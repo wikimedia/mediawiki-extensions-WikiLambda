@@ -26,6 +26,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\ParserOutputLinkTypes;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
@@ -347,14 +348,15 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$cpoParamsWithHTML = new ContentParseParams( $testTitle, null, ParserOptions::newFromAnon(), true );
 		$parserOutputWithHTML = $handler->getParserOutput( $content, $cpoParamsWithHTML );
-		$parserOutputLinks = $parserOutputWithHTML->getLinks();
+		$parserOutputLinks = array_map(
+			static fn ( $item ) => strval( $item['link'] ),
+			$parserOutputWithHTML->getLinkList( ParserOutputLinkTypes::LOCAL )
+		);
 
-		$this->assertCount( 1, $parserOutputLinks, 'Should have links only in one namespace' );
-		$this->assertArrayHasKey( 0, $parserOutputLinks, 'Should have links in NS_MAIN' );
-
-		$this->assertArrayEquals(
-			[ 'Z111', 'Z881', 'Z3', 'Z6', 'Z1002', 'Z1004', 'Z46', 'Z64' ],
-			array_keys( $parserOutputLinks[0] ),
+		$this->assertSame(
+			[ '0:Z111', '0:Z881', '0:Z3', '0:Z6',
+			  '0:Z1002', '0:Z1004', '0:Z46', '0:Z64' ],
+			$parserOutputLinks,
 			'Should have the expected 8 links in NS_MAIN'
 		);
 
