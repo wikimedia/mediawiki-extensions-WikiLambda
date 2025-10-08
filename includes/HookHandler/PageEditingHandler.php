@@ -17,6 +17,7 @@ use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -253,9 +254,24 @@ class PageEditingHandler implements
 			return;
 		}
 
-		$changedObject = $newTargetZObject->getZid();
-		$changeData['target'] = $changedObject;
-		$changeData['type'] = $newTargetZObject->getZType();
+		try {
+			$changedObject = $newTargetZObject->getZid();
+			$changeData['target'] = $changedObject;
+			$changeData['type'] = $newTargetZObject->getZType();
+		} catch ( ZErrorException $ze ) {
+			// (T406708): Something's gone wrong; log and exit.
+			$this->logger->error(
+				__METHOD__ . ': Failed to get ZID/Type for {obj} revision {rev}: {error}',
+				[
+					'obj' => $targetTitle->getDBkey(),
+					'rev' => $newId,
+					'exception' => $ze,
+					'message' => $ze->getMessage(),
+					'errortype' => $ze->getZErrorType()
+				]
+			);
+			return;
+		}
 
 		// (T383156): Only act if this is (a) a change to a Function or a linked Imp/Test & (b) the kind we care about.
 		switch ( $changeData['type'] ) {
