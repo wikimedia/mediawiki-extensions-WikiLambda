@@ -224,6 +224,10 @@ module.exports = exports = defineComponent( {
 @import '../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-default-view {
+	.ext-wikilambda-app-default-view__message {
+		margin-bottom: @spacing-125;
+	}
+
 	.ext-wikilambda-app-default-view__content {
 		box-sizing: border-box;
 		padding: @spacing-75;

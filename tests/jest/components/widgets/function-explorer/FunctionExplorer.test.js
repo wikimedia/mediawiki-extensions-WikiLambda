@@ -163,11 +163,9 @@ describe( 'FunctionExplorer', () => {
 
 			describe( 'when a valid functionZid is provided', () => {
 				beforeAll( () => {
-					Object.defineProperty( navigator, 'clipboard', {
-						value: {
-							writeText: jest.fn()
-						}
-					} );
+					navigator.clipboard = {
+						writeText: jest.fn()
+					};
 
 					jest.spyOn( navigator.clipboard, 'writeText' );
 

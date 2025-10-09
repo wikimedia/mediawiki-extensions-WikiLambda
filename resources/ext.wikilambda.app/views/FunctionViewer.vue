@@ -16,9 +16,18 @@
 				></wl-about-widget>
 			</div>
 			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-16 ext-wikilambda-app-col-tablet-24">
+				<!-- Share URL error message -->
+				<cdx-message
+					v-if="shareUrlError"
+					type="error"
+					class="ext-wikilambda-app-function-viewer-view__message"
+				>
+					{{ shareUrlError }}
+				</cdx-message>
 				<!-- Widget Function Evaluator -->
 				<wl-function-evaluator-widget
 					:function-zid="getCurrentZObjectId"
+					:shared-function-call="sharedFunctionCall"
 				></wl-function-evaluator-widget>
 				<!-- Function Details for Testers and Implementations -->
 				<wl-function-viewer-details>
@@ -46,6 +55,7 @@ const { mapState } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
 const eventLogMixin = require( '../mixins/eventLogMixin.js' );
+const shareUrlMixin = require( '../mixins/shareUrlMixin.js' );
 const useMainStore = require( '../store/index.js' );
 
 // Widget components
@@ -64,7 +74,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-viewer-details': FunctionViewerDetails,
 		'cdx-message': CdxMessage
 	},
-	mixins: [ eventLogMixin ],
+	mixins: [ eventLogMixin, shareUrlMixin ],
 	data: function () {
 		return {
 			functionType: Constants.Z_FUNCTION
@@ -111,6 +121,9 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	mounted: function () {
+		// Load function call from URL if present (validate against current function)
+		this.loadFunctionCallFromUrl( this.getCurrentZObjectId );
+
 		// Log an event using Metrics Platform's core interaction events
 		const interactionData = {
 			zobjecttype: Constants.Z_FUNCTION,
@@ -122,3 +135,13 @@ module.exports = exports = defineComponent( {
 	}
 } );
 </script>
+
+<style lang="less">
+@import '../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-function-viewer-view {
+	.ext-wikilambda-app-function-viewer-view__message {
+		margin-bottom: @spacing-125;
+	}
+}
+</style>

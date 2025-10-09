@@ -5,7 +5,10 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base class="ext-wikilambda-app-function-evaluator-widget" data-testid="function-evaluator-widget">
+	<wl-widget-base
+		id="function-evaluator-widget"
+		class="ext-wikilambda-app-function-evaluator-widget"
+		data-testid="function-evaluator-widget">
 		<template #header>
 			{{ title }}
 		</template>
@@ -83,7 +86,7 @@
 					></wl-z-object-key-value>
 				</div>
 
-				<!-- Run Function button -->
+				<!-- Run Function and Share buttons -->
 				<div class="ext-wikilambda-app-function-evaluator-widget__run-button">
 					<cdx-button
 						action="progressive"
@@ -112,7 +115,7 @@
 					</div>
 					<template v-else>
 						<wl-safe-message v-if="apiErrors.length > 0" :error="apiErrors[0]"></wl-safe-message>
-						<wl-evaluation-result v-else></wl-evaluation-result>
+						<wl-evaluation-result v-else :content-type="contentType"></wl-evaluation-result>
 					</template>
 				</div>
 			</div>
@@ -128,8 +131,9 @@ const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 const eventLogMixin = require( '../../../mixins/eventLogMixin.js' );
 const errorMixin = require( '../../../mixins/errorMixin.js' );
+const clipboardMixin = require( '../../../mixins/clipboardMixin.js' );
 const { typeToString } = require( '../../../utils/typeUtils.js' );
-const { hybridToCanonical } = require( '../../../utils/schemata.js' );
+const { hybridToCanonical, canonicalToHybrid, extractZIDs } = require( '../../../utils/schemata.js' );
 const {
 	getZFunctionCallFunctionId,
 	getZFunctionCallArgumentKeys
@@ -156,7 +160,7 @@ module.exports = exports = defineComponent( {
 		'wl-widget-base': WidgetBase,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
-	mixins: [ eventLogMixin, errorMixin ],
+	mixins: [ eventLogMixin, errorMixin, clipboardMixin ],
 	props: {
 		functionZid: {
 			type: String,
@@ -167,6 +171,11 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: false,
 			default: undefined
+		},
+		sharedFunctionCall: {
+			type: Object,
+			required: false,
+			default: null
 		}
 	},
 	data: function () {
@@ -337,6 +346,19 @@ module.exports = exports = defineComponent( {
 		'callZFunction'
 	] ), {
 		/**
+		 * Fetches a function and its argument types
+		 *
+		 * @param {string} functionZid - The function ZID to fetch
+		 * @return {Promise} Promise that resolves when all data is loaded
+		 */
+		fetchFunctionAndArguments: function ( functionZid ) {
+			return this.fetchZids( { zids: [ functionZid ] } ).then( () => {
+				const inputTypeZids = this.getInputTypeZids( functionZid );
+				return this.fetchZids( { zids: inputTypeZids } );
+			} );
+		},
+
+		/**
 		 * Initializes the detached objects in the zobject table
 		 * that will contain:
 		 * 1. The function call object, and
@@ -354,6 +376,12 @@ module.exports = exports = defineComponent( {
 				zobject: {}
 			} );
 
+			// If we have a shared function call from URL, set it directly
+			if ( this.sharedFunctionCall ) {
+				this.loadSharedFunctionCall();
+				return;
+			}
+
 			// Set blank function call object
 			this.changeTypeByKeyPath( {
 				keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
@@ -364,17 +392,12 @@ module.exports = exports = defineComponent( {
 			// If we are initializing the evaluator with an functionZid
 			// we fetch the function data and then we set the arguments
 			if ( functionZid ) {
-				// Fetch the function zid first,
-				// and then fetch the argument type zids
-				this.fetchZids( { zids: [ functionZid ] } ).then( () => {
-					const inputTypeZids = this.getInputTypeZids( functionZid );
-					this.fetchZids( { zids: inputTypeZids } ).then( () => {
-						this.setFunctionCallArguments( {
-							keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
-							functionZid
-						} );
-						this.isLoading = false;
+				this.fetchFunctionAndArguments( functionZid ).then( () => {
+					this.setFunctionCallArguments( {
+						keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
+						functionZid
 					} );
+					this.isLoading = false;
 				} );
 			} else {
 				this.isLoading = false;
@@ -416,6 +439,36 @@ module.exports = exports = defineComponent( {
 		 */
 		waitAndCallFunction: function () {
 			this.waitForRunningParsers.then( () => this.callFunction() );
+		},
+
+		/**
+		 * Loads a shared function call from the prop
+		 */
+		loadSharedFunctionCall: function () {
+			// Get the function ZID from the shared function call
+			const functionZid = getZFunctionCallFunctionId( this.sharedFunctionCall );
+
+			// Extract all ZIDs from the function call
+			const allZids = extractZIDs( this.sharedFunctionCall );
+
+			// Set the entire function call object in the store at once
+			this.setJsonObject( {
+				namespace: Constants.STORED_OBJECTS.FUNCTION_CALL,
+				zobject: canonicalToHybrid( this.sharedFunctionCall )
+			} );
+
+			// Fetch all ZIDs mentioned in the function call, plus the function and argument types
+			Promise.all( [
+				this.fetchZids( { zids: allZids } ),
+				this.fetchFunctionAndArguments( functionZid )
+			] ).then( () => {
+				this.isLoading = false;
+
+				// Always auto-run when loading from shared URL
+				if ( this.canRunFunction ) {
+					this.waitAndCallFunction();
+				}
+			} );
 		},
 
 		/**
@@ -477,6 +530,9 @@ module.exports = exports = defineComponent( {
 		}
 	} ),
 	watch: {
+		sharedFunctionCall: function () {
+			this.loadSharedFunctionCall();
+		},
 		functionZid: function () {
 			this.initialize( this.functionZid );
 		}
@@ -504,6 +560,12 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-evaluator-widget__inputs,
 	.ext-wikilambda-app-function-evaluator-widget__call {
 		margin-bottom: @spacing-125;
+	}
+
+	.ext-wikilambda-app-function-evaluator-widget__run-button {
+		display: flex;
+		gap: @spacing-50;
+		align-items: center;
 	}
 
 	.ext-wikilambda-app-function-evaluator-widget__result-block {

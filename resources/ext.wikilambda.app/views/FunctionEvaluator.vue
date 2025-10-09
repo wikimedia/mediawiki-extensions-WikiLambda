@@ -8,8 +8,18 @@
 	<div class="ext-wikilambda-app-function-evaluator-view">
 		<div class="ext-wikilambda-app-row">
 			<div class="ext-wikilambda-app-col">
+				<!-- Share URL error message -->
+				<cdx-message
+					v-if="shareUrlError"
+					type="error"
+					class="ext-wikilambda-app-function-evaluator-view__message"
+				>
+					{{ shareUrlError }}
+				</cdx-message>
 				<!-- Widget Function Evaluator -->
-				<wl-function-evaluator-widget></wl-function-evaluator-widget>
+				<wl-function-evaluator-widget
+					:shared-function-call="sharedFunctionCall"
+				></wl-function-evaluator-widget>
 			</div>
 		</div>
 	</div>
@@ -18,14 +28,31 @@
 <script>
 const { defineComponent } = require( 'vue' );
 const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
+const shareUrlMixin = require( '../mixins/shareUrlMixin.js' );
+const { CdxMessage } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-evaluator-view',
 	components: {
+		'cdx-message': CdxMessage,
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget
 	},
+	mixins: [ shareUrlMixin ],
 	mounted: function () {
+		// Load function call from URL if present
+		this.loadFunctionCallFromUrl();
+
 		this.$emit( 'mounted' );
 	}
 } );
 </script>
+
+<style lang="less">
+@import '../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-function-evaluator-view {
+	.ext-wikilambda-app-function-evaluator-view__message {
+		margin-bottom: @spacing-125;
+	}
+}
+</style>

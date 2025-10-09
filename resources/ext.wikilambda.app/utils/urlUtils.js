@@ -110,6 +110,27 @@ const urlUtils = {
 	getQueryParamsFromUrl: function ( url ) {
 		const searchParams = new URL( url ).searchParams;
 		return this.searchParamsToObject( searchParams );
+	},
+
+	/**
+	 * Generate a shareable URL for a function call.
+	 * The URL appends the encoded function call to the current page URL.
+	 *
+	 * @param {Object} canonicalFunctionCall - The function call object in canonical form.
+	 * @return {string} - The generated shareable URL with encoded function call.
+	 */
+	generateShareUrl: function ( canonicalFunctionCall ) {
+		// Convert to JSON (URLSearchParams will handle encoding)
+		const jsonString = JSON.stringify( canonicalFunctionCall );
+
+		// Use the current page URL (without existing query params)
+		const url = new URL( window.location.href );
+		// Clear existing query params
+		url.search = '';
+		// Add the call parameter (URLSearchParams.set will encode it)
+		url.searchParams.set( 'call', jsonString );
+
+		return url.toString();
 	}
 };
 

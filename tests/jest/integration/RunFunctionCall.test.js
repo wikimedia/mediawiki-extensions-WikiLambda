@@ -21,10 +21,16 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 	beforeEach( () => {
 		const setupResult = runSetup();
 		apiPostWithFunctionCallMock = setupResult.apiPostWithFunctionCallMock;
+
+		// Mock navigator.clipboard for share functionality
+		navigator.clipboard = {
+			writeText: jest.fn()
+		};
 	} );
 
 	afterEach( () => {
 		runTeardown();
+		jest.restoreAllMocks();
 	} );
 
 	it( 'allows choosing a function and calling it', async () => {
@@ -65,11 +71,11 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		const secondInputTextField = await within( secondInput ).getByTestId( 'text-input' );
 		expect( secondInputTextField ).toBeTruthy();
 
-		// ACT: Enter a value for the second input
+		// // ACT: Enter a value for the second input
 		const secondInputText = 'second argument value';
 		await fireEvent.update( secondInputTextField, secondInputText );
 
-		// ASSERT: Check the value of the second input is correctly set
+		// // ASSERT: Check the value of the second input is correctly set
 		expect( secondInputTextField.value ).toBe( secondInputText );
 
 		//* -- Calling the function
@@ -87,7 +93,7 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCallPostedToApi )
 		}, { signal: undefined } );
 
-		//* -- Checking the response
+		// * -- Checking the response
 		const resultBlock = await findByTestId( 'function-evaluator-result' );
 
 		// ASSERT: The 'Running…' message is displayed.
@@ -97,8 +103,14 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		expect( await findByText( '"the function call result"' ) ).toBeInTheDocument();
 
 		// ACT: Click the show metrics button.
-		const detailsLink = await within( resultBlock ).findByRole( 'button', { name: 'Details' } );
-		await fireEvent.click( detailsLink );
+		const detailsButton = await within( resultBlock ).findByRole( 'button', { name: 'Details' } );
+		const shareButton = await within( resultBlock ).findByRole( 'button', { name: 'Copy result link' } );
+
+		expect( detailsButton ).toBeInTheDocument();
+		expect( shareButton ).toBeInTheDocument();
+
+		// ACT: Click the show metrics button.
+		await fireEvent.click( detailsButton );
 
 		// ASSERT: The metadata is displayed in the dialog.
 		const detailsDialog = await findByRole( 'dialog' );
@@ -106,5 +118,15 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 		expect( detailsDialog ).toHaveTextContent( 'Start time: 11 seconds ago' );
 		expect( detailsDialog ).toHaveTextContent( 'End time: 2 seconds ago' );
 		expect( detailsDialog ).toHaveTextContent( 'Duration: 146ms' );
+
+		// ACT: Click the share button.
+		await fireEvent.click( shareButton );
+
+		// ASSERT: The share URL is copied to the clipboard.
+		await waitFor( () => {
+			expect( navigator.clipboard.writeText ).toHaveBeenCalledTimes( 1 );
+		} );
+		const copiedUrl = navigator.clipboard.writeText.mock.calls[ 0 ][ 0 ];
+		expect( copiedUrl ).toContain( '?call=' );
 	} );
 } );

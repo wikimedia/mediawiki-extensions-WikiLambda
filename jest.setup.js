@@ -8,7 +8,6 @@
 
 /* global jest, mockLocalStorage, $ */
 // Assign things to "global" here if you want them to be globally available during tests
-
 const fs = require( 'fs' );
 const path = require( 'path' );
 const vueTestUtils = require( '@vue/test-utils' );

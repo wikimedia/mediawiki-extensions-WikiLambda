@@ -12,7 +12,8 @@ const {
 	removeHashFromURL,
 	isLinkCurrentPath,
 	generateViewUrl,
-	generateEditUrl
+	generateEditUrl,
+	generateShareUrl
 } = require( '../../../resources/ext.wikilambda.app/utils/urlUtils.js' );
 const { mockWindowLocation } = require( '../fixtures/location.js' );
 
@@ -153,6 +154,69 @@ describe( 'urlUtils', () => {
 			} );
 
 			expect( url ).toBe( 'https://wikifunctions.org/wiki/Z123?uselang=en&action=edit#main-Z2K2-Z12K1' );
+		} );
+	} );
+
+	describe( 'generateShareUrl', () => {
+		it( 'should generate share URL with encoded function call', () => {
+			mockWindowLocation( 'http://example.com/wiki/Special:RunFunction' );
+
+			const functionCall = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'hello'
+			};
+
+			const url = generateShareUrl( functionCall );
+
+			// Verify URL contains call parameter
+			expect( url ).toContain( 'call=' );
+			// Verify we can decode it back to the original function call
+			const urlObj = new URL( url );
+			const decodedParam = urlObj.searchParams.get( 'call' );
+			const decodedCall = JSON.parse( decodeURIComponent( decodedParam ) );
+			expect( decodedCall ).toEqual( functionCall );
+		} );
+
+		it( 'should clear existing query params before adding call parameter', () => {
+			mockWindowLocation( 'http://example.com/wiki/Z801?foo=bar&baz=qux' );
+
+			const functionCall = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'hello'
+			};
+
+			const url = generateShareUrl( functionCall );
+
+			// Verify old params are removed
+			expect( url ).not.toContain( 'foo=bar' );
+			expect( url ).not.toContain( 'baz=qux' );
+			// Verify call param is present
+			expect( url ).toContain( 'call=' );
+			// Verify we can decode it back
+			const urlObj = new URL( url );
+			const decodedParam = urlObj.searchParams.get( 'call' );
+			const decodedCall = JSON.parse( decodeURIComponent( decodedParam ) );
+			expect( decodedCall ).toEqual( functionCall );
+		} );
+
+		it( 'should properly encode special characters in JSON', () => {
+			mockWindowLocation( 'http://example.com/wiki/Special:RunFunction' );
+
+			const functionCall = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'hello world & special chars: {}[]'
+			};
+
+			const url = generateShareUrl( functionCall );
+
+			expect( url ).toContain( 'call=' );
+			// Use URLSearchParams to properly decode (handles + as space)
+			const urlObj = new URL( url );
+			const decodedCall = urlObj.searchParams.get( 'call' );
+			expect( decodedCall ).toBe( JSON.stringify( functionCall ) );
 		} );
 	} );
 } );
