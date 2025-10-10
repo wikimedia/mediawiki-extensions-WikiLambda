@@ -91,7 +91,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			$errorMessage = __METHOD__ . ' called repo mode is not enabled';
-			$this->logger->info( $errorMessage );
+			$this->logger->debug( $errorMessage );
 			$span->setAttributes( [
 					'response.status_code' => HttpStatus::BAD_REQUEST,
 					'exception.message' => $errorMessage
@@ -164,7 +164,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$response = $this->makeRequest( $requestCall, $renderLang, $span );
 		} catch ( ZErrorException $e ) {
 			$errorMessage = __METHOD__ . ' called on {target} but got a ZErrorException, {error}';
-			$this->logger->info(
+			$this->logger->debug(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -182,7 +182,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$this->dieRESTfullyWithZError( $e->getZError(), HttpStatus::BAD_REQUEST, [ 'data' => $e->getZError() ] );
 		} catch ( JsonException $e ) {
 			$errorMessage = __METHOD__ . ' called on {target} but got a JsonException, {error}';
-			$this->logger->error(
+			$this->logger->info(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -271,7 +271,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		// 3. Check if target function is valid
 		if ( !$targetObject->isValid() ) {
 			$errorMessage = __METHOD__ . ' called on {target} which is an invalid ZObject';
-			$this->logger->warning(
+			$this->logger->info(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -536,7 +536,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$targetType = $this->zObjectStore->fetchZObject( $targetTypeZid );
 		if ( !$targetType ) {
 			$errorMessage = __METHOD__ . ' called on {target} which has a not-found input type {typeZid} at key {key}';
-			$this->logger->warning(
+			$this->logger->debug(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -569,7 +569,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// * There is an error in the content; the function is not wellformed (not very likely).
 			$errorMessage =
 				__METHOD__ . ' called on {target} which has a non-Type argument, {typeZid} at key {key}';
-			$this->logger->error(
+			$this->logger->debug(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -616,7 +616,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// User is trying to use a parameter that can't be parsed from text
 			$errorMessage =
 				__METHOD__ . ' called on {target} with an unparseable input, {targetTypeZid} in position {pos}';
-			$this->logger->info(
+			$this->logger->debug(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -781,7 +781,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$typeObject = $this->zObjectStore->fetchZObject( $targetReturnType );
 		if ( !$typeObject ) {
 			$errorMessage = __METHOD__ . ' called on {target} which has a not-found output type {typeZid}';
-			$this->logger->warning(
+			$this->logger->debug(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -810,7 +810,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// * Output is a generic type; the function input is not supported.
 			// * There is an error in the content; the function is not wellformed (not very likely).
 			$errorMessage = __METHOD__ . ' called on {target} which has a non-Type output, {targetReturnType}';
-			$this->logger->error(
+			$this->logger->debug(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -840,7 +840,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		if ( $rendererFunction === false ) {
 			// User is trying to use a ZFunction that returns something which doesn't have a renderer
 			$errorMessage = __METHOD__ . ' called on {target} with an unrenderable output, {targetReturnType}';
-			$this->logger->info(
+			$this->logger->debug(
 				$errorMessage,
 				[
 					'target' => $target,
@@ -919,9 +919,10 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$apiMessage = $e->getStatusValue()->getErrors()[0]['message'];
 			'@phan-var \MediaWiki\Api\ApiMessage $apiMessage';
 
-			// Log error message thrown by ApiFunctionCall
+			// Log error message thrown by ApiFunctionCall; this is almost certainly a 429 /
+			// "You have too many function calls executing right now." error.
 			$errorMessage = __METHOD__ . ' executed ApiFunctionCall which threw an ApiUsageException: {error}';
-			$this->logger->error(
+			$this->logger->info(
 				$errorMessage,
 				[ 'error' => $e->getMessage() ]
 			);
@@ -950,7 +951,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		} catch ( Exception $e ) {
 			// Log unhandled exception thrown by ApiFunctionCall
 			$errorMessage = __METHOD__ . ' executed ApiFunctionCall which threw an unhandled exception: {error}';
-			$this->logger->error(
+			$this->logger->warning(
 				$errorMessage,
 				[ 'error' => $e->getMessage() ]
 			);
@@ -978,7 +979,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			// The server's not given us a result! This is an unexpected system error
 			$responseType = $response->getZType();
 
-			// Log non valid Orchestrator response
+			// Log non-valid Orchestrator response
 			$errorMessage =
 				__METHOD__ . ' got a non-valid response from the server of type {responseType} with call: {call}';
 			$this->logger->error(
