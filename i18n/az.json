@@ -6,6 +6,7 @@
 		]
 	},
 	"wikilambda-viewmode-nojs": "Bu səhifə JavaScript olmadan məhdud şəkildə göstərilir.",
+	"wikilambda-functioncall": "Funksiya çağırışı",
 	"wikilambda-edit": "Redaktə edilir",
 	"wikilambda-publishnew": "Yayımla",
 	"wikilambda-cancel": "İmtina",
@@ -22,10 +23,13 @@
 	"wikilambda-editor-boolean-selector": "True/false seç",
 	"wikilambda-function-are-you-sure-dialog-header": "Əminsiniz?",
 	"wikilambda-function-are-you-sure-dialog-description": "Dəyişiklikləri yayımlamadan redaktə rejimindən çıxmaq istədiyinizdən əminsiniz?",
+	"wikilambda-functioncall-error-category": "Xətalı Vikifunksiyalar çağırışı olan səhifələr",
 	"wikilambda-create-function": "Funksiya yarat",
 	"wikilambda-create-type": "Növ yarat",
 	"wikilambda-function-definition-name-label": "Ad",
 	"wikilambda-function-definition-edit": "Təsviri redaktə et",
+	"wikilambda-function-implementation-name-label": "Ad",
+	"wikilambda-function-implementation-language-label": "Dil",
 	"wikilambda-function-definition-name-example": "Ad nümunələrinə bax.",
 	"wikilambda-function-definition-alias-label": "Alternativ adlar",
 	"wikilambda-function-definition-alias-example": "Alternativ ad nümunələrinə baxın.",
@@ -49,5 +53,10 @@
 	"wikilambda-continue-editing": "Redaktəyə davam et",
 	"wikilambda-discard-edits": "Düzəlişləri ləğv et",
 	"wikilambda-function-details-summary": "Hər kəs yeni bir tətbiq və ya test təklif edə bilər. Təklif olunan kod mövcud tətbiq və ya təsdiqlənmiş testə çevrilməzdən əvvəl Vikifunksiyalar icması tərəfindən nəzərdən keçirilir.",
-	"wikilambda-function-details-summary-learn-more": "Baxış prosesi haqqında daha çox məlumat əldə edin."
+	"wikilambda-function-details-summary-learn-more": "Baxış prosesi haqqında daha çox məlumat əldə edin.",
+	"wikilambda-function-viewer-aliases-show-language-button": "Daha çox dil göstər",
+	"wikilambda-function-viewer-names-show-languages-button": "Adı başqa dillərdə göstər",
+	"wikilambda-function-viewer-details-input-number": "Daxiletmə $1",
+	"wikilambda-function-viewer-details-table-view-all": "Hamısına bax",
+	"wikilambda-function-viewer-details-table-view-less": "Daha azına bax"
 }

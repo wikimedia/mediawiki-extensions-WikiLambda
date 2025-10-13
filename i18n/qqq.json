@@ -17,7 +17,8 @@
 			"Joseph",
 			"McDutchie",
 			"Msz2001",
-			"Grace Choi"
+			"Grace Choi",
+			"Nemoralis"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -150,7 +151,7 @@
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Label for how much CPU time this function call used on the evaluator.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "Label for how much CPU time this function call used on the executor.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-error": "Error shown when a wikitext function call goes wrong.\n\nParams:\n* $1 - The specific error message",
-	"wikilambda-functioncall-error-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.\n{{Tracking category name}}",
+	"wikilambda-functioncall-error-category": "{{Tracking category name}}\nA [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.",
 	"wikilambda-functioncall-error-category-desc": "{{Doc-tracking-category-desc|generic Wikifunctions error}}",
 	"wikilambda-functioncall-error-unknown": "Error shown when a wikitext function call is made to a function that doesn't exist.\n\nParams:\n* $1 - The function requested",
 	"wikilambda-functioncall-error-unknown-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call to a function that doesn't exist. Please don't add namespace prefix.",
