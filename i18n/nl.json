@@ -3,6 +3,7 @@
 		"authors": [
 			"ABPMAB",
 			"Aranka",
+			"Bdijkstra",
 			"Daanboven",
 			"HanV",
 			"Mainframe98",
@@ -314,7 +315,7 @@
 	"wikilambda-functioncall-error-nonfunction-category": "Pagina's met Wikifuncties-aanroepen naar niet-functionele objecten",
 	"wikilambda-functioncall-error-nonfunction-category-desc": "Pagina's met pogingen om Wikifuncties aan te roepen met een niet-functioneel object",
 	"wikilambda-functioncall-error-nonstringinput-category": "Pagina's met Wikifuncties-aanroepen met niet-tekenreeks-objecten",
-	"wikilambda-functioncall-error-nonstringinput-category-desc": "Pagina's met pogingen om Wikifuncties aan te roepen met een functie die geen tekenreeks retourneert",
+	"wikilambda-functioncall-error-nonstringinput-category-desc": "Pagina's met pogingen om Wikifuncties aan te roepen met een functie die geen tekenreeks accepteert",
 	"wikilambda-functioncall-error-nonstringoutput-category": "Pagina's met Wikifuncties-aanroepen die niet-tekenreeks-objecten aanmaken",
 	"wikilambda-functioncall-error-nonstringoutput-category-desc": "Pagina's met pogingen om Wikifuncties aan te roepen met een functie die geen tekenreeks retourneert",
 	"wikilambda-functioncall-error-bad-langs-category": "Pagina's met Wikifuncties-aanroepen met foutieve taaleigenschappen",
