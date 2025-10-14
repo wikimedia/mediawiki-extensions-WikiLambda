@@ -17,7 +17,8 @@
 			"Raymond",
 			"Robby",
 			"Umherirrender",
-			"Verdy p"
+			"Verdy p",
+			"Nemoralis"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -275,7 +276,7 @@
 	"wikilambda-function-viewer-names-show-languages-button": "Show language button for rendering function name in other languages",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-error": "Error shown when a wikitext function call goes wrong.\n\nParams:\n* $1 - The specific error message",
-	"wikilambda-functioncall-error-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.\n{{Tracking category name}}",
+	"wikilambda-functioncall-error-category": "{{Tracking category name}}\nA [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.",
 	"wikilambda-functioncall-error-category-desc": "{{Doc-tracking-category-desc|generic Wikifunctions error}}",
 	"wikilambda-functioncall-error-invalid-zobject": "Error shown when a wikitext function call is made to a page that's not a valid ZObject.\n\nParams:\n* $1 - The page title they tried to use",
 	"wikilambda-functioncall-error-invalid-zobject-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call to a non-valid object. Please don't add namespace prefix.\n{{Tracking category name}}",
