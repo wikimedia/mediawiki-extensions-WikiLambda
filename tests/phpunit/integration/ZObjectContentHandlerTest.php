@@ -353,7 +353,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 			$parserOutputWithHTML->getLinkList( ParserOutputLinkTypes::LOCAL )
 		);
 
-		$this->assertSame(
+		$this->assertEqualsCanonicalizing(
 			[ '0:Z111', '0:Z881', '0:Z3', '0:Z6',
 			  '0:Z1002', '0:Z1004', '0:Z46', '0:Z64' ],
 			$parserOutputLinks,
@@ -363,13 +363,15 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		// Also check that this happens when the 'generate HTML' flag is false, e.g. LinksUpdate jobs
 		$cpoParamsWithoutHTML = new ContentParseParams( $testTitle, null, ParserOptions::newFromAnon(), false );
 		$parserOutputWithoutHTML = $handler->getParserOutput( $content, $cpoParamsWithoutHTML );
-		$parserOutputLinks = $parserOutputWithoutHTML->getLinks();
+		$parserOutputLinks = array_map(
+			static fn ( $item ) => strval( $item['link'] ),
+			$parserOutputWithoutHTML->getLinkList( ParserOutputLinkTypes::LOCAL )
+		);
 
-		$this->assertCount( 1, $parserOutputLinks, 'Should have links only in one namespace' );
-		$this->assertArrayHasKey( 0, $parserOutputLinks, 'Should have links in NS_MAIN' );
-		$this->assertArrayEquals(
-			[ 'Z111', 'Z881', 'Z3', 'Z6', 'Z1002', 'Z1004', 'Z46', 'Z64' ],
-			array_keys( $parserOutputLinks[0] ),
+		$this->assertEqualsCanonicalizing(
+			[ '0:Z111', '0:Z881', '0:Z3', '0:Z6',
+			  '0:Z1002', '0:Z1004', '0:Z46', '0:Z64' ],
+			$parserOutputLinks,
 			'Should have the expected 8 links in NS_MAIN'
 		);
 	}
