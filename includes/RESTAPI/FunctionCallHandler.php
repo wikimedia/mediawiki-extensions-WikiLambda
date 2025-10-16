@@ -877,7 +877,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 	 * @throws ZErrorException
 	 */
 	private function makeRequest( $call, $renderLanguageCode, $span ): stdClass {
-		// TODO (T338251): Can we do an Orchestrator call directly here using WikiLambdaApiBase::executeFunctionCall()
+		// TODO (T407490): Can we do an Orchestrator call directly here using WikiLambdaApiBase::executeFunctionCall()
 		// (But note that we're not an ActionAPI class, so can't extend that… Meh.)
 		// Also, consider if we can do an Orchestrator call simply calling
 		// OrchestratorRequest instead of layering APIs.
