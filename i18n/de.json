@@ -207,6 +207,8 @@
 	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Diesen Wert leeren",
 	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom Objekt entfernen",
+	"wikilambda-empty-reference-warning": "Gib einen Wert ein.",
+	"wikilambda-empty-references-publish-warning": "Einige Felder enthalten leere Werte. Bitte überprüfe die Felder und fülle sie vor der Veröffentlichung aus.",
 	"wikilambda-expert-mode-json-label": "Aktuelles Objekt",
 	"wikilambda-fallback": "Fallback-Editor",
 	"wikilambda-function-are-you-sure-dialog-description": "Bist du sicher, dass du den Bearbeitungsmodus verlassen möchtest, ohne vorher zu veröffentlichen?",

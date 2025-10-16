@@ -209,6 +209,7 @@
 	"wikilambda-editor-zobject-addkey": "Aggiungi chiave:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Ripulisci questo valore",
 	"wikilambda-editor-zobject-removekey-tooltip": "Rimuovi questa chiave/valore dall'oggetto",
+	"wikilambda-empty-reference-warning": "Inserisci un valore.",
 	"wikilambda-expert-mode-json-label": "Oggetto attuale",
 	"wikilambda-fallback": "Editor di fallback",
 	"wikilambda-function-are-you-sure-dialog-description": "Confermi di voler abbandonare la modalità di modifica senza prima pubblicare?",

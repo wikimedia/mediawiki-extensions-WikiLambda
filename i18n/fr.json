@@ -349,6 +349,7 @@
 	"wikilambda-functioncall-metadata-end-time": "Horodatage de fin",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Erreur|Erreurs}}",
 	"wikilambda-functioncall-metadata-errors-none": "Aucune",
+	"wikilambda-functioncall-metadata-test-failure": "Le résultat attendu et le résultat réel ne sont pas égaux.",
 	"wikilambda-functioncall-metadata-errors-summary": "Type d'erreur",
 	"wikilambda-functioncall-metadata-errors-args": "Données d'erreur",
 	"wikilambda-functioncall-metadata-errors-children": "Pile d'erreurs",
