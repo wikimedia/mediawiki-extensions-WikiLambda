@@ -38,5 +38,16 @@
 				"Z11K2": "Programming language"
 			}
 		]
+	},
+	"Z2K5": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			"Z11",
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1002",
+				"Z11K2": "Description with wikitext [[phab:T1234]]"
+			}
+		]
 	}
 }

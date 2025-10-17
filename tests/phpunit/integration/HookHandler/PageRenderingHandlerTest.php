@@ -43,6 +43,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setUpAsRepoMode();
+		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/test_definitions' );
 
 		$mockHashConfigRepoMode = $this->createMock( HashConfig::class );
 		$mockHashConfigRepoMode->method( 'get' )->with( 'WikiLambdaEnableRepoMode' )->willReturn( true );
@@ -623,7 +624,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 	public function testLabelParserFunctions(
 		string $zobject, ?string $languageCode, string $expectedLabel, string $expectedLabelDescription
 	) {
-		$this->insertZids( [ 'Z1' ] );
+		$this->insertZids( [ 'Z1', 'Z61' ] );
 
 		$labelWikitext = '{{#wikifunctionlabel:' . $zobject
 			. ( $languageCode ? '|' . $languageCode : '' ) . '}}';
@@ -723,6 +724,21 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			'en',
 			$z400EnglishLabel,
 			$z400EnglishLabelDesc
+		];
+
+		$z61 = "<p><a href=\"/wiki/Z61\" title=\"Z61\">Programming language ("
+			. "<span dir=\"ltr\" class=\"ext-wikilambda-inline-zid\">Z61</span>)";
+		$z61EnglishLabel = $z61 . "</a>\n</p>";
+		$z61EnglishLabelDesc = $z61 . ": <span class=\"ext-wikilambda-inline-description\">"
+			. "Description with wikitext phab:T1234</span></a>\n</p>";
+
+		// Description with wikitext
+		yield 'Z61 use with wikitext in description' => [
+			// {{#wikifunctionlabel:Z61}}
+			'Z61',
+			null,
+			$z61EnglishLabel,
+			$z61EnglishLabelDesc,
 		];
 	}
 

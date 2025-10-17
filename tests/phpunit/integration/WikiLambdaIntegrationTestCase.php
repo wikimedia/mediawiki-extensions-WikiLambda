@@ -67,8 +67,8 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 
 	/**
 	 * Given a zid, returns the zobject definition found in:
-	 * * function schemata data definitions, or
 	 * * test data definitions (if directory is configured for this test suite)
+	 * * function schemata data definitions, or
 	 * If not found in either directory, raises Exception
 	 *
 	 * @param string $zid
@@ -78,10 +78,10 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		$mainFile = "$this->mainDataPath/$zid.json";
 		$testFile = isset( $this->testDataPath ) ? "$this->testDataPath/$zid.json" : null;
 
-		if ( file_exists( $mainFile ) ) {
-			$data = file_get_contents( $mainFile );
-		} elseif ( isset( $this->testDataPath ) && file_exists( $testFile ) ) {
+		if ( isset( $this->testDataPath ) && file_exists( $testFile ) ) {
 			$data = file_get_contents( $testFile );
+		} elseif ( file_exists( $mainFile ) ) {
+			$data = file_get_contents( $mainFile );
 		} else {
 			throw new \RuntimeException( "ZObject definition for $zid not found in main or test data paths." );
 		}

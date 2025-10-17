@@ -591,7 +591,10 @@ class PageRenderingHandler implements
 			}
 
 			$output .= $parser->msg( 'colon-separator' )->text()
-				. '<span class="ext-wikilambda-inline-description">' . $description . '</span>';
+				. '<span class="ext-wikilambda-inline-description">'
+				. trim( strip_tags( $parser->recursiveTagParseFully( $description ) ) )
+				. '</span>';
+
 		}
 
 		$output .= ']]';
