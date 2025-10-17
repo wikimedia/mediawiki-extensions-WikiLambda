@@ -201,6 +201,8 @@
 	"wikilambda-editor-zobject-addkey": "Engadir unha chave:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Baleirar este valor",
 	"wikilambda-editor-zobject-removekey-tooltip": "Eliminar esta clave/valor do obxecto",
+	"wikilambda-empty-reference-warning": "Introduce un valor.",
+	"wikilambda-empty-references-publish-warning": "Algúns campos conteñen valores baleiros. Revísaos e éncheos antes de publicares.",
 	"wikilambda-expert-mode-json-label": "Obxecto actual",
 	"wikilambda-fallback": "Editor de reserva",
 	"wikilambda-function-are-you-sure-dialog-description": "Queres saír do modo de edición sen darlle antes a publicar?",

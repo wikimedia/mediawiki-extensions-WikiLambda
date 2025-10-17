@@ -39,6 +39,7 @@
 	"wikilambda-editor-publish-dialog-summary-help-text": "Како сте унапредили ову страницу?",
 	"wikilambda-editor-publish-dialog-summary-label": "Опис измене",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Укратко опис измене",
+	"wikilambda-empty-reference-warning": "Унесите вредност.",
 	"wikilambda-expert-mode-json-label": "Тренутан објекат",
 	"wikilambda-function-are-you-sure-dialog-header": "Јесте ли сигурни?",
 	"wikilambda-function-definition-add-other-label-languages-title": "Додај језик",

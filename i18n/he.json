@@ -204,6 +204,8 @@
 	"wikilambda-editor-zobject-addkey": "הוספת מפתח:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "לרוקן את הערך הזה",
 	"wikilambda-editor-zobject-removekey-tooltip": "הסרת המפתח והערך האלה מהעצם",
+	"wikilambda-empty-reference-warning": "נא למלא ערך.",
+	"wikilambda-empty-references-publish-warning": "חלק מהשדות מכילים ערכים ריקים. נא לסקור ולמלא את השדות לפני פרסום.",
 	"wikilambda-expert-mode-json-label": "עצם נוכחי",
 	"wikilambda-fallback": "עורך גיבוי",
 	"wikilambda-function-are-you-sure-dialog-description": "האם ברצונך באמת לעזוב את מצב העריכה בלי לפרסם קודם?",

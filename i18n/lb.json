@@ -156,6 +156,7 @@
 	"wikilambda-editor-zobject-addkey": "Schlëssel derbäisetzen:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Dëse Wäert eidelmaachen",
 	"wikilambda-editor-zobject-removekey-tooltip": "Dëse Schlëssel/Wäert vum Objet ewechhuelen",
+	"wikilambda-empty-reference-warning": "Gitt e Wäert an.",
 	"wikilambda-expert-mode-json-label": "Aktuellen Objet",
 	"wikilambda-fallback": "Fallback-Editeur",
 	"wikilambda-function-are-you-sure-dialog-description": "Sidd Dir sécher, datt Dir den Ännerungsmodus vun dëser Säit verloosse wëllt ouni virdrun ze verëffentlechen?",

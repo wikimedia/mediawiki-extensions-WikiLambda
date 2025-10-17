@@ -211,6 +211,8 @@
 	"wikilambda-editor-zobject-addkey": "Sleutel toevoegen:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Deze waarde leegmaken",
 	"wikilambda-editor-zobject-removekey-tooltip": "Verwijder deze sleutel/waarde uit het object",
+	"wikilambda-empty-reference-warning": "Voer een waarde in.",
+	"wikilambda-empty-references-publish-warning": "Sommige velden bevatten lege waarden. Controleer de velden en vul ze in voordat u publiceert.",
 	"wikilambda-expert-mode-json-label": "Huidig object",
 	"wikilambda-fallback": "Terugval bewerken",
 	"wikilambda-function-are-you-sure-dialog-description": "Weet u zeker dat u de bewerkingsmodus wilt verlaten zonder eerst te publiceren?",
