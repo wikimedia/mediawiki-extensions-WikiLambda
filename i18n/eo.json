@@ -1,10 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Robin van der Vliet"
+			"Robin van der Vliet",
+			"Tymewalk"
 		]
 	},
 	"wikilambda-cancel": "Nuligi",
 	"wikilambda-function-definition-name-label": "Nomo",
+	"wikilambda-list-items-label": "Eroj",
+	"wikilambda-list-empty-state": "0 eroj",
 	"wikilambda-ztyped-pair-value-label": "Valoro"
 }

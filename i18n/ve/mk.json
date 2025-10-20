@@ -68,5 +68,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Функцијата не може да прикаже исход. Обидете се подоцна.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Откажано",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Одново",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Откажи"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Откажи",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Користи го денешниот датум за исходот да биде тековен",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Користи го стандардниот предмет на Википодатоци за оваа страница",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Користи го стандардниот јазик на оваа страница"
 }

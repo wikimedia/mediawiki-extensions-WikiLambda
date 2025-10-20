@@ -71,5 +71,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "הפונקציה לא יכולה להציג תוצאה. נא לנסות שוב מאוחר יותר.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "בוטל",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "איפוס",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "ביטול"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "ביטול",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "להשתמש בתאריך של היום ולשמור על כך שהתוצאה תהיה עדכנית",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "להשתמש בפריט הוויקינתונים של הדף הזה בתור ברירת מחדל",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "להשתמש בדף ברירת המחדל של השפה הזאת"
 }

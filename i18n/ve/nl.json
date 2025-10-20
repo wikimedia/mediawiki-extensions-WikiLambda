@@ -70,5 +70,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "De functie kan geen resultaat weergeven. Probeer het later opnieuw.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Geannuleerd",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Opnieuw instellen",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Annuleren"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Annuleren",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Gebruik de datum van vandaag en houd het resultaat bijgewerkt",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Het standaard Wikidata-item van deze pagina gebruiken",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "De standaardtaal van deze pagina gebruiken"
 }

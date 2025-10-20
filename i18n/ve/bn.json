@@ -70,5 +70,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "ফাংশনটি কোনও ফলাফল প্রদর্শন করতে পারছে না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "বাতিল করা হয়েছে",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "পুনঃস্থাপন",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "বাতিল"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "বাতিল",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "এই পাতার পূর্বনির্ধারিত ভাষা ব্যবহার করুন"
 }
