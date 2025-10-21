@@ -68,5 +68,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Le function non pote monstrar un resultato. Per favor tenta lo de novo plus tarde.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Cancellate",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Reinitialisar",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Cancellar"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Cancellar",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Usar le data de hodie e mantener le resultato actualisate",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Usar le elemento Wikidata predefinite de iste pagina",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Usar le lingua predefinite de iste pagina"
 }
