@@ -176,6 +176,7 @@
 	"wikilambda-editor-publish-dialog-summary-label": "편집 요약",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "짧은 요약 입력",
 	"wikilambda-editor-tester-list-label": "테스트 목록",
+	"wikilambda-editor-zlist-additem-tooltip": "목록에 항목 추가",
 	"wikilambda-editor-zobject-addkey": "키 추가:",
 	"wikilambda-expert-mode-json-label": "현재 객체",
 	"wikilambda-fallback": "폴백 편집기",

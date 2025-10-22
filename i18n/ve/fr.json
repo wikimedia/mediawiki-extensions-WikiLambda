@@ -2,7 +2,13 @@
 	"@metadata": {
 		"authors": [
 			"EmDashUser002",
-			"JLTRY"
+			"JLTRY",
+			"Derugon",
+			"Escargot bleu",
+			"Goombiis",
+			"McDutchie",
+			"TimHBD",
+			"VIGNERON"
 		]
 	},
 	"wikilambda-fragment-disabled": "Les appels à Wikifunctions sont actuellement désactivés. Vous voudrez peut-être remplacer cet appel.",
@@ -27,7 +33,7 @@
 	"wikilambda-recentchanges-filter-description": "Modifications provenant de Wikifunctions",
 	"wikilambda-recentchanges-filter-label": "Modifications de Wikifunctions",
 	"wikilambda-recentchanges-filter-rc-pref": "Afficher les modifications de Wikifunctions dans les changements récents",
-	"wikilambda-recentchanges-filter-wl-pref": "Afficher les modifications de Wikifunctions dans votre liste de surveillance",
+	"wikilambda-recentchanges-filter-wl-pref": "Afficher les modifications de Wikifunctions dans votre liste de suivi",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Chargement",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "L'aperçu a pris trop de temps",
 	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "Modification des entrées de Wikifunctions",

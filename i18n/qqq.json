@@ -17,7 +17,8 @@
 			"Raymond",
 			"Robby",
 			"Umherirrender",
-			"Verdy p"
+			"Verdy p",
+			"Nemoralis"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -281,13 +282,13 @@
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-error-message": "Error shown when a wikitext function call goes wrong.\n\nParams:\n* $1 - The link to the help page about the specific error",
 	"wikilambda-functioncall-error": "{{Ignored}}\nWikitext link to the Wikifunctions usage help page.",
-	"wikilambda-functioncall-error-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.\n{{Tracking category name}}",
+	"wikilambda-functioncall-error-category": "{{Tracking category name}}\nA [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.",
 	"wikilambda-functioncall-error-category-desc": "{{Doc-tracking-category-desc|generic Wikifunctions error}}",
 	"wikilambda-functioncall-error-disabled": "{{Ignored}}\nWikitext link to the guide about errors caused by Wikifunctions being disabled through its configuration flags.",
-	"wikilambda-functioncall-error-disabled-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call affected by disabled services. Please don't add namespace prefix. Should be consistent with {{msg-mw|Wikilambda-functioncall-error-category}}.\n{{Tracking category name}}",
+	"wikilambda-functioncall-error-disabled-category": "{{Tracking category name}}\nA [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call affected by disabled services. Please don't add namespace prefix. Should be consistent with {{msg-mw|Wikilambda-functioncall-error-category}}.",
 	"wikilambda-functioncall-error-disabled-category-desc": "Description of the disabled Wikifunctions error tracking category.\n{{Doc-tracking-category-desc}}",
 	"wikilambda-functioncall-error-evaluation": "{{Ignored}}\nWikitext link to the guide about errors caused by a failed evaluation.",
-	"wikilambda-functioncall-error-evaluation-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that failed due to evaluation errors. Please don't add namespace prefix. Should be consistent with {{msg-mw|Wikilambda-functioncall-error-category}}.\n{{Tracking category name}}",
+	"wikilambda-functioncall-error-evaluation-category": "{{Tracking category name}}\nA [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that failed due to evaluation errors. Please don't add namespace prefix. Should be consistent with {{msg-mw|Wikilambda-functioncall-error-category}}.",
 	"wikilambda-functioncall-error-evaluation-category-desc": "Description of the failed evaluation error tracking category.\n{{Doc-tracking-category-desc}}",
 	"wikilambda-functioncall-error-unclear": "{{Optional}}\nWikitext link to the guide about unhandled or unclear system errors, in the Wikifunctions usage help page",
 	"wikilambda-functioncall-error-unclear-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call when there was a system failure. Please don't add namespace prefix. Should be consistent with {{msg-mw|Wikilambda-functioncall-error-category}}.\n\n{{Tracking category name}}",
