@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Emma Franzen",
-			"Hamilton Abreu"
+			"Hamilton Abreu",
+			"Mansil alfalb"
 		]
 	},
 	"wikilambda-desc": "Fornece às wikis da Wikimedia uma função de análise sintática de texto wiki para chamar a execução de funções escritas, geridas e executadas numa wiki central.",
@@ -152,6 +153,7 @@
 	"wikilambda-editor-zobject-addkey": "Adicionar chave:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Pôr este valor em branco",
 	"wikilambda-editor-zobject-removekey-tooltip": "Remover este par chave/valor do objeto",
+	"wikilambda-empty-reference-warning": "Insira um valor.",
 	"wikilambda-expert-mode-json-label": "Objeto atual",
 	"wikilambda-fallback": "Editor de recurso",
 	"wikilambda-function-are-you-sure-dialog-description": "Tem a certeza de que deseja sair do modo de edição sem antes publicar as alterações?",
@@ -265,8 +267,9 @@
 	"wikilambda-labelclash": "A etiqueta do conteúdo fornecido entra em conflito com o objeto '$1' para a etiqueta em '$2'.",
 	"wikilambda-languagelabel": "Língua",
 	"wikilambda-list-item-label": "Elemento $1",
-	"wikilambda-list-items-label": "Elementos da lista",
-	"wikilambda-list-items-type-label": "Tipo dos elementos da lista",
+	"wikilambda-list-items-label": "Itens",
+	"wikilambda-list-items-type-label": "Tipo de item",
+	"wikilambda-list-empty-state": "0 itens",
 	"wikilambda-list-type-change-warning": "Alterou o tipo de uma ou de mais listas. Ao publicar, todos os elementos das listas serão apagados",
 	"wikilambda-literal-type": "Literal de tipo $1",
 	"wikilambda-loading": "A carregar dados",
