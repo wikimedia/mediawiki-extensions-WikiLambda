@@ -11,7 +11,8 @@
 			"HanV",
 			"Sjoerddebruin",
 			"Siebrand",
-			"ABPMAB"
+			"ABPMAB",
+			"Bdijkstra"
 		]
 	},
 	"wikilambda-desc": "Voorziet Wikimedia-wiki’s van een wikitekst-parserfunctie waarmee u functies kunt aanroepen die op een centrale wiki worden geschreven, beheerd en geëvalueerd.",
