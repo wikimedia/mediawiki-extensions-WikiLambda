@@ -467,7 +467,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->getServiceContainer()->getWatchedItemStore(),
 			$this->getServiceContainer()->getMessageParser(),
 			$this->getServiceContainer()->getUserOptionsLookup(),
-			$this->getServiceContainer()->getChangeTagsStore()
+			$this->getServiceContainer()->getUserIdentityUtils()
 		);
 	}
 
