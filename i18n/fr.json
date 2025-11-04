@@ -324,8 +324,6 @@
 	"wikilambda-functioncall-error-disabled-category-desc": "Pages avec des appels à Wikifunctions qui ont échoué en raison de la désactivation de Wikifunctions",
 	"wikilambda-functioncall-error-evaluation-category": "Pages avec des appels de fonctions Wiki erronés en raison d'une évaluation ratée",
 	"wikilambda-functioncall-error-evaluation-category-desc": "Pages avec des appels à Wikifunctions qui ont renvoyé des erreurs d'évaluation",
-	"wikilambda-functioncall-error-unclear-category": "Pages avec des appels Wikifunctions erronés sans erreur claire",
-	"wikilambda-functioncall-error-unclear-category-desc": "Pages avec des appels à Wikifunctions qui ont échoué en raison d'une défaillance d'API non gérée",
 	"wikilambda-functioncall-error-unknown-zid-category": "Pages avec des appels de Wikifonctions vers des objets inconnus",
 	"wikilambda-functioncall-error-unknown-zid-category-desc": "Pages avec des tentatives d’appels à des Wikifonctions qui demandent un objet inconnu",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Pages avec des appels de Wikifonctions vers des objets non valides",
