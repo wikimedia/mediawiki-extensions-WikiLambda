@@ -3,7 +3,7 @@
  *
  * This contains methods to navigate a ZObject passed as input through their keys and
  * values. Those functions that are commonly used for read operations on the ZObject
- * persisted in the store are also added in the zobjectMixin.
+ * persisted in the store are also added in the ZObject composable.
  *
  * These methods can be used with canonical and hybrid form, so that they can
  * be safely used for zobjects fetched and stored in the library (which are

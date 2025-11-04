@@ -103,6 +103,7 @@ const WikidataLexeme = require( './wikidata/Lexeme.vue' );
 const WikidataLexemeForm = require( './wikidata/LexemeForm.vue' );
 const WikidataLexemeSense = require( './wikidata/LexemeSense.vue' );
 const WikidataProperty = require( './wikidata/Property.vue' );
+const WikidataStatement = require( './wikidata/Statement.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-key-value',
@@ -133,7 +134,8 @@ module.exports = exports = defineComponent( {
 		'wl-wikidata-lexeme': WikidataLexeme,
 		'wl-wikidata-lexeme-form': WikidataLexemeForm,
 		'wl-wikidata-property': WikidataProperty,
-		'wl-wikidata-lexeme-sense': WikidataLexemeSense
+		'wl-wikidata-lexeme-sense': WikidataLexemeSense,
+		'wl-wikidata-statement': WikidataStatement
 	},
 	props: {
 		keyPath: {
@@ -348,11 +350,23 @@ module.exports = exports = defineComponent( {
 				);
 			}
 
+			// If type is a Wikidata enum, we render the value using the Wikidata enum component
 			if ( store.isWikidataEnum( type.value ) ) {
 				return {
 					hasBuiltin: true,
 					component: 'wl-wikidata-enum',
 					allowExpansion: false
+				};
+			}
+
+			// If type is a Wikidata statement, we render the value using the Wikidata statement component
+			// but only if we are in read mode
+			if ( type.value === Constants.Z_WIKIDATA_STATEMENT && !props.edit ) {
+				return {
+					hasBuiltin: true,
+					component: 'wl-wikidata-statement',
+					allowExpansion: true,
+					expandToSelf: false
 				};
 			}
 

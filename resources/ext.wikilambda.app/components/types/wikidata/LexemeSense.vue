@@ -337,7 +337,7 @@ module.exports = exports = defineComponent( {
 @import '../../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-wikidata-lexeme-sense {
-	--line-height-current: calc( var( --line-height-medium ) * 1em );
+	--line-height-current: calc( var( --line-height-content ) * 1em );
 
 	.ext-wikilambda-app-wikidata-lexeme-sense__read {
 		display: flex;
@@ -355,6 +355,7 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-wikidata-lexeme-sense__wd-icon {
 		margin: 0 @spacing-25;
 		height: var( --line-height-current );
+		flex-shrink: 0;
 	}
 
 	.ext-wikilambda-app-wikidata-lexeme-sense__lexeme-selector {

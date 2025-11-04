@@ -168,7 +168,7 @@ module.exports = exports = defineComponent( {
 @import '../../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-wikidata-item {
-	--line-height-current: calc( var( --line-height-medium ) * 1em );
+	--line-height-current: calc( var( --line-height-content ) * 1em );
 
 	.ext-wikilambda-app-wikidata-item__read {
 		display: flex;
