@@ -223,6 +223,14 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// At this point, we know our request hasn't yet been stored in the cache, so we need to trigger it,
 		// and return a placeholder for now
 
+		$this->logger->info(
+			'WikiLambda client request was uncached for request to {targetFunction} on {page}',
+			[
+				'targetFunction' => $expansion['target'],
+				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
+			]
+		);
+
 		// Check if SRE have set this wiki (probably all wikis) temporarily to not try to use Wikifunctions.
 		if ( $this->config->get( 'WikiLambdaClientModeOffline' ) ) {
 			$this->statsFactoryTimer->setLabel( 'response', 'offline' )->stop();
