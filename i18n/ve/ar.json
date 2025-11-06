@@ -4,14 +4,15 @@
 			"Mdktb",
 			"Meno25",
 			"Mohammed Qays",
-			"Mohanad"
+			"Mohanad",
+			"Bonnjalal00"
 		]
 	},
 	"wikilambda-fragment-disabled": "استدعاءات ويكيفونكشنز معطلة حاليًا. قد ترغب في استبدال هذه الاستدعاءات.",
 	"wikilambda-fragment-pending": "⏳ يتم استدعاء الوظيفة…",
-	"wikilambda-recentchanges-edit-legend": "تعديل من Wikifunctions",
+	"wikilambda-recentchanges-edit-legend": "تعديل من ويكي دوال",
 	"wikilambda-recentchanges-edit-letter": "F",
-	"wikilambda-recentchanges-edit-title": "تعديل وظائف الويكي",
+	"wikilambda-recentchanges-edit-title": "تعديل ويكي دوال",
 	"wikilambda-recentchanges-entry-function": "وظيفة",
 	"wikilambda-recentchanges-explanation-connect-implementation": "متصل {{PLURAL:$1| التنفيذ| $1 التنفيذات:}} $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "متصل {{PLURAL:$1| حالة اختبار| $1 حالات اختبار:}} $2",
@@ -26,14 +27,14 @@
 	"wikilambda-recentchanges-explanation-restore-function": "تعريف الوظيفة المستعادة",
 	"wikilambda-recentchanges-explanation-restore-implementation": "تنفيذ مستعاد $1",
 	"wikilambda-recentchanges-explanation-restore-tester": "حالة الاختبار المستعادة $1",
-	"wikilambda-recentchanges-filter-description": "التعديلات التي تنشأ على Wikifunctions",
-	"wikilambda-recentchanges-filter-label": "تعديلات ويكي الوظائف",
-	"wikilambda-recentchanges-filter-rc-pref": "إظهار تعديلات Wikifunctions في التغييرات الأخيرة",
-	"wikilambda-recentchanges-filter-wl-pref": "إظهار تعديلات Wikifunctions في قائمة المراقبة الخاصة بك",
+	"wikilambda-recentchanges-filter-description": "التعديلات التي تنشأ على ويكي دوال",
+	"wikilambda-recentchanges-filter-label": "تعديلات ويكي دوال",
+	"wikilambda-recentchanges-filter-rc-pref": "إظهار تعديلات ويكي دوال في التغييرات الأخيرة",
+	"wikilambda-recentchanges-filter-wl-pref": "إظهار تعديلات ويكي دوال في قائمة المراقبة الخاصة بك",
 	"wikilambda-visualeditor-wikifunctionscall-back": "خلف",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "تحميل",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "المعاينة استغرقت وقتا طويلا",
-	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "تغيير مدخلات Wikifunctions",
+	"wikilambda-visualeditor-wikifunctionscall-changedesc-title": "تغيير مدخلات ويكي دوال",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "اختر خيارا",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|دالة]] من ويكي دوال",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "اقرأ أقل",
@@ -71,5 +72,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "لا يمكن للدالة عرض النتيجة. يُرجى المحاولة لاحقًا.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "أُلغيت",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "إعادة ضبط",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "إلغاء"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "إلغاء",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "استخدم تاريخ اليوم واحتفظ بالنتيجة محدثة",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "استخدم عنصر ويكي بيانات الافتراضي لهذه الصفحة",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "استخدم اللغة الافتراضية لهذه الصفحة"
 }
