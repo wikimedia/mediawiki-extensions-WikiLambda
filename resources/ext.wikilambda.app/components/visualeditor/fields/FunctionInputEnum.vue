@@ -184,13 +184,13 @@ module.exports = exports = defineComponent( {
 		 * Fetches all enum values for the input type
 		 */
 		const fetchAndValidateEnumValues = () => {
-			// Fetch 20 enum values which usually is enough to show all enums directly
-			store.fetchEnumValues( { type: props.inputType, limit: 20 } ).then( () => {
-				if ( !enumValues.value.length ) {
-					return;
-				}
-				validate( props.value );
-			} );
+			store.fetchEnumValues( { type: props.inputType, limit: Constants.API_ENUMS_FIRST_LIMIT } )
+				.then( () => {
+					if ( !enumValues.value.length ) {
+						return;
+					}
+					validate( props.value );
+				} );
 		};
 
 		/**

@@ -891,7 +891,7 @@ module.exports = {
 			const promise = searchLabels( {
 				input: '',
 				types: [ payload.type ],
-				limit: payload.limit || Constants.API_ENUMS_LIMIT,
+				limit: payload.limit || Constants.API_ENUMS_APPEND_LIMIT,
 				language: this.getUserLangCode,
 				searchContinue
 			} ).then( ( data ) => {

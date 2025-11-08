@@ -621,8 +621,7 @@ module.exports = exports = defineComponent( {
 		 */
 		watch( isEnum, ( value ) => {
 			if ( value ) {
-				// Fetch 20 enum values which usually is enough to show all enums directly
-				store.fetchEnumValues( { type: props.type, limit: 20 } );
+				store.fetchEnumValues( { type: props.type, limit: Constants.API_ENUMS_FIRST_LIMIT } );
 			}
 		} );
 
@@ -630,8 +629,7 @@ module.exports = exports = defineComponent( {
 		onMounted( () => {
 			inputValue.value = selectedLabel.value;
 			if ( isEnum.value ) {
-				// Fetch 20 enum values which usually is enough to show all enums directly
-				store.fetchEnumValues( { type: props.type, limit: 20 } );
+				store.fetchEnumValues( { type: props.type, limit: Constants.API_ENUMS_FIRST_LIMIT } );
 			}
 		} );
 
