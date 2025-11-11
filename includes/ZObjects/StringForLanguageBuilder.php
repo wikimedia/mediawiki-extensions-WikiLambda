@@ -12,7 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Language\Language;
-use MediaWiki\Languages\LanguageFallback;
+use MediaWiki\Language\LanguageFallbackMode;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -23,7 +23,7 @@ use MediaWiki\MediaWikiServices;
  */
 class StringForLanguageBuilder {
 
-	private int $languageFallback = LanguageFallback::STRICT;
+	private LanguageFallbackMode $languageFallback = LanguageFallbackMode::STRICT;
 	private Language $language;
 	private ?string $placeholderText = null;
 	private ZMultiLingualString $provider;
@@ -38,11 +38,11 @@ class StringForLanguageBuilder {
 	}
 
 	/**
-	 * If the string for the language passed to the constructor is not available, fallback to Engligh.
+	 * If the string for the language passed to the constructor is not available, fallback to English.
 	 * @return StringForLanguageBuilder
 	 */
 	public function fallbackWithEnglish(): StringForLanguageBuilder {
-		$this->languageFallback = LanguageFallback::MESSAGES;
+		$this->languageFallback = LanguageFallbackMode::MESSAGES;
 		return $this;
 	}
 
