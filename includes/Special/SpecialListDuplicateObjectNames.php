@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Cache\LinkBatchFactory;
-use MediaWiki\Languages\LanguageNameUtils;
+use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;

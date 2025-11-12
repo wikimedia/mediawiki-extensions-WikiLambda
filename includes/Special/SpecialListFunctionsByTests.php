@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\Pagers\FunctionsByTestsPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\HTMLForm\HTMLForm;
-use MediaWiki\Languages\LanguageFallback;
+use MediaWiki\Language\LanguageFallback;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
 
