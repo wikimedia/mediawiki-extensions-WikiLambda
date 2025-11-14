@@ -37,24 +37,15 @@ class SpecialCreateObject extends SpecialPage {
 		// we do not know which object type will be created, so we need to be generic here
 		$request = $this->getRequest();
 		$zid = $request->getText( 'zid' );
-		$description = null;
 
-		switch ( $zid ) {
-			case ZTypeRegistry::Z_TYPE:
-				$description = $this->msg( 'wikilambda-special-create-type' );
-				break;
-			case ZTypeRegistry::Z_FUNCTION:
-				$description = $this->msg( 'wikilambda-special-create-function' );
-				break;
-			case ZTypeRegistry::Z_IMPLEMENTATION:
-				$description = $this->msg( 'wikilambda-special-create-implementation' );
-				break;
-			case ZTypeRegistry::Z_TESTER:
-				$description = $this->msg( 'wikilambda-special-create-test' );
-				break;
-			default:
-				$description = $this->msg( 'wikilambda-special-createobject' );
-		}
+		$description = match ( $zid ) {
+			ZTypeRegistry::Z_TYPE => $this->msg( 'wikilambda-special-create-type' ),
+			ZTypeRegistry::Z_FUNCTION => $this->msg( 'wikilambda-special-create-function' ),
+			ZTypeRegistry::Z_IMPLEMENTATION => $this->msg( 'wikilambda-special-create-implementation' ),
+			ZTypeRegistry::Z_TESTER => $this->msg( 'wikilambda-special-create-test' ),
+			default => $this->msg( 'wikilambda-special-createobject' ),
+		};
+
 		return $description;
 	}
 

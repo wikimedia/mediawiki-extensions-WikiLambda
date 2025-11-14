@@ -425,30 +425,22 @@ class PageRenderingHandler implements
 			return true;
 		}
 
-		switch ( $magicWordId ) {
-			case 'magic_count_all':
-				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_OBJECT );
-				break;
-			case 'magic_count_functions':
-				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_FUNCTION );
-				break;
-			case 'magic_count_implementations':
-				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_IMPLEMENTATION );
-				break;
-			case 'magic_count_testers':
-				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TESTER );
-				break;
-			case 'magic_count_types':
-				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TYPE );
-				break;
-			case 'magic_count_languages':
-				$ret = $this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_LANGUAGE );
-				break;
+		$matchedType = match ( $magicWordId ) {
+			'magic_count_all' => ZTypeRegistry::Z_OBJECT,
+			'magic_count_functions' => ZTypeRegistry::Z_FUNCTION,
+			'magic_count_implementations' => ZTypeRegistry::Z_IMPLEMENTATION,
+			'magic_count_testers' => ZTypeRegistry::Z_TESTER,
+			'magic_count_types' => ZTypeRegistry::Z_TYPE,
+			'magic_count_languages' => ZTypeRegistry::Z_LANGUAGE,
+			default => null,
+		};
 
+		if ( $matchedType === null ) {
 			// Unknown magic word, do nothing
-			default:
-				break;
+			return;
 		}
+
+		$ret = $this->zObjectStore->getCountOfTypeInstances( $matchedType );
 
 		// Speed-optimisation: cache the value for calls to the same variable in the same request
 		$variableCache[$magicWordId] = $ret;

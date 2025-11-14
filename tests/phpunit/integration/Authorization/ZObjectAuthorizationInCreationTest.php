@@ -62,25 +62,11 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		string $createContent, array $expectedCreateRights,
 		bool $expectedCreateAllowed, bool $systemBlocksAsInvalid
 	) {
-		switch ( $userType ) {
-			case 'basic':
-				$user = $this->getTestUser()->getUser();
-				break;
-
-			case 'functioneer':
-				$user = $this->getTestUser( [ 'functioneer' ] )->getUser();
-				break;
-
-			case 'maintainer':
-				$user = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
-				break;
-
-			default:
-				$this->assertFalse(
-					true,
-					"userType must be one of 'basic', 'functioneer', or 'maintainer', instead set to '$userType'."
-				);
-		}
+		$user = match ( $userType ) {
+			'basic' => $this->getTestUser()->getUser(),
+			'functioneer' => $this->getTestUser( [ 'functioneer' ] )->getUser(),
+			'maintainer' => $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser(),
+		};
 
 		$title = Title::newFromText( $zid, NS_MAIN );
 
