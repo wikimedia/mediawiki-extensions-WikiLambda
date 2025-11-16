@@ -58,7 +58,6 @@ class ClientChangeHooksTest extends WikiLambdaClientIntegrationTestCase {
 			[ 'rc_id', 1 ],
 			[ 'rc_source', WikifunctionsRecentChangesInsertJob::SRC_WIKIFUNCTIONS ],
 			[ 'rc_params', '{"target":"Z801","newId":10,"oldId":9,"message": "foo"}' ],
-			[ 'rc_type', 'edit' ],
 			[ 'rc_bot', false ],
 			[ 'rc_minor', true ],
 

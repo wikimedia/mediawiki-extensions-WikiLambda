@@ -78,7 +78,6 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 
 		// Build the RecentChange attributes common to all entries regardless of page on which it's used
 		$generalAttributes = [
-			'rc_type' => RC_EXTERNAL,
 			'rc_source' => self::SRC_WIKIFUNCTIONS,
 
 			// Our standard flags, invariant between changes: never minor or deletes or creates
