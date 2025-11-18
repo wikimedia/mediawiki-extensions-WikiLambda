@@ -85,7 +85,6 @@
 	"apihelp-wikilambda_edit-param-zobject": "{{doc-apihelp-param|wikilambda_edit|zobject}}\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_function_call-client-error": "Error message when there is a client error \n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_function_call-server-error": "Error message when there is a server error \n\n{{doc-wikilambda}}",
-	"apierror-wikilambda_function_call-not-connected": "Error message when orchestrator is not connected.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_function_call-concurrency-limit": "Error message when user exceeds concurrency limits.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_function_call-response-malformed": "Error message when orchestrator passes back a failure we don't specifically code.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Error message when orchestrator is not connected.\n\n{{doc-wikilambda}}",
