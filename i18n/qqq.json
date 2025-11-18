@@ -405,6 +405,7 @@
 	"wikilambda-list-type-change-warning": "Warning message when the type of a typed list is changed that list items will be removed",
 	"wikilambda-literal-type": "Adjective for a type expressed as a literal, where $1 is the type name.\n\nNote: $1 is a noun, which can be \"function\", \"string\", \"number\", or something else. If different nouns require a different adjective in your language, for example because of the noun's gender, try to translate it in a way that would be the same with any noun, for example: \"Literal object of type $1\".",
 	"wikilambda-loading": "Label to inform the user that the content of the page is being loaded",
+	"wikilambda-loggedout-error-message": "String to communicate that the user got logged out when trying to save/publish a ZObject, probably due to too long inactivity or expired session token",
 	"wikilambda-metadata-add-alias": "Label for button to add an alias to a ZObject",
 	"wikilambda-metadata-aka-column": "Label for the 'Also known as' column in the metadata table.",
 	"wikilambda-metadata-all-languages": "Label for button to show all languages in the metadata.",

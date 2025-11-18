@@ -295,11 +295,14 @@ module.exports = exports = defineComponent( {
 			} ).then( ( response ) => {
 				successfulExit( response.page );
 			} ).catch( ( /* ApiError */ error ) => {
-				store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
+				store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+				const errorMessage = error.code === 'badtoken' ?
+					i18n( 'wikilambda-loggedout-error-message' ).text() :
+					error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
 				store.setError( {
 					errorId: Constants.STORED_OBJECTS.MAIN,
 					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage: error.messageOrFallback( 'wikilambda-unknown-save-error-message' )
+					errorMessage
 				} );
 			} ).finally( () => {
 				isPublishing.value = false;

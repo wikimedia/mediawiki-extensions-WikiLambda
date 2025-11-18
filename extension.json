@@ -881,6 +881,7 @@
 				"wikilambda-function-evaluator-share-button-tooltip",
 				"wikilambda-function-evaluator-share-error-invalid-json",
 				"wikilambda-function-evaluator-share-error-invalid-structure",
+				"wikilambda-loggedout-error-message",
 				"wikilambda-unknown-error-message",
 				"wikilambda-unknown-exec-error-message",
 				"wikilambda-unknown-save-error-message",

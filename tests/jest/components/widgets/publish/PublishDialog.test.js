@@ -171,6 +171,23 @@ describe( 'Publish Dialog', () => {
 		} ) );
 	} );
 
+	it( 'shows loggedout error message when submission fails with badtoken error', async () => {
+		const error = new ApiError( 'badtoken', { error: { message: 'Invalid token' } } );
+		store.submitZObject.mockRejectedValue( error );
+
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false },
+			global: { stubs: dialogGlobalStubs }
+		} );
+
+		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+		await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
+			errorId: 'main',
+			errorType: Constants.ERROR_TYPES.ERROR,
+			errorMessage: 'You are not logged in. Please log in to publish.'
+		} ) );
+	} );
+
 	it( 'shows a keyboard warning when trying to submit with the Enter key', async () => {
 		const wrapper = renderPublishDialog( {
 			showDialog: true,

@@ -390,6 +390,7 @@
 	"wikilambda-list-type-change-warning": "You changed the type of one or more lists. On publish, some list items will be deleted",
 	"wikilambda-literal-type": "Literal $1",
 	"wikilambda-loading": "Loading data",
+	"wikilambda-loggedout-error-message": "You are not logged in. Please log in to publish.",
 	"wikilambda-metadata-add-alias": "Add Alias",
 	"wikilambda-metadata-aka-column": "Also known as",
 	"wikilambda-metadata-all-languages": "Show all entered languages",
