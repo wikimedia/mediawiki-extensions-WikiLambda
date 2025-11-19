@@ -82,7 +82,6 @@
 	"apihelp-wikilambda_edit-param-zobject": "JSON-weergave van het ZObject dat moet worden opgeslagen",
 	"apierror-wikilambda_function_call-client-error": "De aanvraag kon niet worden voltooid vanwege een cliëntfout",
 	"apierror-wikilambda_function_call-server-error": "De aanvraag kon niet worden voltooid vanwege een serverfout",
-	"apierror-wikilambda_function_call-not-connected": "Kan host ‘$1’ niet opzoeken, waarschijnlijk omdat de Orchestrator niet actief is. Raadpleeg de README om de Orchestrator toe te voegen aan uw docker-compose-configuratie.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Er worden momenteel te veel functieaanroepen uitgevoerd.",
 	"apierror-wikilambda_function_call-response-malformed": "Fout in antwoord op functieaanroep: ‘$1’.",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Kan host ‘$1’ niet opzoeken, waarschijnlijk omdat de Orchestrator niet actief is. Raadpleeg de README om de Orchestrator toe te voegen aan uw docker-compose-configuratie.",

@@ -45,7 +45,6 @@
 	"apihelp-wikilambda_edit-param-summary": "Değişiklik özeti iletisi",
 	"apihelp-wikilambda_edit-param-zid": "Değiştirilecek ZObject'in ZID'si. Eğer yoksa, yeni bir ZObject oluşturulur",
 	"apihelp-wikilambda_edit-param-zobject": "Kaydedilecek ZObject'in JSON gösterimi",
-	"apierror-wikilambda_function_call-not-connected": "<$1> sunucusu çözümlenemiyor, muhtemelen düzenleyici çalışmıyor. Lütfen, düzenleyiciyi docker-compose yapılandırmanıza eklemek için README dosyasına bakın.",
 	"apihelp-query+wikilambdafn_search-summary": "Bu API sorgu listesi, sağlanan bir ZFunction kimliği ile ilişkili tüm ZObject'lerin kimliklerini arar",
 	"apihelp-query+wikilambdafn_search-example-simple": "Belirli bir ZFunction kimliğiyle ilişkili ZImplementation kimliklerini arayın",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "Aranacak ZFunction kimliği:",

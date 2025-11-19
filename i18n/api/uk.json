@@ -43,7 +43,6 @@
 	"apihelp-wikilambda_edit-param-summary": "Редагувати короткий опис",
 	"apihelp-wikilambda_edit-param-zid": "ZID об'єкта ZObject для редагування. Якщо значення null, ZObject буде створено знову",
 	"apihelp-wikilambda_edit-param-zobject": "JSON-представлення ZObject для збереження",
-	"apierror-wikilambda_function_call-not-connected": "Не вдалося вирішити хост '$1', ймовірно, тому що оркестратор не працює. Будь ласка, зверніться до README, щоб додати оркестратор до вашої конфігурації докер-компонування.",
 	"apihelp-query+wikilambdafn_search-summary": "Цей список запитів API шукає ідентифікатори всіх ZObjects, пов'язаних із наданим ідентифікатором ZFunction",
 	"apihelp-query+wikilambdafn_search-example-simple": "Знайдіть ідентифікатори ZImplementation, пов'язані з даним ідентифікатором ZFunction",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "Ідентифікатор ZFunction для пошуку",

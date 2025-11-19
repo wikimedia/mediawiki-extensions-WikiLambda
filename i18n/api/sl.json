@@ -63,7 +63,6 @@
 	"apihelp-wikilambda_edit-param-summary": "Sprememba povzetka urejanj",
 	"apihelp-wikilambda_edit-param-zid": "ZID ZObjekta za urejanje. Če je ničeln, bo ZObjekt ustvarjen na novo.",
 	"apihelp-wikilambda_edit-param-zobject": "JSON-reprezentacija ZObjekta za shranitev",
-	"apierror-wikilambda_function_call-not-connected": "Ni bilo mogoče razrešiti gostitelja »$1«, verjetno zato, ker orkestrator ne deluje. Če želite svoji docker-compose konfiguraciji dodati orkestrator, preberite README.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Trenutno se izvaja preveč klicev funkcij.",
 	"apierror-wikilambda_function_call-response-malformed": "Odgovor na klic funkcije je bil pokvarjen: »$1«.",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Ni bilo mogoče razrešiti gostitelja »$1«, verjetno zato, ker orkestrator ne deluje. Prosimo, preberite README, če želite dodati orkestrator vaši konfiguraciji docker-compose.",

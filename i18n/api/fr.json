@@ -90,7 +90,6 @@
 	"apihelp-wikilambda_edit-param-zobject": "Représentation JSON du Z-Objet à enregistrer",
 	"apierror-wikilambda_function_call-client-error": "Impossible de terminer la demande en raison d'une erreur du client",
 	"apierror-wikilambda_function_call-server-error": "Impossible de terminer la demande en raison d'une erreur de serveur",
-	"apierror-wikilambda_function_call-not-connected": "Impossible de résoudre l'hôte « $1 », probablement parce que l’orchestrateur ne fonctionne pas. Veuillez consulter le README pour ajouter l’orchestrateur à votre configuration « docker-compose ».",
 	"apierror-wikilambda_function_call-concurrency-limit": "Vous avez actuellement trop d’appels de fonctions en cours d’exécution.",
 	"apierror-wikilambda_function_call-response-malformed": "Échec dans la réponse à l’appel de fonction : '$1'",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Impossible de résoudre l’hôte « $1 », probablement parce que l’orchestrateur ne s'exécute pas. Veuillez consulter le README pour ajouter l’orchestrateur à votre configuration « docker-compose ».",

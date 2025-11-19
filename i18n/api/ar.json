@@ -81,7 +81,6 @@
 	"apihelp-wikilambda_edit-param-zobject": "تمثيل JSON لـ ZObject لحفظه",
 	"apierror-wikilambda_function_call-client-error": "لم نتمكن من إكمال الطلب بسبب خطأ العميل",
 	"apierror-wikilambda_function_call-server-error": "لم يتمكن من إكمال الطلب بسبب خطأ في الخادم",
-	"apierror-wikilambda_function_call-not-connected": "تعذر حل مشكلة المضيف ' $1 '، ربما لأن المُنسّق لا يعمل. يُرجى مراجعة ملف README لإضافة المُنسّق إلى إعدادات docker-compose.",
 	"apierror-wikilambda_function_call-concurrency-limit": "لديك عدد كبير جدًا من مكالمات الوظائف التي يتم تنفيذها الآن.",
 	"apierror-wikilambda_function_call-response-malformed": "كانت استجابة استدعاء الوظيفة معطلة: ' $1 '.",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "تعذر حل المضيف ' $1 ' ، ربما بسبب عدم تشغيل المنسق. يرجى الرجوع إلى README لإضافة المنسق إلى تكوين تكوين عامل الإرساء الخاص بك.",

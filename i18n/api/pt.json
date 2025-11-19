@@ -63,7 +63,6 @@
 	"apihelp-wikilambda_edit-param-summary": "Editar mensagem de resumo",
 	"apihelp-wikilambda_edit-param-zid": "O Identificador-Z do Objeto-Z a ser editado. Se nulo, será criado um Objeto-Z novo",
 	"apihelp-wikilambda_edit-param-zobject": "Representação JSON do Objeto-Z a gravar",
-	"apierror-wikilambda_function_call-not-connected": "Não foi possível resolver o servidor '$1', provavelmente porque o orquestrador não está a ser executado. Consulte o README para adicionar o orquestrador à sua configuração \"docker-compose\".",
 	"apierror-wikilambda_function_call-concurrency-limit": "Tem demasiadas chamadas de funções em execução neste momento.",
 	"apihelp-query+wikilambdafn_search-summary": "Esta consulta da API procura os identificadores de todos os Objetos-Z associados ao identificador de uma Função-Z que for especificado",
 	"apihelp-query+wikilambdafn_search-example-simple": "Procurar identificadores de Implementações-Z que estão associados ao identificador de uma Função-Z que for especificado",

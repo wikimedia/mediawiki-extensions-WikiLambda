@@ -79,7 +79,6 @@
 	"apihelp-wikilambda_edit-param-zobject": "Representation JSON del ZObject a salveguardar",
 	"apierror-wikilambda_function_call-client-error": "Non poteva terminar le requesta a causa de un error del cliente",
 	"apierror-wikilambda_function_call-server-error": "Non poteva terminar le requesta a causa de un error del servitor",
-	"apierror-wikilambda_function_call-not-connected": "Non poteva trovar le servitor '$1', probabilemente perque le orchestrator non es active. Per favor consulta le file README pro adder le orchestrator a tu configuration docker-compose.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Tu ha troppo de appellos de function in execution in iste momento.",
 	"apierror-wikilambda_function_call-response-malformed": "Le responsa del appello de function es defectuose: '$1'.",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Non poteva trovar le servitor '$1', probabilemente perque le orchestrator non es active. Per favor consulta le file README pro adder le orchestrator a tu configuration docker-compose.",
