@@ -6,6 +6,7 @@ services:
     # image: local-orchestrator:latest
     ports:
       - 6254:6254
+      - 9100:9100
     environment:
       WIKI_API_URL: "http://mediawiki-web:8080/w/api.php"
       WIKIDATA_API_URL: "https://www.wikidata.org"
@@ -51,6 +52,7 @@ services:
     # image: local-evaluator-py:latest
     ports:
       - 6928:6927
+      - 9091:9090
 
   function-evaluator-javascript:
     image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/wasm-javascript-all:latest
@@ -59,3 +61,10 @@ services:
     # image: local-evaluator-js:latest
     ports:
       - 6929:6927
+      - 9092:9090
+
+  statsd-exporter:
+    ports:
+      - "9112:9112"
+    image: docker.io/prom/statsd-exporter:v0.22.2
+    command: "--web.listen-address=:9112"
