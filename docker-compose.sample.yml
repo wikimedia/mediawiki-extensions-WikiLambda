@@ -35,6 +35,11 @@ services:
             "qualifiers": true,
             "references": true
           },
+          "memcachedUri": "<memcached-container>:11211",
+          "useMemcached": true,
+          "memcachedTTL": 60000,
+          "useWikidataMemcached": true,
+          "wikidataMemcachedTTL": 60000,
           "useBatching": true,
           "generateFunctionsMetrics": true,
           "addNestedMetadata": false
@@ -57,6 +62,11 @@ services:
     ports:
       - 6929:6927
       - 9092:9090
+
+  memcached:
+    image: memcached
+    ports:
+      - 11211:11211
 
   statsd-exporter:
     ports:
