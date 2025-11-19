@@ -343,6 +343,37 @@ describe( 'dialog', () => {
 			expect( message.length ).toBe( 1 );
 			expect( message[ 0 ].text() ).toContain( 'Something not working? Try Wikifunctions.Debug to trace your code.' );
 		} );
+
+		it( 'renders the array of debug logs', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataDebugLogs } );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const section = sections[ 0 ];
+
+			// Check header - should show test failure message
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'None' );
+
+			// Check content
+			const content = section.find( '.cdx-accordion__content' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+			expect( keys.length ).toBe( 1 );
+
+			// Execution debug logs (key=executorDebugLogs):
+			expect( keys[ 0 ].text() ).toContain( 'Execution debug logs:' );
+
+			const list = keys[ 0 ].findAll( 'ul > li' );
+			expect( list.length ).toBe( 5 );
+
+			const logs = list.map( ( li ) => li.text() );
+			expect( logs ).toEqual( [
+				'first log',
+				'second log',
+				'<b>html log</b>',
+				'{"Z1K1":"Z60","Z60K1":"en"}',
+				'content of Z6'
+			] );
+		} );
 	} );
 
 	describe( 'with nested metadata', () => {

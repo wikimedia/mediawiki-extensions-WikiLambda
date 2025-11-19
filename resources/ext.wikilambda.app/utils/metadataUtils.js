@@ -23,7 +23,7 @@ const metadataUtils = {
 				{ key: 'validateErrors', title: 'wikilambda-functioncall-metadata-validator-errors-summary', transform: 'getErrorType' },
 				{ key: 'expectedTestResult', title: 'wikilambda-functioncall-metadata-expected-result', transform: 'getStringValue' },
 				{ key: 'actualTestResult', title: 'wikilambda-functioncall-metadata-actual-result', transform: 'getStringValue' },
-				{ key: 'executorDebugLogs', title: 'wikilambda-functioncall-metadata-execution-debug-logs' }
+				{ key: 'executorDebugLogs', title: 'wikilambda-functioncall-metadata-execution-debug-logs', transform: 'getDebugLogs' }
 			]
 		},
 		implementation: {

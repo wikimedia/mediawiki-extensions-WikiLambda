@@ -190,6 +190,17 @@ const metadataDifferButNoErrors = convertSetToMap( {
 	actualTestResult: 'CBA'
 } );
 
+const metadataDebugLogs = convertSetToMap( {
+	executorDebugLogs: [
+		'Z6',
+		'first log',
+		'second log',
+		'<b>html log</b>',
+		{ Z1K1: 'Z60', Z60K1: 'en' },
+		{ Z1K1: 'Z6', Z6K1: 'content of Z6' }
+	]
+} );
+
 module.exports = {
 	metadataBasic,
 	metadataErrors,
@@ -197,5 +208,6 @@ module.exports = {
 	metadataEmpty,
 	metadataNested,
 	metadataDifferButNoErrors,
+	metadataDebugLogs,
 	convertSetToMap
 };

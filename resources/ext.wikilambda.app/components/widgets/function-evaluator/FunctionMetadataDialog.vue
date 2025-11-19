@@ -344,6 +344,36 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Transform method.
+		 * Given an array of logs, return a renderable list.
+		 *
+		 * @param {Array} logs
+		 * @return {string}
+		 */
+		function getDebugLogs( logs ) {
+			if ( typeof logs === 'string' ) {
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.TEXT,
+					value: logs
+				};
+			}
+			if ( Array.isArray( logs ) ) {
+				const list = [];
+				for ( const log of logs.slice( 1 ) ) {
+					// TODO (T385176) Enable representation of non-string values
+					const safeLog = escapeHtml( getStringValue( log ) );
+					list.push( `<li>${ safeLog }</li>` );
+					getStringValue( log );
+				}
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.HTML,
+					value: `<ul>${ list.join( '' ) }</ul>`
+				};
+			}
+			return undefined;
+		}
+
+		/**
 		 * Returns the array of menu items to feed the CdxSelect
 		 * component. Each menu item identifies the metadata collection
 		 * for a particular function call. The value that identifies
@@ -897,6 +927,16 @@ module.exports = exports = defineComponent( {
 			return metadata;
 		}
 
+		const transforms = {
+			getErrorType,
+			getErrorStringArgs,
+			getErrorChildren,
+			getImplementationLink,
+			getStringValue,
+			toRelativeTime,
+			getDebugLogs
+		};
+
 		/**
 		 * Transforms metadata values based on the transform method specified
 		 *
@@ -906,21 +946,8 @@ module.exports = exports = defineComponent( {
 		function getTransformedValue( item ) {
 			let value = keyValues.value.get( item.key );
 
-			if ( ( 'transform' in item ) ) {
-				const transformMethod = item.transform;
-				if ( transformMethod === 'getErrorType' ) {
-					value = getErrorType( value );
-				} else if ( transformMethod === 'getErrorStringArgs' ) {
-					value = getErrorStringArgs( value );
-				} else if ( transformMethod === 'getErrorChildren' ) {
-					value = getErrorChildren( value );
-				} else if ( transformMethod === 'getImplementationLink' ) {
-					value = getImplementationLink( value );
-				} else if ( transformMethod === 'getStringValue' ) {
-					value = getStringValue( value );
-				} else if ( transformMethod === 'toRelativeTime' ) {
-					value = toRelativeTime( value );
-				}
+			if ( item.transform && transforms[ item.transform ] ) {
+				value = transforms[ item.transform ]( value );
 			}
 
 			if ( !value ) {
