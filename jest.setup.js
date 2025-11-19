@@ -177,7 +177,7 @@ vueTestUtils.config.global.mocks = {
 };
 
 vueTestUtils.config.global.provide = {
-	i18n: global.$i18n // ✅ This makes inject('i18n') work in Composition API tests
+	i18n: global.$i18n // This makes inject('i18n') work in Composition API tests
 };
 
 global.store = createTestingPinia();

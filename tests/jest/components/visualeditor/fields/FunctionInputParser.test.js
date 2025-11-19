@@ -108,11 +108,11 @@ describe( 'FunctionInputParser', () => {
 
 		const wrapper = renderFunctionInputParser();
 
-		// Wait for initial validation of input value:
-		await waitFor( () => expect( wrapper.emitted().validate ).toBeTruthy() );
-
-		// Check that the initial validation event was emitted
-		expect( wrapper.emitted().validate.length ).toBe( 1 );
+		// Wait for initial validation of input value to be done...
+		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
+		// ... which takes a validate=false on start, and a validate=true on success
+		expect( wrapper.emitted().validate[ 0 ][ 0 ].isValid ).toBe( false );
+		expect( wrapper.emitted().validate[ 1 ][ 0 ].isValid ).toBe( true );
 
 		// Update field, simulate multiple keystrokes
 		const input = wrapper.getComponent( { name: 'cdx-text-input' } );
@@ -125,15 +125,31 @@ describe( 'FunctionInputParser', () => {
 		jest.advanceTimersByTime( 100 );
 
 		// Check that no new validation events were emitted yet
-		expect( wrapper.emitted().validate.length ).toBe( 1 );
+		expect( wrapper.emitted().validate.length ).toBe( 2 );
 
 		// Advance timer 1000ms, validation should have started
 		jest.advanceTimersByTime( 1000 );
 
 		// Wait for validation to complete
-		await waitFor( async () => expect( wrapper.emitted().validate.length ).toBe( 3 ) );
+		await waitFor( async () => expect( wrapper.emitted().validate.length ).toBe( 4 ) );
+		// ... which takes a validate=false on start, and a validate=true on success
+		expect( wrapper.emitted().validate[ 2 ][ 0 ].isValid ).toBe( false );
+		expect( wrapper.emitted().validate[ 3 ][ 0 ].isValid ).toBe( true );
 
-		expect( store.runParser ).toHaveBeenCalledWith( {
+		// Expect that the parser was only called twice...
+		expect( store.runParser ).toHaveBeenCalledTimes( 2 );
+
+		// ... the first time on start:
+		expect( store.runParser ).toHaveBeenNthCalledWith( 1, {
+			parserZid: 'Z30020',
+			wait: true,
+			zlang: 'Z1002',
+			zobject: 'Test value',
+			signal: expect.any( Object )
+		} );
+
+		// ... and the second with the new value:
+		expect( store.runParser ).toHaveBeenNthCalledWith( 2, {
 			parserZid: 'Z30020',
 			wait: true,
 			zlang: 'Z1002',

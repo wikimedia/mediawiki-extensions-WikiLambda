@@ -72,12 +72,13 @@ module.exports = exports = defineComponent( {
 		const { getZObjectType } = useZObject();
 		const store = useMainStore();
 
+		const debounceDelay = 1000;
+		let debounceTimer = null;
+		let parserAbortController = null;
+
 		// Reactive data
 		const areTestsFetched = ref( false );
-		const isParserRunning = ref( false ); // Track whether the parser is running
-		const parserAbortController = ref( null ); // Track the AbortController for parser requests
-		const debounceDelay = ref( 1000 );
-		const debounceTimer = ref( null );
+		const isParserRunning = ref( false );
 
 		// Computed properties
 		/**
@@ -181,10 +182,10 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Cancel previous parser request if any
-			if ( parserAbortController.value ) {
-				parserAbortController.value.abort();
+			if ( parserAbortController ) {
+				parserAbortController.abort();
 			}
-			parserAbortController.value = new AbortController();
+			parserAbortController = new AbortController();
 
 			// With non-empty value: run parser function
 			store.runParser( {
@@ -192,7 +193,7 @@ module.exports = exports = defineComponent( {
 				zobject: value,
 				zlang: store.getUserLangZid,
 				wait: true,
-				signal: parserAbortController.value.signal
+				signal: parserAbortController.signal
 			} ).then( ( data ) => {
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
 				// Resolve the parser promise because we do not have other API calls
@@ -316,12 +317,12 @@ module.exports = exports = defineComponent( {
 			emit( 'input', value );
 
 			// Clear debounce
-			clearTimeout( debounceTimer.value );
+			clearTimeout( debounceTimer );
 
 			// Set new debounce
-			debounceTimer.value = setTimeout( () => {
+			debounceTimer = setTimeout( () => {
 				handleChange( value );
-			}, debounceDelay.value );
+			}, debounceDelay );
 		};
 
 		/**
@@ -350,11 +351,11 @@ module.exports = exports = defineComponent( {
 		watch( () => props.shouldUseDefaultValue, ( newValue ) => {
 			if ( newValue ) {
 				// Cancel any ongoing parser validation
-				if ( parserAbortController.value ) {
-					parserAbortController.value.abort();
+				if ( parserAbortController ) {
+					parserAbortController.abort();
 				}
 				// Clear any pending debounced validation
-				clearTimeout( debounceTimer.value );
+				clearTimeout( debounceTimer );
 				// Reset parser state
 				isParserRunning.value = false;
 			}
@@ -368,11 +369,11 @@ module.exports = exports = defineComponent( {
 		watch( () => props.shouldUseDefaultValue, ( newValue ) => {
 			if ( newValue ) {
 				// Cancel any ongoing parser validation
-				if ( parserAbortController.value ) {
-					parserAbortController.value.abort();
+				if ( parserAbortController ) {
+					parserAbortController.abort();
 				}
 				// Clear any pending debounced validation
-				clearTimeout( debounceTimer.value );
+				clearTimeout( debounceTimer );
 				// Reset parser state
 				isParserRunning.value = false;
 			}
@@ -405,8 +406,8 @@ module.exports = exports = defineComponent( {
 
 		onBeforeUnmount( () => {
 			// Cancel any ongoing parser request when the component is unmounted
-			if ( parserAbortController.value ) {
-				parserAbortController.value.abort();
+			if ( parserAbortController ) {
+				parserAbortController.abort();
 			}
 		} );
 
