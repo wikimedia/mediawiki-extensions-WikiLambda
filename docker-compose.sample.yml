@@ -15,12 +15,7 @@ services:
           "evaluatorConfigs": [
             {
               "programmingLanguages": [
-                "Z610",
-                "Z611",
-                "Z612",
-                "Z613",
-                "Z614",
-                "Z615"
+                "Z610"
               ],
               "evaluatorUri": "http://mediawiki-function-evaluator-python-1:6927/1/v1/evaluate/",
               "evaluatorWs": "",
@@ -28,21 +23,21 @@ services:
             },
             {
               "programmingLanguages": [
-                "Z600",
-                "Z601",
-                "Z602",
-                "Z603",
-                "Z604",
-                "Z605",
-                "Z606",
-                "Z607",
-                "Z608"
+                "Z600"
               ],
               "evaluatorUri": "http://mediawiki-function-evaluator-javascript-1:6927/1/v1/evaluate/",
               "evaluatorWs": "",
               "useReentrance": false
             }
-          ]
+          ],
+          "useWikidata": true,
+          "wikidataImport": {
+            "qualifiers": true,
+            "references": true
+          },
+          "useBatching": true,
+          "generateFunctionsMetrics": true,
+          "addNestedMetadata": false
         }
 
   function-evaluator-python:
