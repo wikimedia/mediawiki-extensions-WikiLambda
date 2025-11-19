@@ -19,7 +19,7 @@ const Constants = require( '../../Constants.js' );
  * @property {string} messageKey
  * @property {Array} params
  * @property {string} message
- * @property {type} type
+ * @property {string} type — one of Constants.ERROR_TYPES
  * @property {boolean} isPermanent
  */
 class ErrorData {
