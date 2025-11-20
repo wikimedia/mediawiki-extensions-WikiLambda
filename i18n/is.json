@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sveinn í Felli"
+		]
+	},
+	"wikilambda-editor-multilingual-string-loadmore": "{{PLURAL:$1|$1 tungumál}}"
+}
