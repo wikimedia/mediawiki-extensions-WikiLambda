@@ -77,7 +77,6 @@ module.exports = exports = defineComponent( {
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
 		const enumSelectConfig = { visibleItemLimit: 5 };
 		const loadingCount = ref( 0 );
 

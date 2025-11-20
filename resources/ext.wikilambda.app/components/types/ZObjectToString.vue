@@ -131,7 +131,6 @@ module.exports = exports = defineComponent( {
 		const { typeToString } = useType();
 		const store = useMainStore();
 
-		// Reactive data
 		const renderedValue = ref( '' );
 		const rendererRunning = ref( false );
 		const rendererError = ref( false );
@@ -500,16 +499,16 @@ module.exports = exports = defineComponent( {
 		 * This will propagate the event till the nearest ZObjectKeyValue
 		 * parent, who will set the expansion flag to true.
 		 */
-		const expand = () => {
+		function expand() {
 			emit( 'expand', true );
-		};
+		}
 
 		/**
 		 * Trigger the call to the Renderer function for this type
 		 * passing the current object values, and set the returned string
 		 * in the local renderedValue variable.
 		 */
-		const generateRenderedValue = () => {
+		function generateRenderedValue() {
 			// Only generate rendered value once.
 			// If the rendererZid is not set, we can't render anything else
 			if ( rendererRunning.value || !rendererZid.value ) {
@@ -537,17 +536,17 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				rendererRunning.value = false;
 			} );
-		};
+		}
 
 		/**
 		 * Fetch the Wikidata entity data depending on the type of the entity
 		 *
 		 * @return {Promise | undefined}
 		 */
-		const fetchWikidataEntity = () => {
+		function fetchWikidataEntity() {
 			store.fetchWikidataEntitiesByType( { type: wikidataType.value, ids: [ wikidataEntityId.value ] } );
 			store.fetchZids( { zids: [ wikidataType.value ] } );
-		};
+		}
 
 		// Watch
 		/**

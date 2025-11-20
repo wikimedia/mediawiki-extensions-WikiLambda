@@ -177,12 +177,12 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Emits set-keys event with implementation and tester zids
 		 */
-		const emitTesterKeys = () => {
+		function emitTesterKeys() {
 			emit( 'set-keys', {
 				implementationZid: props.implementationZid,
 				testerZid: props.testerZid
 			} );
-		};
+		}
 
 		return {
 			emitTesterKeys,

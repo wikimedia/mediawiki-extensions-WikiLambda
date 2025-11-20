@@ -16,7 +16,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, ref } = require( 'vue' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useType = require( '../../composables/useType.js' );
@@ -64,8 +64,7 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
-		const icon = ref( icons.cdxIconEllipsis );
+		const icon = icons.cdxIconEllipsis;
 
 		// Computed properties
 		/**
@@ -173,7 +172,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		const getResolverMenuItems = () => {
+		function getResolverMenuItems() {
 			const resolvers = [];
 
 			// Function call: Always available
@@ -206,14 +205,14 @@ module.exports = exports = defineComponent( {
 				} );
 			}
 			return resolvers;
-		};
+		}
 
 		/**
 		 * Return the menu options for creating literal types
 		 *
 		 * @return {Array}
 		 */
-		const getLiteralMenuItems = () => {
+		function getLiteralMenuItems() {
 			const literals = [];
 
 			// Add literal parent expected type when:
@@ -260,7 +259,7 @@ module.exports = exports = defineComponent( {
 			}
 
 			return literals;
-		};
+		}
 
 		/**
 		 * Returns the available options for the type mode selector.
@@ -384,7 +383,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		const selectMode = ( value ) => {
+		function selectMode( value ) {
 			// List actions:
 			if ( value === Constants.LIST_MENU_OPTIONS.DELETE_ITEM ) {
 				emit( 'delete-list-item' );
@@ -415,7 +414,7 @@ module.exports = exports = defineComponent( {
 					literal: true
 				} );
 			}
-		};
+		}
 
 		// Return all properties and methods for the template
 		return {

@@ -535,11 +535,11 @@ module.exports = exports = defineComponent( {
 		/**
 		 * If the current object is the main object, set the dirty flag to true.
 		 */
-		const setDirtyIfMainObject = () => {
+		function setDirtyIfMainObject() {
 			if ( props.keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
 				store.setDirty();
 			}
-		};
+		}
 
 		/**
 		 * If the current object is the main object and we are creating a new page,
@@ -547,7 +547,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} typeValue
 		 */
-		const setPageCreateTitle = ( typeValue ) => {
+		function setPageCreateTitle( typeValue ) {
 			// If this is an edit existing object page, do nothing
 			if ( !store.isCreateNewPage ) {
 				return;
@@ -570,7 +570,7 @@ module.exports = exports = defineComponent( {
 					pageTitle = i18n( 'wikilambda-special-createobject' ).text();
 			}
 			document.getElementById( 'firstHeading' ).textContent = pageTitle;
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
@@ -582,7 +582,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object|Array|string} payload.value new type to create
 		 * @param {boolean|undefined} payload.literal force new type to be created as literal
 		 */
-		const setType = ( payload ) => {
+		function setType( payload ) {
 			// If setType with no payload, clear the current object of
 			// all its keys, except the Object type/Z1K1, and exit
 			if ( !payload ) {
@@ -635,7 +635,7 @@ module.exports = exports = defineComponent( {
 
 			// Else remain in default view page and set to dirty
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
@@ -646,7 +646,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object|Array|string} payload.value new value to set
 		 * @param {Function} payload.callback optional callback to execute after mutation
 		 */
-		const setValue = ( payload ) => {
+		function setValue( payload ) {
 			// If value is null or undefined, do nothing
 			if ( payload.value === null || payload.value === undefined ) {
 				return;
@@ -749,7 +749,7 @@ module.exports = exports = defineComponent( {
 			}
 
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
@@ -757,21 +757,21 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} payload
 		 */
-		const addListItem = ( payload ) => {
+		function addListItem( payload ) {
 			const value = canonicalToHybrid( store.createObjectByType( payload ) );
 			store.pushItemsByKeyPath( {
 				keyPath: props.keyPath.split( '.' ),
 				values: [ value ]
 			} );
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a typed list item and the user deletes it.
 		 * TODO (T331132): Create a 'revert delete' workflow.
 		 */
-		const deleteListItem = () => {
+		function deleteListItem() {
 			const listKeyPath = props.keyPath.split( '.' ).slice( 0, -1 );
 			const lastItem = props.keyPath.split( '.' ).slice( -1 );
 			store.deleteListItemsByKeyPath( {
@@ -779,40 +779,40 @@ module.exports = exports = defineComponent( {
 				indexes: lastItem
 			} );
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a typed list item and the user moves it before the previous item.
 		 */
-		const moveBefore = () => {
+		function moveBefore() {
 			store.moveListItemByKeyPath( {
 				keyPath: props.keyPath.split( '.' ),
 				offset: -1
 			} );
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a typed list item and the user moves it after the next item.
 		 */
-		const moveAfter = () => {
+		function moveAfter() {
 			store.moveListItemByKeyPath( {
 				keyPath: props.keyPath.split( '.' ),
 				offset: 1
 			} );
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a function call and the user adds a new argument.
 		 */
-		const addArgument = () => {
+		function addArgument() {
 			store.addLocalArgumentToFunctionCall( { keyPath: props.keyPath.split( '.' ) } );
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
@@ -820,13 +820,13 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} argKey
 		 */
-		const deleteArgument = ( argKey ) => {
+		function deleteArgument( argKey ) {
 			store.deleteLocalArgumentFromFunctionCall( {
 				keyPath: props.keyPath.split( '.' ),
 				key: argKey
 			} );
 			setDirtyIfMainObject();
-		};
+		}
 
 		/**
 		 * Sets the expanded flag to a given value. If the type
@@ -835,9 +835,9 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {boolean} value
 		 */
-		const setExpanded = ( value ) => {
+		function setExpanded( value ) {
 			expanded.value = value;
-		};
+		}
 
 		/**
 		 * Auto-expand when field errors appear (only the first time)

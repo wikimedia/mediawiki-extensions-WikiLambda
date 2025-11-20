@@ -65,7 +65,6 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const wikidataIcon = wikidataIconSvg;
 		const inputValue = ref( '' );
 		const lookupResults = ref( [] );
@@ -75,9 +74,9 @@ module.exports = exports = defineComponent( {
 			visibleItemLimit: 5,
 			searchContinue: null
 		} );
-		const lookupDelayTimer = ref( null );
+		let lookupDelayTimer = null;
 		const lookupDelayMs = 300;
-		const lookupAbortController = ref( null );
+		let lookupAbortController = null;
 
 		/**
 		 * Return the placeholder string depending on the item to select
@@ -100,16 +99,16 @@ module.exports = exports = defineComponent( {
 		 */
 		function getLookupResults( searchTerm ) {
 			// Cancel previous request if any
-			if ( lookupAbortController.value ) {
-				lookupAbortController.value.abort();
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
 			}
-			lookupAbortController.value = new AbortController();
+			lookupAbortController = new AbortController();
 
 			const payload = {
 				search: searchTerm,
 				type: Constants.WIKIDATA_API_TYPE_VALUES[ props.type ],
 				searchContinue: lookupConfig.value.searchContinue,
-				signal: lookupAbortController.value.signal
+				signal: lookupAbortController.signal
 			};
 
 			store.lookupWikidataEntities( payload )
@@ -157,8 +156,8 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Search after 300 ms
-			clearTimeout( lookupDelayTimer.value );
-			lookupDelayTimer.value = setTimeout( () => {
+			clearTimeout( lookupDelayTimer );
+			lookupDelayTimer = setTimeout( () => {
 				getLookupResults( input );
 			}, lookupDelayMs );
 		}

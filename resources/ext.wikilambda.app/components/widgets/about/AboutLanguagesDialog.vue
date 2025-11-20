@@ -107,11 +107,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const searchTerm = ref( '' );
 		const lookupResults = ref( [] );
 		const showSearchCancel = ref( false );
-		const lookupAbortController = ref( null );
+		let lookupAbortController = null;
 
 		/**
 		 * Returns a list of all the fallback language Zids.
@@ -140,7 +139,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		const localItems = computed( () => {
-			const buildLangItem = ( langZid ) => {
+			function buildLangItem( langZid ) {
 				const name = store.getZPersistentName( langZid );
 				return {
 					langZid,
@@ -149,7 +148,7 @@ module.exports = exports = defineComponent( {
 					hasName: !!name,
 					name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
 				};
-			};
+			}
 
 			const sortByLabel = ( a, b ) => a.langLabelData.label.localeCompare(
 				b.langLabelData.label,
@@ -262,14 +261,14 @@ module.exports = exports = defineComponent( {
 		function getLookupResults( substring ) {
 			const allZids = [];
 			// Cancel previous request if any
-			if ( lookupAbortController.value ) {
-				lookupAbortController.value.abort();
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
 			}
-			lookupAbortController.value = new AbortController();
+			lookupAbortController = new AbortController();
 			store.lookupZObjectLabels( {
 				input: substring,
 				types: [ Constants.Z_NATURAL_LANGUAGE ],
-				signal: lookupAbortController.value.signal
+				signal: lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { labels } = data;
 				// Compile information for every search result

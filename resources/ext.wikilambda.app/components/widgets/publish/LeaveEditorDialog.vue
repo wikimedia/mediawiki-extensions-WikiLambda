@@ -9,7 +9,7 @@
 	<div class="ext-wikilambda-app-leave-editor-dialog">
 		<cdx-dialog
 			:open="showDialog"
-			:title="leaveDialogTitle"
+			:title="i18n( 'wikilambda-editor-leave-edit-mode-header' ).text()"
 			:close-button-label="i18n( 'wikilambda-dialog-close' ).text()"
 			:use-close-button="true"
 			:primary-action="primaryAction"
@@ -49,13 +49,6 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 
 		/**
-		 * Returns the title for the Leave dialog
-		 *
-		 * @return {string}
-		 */
-		const leaveDialogTitle = computed( () => i18n( 'wikilambda-editor-leave-edit-mode-header' ).text() );
-
-		/**
 		 * Returns an object of type PrimaryModalAction that describes
 		 * the action of the primary (save or publish) dialog button.
 		 *
@@ -79,24 +72,23 @@ module.exports = exports = defineComponent( {
 		/**
 		 * On click "Continue editing" option, simply close the dialog
 		 */
-		const stayOnPage = () => {
+		function stayOnPage() {
 			emit( 'close-dialog' );
-		};
+		}
 
 		/**
 		 * On click "Discard edits" option, handle state and event
 		 * listeners for exit and close the dialog
 		 */
-		const leavePage = () => {
+		function leavePage() {
 			emit( 'before-exit' );
 			if ( props.continueCallback ) {
 				props.continueCallback();
 			}
-		};
+		}
 
 		return {
 			defaultAction,
-			leaveDialogTitle,
 			leavePage,
 			primaryAction,
 			stayOnPage,

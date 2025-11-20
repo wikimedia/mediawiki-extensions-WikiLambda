@@ -24,7 +24,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onMounted, ref } = require( 'vue' );
+const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -106,9 +106,11 @@ module.exports = exports = defineComponent( {
 		const allowsEmptyField = computed( () => Constants.VE_ALLOW_EMPTY_FIELD.includes( props.inputType ) );
 
 		/**
-		 * Updates the validation state
+		 * Returns the placeholder text.
+		 * If the default value checkbox is checked, return the default value label,
+		 * otherwise return an empty string.
 		 *
-		 * @param {boolean} isValid
+		 * @return {string}
 		 */
 		const placeholder = computed( () => {
 			if ( props.shouldUseDefaultValue ) {
@@ -127,31 +129,51 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {boolean} isValid
 		 */
-		const updateValidationState = ( isValid ) => {
+		function updateValidationState( isValid ) {
 			const simplifiedType = Constants.WIKIDATA_SIMPLIFIED_TYPES[ entityType.value ];
 			const errorMessageKey = Constants.WIKIDATA_INPUT_ERROR_MSG[ simplifiedType ];
 			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
 			emit( 'validate', { isValid, error } );
-		};
+		}
 
 		/**
-		 * Validates a Wikidata entity ID
+		 * Validates a Wikidata entity ID by checking if it exists and is of the correct type.
 		 *
-		 * @param {string} entityIdValue
-		 * @param {boolean} emitUpdate
+		 * This method performs asynchronous validation using a two-step process:
+		 * 1. First attempts to retrieve the entity from the local cache
+		 * 2. If not found, fetches the entity from Wikidata and validates again
+		 *
+		 * The two-step process is necessary because:
+		 * - The store manages entity fetching through promises to prevent duplicate API calls
+		 * - When fetchWikidataEntitiesByType is called, it first adds a promise to the store
+		 * - If the same entity is already being fetched, the existing promise is returned
+		 * - If the entity is already cached, the promise resolves immediately
+		 * - Only if the entity hasn't been requested yet it makes a new API call
+		 * - This prevents race conditions and unnecessary duplicate requests
+		 *
+		 * During validation:
+		 * - Sets the component's validating state to true
+		 * - Initially emits an invalid validation state
+		 * - Updates validation state to true if entity is found and valid
+		 * - Updates validation state to false if entity doesn't exist or is invalid
+		 * - Optionally emits an update event if validation succeeds and emitUpdate is true
+		 * - Always resets the validating state when complete
+		 *
+		 * @param {string} entityIdValue - The Wikidata entity ID to validate (e.g., 'Q42', 'L123', 'P31')
+		 * @param {boolean} [emitUpdate=false] - Whether to emit an 'update' event if validation succeeds
 		 */
-		const validateEntity = ( entityIdValue, emitUpdate = false ) => {
+		function validateEntity( entityIdValue, emitUpdate = false ) {
 			// Set validating state and emit invalid until we get a response
 			isValidating.value = true;
 			emit( 'validate', { isValid: false } );
 
 			// Helper function to validate and update the validation state
-			const validateAndUpdate = () => {
+			function validateAndUpdate() {
 				updateValidationState( true );
 				if ( emitUpdate ) {
 					emit( 'update', entityIdValue );
 				}
-			};
+			}
 
 			// First, try to get the entity data asynchronously
 			store.getWikidataEntityDataAsync( entityType.value, entityIdValue )
@@ -166,15 +188,15 @@ module.exports = exports = defineComponent( {
 				.finally( () => {
 					isValidating.value = false;
 				} );
-		};
+		}
 
 		/**
-		 * Validates the value
+		 * Validates the value and optionally emits an update event if valid.
 		 *
-		 * @param {string} value
-		 * @param {boolean} emitUpdate
+		 * @param {string} value - The value to validate.
+		 * @param {boolean} emitUpdate - Whether to emit the update event if valid.
 		 */
-		const validate = ( value, emitUpdate = false ) => {
+		function validate( value, emitUpdate = false ) {
 			// If default value checkbox is checked, field is valid
 			if ( props.shouldUseDefaultValue ) {
 				updateValidationState( true );
@@ -184,7 +206,7 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
-			// For empty values, check if empty field is allowed
+			// For empty values, valid if: empty is allowed AND no default value available
 			if ( !value ) {
 				const isValid = allowsEmptyField.value && !props.hasDefaultValue;
 				updateValidationState( isValid );
@@ -196,26 +218,39 @@ module.exports = exports = defineComponent( {
 
 			// For non-empty values, validate the entity
 			validateEntity( value, emitUpdate );
-		};
+		}
 
 		/**
-		 * Handle Wikidata entity selection
+		 * Handle Wikidata entity selection:
+		 * * emits 'input' event to set the local variable to the new value
+		 * * starts validation, which will emit 'update' event to set up the
+		 *   value in the store and make it available to VE
 		 *
-		 * @param {string} value
+		 * @param {string} value - The selected entity ID
 		 */
-		const onSelect = ( value ) => {
+		function onSelect( value ) {
 			emit( 'input', value );
 			validateEntity( value, true );
-		};
+		}
 
 		/**
 		 * Fetches the default value from wikidata.
 		 */
-		const fetchDefaultValue = () => {
+		function fetchDefaultValue() {
 			if ( props.defaultValue ) {
 				store.fetchWikidataEntitiesByType( { type: entityType.value, ids: [ props.defaultValue ] } );
 			}
-		};
+		}
+
+		/**
+		 * Watch for changes to shouldUseDefaultValue and re-validate
+		 *
+		 * @param {string} value
+		 * @param {boolean} emitUpdate
+		 */
+		watch( () => props.shouldUseDefaultValue, () => {
+			validate( entityId.value );
+		} );
 
 		onMounted( () => {
 			fetchDefaultValue();

@@ -10,7 +10,7 @@
 			class="ext-wikilambda-app-publish-dialog"
 			data-testid="publish-dialog"
 			:open="showDialog"
-			:title="publishDialogTitle"
+			:title="i18n( 'wikilambda-editor-publish-dialog-header' ).text()"
 			:close-button-label="i18n( 'wikilambda-dialog-close' ).text()"
 			:use-close-button="true"
 			:primary-action="primaryAction"
@@ -39,8 +39,8 @@
 				<cdx-text-input
 					v-model="summary"
 					class="ext-wikilambda-app-publish-dialog__summary-input"
-					:aria-label="summaryLabel"
-					:placeholder="summaryPlaceholder"
+					:aria-label="i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text()"
+					:placeholder="i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
 					@keydown="handleSummaryKeydown"
 				></cdx-text-input>
 				<template #label>
@@ -125,7 +125,6 @@ module.exports = exports = defineComponent( {
 		const eventLogUtils = useEventLog();
 		const store = useMainStore();
 
-		// Reactive data
 		const summary = ref( '' );
 		const hasKeyboardSubmitWarning = ref( false );
 		const isPublishing = ref( false );
@@ -180,22 +179,6 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		const publishDialogTitle = computed( () => i18n( 'wikilambda-editor-publish-dialog-header' ).text() );
-
-		/**
-		 * Returns the label for the summary text field
-		 *
-		 * @return {string}
-		 */
-		const summaryLabel = computed( () => i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text() );
-
-		/**
-		 * Returns the placeholder for the summary text field
-		 *
-		 * @return {string}
-		 */
-		const summaryPlaceholder = computed( () => i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text() );
-
 		/**
 		 * Returns the legal text to display in the Publish Dialog, depending
 		 * on the type of object that is being submitted:
@@ -229,29 +212,29 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Event} event The keydown event.
 		 */
-		const handleSummaryEnter = ( event ) => {
+		function handleSummaryEnter( event ) {
 			event.preventDefault();
 			hasKeyboardSubmitWarning.value = true;
-		};
+		}
 
 		/**
 		 * Clears the error notifications and emits a close-dialog
 		 * event for the Publish widget to close the dialog.
 		 */
-		const closeDialog = () => {
+		function closeDialog() {
 			hasKeyboardSubmitWarning.value = false;
 
 			// Clear all publish dialog errors/warnings (errorId: "main"), preserve field-level warnings
 			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
 			emit( 'close-dialog' );
-		};
+		}
 
 		/**
 		 * Navigates to the page specified by the pageTitle parameter.
 		 *
 		 * @param {string} pageTitle The title of the page to navigate to.
 		 */
-		const navigateToPage = ( pageTitle ) => {
+		function navigateToPage( pageTitle ) {
 			window.location.href = !pageTitle ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
 				urlUtils.generateViewUrl( {
@@ -259,7 +242,7 @@ module.exports = exports = defineComponent( {
 					zid: pageTitle,
 					params: { success: true }
 				} );
-		};
+		}
 
 		/**
 		 * Before exiting the page after successful publishing, handle
@@ -267,13 +250,13 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string | undefined} pageTitle
 		 */
-		const successfulExit = ( pageTitle ) => {
+		function successfulExit( pageTitle ) {
 			emit( 'before-exit' );
 			store.setDirty( false );
 			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
 			closeDialog();
 			navigateToPage( pageTitle );
-		};
+		}
 
 		/**
 		 * Submits the ZObject to the wikilambda_edit API
@@ -284,7 +267,7 @@ module.exports = exports = defineComponent( {
 		 * 2. If the response is successful, navigates to the ZObject
 		 *    page.
 		 */
-		const publishZObject = () => {
+		function publishZObject() {
 			const summaryValue = summary.value;
 			const shouldDisconnectFunctionObjects = props.functionSignatureChanged;
 
@@ -316,7 +299,7 @@ module.exports = exports = defineComponent( {
 				};
 				eventLogUtils.submitInteraction( 'publish', interactionData );
 			} );
-		};
+		}
 
 		/**
 		 * Handles the keydown event on the summary text field.
@@ -325,7 +308,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Event} event The keydown event.
 		 */
-		const handleSummaryKeydown = ( event ) => {
+		function handleSummaryKeydown( event ) {
 			const enterKey = event.key === 'Enter';
 
 			// If the user presses Ctrl/Cmd + Enter, publish the ZObject
@@ -338,7 +321,7 @@ module.exports = exports = defineComponent( {
 			if ( enterKey ) {
 				handleSummaryEnter( event );
 			}
-		};
+		}
 
 		// Return all properties and methods for the template
 		return {
@@ -348,16 +331,13 @@ module.exports = exports = defineComponent( {
 			handleSummaryKeydown,
 			hasErrors,
 			hasKeyboardSubmitWarning,
+			i18n,
 			keyboardSubmitMessage,
 			legalText,
 			primaryAction,
-			publishDialogTitle,
 			publishZObject,
 			status,
-			summary,
-			summaryLabel,
-			summaryPlaceholder,
-			i18n
+			summary
 		};
 	}
 } );

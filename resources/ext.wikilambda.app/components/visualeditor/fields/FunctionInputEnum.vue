@@ -118,7 +118,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value - The value to validate.
 		 * @return {boolean} - True if the value is valid, otherwise false.
 		 */
-		const isValid = ( value ) => {
+		function isValid( value ) {
 			// If default value checkbox is checked, field is valid
 			if ( props.shouldUseDefaultValue ) {
 				return true;
@@ -128,18 +128,18 @@ module.exports = exports = defineComponent( {
 				return true;
 			}
 			return typeUtils.isValidZidFormat( value ) && isValueInEnumValues( value );
-		};
+		}
 
 		/**
 		 * Updates the validation state of the field.
 		 *
 		 * @param {boolean} isValidValue - The validation result.
 		 */
-		const updateValidationState = ( isValidValue ) => {
+		function updateValidationState( isValidValue ) {
 			const errorMessageKey = 'wikilambda-visualeditor-wikifunctionscall-error-enum';
 			const error = !isValidValue ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
 			emit( 'validate', { isValid: isValidValue, error } );
-		};
+		}
 
 		/**
 		 * Validates the value and optionally emits an update event if valid.
@@ -147,38 +147,38 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value - The value to validate.
 		 * @param {boolean} emitUpdate - Whether to emit the update event if valid.
 		 */
-		const validate = ( value, emitUpdate = false ) => {
+		function validate( value, emitUpdate = false ) {
 			const isValidValue = isValid( value );
 			updateValidationState( isValidValue );
 
 			if ( emitUpdate && isValidValue ) {
 				emit( 'update', value );
 			}
-		};
+		}
 
 		/**
 		 * Load more values for the enumeration selector
 		 */
-		const handleLoadMoreSelect = () => {
+		function handleLoadMoreSelect() {
 			store.fetchEnumValues( { type: props.inputType } );
-		};
+		}
 
 		/**
 		 * Handles the blur event and validates the current value.
 		 */
-		const handleBlur = () => {
+		function handleBlur() {
 			validate( props.value );
-		};
+		}
 
 		/**
 		 * Handles the update event
 		 *
 		 * @param {string} value - The new value to validate.
 		 */
-		const handleUpdate = ( value ) => {
+		function handleUpdate( value ) {
 			emit( 'input', value );
 			validate( value, true );
-		};
+		}
 
 		/**
 		 * Fetches all enum values for the input type

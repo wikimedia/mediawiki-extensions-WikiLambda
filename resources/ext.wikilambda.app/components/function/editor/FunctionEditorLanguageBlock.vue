@@ -142,19 +142,19 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		const onLanguageChanged = ( value ) => {
+		function onLanguageChanged( value ) {
 			emit( 'language-changed', {
 				language: value,
 				index: props.index
 			} );
-		};
+		}
 
 		/**
 		 * Emits a labels updated event
 		 */
-		const onLabelsUpdated = () => {
+		function onLabelsUpdated() {
 			emit( 'labels-updated' );
-		};
+		}
 
 		return {
 			adminTooltipMessage,

@@ -83,9 +83,8 @@ module.exports = exports = defineComponent( {
 		const { isValidZidFormat } = useType();
 		const store = useMainStore();
 
-		// Reactive data
 		const showSearchCancel = ref( false );
-		const lookupAbortController = ref( null );
+		let lookupAbortController = null;
 		const callsToAction = [
 			{
 				title: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title' ).parse(),
@@ -154,14 +153,14 @@ module.exports = exports = defineComponent( {
 		function fetchLookupResults( substring ) {
 			const allZids = [];
 			// Cancel previous request if any
-			if ( lookupAbortController.value ) {
-				lookupAbortController.value.abort();
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
 			}
-			lookupAbortController.value = new AbortController();
+			lookupAbortController = new AbortController();
 			store.lookupFunctions( {
 				search: substring,
 				renderable: true,
-				signal: lookupAbortController.value.signal
+				signal: lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { objects } = data;
 				// If the string searched has changed, do not show the search result

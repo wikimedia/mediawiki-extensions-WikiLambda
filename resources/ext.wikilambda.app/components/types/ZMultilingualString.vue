@@ -118,7 +118,6 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
 		const listItemType = Constants.Z_MONOLINGUALSTRING;
 		const iconLanguage = icons.cdxIconLanguage;
 		const iconAdd = icons.cdxIconAdd;

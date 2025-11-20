@@ -33,14 +33,14 @@
 				data-testid="function-editor-input-item-label"
 			>
 				<template #label>
-					{{ inputLabelTitle }}
+					{{ i18n( 'wikilambda-function-definition-input-item-label' ).text() }}
 				</template>
 				<cdx-text-input
 					:lang="input ? langLabelData.langCode : undefined"
 					:dir="input ? langLabelData.langDir : undefined"
 					:model-value="input ? input.value : ''"
-					:placeholder="inputLabelFieldPlaceholder"
-					:aria-label="inputLabelFieldPlaceholder"
+					:placeholder="i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+					:aria-label="i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 					:maxlength="maxInputLabelChars"
 					@input="updateRemainingChars"
 					@change="persistInputLabel"
@@ -58,7 +58,7 @@
 				:object-value="input.type"
 				:label-data="inputTypeLabel"
 				:disabled="!canEditType"
-				:placeholder="inputTypeFieldPlaceholder"
+				:placeholder="i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
 			></wl-type-selector>
 		</div>
 	</div>
@@ -137,10 +137,9 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
+		const iconTrash = icons.cdxIconTrash;
 		const maxInputLabelChars = Constants.INPUT_CHARS_MAX;
 		const remainingChars = ref( Constants.INPUT_CHARS_MAX );
-		const iconTrash = icons.cdxIconTrash;
 
 		/**
 		 * Returns the label and index for the current input.
@@ -154,20 +153,6 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Returns the title for the input label field
-		 *
-		 * @return {string}
-		 */
-		const inputLabelTitle = computed( () => i18n( 'wikilambda-function-definition-input-item-label' ).text() );
-
-		/**
-		 * Returns the placeholder for the input label field
-		 *
-		 * @return {string}
-		 */
-		const inputLabelFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text() );
-
-		/**
 		 * Returns the title for the input type field
 		 *
 		 * @return {string}
@@ -175,13 +160,6 @@ module.exports = exports = defineComponent( {
 		const inputTypeLabel = computed( () => LabelData.fromString(
 			i18n( 'wikilambda-function-definition-input-item-type' ).text()
 		) );
-
-		/**
-		 * Returns the placeholder for the input type field
-		 *
-		 * @return {string}
-		 */
-		const inputTypeFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text() );
 
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K2 field
@@ -230,9 +208,6 @@ module.exports = exports = defineComponent( {
 		return {
 			iconTrash,
 			inputFieldLabel,
-			inputLabelFieldPlaceholder,
-			inputLabelTitle,
-			inputTypeFieldPlaceholder,
 			inputTypeLabel,
 			maxInputLabelChars,
 			persistInputLabel,

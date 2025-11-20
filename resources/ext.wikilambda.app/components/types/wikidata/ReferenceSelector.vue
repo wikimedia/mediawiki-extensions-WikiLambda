@@ -94,7 +94,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string|null} value - The selected value from the dropdown.
 		 */
-		const onSelect = ( value ) => {
+		function onSelect( value ) {
 			// If the already selected value is selected again, exit early
 			if ( selectedValue.value === value ) {
 				return;
@@ -102,7 +102,7 @@ module.exports = exports = defineComponent( {
 
 			// If a new value is selected, emit the select event.
 			emit( 'select-item', value || '' );
-		};
+		}
 
 		/**
 		 * Fetches the Zids for the Wikidata enum reference types when the component is mounted.

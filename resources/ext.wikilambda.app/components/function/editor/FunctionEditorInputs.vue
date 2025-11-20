@@ -125,7 +125,6 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const iconAdd = icons.cdxIconAdd;
 
 		/**

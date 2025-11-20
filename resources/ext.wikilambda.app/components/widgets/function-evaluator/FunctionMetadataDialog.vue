@@ -164,7 +164,6 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const iconHelpNotice = icons.cdxIconHelpNotice;
 		const selectedMetadataPath = ref( '0' );
 
@@ -754,7 +753,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		function toRelativeTime( input ) {
-			const transformDateTime = ( dateTimeString ) => {
+			function transformDateTime( dateTimeString ) {
 				if ( Intl.RelativeTimeFormat ) {
 					const target = Date.parse( dateTimeString );
 					const now = Date.now();
@@ -818,7 +817,7 @@ module.exports = exports = defineComponent( {
 
 				// Fallback for browsers without Intl
 				return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
-			};
+			}
 
 			return {
 				type: Constants.METADATA_CONTENT_TYPE.TEXT,

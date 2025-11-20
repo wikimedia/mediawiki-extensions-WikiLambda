@@ -8,8 +8,9 @@
 	<wl-function-editor-field class="ext-wikilambda-app-function-editor-name">
 		<template #label>
 			<label :for="nameFieldId">
-				{{ nameLabel }}
-				<span>{{ nameOptional }}</span>
+				<!-- TODO (T335583): Replace i18n message with key label -->
+				{{ i18n( 'wikilambda-function-definition-name-label' ).text() }}
+				<span>{{ i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 			</label>
 		</template>
 		<template #body>
@@ -19,8 +20,8 @@
 				:dir="name ? langLabelData.langDir : undefined"
 				:model-value="name ? name.value : ''"
 				class="ext-wikilambda-app-function-editor-name__input"
-				:aria-label="nameLabel"
-				:placeholder="nameFieldPlaceholder"
+				:aria-label="i18n( 'wikilambda-function-definition-name-label' ).text()"
+				:placeholder="i18n( 'wikilambda-function-definition-name-placeholder' ).text()"
 				:maxlength="maxLabelChars"
 				@input="updateRemainingChars"
 				@change="persistName"
@@ -33,7 +34,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, nextTick, onBeforeUnmount, onMounted, ref } = require( 'vue' );
+const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -75,7 +76,6 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { updatePageTitle } = usePageTitle();
 
-		// Reactive data
 		const ignoreChangeEvent = ref( false );
 		const maxLabelChars = Constants.LABEL_CHARS_MAX;
 		const remainingChars = ref( Constants.LABEL_CHARS_MAX );
@@ -90,31 +90,6 @@ module.exports = exports = defineComponent( {
 		const name = computed( () => props.zLanguage ? store.getZPersistentName( props.zLanguage ) : undefined );
 
 		/**
-		 * Returns the label for the name field
-		 *
-		 *
-		 * TODO (T335583): Replace i18n message with key label
-		 * return getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL );
-		 *
-		 * @return {string}
-		 */
-		const nameLabel = computed( () => i18n( 'wikilambda-function-definition-name-label' ).text() );
-
-		/**
-		 * Returns the i18n message for the name field placeholder
-		 *
-		 * @return {string}
-		 */
-		const nameFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-name-placeholder' ).text() );
-
-		/**
-		 * Returns the "optional" caption for the name field
-		 *
-		 * @return {string}
-		 */
-		const nameOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
-
-		/**
 		 * Returns the id for the input field
 		 *
 		 * @return {string}
@@ -127,17 +102,17 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Event} event - the event object that is automatically passed in on input
 		 */
-		const updateRemainingChars = ( event ) => {
+		function updateRemainingChars( event ) {
 			const { length } = event.target.value;
 			remainingChars.value = maxLabelChars - length;
-		};
+		}
 
 		/**
 		 * Persist the new name value in the globally stored object
 		 *
 		 * @param {Object} event
 		 */
-		const persistName = ( event ) => {
+		function persistName( event ) {
 			if ( ignoreChangeEvent.value ) {
 				return;
 			}
@@ -156,13 +131,11 @@ module.exports = exports = defineComponent( {
 			// After persisting in the state, update the page title
 			updatePageTitle();
 			emit( 'name-updated' );
-		};
+		}
 
 		// Lifecycle
 		onMounted( () => {
-			nextTick( () => {
-				remainingChars.value = maxLabelChars - ( name.value ? name.value.length : 0 );
-			} );
+			remainingChars.value = maxLabelChars - ( name.value ? name.value.value.length : 0 );
 		} );
 
 		onBeforeUnmount( () => {
@@ -172,12 +145,10 @@ module.exports = exports = defineComponent( {
 
 		// Return all properties and methods for the template
 		return {
+			i18n,
 			maxLabelChars,
 			name,
 			nameFieldId,
-			nameFieldPlaceholder,
-			nameLabel,
-			nameOptional,
 			persistName,
 			remainingChars,
 			updateRemainingChars

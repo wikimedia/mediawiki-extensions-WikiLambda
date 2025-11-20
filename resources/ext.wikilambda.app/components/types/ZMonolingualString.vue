@@ -33,9 +33,10 @@
 				{{ langIso.toUpperCase() }}
 			</cdx-info-chip>
 			<cdx-text-input
-				v-model="text"
+				:model-value="text"
 				class="ext-wikilambda-app-monolingual-string__input"
 				:placeholder="i18n( 'wikilambda-edit-monolingual-text-placeholder' ).text()"
+				@update:model-value="setText"
 			>
 			</cdx-text-input>
 		</div>
@@ -78,45 +79,37 @@ module.exports = exports = defineComponent( {
 		const { getZMonolingualTextValue, getZMonolingualLangValue } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
 		const chipComponent = ref( null );
 		const chipWidth = ref( 72 );
 
 		// Computed properties
 		/**
-		 * Computed value:
-		 * 1. Getter gets the value from the state.
-		 * 2. Setter informs the ZObjectKeyValue of the change.
+		 * Returns the terminal value of the string represented
+		 * in this component.
+		 *
+		 * @return {string}
+		 */
+		const text = computed( () => getZMonolingualTextValue( props.objectValue ) );
+
+		/**
+		 * Sets the text value by emitting a setValue event.
 		 * Only the ZObjectKeyValue responds to the 'setValue' emitted event
 		 * so only the ZObjectKeyValue is doing operations to transform
 		 * the state data. This is so that we don't duplicate state mutation
 		 * logic all over the components, and builtin components are just
 		 * visual representations and have zero logic.
+		 *
+		 * @param {string} value
 		 */
-		const text = computed( {
-			/**
-			 * Returns the terminal value of the string represented
-			 * in this component.
-			 *
-			 * @return {string}
-			 */
-			get: () => getZMonolingualTextValue( props.objectValue ),
-			/**
-			 * Emits a setValue event with the new value for the string
-			 * and the key path information depending on the object key.
-			 *
-			 * @param {string} value
-			 */
-			set: ( value ) => {
-				emit( 'set-value', {
-					keyPath: [
-						Constants.Z_MONOLINGUALSTRING_VALUE,
-						Constants.Z_STRING_VALUE
-					],
-					value
-				} );
-			}
-		} );
+		function setText( value ) {
+			emit( 'set-value', {
+				keyPath: [
+					Constants.Z_MONOLINGUALSTRING_VALUE,
+					Constants.Z_STRING_VALUE
+				],
+				value
+			} );
+		}
 
 		/**
 		 * Returns the language Zid of the Monolingual string
@@ -179,6 +172,7 @@ module.exports = exports = defineComponent( {
 			hasEmptyLang,
 			inputCssVariablesStyle,
 			langIso,
+			setText,
 			text,
 			i18n
 		};

@@ -11,13 +11,15 @@
 		:tooltip-icon="tooltipIcon"
 		:show-tooltip="tooltipMessage && !canEdit">
 		<template #label>
-			<label :id="outputFieldId">
-				{{ outputLabel }}
+			<label id="ext-wikilambda-app-function-editor-output__label-id">
+				{{ i18n( 'wikilambda-function-definition-output-label' ).text() }}
 			</label>
 		</template>
 		<template #description>
-			{{ outputFieldDescription }}
-			<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
+			{{ i18n( 'wikilambda-function-definition-output-description' ).text() }}
+			<a :href="listObjectsUrl" target="_blank">
+				{{ i18n( 'wikilambda-function-definition-output-types' ).text() }}
+			</a>
 		</template>
 		<template #body>
 			<wl-type-selector
@@ -26,10 +28,10 @@
 				data-testid="function-editor-output-type"
 				:key-path="outputTypeKeyPath"
 				:object-value="outputType"
-				:aria-labelledby="outputFieldId"
+				aria-labelledby="ext-wikilambda-app-function-editor-output__label-id"
 				:disabled="!canEdit"
 				:label-data="outputTypeLabel"
-				:placeholder="outputFieldPlaceholder"
+				:placeholder="i18n( 'wikilambda-function-definition-output-selector' ).text()"
 			></wl-type-selector>
 		</template>
 	</wl-function-editor-field>
@@ -92,15 +94,6 @@ module.exports = exports = defineComponent( {
 		const outputType = computed( () => store.getZFunctionOutput );
 
 		/**
-		 * Returns the label for the output field
-		 *
-		 * TODO (T335583): Replace i18n message with key label
-		 *
-		 * @return {string}
-		 */
-		const outputLabel = computed( () => i18n( 'wikilambda-function-definition-output-label' ).text() );
-
-		/**
 		 * Returns the title of the "Type" column for the output field
 		 *
 		 * @return {LabelData}
@@ -110,27 +103,6 @@ module.exports = exports = defineComponent( {
 		) );
 
 		/**
-		 * Returns the id for the output field
-		 *
-		 * @return {string}
-		 */
-		const outputFieldId = computed( () => 'ext-wikilambda-app-function-editor-output__label-id' );
-
-		/**
-		 * Returns the description for the output field
-		 *
-		 * @return {string}
-		 */
-		const outputFieldDescription = computed( () => i18n( 'wikilambda-function-definition-output-description' ).text() );
-
-		/**
-		 * Returns the placeholder for the output field
-		 *
-		 * @return {string}
-		 */
-		const outputFieldPlaceholder = computed( () => i18n( 'wikilambda-function-definition-output-selector' ).text() );
-
-		/**
 		 * Returns the URL to the Special page List Object by Type
 		 *
 		 * @return {string}
@@ -138,20 +110,9 @@ module.exports = exports = defineComponent( {
 		const listObjectsUrl = computed( () => new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
 			.getUrl( { uselang: store.getUserLangCode } ) );
 
-		/**
-		 * Returns the text for the link to the Special page List Object by Type
-		 *
-		 * @return {string}
-		 */
-		const listObjectsLink = computed( () => i18n( 'wikilambda-function-definition-output-types' ).text() );
-
 		return {
-			listObjectsLink,
 			listObjectsUrl,
-			outputFieldDescription,
-			outputFieldId,
-			outputFieldPlaceholder,
-			outputLabel,
+			i18n,
 			outputType,
 			outputTypeKeyPath,
 			outputTypeLabel

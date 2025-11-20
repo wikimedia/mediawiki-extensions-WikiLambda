@@ -179,7 +179,6 @@ module.exports = exports = defineComponent( {
 		const { submitInteraction } = useEventLog();
 		const store = useMainStore();
 
-		// Reactive data
 		const running = ref( false );
 		const hasResult = ref( false );
 		const isLoading = ref( true );

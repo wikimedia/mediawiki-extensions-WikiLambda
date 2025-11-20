@@ -46,23 +46,23 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const isExpanded = ref( false );
 		const isExpandable = ref( false );
-		const throttledResizeHandler = ref( null );
+		let throttledResizeHandler = null;
 		const descriptionComponent = ref( null );
 
 		/**
 		 * Checks if the description is clamped and updates `isExpandable`.
 		 */
-		const checkClamped = () => {
+		function checkClamped() {
 			const element = descriptionComponent.value;
 			isExpandable.value = element && element.scrollHeight > element.clientHeight;
-		};
+		}
 
 		/**
 		 * Toggles the expanded state of the description.
 		 */
-		const toggleExpanded = () => {
+		function toggleExpanded() {
 			isExpanded.value = !isExpanded.value;
-		};
+		}
 
 		/**
 		 * Re-checks clamping when the description changes.
@@ -80,15 +80,15 @@ module.exports = exports = defineComponent( {
 			setTimeout( () => {
 				checkClamped();
 			}, 10 );
-			throttledResizeHandler.value = throttle( checkClamped, 200 );
-			window.addEventListener( 'resize', throttledResizeHandler.value );
+			throttledResizeHandler = throttle( checkClamped, 200 );
+			window.addEventListener( 'resize', throttledResizeHandler );
 		} );
 
 		/**
 		 * Cleans up resize handling before unmounting.
 		 */
 		onBeforeUnmount( () => {
-			window.removeEventListener( 'resize', throttledResizeHandler.value );
+			window.removeEventListener( 'resize', throttledResizeHandler );
 		} );
 
 		return {

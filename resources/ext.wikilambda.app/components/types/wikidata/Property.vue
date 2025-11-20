@@ -140,7 +140,15 @@ module.exports = exports = defineComponent( {
 			}
 		} );
 
-		return { wikidataIcon, propertyType, propertyId, propertyUrl, propertyLabelData, propertyLabel, onSelect };
+		return {
+			wikidataIcon,
+			propertyType,
+			propertyId,
+			propertyUrl,
+			propertyLabelData,
+			propertyLabel,
+			onSelect
+		};
 	}
 } );
 </script>

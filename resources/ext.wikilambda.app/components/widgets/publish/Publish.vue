@@ -83,7 +83,6 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { submitInteraction } = useEventLog();
 
-		// Reactive data
 		const leaveEditorCallback = ref( undefined );
 		const showLeaveEditorDialog = ref( false );
 		const showPublishDialog = ref( false );
@@ -241,7 +240,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} targetUrl
 		 */
 		function leaveTo( targetUrl ) {
-			const leaveAction = () => {
+			function leaveAction() {
 				removeListeners();
 				// Log an event using Metrics Platform's core interaction events
 				const interactionData = {
@@ -252,7 +251,7 @@ module.exports = exports = defineComponent( {
 				};
 				submitInteraction( 'cancel', interactionData );
 				window.location.href = targetUrl;
-			};
+			}
 
 			if ( props.isDirty ) {
 				leaveEditorCallback.value = leaveAction;

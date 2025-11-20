@@ -123,11 +123,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const searchTerm = ref( '' );
 		const showSearchCancel = ref( false );
 		const lookupResults = ref( [] );
-		const lookupAbortController = ref( null );
+		let lookupAbortController = null;
 
 		// Computed properties
 		/**
@@ -261,12 +260,12 @@ module.exports = exports = defineComponent( {
 		 * Clears the search term, lookup results, and emits the 'close-dialog'
 		 * event to notify the parent component that the dialog has been closed.
 		 */
-		const closeDialog = () => {
+		function closeDialog() {
 			searchTerm.value = '';
 			lookupResults.value = [];
 			showSearchCancel.value = false;
 			emit( 'close-dialog' );
-		};
+		}
 
 		/**
 		 * Navigates to the edit page when in read mode.
@@ -274,7 +273,7 @@ module.exports = exports = defineComponent( {
 		 * This allows users to switch to edit mode to add new languages.
 		 * The hash will be used to scroll to the relevant multilingual string component.
 		 */
-		const navigateToEdit = () => {
+		function navigateToEdit() {
 			const url = urlUtils.generateEditUrl( {
 				langCode: store.getUserLangCode,
 				zid: store.getCurrentZObjectId,
@@ -283,7 +282,7 @@ module.exports = exports = defineComponent( {
 
 			// Navigate to the edit page with hash for automatic scrolling
 			window.location.href = url;
-		};
+		}
 
 		/**
 		 * Emits the 'add-language' event to notify the parent component.
@@ -292,10 +291,10 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} langZid - The ZID of the language to add
 		 */
-		const addLanguage = ( langZid ) => {
+		function addLanguage( langZid ) {
 			emit( 'add-language', langZid );
 			closeDialog();
-		};
+		}
 
 		/**
 		 * Performs a language lookup search and formats the results.
@@ -305,17 +304,17 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} substring - The search term to look up
 		 */
-		const getLookupResults = ( substring ) => {
+		function getLookupResults( substring ) {
 			const allZids = [];
 			// Cancel previous request if any
-			if ( lookupAbortController.value ) {
-				lookupAbortController.value.abort();
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
 			}
-			lookupAbortController.value = new AbortController();
+			lookupAbortController = new AbortController();
 			store.lookupZObjectLabels( {
 				input: substring,
 				types: [ Constants.Z_NATURAL_LANGUAGE ],
-				signal: lookupAbortController.value.signal
+				signal: lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { labels } = data;
 				// Compile information for every search result
@@ -375,7 +374,7 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 			} );
-		};
+		}
 
 		/**
 		 * Updates the search term and triggers search results update.
@@ -384,25 +383,25 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value - The new search term entered by the user
 		 */
-		const updateSearchTerm = ( value ) => {
+		function updateSearchTerm( value ) {
 			searchTerm.value = value;
 			if ( !value ) {
 				lookupResults.value = [];
 				return;
 			}
 			getLookupResults( value );
-		};
+		}
 
 		/**
 		 * Clears the search field and resets search-related state.
 		 * Resets the search term, clears lookup results, and hides the search cancel button.
 		 * This provides a clean slate for new searches.
 		 */
-		const clearSearch = () => {
+		function clearSearch() {
 			searchTerm.value = '';
 			updateSearchTerm( '' );
 			showSearchCancel.value = false;
-		};
+		}
 
 		/**
 		 * Handles clicking on an item in the dialog.
@@ -414,7 +413,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} item - The clicked item with langZid and other properties
 		 * @return {void}
 		 */
-		const handleItemClick = ( item ) => {
+		function handleItemClick( item ) {
 			// Already visible → just close dialog
 			if ( item.isInVisibleList ) {
 				return closeDialog();
@@ -429,17 +428,17 @@ module.exports = exports = defineComponent( {
 
 			// Default → add language
 			addLanguage( item.langZid );
-		};
+		}
 
 		/**
 		 * Checks if there are no visible local items and fetches common language ZIDs if needed.
 		 * This helper method centralizes the logic for determining when to fetch common languages.
 		 */
-		const fetchCommonLanguagesIfNeeded = () => {
+		function fetchCommonLanguagesIfNeeded() {
 			if ( getAvailableLanguages.value.length === 0 ) {
 				store.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
 			}
-		};
+		}
 
 		// Watch
 		watch( () => props.items, () => {

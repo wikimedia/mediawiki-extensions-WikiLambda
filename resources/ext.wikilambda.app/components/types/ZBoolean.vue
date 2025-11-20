@@ -18,11 +18,12 @@
 			<cdx-radio
 				v-for="radio in radioChoices"
 				:key="`radio-${ radio.value }`"
-				v-model="value"
+				:model-value="value"
 				:name="keyPath"
 				:input-value="radio.value"
 				:inline="true"
 				:disabled="disabled"
+				@update:model-value="setValue"
 			>
 				<span
 					:lang="radio.labelData.langCode"
@@ -76,18 +77,27 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 
 		// Computed properties
-		const value = computed( {
-			get: () => getZBooleanValue( props.objectValue ),
-			set: ( newValue ) => {
-				emit( 'set-value', {
-					keyPath: [
-						Constants.Z_BOOLEAN_IDENTITY,
-						Constants.Z_REFERENCE_ID
-					],
-					value: newValue
-				} );
-			}
-		} );
+		/**
+		 * Returns the boolean value from the object.
+		 *
+		 * @return {string}
+		 */
+		const value = computed( () => getZBooleanValue( props.objectValue ) );
+
+		/**
+		 * Sets the boolean value by emitting a setValue event.
+		 *
+		 * @param {string} newValue
+		 */
+		function setValue( newValue ) {
+			emit( 'set-value', {
+				keyPath: [
+					Constants.Z_BOOLEAN_IDENTITY,
+					Constants.Z_REFERENCE_ID
+				],
+				value: newValue
+			} );
+		}
 
 		/**
 		 * Returns the LabelData object for the selected value of the boolean
@@ -125,6 +135,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			radioChoices,
+			setValue,
 			value,
 			valueLabelData,
 			valueUrl

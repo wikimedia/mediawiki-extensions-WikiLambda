@@ -134,7 +134,6 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { updatePageTitle } = usePageTitle();
 
-		// Reactive data
 		const iconEdit = icons.cdxIconEdit;
 		const iconLanguage = icons.cdxIconLanguage;
 		const displayLanguages = ref( [] );

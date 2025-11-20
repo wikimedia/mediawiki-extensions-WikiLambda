@@ -64,7 +64,6 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const { getZHTMLFragmentTerminalValue } = useZObject( { keyPath: props.keyPath } );
 
-		// Reactive data
 		const editorValue = ref( '' );
 		const allowSetEditorValue = ref( true );
 

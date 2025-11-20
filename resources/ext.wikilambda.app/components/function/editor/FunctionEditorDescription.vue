@@ -8,8 +8,9 @@
 	<wl-function-editor-field class="ext-wikilambda-app-function-editor-description">
 		<template #label>
 			<label :for="descriptionInputId">
-				{{ descriptionLabel }}
-				<span>{{ descriptionOptional }}</span>
+				<!-- TODO (T335583): Replace i18n message with key label -->
+				{{ i18n( 'wikilambda-function-definition-description-label' ).text() }}
+				<span>{{ i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 			</label>
 		</template>
 		<template #body>
@@ -19,8 +20,8 @@
 				:dir="description ? langLabelData.langDir : undefined"
 				:model-value="description ? description.value : ''"
 				class="ext-wikilambda-app-function-editor-description__input"
-				:aria-label="descriptionLabel"
-				:placeholder="descriptionInputPlaceholder"
+				:aria-label="i18n( 'wikilambda-function-definition-description-label' ).text()"
+				:placeholder="i18n( 'wikilambda-function-definition-description-placeholder' ).text()"
 				:maxlength="maxDescriptionChars"
 				@input="updateRemainingChars"
 				@change="persistDescription"
@@ -33,7 +34,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, nextTick, onBeforeUnmount, onMounted, ref } = require( 'vue' );
+const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref } = require( 'vue' );
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -82,29 +83,6 @@ module.exports = exports = defineComponent( {
 		);
 
 		/**
-		 * Returns the label for the description field
-		 *
-		 * TODO (T335583): Replace i18n message with key label
-		 *
-		 * @return {string}
-		 */
-		const descriptionLabel = computed( () => i18n( 'wikilambda-function-definition-description-label' ).text() );
-
-		/**
-		 * Returns the i18n message for the description field placeholder
-		 *
-		 * @return {string}
-		 */
-		const descriptionInputPlaceholder = computed( () => i18n( 'wikilambda-function-definition-description-placeholder' ).text() );
-
-		/**
-		 * Returns the "optional" caption for the description field
-		 *
-		 * @return {string}
-		 */
-		const descriptionOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
-
-		/**
 		 * Returns the id for the input field
 		 *
 		 * @return {string}
@@ -116,17 +94,17 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Event} event
 		 */
-		const updateRemainingChars = ( event ) => {
+		function updateRemainingChars( event ) {
 			const { length } = event.target.value;
 			remainingChars.value = maxDescriptionChars - length;
-		};
+		}
 
 		/**
 		 * Persist the new description value in the store
 		 *
 		 * @param {Object} event
 		 */
-		const persistDescription = ( event ) => {
+		function persistDescription( event ) {
 			if ( ignoreChangeEvent.value ) {
 				return;
 			}
@@ -143,13 +121,10 @@ module.exports = exports = defineComponent( {
 			} );
 
 			emit( 'description-updated' );
-		};
+		}
 
 		onMounted( () => {
-			nextTick( () => {
-				remainingChars.value = maxDescriptionChars -
-					( description.value ? description.value.value.length : 0 );
-			} );
+			remainingChars.value = maxDescriptionChars - ( description.value ? description.value.value.length : 0 );
 		} );
 
 		onBeforeUnmount( () => {
@@ -160,9 +135,7 @@ module.exports = exports = defineComponent( {
 		return {
 			description,
 			descriptionInputId,
-			descriptionInputPlaceholder,
-			descriptionLabel,
-			descriptionOptional,
+			i18n,
 			maxDescriptionChars,
 			persistDescription,
 			remainingChars,

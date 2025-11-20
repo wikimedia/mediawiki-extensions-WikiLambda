@@ -68,10 +68,10 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value - The new value to emit.
 		 */
-		const handleInput = ( value ) => {
+		function handleInput( value ) {
 			emit( 'input', value );
 			emit( 'update', value );
-		};
+		}
 
 		onMounted( () => {
 			emit( 'validate', { isValid: true } );

@@ -28,7 +28,7 @@
 				@click="addLanguage"
 			>
 				<cdx-icon :icon="iconLanguage"></cdx-icon>
-				{{ addLanguageButtonText }}
+				{{ i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text() }}
 			</cdx-button>
 		</div>
 		<!-- Footer with Publish Widget -->
@@ -71,7 +71,6 @@ module.exports = exports = defineComponent( {
 		const { submitInteraction } = useEventLog();
 		const store = useMainStore();
 
-		// Reactive data
 		const iconLanguage = icons.cdxIconLanguage;
 		const initialInputTypes = ref( [] );
 		const initialOutputType = ref( '' );
@@ -161,13 +160,6 @@ module.exports = exports = defineComponent( {
 			}
 			return '';
 		} );
-
-		/**
-		 * Returns the text for the button to add more languages
-		 *
-		 * @return {string}
-		 */
-		const addLanguageButtonText = computed( () => i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text() );
 
 		// Methods
 		/**
@@ -263,7 +255,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			addLanguage,
-			addLanguageButtonText,
+			i18n,
 			functionLanguages,
 			functionSignatureChanged,
 			iconLanguage,

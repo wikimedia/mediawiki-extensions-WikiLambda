@@ -77,18 +77,18 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Event} event
 		 */
-		const clickExpandToggle = ( event ) => {
+		function clickExpandToggle( event ) {
 			emit( 'toggle-expand', event );
-		};
+		}
 
 		/**
 		 * Waits for running parsers then emits toggle event
 		 *
 		 * @param {Event} event
 		 */
-		const waitAndExpand = ( event ) => {
+		function waitAndExpand( event ) {
 			store.waitForRunningParsers.then( () => clickExpandToggle( event ) );
-		};
+		}
 
 		return {
 			iconBullet,

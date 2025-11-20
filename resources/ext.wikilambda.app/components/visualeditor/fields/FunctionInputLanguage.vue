@@ -85,9 +85,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		const allowsEmptyField = computed( () => Constants.VE_ALLOW_EMPTY_FIELD
-			.includes( Constants.Z_NATURAL_LANGUAGE )
-		);
+		const allowsEmptyField = Constants.VE_ALLOW_EMPTY_FIELD.includes( Constants.Z_NATURAL_LANGUAGE );
 
 		/**
 		 * Updates the validation state of the field by emitting a 'validate'
@@ -95,11 +93,11 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {boolean} isValid - The validation result.
 		 */
-		const updateValidationState = ( isValid ) => {
+		function updateValidationState( isValid ) {
 			const errorMessageKey = 'wikilambda-visualeditor-wikifunctionscall-error-language';
 			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
 			emit( 'validate', { isValid, error } );
-		};
+		}
 
 		/**
 		 * Fetches the selected zid and validates it
@@ -107,7 +105,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} zid
 		 * @param {boolean} emitUpdate
 		 */
-		const validateLanguage = ( zid, emitUpdate ) => {
+		function validateLanguage( zid, emitUpdate ) {
 			// Set validating flag and emit invalid until we get a response
 			isValidating.value = true;
 			emit( 'validate', { isValid: false } );
@@ -139,7 +137,7 @@ module.exports = exports = defineComponent( {
 					// Unset validating flag
 					isValidating.value = false;
 				} );
-		};
+		}
 
 		/**
 		 * Validates the value
@@ -147,7 +145,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value
 		 * @param {boolean} emitUpdate
 		 */
-		const validate = ( value, emitUpdate = false ) => {
+		function validate( value, emitUpdate = false ) {
 
 			// If default value checkbox is checked, field is valid
 			if ( props.shouldUseDefaultValue ) {
@@ -176,24 +174,24 @@ module.exports = exports = defineComponent( {
 
 			// Else, initiate asynchronous validation
 			validateLanguage( value, emitUpdate );
-		};
+		}
 
 		/**
 		 * Handles the update event
 		 *
 		 * @param {string} value
 		 */
-		const handleUpdate = ( value ) => {
+		function handleUpdate( value ) {
 			emit( 'input', value );
 			validate( value, true );
-		};
+		}
 
 		/**
 		 * Fetches suggested languages
 		 */
-		const fetchSuggestedLangs = () => {
+		function fetchSuggestedLangs() {
 			store.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
-		};
+		}
 
 		/**
 		 * Watch for changes to shouldUseDefaultValue and re-validate

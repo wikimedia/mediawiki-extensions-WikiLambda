@@ -150,9 +150,9 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Toggles the metadata dialog
 		 */
-		const handleMessageIconClick = () => {
+		function handleMessageIconClick() {
 			showMetadata.value = !showMetadata.value;
-		};
+		}
 
 		return {
 			errorId,

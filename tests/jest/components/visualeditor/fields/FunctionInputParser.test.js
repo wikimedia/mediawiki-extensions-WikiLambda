@@ -263,6 +263,36 @@ describe( 'FunctionInputParser', () => {
 
 			expect( wrapper.vm.placeholder ).toContain( 'Example result' );
 		} );
+
+		it( 'cancels validation and clears parser state when shouldUseDefaultValue changes to true', async () => {
+			// Mock runParser to never resolve so we can test the abort behavior
+			let parserResolve;
+			const parserPromise = new Promise( ( resolve ) => {
+				parserResolve = resolve;
+			} );
+			store.runParser.mockReturnValue( parserPromise );
+
+			const wrapper = renderFunctionInputParser( {
+				value: 'Test value',
+				shouldUseDefaultValue: false,
+				hasDefaultValue: true
+			} );
+
+			// Wait for parser to start running
+			await waitFor( () => expect( wrapper.vm.isParserRunning ).toBe( true ) );
+
+			// Change shouldUseDefaultValue to true - should abort parser and clear state
+			await wrapper.setProps( { shouldUseDefaultValue: true } );
+
+			// Parser should be stopped
+			expect( wrapper.vm.isParserRunning ).toBe( false );
+
+			// Cleanup: resolve the parser promise to avoid open handles
+			parserResolve( {
+				response: { Z22K1: { Z1K1: typeZid } },
+				resolver: { resolve: jest.fn() }
+			} );
+		} );
 	} );
 
 } );

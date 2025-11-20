@@ -102,7 +102,6 @@ module.exports = exports = defineComponent( {
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
 		const wikidataIcon = wikidataIconSvg;
 		const lexemeType = Constants.Z_WIKIDATA_LEXEME;
 		const lexemeSenseType = Constants.Z_WIKIDATA_LEXEME_SENSE;

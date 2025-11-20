@@ -74,7 +74,6 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const icon = wikifunctionsIconSvg;
 		const inputFields = ref( [] );
 		const allTypesFetched = ref( false );

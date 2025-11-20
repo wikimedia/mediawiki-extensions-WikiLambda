@@ -64,11 +64,12 @@
 						<cdx-radio
 							v-for="radio in radioChoices"
 							:key="`radio-${ radio.value }`"
-							v-model="implementationType"
+							:model-value="implementationType"
 							:disabled="!functionZid"
 							:input-value="radio.value"
 							name="implementation-type-radio"
 							:inline="true"
+							@update:model-value="setImplementationType"
 						>
 							<span
 								:lang="radio.labelData.langCode"
@@ -168,32 +169,28 @@ module.exports = exports = defineComponent( {
 		const functionZid = computed( () => getZImplementationFunctionZid( props.objectValue ) );
 
 		/**
-		 * Active implementation key, that which contains the implementation
-		 * content. The values are Z14K2 for composition, Z14K3 for code or
+		 * Returns the implementation type or key which is selected.
+		 * The values are Z14K2 for composition, Z14K3 for code or
 		 * Z14K4 for built-in.
+		 *
+		 * @return {string}
 		 */
-		const implementationType = computed( {
-			/**
-			 * Returns the implementation type or key which is selected
-			 *
-			 * @return {string}
-			 */
-			get: () => getZImplementationContentType( props.objectValue ),
-			/**
-			 * Sets the implementation type and initializes the value
-			 * to a blank scaffolding depending on what key is selected
-			 *
-			 * @param {string} value
-			 */
-			set: ( value ) => {
-				if ( props.edit ) {
-					emit( 'set-value', {
-						keyPath: [ value ],
-						value: ''
-					} );
-				}
+		const implementationType = computed( () => getZImplementationContentType( props.objectValue ) );
+
+		/**
+		 * Sets the implementation type and initializes the value
+		 * to a blank scaffolding depending on what key is selected.
+		 *
+		 * @param {string} value
+		 */
+		function setImplementationType( value ) {
+			if ( props.edit ) {
+				emit( 'set-value', {
+					keyPath: [ value ],
+					value: ''
+				} );
 			}
-		} );
+		}
 
 		/**
 		 * Returns the LabelData object for the implementation type
@@ -250,6 +247,7 @@ module.exports = exports = defineComponent( {
 			isTypeBuiltin,
 			isTypeCode,
 			radioChoices,
+			setImplementationType,
 			i18n
 		};
 	},

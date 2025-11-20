@@ -8,19 +8,20 @@
 	<wl-function-editor-field class="ext-wikilambda-app-function-editor-aliases">
 		<template #label>
 			<label :for="aliasFieldId">
-				{{ aliasLabel }}
-				<span>{{ aliasOptional }}</span>
+				<!-- TODO (T335583): Replace i18n message with key label -->
+				{{ i18n( 'wikilambda-function-definition-alias-label' ).text() }}
+				<span>{{ i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 			</label>
 		</template>
 		<template #description>
-			{{ aliasFieldDescription }}
+			{{ i18n( 'wikilambda-function-definition-alias-description' ).text() }}
 		</template>
 		<template #body>
 			<cdx-chip-input
 				:id="aliasFieldId"
-				:aria-label="aliasInputLabel"
+				:aria-label="i18n( 'wikilambda-function-definition-alias-label-new' ).text()"
 				:input-chips="aliases ? aliases.value.map( ( a ) => ( { value: a } ) ) : []"
-				:placeholder="aliasFieldPlaceholder"
+				:placeholder="hasAliases ? '' : i18n( 'wikilambda-function-definition-alias-placeholder' ).text()"
 				@update:input-chips="persistAlias"
 			></cdx-chip-input>
 		</template>
@@ -75,44 +76,6 @@ module.exports = exports = defineComponent( {
 		const hasAliases = computed( () => aliases.value && aliases.value.value.length > 0 );
 
 		/**
-		 * Returns the label for the alias field
-		 *
-		 * TODO (T335583): Replace i18n message with key label
-		 *
-		 * @return {string}
-		 */
-		const aliasLabel = computed( () => i18n( 'wikilambda-function-definition-alias-label' ).text() );
-
-		/**
-		 * Returns the label for the alias input field
-		 *
-		 * @return {string}
-		 */
-		const aliasInputLabel = computed( () => i18n( 'wikilambda-function-definition-alias-label-new' ).text() );
-
-		/**
-		 * Returns the "optional" caption for the alias field
-		 *
-		 * @return {string}
-		 */
-		const aliasOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
-
-		/**
-		 * Returns the placeholder for the chip input field
-		 *
-		 * @return {string}
-		 */
-		const aliasFieldPlaceholder = computed( () => hasAliases.value ? '' :
-			i18n( 'wikilambda-function-definition-alias-placeholder' ).text() );
-
-		/**
-		 * Returns the description for the alias field
-		 *
-		 * @return {string}
-		 */
-		const aliasFieldDescription = computed( () => i18n( 'wikilambda-function-definition-alias-description' ).text() );
-
-		/**
 		 * Returns the id for the alias field
 		 *
 		 * @return {string}
@@ -124,7 +87,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Array} aliasesArray list of ChipInputItem objects
 		 */
-		const persistAlias = ( aliasesArray ) => {
+		function persistAlias( aliasesArray ) {
 			store.setZMonolingualStringset( {
 				parentKeyPath: [
 					Constants.STORED_OBJECTS.MAIN,
@@ -137,16 +100,13 @@ module.exports = exports = defineComponent( {
 			} );
 
 			emit( 'alias-updated' );
-		};
+		}
 
 		return {
-			aliasFieldDescription,
 			aliasFieldId,
-			aliasFieldPlaceholder,
-			aliasInputLabel,
-			aliasLabel,
-			aliasOptional,
 			aliases,
+			hasAliases,
+			i18n,
 			persistAlias
 		};
 	}

@@ -73,32 +73,32 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		const selectFunction = ( value ) => {
+		function selectFunction( value ) {
 			store.setVEFunctionId( value );
 			store.setVEFunctionParams();
-		};
+		}
 
 		/**
 		 * When the function input values are updated,
 		 * emit a 'function-inputs-updated' event to VisualEditor
 		 */
-		const updateFunctionInputs = () => {
+		function updateFunctionInputs() {
 			emit( 'function-inputs-updated' );
-		};
+		}
 
 		/**
 		 * When we start loading, emit a 'loading-start' event to VisualEditor
 		 */
-		const startLoading = () => {
+		function startLoading() {
 			emit( 'loading-start' );
-		};
+		}
 
 		/**
 		 * When we want to end loading, emit a 'loading-end' event to VisualEditor
 		 */
-		const endLoading = () => {
+		function endLoading() {
 			emit( 'loading-end' );
-		};
+		}
 
 		/**
 		 * When function updates and we have the new name,

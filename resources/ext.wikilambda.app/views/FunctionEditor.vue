@@ -29,8 +29,6 @@ module.exports = exports = defineComponent( {
 		onMounted( () => {
 			emit( 'mounted' );
 		} );
-
-		return {};
 	}
 } );
 </script>

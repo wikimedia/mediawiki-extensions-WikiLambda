@@ -7,14 +7,15 @@
 <template>
 	<wl-function-editor-field class="ext-wikilambda-app-function-editor-language">
 		<template #label>
-			<label :id="languageFieldId">
-				{{ languageLabel }}
+			<label id="ext-wikilambda-app-function-editor-language__label-id">
+				<!-- TODO (T335583): Replace i18n message with key label -->
+				{{ i18n( 'wikilambda-languagelabel' ).text() }}
 			</label>
 		</template>
 		<template #body>
 			<wl-z-object-selector
 				class="ext-wikilambda-app-function-editor-language__add-language"
-				:aria-labelledby="languageFieldId"
+				aria-labelledby="ext-wikilambda-app-function-editor-language__label-id"
 				:disabled="hasLanguage"
 				:exclude-zids="functionLanguages"
 				:selected-zid="zLanguage"
@@ -64,23 +65,6 @@ module.exports = exports = defineComponent( {
 		const functionLanguages = computed( () => store.getMultilingualDataLanguages.all );
 
 		/**
-		 * Returns the id for the language field
-		 *
-		 * @return {string}
-		 */
-		const languageFieldId = computed( () => 'ext-wikilambda-app-function-editor-language__label-id' );
-
-		/**
-		 * Returns the label for the language field
-		 *
-		 * TODO (T335583): Replace i18n message with key label
-		 * return getLabelData( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
-		 *
-		 * @return {string}
-		 */
-		const languageLabel = computed( () => i18n( 'wikilambda-languagelabel' ).text() );
-
-		/**
 		 * Whether the language selector has a value or is empty
 		 *
 		 * @return {boolean}
@@ -92,16 +76,15 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} lang
 		 */
-		const addNewLanguage = ( lang ) => {
+		function addNewLanguage( lang ) {
 			emit( 'language-changed', lang );
-		};
+		}
 
 		return {
+			i18n,
 			addNewLanguage,
 			functionLanguages,
 			hasLanguage,
-			languageFieldId,
-			languageLabel,
 			naturalLanguageType
 		};
 	}

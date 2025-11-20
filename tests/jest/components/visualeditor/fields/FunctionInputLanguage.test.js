@@ -191,5 +191,31 @@ describe( 'FunctionInputLanguage', () => {
 
 			expect( wrapper.vm.placeholder ).toBe( '' );
 		} );
+
+		it( 're-validates input when shouldUseDefaultValue prop changes', async () => {
+			const wrapper = renderFunctionInputLanguage( {
+				value: '',
+				shouldUseDefaultValue: false,
+				hasDefaultValue: true
+			} );
+
+			// Wait for initial validation to finish
+			await waitFor( () => expect( wrapper.emitted().validate ).toBeTruthy() );
+
+			// Initially invalid because empty value and default value is available
+			expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false, error: errorLang } ] );
+
+			// Change shouldUseDefaultValue to true
+			await wrapper.setProps( { shouldUseDefaultValue: true } );
+
+			// Should re-validate and become valid (when shouldUseDefaultValue is true, field is valid)
+			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
+
+			// Change shouldUseDefaultValue back to false
+			await wrapper.setProps( { shouldUseDefaultValue: false } );
+
+			// Should re-validate and become invalid again
+			expect( wrapper.emitted().validate[ 2 ] ).toEqual( [ { isValid: false, error: errorLang } ] );
+		} );
 	} );
 } );

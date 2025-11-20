@@ -30,7 +30,7 @@
 						:menu-items="programmingLanguageMenuItems"
 						:default-label="i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 						:status="programmingLanguageErrors.length > 0 ? 'error' : 'default'"
-						@update:selected="onProgrammingLanguageChange"
+						@update:selected="setProgrammingLanguage"
 					></cdx-select>
 				</div>
 			</template>
@@ -131,7 +131,6 @@ module.exports = exports = defineComponent( {
 		const { getZCodeString, key, getZCodeProgrammingLanguageId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
 		const editorValue = ref( '' );
 		const allowSetEditorValue = ref( true );
 		const hasClickedDisabledField = ref( false );
@@ -219,15 +218,10 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Zid of the selected programming language or empty string if not set
+		 *
+		 * @return {string}
 		 */
-		const programmingLanguageValue = computed( {
-			get: () => !programmingLanguageZid.value ? '' : programmingLanguageZid.value,
-			set: ( val ) => {
-				if ( val !== programmingLanguageValue.value ) {
-					selectLanguage( val );
-				}
-			}
-		} );
+		const programmingLanguageValue = computed( () => !programmingLanguageZid.value ? '' : programmingLanguageZid.value );
 
 		/**
 		 * Returns the literal of the programming language selected in the Menu Items array by its zid,
@@ -373,8 +367,10 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} newValue
 		 */
-		function onProgrammingLanguageChange( newValue ) {
-			programmingLanguageValue.value = newValue;
+		function setProgrammingLanguage( newValue ) {
+			if ( newValue !== programmingLanguageValue.value ) {
+				selectLanguage( newValue );
+			}
 			store.clearErrors( programmingLangErrorId );
 		}
 
@@ -431,7 +427,7 @@ module.exports = exports = defineComponent( {
 			codeErrors,
 			codeLabelData,
 			editorValue,
-			onProgrammingLanguageChange,
+			setProgrammingLanguage,
 			parentIsImplementation,
 			programmingLanguageErrors,
 			programmingLanguageLabelData,

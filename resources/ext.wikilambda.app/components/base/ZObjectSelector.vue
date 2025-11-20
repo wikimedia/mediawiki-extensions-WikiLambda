@@ -130,7 +130,6 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
 
-		// Reactive data
 		const inputValue = ref( '' );
 		const lookupResults = ref( [] );
 		const lookupConfig = ref( {
@@ -139,9 +138,9 @@ module.exports = exports = defineComponent( {
 			visibleItemLimit: 5,
 			searchContinue: null
 		} );
-		const lookupDelayTimer = ref( null );
+		let lookupDelayTimer = null;
 		const lookupDelayMs = 300;
-		const lookupAbortController = ref( null );
+		let lookupAbortController = null;
 		const selectConfig = {
 			visibleItemLimit: 5
 		};
@@ -182,13 +181,13 @@ module.exports = exports = defineComponent( {
 		 * @param {string} label - The label text
 		 * @return {string}
 		 */
-		const getLabelOrZid = ( value, label ) => {
+		function getLabelOrZid( value, label ) {
 			// If the requested language is 'qqx', return (value/zid) as the label
 			if ( store.getUserRequestedLang === 'qqx' ) {
 				return `(${ value })`;
 			}
 			return label;
-		};
+		}
 
 		/**
 		 * Whether is in the built-in list of Zids excluded from selection.
@@ -390,9 +389,9 @@ module.exports = exports = defineComponent( {
 		 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
 		 * and there are more results to load.
 		 */
-		const onLoadMoreSelect = () => {
+		function onLoadMoreSelect() {
 			store.fetchEnumValues( { type: props.type } );
-		};
+		}
 
 		/**
 		 * Handle get zObject lookup.
@@ -400,18 +399,18 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} input
 		 */
-		const getLookupResults = ( input ) => {
+		function getLookupResults( input ) {
 			// Cancel previous request if any
-			if ( lookupAbortController.value ) {
-				lookupAbortController.value.abort();
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
 			}
-			lookupAbortController.value = new AbortController();
+			lookupAbortController = new AbortController();
 			store.lookupZObjectLabels( {
 				input,
 				types: lookupTypes.value,
 				returnTypes: lookupReturnTypes.value,
 				searchContinue: lookupConfig.value.searchContinue,
-				signal: lookupAbortController.value.signal
+				signal: lookupAbortController.signal
 			} ).then( ( data ) => {
 				const { labels, searchContinue } = data;
 				const zids = [];
@@ -466,20 +465,20 @@ module.exports = exports = defineComponent( {
 				lookupConfig.value.searchQuery = input;
 				lookupResults.value = [];
 			} );
-		};
+		}
 
 		/**
 		 * Load more Lookup results when the user scrolls to the bottom of the list
 		 * and there are more results to load.
 		 */
-		const onLoadMoreLookup = () => {
+		function onLoadMoreLookup() {
 			if ( !lookupConfig.value.searchContinue ) {
 				// No more results to load
 				return;
 			}
 
 			getLookupResults( lookupConfig.value.searchQuery );
-		};
+		}
 
 		/**
 		 * On field input, perform a backend lookup and set the lookupResults
@@ -487,7 +486,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} input
 		 */
-		const onInput = ( input ) => {
+		function onInput( input ) {
 			inputValue.value = input;
 			emit( 'input-change', input || '' );
 
@@ -504,11 +503,11 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Search after 300 ms
-			clearTimeout( lookupDelayTimer.value );
-			lookupDelayTimer.value = setTimeout( () => {
+			clearTimeout( lookupDelayTimer );
+			lookupDelayTimer = setTimeout( () => {
 				getLookupResults( input );
 			}, lookupDelayMs );
-		};
+		}
 
 		/**
 		 * On focus, if there is an inputValue and the lookupResults are empty,
@@ -516,11 +515,11 @@ module.exports = exports = defineComponent( {
 		 * This ensures that the lookup results are populated when the field is focused,
 		 * especially when the field is mounted.
 		 */
-		const onFocus = () => {
+		function onFocus() {
 			if ( inputValue.value && !lookupResults.value.length ) {
 				getLookupResults( inputValue.value );
 			}
-		};
+		}
 
 		/**
 		 * Model update event, sets the value of the field
@@ -529,7 +528,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string | null} value
 		 */
-		const onSelect = ( value ) => {
+		function onSelect( value ) {
 			// T374246: update:selected events are emitted with null value
 			// whenever input changes, so we need to exit early whenever
 			// selected value is null, instead of setting the value to empty
@@ -552,12 +551,12 @@ module.exports = exports = defineComponent( {
 			// updated.
 			clearFieldErrors();
 			emit( 'select-item', value || '' );
-		};
+		}
 
 		/**
 		 * On blur, handle various states of input and selection
 		 */
-		const onBlur = () => {
+		function onBlur() {
 			// On blur, these are the possible states:
 			// * inputValue is empty
 			// * inputValue is non-empty
@@ -603,7 +602,7 @@ module.exports = exports = defineComponent( {
 				inputValue.value = selectedLabel.value;
 				lookupConfig.value.searchQuery = selectedLabel.value;
 			}
-		};
+		}
 
 		// Watch
 		/**

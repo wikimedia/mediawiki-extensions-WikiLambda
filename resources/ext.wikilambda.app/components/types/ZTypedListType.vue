@@ -38,11 +38,6 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	emits: [ 'type-changed' ],
-	setup() {
-		// Note: This component is just a wrapper that passes props to ZObjectKeyValue
-		// No setup logic needed
-		return {};
-	},
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}

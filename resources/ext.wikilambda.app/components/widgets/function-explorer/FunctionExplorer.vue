@@ -192,7 +192,6 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { copyToClipboard, showValueOrCopiedMessage } = useClipboard();
 
-		// Reactive data
 		const currentFunctionZid = ref( props.functionZid );
 		const functionType = Constants.Z_FUNCTION;
 		const implementationCode = Constants.Z_IMPLEMENTATION_CODE;

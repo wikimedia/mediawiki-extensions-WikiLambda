@@ -81,19 +81,18 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
 		/**
 		 * Icon for the reset action.
 		 *
 		 * @type {string}
 		 */
-		const resetIcon = ref( icons.cdxIconReload );
+		const resetIcon = icons.cdxIconReload;
 		/**
 		 * Icon for the cancel action.
 		 *
 		 * @type {string}
 		 */
-		const cancelIcon = ref( icons.cdxIconCancel );
+		const cancelIcon = icons.cdxIconCancel;
 		/**
 		 * Result of the function call.
 		 *
@@ -129,20 +128,20 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @type {Array|null}
 		 */
-		const lastProcessedParams = ref( null );
+		let lastProcessedParams = null;
 		/**
 		 * Abort Controller for managing function calls.
 		 *
 		 * @type {Object|null}
 		 */
-		const abortController = ref( null );
+		let abortController = null;
 		/**
 		 * Collection of callbacks that produce default values for empty args
 		 * indexed by the argument type.
 		 *
 		 * @type {Object}
 		 */
-		const defaultValueCallbacks = ref( {
+		const defaultValueCallbacks = {
 			[ Constants.Z_GREGORIAN_CALENDAR_DATE ]: () => {
 				const today = new Date();
 				const d = today.getDate();
@@ -156,7 +155,7 @@ module.exports = exports = defineComponent( {
 			},
 			[ Constants.Z_WIKIDATA_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || '',
 			[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || ''
-		} );
+		};
 
 		// Computed properties
 		/**
@@ -167,12 +166,12 @@ module.exports = exports = defineComponent( {
 		const actionIcon = computed( () => {
 			// If the function call is in progress, show the cancel icon.
 			if ( isLoading.value ) {
-				return cancelIcon.value;
+				return cancelIcon;
 			}
 			// If the field is valid (payload exists) and the function call result is a string,
 			// or if there is an error or the call was cancelled, show the reset icon.
 			if ( props.payload && ( typeof functionCallResult.value === 'string' || functionCallError.value || isCancelled.value ) ) {
-				return resetIcon.value;
+				return resetIcon;
 			}
 			return '';
 		} );
@@ -197,22 +196,22 @@ module.exports = exports = defineComponent( {
 		 * Cancels the current function call by setting the `isCancelled` flag to `true`,
 		 * aborting the Abort Controller if it exists and stopping the loading state.
 		 */
-		const cancelFunctionCall = () => {
-			if ( abortController.value ) {
-				abortController.value.abort();
+		function cancelFunctionCall() {
+			if ( abortController ) {
+				abortController.abort();
 			}
 			isCancelled.value = true;
 			isLoading.value = false;
-		};
+		}
 
 		/**
 		 * Handles the click event for the accordion.
 		 *
 		 * @param {boolean} value - The new state of the accordion.
 		 */
-		const handleAccordionClick = ( value ) => {
+		function handleAccordionClick( value ) {
 			isOpen.value = value;
-		};
+		}
 
 		/**
 		 * Checks if a parser ZID exists for the given type.
@@ -228,7 +227,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} type - The type to check.
 		 * @return {boolean} - Returns `true` if a callback exists, otherwise `false`.
 		 */
-		const hasDefaultValue = ( type ) => !!defaultValueCallbacks.value[ type ];
+		const hasDefaultValue = ( type ) => !!defaultValueCallbacks[ type ];
 
 		/**
 		 * Gets the default value for the given type using the callback.
@@ -236,7 +235,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} type - The type to get the default value for.
 		 * @return {string} - The default value.
 		 */
-		const getDefaultValue = ( type ) => defaultValueCallbacks.value[ type ]();
+		const getDefaultValue = ( type ) => defaultValueCallbacks[ type ]();
 
 		/**
 		 * Creates a parser call object for the given type and value.
@@ -245,14 +244,14 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value - The value of the parameter.
 		 * @return {Object} - The created parser call object.
 		 */
-		const createParserCallMethod = ( type, value ) => {
+		function createParserCallMethod( type, value ) {
 			const parserZid = store.getParserZid( type );
 			return createParserCall( {
 				parserZid,
 				zobject: value,
 				zlang: store.getUserLangZid
 			} );
-		};
+		}
 
 		/**
 		 * Constructs the function call parameter based on its type.
@@ -263,7 +262,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} param.type - The type of the parameter.
 		 * @return {Object|string} - The created parameter object or string.
 		 */
-		const createFunctionCallParam = ( param ) => {
+		function createFunctionCallParam( param ) {
 			let { value } = param;
 			const { type } = param;
 
@@ -283,7 +282,7 @@ module.exports = exports = defineComponent( {
 				type: type === Constants.Z_OBJECT ? Constants.Z_STRING : type,
 				value
 			} );
-		};
+		}
 
 		/**
 		 * Creates the renderer call using the given renderer ZID and the function call.
@@ -305,14 +304,14 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} params - The parameters for the function call.
 		 * @return {Object} - The function call object.
 		 */
-		const createFunctionCallMethod = ( functionZid, params ) => {
+		function createFunctionCallMethod( functionZid, params ) {
 			const functionCall = getScaffolding( Constants.Z_FUNCTION_CALL );
 			functionCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = functionZid;
 			params.forEach( ( param, index ) => {
 				functionCall[ `${ functionZid }K${ index + 1 }` ] = createFunctionCallParam( param );
 			} );
 			return functionCall;
-		};
+		}
 
 		/**
 		 * Constructs the function call object with its parameters.
@@ -321,7 +320,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} params - The parameters for the function call.
 		 * @return {Object} - The created function call object.
 		 */
-		const constructFunctionCall = ( functionZid, params ) => {
+		function constructFunctionCall( functionZid, params ) {
 			const outputType = store.getOutputTypeOfFunctionZid( functionZid );
 			const rendererZid = store.getRendererZid( outputType );
 
@@ -335,17 +334,17 @@ module.exports = exports = defineComponent( {
 
 			// If a renderer is needed, wrap the function call with a renderer call
 			return createRendererCallMethod( rendererZid, functionCall );
-		};
+		}
 
 		/**
 		 * Starts the loading state and resets result/error states.
 		 */
-		const startLoading = () => {
+		function startLoading() {
 			isLoading.value = true;
 			functionCallResult.value = null;
 			functionCallError.value = null;
 			isCancelled.value = false;
-		};
+		}
 
 		/**
 		 * Retrieves the result of a function call based on its type.
@@ -354,7 +353,7 @@ module.exports = exports = defineComponent( {
 		 * @param {Object|string} response - The response from the function call.
 		 * @return {string} - The result as a string.
 		 */
-		const getFunctionCallResult = ( type, response ) => {
+		function getFunctionCallResult( type, response ) {
 			if ( type === Constants.Z_STRING ) {
 				return getZStringTerminalValue( response );
 			}
@@ -362,7 +361,7 @@ module.exports = exports = defineComponent( {
 				return getZHTMLFragmentTerminalValue( response );
 			}
 			return '';
-		};
+		}
 
 		/**
 		 * Executes a function call with the provided payload.
@@ -373,19 +372,19 @@ module.exports = exports = defineComponent( {
 		 * @param {Array} payload.params - The parameters to pass to the function call.
 		 * @return {Promise} - A promise that resolves when the function call completes.
 		 */
-		const runFunctionCall = ( payload ) => {
+		function runFunctionCall( payload ) {
 			const { functionZid, params } = payload;
 
 			// Track the preview action
 			store.submitVEInteraction( 'preview-change-query' );
 
 			// Cancel previous request and set up a new AbortController
-			if ( abortController.value ) {
-				abortController.value.abort();
+			if ( abortController ) {
+				abortController.abort();
 			}
 			// Create a new AbortController for the current function call
-			abortController.value = new AbortController();
-			const signal = abortController.value.signal;
+			abortController = new AbortController();
+			const signal = abortController.signal;
 
 			startLoading();
 
@@ -416,7 +415,7 @@ module.exports = exports = defineComponent( {
 					functionCallError.value = error.messageOrFallback( 'wikilambda-unknown-exec-error-message' );
 					isLoading.value = false;
 				} );
-		};
+		}
 
 		/**
 		 * Determines whether the function call should be executed based on the
@@ -426,7 +425,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean} - Returns `true` if the function call should be executed, otherwise `false`.
 		 */
 		const shouldRunFunction = ( payload ) => isOpen.value &&
-					payload && JSON.stringify( payload.params ) !== JSON.stringify( lastProcessedParams.value );
+					payload && JSON.stringify( payload.params ) !== JSON.stringify( lastProcessedParams );
 
 		/**
 		 * Processes the function call if the conditions for execution are met.
@@ -434,25 +433,25 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} payload - The payload object containing function call details.
 		 */
-		const processFunctionCall = ( payload ) => {
+		function processFunctionCall( payload ) {
 			if ( shouldRunFunction( payload ) ) {
 				runFunctionCall( payload );
-				lastProcessedParams.value = payload.params;
+				lastProcessedParams = payload.params;
 			}
-		};
+		}
 
 		/**
 		 * Handles the click event for the action button.
 		 * - If the component is in a loading state, cancels the current function call.
 		 * - Otherwise, initiates a new function call using the provided payload.
 		 */
-		const handleActionButtonClick = () => {
+		function handleActionButtonClick() {
 			if ( isLoading.value ) {
 				cancelFunctionCall();
 			} else {
 				runFunctionCall( props.payload );
 			}
-		};
+		}
 
 		// Watch
 		/**
@@ -473,8 +472,8 @@ module.exports = exports = defineComponent( {
 
 		onBeforeUnmount( () => {
 			// Clean up the Abort Controller if it exists
-			if ( abortController.value ) {
-				abortController.value.abort();
+			if ( abortController ) {
+				abortController.abort();
 			}
 		} );
 

@@ -108,6 +108,14 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { getExpectedTypeOfKey, getLabelData } = storeToRefs( store );
 
+		/**
+		 * Returns the zids to be excluded from the type selector.
+		 * for now, we exclude the Wikidata enum type.
+		 *
+		 * @return {Array}
+		 */
+		const excludeZids = [ Constants.Z_WIKIDATA_ENUM, Constants.Z_OBJECT_ENUM ];
+
 		// Computed properties
 		/**
 		 * Returns the string type (mode) of the selected value,
@@ -142,14 +150,6 @@ module.exports = exports = defineComponent( {
 		const genericTypeArgKeys = computed( () => selectedIsTerminal.value ?
 			[] :
 			getZFunctionCallArgumentKeys( props.objectValue ) );
-
-		/**
-		 * Returns the zids to be excluded from the type selector.
-		 * for now, we exclude the Wikidata enum type.
-		 *
-		 * @return {Array}
-		 */
-		const excludeZids = computed( () => [ Constants.Z_WIKIDATA_ENUM, Constants.Z_OBJECT_ENUM ] );
 
 		// Methods
 		/**

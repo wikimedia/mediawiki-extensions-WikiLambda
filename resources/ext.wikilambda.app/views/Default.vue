@@ -102,7 +102,6 @@ module.exports = exports = defineComponent( {
 		const { submitInteraction } = useEventLog();
 		const { typeToString } = useType();
 
-		// Reactive data
 		const initialKeyPath = `${ Constants.STORED_OBJECTS.MAIN }.${ Constants.Z_PERSISTENTOBJECT_VALUE }`;
 
 		// Computed properties

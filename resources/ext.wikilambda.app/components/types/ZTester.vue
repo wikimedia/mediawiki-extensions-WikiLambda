@@ -163,7 +163,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} outputType
 		 */
 		function initializeTestValidation( outputType ) {
-			const setupValidation = ( equalityFunctionZid ) => {
+			function setupValidation( equalityFunctionZid ) {
 				// Set test validation function call Zid
 				emit( 'set-value', {
 					keyPath: [
@@ -178,7 +178,7 @@ module.exports = exports = defineComponent( {
 					keyPath: [ ...props.keyPath.split( '.' ), Constants.Z_TESTER_VALIDATION ],
 					functionZid: equalityFunctionZid || undefined
 				} );
-			};
+			}
 
 			const type = store.getStoredObject( outputType );
 			const equalityZid = type[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_EQUALITY ];

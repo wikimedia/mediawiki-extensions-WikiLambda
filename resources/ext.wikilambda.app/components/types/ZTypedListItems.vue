@@ -126,9 +126,9 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Emits add-list-item event
 		 */
-		const addListItem = () => {
+		function addListItem() {
 			emit( 'add-list-item' );
-		};
+		}
 
 		return {
 			addListItem,

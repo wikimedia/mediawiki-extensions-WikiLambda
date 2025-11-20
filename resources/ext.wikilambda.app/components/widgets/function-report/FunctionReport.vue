@@ -99,13 +99,12 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const activeImplementationZid = ref( null );
 		const activeTesterZid = ref( null );
-		const errorId = ref( Constants.ERROR_IDS.TEST_RESULTS );
+		const errorId = Constants.ERROR_IDS.TEST_RESULTS;
 		const showMetrics = ref( false );
 		const fetching = ref( false );
-		const abortController = ref( null );
+		let abortController = null;
 
 		// Computed properties
 		/**
@@ -262,35 +261,35 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Object} keys
 		 */
-		const openMetricsDialog = ( keys ) => {
+		function openMetricsDialog( keys ) {
 			activeImplementationZid.value = keys.implementationZid;
 			activeTesterZid.value = keys.testerZid;
 			showMetrics.value = true;
-		};
+		}
 
 		/**
 		 * Closes the metrics dialog
 		 */
-		const closeMetricsDialog = () => {
+		function closeMetricsDialog() {
 			activeImplementationZid.value = null;
 			activeTesterZid.value = null;
 			showMetrics.value = false;
-		};
+		}
 		/**
 		 * Cancels the current test request
 		 */
-		const cancelTesters = () => {
-			if ( abortController.value ) {
-				abortController.value.abort();
-				abortController.value = null;
+		function cancelTesters() {
+			if ( abortController ) {
+				abortController.abort();
+				abortController = null;
 			}
 			fetching.value = false;
-		};
+		}
 
 		/**
 		 * Calls the run function API with the required tester and implementation zids.
 		 */
-		const runTesters = () => {
+		function runTesters() {
 			// If already fetching, cancel the current request
 			if ( fetching.value ) {
 				cancelTesters();
@@ -298,10 +297,10 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Cancel previous request if any
-			if ( abortController.value ) {
-				abortController.value.abort();
+			if ( abortController ) {
+				abortController.abort();
 			}
-			abortController.value = new AbortController();
+			abortController = new AbortController();
 
 			fetching.value = true;
 			store.getTestResults( {
@@ -309,7 +308,7 @@ module.exports = exports = defineComponent( {
 				zImplementations: implementations.value,
 				zTesters: testers.value,
 				clearPreviousResults: true,
-				signal: abortController.value.signal
+				signal: abortController.signal
 			} ).then( () => {
 				fetching.value = false;
 			} ).catch( ( error ) => {
@@ -321,20 +320,20 @@ module.exports = exports = defineComponent( {
 				// Re-throw other errors
 				throw error;
 			} );
-		};
+		}
 
 		/**
 		 * Run the initial call only when we are in a view or edit page
 		 * but not when we are in a new implementation or test page
 		 */
-		const runInitialCall = () => {
+		function runInitialCall() {
 			if (
 				store.getCurrentZObjectId &&
 				store.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER
 			) {
 				runTesters();
 			}
-		};
+		}
 
 		// Watch
 		watch( implementations, ( newValue, oldValue ) => {

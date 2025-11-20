@@ -143,7 +143,6 @@ module.exports = exports = defineComponent( {
 		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Reactive data
 		const blankObject = ref( undefined );
 		const renderValueInitialized = ref( false );
 		const renderTestsInitialized = ref( false );
@@ -152,8 +151,8 @@ module.exports = exports = defineComponent( {
 		const showExamplesDialog = ref( false );
 		const showExamplesLink = ref( false );
 		const showErrorFooter = ref( false );
-		const pendingPromises = ref( [] );
-		const parserAbortController = ref( null );
+		const pendingPromises = [];
+		let parserAbortController = null;
 
 		// Computed properties
 		/**
@@ -387,17 +386,17 @@ module.exports = exports = defineComponent( {
 		 */
 		function generateParsedValue() {
 			// Cancel previous parser request if any
-			if ( parserAbortController.value ) {
-				parserAbortController.value.abort();
+			if ( parserAbortController ) {
+				parserAbortController.abort();
 			}
-			parserAbortController.value = new AbortController();
+			parserAbortController = new AbortController();
 
 			store.runParser( {
 				parserZid: parserZid.value,
 				zobject: renderedValue.value,
 				zlang: store.getUserLangZid,
 				wait: true,
-				signal: parserAbortController.value.signal
+				signal: parserAbortController.signal
 			} ).then( ( data ) => {
 				clearRendererError();
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
@@ -437,7 +436,7 @@ module.exports = exports = defineComponent( {
 					// Parent component (ZObjectKeyValue) should:
 					// * Set the value of the returned ZObject
 					// * Resolve parser promise once the changes are persisted
-					pendingPromises.value.push( data.resolver );
+					pendingPromises.push( data.resolver );
 					emit( 'set-value', {
 						keyPath: [],
 						value: canonicalToHybrid( response ),
@@ -545,11 +544,11 @@ module.exports = exports = defineComponent( {
 
 		onBeforeUnmount( () => {
 			// In the case of an abrupt unmount, resolve all pending promises
-			pendingPromises.value.forEach( ( resolver ) => {
+			pendingPromises.forEach( ( resolver ) => {
 				resolver.resolve();
 			} );
-			if ( parserAbortController.value ) {
-				parserAbortController.value.abort();
+			if ( parserAbortController ) {
+				parserAbortController.abort();
 			}
 		} );
 

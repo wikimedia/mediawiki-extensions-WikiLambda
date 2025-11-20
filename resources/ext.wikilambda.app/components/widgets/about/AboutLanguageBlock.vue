@@ -290,7 +290,6 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Reactive data
 		const outputTypeKeyPath = [
 			Constants.STORED_OBJECTS.MAIN,
 			Constants.Z_PERSISTENTOBJECT_VALUE,

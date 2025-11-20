@@ -78,7 +78,6 @@ module.exports = exports = defineComponent( {
 		const { isValidZidFormat } = useType();
 		const store = useMainStore();
 
-		// Reactive data
 		/* Local state for function implementations */
 		const implementationsState = ref( {} );
 		const implementationsFetched = ref( false );
@@ -160,11 +159,11 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} rows
 		 * @param {boolean} value
 		 */
-		const checkAllRows = ( rows, value ) => {
+		function checkAllRows( rows, value ) {
 			for ( const zid in rows ) {
 				rows[ zid ].checked = value;
 			}
-		};
+		}
 
 		/**
 		 * Build the columns for the Implementations table
@@ -466,9 +465,9 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Closes the warning toast message
 		 */
-		const closeToast = () => {
+		function closeToast() {
 			currentToast.value = null;
-		};
+		}
 
 		/**
 		 * Sets the local implementations state with the properties
@@ -476,7 +475,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Array|null} zids
 		 */
-		const setImplementationsState = ( zids = null ) => {
+		function setImplementationsState( zids = null ) {
 			const allZids = zids === null ? allImplementations.value : zids;
 
 			for ( const zid of allZids ) {
@@ -486,7 +485,7 @@ module.exports = exports = defineComponent( {
 					checked: false
 				};
 			}
-		};
+		}
 
 		/**
 		 * Sets the local implementations state with the properties
@@ -494,7 +493,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {Array|null} zids
 		 */
-		const setTestsState = ( zids = null ) => {
+		function setTestsState( zids = null ) {
 			const allZids = zids === null ? allTests.value : zids;
 			for ( const zid of allZids ) {
 				const isConnected = store.getConnectedTests.includes( zid );
@@ -503,36 +502,36 @@ module.exports = exports = defineComponent( {
 					checked: false
 				};
 			}
-		};
+		}
 
 		/**
 		 * Fetches all the associated implementations and
 		 * initializes the local state variables
 		 */
-		const initializeImplementations = () => {
+		function initializeImplementations() {
 			// Fetch implementations for the current Function Zid
 			store.fetchImplementations( store.getCurrentZObjectId ).then( ( zids ) => {
 				setImplementationsState( zids );
 				implementationsFetched.value = true;
 			} );
-		};
+		}
 
 		/**
 		 * Fetches all the associated tests and
 		 * initializes the local state variables
 		 */
-		const initializeTests = () => {
+		function initializeTests() {
 			// Fetch tests for the current Function Zid
 			store.fetchTests( store.getCurrentZObjectId ).then( ( zids ) => {
 				setTestsState( zids );
 				testsFetched.value = true;
 			} );
-		};
+		}
 
 		/**
 		 * Get the set of checked implementations and connect them to the current function
 		 */
-		const connectCheckedImplementations = () => {
+		function connectCheckedImplementations() {
 			const zids = Object.keys( implementationsState.value ).filter(
 				( zid ) => implementationsState.value[ zid ].checked && !implementationsState.value[ zid ].available
 			);
@@ -547,12 +546,12 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				implementationsLoading.value = false;
 			} );
-		};
+		}
 
 		/**
 		 * Get the set of checked implementations and disconnect them from the current function
 		 */
-		const disconnectCheckedImplementations = () => {
+		function disconnectCheckedImplementations() {
 			const zids = Object.keys( implementationsState.value ).filter(
 				( zid ) => implementationsState.value[ zid ].checked && implementationsState.value[ zid ].available
 			);
@@ -566,12 +565,12 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				implementationsLoading.value = false;
 			} );
-		};
+		}
 
 		/**
 		 * Get the set of checked tests and connect them to the current function
 		 */
-		const connectCheckedTests = () => {
+		function connectCheckedTests() {
 			const zids = Object.keys( testsState.value )
 				.filter( ( zid ) => testsState.value[ zid ].checked && !testsState.value[ zid ].available );
 
@@ -584,12 +583,12 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				testsLoading.value = false;
 			} );
-		};
+		}
 
 		/**
 		 * Get the set of checked tests and disconnect them from the current function
 		 */
-		const disconnectCheckedTests = () => {
+		function disconnectCheckedTests() {
 			const zids = Object.keys( testsState.value )
 				.filter( ( zid ) => testsState.value[ zid ].checked && testsState.value[ zid ].available );
 
@@ -602,19 +601,19 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				testsLoading.value = false;
 			} );
-		};
+		}
 
 		/**
 		 * Triggers the re-run of all the tests and sets the result
 		 */
-		const runTesters = () => {
+		function runTesters() {
 			store.getTestResults( {
 				zFunctionId: store.getCurrentZObjectId,
 				zImplementations: allImplementations.value,
 				zTesters: allTests.value,
 				clearPreviousResults: true
 			} );
-		};
+		}
 
 		// Watch
 		watch( fetchedObjects, ( value ) => {

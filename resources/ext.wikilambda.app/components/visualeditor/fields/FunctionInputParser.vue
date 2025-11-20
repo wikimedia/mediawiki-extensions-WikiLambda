@@ -76,7 +76,6 @@ module.exports = exports = defineComponent( {
 		let debounceTimer = null;
 		let parserAbortController = null;
 
-		// Reactive data
 		const areTestsFetched = ref( false );
 		const isParserRunning = ref( false );
 
@@ -234,32 +233,32 @@ module.exports = exports = defineComponent( {
 		 * - Sets the field as invalid.
 		 * - Sets the parser running state.
 		 */
-		const onValidateStart = () => {
+		function onValidateStart() {
 			emit( 'validate', { isValid: false } );
 			isParserRunning.value = true;
-		};
+		}
 
 		/**
 		 * Handles the end of the validation process by resetting the parser state.
 		 * - Resets the parser running state.
 		 */
-		const onValidateEnd = () => {
+		function onValidateEnd() {
 			isParserRunning.value = false;
-		};
+		}
 
 		/**
 		 * Handles validation success by emitting the appropriate events.
 		 */
-		const onValidateSuccess = () => {
+		function onValidateSuccess() {
 			emit( 'validate', { isValid: true } );
-		};
+		}
 
 		/**
 		 * Handles validation error by emitting the appropriate events.
 		 *
 		 * @param {ErrorData|string} error - The error caught
 		 */
-		const onValidateError = ( error ) => {
+		function onValidateError( error ) {
 			// If the error message is 'abort', do not emit an error
 			// because the validation was cancelled.
 			if ( error === 'abort' ) {
@@ -267,7 +266,7 @@ module.exports = exports = defineComponent( {
 			}
 			// Otherwise, emit the ErrorData object
 			emit( 'validate', { isValid: false, error } );
-		};
+		}
 
 		/**
 		 * Validates the value and handles the validation result.
@@ -277,7 +276,7 @@ module.exports = exports = defineComponent( {
 		 * @param {boolean} emitUpdate - Whether to emit the update event after validation.
 		 * @return {Promise}
 		 */
-		const validate = ( value ) => {
+		function validate( value ) {
 			onValidateStart();
 			return isValid( value )
 				.then( () => {
@@ -291,7 +290,7 @@ module.exports = exports = defineComponent( {
 						onValidateEnd();
 					}
 				} );
-		};
+		}
 
 		/**
 		 * Validates the new value asynchronously and emits
@@ -299,11 +298,11 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value
 		 */
-		const handleChange = ( value ) => {
+		function handleChange( value ) {
 			validate( value ).then( () => {
 				emit( 'update', value );
 			} );
-		};
+		}
 
 		/**
 		 * Handles the update model value event and emits:
@@ -313,7 +312,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @param {string} value - The updated value.
 		 */
-		const handleUpdate = ( value ) => {
+		function handleUpdate( value ) {
 			emit( 'input', value );
 
 			// Clear debounce
@@ -323,14 +322,14 @@ module.exports = exports = defineComponent( {
 			debounceTimer = setTimeout( () => {
 				handleChange( value );
 			}, debounceDelay );
-		};
+		}
 
 		/**
 		 * Runs the test results for the renderer function asynchronously.
 		 * Updates the `areTestsFetched` flag during the process.
 		 * The results are gathered as reactive computed properties.
 		 */
-		const generateRendererExamples = () => {
+		function generateRendererExamples() {
 			areTestsFetched.value = false;
 
 			store.getTestResults( {
@@ -340,7 +339,7 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				areTestsFetched.value = true;
 			} );
-		};
+		}
 
 		// Watch
 		/**

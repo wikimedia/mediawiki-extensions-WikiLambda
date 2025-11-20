@@ -14,11 +14,12 @@
 		</p>
 		<cdx-text-input
 			v-else
-			v-model="value"
+			:model-value="value"
 			aria-label=""
 			placeholder=""
 			data-testid="text-input"
 			:disabled="disabled"
+			@update:model-value="setValue"
 		></cdx-text-input>
 	</div>
 </template>
@@ -62,36 +63,30 @@ module.exports = exports = defineComponent( {
 		const { getZStringTerminalValue, key } = useZObject( { keyPath: props.keyPath } );
 
 		/**
-		 * Computed value:
-		 * 1. Getter gets the value from the state.
-		 * 2. Setter informs the ZObjectKeyValue of the change.
+		 * Returns the terminal value of the string represented
+		 * in this component.
+		 *
+		 * @return {string}
+		 */
+		const value = computed( () => getZStringTerminalValue( props.objectValue ) );
+
+		/**
+		 * Sets the value by emitting a setValue event.
 		 * Only the ZObjectKeyValue responds to the 'setValue' emitted event
 		 * so only the ZObjectKeyValue is doing operations to transform
 		 * the state data. This is so that we don't duplicate state mutation
 		 * logic all over the components, and builtin components are just
 		 * visual representations and have zero logic.
+		 *
+		 * @param {string} newValue
 		 */
-		const value = computed( {
-			/**
-			 * Returns the terminal value of the string represented
-			 * in this component.
-			 *
-			 * @return {string}
-			 */
-			get: () => getZStringTerminalValue( props.objectValue ),
-			/**
-			 * Emits a setValue event with the new value for the string
-			 * and the key path information depending on the object key.
-			 *
-			 * @param {string} newValue
-			 */
-			set: ( newValue ) => {
-				const keyPath = key.value !== Constants.Z_STRING_VALUE ? [ Constants.Z_STRING_VALUE ] : [];
-				emit( 'set-value', { keyPath, value: newValue } );
-			}
-		} );
+		function setValue( newValue ) {
+			const keyPath = key.value !== Constants.Z_STRING_VALUE ? [ Constants.Z_STRING_VALUE ] : [];
+			emit( 'set-value', { keyPath, value: newValue } );
+		}
 
 		return {
+			setValue,
 			value
 		};
 	}
