@@ -46,12 +46,12 @@
 				</cdx-button>
 			</div>
 			<!-- Button to load more items -->
-			<div
-				class="ext-wikilambda-app-multilingual-string__load-more"
-			>
+			<div class="ext-wikilambda-app-multilingual-string__load-more">
 				<cdx-button
 					data-testid="multilingual-string-load-more"
+					class="ext-wikilambda-app-multilingual-string__load-more-button"
 					action="default"
+					size="small"
 					@click="openLoadMoreDialog"
 				>
 					<cdx-icon :icon="iconLanguage"></cdx-icon>
@@ -476,6 +476,10 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-multilingual-string__load-more {
 		margin-bottom: @spacing-50;
+	}
+
+	.ext-wikilambda-app-multilingual-string__load-more-button.cdx-button {
+		font-weight: @font-weight-normal;
 	}
 
 	.ext-wikilambda-app-multilingual-string__add-button {
