@@ -214,7 +214,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'when collapsed, shows a loading state when running the renderer and then shows result in text', async () => {
 			const wrapper = renderZObjectStringRenderer();
 
-			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
+			const text = wrapper.find( '[data-testid="z-object-string-renderer-text"]' );
 			expect( text.exists() ).toBe( true );
 
 			// Wait for the renderer to start running
@@ -235,7 +235,7 @@ describe( 'ZObjectStringRenderer', () => {
 		it( 'when expanded, falls back to ZObjectKeyValueSet', () => {
 			const wrapper = renderZObjectStringRenderer( { expanded: true } );
 
-			const text = wrapper.find( '[data-testid="zobject-string-renderer-text"]' );
+			const text = wrapper.find( '[data-testid="z-object-string-renderer-text"]' );
 			expect( text.exists() ).toBe( false );
 
 			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
@@ -245,15 +245,13 @@ describe( 'ZObjectStringRenderer', () => {
 			expect( keyValueSet.props( 'edit' ) ).toBe( false );
 		} );
 
-		it( 'calls render only once if call is successful', async () => {
-			const rendererSpy = jest.spyOn( store, 'runRenderer' );
-
+		it( 'can call the renderer multiple times because runRenderer will return cached data anyway', async () => {
 			const wrapper = renderZObjectStringRenderer( { expanded: true } );
 
 			// First render should trigger it
 			await waitFor( () => {
-				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
-				expect( rendererSpy ).toHaveBeenCalledWith( {
+				expect( store.runRenderer ).toHaveBeenCalledTimes( 1 );
+				expect( store.runRenderer ).toHaveBeenCalledWith( {
 					rendererZid,
 					zobject: parsedObject,
 					zlang: 'Z1002'
@@ -263,33 +261,32 @@ describe( 'ZObjectStringRenderer', () => {
 			// Collapse doesn't trigger, as the first call was successful
 			await wrapper.setProps( { expanded: false } );
 			await waitFor( () => {
-				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+				expect( store.runRenderer ).toHaveBeenCalledTimes( 2 );
 			} );
 
 			// Expand again
 			await wrapper.setProps( { expanded: true } );
 			await waitFor( () => {
-				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+				expect( store.runRenderer ).toHaveBeenCalledTimes( 2 );
 			} );
 
 			// Collapse again, no repeated calls
 			await wrapper.setProps( { expanded: false } );
 			await waitFor( () => {
-				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
+				expect( store.runRenderer ).toHaveBeenCalledTimes( 3 );
 			} );
 		} );
 
-		it( 'calls render again if first call was not successful', async () => {
+		it( 'calls render again if call was not successful', async () => {
 			// Mock renderer to return an error
 			store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
-			const rendererSpy = jest.spyOn( store, 'runRenderer' );
 
 			const wrapper = renderZObjectStringRenderer( { expanded: true } );
 
 			// First render should trigger it
 			await waitFor( () => {
-				expect( rendererSpy ).toHaveBeenCalledTimes( 1 );
-				expect( rendererSpy ).toHaveBeenCalledWith( {
+				expect( store.runRenderer ).toHaveBeenCalledTimes( 1 );
+				expect( store.runRenderer ).toHaveBeenCalledWith( {
 					rendererZid,
 					zobject: parsedObject,
 					zlang: 'Z1002'
@@ -298,14 +295,14 @@ describe( 'ZObjectStringRenderer', () => {
 
 			// Collapse triggers it again
 			await wrapper.setProps( { expanded: false } );
-			expect( rendererSpy ).toHaveBeenCalledTimes( 2 );
+			expect( store.runRenderer ).toHaveBeenCalledTimes( 2 );
 
 			// Expand
 			await wrapper.setProps( { expanded: true } );
 
 			// Collapse again, rendered is called once more
 			await wrapper.setProps( { expanded: false } );
-			expect( rendererSpy ).toHaveBeenCalledTimes( 3 );
+			expect( store.runRenderer ).toHaveBeenCalledTimes( 3 );
 		} );
 	} );
 

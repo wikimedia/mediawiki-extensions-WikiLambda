@@ -23,6 +23,8 @@ describe( 'ztype Pinia store', () => {
 		store.parsers = {};
 		store.rendererExamples = {};
 		store.parserPromises = [];
+		store.rendererData = {};
+		store.rendererPromises = {};
 	} );
 
 	describe( 'Getters', () => {
@@ -161,6 +163,11 @@ describe( 'ztype Pinia store', () => {
 			mw.Api = jest.fn( () => ( {
 				post: postMock
 			} ) );
+			// Mock getUserLangCode getter
+			Object.defineProperty( store, 'getUserLangCode', {
+				get: () => 'en',
+				configurable: true
+			} );
 		} );
 
 		describe( 'setRenderer', () => {
@@ -251,6 +258,120 @@ describe( 'ztype Pinia store', () => {
 					uselang: 'en'
 				}, { signal: undefined } );
 			} );
+
+			it( 'returns cached data immediately if available', async () => {
+				const payload = {
+					rendererZid: rendererZid,
+					zobject: { some: 'object' },
+					zlang: 'Z1002'
+				};
+				const cacheKey = store.getRendererCacheKey( payload );
+				const cachedData = {
+					response: {
+						Z1K1: 'Z22',
+						Z22K1: 'cached result',
+						Z22K2: {}
+					},
+					result: 'cached result',
+					metadata: {}
+				};
+				store.setRendererData( { cacheKey, data: cachedData } );
+
+				const result = await store.runRenderer( payload );
+
+				expect( result ).toEqual( cachedData );
+				expect( postMock ).not.toHaveBeenCalled();
+			} );
+
+			it( 'reuses in-flight promise if request is already running', () => {
+				const payload = {
+					rendererZid: rendererZid,
+					zobject: { some: 'object' },
+					zlang: 'Z1002'
+				};
+				const cacheKey = store.getRendererCacheKey( payload );
+
+				// Start first request
+				const promise1 = store.runRenderer( payload );
+				expect( postMock ).toHaveBeenCalledTimes( 1 );
+				// Verify promise is stored
+				expect( cacheKey in store.rendererPromises ).toBe( true );
+				expect( store.rendererPromises[ cacheKey ] ).toEqual( promise1 );
+
+				// Start second request before first completes
+				const promise2 = store.runRenderer( payload );
+
+				// Both should be the same promise (same reference)
+				expect( promise1 ).toEqual( promise2 );
+				expect( postMock ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			it( 'caches response after successful API call', async () => {
+				const payload = {
+					rendererZid: rendererZid,
+					zobject: { some: 'object' },
+					zlang: 'Z1002'
+				};
+				const cacheKey = store.getRendererCacheKey( payload );
+
+				await store.runRenderer( payload );
+
+				// Verify it was cached
+				const cachedData = store.getRendererData( cacheKey );
+				expect( cachedData ).toBeDefined();
+				expect( cachedData ).toEqual( { metadata: undefined, response: 'some response', result: undefined } );
+
+				// Second call should use cache
+				postMock.mockClear();
+				const result = await store.runRenderer( payload );
+				expect( postMock ).not.toHaveBeenCalled();
+				expect( result ).toEqual( { metadata: undefined, response: 'some response', result: undefined } );
+			} );
+
+			it( 'clears promise from rendererPromises on success', async () => {
+				const payload = {
+					rendererZid: rendererZid,
+					zobject: { some: 'object' },
+					zlang: 'Z1002'
+				};
+				const cacheKey = store.getRendererCacheKey( payload );
+
+				const promise = store.runRenderer( payload );
+				// Verify promise is stored (key exists in rendererPromises)
+				expect( cacheKey in store.rendererPromises ).toBe( true );
+
+				await promise;
+				// After completion, the promise is deleted from rendererPromises
+				expect( cacheKey in store.rendererPromises ).toBe( false );
+			} );
+
+			it( 'clears promise from rendererPromises on error', async () => {
+				const payload = {
+					rendererZid: rendererZid,
+					zobject: { some: 'object' },
+					zlang: 'Z1002'
+				};
+				const cacheKey = store.getRendererCacheKey( payload );
+				const error = new Error( 'API call failed' );
+
+				// Mock API to reject with an error
+				postMock = jest.fn( () => new Promise( ( resolve, reject ) => {
+					reject( error );
+				} ) );
+				mw.Api = jest.fn( () => ( {
+					post: postMock
+				} ) );
+
+				const promise = store.runRenderer( payload );
+				// Verify promise is stored (key exists in rendererPromises)
+				expect( cacheKey in store.rendererPromises ).toBe( true );
+
+				// Wait for promise to reject
+				await expect( promise ).rejects.toThrow();
+				// After error, the promise is deleted from rendererPromises
+				expect( cacheKey in store.rendererPromises ).toBe( false );
+			} );
+
 		} );
 
 		describe( 'runParser', () => {

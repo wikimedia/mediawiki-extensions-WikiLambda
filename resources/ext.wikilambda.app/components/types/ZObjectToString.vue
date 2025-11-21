@@ -468,11 +468,15 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		const textValue = computed( () => (
-			type.value === Constants.Z_STRING ?
-				i18n( 'quotation-marks', value.value ).text() :
-				( renderedValue.value || labelData.value.label )
-		) );
+		const textValue = computed( () => {
+			if ( type.value === Constants.Z_STRING ) {
+				return i18n( 'quotation-marks', value.value ).text();
+			}
+			if ( rendererRunning.value ) {
+				return i18n( 'wikilambda-string-renderer-running' ).text();
+			}
+			return renderedValue.value || labelData.value.label;
+		} );
 
 		/**
 		 * Returns special class names for:
@@ -509,20 +513,18 @@ module.exports = exports = defineComponent( {
 		 * passing the current object values, and set the returned string
 		 * in the local renderedValue variable.
 		 */
-		function generateRenderedValue() {
-			// Only generate rendered value once.
-			// If the rendererZid is not set, we can't render anything else
-			if ( rendererRunning.value || !rendererZid.value ) {
+		const generateRenderedValue = () => {
+			if ( !rendererZid.value ) {
 				return;
 			}
 
 			rendererRunning.value = true;
+			rendererError.value = false;
 			renderedValue.value = i18n( 'wikilambda-string-renderer-running' ).text();
-			const zobject = hybridToCanonical( props.objectValue );
 
 			store.runRenderer( {
 				rendererZid: rendererZid.value,
-				zobject,
+				zobject: hybridToCanonical( props.objectValue ),
 				zlang: store.getUserLangZid
 			} ).then( ( data ) => {
 				const response = data.response[ Constants.Z_RESPONSEENVELOPE_VALUE ];
@@ -537,7 +539,7 @@ module.exports = exports = defineComponent( {
 			} ).finally( () => {
 				rendererRunning.value = false;
 			} );
-		}
+		};
 
 		/**
 		 * Fetch the Wikidata entity data depending on the type of the entity

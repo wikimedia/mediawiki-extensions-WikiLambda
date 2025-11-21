@@ -40,7 +40,26 @@ module.exports = {
 		 * Array of promises of pending running parser
 		 * functions
 		 */
-		parserPromises: []
+		parserPromises: [],
+		/**
+		 * Cache of renderer data indexed by cache key.
+		 * Cache key format: `${JSON.stringify(canonicalZobject)}|${rendererZid}|${zlang}`
+		 * {
+		 *  <cacheKey>: <dataObject>
+		 *  // Full data object returned from performFunctionCall
+		 *  // with data.response.Z_RESPONSEENVELOPE_VALUE
+		 *  // and data.response.Z_RESPONSEENVELOPE_METADATA
+		 * }
+		 */
+		rendererData: {},
+		/**
+		 * Promises of pending renderer requests indexed by cache key.
+		 * Cache key format: `${JSON.stringify(canonicalZobject)}|${rendererZid}|${zlang}`
+		 * {
+		 *  <cacheKey>: <Promise>
+		 * }
+		 */
+		rendererPromises: {}
 	},
 
 	getters: {
@@ -151,6 +170,22 @@ module.exports = {
 		 */
 		waitForRunningParsers: function ( state ) {
 			return Promise.all( state.parserPromises );
+		},
+
+		/**
+		 * Returns the cached rendered value data for a given zobject, rendererZid, and zlang.
+		 * Returns undefined if not cached.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getRendererData: function ( state ) {
+			/**
+			 * @param {string} cacheKey
+			 * @return {Object|undefined} Full data object with data.response.Z_RESPONSEENVELOPE_VALUE
+			 */
+			const findRendererData = ( cacheKey ) => state.rendererData[ cacheKey ];
+			return findRendererData;
 		}
 	},
 
@@ -203,6 +238,46 @@ module.exports = {
 		},
 
 		/**
+		 * Stores a rendered value data in the cache.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.cacheKey
+		 * @param {Object} payload.data Full data object returned from performFunctionCall
+		 */
+		setRendererData: function ( payload ) {
+			this.rendererData[ payload.cacheKey ] = payload.data;
+		},
+
+		/**
+		 * Set or unset the unresolved promise to the renderer API call for a given cache key.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.cacheKey
+		 * @param {Promise} payload.promise
+		 */
+		setRendererPromise: function ( payload ) {
+			if ( 'promise' in payload ) {
+				this.rendererPromises[ payload.cacheKey ] = payload.promise;
+			} else {
+				// Set as a resolved Promise if the tests for this function have been fetched
+				delete this.rendererPromises[ payload.cacheKey ];
+			}
+		},
+
+		/**
+		 * Returns the cache key for a given renderer.
+		 *
+		 * @param {Object} payload
+		 * @param {Object|Array|string} payload.zobject
+		 * @param {string} payload.rendererZid
+		 * @param {string} payload.zlang
+		 * @return {string}
+		 */
+		getRendererCacheKey: function ( payload ) {
+			return `${ JSON.stringify( payload.zobject ) }|${ payload.rendererZid }|${ payload.zlang }`;
+		},
+
+		/**
 		 * Given any Object/Z1 and a Language/Z60, it runs
 		 * its renderer and returns the resulting Object.
 		 * TODO (T406160): currently this will return a String/Z6 object,
@@ -212,19 +287,46 @@ module.exports = {
 		 * @param {string} payload.rendererZid
 		 * @param {Object|Array|string} payload.zobject
 		 * @param {string} payload.zlang
+		 * @param {AbortSignal} payload.signal optional signal to abort the request
 		 * @return {Promise}
 		 */
 		runRenderer: function ( payload ) {
-			// 1. Create a function call
+			// 1. Check cache first - if value is already cached, return a resolved promise immediately
+			const cacheKey = this.getRendererCacheKey( payload );
+			const cachedData = this.getRendererData( cacheKey );
+			if ( cachedData ) {
+				return Promise.resolve( cachedData );
+			}
+
+			// 2. If a renderer request is already in flight for this cache key, return that promise
+			if ( cacheKey in this.rendererPromises ) {
+				return this.rendererPromises[ cacheKey ];
+			}
+
+			// 3. Create a function call
 			const rendererCall = createRendererCall( payload );
 
-			// 2. Run this function call by calling wikilambda_function_call_zobject and return
+			// 4. Run this function call by calling wikilambda_function_call_zobject and return
 			const run = () => performFunctionCall( {
 				functionCall: rendererCall,
-				language: this.getUserLangCode
+				language: this.getUserLangCode,
+				signal: payload.signal
+			} ).then( ( data ) => {
+				this.setRendererData( {
+					cacheKey: cacheKey,
+					data
+				} );
+				this.setRendererPromise( { cacheKey } );
+				return data;
+			} ).catch( ( error ) => {
+				// Remove promise from store on error
+				this.setRendererPromise( { cacheKey } );
+				throw error;
 			} );
 
 			const job = this.enqueue( run );
+			// Store the promise so other components can wait for the same request
+			this.setRendererPromise( { cacheKey, promise: job.promise } );
 			return job.promise;
 		},
 

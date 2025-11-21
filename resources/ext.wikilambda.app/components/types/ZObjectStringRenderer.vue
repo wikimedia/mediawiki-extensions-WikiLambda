@@ -12,7 +12,7 @@
 				v-if="!edit"
 				class="ext-wikilambda-app-object-string-renderer__text"
 				:class="{ 'ext-wikilambda-app-object-string-renderer__rendering': rendererRunning }"
-				data-testid="zobject-string-renderer-text">
+				data-testid="z-object-string-renderer-text">
 				{{ renderedValue }}
 			</p>
 			<!-- We capture the change event instead of update:modelValue
@@ -23,7 +23,7 @@
 				:model-value="renderedValue"
 				:disabled="rendererRunning"
 				:placeholder="placeholderValue"
-				data-testid="zobject-string-renderer-input"
+				data-testid="z-object-string-renderer-input"
 				@change="setRenderedValue"
 			></cdx-text-input>
 			<div
@@ -144,9 +144,9 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 
 		const blankObject = ref( undefined );
-		const renderValueInitialized = ref( false );
 		const renderTestsInitialized = ref( false );
 		const renderedValue = ref( '' );
+		const userInputValue = ref( '' );
 		const rendererRunning = ref( false );
 		const showExamplesDialog = ref( false );
 		const showExamplesLink = ref( false );
@@ -299,6 +299,7 @@ module.exports = exports = defineComponent( {
 		 */
 		function setRenderedValue( event ) {
 			renderedValue.value = event.target.value;
+			userInputValue.value = event.target.value;
 			generateParsedValue();
 		}
 		/**
@@ -307,13 +308,6 @@ module.exports = exports = defineComponent( {
 		 * in the local renderedValue variable.
 		 */
 		function generateRenderedValue() {
-			// If we are in view mode, only initialize rendered value once.
-			// Only when the rendered value is generated successfully we will
-			// mark it as initialized.
-			if ( !props.edit && renderValueInitialized.value ) {
-				return;
-			}
-
 			// If we are in edit mode, only generate rendered value if the object is not
 			// blank. For this we need to wait till the typeObject has been fetched.
 			if ( props.edit && !typeObject.value ) {
@@ -331,6 +325,7 @@ module.exports = exports = defineComponent( {
 			if ( JSON.stringify( zobject ) === JSON.stringify( blankObject.value ) ) {
 				return;
 			}
+
 			rendererRunning.value = true;
 			renderedValue.value = i18n( 'wikilambda-string-renderer-running' ).text();
 
@@ -352,7 +347,6 @@ module.exports = exports = defineComponent( {
 						errorMessageKey: 'wikilambda-renderer-unknown-error',
 						errorParams: [ rendererZid.value ]
 					};
-
 					store.handleMetadataError( {
 						metadata,
 						fallbackErrorData,
@@ -371,10 +365,10 @@ module.exports = exports = defineComponent( {
 				} else {
 					// Success: Update the locally saved renderedValue with the response
 					renderedValue.value = response;
-					renderValueInitialized.value = true;
 				}
 			} ).catch( () => {
 				renderedValue.value = noRenderedValue.value;
+				clearFieldErrors();
 				clearRendererError();
 				setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
 			} );
