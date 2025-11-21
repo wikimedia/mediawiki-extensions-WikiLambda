@@ -93,48 +93,106 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Reset the abort controller and return the signal.
+		 *
+		 * @return {AbortSignal}
+		 */
+		function resetAbortController() {
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
+			}
+			lookupAbortController = new AbortController();
+			return lookupAbortController.signal;
+		}
+
+		/**
+		 * Builds a menu item object from a Wikidata entity result.
+		 *
+		 * @param {Object} entity - The entity result from the API
+		 * @param {string} entity.id
+		 * @param {string} entity.label
+		 * @param {string} entity.description
+		 * @return {Object} A menu item object for Codex
+		 */
+		function buildMenuItem( { id, label, description } ) {
+			return {
+				value: id,
+				label,
+				description,
+				title: description
+			};
+		}
+
+		/**
+		 * Updates the lookup configuration with new search data.
+		 *
+		 * @param {string} searchQuery - The search query string
+		 * @param {string|null} searchContinue - The search continuation token
+		 */
+		function updateLookupConfig( searchQuery, searchContinue ) {
+			lookupConfig.value.searchQuery = searchQuery;
+			lookupConfig.value.searchContinue = searchContinue;
+		}
+
+		/**
+		 * Processes lookup response data and updates the lookup results.
+		 *
+		 * @param {Object} data - The response data from the API
+		 * @param {string} searchTerm - The original search term
+		 */
+		function handleLookupResponse( data, searchTerm ) {
+			const { searchContinue, search } = data;
+
+			// Clear results if this is a new search (not a continuation)
+			if ( !lookupConfig.value.searchContinue ) {
+				lookupResults.value = [];
+			}
+
+			// Update lookup configuration
+			updateLookupConfig( searchTerm, searchContinue );
+
+			// Process search results if available
+			if ( !search || search.length === 0 ) {
+				return;
+			}
+
+			const newMenuItems = search.map( ( entity ) => buildMenuItem( entity ) );
+			lookupResults.value.push( ...newMenuItems );
+		}
+
+		/**
+		 * Handle lookup error.
+		 *
+		 * @param {Error} error
+		 * @param {string} searchTerm
+		 */
+		function handleLookupError( error, searchTerm ) {
+			if ( error.code === 'abort' ) {
+				return;
+			}
+			lookupConfig.value.searchQuery = searchTerm;
+			if ( !lookupConfig.value.searchContinue ) {
+				lookupResults.value = [];
+			}
+		}
+
+		/**
 		 * Perform Wikidata Entity lookup given a search term.
 		 *
 		 * @param {string} searchTerm
 		 */
 		function getLookupResults( searchTerm ) {
-			// Cancel previous request if any
-			if ( lookupAbortController ) {
-				lookupAbortController.abort();
-			}
-			lookupAbortController = new AbortController();
-
+			const signal = resetAbortController();
 			const payload = {
 				search: searchTerm,
 				type: Constants.WIKIDATA_API_TYPE_VALUES[ props.type ],
 				searchContinue: lookupConfig.value.searchContinue,
-				signal: lookupAbortController.signal
+				signal
 			};
 
 			store.lookupWikidataEntities( payload )
-				.then( ( data ) => {
-					const { searchContinue, search } = data;
-
-					lookupConfig.value.searchContinue = searchContinue;
-					lookupConfig.value.searchQuery = searchTerm;
-					lookupResults.value = [];
-
-					for ( const entity of search ) {
-						lookupResults.value.push( {
-							value: entity.id,
-							label: entity.label,
-							description: entity.description,
-							title: entity.description
-						} );
-					}
-				} )
-				.catch( ( error ) => {
-					if ( error.code === 'abort' ) {
-						return;
-					}
-					lookupConfig.value.searchQuery = searchTerm;
-					lookupResults.value = [];
-				} );
+				.then( ( data ) => handleLookupResponse( data, searchTerm ) )
+				.catch( ( error ) => handleLookupError( error, searchTerm ) );
 		}
 
 		/**

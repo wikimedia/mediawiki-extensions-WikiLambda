@@ -394,77 +394,152 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Reset the abort controller and return the signal.
+		 *
+		 * @return {AbortSignal}
+		 */
+		function resetAbortController() {
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
+			}
+			lookupAbortController = new AbortController();
+			return lookupAbortController.signal;
+		}
+
+		/**
+		 * Determines the appropriate icon for a lookup result based on its type.
+		 *
+		 * @param {Object} result - The lookup result object
+		 * @return {string|undefined} The icon name or undefined
+		 */
+		function getMenuItemIcon( result ) {
+			// If we expect to receive functions along with other literal types, show icon
+			if (
+				!lookupTypes.value ||
+				( lookupTypes.value.length > 1 && lookupTypes.value.includes( Constants.Z_FUNCTION ) )
+			) {
+				// If the result is a function, show the function icon
+				return result.page_type === Constants.Z_FUNCTION ?
+					icons.cdxIconFunction :
+					icons.cdxIconInstance;
+			}
+			return undefined;
+		}
+
+		/**
+		 * Builds a menu item object from a lookup result.
+		 *
+		 * @param {Object} result - The lookup result from the API
+		 * @return {Object} A menu item object for Codex
+		 */
+		function buildMenuItem( result ) {
+			const value = result.page_title;
+			const label = getLabelOrZid( value, result.label );
+			const description = getLabelOrZid( result.page_type, result.type_label );
+			const supportingText = ( label !== result.match_label ) ? `(${ result.match_label })` : '';
+			const icon = getMenuItemIcon( result );
+
+			return {
+				value,
+				label,
+				description,
+				supportingText,
+				icon
+			};
+		}
+
+		/**
+		 * Updates the lookup configuration with new search data.
+		 *
+		 * @param {string} searchQuery - The search query string
+		 * @param {string|null} searchContinue - The search continuation token
+		 */
+		function updateLookupConfig( searchQuery, searchContinue ) {
+			lookupConfig.value.searchQuery = searchQuery;
+			lookupConfig.value.searchContinue = searchContinue;
+		}
+
+		/**
+		 * Processes lookup response data and updates the lookup results.
+		 *
+		 * @param {Object} data - The response data from the API
+		 * @param {string} input - The original search input
+		 */
+		function handleLookupResponse( data, input ) {
+			const { labels, searchContinue } = data;
+
+			// Clear results if this is a new search (not a continuation)
+			if ( !lookupConfig.value.searchContinue ) {
+				lookupResults.value = [];
+			}
+
+			// Update lookup configuration
+			updateLookupConfig( input, searchContinue );
+
+			// Process labels if available
+			if ( !labels || labels.length === 0 ) {
+				return;
+			}
+
+			const zids = [];
+			const newMenuItems = [];
+
+			labels.forEach( ( result ) => {
+				const menuItem = buildMenuItem( result );
+				const value = menuItem.value;
+
+				// Exclude everything in the exclude Zids and disallowed types lists
+				if ( !isExcludedZid( value ) ) {
+					newMenuItems.push( menuItem );
+				}
+
+				// Gather all zids to request them for the data store
+				zids.push( value );
+			} );
+
+			// Add new menu items to lookup results
+			lookupResults.value.push( ...newMenuItems );
+
+			// Fetch and collect all the data;
+			// store.fetchZids makes sure that only the missing zids are requested
+			if ( zids.length > 0 ) {
+				store.fetchZids( { zids } );
+			}
+		}
+
+		/**
+		 * Handle lookup error.
+		 *
+		 * @param {Error} error
+		 * @param {string} searchTerm
+		 */
+		function handleLookupError( error, searchTerm ) {
+			if ( error.code === 'abort' ) {
+				return;
+			}
+			lookupConfig.value.searchQuery = searchTerm;
+			if ( !lookupConfig.value.searchContinue ) {
+				lookupResults.value = [];
+			}
+		}
+
+		/**
 		 * Handle get zObject lookup.
 		 * update lookup results with label and update in store.
 		 *
 		 * @param {string} input
 		 */
 		function getLookupResults( input ) {
-			// Cancel previous request if any
-			if ( lookupAbortController ) {
-				lookupAbortController.abort();
-			}
-			lookupAbortController = new AbortController();
+			const signal = resetAbortController();
 			store.lookupZObjectLabels( {
 				input,
 				types: lookupTypes.value,
 				returnTypes: lookupReturnTypes.value,
 				searchContinue: lookupConfig.value.searchContinue,
-				signal: lookupAbortController.signal
+				signal
 			} ).then( ( data ) => {
-				const { labels, searchContinue } = data;
-				const zids = [];
-				// If searchContinue is present, store it in lookupConfig
-				lookupConfig.value.searchContinue = searchContinue;
-				lookupConfig.value.searchQuery = input;
-				lookupResults.value = [];
-				// Update lookupResults list
-				if ( labels && labels.length > 0 ) {
-					labels.forEach( ( result ) => {
-						// Set up codex MenuItem options
-						// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
-						const value = result.page_title;
-						const label = getLabelOrZid( value, result.label );
-						const description = getLabelOrZid( result.page_type, result.type_label );
-						const supportingText = ( label !== result.match_label ) ? `(${ result.match_label })` : '';
-
-						let icon;
-						// If we expect to receive functions along with other literal types, show icon
-						if ( !lookupTypes.value || ( lookupTypes.value.length > 1 &&
-							lookupTypes.value.includes( Constants.Z_FUNCTION )
-						) ) {
-							icon = ( result.page_type === Constants.Z_FUNCTION ) ?
-								icons.cdxIconFunction :
-								icons.cdxIconInstance;
-						} else {
-							icon = undefined;
-						}
-
-						// Exclude everything in the exclude Zids and disallowed types lists
-						if ( !isExcludedZid( value ) ) {
-							lookupResults.value.push( {
-								value,
-								label,
-								description,
-								supportingText,
-								icon
-							} );
-						}
-
-						// Gather all zids to request them for the data store
-						zids.push( value );
-					} );
-					// Once lookupResults are gathered, fetch and collect all the data;
-					// store.fetchZids makes sure that only the missing zids are requested
-					store.fetchZids( { zids } );
-				}
-			} ).catch( ( error ) => {
-				if ( error.code === 'abort' ) {
-					return;
-				}
-				lookupConfig.value.searchQuery = input;
-				lookupResults.value = [];
-			} );
+				handleLookupResponse( data, input );
+			} ).catch( ( error ) => handleLookupError( error, input ) );
 		}
 
 		/**
@@ -476,7 +551,6 @@ module.exports = exports = defineComponent( {
 				// No more results to load
 				return;
 			}
-
 			getLookupResults( lookupConfig.value.searchQuery );
 		}
 

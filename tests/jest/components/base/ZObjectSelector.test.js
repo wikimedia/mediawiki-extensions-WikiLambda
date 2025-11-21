@@ -281,6 +281,60 @@ describe( 'ZObjectSelector', () => {
 			// Found exact match for "Monolingual text", set as selected
 			expect( lookup.props( 'inputValue' ) ).toBe( 'Monolingual text' );
 		} );
+
+		it( 'appends lookup results when loading more', async () => {
+			jest.useFakeTimers();
+			try {
+				const firstBatch = {
+					labels: [ {
+						page_title: 'Z11',
+						label: 'Monolingual text',
+						match_label: 'Monolingual text',
+						page_type: Constants.Z_TYPE,
+						type_label: 'Type'
+					} ],
+					searchContinue: 'continue-1'
+				};
+				const secondBatch = {
+					labels: [ {
+						page_title: 'Z12',
+						label: 'Multilingual text',
+						match_label: 'Multilingual text',
+						page_type: Constants.Z_TYPE,
+						type_label: 'Type'
+					} ],
+					searchContinue: null
+				};
+
+				store.lookupZObjectLabels.mockReset();
+				store.lookupZObjectLabels
+					.mockResolvedValueOnce( firstBatch )
+					.mockResolvedValueOnce( secondBatch );
+
+				const wrapper = renderZObjectSelector( {
+					type: Constants.Z_TYPE
+				} );
+				const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+
+				lookup.vm.$emit( 'update:input-value', 'Mon' );
+				jest.runAllTimers();
+
+				await waitFor( () => {
+					expect( lookup.props( 'menuItems' ).length ).toBe( 1 );
+					expect( lookup.props( 'menuItems' )[ 0 ].value ).toBe( 'Z11' );
+				} );
+
+				lookup.vm.$emit( 'load-more' );
+
+				await waitFor( () => {
+					expect( store.lookupZObjectLabels ).toHaveBeenCalledTimes( 2 );
+					expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+					expect( lookup.props( 'menuItems' ).map( ( item ) => item.value ) ).toEqual( [ 'Z11', 'Z12' ] );
+				} );
+			} finally {
+				jest.useRealTimers();
+			}
+		} );
 	} );
 
 	describe( 'Select', () => {

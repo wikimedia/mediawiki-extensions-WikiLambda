@@ -205,6 +205,54 @@ describe( 'WikidataEntitySelector', () => {
 			expect( lookup.props( 'inputValue' ) ).toBe( 'pangoli' );
 			expect( lookup.props( 'menuItems' ).length ).toBe( 0 );
 		} );
+
+		it( 'appends lookup results when loading more', async () => {
+			jest.useFakeTimers();
+			try {
+				const firstBatch = {
+					search: [ {
+						id: 'L1',
+						label: 'turtle',
+						description: 'English, noun'
+					} ],
+					searchContinue: 'continue-1'
+				};
+				const secondBatch = {
+					search: [ {
+						id: 'L2',
+						label: 'turtles',
+						description: 'English, plural noun'
+					} ],
+					searchContinue: null
+				};
+
+				store.lookupWikidataEntities.mockReset();
+				store.lookupWikidataEntities
+					.mockResolvedValueOnce( firstBatch )
+					.mockResolvedValueOnce( secondBatch );
+
+				const wrapper = renderEntitySelector();
+				const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+				lookup.vm.$emit( 'update:inputValue', 'turtle' );
+				jest.runAllTimers();
+
+				await waitFor( () => {
+					expect( lookup.props( 'menuItems' ).length ).toBe( 1 );
+					expect( lookup.props( 'menuItems' )[ 0 ].value ).toBe( 'L1' );
+				} );
+
+				lookup.vm.$emit( 'load-more' );
+
+				await waitFor( () => {
+					expect( store.lookupWikidataEntities ).toHaveBeenCalledTimes( 2 );
+					expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+					expect( lookup.props( 'menuItems' ).map( ( item ) => item.value ) ).toEqual( [ 'L1', 'L2' ] );
+				} );
+			} finally {
+				jest.useRealTimers();
+			}
+		} );
 	} );
 
 	describe( 'on blur', () => {
