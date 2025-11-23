@@ -15,9 +15,7 @@
 		<!-- Dialog Header -->
 		<template #header>
 			<wl-custom-dialog-header @close-dialog="closeDialog">
-				<template #title>
-					{{ i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
-				</template>
+				{{ i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
 				<template v-if="headerText" #subtitle>
 					<span :lang="headerText.langCode" :dir="headerText.langDir">
 						{{ headerText.label }}

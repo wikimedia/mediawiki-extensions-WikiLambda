@@ -431,10 +431,11 @@ describe( 'ZObjectKeyValue', () => {
 				expect( wrapper.findComponent( { name: 'wl-mode-selector' } ).exists() ).toBe( true );
 			} );
 
-			it( 'it does not load the mode selector if key is skipped', () => {
+			it( 'it does not load the mode selector if key and indentation are skipped', () => {
 				const wrapper = renderZObjectKeyValue( {
 					edit: true,
-					skipKey: true
+					skipKey: true,
+					skipIndent: true
 				}, {
 					stubs: {
 						WlKeyBlock: false
@@ -566,6 +567,31 @@ describe( 'ZObjectKeyValue', () => {
 				expect( store.setDirty ).toHaveBeenCalled();
 				expect( store.deleteLocalArgumentFromFunctionCall ).toHaveBeenCalledWith( {
 					keyPath: [ 'main', 'Z2K2', 'K3' ]
+				} );
+			} );
+
+			it( 'copies to the clipboard if the mode selector emits copy', () => {
+				keyPath = 'main.Z2K2.Z20K3';
+				objectValue = { Z1K1: 'Z6', Z6K1: 'foo' };
+
+				store.copyToClipboard = jest.fn();
+				store.getExpectedTypeOfKey = jest.fn().mockReturnValue( 'Z7' );
+
+				const wrapper = renderZObjectKeyValue( {
+					edit: true
+				}, {
+					stubs: {
+						WlKeyBlock: false
+					}
+				} );
+
+				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+				modeSelector.vm.$emit( 'copy' );
+
+				expect( store.copyToClipboard ).toHaveBeenCalledWith( {
+					originKey: 'Z20K3',
+					originSlotType: 'Z7',
+					value: objectValue
 				} );
 			} );
 		} );

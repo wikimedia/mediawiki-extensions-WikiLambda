@@ -7,27 +7,17 @@
 <template>
 	<div class="ext-wikilambda-app-implementation" data-testid="z-implementation">
 		<!-- Function selection block -->
-		<wl-key-value-block
-			:key-bold="true"
-			class="ext-wikilambda-app-implementation__function"
+		<wl-z-object-key-value
 			data-testid="implementation-function"
-		>
-			<template #key>
-				<label
-					:lang="functionLabelData.langCode"
-					:dir="functionLabelData.langDir"
-				>{{ functionLabelData.label }}</label>
-			</template>
-			<template #value>
-				<wl-z-object-key-value
-					:key-path="`${ keyPath }.${ functionKey }`"
-					:object-value="objectValue[ functionKey ]"
-					:edit="edit && !isTypeBuiltin"
-					:skip-key="true"
-					:skip-indent="true"
-				></wl-z-object-key-value>
-			</template>
-		</wl-key-value-block>
+			class="ext-wikilambda-app-implementation__function"
+			:key-path="`${ keyPath }.${ functionKey }`"
+			:object-value="objectValue[ functionKey ]"
+			:edit="edit && !isTypeBuiltin"
+			:skip-key="false"
+			:skip-indent="true"
+			:skip-mode-selector="true"
+			:highlight-key="true"
+		></wl-z-object-key-value>
 
 		<!-- Implementation type block -->
 		<wl-key-value-block
@@ -82,29 +72,17 @@
 		</wl-key-value-block>
 
 		<!-- Implementation content block -->
-		<wl-key-value-block
+		<wl-z-object-key-value
 			v-if="!isTypeBuiltin && functionZid"
-			:key-bold="true"
-			class="ext-wikilambda-app-implementation__content"
 			data-testid="implementation-content"
-		>
-			<template v-if="!isTypeCode" #key>
-				<label
-					:lang="implementationTypeLabelData.langCode"
-					:dir="implementationTypeLabelData.langDir"
-				>{{ implementationTypeLabelData.label }}</label>
-			</template>
-			<template #value>
-				<wl-z-object-key-value
-					:key-path="`${ keyPath }.${ implementationType }`"
-					:object-value="objectValue[ implementationType ]"
-					:edit="edit"
-					:skip-key="true"
-					:skip-indent="isTypeCode"
-					data-testid="implementation-content-block"
-				></wl-z-object-key-value>
-			</template>
-		</wl-key-value-block>
+			class="ext-wikilambda-app-implementation__content"
+			:key-path="`${ keyPath }.${ implementationType }`"
+			:object-value="objectValue[ implementationType ]"
+			:edit="edit"
+			:skip-key="isTypeCode"
+			:skip-indent="isTypeCode"
+			:highlight-key="true"
+		></wl-z-object-key-value>
 	</div>
 </template>
 
@@ -154,13 +132,6 @@ module.exports = exports = defineComponent( {
 		const functionKey = Constants.Z_IMPLEMENTATION_FUNCTION;
 
 		// Function data
-		/**
-		 * Returns the LabelData object for the implementation Function/Z14K1 key
-		 *
-		 * @return {LabelData}
-		 */
-		const functionLabelData = computed( () => store.getLabelData( Constants.Z_IMPLEMENTATION_FUNCTION ) );
-
 		/**
 		 * Return the zid of the target function for this implementation
 		 *
@@ -240,7 +211,6 @@ module.exports = exports = defineComponent( {
 
 		return {
 			functionKey,
-			functionLabelData,
 			functionZid,
 			implementationLabelData,
 			implementationType,

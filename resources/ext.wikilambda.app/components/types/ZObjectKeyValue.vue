@@ -25,20 +25,23 @@
 			<!-- Main content: either only one row with value, or top row with key and then value -->
 			<!-- Key and Mode: render only when key is shown -->
 			<template v-if="showKeyLabel" #key>
-				<wl-localized-label :label-data="keyLabel"></wl-localized-label>
-				<!-- Mode: never rendered in view mode -->
+				<wl-localized-label
+					:class="{ 'ext-wikilambda-app-object-key-value__highlight': highlightKey }"
+					:label-data="keyLabel"></wl-localized-label>
 				<wl-mode-selector
-					v-if="edit"
+					v-if="edit && !skipModeSelector"
 					:key-path="keyPath"
 					:object-value="objectValue"
 					:disabled="disableEdit"
 					:expected-type="expectedType"
 					@set-type="setType"
+					@set-value="setValue"
 					@delete-list-item="deleteListItem( keyPath )"
 					@move-before="moveBefore( keyPath )"
 					@move-after="moveAfter( keyPath )"
 					@add-arg="addArgument"
 					@delete-arg="deleteArgument"
+					@copy="copyToClipboard"
 				></wl-mode-selector>
 			</template>
 			<!-- Value: will always be rendered -->
@@ -157,6 +160,14 @@ module.exports = exports = defineComponent( {
 			default: false
 		},
 		skipIndent: {
+			type: Boolean,
+			default: false
+		},
+		skipModeSelector: {
+			type: Boolean,
+			default: false
+		},
+		highlightKey: {
 			type: Boolean,
 			default: false
 		},
@@ -818,6 +829,17 @@ module.exports = exports = defineComponent( {
 			setDirtyKeyPath( props.keyPath );
 		}
 
+		/**
+		 * Copy value to clipboard store
+		 */
+		function copyToClipboard() {
+			store.copyToClipboard( {
+				originKey: key.value,
+				originSlotType: expectedType.value,
+				value: props.objectValue
+			} );
+		}
+
 		// Watch
 		/**
 		 * Auto-expand when field errors appear (only the first time)
@@ -852,6 +874,7 @@ module.exports = exports = defineComponent( {
 		return {
 			addArgument,
 			addListItem,
+			copyToClipboard,
 			deleteArgument,
 			deleteListItem,
 			disableEdit,
@@ -881,5 +904,10 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-object-key-value {
 	width: 100%;
+
+	.ext-wikilambda-app-object-key-value__highlight {
+		color: @color-base;
+		font-weight: bold;
+	}
 }
 </style>

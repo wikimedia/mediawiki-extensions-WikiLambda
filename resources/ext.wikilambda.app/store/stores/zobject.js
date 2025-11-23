@@ -1012,6 +1012,9 @@ const zobjectStore = {
 		initializeView: function () {
 			const { abstractContent, createNewPage, runFunction, zId } = this.getWikilambdaConfig;
 
+			// For all cases, initialize clipboard from localStorage
+			this.initializeClipboard();
+
 			if ( abstractContent ) {
 				// If abstractContent is true, fully initialize for abstract view
 				return this.initializeAbstractWikiContent();

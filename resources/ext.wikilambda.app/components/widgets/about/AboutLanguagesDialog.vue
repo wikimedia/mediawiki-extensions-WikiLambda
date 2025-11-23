@@ -17,9 +17,7 @@
 			<!-- Dialog Header -->
 			<template #header>
 				<wl-custom-dialog-header @close-dialog="closeDialog">
-					<template #title>
-						{{ i18n( 'wikilambda-about-widget-view-languages-title' ).text() }}
-					</template>
+					{{ i18n( 'wikilambda-about-widget-view-languages-title' ).text() }}
 				</wl-custom-dialog-header>
 				<!-- Language Search block -->
 				<div class="ext-wikilambda-app-about-languages-dialog__search">

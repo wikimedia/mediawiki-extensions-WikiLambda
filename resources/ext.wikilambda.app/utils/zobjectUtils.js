@@ -21,8 +21,8 @@ const { isValidZidFormat, getScaffolding } = require( './typeUtils.js' );
 const zobjectUtils = {
 	/**
 	 * Gets the type of a valid ZObject.
-	 * The input object can be canonical or hybrid, so it
-	 * converts to canonical first.
+	 * The input object can be canonical or hybrid, it converts the object to canonical first.
+	 * The output object will always be in canonical form
 	 *
 	 * @param {Object|Array|string} value
 	 * @return {string|Object|undefined}

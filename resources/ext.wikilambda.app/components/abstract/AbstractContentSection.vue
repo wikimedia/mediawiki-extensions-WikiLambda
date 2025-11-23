@@ -39,19 +39,27 @@
 		>
 			<cdx-icon :icon="iconAdd"></cdx-icon>
 		</cdx-menu-button>
+		<wl-clipboard-dialog
+			:open="showClipboard"
+			expected-type="Z89"
+			@close-dialog="closeClipboard"
+			@paste="pasteFromClipboard"
+		></wl-clipboard-dialog>
 	</div>
 </template>
 
 <script>
-const { computed, defineComponent, inject } = require( 'vue' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
-const useMainStore = require( '../../store/index.js' );
 const useMenuAction = require( '../../composables/useMenuAction.js' );
+const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Abstract components
 const AbstractContentFragment = require( './AbstractContentFragment.vue' );
+// Base components
+const ClipboardDialog = require( '../base/ClipboardDialog.vue' );
 // Codex components
 const { CdxMenuButton, CdxIcon } = require( '../../../codex.js' );
 
@@ -59,6 +67,7 @@ module.exports = exports = defineComponent( {
 	name: 'wl-abstract-content-section',
 	components: {
 		'wl-abstract-content-fragment': AbstractContentFragment,
+		'wl-clipboard-dialog': ClipboardDialog,
 		'cdx-menu-button': CdxMenuButton,
 		'cdx-icon': CdxIcon
 	},
@@ -87,6 +96,41 @@ module.exports = exports = defineComponent( {
 
 		const iconAdd = icons.cdxIconAdd;
 
+		// Clipboard vars
+		const showClipboard = ref( false );
+		const copyToKeyPath = ref( null );
+
+		/**
+		 * Close clipboard dialog with no action.
+		 */
+		function closeClipboard() {
+			showClipboard.value = false;
+			copyToKeyPath.value = null;
+		}
+
+		/**
+		 * Paste selected item from clipboard dialog as the value
+		 * for this key and close the clipboard dialog.
+		 *
+		 * @param {Object} item
+		 */
+		function pasteFromClipboard( item ) {
+			const cleanValue = store.cleanClipboardItem( item.value, copyToKeyPath.value );
+			store.setValueByKeyPath( {
+				keyPath: copyToKeyPath.value.split( '.' ),
+				value: cleanValue
+			} );
+
+			// Set page as dirty and set fragment as dirty
+			store.setDirty();
+			store.setDirtyFragment( copyToKeyPath.value );
+
+			closeClipboard();
+		}
+
+		/**
+		 *
+		 */
 		const menuItems = computed( () => {
 			const basicActionGroup = {
 				label: i18n( 'wikilambda-abstract-menu-group-basic-fragments' ).text(),
@@ -196,9 +240,27 @@ module.exports = exports = defineComponent( {
 				deleteListItem( itemKeyPath );
 				return;
 			}
+
+			if ( payload.action === Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD ) {
+				store.copyToClipboard( {
+					originKey: `${ props.section.qid }.${ itemKey }`,
+					originSlotType: Constants.Z_HTML_FRAGMENT,
+					value: props.section.fragments[ itemKey ]
+				} );
+				return;
+			}
+
+			if ( payload.action === Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD ) {
+				showClipboard.value = true;
+				copyToKeyPath.value = itemKeyPath;
+				return;
+			}
 		}
 
 		return {
+			closeClipboard,
+			pasteFromClipboard,
+			showClipboard,
 			addFragment,
 			menuItems,
 			performAction,

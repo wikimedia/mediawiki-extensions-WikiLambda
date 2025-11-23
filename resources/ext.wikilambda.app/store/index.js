@@ -11,6 +11,7 @@ const { defineStore } = require( 'pinia' );
 const abstractWikiStore = require( './stores/abstractWiki.js' );
 const currentPageStore = require( './stores/currentPage.js' );
 const errorsStore = require( './stores/errors.js' );
+const clipboardStore = require( './stores/clipboard.js' );
 const factoryStore = require( './stores/factory.js' );
 const functionCallStore = require( './stores/functionCall.js' );
 const languagesStore = require( './stores/languages.js' );
@@ -64,7 +65,9 @@ module.exports = defineStore( 'main', {
 		// VisualEditor
 		visualeditorStore.state,
 		// Abstract Wikipedia
-		abstractWikiStore.state
+		abstractWikiStore.state,
+		// Clipboard
+		clipboardStore.state
 	),
 	getters: Object.assign(
 		// Router
@@ -97,7 +100,9 @@ module.exports = defineStore( 'main', {
 		// VisualEditor
 		visualeditorStore.getters,
 		// Abstract Wikipedia
-		abstractWikiStore.getters
+		abstractWikiStore.getters,
+		// Clipboard
+		clipboardStore.getters
 	),
 	actions: Object.assign(
 		// Router
@@ -130,6 +135,8 @@ module.exports = defineStore( 'main', {
 		// VisualEditor
 		visualeditorStore.actions,
 		// Abstract Wikipedia
-		abstractWikiStore.actions
+		abstractWikiStore.actions,
+		// Clipboard
+		clipboardStore.actions
 	)
 } );

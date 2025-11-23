@@ -12,7 +12,12 @@
 const Constants = require( '../../Constants.js' );
 const { searchLabels, searchFunctions, fetchZObjects } = require( '../../utils/apiUtils.js' );
 const LabelData = require( '../classes/LabelData.js' );
-const { getZObjectType } = require( '../../utils/zobjectUtils.js' );
+const {
+	getZArgumentReferenceTerminalValue,
+	getZFunctionCallFunctionId,
+	getZObjectType,
+	getZReferenceTerminalValue
+} = require( '../../utils/zobjectUtils.js' );
 const {
 	isGlobalKey,
 	getZidOfGlobalKey,
@@ -106,6 +111,62 @@ module.exports = {
 		},
 
 		/**
+		 * Given a key, returns its expected value type, if any.
+		 * Otherwise, returns undefined. Assumes key has a string value.
+		 *
+		 * Used internally, to distinguish unknown responses from
+		 * genuine Z1 outputs (unbound type).
+		 *
+		 * @return {Function}
+		 */
+		getExpectedTypeInternal: function () {
+			/**
+			 * @param {string} key
+			 * @return {string|undefined}
+			 */
+			const findExpectedTypeInternal = ( key ) => {
+				// Exit early with undefined if key is not global
+				if ( !isGlobalKey( key ) ) {
+					return undefined;
+				}
+
+				const zid = getZidOfGlobalKey( key );
+				const storedObject = this.getStoredObject( zid );
+
+				// Exit early with undefined if key is not stored
+				if ( !storedObject ) {
+					return undefined;
+				}
+
+				const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
+
+				// Return the key value type if zid belongs to a type
+				if ( ztype === Constants.Z_TYPE ) {
+					const zkey = getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
+					return zkey ? zkey[ Constants.Z_KEY_TYPE ] : undefined;
+				}
+
+				// Return the key value type if zid belongs to an error type
+				if ( ztype === Constants.Z_ERRORTYPE ) {
+					const zkey = getKeyFromKeyList( key, zobject[ Constants.Z_ERRORTYPE_KEYS ] );
+					return zkey ? zkey[ Constants.Z_KEY_TYPE ] : undefined;
+				}
+
+				// Return the argument type if the zid belongs to a function
+				if ( ztype === Constants.Z_FUNCTION ) {
+					const zarg = getArgFromArgList( key, zobject[ Constants.Z_FUNCTION_ARGUMENTS ] );
+					return zarg ? zarg[ Constants.Z_ARGUMENT_TYPE ] : undefined;
+				}
+
+				// If not found, return undefined
+				return undefined;
+			};
+
+			return findExpectedTypeInternal;
+		},
+
+		/**
 		 * Given a global ZKey (ZnKm) it returns a string that reflects
 		 * its expected value type (if any). Else it returns Z1.
 		 *
@@ -123,40 +184,9 @@ module.exports = {
 					return Constants.Z_PERSISTENTOBJECT;
 				}
 
-				if ( isGlobalKey( key ) ) {
-					const zid = getZidOfGlobalKey( key );
-					const storedObject = this.getStoredObject( zid );
-
-					if ( storedObject ) {
-						const zobject = storedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-						const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
-
-						switch ( ztype ) {
-							// Return the key value type if zid belongs to a type
-							case Constants.Z_TYPE: {
-								const zkey = getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
-								return zkey ? zkey[ Constants.Z_KEY_TYPE ] : Constants.Z_OBJECT;
-							}
-
-							// Return the argument type if the zid belongs to a function
-							case Constants.Z_FUNCTION: {
-								const zarg = getArgFromArgList( key, zobject[ Constants.Z_FUNCTION_ARGUMENTS ] );
-								if ( zarg ) {
-									const type = zarg[ Constants.Z_ARGUMENT_TYPE ];
-									return type;
-								}
-								return Constants.Z_OBJECT;
-							}
-
-							// If not found, return Z1/ZObject (any) type
-							default:
-								return Constants.Z_OBJECT;
-						}
-					}
-				}
-
-				// If key is not found, a list index, or a local key, return Z1/Object (any) type
-				return Constants.Z_OBJECT;
+				// If key is not found, is a list index, or is a local key, return Z1/Object type
+				const expectedType = this.getExpectedTypeInternal( key );
+				return expectedType || Constants.Z_OBJECT;
 			};
 
 			return findExpectedType;
@@ -729,6 +759,53 @@ module.exports = {
 				return obj[ Constants.Z_FUNCTION_RETURN_TYPE ];
 			};
 			return findOutputTypeOfFunctionZid;
+		},
+
+		/**
+		 * Returns the resolving type of a given object (in its canonical or hybrid form).
+		 * * If the object is a function call, returns the function output type (canonical)
+		 * * If the object is a reference, returns the type of the referred object (canonical)
+		 * * If the object is an argument reference, returns the type of the function input (canonical)
+		 *
+		 * The input value can be either canonical or hybrid, as getZObjectType will convert it to
+		 * canonical as a first step. The output resolving type will always be in canonical form.
+		 *
+		 * @return {Function}
+		 */
+		getResolvingType: function () {
+			/**
+			 * @param {Object} zobject - an input zobject, which can be either canonical or hybrid
+			 * @return {Object|string|undefined}
+			 */
+			const findResolvingType = ( zobject ) => {
+				const type = getZObjectType( zobject );
+
+				// If it's a function call, return the type the function resolves to
+				if ( type === Constants.Z_FUNCTION_CALL ) {
+					const functionZid = getZFunctionCallFunctionId( zobject );
+					return this.getOutputTypeOfFunctionZid( functionZid );
+				}
+
+				// If it's a reference, return the type of referred object
+				if ( type === Constants.Z_REFERENCE ) {
+					const persistedObject = this.getStoredObject( getZReferenceTerminalValue( zobject ) );
+					return persistedObject ?
+						getZObjectType( persistedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) :
+						undefined;
+				}
+
+				// If it's an argument reference, return the type of the function arg
+				if ( type === Constants.Z_ARGUMENT_REFERENCE ) {
+					const argumentKey = getZArgumentReferenceTerminalValue( zobject );
+					return argumentKey ?
+						this.getExpectedTypeInternal( argumentKey ) :
+						undefined;
+				}
+
+				// Not a resolver, return literal type
+				return type;
+			};
+			return findResolvingType;
 		}
 	},
 

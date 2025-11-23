@@ -90,6 +90,20 @@ const miscUtils = {
 				func.apply( this, args );
 			}
 		};
+	},
+
+	/**
+	 * Helper function: parse or null
+	 *
+	 * @param {any} value
+	 * @return {Object|Array|null}
+	 */
+	tryJsonParse: function ( value ) {
+		try {
+			return JSON.parse( value );
+		} catch ( error ) {
+			return null;
+		}
 	}
 };
 

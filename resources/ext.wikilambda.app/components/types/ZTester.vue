@@ -7,73 +7,41 @@
 <template>
 	<div class="ext-wikilambda-app-tester" data-testid="z-tester">
 		<!-- Function selection block -->
-		<wl-key-value-block
-			:key-bold="true"
-			class="ext-wikilambda-app-tester__function"
+		<wl-z-object-key-value
 			data-testid="tester-function-select"
-		>
-			<template #key>
-				<label
-					:lang="functionLabelData.langCode"
-					:dir="functionLabelData.langDir"
-				>{{ functionLabelData.label }}</label>
-			</template>
-			<template #value>
-				<wl-z-object-key-value
-					:key-path="`${ keyPath }.${ functionKey }`"
-					:object-value="objectValue[ functionKey ]"
-					:edit="edit"
-					:skip-key="true"
-					:skip-indent="true"
-				></wl-z-object-key-value>
-			</template>
-		</wl-key-value-block>
+			class="ext-wikilambda-app-tester__function"
+			:key-path="`${ keyPath }.${ functionKey }`"
+			:object-value="objectValue[ functionKey ]"
+			:edit="edit"
+			:skip-key="false"
+			:skip-indent="true"
+			:skip-mode-selector="true"
+			:highlight-key="true"
+		></wl-z-object-key-value>
 
 		<!-- Tester call block -->
-		<wl-key-value-block
-			:key-bold="true"
-			class="ext-wikilambda-app-tester__content"
+		<wl-z-object-key-value
 			data-testid="tester-call"
-		>
-			<template #key>
-				<label
-					:lang="testerCallLabelData.langCode"
-					:dir="testerCallLabelData.langDir"
-				>{{ testerCallLabelData.label }}</label>
-			</template>
-			<template #value>
-				<wl-z-object-key-value
-					:key-path="`${ keyPath }.${ callKey }`"
-					:object-value="objectValue[ callKey ]"
-					:edit="edit"
-					:skip-key="true"
-					:default-expanded="defaultExpanded"
-				></wl-z-object-key-value>
-			</template>
-		</wl-key-value-block>
+			class="ext-wikilambda-app-tester__content"
+			:key-path="`${ keyPath }.${ callKey }`"
+			:object-value="objectValue[ callKey ]"
+			:edit="edit"
+			:skip-key="false"
+			:highlight-key="true"
+			:default-expanded="defaultExpanded"
+		></wl-z-object-key-value>
 
 		<!-- Tester result validation block -->
-		<wl-key-value-block
-			:key-bold="true"
-			class="ext-wikilambda-app-tester__content"
+		<wl-z-object-key-value
 			data-testid="tester-validation"
-		>
-			<template #key>
-				<label
-					:lang="testerValidationLabelData.langCode"
-					:dir="testerValidationLabelData.langDir"
-				>{{ testerValidationLabelData.label }}</label>
-			</template>
-			<template #value>
-				<wl-z-object-key-value
-					:key-path="`${ keyPath }.${ validationKey }`"
-					:object-value="objectValue[ validationKey ]"
-					:edit="edit"
-					:skip-key="true"
-					:default-expanded="defaultExpanded"
-				></wl-z-object-key-value>
-			</template>
-		</wl-key-value-block>
+			class="ext-wikilambda-app-tester__content"
+			:key-path="`${ keyPath }.${ validationKey }`"
+			:object-value="objectValue[ validationKey ]"
+			:edit="edit"
+			:skip-key="false"
+			:highlight-key="true"
+			:default-expanded="defaultExpanded"
+		></wl-z-object-key-value>
 	</div>
 </template>
 
@@ -85,13 +53,9 @@ const useMainStore = require( '../../store/index.js' );
 const useType = require( '../../composables/useType.js' );
 const useZObject = require( '../../composables/useZObject.js' );
 
-// Base components
-const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
-
 module.exports = exports = defineComponent( {
 	name: 'wl-z-tester',
 	components: {
-		'wl-key-value-block': KeyValueBlock
 	},
 	props: {
 		keyPath: {
@@ -117,13 +81,6 @@ module.exports = exports = defineComponent( {
 		const functionKey = Constants.Z_TESTER_FUNCTION;
 
 		/**
-		 * Returns the LabelData object for the test Function/Z20K1 key
-		 *
-		 * @return {LabelData}
-		 */
-		const functionLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_FUNCTION ) );
-
-		/**
 		 * Returns the Zid of the selected function/Z20K1
 		 *
 		 * @return {string}
@@ -142,13 +99,6 @@ module.exports = exports = defineComponent( {
 
 		// Function Call
 		const callKey = Constants.Z_TESTER_CALL;
-
-		/**
-		 * Returns the label data for the tester call key
-		 *
-		 * @return {LabelData}
-		 */
-		const testerCallLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_CALL ) );
 
 		/**
 		 * Initializes Test call/Z20K2 with a function call to the given functionZid
@@ -183,13 +133,6 @@ module.exports = exports = defineComponent( {
 
 		// Function Validation
 		const validationKey = Constants.Z_TESTER_VALIDATION;
-
-		/**
-		 * Returns the label data for the tester validation key
-		 *
-		 * @return {LabelData}
-		 */
-		const testerValidationLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_VALIDATION ) );
 
 		/**
 		 * Initializes Test validator/Z20K3 with a function call to the equality function
@@ -255,9 +198,6 @@ module.exports = exports = defineComponent( {
 		return {
 			callKey,
 			functionKey,
-			functionLabelData,
-			testerCallLabelData,
-			testerValidationLabelData,
 			validationKey,
 			defaultExpanded
 		};

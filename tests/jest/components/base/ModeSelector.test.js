@@ -127,7 +127,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_STRING
 			} );
 
@@ -145,7 +144,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_OBJECT
 			} );
 
@@ -164,7 +162,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_STRING
 			} );
 
@@ -183,7 +180,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_STRING
 			} );
 
@@ -208,12 +204,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_WIKIDATA_LEXEME
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems.length ).toBe( 2 );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 1 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z7' );
 		} );
@@ -232,12 +227,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_WIKIDATA_LEXEME
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems.length ).toBe( 2 );
 			expect( menu.vm.menuItems[ 0 ].items.length ).toBe( 2 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toBe( 'Z18' );
 			expect( menu.vm.menuItems[ 0 ].items[ 1 ].value ).toBe( 'Z7' );
@@ -253,7 +247,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_WIKIDATA_REFERENCE_LEXEME
 			} );
 
@@ -277,7 +270,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_OBJECT
 			} );
 
@@ -298,7 +290,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_OBJECT
 			} );
 
@@ -319,8 +310,7 @@ describe( 'ModeSelector', () => {
 
 			const wrapper = renderModeSelector( {
 				keyPath,
-				objectValue,
-				edit: true
+				objectValue
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
@@ -337,7 +327,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_STRING
 			} );
 
@@ -353,7 +342,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_STRING
 			} );
 
@@ -379,12 +367,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 2 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 
@@ -399,7 +386,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
@@ -419,12 +405,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].disabled ).toBe( false );
 			expect( menu.vm.menuItems[ 1 ].items[ 1 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
@@ -442,12 +427,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].disabled ).toBe( true );
 			expect( menu.vm.menuItems[ 1 ].items[ 1 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
@@ -465,12 +449,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 3 );
+			expect( menu.vm.menuItems.length ).toBe( 4 );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_BEFORE );
 			expect( menu.vm.menuItems[ 1 ].items[ 0 ].disabled ).toBe( false );
 			expect( menu.vm.menuItems[ 1 ].items[ 1 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.MOVE_AFTER );
@@ -488,7 +471,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
@@ -508,7 +490,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
@@ -528,13 +509,124 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems.length ).toBe( 2 );
 			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
+		} );
+	} );
+
+	describe( 'clipboard options', () => {
+		beforeEach( () => {
+			keyPath = 'main.Z2K2.Z20K3';
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z801' },
+				Z801K1: { Z1K1: 'Z6', Z6K1: 'foo' }
+			};
+		} );
+
+		it( 'shows copy and paste clipboard options', () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				expectedType: Constants.Z_FUNCTION_CALL
+			} );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menu.vm.menuItems.length ).toBe( 2 );
+
+			const clipboadGroup = menu.vm.menuItems[ 1 ];
+
+			expect( clipboadGroup.items.length ).toBe( 2 );
+			expect( clipboadGroup.items[ 0 ] ).toEqual( {
+				icon: "<path data-testid='mock-cdx-copy'/>",
+				label: 'Copy to clipboard',
+				value: 'copy'
+			} );
+			expect( clipboadGroup.items[ 1 ] ).toEqual( {
+				icon: "<path data-testid='mock-cdx-paste'/>",
+				label: 'Paste from clipboard',
+				value: 'paste'
+			} );
+		} );
+
+		it( 'emits copy event when selecting copy menu option', async () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				expectedType: Constants.Z_FUNCTION_CALL
+			} );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD );
+			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'copy' ) );
+		} );
+
+		it( 'shows clipboard dialog when selecting paste menu option', async () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				expectedType: Constants.Z_FUNCTION_CALL
+			} );
+
+			const dialog = wrapper.findComponent( { name: 'wl-clipboard-dialog' } );
+			expect( dialog.props( 'open' ) ).toBe( false );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD );
+
+			await waitFor( () => expect( dialog.props( 'open' ) ).toBe( true ) );
+		} );
+
+		it( 'closes clipboard dialog when it emits close-dialog event', async () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				expectedType: Constants.Z_FUNCTION_CALL
+			} );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			const dialog = wrapper.findComponent( { name: 'wl-clipboard-dialog' } );
+
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD );
+
+			await waitFor( () => expect( dialog.props( 'open' ) ).toBe( true ) );
+
+			dialog.vm.$emit( 'close-dialog' );
+
+			await waitFor( () => expect( dialog.props( 'open' ) ).toBe( false ) );
+		} );
+
+		it( 'cleans the value and throws set-value event when clipboard dialog emits paste event', async () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue,
+				expectedType: Constants.Z_FUNCTION_CALL
+			} );
+
+			const clipboardItem = { Z1K1: 'Z6', Z6K1: 'some dirty value' };
+			const cleanItem = { Z1K1: 'Z6', Z6K1: 'some clean value' };
+
+			store.cleanClipboardItem = jest.fn().mockReturnValue( cleanItem );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			const dialog = wrapper.findComponent( { name: 'wl-clipboard-dialog' } );
+
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD );
+
+			await waitFor( () => expect( dialog.props( 'open' ) ).toBe( true ) );
+
+			dialog.vm.$emit( 'paste', { value: clipboardItem } );
+
+			await waitFor( () => expect( dialog.props( 'open' ) ).toBe( false ) );
+			expect( store.cleanClipboardItem ).toHaveBeenCalledWith( clipboardItem, keyPath );
+			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
+				keyPath: [],
+				value: cleanItem
+			} ] ] );
 		} );
 	} );
 
@@ -546,12 +638,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems.length ).toBe( 2 );
 		} );
 
 		it( 'shows add argument option if function call function is a function call', () => {
@@ -564,7 +655,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
@@ -582,7 +672,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
@@ -600,7 +689,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
@@ -618,12 +706,11 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems.length ).toBe( 1 );
+			expect( menu.vm.menuItems.length ).toBe( 2 );
 		} );
 
 		it( 'shows delete argument option if key is local', () => {
@@ -633,7 +720,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 
@@ -648,7 +734,6 @@ describe( 'ModeSelector', () => {
 			const wrapper = renderModeSelector( {
 				keyPath,
 				objectValue,
-				edit: true,
 				expectedType: Constants.Z_MONOLINGUALSTRING
 			} );
 

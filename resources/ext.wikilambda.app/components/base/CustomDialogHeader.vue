@@ -7,9 +7,11 @@
 <template>
 	<div class="cdx-dialog__header--default ext-wikilambda-app-custom-dialog-header" data-testid="custom-dialog-header">
 		<div class="cdx-dialog__header__title-group ext-wikilambda-app-custom-dialog-header__title-group">
+			<!-- Main slot: dialog title -->
 			<h2 class="cdx-dialog__header__title">
-				<slot name="title"></slot>
+				<slot></slot>
 			</h2>
+			<!-- Subtitle slot -->
 			<p v-if="$slots.subtitle" class="cdx-dialog__header__subtitle">
 				<slot name="subtitle"></slot>
 			</p>
@@ -17,6 +19,7 @@
 		<div
 			class="ext-wikilambda-app-custom-dialog-header__extra"
 			:class="{ 'ext-wikilambda-app-custom-dialog-header__extra--has-content': $slots.extra }">
+			<!-- Extra slot: additional content aligned to the right of the dialog header -->
 			<slot v-if="$slots.extra" name="extra"></slot>
 			<cdx-button
 				weight="quiet"

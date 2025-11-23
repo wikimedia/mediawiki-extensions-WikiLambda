@@ -100,7 +100,7 @@ describe( 'ZTester', () => {
 		it( 'renders tester call block', () => {
 			const wrapper = renderZTester();
 
-			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
+			const callBlock = wrapper.find( '[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -108,16 +108,16 @@ describe( 'ZTester', () => {
 		it( 'renders tester validation block', () => {
 			const wrapper = renderZTester();
 
-			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
+			const callBlock = wrapper.find( '[data-testid=tester-validation]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'does not expand call or validation blocks', () => {
 			const wrapper = renderZTester();
-			const callBlock = wrapper.find( 'div[data-testid=tester-call]' )
+			const callBlock = wrapper.find( '[data-testid=tester-call]' )
 				.findComponent( { name: 'wl-z-object-key-value' } );
-			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' )
+			const validationBlock = wrapper.find( '[data-testid=tester-validation]' )
 				.findComponent( { name: 'wl-z-object-key-value' } );
 
 			expect( callBlock.props( 'defaultExpanded' ) ).toBe( false );
@@ -143,7 +143,7 @@ describe( 'ZTester', () => {
 		it( 'renders tester call block', () => {
 			const wrapper = renderZTester( { edit: true } );
 
-			const callBlock = wrapper.find( 'div[data-testid=tester-call]' );
+			const callBlock = wrapper.find( '[data-testid=tester-call]' );
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
@@ -151,16 +151,16 @@ describe( 'ZTester', () => {
 		it( 'renders tester validation block', () => {
 			const wrapper = renderZTester( { edit: true } );
 
-			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' );
+			const validationBlock = wrapper.find( '[data-testid=tester-validation]' );
 			expect( validationBlock.exists() ).toBe( true );
 			expect( validationBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
 
 		it( 'keeps call and validation collapsed when not creating a new tester', () => {
 			const wrapper = renderZTester( { edit: true } );
-			const callBlock = wrapper.find( 'div[data-testid=tester-call]' )
+			const callBlock = wrapper.find( '[data-testid=tester-call]' )
 				.findComponent( { name: 'wl-z-object-key-value' } );
-			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' )
+			const validationBlock = wrapper.find( '[data-testid=tester-validation]' )
 				.findComponent( { name: 'wl-z-object-key-value' } );
 
 			expect( callBlock.props( 'defaultExpanded' ) ).toBe( false );
@@ -270,9 +270,9 @@ describe( 'ZTester', () => {
 			store.getCurrentZObjectType = Constants.Z_TESTER;
 
 			const wrapper = renderZTester( { edit: true } );
-			const callBlock = wrapper.find( 'div[data-testid=tester-call]' )
+			const callBlock = wrapper.find( '[data-testid=tester-call]' )
 				.findComponent( { name: 'wl-z-object-key-value' } );
-			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' )
+			const validationBlock = wrapper.find( '[data-testid=tester-validation]' )
 				.findComponent( { name: 'wl-z-object-key-value' } );
 
 			expect( callBlock.props( 'defaultExpanded' ) ).toBe( true );

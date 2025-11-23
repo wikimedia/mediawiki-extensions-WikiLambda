@@ -764,6 +764,10 @@ describe( 'zobject Pinia store', () => {
 				};
 			};
 
+			beforeEach( () => {
+				store.initializeClipboard = jest.fn();
+			} );
+
 			afterEach( () => {
 				restoreWindowLocation();
 			} );
@@ -783,6 +787,7 @@ describe( 'zobject Pinia store', () => {
 
 				await store.initializeView();
 
+				expect( store.initializeClipboard ).toHaveBeenCalled();
 				expect( store.initializeCreateNewPage ).toHaveBeenCalled();
 			} );
 
@@ -801,6 +806,7 @@ describe( 'zobject Pinia store', () => {
 
 				await store.initializeView();
 
+				expect( store.initializeClipboard ).toHaveBeenCalled();
 				expect( store.initializeEvaluateFunction ).toHaveBeenCalled();
 			} );
 
@@ -818,6 +824,7 @@ describe( 'zobject Pinia store', () => {
 
 				await store.initializeView();
 
+				expect( store.initializeClipboard ).toHaveBeenCalled();
 				expect( store.initializeEvaluateFunction ).toHaveBeenCalled();
 			} );
 
@@ -835,6 +842,7 @@ describe( 'zobject Pinia store', () => {
 
 				await store.initializeView();
 
+				expect( store.initializeClipboard ).toHaveBeenCalled();
 				expect( store.initializeRootZObject ).toHaveBeenCalledWith( 'Z10000' );
 			} );
 
@@ -851,6 +859,7 @@ describe( 'zobject Pinia store', () => {
 
 				await store.initializeView();
 
+				expect( store.initializeClipboard ).toHaveBeenCalled();
 				expect( store.initializeAbstractWikiContent ).toHaveBeenCalled();
 			} );
 

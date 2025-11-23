@@ -123,17 +123,16 @@ module.exports = exports = defineComponent( {
 					icon: icons.cdxIconTableAddRowAfter
 				} ]
 			};
-			// copy options
+			// clipboard options
 			const clipboardActionGroup = {
-				// TODO i18n with general clipboard work
-				label: 'Clipboard',
+				label: i18n( 'wikilambda-clipboard-menu-group' ).text(),
 				hideLabel: true,
 				items: [ {
-					label: 'Copy to clipboard',
+					label: i18n( 'wikilambda-clipboard-menu-option-copy' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
 					icon: icons.cdxIconCopy
 				}, {
-					label: 'Paste from clipboard',
+					label: i18n( 'wikilambda-clipboard-menu-option-paste' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD,
 					icon: icons.cdxIconPaste
 				} ]
@@ -220,7 +219,6 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-abstract-content-fragment-menu {
 		flex: 0 0 auto;
-		margin-right: @spacing-50;
 	}
 
 	.ext-wikilambda-app-abstract-content-fragment-menu > .cdx-toggle-button {

@@ -10,13 +10,19 @@
 			:disabled="disabled"
 			@update:selected="selectMode"
 		>
-			<cdx-icon :icon="icon"></cdx-icon>
+			<cdx-icon :icon="icon" size="small"></cdx-icon>
 		</cdx-menu-button>
+		<wl-clipboard-dialog
+			:open="showClipboard"
+			:expected-type="expectedType"
+			@close-dialog="closeClipboard"
+			@paste="pasteFromClipboard"
+		></wl-clipboard-dialog>
 	</div>
 </template>
 
 <script>
-const { computed, defineComponent, inject } = require( 'vue' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useType = require( '../../composables/useType.js' );
@@ -25,6 +31,8 @@ const useMainStore = require( '../../store/index.js' );
 const { createLabelComparator } = require( '../../utils/sortUtils.js' );
 const icons = require( '../../../lib/icons.json' );
 
+// Base components
+const ClipboardDialog = require( './ClipboardDialog.vue' );
 // Codex components
 const { CdxIcon, CdxMenuButton } = require( '../../../codex.js' );
 
@@ -32,7 +40,8 @@ module.exports = exports = defineComponent( {
 	name: 'wl-mode-selector',
 	components: {
 		'cdx-icon': CdxIcon,
-		'cdx-menu-button': CdxMenuButton
+		'cdx-menu-button': CdxMenuButton,
+		'wl-clipboard-dialog': ClipboardDialog
 	},
 	props: {
 		keyPath: {
@@ -53,7 +62,16 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	emits: [ 'add-arg', 'delete-arg', 'delete-list-item', 'move-after', 'move-before', 'set-type' ],
+	emits: [
+		'add-arg',
+		'copy',
+		'delete-arg',
+		'delete-list-item',
+		'move-after',
+		'move-before',
+		'set-type',
+		'set-value'
+	],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const { typeToString, isKeyTypedListItem, isKeyTypedListType, isLocalKey } = useType();
@@ -67,6 +85,9 @@ module.exports = exports = defineComponent( {
 
 		// Constants
 		const icon = icons.cdxIconEllipsis;
+
+		// Clipboard
+		const showClipboard = ref( false );
 
 		// Type data
 		/**
@@ -391,6 +412,24 @@ module.exports = exports = defineComponent( {
 				items.push( deleteArgumentActionGroup );
 			}
 
+			// Clipboard options
+			{
+				const clipboardActionGroup = {
+					label: i18n( 'wikilambda-clipboard-menu-group' ).text(),
+					hideLabel: true,
+					items: [ {
+						label: i18n( 'wikilambda-clipboard-menu-option-copy' ).text(),
+						value: Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
+						icon: icons.cdxIconCopy
+					}, {
+						label: i18n( 'wikilambda-clipboard-menu-option-paste' ).text(),
+						value: Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD,
+						icon: icons.cdxIconPaste
+					} ]
+				};
+				items.push( clipboardActionGroup );
+			}
+
 			return items;
 		} );
 
@@ -423,22 +462,58 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
+			// Clipboard actions:
+			if ( value === Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD ) {
+				emit( 'copy' );
+				return;
+			}
+			if ( value === Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD ) {
+				showClipboard.value = true;
+				return;
+			}
+
+			// Value mutation actions:
 			if ( value !== selected.value ) {
 				const newType = menuItems.value[ 0 ].items.find( ( menu ) => menu.value === value );
 				emit( 'set-type', {
-					keypath: [],
 					value: newType.type,
 					literal: true
 				} );
 			}
 		}
 
+		/**
+		 * Close clipboard dialog with no action.
+		 */
+		function closeClipboard() {
+			showClipboard.value = false;
+		}
+
+		/**
+		 * Paste selected item from clipboard dialog as the value
+		 * for this key and close the clipboard dialog.
+		 *
+		 * @param {Object} item
+		 */
+		function pasteFromClipboard( item ) {
+			const cleanValue = store.cleanClipboardItem( item.value, props.keyPath );
+			emit( 'set-value', {
+				keyPath: [],
+				value: cleanValue
+			} );
+
+			closeClipboard();
+		}
+
 		// Return all properties and methods for the template
 		return {
+			closeClipboard,
 			icon,
 			menuItems,
+			pasteFromClipboard,
 			selectMode,
 			selected,
+			showClipboard,
 			i18n
 		};
 	}

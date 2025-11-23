@@ -82,11 +82,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( validationFunctionSelector.value ).toBe( validationFunctionNameToSelect );
 
 		await waitFor( () => {
-			expect( within( testerValidationContainer ).getAllByTestId( 'z-object-key-value' ) ).toHaveLength( 4 );
+			expect( within( testerValidationContainer ).getAllByTestId( 'z-object-key-value' ) ).toHaveLength( 3 );
 		} );
 		// ACT: Enter expected value to which function call result should be compared.
 		const testerValidationAccordionList = within( testerValidationContainer ).getAllByTestId( 'z-object-key-value' );
-		const validationArgumentAccordion = testerValidationAccordionList[ 3 ];
+		const validationArgumentAccordion = testerValidationAccordionList[ 2 ];
 		const validationArgumentInput = await within( validationArgumentAccordion ).getByTestId( 'text-input' );
 		await fireEvent.update( validationArgumentInput, 'expected value' );
 

@@ -10,6 +10,7 @@ const { createPinia, setActivePinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const { canonicalToHybrid } = require( '../../../../resources/ext.wikilambda.app/utils/schemata.js' );
 const { mockApiResponseFor, mockStoredObjects, mockEnumValues } = require( '../../fixtures/mocks.js' );
 
 const mockLabels = {
@@ -708,7 +709,83 @@ describe( 'library Pinia store', () => {
 				const allEnumValues = [ { page_title: 'Z30004', label: 'April' }, ...mockEnumValues ];
 				expect( store.getEnumValues( 'Z30000', 'Z30004' ) ).toEqual( allEnumValues );
 			} );
+		} );
 
+		describe( 'getResolvingType', () => {
+			beforeEach( () => {
+				store.objects = mockStoredObjects;
+			} );
+
+			it( 'returns undefined if zobject is undefined', () => {
+				expect( store.getResolvingType( undefined ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if zobject is a function call of an unknown function', () => {
+				const zobject = {
+					Z1K1: 'Z7',
+					Z7K1: 'Z444',
+					Z444K1: 'booh'
+				};
+				const expected = undefined;
+				expect( store.getResolvingType( zobject ) ).toEqual( expected );
+				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+			} );
+
+			it( 'returns function output type if zobject is a function call of a known function', () => {
+				const zobject = {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: 'Z6'
+				};
+				const expected = 'Z4';
+				expect( store.getResolvingType( zobject ) ).toEqual( expected );
+				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+			} );
+
+			it( 'returns type of referred object if zobject is a known reference', () => {
+				const zobject = 'Z1003';
+				const expected = 'Z60';
+				expect( store.getResolvingType( zobject ) ).toEqual( expected );
+				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+			} );
+
+			it( 'returns undefined if zobject is an unknown reference', () => {
+				const zobject = 'Z444';
+				const expected = undefined;
+				expect( store.getResolvingType( zobject ) ).toEqual( expected );
+				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+			} );
+
+			it( 'returns type of function input if zobject is an argument reference', () => {
+				const zobject = {
+					Z1K1: 'Z18',
+					Z18K1: 'Z802K1'
+				};
+				const expected = 'Z40';
+				expect( store.getResolvingType( zobject ) ).toEqual( expected );
+				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+			} );
+
+			it( 'returns undefined if zobject is an unknown argument reference', () => {
+				const zobject = {
+					Z1K1: 'Z18',
+					Z18K1: 'Z444K1'
+				};
+				const expected = undefined;
+				expect( store.getResolvingType( zobject ) ).toEqual( expected );
+				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+			} );
+
+			it( 'returns type of the literal object', () => {
+				const zobject = {
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: 'text'
+				};
+				const expected = 'Z11';
+				expect( store.getResolvingType( zobject ) ).toEqual( expected );
+				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
+			} );
 		} );
 	} );
 
