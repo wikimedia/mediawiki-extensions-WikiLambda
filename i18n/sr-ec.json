@@ -108,6 +108,7 @@
 	"wikilambda-list-item-label": "Ставка $1",
 	"wikilambda-list-items-label": "Ставке",
 	"wikilambda-loading": "Учитавање података",
+	"wikilambda-loggedout-error-message": "Нисте пријављени. Пријавите се да би објавили.",
 	"wikilambda-metadata-all-languages": "Прикажи све унесене језике",
 	"wikilambda-metadata-label-column": "Назив",
 	"wikilambda-metadata-labels-table-label": "Називи",

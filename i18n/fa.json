@@ -61,6 +61,7 @@
 	"wikilambda-implementation-create-new": "ایجاد پیاده‌سازی تازه",
 	"wikilambda-implementation-none-found": "پیاده‌سازی یافت نشد.",
 	"wikilambda-implementation-selector": "یک پیاده‌سازی را انتخاب کنید",
+	"wikilambda-loggedout-error-message": "شما به سامانه وارد نشده‌اید. برای انتشار لطفاً وارد سامانه شوید.",
 	"wikilambda-metadata-add-alias": "افزودن نام مستعار",
 	"wikilambda-metadata-aka-column": "همچنین شناخته‌شده به‌عنوان",
 	"wikilambda-metadata-all-languages": "نمایش همهٔ زبان‌های واردشده",

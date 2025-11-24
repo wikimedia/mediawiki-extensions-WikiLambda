@@ -367,6 +367,7 @@
 	"wikilambda-list-type-change-warning": "Cambiaches o tipo dunha ou máis listas. Ao publicalas, algúns elementos da lista eliminaranse.",
 	"wikilambda-literal-type": "Obxecto literal de tipo $1",
 	"wikilambda-loading": "Cargando os datos",
+	"wikilambda-loggedout-error-message": "Non iniciaches sesión. Inicia sesión para publicares.",
 	"wikilambda-metadata-add-alias": "Engadir o pseudónimo",
 	"wikilambda-metadata-aka-column": "Tamén coñecido como",
 	"wikilambda-metadata-all-languages": "Mostrar todas as linguas introducidas",

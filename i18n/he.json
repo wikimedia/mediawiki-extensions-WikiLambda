@@ -370,6 +370,7 @@
 	"wikilambda-list-type-change-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, חלק מפריטי הרשימה יימחקו",
 	"wikilambda-literal-type": "עצם מפורש מסוג $1",
 	"wikilambda-loading": "טעינת נתונים",
+	"wikilambda-loggedout-error-message": "לא נכנסת לחשבון. נא להיכנס לחשבון כדי לפרסם.",
 	"wikilambda-metadata-add-alias": "הוספת כינוי",
 	"wikilambda-metadata-aka-column": "ידועה גם בשם",
 	"wikilambda-metadata-all-languages": "הצגת כל השפות שהוכנסו",
