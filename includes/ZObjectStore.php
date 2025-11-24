@@ -56,6 +56,10 @@ class ZObjectStore {
 
 	private BagOStuff $zObjectCache;
 
+	// NOTE: This constant hard-codes user-provided content as starting from 'Z10000'. Now that the
+	// wiki has launched, change it will have unpredicatable effects.
+	private const PREDEFINED_TOP_LIMIT = 'Z9999';
+
 	public const ZOBJECT_CACHE_KEY_PREFIX = 'WikiLambdaObjectStorage';
 
 	/**
@@ -94,22 +98,60 @@ class ZObjectStore {
 	public function getNextAvailableZid(): string {
 		// Intentionally use DB_PRIMARY as we need the latest data here.
 		$dbr = $this->dbProvider->getPrimaryDatabase();
-		$res = $dbr->newSelectQueryBuilder()
+
+		$conditions = [
+			'page_namespace' => NS_MAIN,
+			'LENGTH( page_title ) > 5',
+			$dbr->expr( 'page_title', IExpression::LIKE, new LikeValue( 'Z', $dbr->anyString() ) )
+		];
+
+		// First try, get zid of highest page_id, skipping predefined
+		$latest = $dbr->newSelectQueryBuilder()
 			->select( [ 'page_title' ] )
 			->from( 'page' )
-			->where( [
-				'page_namespace' => NS_MAIN,
-				'LENGTH( page_title ) > 5'
-			] )
+			->where( $conditions )
 			->orderBy( 'page_id', SelectQueryBuilder::SORT_DESC )
-			->groupBy( [ 'page_id', 'page_title' ] )
 			->limit( 1 )
 			->caller( __METHOD__ )
 			->fetchResultSet();
 
-		// NOTE: This hard-codes user-provided content as starting from 'Z10000'. Now that the
-		// wiki has launched, change it will have unpredicatable effects.
-		$highestZid = $res->numRows() > 0 ? $res->fetchRow()[ 0 ] : 'Z9999';
+		$latestZid = $latest->numRows() > 0 ? $latest->fetchRow()[ 0 ] : self::PREDEFINED_TOP_LIMIT;
+		$targetZid = 'Z' . ( max( intval( substr( $latestZid, 1 ) ) + 1, 10000 ) );
+
+		// Check if target zid already exists, just in case of general zid disarray
+		// where the latest non-predefined zid is not the highest one
+		$exists = $dbr->newSelectQueryBuilder()
+			->select( 'COUNT(*)' )
+			->from( 'page' )
+			->where( $conditions )
+			->andWhere( [ 'page_title' => $targetZid ] )
+			->caller( __METHOD__ )
+			->fetchField();
+
+		// If Zid after latest added is available, return
+		if ( !$exists ) {
+			return $targetZid;
+		}
+
+		// If Zid after latest is not available, find Zid after highest one
+		// NOTE: this operation is much more expensive, so we should only
+		// perform it in the exceptional case that latestZid fails.
+		$highest = $dbr->newSelectQueryBuilder()
+			->select( [ 'page_title' ] )
+			->from( 'page' )
+			->where( $conditions )
+			->orderBy( 'CAST(SUBSTR(page_title, 2) AS INTEGER)', SelectQueryBuilder::SORT_DESC )
+			->limit( 1 )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$highestZid = $highest->numRows() > 0 ? $highest->fetchRow()[ 0 ] : self::PREDEFINED_TOP_LIMIT;
+
+		$this->logger->warning(
+			__METHOD__ . ' at first got "' . $targetZid . '" — exists; slower query gets: "Z' . $highestZid . '".',
+			[ 'targetZid' => $targetZid, 'highestZid' => $highestZid ]
+		);
+
 		$targetZid = 'Z' . ( max( intval( substr( $highestZid, 1 ) ) + 1, 10000 ) );
 
 		return $targetZid;

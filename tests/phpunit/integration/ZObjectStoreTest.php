@@ -42,9 +42,64 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 	}
 
+	private function addPageData( $pages ) {
+		$rows = [];
+		foreach ( $pages as $page ) {
+			$rows[] = [
+				'page_id' => $page[0],
+				'page_namespace' => $page[1],
+				'page_title' => $page[2],
+				'page_random' => mt_rand() / mt_getrandmax(),
+				'page_touched' => '20251123214400',
+				'page_latest' => 1,
+				'page_len' => 0,
+			];
+		}
+		$this->getDb()->newInsertQueryBuilder()
+			->insertInto( 'page' )
+			->rows( $rows )
+			->caller( __METHOD__ )
+			->execute();
+	}
+
 	public function testGetNextAvailableZid_first() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$this->assertEquals( 'Z10000', $zid );
+	}
+
+	public function testGetNextAvailableZid_latest() {
+		$this->addPageData( [
+			[ 100, 0, 'Z10011' ],
+			[ 101, 0, 'Z10012' ],
+			[ 102, 0, 'Z10013' ],
+		] );
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$this->assertEquals( 'Z10014', $zid );
+	}
+
+	public function testGetNextAvailableZid_scrambled() {
+		$this->addPageData( [
+			[ 103, 0, 'Z10014' ],
+			[ 104, 0, 'Z10024' ],
+			[ 105, 0, 'Z10025' ],
+			[ 106, 0, 'Z10015' ],
+		] );
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$this->assertEquals( 'Z10016', $zid );
+	}
+
+	public function testGetNextAvailableZid_highest() {
+		$this->addPageData( [
+			[ 103, 0, 'Z10014' ],
+			[ 104, 0, 'Z10017' ],
+			[ 105, 0, 'Z10018' ],
+			[ 106, 0, 'Z10015' ],
+			[ 107, 0, 'Z10016' ],
+			// Next in line would be Z10017
+			// But next available slot is Z10019
+		] );
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$this->assertEquals( 'Z10019', $zid );
 	}
 
 	public function testfetchZObject_valid() {
