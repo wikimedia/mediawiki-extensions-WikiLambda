@@ -458,6 +458,7 @@
 				"ext.wikilambda.app/utils/miscUtils.js",
 				"ext.wikilambda.app/utils/schemata.js",
 				"ext.wikilambda.app/utils/scrollUtils.js",
+				"ext.wikilambda.app/utils/sortUtils.js",
 				"ext.wikilambda.app/utils/typeUtils.js",
 				"ext.wikilambda.app/utils/urlUtils.js",
 				"ext.wikilambda.app/utils/wikidataUtils.js",

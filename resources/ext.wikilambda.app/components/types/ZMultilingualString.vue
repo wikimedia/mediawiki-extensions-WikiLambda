@@ -81,6 +81,7 @@ const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const useZObject = require( '../../composables/useZObject.js' );
 const { canonicalToHybrid } = require( '../../utils/schemata.js' );
+const { sortLabelByLocale } = require( '../../utils/sortUtils.js' );
 // Type components
 const ZMultilingualStringDialog = require( './ZMultilingualStringDialog.vue' );
 // Codex components
@@ -236,7 +237,7 @@ module.exports = exports = defineComponent( {
 			// alphabetically by langZid
 			const la = a.langZid || '';
 			const lb = b.langZid || '';
-			return la.localeCompare( lb );
+			return sortLabelByLocale( store.getUserLangCode, la, lb );
 		}
 
 		/**

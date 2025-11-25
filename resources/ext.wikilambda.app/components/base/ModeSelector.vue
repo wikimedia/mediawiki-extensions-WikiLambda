@@ -22,6 +22,7 @@ const Constants = require( '../../Constants.js' );
 const useType = require( '../../composables/useType.js' );
 const useZObject = require( '../../composables/useZObject.js' );
 const useMainStore = require( '../../store/index.js' );
+const { createLabelComparator } = require( '../../utils/sortUtils.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Codex components
@@ -281,8 +282,7 @@ module.exports = exports = defineComponent( {
 				...( allowLiterals.value ? literals : [] ),
 				...( allowResolvers.value ? resolvers : [] )
 			]
-				.sort( ( a, b ) => ( a.label < b.label ) ? -1 :
-					( a.label > b.label ) ? 1 : 0 );
+				.sort( createLabelComparator( store.getUserLangCode, 'label' ) );
 
 			// If there are literals and resolvers, add them to the menu
 			if ( options.length ) {

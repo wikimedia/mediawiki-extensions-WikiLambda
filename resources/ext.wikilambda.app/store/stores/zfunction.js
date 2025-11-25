@@ -9,6 +9,7 @@ const Constants = require( '../../Constants.js' );
 const { fetchFunctionObjects } = require( '../../utils/apiUtils.js' );
 const { canonicalToHybrid } = require( '../../utils/schemata.js' );
 const { createConnectedItemsChangesSummaryMessage } = require( '../../utils/miscUtils.js' );
+const { createLabelComparator } = require( '../../utils/sortUtils.js' );
 const {
 	validateGenericType,
 	getZMonolingualItemForLang,
@@ -63,31 +64,35 @@ module.exports = {
 			const findInputLabels = ( lang ) => {
 				const inputs = this.getZFunctionInputs;
 
-				return inputs.map( ( input, index ) => {
-					const inputKeyPath = [
-						Constants.STORED_OBJECTS.MAIN,
-						Constants.Z_PERSISTENTOBJECT_VALUE,
-						Constants.Z_FUNCTION_ARGUMENTS,
-						index + 1
-					];
-					const key = getZStringTerminalValue( input[ Constants.Z_ARGUMENT_KEY ] );
-					const type = input[ Constants.Z_ARGUMENT_TYPE ];
-					const typeKeyPath = [ ...inputKeyPath, Constants.Z_ARGUMENT_TYPE ].join( '.' );
+				return inputs
+					.map( ( input, index ) => {
+						const inputKeyPath = [
+							Constants.STORED_OBJECTS.MAIN,
+							Constants.Z_PERSISTENTOBJECT_VALUE,
+							Constants.Z_FUNCTION_ARGUMENTS,
+							index + 1
+						];
+						const key = getZStringTerminalValue( input[ Constants.Z_ARGUMENT_KEY ] );
+						const type = input[ Constants.Z_ARGUMENT_TYPE ];
+						const typeKeyPath = [ ...inputKeyPath, Constants.Z_ARGUMENT_TYPE ].join( '.' );
 
-					const label = getZMonolingualItemForLang( input[ Constants.Z_ARGUMENT_LABEL ], lang );
-					const value = label ? label.value : '';
-					const keyPath = label ?
-						[
-							...inputKeyPath,
-							Constants.Z_ARGUMENT_LABEL,
-							Constants.Z_MULTILINGUALSTRING_VALUE,
-							label.index,
-							Constants.Z_MONOLINGUALSTRING_VALUE
-						].join( '.' ) :
-						undefined;
+						const label = getZMonolingualItemForLang( input[ Constants.Z_ARGUMENT_LABEL ], lang );
+						const value = label ? label.value : '';
+						const keyPath = label ?
+							[
+								...inputKeyPath,
+								Constants.Z_ARGUMENT_LABEL,
+								Constants.Z_MULTILINGUALSTRING_VALUE,
+								label.index,
+								Constants.Z_MONOLINGUALSTRING_VALUE
+							].join( '.' ) :
+							undefined;
 
-					return { keyPath, value, key, type, typeKeyPath };
-				} ).sort( ( a, b ) => ( a.key < b.key ) ? -1 : ( b.key < a.key ) ? 1 : 0 );
+						return { keyPath, value, key, type, typeKeyPath };
+					} )
+					// Natural sort for Z{number}K{number} format keys (e.g. Z1K1, Z1K2 ... Z1K9, Z1K10, Z1K11, etc.)
+					// Uses 'en' language code for numeric sorting so it the order is the same for all languages.
+					.sort( createLabelComparator( 'en', 'key' ) );
 			};
 			return findInputLabels;
 		},

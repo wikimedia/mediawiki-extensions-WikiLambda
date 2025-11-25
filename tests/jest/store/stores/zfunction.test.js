@@ -64,6 +64,24 @@ describe( 'zFunction Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getZFunctionInputLabels', () => {
+			it( 'sorts arguments using natural key order regardless of numeric suffix', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z123K10', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z123K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z123K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+				] } } );
+
+				const labels = store.getZFunctionInputLabels( 'en' );
+
+				expect( labels.map( ( input ) => input.key ) ).toEqual( [
+					'Z123K1',
+					'Z123K2',
+					'Z123K10'
+				] );
+			} );
+		} );
+
 		describe( 'getZFunctionOutput', () => {
 			it( 'returns undefined when object is undefined', () => {
 				const expected = undefined;

@@ -86,6 +86,7 @@ const Constants = require( '../../../Constants.js' );
 const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
+const { createLabelComparator } = require( '../../../utils/sortUtils.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-about-languages-dialog',
@@ -150,10 +151,9 @@ module.exports = exports = defineComponent( {
 				};
 			}
 
-			const sortByLabel = ( a, b ) => a.langLabelData.label.localeCompare(
-				b.langLabelData.label,
+			const sortByLabel = createLabelComparator(
 				store.getUserLangCode,
-				{ sensitivity: 'base' }
+				( item ) => item.langLabelData.label
 			);
 
 			const suggestedLangsList = store.getFallbackLanguageZids.map( ( zid ) => buildLangItem( zid ) );

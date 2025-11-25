@@ -357,7 +357,15 @@ describe( 'ZObjectSelector', () => {
 				Z1004: 'French',
 				Z1005: 'Russian',
 				Z1006: 'Chinese',
-				Z30004: 'April'
+				Z30004: 'April',
+				Z30005: 'May',
+				Z30006: 'June',
+				Z30007: 'July',
+				Z30008: 'August',
+				Z30009: 'September',
+				Z30010: 'October',
+				Z30011: 'November',
+				Z30012: 'December'
 			} );
 			store.fetchZids.mockResolvedValue();
 		} );
@@ -398,6 +406,29 @@ describe( 'ZObjectSelector', () => {
 			expect( select.props( 'menuItems' ) ).toEqual( enumMenuItems );
 		} );
 
+		it( 'sorts enum menu items by Zid using natural ordering', async () => {
+			const unsortedEnumValues = [
+				{ page_title: 'Z30010', label: 'October' },
+				{ page_title: 'Z30002', label: 'February' },
+				{ page_title: 'Z30001', label: 'January' },
+				{ page_title: 'Z30005', label: 'May' }
+			];
+			store.getEnumValues = createGettersWithFunctionsMock( unsortedEnumValues );
+
+			const wrapper = renderZObjectSelector( {
+				type: mockEnumZid
+			} );
+
+			const select = wrapper.getComponent( { name: 'cdx-select' } );
+			await waitFor( () => expect( select.props( 'menuItems' ).length ).toBe( 4 ) );
+			expect( select.props( 'menuItems' ) ).toEqual( [
+				{ value: 'Z30001', label: 'January' },
+				{ value: 'Z30002', label: 'February' },
+				{ value: 'Z30005', label: 'May' },
+				{ value: 'Z30010', label: 'October' }
+			] );
+		} );
+
 		it( 'sets new value on selector update', async () => {
 			const wrapper = renderZObjectSelector( {
 				type: mockEnumZid
@@ -424,10 +455,10 @@ describe( 'ZObjectSelector', () => {
 			await waitFor( () => expect( select.props( 'menuItems' ).length ).toBe( 4 ) );
 			expect( store.getEnumValues ).toHaveBeenCalledWith( mockEnumZid, 'Z30004' );
 			expect( select.props( 'menuItems' ) ).toEqual( [
-				{ value: 'Z30004', label: 'April' },
 				{ value: 'Z30001', label: 'January' },
 				{ value: 'Z30002', label: 'February' },
-				{ value: 'Z30003', label: 'March' }
+				{ value: 'Z30003', label: 'March' },
+				{ value: 'Z30004', label: 'April' }
 			] );
 		} );
 	} );

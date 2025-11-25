@@ -65,6 +65,7 @@ const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const useError = require( '../../composables/useError.js' );
 const icons = require( '../../../lib/icons.json' );
+const { createLabelComparator } = require( '../../utils/sortUtils.js' );
 
 // Base components
 const SafeMessage = require( './SafeMessage.vue' );
@@ -281,7 +282,8 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Returns the menu items for the enum selector.
+		 * Returns the menu items for the enum selector, sorted by their ZID.
+		 *
 		 * By passing selected Zid to store.getEnumValues getter, it will manually
 		 * include this item in the enum list if:
 		 * * it's not part of the first page of enum values
@@ -289,11 +291,17 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array}
 		 */
-		const enumValues = computed( () => store.getEnumValues( props.type, props.selectedZid ).map( ( item ) => {
-			const value = item.page_title;
-			const label = getLabelOrZid( value, item.label );
-			return { value, label };
-		} ) );
+		const enumValues = computed( () => {
+			const items = store.getEnumValues( props.type, props.selectedZid )
+				.slice()
+				// (T368497) We sort by page_title (which will be the ZID), in English for stability.
+				.sort( createLabelComparator( 'en', 'page_title' ) );
+			return items.map( ( item ) => {
+				const value = item.page_title;
+				const label = getLabelOrZid( value, item.label );
+				return { value, label };
+			} );
+		} );
 
 		/**
 		 * Returns the placeholder for the Lookup selector, either
