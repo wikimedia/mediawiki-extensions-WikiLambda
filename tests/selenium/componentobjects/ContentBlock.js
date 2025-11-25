@@ -11,9 +11,8 @@
  * @license MIT
  */
 
-'use strict';
-const { Element: WebdriverIOElementType } = require( 'webdriverio' );
-const ElementActions = require( '../utils/ElementActions' );
+import { Element as WebdriverIOElementType } from 'webdriverio';
+import ElementActions from '../utils/ElementActions.js';
 
 class ContentBlock {
 	get contentBlock() {
@@ -136,4 +135,4 @@ class ContentBlock {
 	// #endregion
 }
 
-module.exports = new ContentBlock();
+export default new ContentBlock();

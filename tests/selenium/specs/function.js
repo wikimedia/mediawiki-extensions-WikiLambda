@@ -28,12 +28,11 @@
  * @license MIT
  */
 
-'use strict';
-const ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' ),
-	FunctionForm = require( '../pageobjects/function/FunctionForm.page' ),
-	FunctionPage = require( '../pageobjects/function/Function.page' ),
-	util = require( 'wdio-mediawiki/Util' ),
-	LoginPage = require( 'wdio-mediawiki/LoginPage' );
+import ListObjectsByType from '../pageobjects/special/ListObjectsByType.page.js';
+import FunctionForm from '../pageobjects/function/FunctionForm.page.js';
+import FunctionPage from '../pageobjects/function/Function.page.js';
+import * as util from 'wdio-mediawiki/Util.js';
+import LoginPage from 'wdio-mediawiki/LoginPage.js';
 
 describe( 'Function', () => {
 

@@ -18,11 +18,10 @@
  * @license MIT
  */
 
-'use strict';
-const LoginPage = require( 'wdio-mediawiki/LoginPage' );
-const FunctionPage = require( '../pageobjects/function/Function.page' );
-const ImplementationForm = require( '../pageobjects/implementation/ImplementationForm.page' );
-const ImplementationPage = require( '../pageobjects/implementation/Implementation.page' );
+import LoginPage from 'wdio-mediawiki/LoginPage.js';
+import FunctionPage from '../pageobjects/function/Function.page.js';
+import ImplementationForm from '../pageobjects/implementation/ImplementationForm.page.js';
+import ImplementationPage from '../pageobjects/implementation/Implementation.page.js';
 
 describe( 'Implementation (CUJ 5)', () => {
 

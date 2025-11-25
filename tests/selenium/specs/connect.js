@@ -31,9 +31,8 @@
  * @license MIT
  */
 
-'use strict';
-const LoginPage = require( 'wdio-mediawiki/LoginPage' );
-const FunctionPage = require( '../pageobjects/function/Function.page' );
+import LoginPage from 'wdio-mediawiki/LoginPage.js';
+import FunctionPage from '../pageobjects/function/Function.page.js';
 
 describe( 'Dynamic Test for Implementation and Test Case Connection', () => {
 

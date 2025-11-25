@@ -5,8 +5,7 @@
  * @license MIT
  */
 
-'use strict';
-const Page = require( 'wdio-mediawiki/Page' );
+import Page from 'wdio-mediawiki/Page.js';
 
 class ListFunctions extends Page {
 	get functionIdByName() {
@@ -68,4 +67,4 @@ class ListObjectsByType extends Page {
 	}
 }
 
-module.exports = new ListObjectsByType();
+export default new ListObjectsByType();

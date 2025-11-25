@@ -10,9 +10,8 @@
  * @license MIT
  */
 
-'use strict';
-const ElementActions = require( '../utils/ElementActions' );
-const InputDropdown = require( './InputDropdown' );
+import ElementActions from '../utils/ElementActions.js';
+import InputDropdown from './InputDropdown.js';
 
 class FunctionExplorerBlock {
 	get functionExplorerBlock() {
@@ -57,4 +56,4 @@ class FunctionExplorerBlock {
 	}
 }
 
-module.exports = new FunctionExplorerBlock();
+export default new FunctionExplorerBlock();

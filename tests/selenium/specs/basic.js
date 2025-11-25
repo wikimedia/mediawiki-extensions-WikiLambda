@@ -5,12 +5,11 @@
  * @license MIT
  */
 
-'use strict';
-const LoginPage = require( 'wdio-mediawiki/LoginPage' ),
-	CreateObjectPage = require( '../pageobjects/special/CreateObject.page.js' ),
-	RunFunction = require( '../pageobjects/special/RunFunction.page.js' ),
-	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' ),
-	i18n = require( '../utils/i18n.js' )();
+import LoginPage from 'wdio-mediawiki/LoginPage.js';
+import CreateObjectPage from '../pageobjects/special/CreateObject.page.js';
+import RunFunction from '../pageobjects/special/RunFunction.page.js';
+import ListObjectsByType from '../pageobjects/special/ListObjectsByType.page.js';
+import i18n from '../utils/i18n.js';
 
 describe( 'Installation checks', () => {
 	before( async () => {

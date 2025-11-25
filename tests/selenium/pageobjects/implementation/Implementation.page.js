@@ -15,12 +15,11 @@
  * @license MIT
  */
 
-'use strict';
-const { Element: WebdriverIOElementType } = require( 'webdriverio' );
-const Page = require( 'wdio-mediawiki/Page' );
-const ElementActions = require( '../../utils/ElementActions' );
-const AboutBlock = require( '../../componentobjects/AboutBlock' );
-const ContentBlock = require( '../../componentobjects/ContentBlock' );
+import { Element as WebdriverIOElementType } from 'webdriverio';
+import Page from 'wdio-mediawiki/Page.js';
+import ElementActions from '../../utils/ElementActions.js';
+import AboutBlock from '../../componentobjects/AboutBlock.js';
+import ContentBlock from '../../componentobjects/ContentBlock.js';
 
 class Implementation extends Page {
 	get implementationTitleSelector() {
@@ -134,4 +133,4 @@ class Implementation extends Page {
 	// #endregion
 }
 
-module.exports = new Implementation();
+export default new Implementation();

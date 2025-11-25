@@ -18,12 +18,11 @@
  * @license MIT
  */
 
-'use strict';
-const LoginPage = require( 'wdio-mediawiki/LoginPage' );
-const FunctionPage = require( '../pageobjects/function/Function.page' );
-const TesterForm = require( '../pageobjects/tester/TesterForm.page' );
-const TesterPage = require( '../pageobjects/tester/Tester.page' );
-const AboutBlock = require( '../componentobjects/AboutBlock' );
+import LoginPage from 'wdio-mediawiki/LoginPage.js';
+import FunctionPage from '../pageobjects/function/Function.page.js';
+import TesterForm from '../pageobjects/tester/TesterForm.page.js';
+import TesterPage from '../pageobjects/tester/Tester.page.js';
+import AboutBlock from '../componentobjects/AboutBlock.js';
 
 describe( 'Tester', () => {
 
@@ -154,31 +153,31 @@ describe( 'Tester', () => {
 				{ message: `Validation parameter are not displayed as expected to be ${ validationBlockEntries.secondString.true }` } );
 		} );
 	} );
-} );
 
-describe( 'Edit the test', () => {
+	describe( 'Edit the test', () => {
 
-	let aboutBlockEditEnglishEntries;
+		let aboutBlockEditEnglishEntries;
 
-	before( () => {
-		const time = Date.now();
-		aboutBlockEditEnglishEntries = {
-			language: 'English',
-			label: `e2e-edit-test-${ time }-English`,
-			description: 'This is edited description for the test in English',
-			alias: 'edited alias in English'
-		};
-	} );
+		before( () => {
+			const time = Date.now();
+			aboutBlockEditEnglishEntries = {
+				language: 'English',
+				label: `e2e-edit-test-${ time }-English`,
+				description: 'This is edited description for the test in English',
+				alias: 'edited alias in English'
+			};
+		} );
 
-	it( 'should edit the about block test', async () => {
-		await TesterPage.clickOnEditSourceLink();
-		await TesterForm.addAboutBlockEntries( aboutBlockEditEnglishEntries );
-		await TesterForm.publishTest();
-		await AboutBlock.aboutBlock.waitForExist();
-		await AboutBlock.aboutDescription.waitForExist();
-		await AboutBlock.aboutDescription.waitForDisplayed();
-		await expect( await TesterPage.getTesterDescription() ).toBe(
-			aboutBlockEditEnglishEntries.description,
-			{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEditEnglishEntries.description }` } );
+		it( 'should edit the about block test', async () => {
+			await TesterPage.clickOnEditSourceLink();
+			await TesterForm.addAboutBlockEntries( aboutBlockEditEnglishEntries );
+			await TesterForm.publishTest();
+			await AboutBlock.aboutBlock.waitForExist();
+			await AboutBlock.aboutDescription.waitForExist();
+			await AboutBlock.aboutDescription.waitForDisplayed();
+			await expect( await TesterPage.getTesterDescription() ).toBe(
+				aboutBlockEditEnglishEntries.description,
+				{ message: `Tester page is not displaying the tester description as expected to be ${ aboutBlockEditEnglishEntries.description }` } );
+		} );
 	} );
 } );

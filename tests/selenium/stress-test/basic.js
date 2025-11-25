@@ -24,7 +24,6 @@
  * However this can not be used as blocked by T324766
  */
 
-'use strict';
 const { config } = require( '../wdio.conf' );
 
 const specs = [];

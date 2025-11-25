@@ -5,14 +5,13 @@
  * @license MIT
  */
 
-'use strict';
-const Page = require( 'wdio-mediawiki/Page' );
-const ElementActions = require( '../../utils/ElementActions' );
-const EvaluateFunctionBlock = require( '../../componentobjects/EvaluateFunctionBlock' );
-const AboutBlock = require( '../../componentobjects/AboutBlock' );
-const InputDropdown = require( '../../componentobjects/InputDropdown' );
-const { Element: WebdriverIOElementType } = require( 'webdriverio' );
-const i18n = require( '../../utils/i18n.js' )();
+import Page from 'wdio-mediawiki/Page.js';
+import ElementActions from '../../utils/ElementActions.js';
+import EvaluateFunctionBlock from '../../componentobjects/EvaluateFunctionBlock.js';
+import AboutBlock from '../../componentobjects/AboutBlock.js';
+import InputDropdown from '../../componentobjects/InputDropdown.js';
+import { Element as WebdriverIOElementType } from 'webdriverio';
+import i18n from '../../utils/i18n.js';
 
 class FunctionPage extends Page {
 
@@ -401,4 +400,4 @@ class FunctionPage extends Page {
 	// #endregion Details Section
 }
 
-module.exports = new FunctionPage();
+export default new FunctionPage();

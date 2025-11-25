@@ -14,12 +14,11 @@
  * @license MIT
  */
 
-'use strict';
-const Page = require( 'wdio-mediawiki/Page' );
-const ElementActions = require( '../../utils/ElementActions' );
-const AboutBlock = require( '../../componentobjects/AboutBlock' );
-const { Element: WebdriverIOElementType } = require( 'webdriverio' );
-const ContentBlock = require( '../../componentobjects/ContentBlock' );
+import Page from 'wdio-mediawiki/Page.js';
+import ElementActions from '../../utils/ElementActions.js';
+import AboutBlock from '../../componentobjects/AboutBlock.js';
+import { Element as WebdriverIOElementType } from 'webdriverio';
+import ContentBlock from '../../componentobjects/ContentBlock.js';
 
 class Tester extends Page {
 	get testerTitleSelector() {
@@ -212,4 +211,4 @@ class Tester extends Page {
 	// #endregion
 }
 
-module.exports = new Tester();
+export default new Tester();

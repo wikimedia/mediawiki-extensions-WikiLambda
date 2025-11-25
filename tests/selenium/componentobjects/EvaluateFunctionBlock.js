@@ -11,8 +11,7 @@
  * @license MIT
  */
 
-'use strict';
-const ElementActions = require( '../utils/ElementActions' );
+import ElementActions from '../utils/ElementActions.js';
 
 class EvaluateFunctionBlock {
 	get evaluateFunctionBlock() {
@@ -60,4 +59,4 @@ class EvaluateFunctionBlock {
 	// #endregion
 }
 
-module.exports = new EvaluateFunctionBlock();
+export default new EvaluateFunctionBlock();

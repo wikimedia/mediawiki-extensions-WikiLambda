@@ -5,10 +5,9 @@
  * @license MIT
  */
 
-'use strict';
-const Page = require( 'wdio-mediawiki/Page' );
-const { LanguageContainerComponent, FirstLanguageContainerComponent } = require( '../../componentobjects/function-form/LanguageContainer.component' );
-const ZObjectPublish = require( '../../componentobjects/ZObjectPublish' );
+import Page from 'wdio-mediawiki/Page.js';
+import { LanguageContainerComponent, FirstLanguageContainerComponent } from '../../componentobjects/function-form/LanguageContainer.component.js';
+import ZObjectPublish from '../../componentobjects/ZObjectPublish.js';
 
 class FunctionForm extends Page {
 	get addLabelInAnotherLanguageBtn() {
@@ -61,4 +60,4 @@ class FunctionForm extends Page {
 	}
 }
 
-module.exports = new FunctionForm();
+export default new FunctionForm();

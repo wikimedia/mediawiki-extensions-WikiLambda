@@ -9,9 +9,8 @@
  * @license MIT
  */
 
-'use strict';
-const ElementActions = require( '../utils/ElementActions' ),
-	i18n = require( '../utils/i18n.js' )();
+import ElementActions from '../utils/ElementActions.js';
+import i18n from '../utils/i18n.js';
 
 class ZObjectPublish {
 	get publishBlock() {
@@ -42,4 +41,4 @@ class ZObjectPublish {
 	}
 }
 
-module.exports = new ZObjectPublish();
+export default new ZObjectPublish();

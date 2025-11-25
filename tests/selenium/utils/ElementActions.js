@@ -15,8 +15,7 @@
  * @license MIT
  */
 
-'use strict';
-const { Element: WebdriverIOElementType } = require( 'webdriverio' );
+import { Element as WebdriverIOElementType } from 'webdriverio';
 
 class ElementActions {
 	/**
@@ -126,4 +125,4 @@ class ElementActions {
 	}
 }
 
-module.exports = new ElementActions();
+export default new ElementActions();

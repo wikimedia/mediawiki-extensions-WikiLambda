@@ -10,9 +10,8 @@
  * @license MIT
  */
 
-'use strict';
-const ElementActions = require( '../utils/ElementActions' );
-const { Element: WebdriverIOElementType } = require( 'webdriverio' );
+import ElementActions from '../utils/ElementActions.js';
+import { Element as WebdriverIOElementType } from 'webdriverio';
 
 class InputDropdown {
 	/**
@@ -32,7 +31,7 @@ class InputDropdown {
 		await ElementActions.setInput( resolvedInputSelector, inputText );
 		// TODO: get rid of this hacky pause
 		// eslint-disable-next-line wdio/no-pause
-		await browser.pause( 1000 );
+		await browser.pause( 2000 );
 		const optionSelector = await resolvedParentSelector.$( `bdi=${ inputText }` );
 		await ElementActions.doClick( optionSelector );
 	}
@@ -82,4 +81,4 @@ class InputDropdown {
 	}
 }
 
-module.exports = new InputDropdown();
+export default new InputDropdown();

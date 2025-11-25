@@ -5,10 +5,8 @@
  * @license MIT
  */
 
-'use strict';
-
-const ObjectSelector = require( './ObjectSelector' ),
-	i18n = require( '../../utils/i18n.js' )();
+import ObjectSelector from './ObjectSelector.js';
+import i18n from '../../utils/i18n.js';
 
 class LanguageContainerComponent {
 	get languageField() {
@@ -114,7 +112,4 @@ class FirstLanguageContainerComponent extends LanguageContainerComponent {
 	}
 }
 
-module.exports = {
-	LanguageContainerComponent,
-	FirstLanguageContainerComponent
-};
+export { LanguageContainerComponent, FirstLanguageContainerComponent };

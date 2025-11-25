@@ -11,9 +11,8 @@
  * @license MIT
  */
 
-'use strict';
-const ElementActions = require( '../utils/ElementActions' ),
-	{ Element: WebdriverIOElementType } = require( 'webdriverio' );
+import ElementActions from '../utils/ElementActions.js';
+import { Element as WebdriverIOElementType } from 'webdriverio';
 
 class AboutBlock {
 	get aboutBlock() {
@@ -210,4 +209,4 @@ class AboutBlock {
 	// #endregion
 }
 
-module.exports = new AboutBlock();
+export default new AboutBlock();

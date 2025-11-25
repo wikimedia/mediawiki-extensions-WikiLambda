@@ -5,8 +5,7 @@
  * @license MIT
  */
 
-'use strict';
-const Page = require( 'wdio-mediawiki/Page' );
+import Page from 'wdio-mediawiki/Page.js';
 class CreateObjectPage extends Page {
 	get title() {
 		return $( '#firstHeading' );
@@ -17,4 +16,4 @@ class CreateObjectPage extends Page {
 	}
 
 }
-module.exports = new CreateObjectPage();
+export default new CreateObjectPage();

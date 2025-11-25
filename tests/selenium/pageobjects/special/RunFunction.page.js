@@ -5,8 +5,7 @@
  * @license MIT
  */
 
-'use strict';
-const Page = require( 'wdio-mediawiki/Page' );
+import Page from 'wdio-mediawiki/Page.js';
 class RunFunctionPage extends Page {
 	get title() {
 		return $( '#firstHeading' );
@@ -16,4 +15,4 @@ class RunFunctionPage extends Page {
 		return super.openTitle( 'Special:RunFunction' );
 	}
 }
-module.exports = new RunFunctionPage();
+export default new RunFunctionPage();

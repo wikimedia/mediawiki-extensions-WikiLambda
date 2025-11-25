@@ -14,16 +14,15 @@
  * @license MIT
  */
 
-'use strict';
-const Page = require( 'wdio-mediawiki/Page' );
-const AboutBlock = require( '../../componentobjects/AboutBlock' );
-const InputDropdown = require( '../../componentobjects/InputDropdown' );
-const ElementActions = require( '../../utils/ElementActions' );
-const ZObjectPublish = require( '../../componentobjects/ZObjectPublish' );
-const { Element: WebdriverIOElementType } = require( 'webdriverio' );
-const ContentBlock = require( '../../componentobjects/ContentBlock' );
-const FunctionExplorerBlock = require( '../../componentobjects/FunctionExplorerBlock' );
-const i18n = require( '../../utils/i18n.js' )();
+import Page from 'wdio-mediawiki/Page.js';
+import AboutBlock from '../../componentobjects/AboutBlock.js';
+import InputDropdown from '../../componentobjects/InputDropdown.js';
+import ElementActions from '../../utils/ElementActions.js';
+import ZObjectPublish from '../../componentobjects/ZObjectPublish.js';
+import { Element as WebdriverIOElementType } from 'webdriverio';
+import ContentBlock from '../../componentobjects/ContentBlock.js';
+import FunctionExplorerBlock from '../../componentobjects/FunctionExplorerBlock.js';
+import i18n from '../../utils/i18n.js';
 
 class TesterPage extends Page {
 
@@ -250,4 +249,4 @@ class TesterPage extends Page {
 	}
 }
 
-module.exports = new TesterPage();
+export default new TesterPage();

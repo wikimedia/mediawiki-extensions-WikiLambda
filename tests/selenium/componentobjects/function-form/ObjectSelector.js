@@ -5,9 +5,7 @@
  * @license MIT
  */
 
-'use strict';
-
-const WebdriverIO = require( 'webdriverio' );
+import WebdriverIO from 'webdriverio';
 
 class ObjectSelector {
 	get menu() {
@@ -58,4 +56,4 @@ class ObjectSelector {
 	}
 }
 
-module.exports = ObjectSelector;
+export default ObjectSelector;
