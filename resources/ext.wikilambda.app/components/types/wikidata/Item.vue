@@ -70,6 +70,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
+	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		// Use ZObject utilities composable
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );

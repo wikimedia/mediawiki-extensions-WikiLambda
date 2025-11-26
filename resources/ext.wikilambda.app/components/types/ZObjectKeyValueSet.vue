@@ -59,6 +59,7 @@ module.exports = exports = defineComponent( {
 			default: undefined
 		}
 	},
+	emits: [ 'set-type', 'set-value' ],
 	setup( props ) {
 		const { depth } = useZObject( { keyPath: props.keyPath } );
 

@@ -52,6 +52,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
+	emits: [ 'add-arg', 'delete-arg', 'delete-list-item', 'move-after', 'move-before', 'set-type' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const { typeToString, isKeyTypedListItem, isKeyTypedListType, isLocalKey } = useType();

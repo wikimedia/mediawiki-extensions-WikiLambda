@@ -71,6 +71,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
+	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();

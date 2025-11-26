@@ -85,6 +85,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
+	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const { typeToString, isKeyTypedListItem } = useType();
 		const { getZReferenceTerminalValue, key, parentKey } = useZObject( { keyPath: props.keyPath } );

@@ -60,6 +60,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
+	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const { getZHTMLFragmentTerminalValue } = useZObject( { keyPath: props.keyPath } );
 

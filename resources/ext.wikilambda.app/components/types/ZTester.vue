@@ -105,6 +105,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
+	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const { isValidZidFormat } = useType();
 		const { getZTesterFunctionZid } = useZObject( { keyPath: props.keyPath } );

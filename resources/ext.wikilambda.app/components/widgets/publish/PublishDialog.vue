@@ -119,6 +119,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
+	emits: [ 'before-exit', 'close-dialog' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const eventLogUtils = useEventLog();

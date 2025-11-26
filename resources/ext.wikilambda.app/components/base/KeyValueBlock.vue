@@ -110,6 +110,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
+	emits: [ 'toggle-expand' ],
 	setup( props, { emit } ) {
 		/**
 		 * Returns the key type based on the edit and disableEdit props

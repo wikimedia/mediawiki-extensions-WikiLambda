@@ -136,6 +136,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
+	emits: [ 'expand', 'set-type', 'set-value' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const { getZObjectType } = useZObject( { keyPath: props.keyPath } );

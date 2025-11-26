@@ -147,6 +147,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
+	emits: [ 'connect', 'disconnect' ],
 	setup( _, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const breakpoint = useBreakpoints( Constants.BREAKPOINTS );

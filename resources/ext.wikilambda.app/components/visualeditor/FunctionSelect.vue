@@ -77,6 +77,7 @@ module.exports = exports = defineComponent( {
 		'cdx-search-input': CdxSearchInput,
 		'wl-function-select-item': FunctionSelectItem
 	},
+	emits: [ 'select' ],
 	setup( _, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const { isValidZidFormat } = useType();
