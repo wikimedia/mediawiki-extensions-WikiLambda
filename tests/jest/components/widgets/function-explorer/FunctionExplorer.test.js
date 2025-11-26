@@ -50,7 +50,7 @@ describe( 'FunctionExplorer', () => {
 				stubs: {
 					WlWidgetBase: false,
 					CdxButton: false,
-					WlTypeToString: false,
+					WlZObjectToString: false,
 					...options?.stubs
 				}
 			}
@@ -63,6 +63,7 @@ describe( 'FunctionExplorer', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
+		store.fetchZids = jest.fn().mockResolvedValue();
 		store.getLabelData = createLabelDataMock( {
 			Z6: 'String',
 			Z40: 'Boolean',
@@ -276,6 +277,64 @@ describe( 'FunctionExplorer', () => {
 					} );
 				} );
 			} );
+		} );
+	} );
+
+	it( 'fetches zids for argument and output types', () => {
+		renderFunctionExplorer( {
+			functionZid: reverseStringFunctionZid,
+			edit: false
+		} );
+
+		// Should fetch ZIDs referenced by inputs/outputs (argument type Z6 and return type Z6)
+		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: expect.arrayContaining( [ 'Z6' ] ) } );
+	} );
+
+	it( 'fetches function call zids for generic argument types', () => {
+		const typedPairType = {
+			[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+			[ Constants.Z_FUNCTION_CALL_FUNCTION ]: 'Z882'
+		};
+		// Create a function object that includes Z8K1 (arguments) with the typedPairType
+		const functionWithTypedPairArg = {
+			Z1K1: 'Z2',
+			Z2K2: {
+				Z1K1: 'Z8',
+				Z8K1: [
+					'Z17',
+					{
+						Z1K1: 'Z17',
+						Z17K1: typedPairType,
+						Z17K2: 'Z10004K1'
+					}
+				],
+
+				Z8K2: 'Z6'
+			}
+		};
+		store.getStoredObject = ( zid ) => {
+			if ( !zid || zid === '' ) {
+				return null;
+			}
+			return zid === reverseStringFunctionZid ?
+				functionWithTypedPairArg :
+				isReverseStringFunction;
+		};
+		store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+			{
+				[ Constants.Z_ARGUMENT_KEY ]: 'Z10004K1',
+				[ Constants.Z_ARGUMENT_TYPE ]: typedPairType
+			}
+		] );
+
+		renderFunctionExplorer( {
+			functionZid: reverseStringFunctionZid,
+			edit: false
+		} );
+
+		// Should fetch ZIDs referenced by the argument/return types (Z882 via function call type, Z7 call, Z6 return).
+		expect( store.fetchZids ).toHaveBeenCalledWith( {
+			zids: expect.arrayContaining( [ 'Z882', 'Z7', 'Z6' ] )
 		} );
 	} );
 

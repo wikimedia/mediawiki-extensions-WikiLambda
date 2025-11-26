@@ -92,10 +92,13 @@
 						<span
 							class="ext-wikilambda-app-function-explorer-widget__type
 							ext-wikilambda-app-function-explorer-widget__dark-links">
-							<wl-type-to-string
+							<wl-z-object-to-string
 								data-testid="function-input-type"
-								:type="arg.type"
-							></wl-type-to-string>
+								:key-path="`function-explorer-input-${arg.key}`"
+								:object-value="arg.type"
+								:edit="edit"
+							></wl-z-object-to-string>
+
 						</span>
 						<span
 							v-if="implementation === implementationCode"
@@ -124,10 +127,12 @@
 					<span
 						class="ext-wikilambda-app-function-explorer-widget__type
 						ext-wikilambda-app-function-explorer-widget__dark-links">
-						<wl-type-to-string
+						<wl-z-object-to-string
 							data-testid="function-output"
-							:type="outputType"
-						></wl-type-to-string>
+							key-path="function-explorer-output"
+							:object-value="outputType"
+							:edit="edit"
+						></wl-z-object-to-string>
 					</span>
 				</div>
 			</section>
@@ -154,11 +159,13 @@ const icons = require( '../../../../lib/icons.json' );
 const useMainStore = require( '../../../store/index.js' );
 const useClipboard = require( '../../../composables/useClipboard.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+const { extractZIDs } = require( '../../../utils/schemata.js' );
 
 // Base components
 const WidgetBase = require( '../../base/WidgetBase.vue' );
-const TypeToString = require( '../../base/TypeToString.vue' );
 const ZObjectSelector = require( '../../base/ZObjectSelector.vue' );
+// Type components
+const ZObjectToString = require( '../../types/ZObjectToString.vue' );
 // Codex components
 const { CdxButton, CdxIcon } = require( '../../../../codex.js' );
 
@@ -167,9 +174,9 @@ module.exports = exports = defineComponent( {
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
-		'wl-type-to-string': TypeToString,
 		'wl-widget-base': WidgetBase,
-		'wl-z-object-selector': ZObjectSelector
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-object-to-string': ZObjectToString
 	},
 	props: {
 		edit: {
@@ -254,10 +261,15 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Returns the output type of the selected function
 		 *
-		 * @return {Object|string}
+		 * @return {Object|string|undefined}
 		 */
-		const outputType = computed( () => functionObject.value[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-			Constants.Z_FUNCTION_RETURN_TYPE ] );
+		const outputType = computed( () => {
+			if ( !functionObject.value ) {
+				return undefined;
+			}
+			return functionObject.value[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_FUNCTION_RETURN_TYPE ];
+		} );
 
 		/**
 		 * Returns whether the reset button must be disabled (the
@@ -268,14 +280,25 @@ module.exports = exports = defineComponent( {
 		const resetButtonDisabled = computed( () => currentFunctionZid.value === props.functionZid );
 
 		// Methods
-		function updateSelectedFunction( zIdSelected ) {
-			currentFunctionZid.value = zIdSelected;
+		/**
+		 * Updates the selected function to the provided Zid.
+		 *
+		 * @param {string} selectedZid - The Zid of the selected function
+		 */
+		function updateSelectedFunction( selectedZid ) {
+			currentFunctionZid.value = selectedZid;
 		}
 
+		/**
+		 * Resets the selected function to the initial function.
+		 */
 		function resetFunction() {
 			currentFunctionZid.value = props.functionZid;
 		}
 
+		/**
+		 * Navigates to the function URL in a new tab.
+		 */
 		function navigateToFunction() {
 			window.open( functionUrl.value, '_blank' );
 		}
@@ -284,6 +307,25 @@ module.exports = exports = defineComponent( {
 		watch( () => props.functionZid, () => {
 			resetFunction();
 		} );
+
+		watch( functionObject, ( newObject ) => {
+			if ( !newObject ) {
+				return;
+			}
+
+			const value = newObject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+			if ( !value ) {
+				return;
+			}
+
+			// Collect input and output types, and gather all involved zids
+			const inputTypes = ( value[ Constants.Z_FUNCTION_ARGUMENTS ] || [] ).slice( 1 )
+				.map( ( arg ) => arg[ Constants.Z_ARGUMENT_TYPE ] );
+			const functionTypes = [ value[ Constants.Z_FUNCTION_RETURN_TYPE ], ...inputTypes ];
+
+			const zids = extractZIDs( functionTypes );
+			store.fetchZids( { zids } );
+		}, { immediate: true } );
 
 		return {
 			copyToClipboard,
@@ -358,7 +400,7 @@ module.exports = exports = defineComponent( {
 	}
 
 	.ext-wikilambda-app-function-explorer-widget__footer-wrapper {
-		margin-top: @spacing-50;
+		margin-top: @spacing-100;
 	}
 }
 </style>

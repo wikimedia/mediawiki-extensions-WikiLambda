@@ -482,7 +482,6 @@
 				"ext.wikilambda.app/components/base/SafeMessage.vue",
 				"ext.wikilambda.app/components/base/StatusIcon.vue",
 				"ext.wikilambda.app/components/base/TypeSelector.vue",
-				"ext.wikilambda.app/components/base/TypeToString.vue",
 				"ext.wikilambda.app/components/base/WidgetBase.vue",
 				"ext.wikilambda.app/components/types/ZArgumentReference.vue",
 				"ext.wikilambda.app/components/types/ZBoolean.vue",
