@@ -38,7 +38,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Label for the 'Read less' button in the visual editor to collapse a description",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Label for the 'Read more' button in the visual editor to expand a description",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Message to show when the Function search in the Wikifunctions insert dialog in the visual editor rendered no results",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Placeholder for the Function search field in the Wikifunctions insert dialog in the visual editor",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Placeholder for the Function search field in the Wikifunctions insert dialog in the visual editor.\n\nParameters:\n* $1: The pre-formatted number of available Functions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Title of the search results section in the Wikifunctions insert dialog in the visual editor",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Placeholder for the string input field in the Wikifunctions call input configuration dialog in the visual editor",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Title of the suggested functions section in the Wikifunctions insert dialog in the visual editor",

@@ -137,6 +137,10 @@ global.mw = {
 		},
 		listToText: function () {
 			return 'list';
+		},
+		convertNumber: function ( number ) {
+			// Simple mock implementation: format numbers with comma separators
+			return number.toString().replace( /\B(?=(\d{3})+(?!\d))/g, ',' );
 		}
 	},
 	storage: {

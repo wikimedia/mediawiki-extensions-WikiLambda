@@ -11,7 +11,7 @@
 		<div class="ext-wikilambda-app-function-select__field">
 			<cdx-search-input
 				:model-value="searchTerm"
-				:placeholder="i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder' )"
+				:placeholder="searchPlaceholder"
 				@update:model-value="updateSearchTerm"
 				@focus="showSearchCancel = true"
 			></cdx-search-input>
@@ -217,10 +217,17 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		const searchPlaceholder = computed( () => i18n(
+			'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder',
+			// Note: This is currently a hard-coded value of 2000 Functions.
+			mw.language.convertNumber( 2000 )
+		).text() );
+
 		return {
 			callsToAction,
 			descriptions,
 			lookupResults,
+			searchPlaceholder,
 			searchTerm,
 			selectFunction,
 			showSearchCancel,

@@ -37,7 +37,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Read less",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Read more",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "No results found. Try using a different search query.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Search among {{formatnum:2000}}+ functions",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Search among $1+ functions",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Results",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Enter text",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Suggested functions",
