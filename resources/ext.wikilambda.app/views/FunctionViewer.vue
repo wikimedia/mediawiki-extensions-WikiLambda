@@ -50,7 +50,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onMounted, watch } = require( 'vue' );
+const { computed, defineComponent, inject, onMounted } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
@@ -93,10 +93,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		const displaySuccessMessage = computed( () => {
-			const url = new URL( window.location.href );
-			return url.searchParams.get( 'success' ) === 'true';
-		} );
+		const displaySuccessMessage = computed( () => store.getShowPublishSuccess );
 
 		/**
 		 * Dispatch event after a click of the edit icon in the About widget.
@@ -110,23 +107,13 @@ module.exports = exports = defineComponent( {
 			submitInteraction( 'edit', interactionData );
 		}
 
-		// Watch
-		/**
-		 * Remove the success query parameter from the URL when the success message is displayed.
-		 */
-		watch( displaySuccessMessage, ( value ) => {
-			if ( value ) {
-				const url = new URL( window.location.href );
-				url.searchParams.delete( 'success' );
-				history.replaceState( null, '', `${ url.pathname }${ url.search }` );
-			}
-		}, { immediate: true } );
-
 		// Lifecycle
 		onMounted( () => {
+			// Check if we should show publish success message
+			store.checkPublishSuccess( getCurrentZObjectId.value );
+
 			// Load function call from URL if present (validate against current function)
 			loadFunctionCallFromUrl( getCurrentZObjectId.value );
-			// Load function call from URL if present (validate against current function)
 			const interactionData = {
 				zobjecttype: Constants.Z_FUNCTION,
 				zobjectid: store.getCurrentZObjectId || null,

@@ -134,7 +134,12 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
 		// ASSERT: Location is changed to page returned by API.
-		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage' ) );
+
+		// ASSERT: Publish success flag is set in sessionStorage (verifies the mechanism for showing success message).
+		await waitFor( () => {
+			expect( sessionStorage.getItem( 'wikilambda-publish-success-newPage' ) ).toBe( 'true' );
+		} );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
@@ -249,7 +254,7 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
 		// ASSERT: Location is changed to page returned by API.
-		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		await waitFor( () => expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

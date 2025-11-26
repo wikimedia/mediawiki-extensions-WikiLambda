@@ -7,6 +7,7 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/dom' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 const FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
 const { buildUrl } = require( '../helpers/urlHelpers.js' );
@@ -31,6 +32,8 @@ describe( 'FunctionViewer', () => {
 		store.isCreateNewPage = false;
 
 		mockWindowLocation( buildUrl( `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ functionZid }` ) );
+		// Clear sessionStorage before each test
+		sessionStorage.clear();
 	} );
 
 	afterEach( () => {
@@ -50,11 +53,24 @@ describe( 'FunctionViewer', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBeFalsy();
 	} );
 
-	it( 'displays success message if indicated in url', () => {
-		mockWindowLocation( buildUrl( `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ functionZid }`, { success: true } ) );
+	it( 'displays success message if publish success flag is set in store', async () => {
+		// Set the publish success flag in sessionStorage (simulating a publish action)
+		sessionStorage.setItem( `wikilambda-publish-success-${ functionZid }`, 'true' );
+		// We need to mock the checkPublishSuccess method from the store
+		store.checkPublishSuccess = jest.fn().mockImplementation( () => {
+			store.getShowPublishSuccess = true;
+			sessionStorage.removeItem( `wikilambda-publish-success-${ functionZid }` );
+		} );
 		const wrapper = renderFunctionViewer();
 
-		// Test user behavior: success message should be visible when success=true in URL
-		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBe( false );
+
+		// Wait for the success message to appear
+		await waitFor( () => {
+			expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBe( true );
+		} );
+
+		// Verify the store state was updated
+		expect( store.getShowPublishSuccess ).toBe( true );
 	} );
 } );

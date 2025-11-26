@@ -25,8 +25,20 @@ const {
 } = require( '../../../utils/zobjectUtils.js' );
 
 module.exports = {
-	state: {},
-	getters: {},
+	state: {
+		// Flag to show publish success message
+		showPublishSuccess: false
+	},
+	getters: {
+		/**
+		 * Returns whether to show the publish success message
+		 *
+		 * @return {boolean}
+		 */
+		getShowPublishSuccess: function () {
+			return this.showPublishSuccess;
+		}
+	},
 	actions: {
 		/**
 		 * Return a boolean indicating if the current Z Object is valid based on type requirements
@@ -628,6 +640,39 @@ module.exports = {
 			if ( Constants.Z_FUNCTION_IMPLEMENTATIONS in value ) {
 				value[ Constants.Z_FUNCTION_IMPLEMENTATIONS ] = canonicalToHybrid( [ Constants.Z_IMPLEMENTATION ] );
 			}
+		},
+
+		/**
+		 * Sets the flag to show publish success message
+		 * Uses sessionStorage to persist across page reloads
+		 *
+		 * @param {string} zid - The ZObject ID that was published
+		 */
+		setPublishSuccess: function ( zid ) {
+			if ( !zid ) {
+				return;
+			}
+			sessionStorage.setItem( `wikilambda-publish-success-${ zid }`, 'true' );
+		},
+
+		/**
+		 * Checks if the publish success flag is set for a given ZID
+		 *
+		 * @param {string} zid - The ZObject ID to check
+		 * @return {void}
+		 */
+		checkPublishSuccess: function ( zid ) {
+			if ( !zid ) {
+				return;
+			}
+			const key = `wikilambda-publish-success-${ zid }`;
+			const exists = sessionStorage.getItem( key ) === 'true';
+			if ( exists ) {
+				sessionStorage.removeItem( key );
+				this.showPublishSuccess = true;
+				return;
+			}
+			this.showPublishSuccess = false;
 		}
 	}
 };

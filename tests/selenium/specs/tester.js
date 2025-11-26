@@ -18,11 +18,11 @@
  * @license MIT
  */
 
-import LoginPage from 'wdio-mediawiki/LoginPage.js';
+import AboutBlock from '../componentobjects/AboutBlock.js';
 import FunctionPage from '../pageobjects/function/Function.page.js';
+import LoginPage from 'wdio-mediawiki/LoginPage.js';
 import TesterForm from '../pageobjects/tester/TesterForm.page.js';
 import TesterPage from '../pageobjects/tester/Tester.page.js';
-import AboutBlock from '../componentobjects/AboutBlock.js';
 
 describe( 'Tester', () => {
 
@@ -112,10 +112,13 @@ describe( 'Tester', () => {
 			// publish the test
 			await TesterForm.publishTest();
 
-			// wait for success redirect and confirm test is successfully published
+			// wait for redirect after publishing (URL should change to the tester page)
 			await browser.waitUntil(
-				async () => ( await browser.getUrl() ).includes( 'success=true' ),
-				{ timeout: 10000, timeoutMsg: 'Unable to publish the test, success URL not found' }
+				async () => {
+					const newUrl = await browser.getUrl();
+					return newUrl.includes( '/view/' ) && !newUrl.includes( 'Special:CreateObject' );
+				},
+				{ timeout: 10000, timeoutMsg: 'Unable to publish the test, redirect did not occur' }
 			);
 
 			// Confirm that the tester Page is open

@@ -18,10 +18,10 @@
  * @license MIT
  */
 
-import LoginPage from 'wdio-mediawiki/LoginPage.js';
 import FunctionPage from '../pageobjects/function/Function.page.js';
 import ImplementationForm from '../pageobjects/implementation/ImplementationForm.page.js';
 import ImplementationPage from '../pageobjects/implementation/Implementation.page.js';
+import LoginPage from 'wdio-mediawiki/LoginPage.js';
 
 describe( 'Implementation (CUJ 5)', () => {
 
@@ -115,10 +115,14 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			// Publish the new implementation
 			await ImplementationForm.publishImplementation();
-			const successUrl = await browser.getUrl();
-			if ( !successUrl.includes( 'success=true' ) ) {
-				throw new Error( 'Unable to publish the implementation' );
-			}
+			// Wait for redirect after publishing (URL should change to view page, not create page)
+			await browser.waitUntil(
+				async () => {
+					const newUrl = await browser.getUrl();
+					return newUrl.includes( '/view/' ) && !newUrl.includes( '/create' );
+				},
+				{ timeout: 10000, timeoutMsg: 'Unable to publish the implementation, redirect did not occur' }
+			);
 
 			// Data checks
 			await expect( await ImplementationPage.getImplementationDescription() ).toBe(
@@ -223,10 +227,15 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			// Publish the new implementation
 			await ImplementationForm.publishImplementation();
-			const successUrl = await browser.getUrl();
-			if ( !successUrl.includes( 'success=true' ) ) {
-				throw new Error( 'Unable to publish the implementation' );
-			}
+
+			// Wait for redirect after publishing (URL should change to view page, not create page)
+			await browser.waitUntil(
+				async () => {
+					const newUrl = await browser.getUrl();
+					return newUrl.includes( '/view/' ) && !newUrl.includes( 'Special:CreateObject' );
+				},
+				{ timeout: 10000, timeoutMsg: 'Unable to publish the implementation, redirect did not occur' }
+			);
 
 			// Confirm that the Implementation Page is open
 			await expect( await ImplementationPage.getImplementationTitle() )

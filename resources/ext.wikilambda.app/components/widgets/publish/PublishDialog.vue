@@ -239,8 +239,7 @@ module.exports = exports = defineComponent( {
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
 				urlUtils.generateViewUrl( {
 					langCode: store.getUserLangCode,
-					zid: pageTitle,
-					params: { success: true }
+					zid: pageTitle
 				} );
 		}
 
@@ -254,6 +253,8 @@ module.exports = exports = defineComponent( {
 			emit( 'before-exit' );
 			store.setDirty( false );
 			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
+			// Set publish success flag in store before navigating
+			store.setPublishSuccess( pageTitle );
 			closeDialog();
 			navigateToPage( pageTitle );
 		}
