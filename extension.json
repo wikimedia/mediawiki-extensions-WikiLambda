@@ -385,6 +385,7 @@
 				"mediawiki.Title",
 				"mediawiki.api",
 				"mediawiki.jqueryMsg",
+				"mediawiki.DateFormatter",
 				"mediawiki.router",
 				"mediawiki.storage",
 				"mediawiki.user",

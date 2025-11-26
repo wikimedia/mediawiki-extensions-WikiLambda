@@ -108,6 +108,7 @@ const { extractErrorData, escapeHtml } = require( '../../../utils/errorUtils.js'
 const { extractZIDs } = require( '../../../utils/schemata.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const icons = require( '../../../../lib/icons.json' );
+const DateFormatter = require( 'mediawiki.DateFormatter' );
 
 // Widget components
 const FunctionMetadataItem = require( './FunctionMetadataItem.vue' );
@@ -753,75 +754,15 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		function toRelativeTime( input ) {
-			function transformDateTime( dateTimeString ) {
-				if ( Intl.RelativeTimeFormat ) {
-					const target = Date.parse( dateTimeString );
-					const now = Date.now();
-					const offset = now - target;
-
-					let relativeTimeFormatter;
-					try {
-						relativeTimeFormatter = new Intl.RelativeTimeFormat( store.getUserLangCode );
-					} catch ( error ) {
-						// Fall back to English if the MW locale isn't supported
-						relativeTimeFormatter = new Intl.RelativeTimeFormat( 'en' );
-					}
-
-					let offsetThreshold = 1000;
-
-					// If this was within the last minute, render in seconds.
-					if ( offset < offsetThreshold * 60 ) {
-						return relativeTimeFormatter.format(
-							-Math.floor( offset / offsetThreshold ),
-							'second'
-						);
-					}
-					offsetThreshold *= 60;
-
-					// If this was within the last hour, render in minutes.
-					if ( offset < offsetThreshold * 60 ) {
-						return relativeTimeFormatter.format(
-							-Math.floor( offset / offsetThreshold ),
-							'minute'
-						);
-					}
-					offsetThreshold *= 60;
-
-					// If this was within the last day, render in hours.
-					if ( offset < offsetThreshold * 24 ) {
-						return relativeTimeFormatter.format(
-							-Math.floor( offset / offsetThreshold ),
-							'hour'
-						);
-					}
-					offsetThreshold *= 24;
-
-					// If this was within the last week, render in days.
-					if ( offset < offsetThreshold * 7 ) {
-						return relativeTimeFormatter.format(
-							-Math.floor( offset / offsetThreshold ),
-							'hour'
-						);
-					}
-					offsetThreshold *= 7;
-
-					// If this was within the last four weeks, render in weeks.
-					if ( offset < offsetThreshold * 4 ) {
-						return relativeTimeFormatter.format(
-							-Math.floor( offset / offsetThreshold ),
-							'hour'
-						);
-					}
-					offsetThreshold *= 4;
-				}
-
-				// Fallback for browsers without Intl
-				return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
-			}
+			const date = new Date( input );
+			const isValidDate = !Number.isNaN( date.getTime() );
+			const value = isValidDate ?
+				DateFormatter.formatRelativeTimeOrDate( date ) :
+				input;
 
 			return {
 				type: Constants.METADATA_CONTENT_TYPE.TEXT,
-				value: transformDateTime( input )
+				value
 			};
 		}
 
