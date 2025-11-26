@@ -372,6 +372,8 @@
 	"wikilambda-functioncall-metadata-show-raw-json": "Label for a toggle switch that allows users to view test result values (expected/actual) as raw JSON instead of the structured ZObject view.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-hostname": "Title for the hostname section in the function call metadata dialog.",
 	"wikilambda-functioncall-metadata-implementation": "Title for the implementation section in the function call metadata dialog.\n\n{{doc-wikilambda}}",
+	"wikilambda-functioncall-metadata-implementation-how-chosen": "Label for the action button to open the help page about implementation selection.",
+	"wikilambda-functioncall-metadata-implementation-how-chosen-link": "URL of the help page about implementation selection.",
 	"wikilambda-functioncall-metadata-implementation-id": "A label in the function call metadata dialog. Refers to the persistent ID of the implementation used to run the function.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-implementation-name": "A label in the function call metadata dialog. Refers to the implementation name used to run the function.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-implementation-type": "A label in the function call metadata dialog. Refers to the type of the implementation (Built-In, Evaluated, Composition) used to run the function.\n\n{{doc-wikilambda}}",

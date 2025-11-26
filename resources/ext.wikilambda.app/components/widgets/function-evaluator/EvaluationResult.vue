@@ -42,6 +42,7 @@
 			:open="showMetadata"
 			:header-text="implementationName"
 			:metadata="metadata"
+			:has-chosen-implementation="hasChosenImplementation"
 			@close-dialog="showMetadata = false"
 		></wl-function-metadata-dialog>
 	</div>
@@ -156,6 +157,13 @@ module.exports = exports = defineComponent( {
 				props.contentType !== Constants.Z_IMPLEMENTATION );
 
 		/**
+		 * Returns whether the implementation has been chosen
+		 *
+		 * @return {boolean}
+		 */
+		const hasChosenImplementation = computed( () => props.contentType !== Constants.Z_IMPLEMENTATION );
+
+		/**
 		 * If we are in an implementation page, return the implementation
 		 * label in the user language. Else return undefined
 		 *
@@ -206,6 +214,7 @@ module.exports = exports = defineComponent( {
 		return {
 			i18n,
 			hasMetadata,
+			hasChosenImplementation,
 			iconLink,
 			iconCheck,
 			implementationName,

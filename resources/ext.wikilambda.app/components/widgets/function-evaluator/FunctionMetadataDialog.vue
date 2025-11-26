@@ -93,6 +93,16 @@
 						:item="item"
 					></wl-function-metadata-item>
 				</ul>
+				<a
+					v-if="section.link"
+					:href="section.link.url"
+					target="_blank"
+					class="ext-wikilambda-app-function-metadata-dialog__link"
+				>
+					{{ section.link.label }}
+					<cdx-icon :icon="iconLinkExternal" class="ext-wikilambda-app-function-metadata-dialog__link-icon">
+					</cdx-icon>
+				</a>
 			</cdx-accordion>
 		</div>
 	</cdx-dialog>
@@ -159,6 +169,11 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: false,
 			default: undefined
+		},
+		hasChosenImplementation: {
+			type: Boolean,
+			required: false,
+			default: false
 		}
 	},
 	emits: [ 'close-dialog' ],
@@ -167,6 +182,7 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 
 		const iconHelpNotice = icons.cdxIconHelpNotice;
+		const iconLinkExternal = icons.cdxIconLinkExternal || icons.cdxIconLink;
 		const selectedMetadataPath = ref( '0' );
 
 		/**
@@ -798,7 +814,11 @@ module.exports = exports = defineComponent( {
 					content: ( 'sections' in value ) ?
 						compileSections( value.sections ) :
 						compileKeys( value.keys ),
-					open: value.open || false
+					open: value.open || false,
+					link: props.hasChosenImplementation && key === 'implementation' ? {
+						label: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen' ).text(),
+						url: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen-link' ).text()
+					} : null
 				};
 				// Check that section has content
 				if ( section.content.length > 0 ) {
@@ -951,6 +971,7 @@ module.exports = exports = defineComponent( {
 			hasMetadataErrors,
 			hasNestedMetadata,
 			iconHelpNotice,
+			iconLinkExternal,
 			isLabelData,
 			parsedMetaDataHelpLink,
 			sections,
@@ -976,6 +997,11 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-function-metadata-dialog__body {
 		color: @color-base;
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__content {
+		padding: 0;
+		list-style-position: inside;
 	}
 
 	.ext-wikilambda-app-function-metadata-dialog__select-block {
@@ -1015,6 +1041,17 @@ module.exports = exports = defineComponent( {
 				color: @color-destructive;
 			}
 		}
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__link {
+		display: inline-flex;
+		align-items: center;
+		gap: @spacing-25;
+		margin-top: @spacing-50;
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__link-icon {
+		color: inherit;
 	}
 }
 </style>
