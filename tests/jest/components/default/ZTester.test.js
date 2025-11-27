@@ -10,6 +10,7 @@ const { waitFor } = require( '@testing-library/vue' );
 const { shallowMount } = require( '@vue/test-utils' );
 const createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const ZTester = require( '../../../../resources/ext.wikilambda.app/components/types/ZTester.vue' );
 
@@ -111,6 +112,17 @@ describe( 'ZTester', () => {
 			expect( callBlock.exists() ).toBe( true );
 			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
 		} );
+
+		it( 'does not expand call or validation blocks', () => {
+			const wrapper = renderZTester();
+			const callBlock = wrapper.find( 'div[data-testid=tester-call]' )
+				.findComponent( { name: 'wl-z-object-key-value' } );
+			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' )
+				.findComponent( { name: 'wl-z-object-key-value' } );
+
+			expect( callBlock.props( 'defaultExpanded' ) ).toBe( false );
+			expect( validationBlock.props( 'defaultExpanded' ) ).toBe( false );
+		} );
 	} );
 
 	describe( 'in edit mode', () => {
@@ -139,9 +151,20 @@ describe( 'ZTester', () => {
 		it( 'renders tester validation block', () => {
 			const wrapper = renderZTester( { edit: true } );
 
-			const callBlock = wrapper.find( 'div[data-testid=tester-validation]' );
-			expect( callBlock.exists() ).toBe( true );
-			expect( callBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
+			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' );
+			expect( validationBlock.exists() ).toBe( true );
+			expect( validationBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
+		} );
+
+		it( 'keeps call and validation collapsed when not creating a new tester', () => {
+			const wrapper = renderZTester( { edit: true } );
+			const callBlock = wrapper.find( 'div[data-testid=tester-call]' )
+				.findComponent( { name: 'wl-z-object-key-value' } );
+			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' )
+				.findComponent( { name: 'wl-z-object-key-value' } );
+
+			expect( callBlock.props( 'defaultExpanded' ) ).toBe( false );
+			expect( validationBlock.props( 'defaultExpanded' ) ).toBe( false );
 		} );
 	} );
 
@@ -242,5 +265,19 @@ describe( 'ZTester', () => {
 				expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( setEmptyArguments );
 			} );
 		} );
+
+		it( 'expands call and validation blocks when creating a tester', () => {
+			store.getCurrentZObjectType = Constants.Z_TESTER;
+
+			const wrapper = renderZTester( { edit: true } );
+			const callBlock = wrapper.find( 'div[data-testid=tester-call]' )
+				.findComponent( { name: 'wl-z-object-key-value' } );
+			const validationBlock = wrapper.find( 'div[data-testid=tester-validation]' )
+				.findComponent( { name: 'wl-z-object-key-value' } );
+
+			expect( callBlock.props( 'defaultExpanded' ) ).toBe( true );
+			expect( validationBlock.props( 'defaultExpanded' ) ).toBe( true );
+		} );
 	} );
+
 } );

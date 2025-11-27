@@ -45,10 +45,6 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		//* -- Call section
 		const testerCallContainer = await findByTestId( 'tester-call' );
 
-		// ACT: Expand toggle
-		const expandTesterCall = within( testerCallContainer ).getByTestId( 'expanded-toggle' );
-		await fireEvent.click( expandTesterCall );
-
 		// ACT: Select the function under test as the function to call
 		const testerCallAccordionContainer = await within( testerCallContainer ).getByTestId( 'z-object-key-value-set' );
 		const callFunctionReference = await within( testerCallAccordionContainer ).getAllByTestId( 'z-reference-selector' )[ 1 ];
@@ -75,10 +71,6 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		//* -- Validation section
 		const testerValidationContainer = await findByTestId( 'tester-validation' );
 
-		// ACT: Expand toggle
-		const expandValidationCall = within( testerValidationContainer ).getByTestId( 'expanded-toggle' );
-		await fireEvent.click( expandValidationCall );
-
 		// ACT: Select String Equality as the validation call function.
 		const testerValidationAccordionContainer = await within( testerValidationContainer ).getByTestId( 'z-object-key-value-set' );
 		const validationFunctionReference = await within( testerValidationAccordionContainer ).getAllByTestId( 'z-reference-selector' )[ 1 ];
@@ -89,9 +81,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		// ASSERT: The function under test is selected as the function to call.
 		expect( validationFunctionSelector.value ).toBe( validationFunctionNameToSelect );
 
-		const testerValidationAccordionList = await within( testerValidationContainer ).getAllByTestId( 'z-object-key-value' );
-
+		await waitFor( () => {
+			expect( within( testerValidationContainer ).getAllByTestId( 'z-object-key-value' ) ).toHaveLength( 4 );
+		} );
 		// ACT: Enter expected value to which function call result should be compared.
+		const testerValidationAccordionList = within( testerValidationContainer ).getAllByTestId( 'z-object-key-value' );
 		const validationArgumentAccordion = testerValidationAccordionList[ 3 ];
 		const validationArgumentInput = await within( validationArgumentAccordion ).getByTestId( 'text-input' );
 		await fireEvent.update( validationArgumentInput, 'expected value' );

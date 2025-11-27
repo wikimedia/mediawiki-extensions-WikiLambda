@@ -99,12 +99,10 @@ describe( 'Tester', () => {
 			await TesterForm.addAboutBlockEntries( aboutBlockEntriesArabic );
 
 			// fill the entries in the call block
-			await TesterForm.expandCallFunctionBlock();
 			await TesterForm.setCallFunctionBlock( functionDetails.ZObjectLabel );
 			await TesterForm.setCallFunctionParameters( callBlockEntries );
 
 			// fill validation block
-			await TesterForm.expandValidationBlock();
 			await TesterForm.setValidationBlock( validationBlockEntries.ZObjectLabel );
 			await TesterForm.setValidationBlockParameters(
 				validationBlockEntries.secondString.true );

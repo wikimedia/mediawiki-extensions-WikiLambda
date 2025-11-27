@@ -47,6 +47,7 @@
 					:object-value="objectValue[ callKey ]"
 					:edit="edit"
 					:skip-key="true"
+					:default-expanded="defaultExpanded"
 				></wl-z-object-key-value>
 			</template>
 		</wl-key-value-block>
@@ -69,6 +70,7 @@
 					:object-value="objectValue[ validationKey ]"
 					:edit="edit"
 					:skip-key="true"
+					:default-expanded="defaultExpanded"
 				></wl-z-object-key-value>
 			</template>
 		</wl-key-value-block>
@@ -154,6 +156,20 @@ module.exports = exports = defineComponent( {
 		 * @return {LabelData}
 		 */
 		const testerValidationLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_VALIDATION ) );
+
+		/**
+		 * Returns whether tester call and validation sections should be expanded
+		 * by default. This is true only when creating a brand new tester so users
+		 * can immediately edit both areas.
+		 *
+		 * @return {boolean}
+		 */
+		const defaultExpanded = computed( () => {
+			if ( !store.isCreateNewPage ) {
+				return false;
+			}
+			return true;
+		} );
 
 		// Methods
 		/**
@@ -244,7 +260,8 @@ module.exports = exports = defineComponent( {
 			functionLabelData,
 			testerCallLabelData,
 			testerValidationLabelData,
-			validationKey
+			validationKey,
+			defaultExpanded
 		};
 	},
 	beforeCreate: function () {
