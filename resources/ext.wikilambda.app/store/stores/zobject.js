@@ -27,9 +27,6 @@ const {
 	resolveZObjectByKeyPath,
 	walkZObject
 } = require( '../../utils/zobjectUtils.js' );
-const currentPageStore = require( './zobject/currentPage.js' );
-const factoryStore = require( './zobject/factory.js' );
-const submissionStore = require( './zobject/submission.js' );
 
 const zobjectStore = {
 	state: {
@@ -1214,23 +1211,4 @@ const zobjectStore = {
 	}
 };
 
-module.exports = {
-	state: Object.assign(
-		currentPageStore.state,
-		factoryStore.state,
-		submissionStore.state,
-		zobjectStore.state
-	),
-	getters: Object.assign(
-		currentPageStore.getters,
-		factoryStore.getters,
-		submissionStore.getters,
-		zobjectStore.getters
-	),
-	actions: Object.assign(
-		currentPageStore.actions,
-		factoryStore.actions,
-		submissionStore.actions,
-		zobjectStore.actions
-	)
-};
+module.exports = zobjectStore;

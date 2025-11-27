@@ -6,10 +6,10 @@
  */
 'use strict';
 
-const Constants = require( '../../../Constants.js' );
-const eventLogUtils = require( '../../../utils/eventLogUtils.js' );
-const { canonicalToHybrid } = require( '../../../utils/schemata.js' );
-const { isTruthyOrEqual } = require( '../../../utils/typeUtils.js' );
+const Constants = require( '../../Constants.js' );
+const eventLogUtils = require( '../../utils/eventLogUtils.js' );
+const { canonicalToHybrid } = require( '../../utils/schemata.js' );
+const { isTruthyOrEqual } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {

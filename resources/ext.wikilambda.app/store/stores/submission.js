@@ -7,9 +7,9 @@
  */
 'use strict';
 
-const { saveZObject } = require( '../../../utils/apiUtils.js' );
-const Constants = require( '../../../Constants.js' );
-const { canonicalToHybrid, hybridToCanonical } = require( '../../../utils/schemata.js' );
+const { saveZObject } = require( '../../utils/apiUtils.js' );
+const Constants = require( '../../Constants.js' );
+const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const {
 	getZObjectType,
 	getZCodeString,
@@ -22,7 +22,7 @@ const {
 	getZStringTerminalValue,
 	getZReferenceTerminalValue,
 	validateFunctionCall
-} = require( '../../../utils/zobjectUtils.js' );
+} = require( '../../utils/zobjectUtils.js' );
 
 module.exports = {
 	state: {

@@ -8,7 +8,9 @@
 
 const { defineStore } = require( 'pinia' );
 
+const currentPageStore = require( './stores/currentPage.js' );
 const errorsStore = require( './stores/errors.js' );
+const factoryStore = require( './stores/factory.js' );
 const functionCallStore = require( './stores/functionCall.js' );
 const languagesStore = require( './stores/languages.js' );
 const libraryStore = require( './stores/library.js' );
@@ -16,6 +18,7 @@ const listItemsStore = require( './stores/listItems.js' );
 const programmingLanguagesStore = require( './stores/programmingLanguages.js' );
 const queueStore = require( './stores/queue.js' );
 const routerStore = require( './stores/router.js' );
+const submissionStore = require( './stores/submission.js' );
 const testResultsStore = require( './stores/testResults.js' );
 const userStore = require( './stores/user.js' );
 const visualeditorStore = require( './stores/visualeditor.js' );
@@ -44,6 +47,9 @@ module.exports = defineStore( 'main', {
 		functionCallStore.state,
 		testResultsStore.state,
 		// Main ZObject: general and for some specific types
+		currentPageStore.state,
+		factoryStore.state,
+		submissionStore.state,
 		zobjectStore.state,
 		ztypeStore.state,
 		zfunctionStore.state,
@@ -71,6 +77,9 @@ module.exports = defineStore( 'main', {
 		functionCallStore.getters,
 		testResultsStore.getters,
 		// Main ZObject: general and for some specific types
+		currentPageStore.getters,
+		factoryStore.getters,
+		submissionStore.getters,
 		zobjectStore.getters,
 		ztypeStore.getters,
 		zfunctionStore.getters,
@@ -98,6 +107,9 @@ module.exports = defineStore( 'main', {
 		functionCallStore.actions,
 		testResultsStore.actions,
 		// Main ZObject: general and for some specific types
+		currentPageStore.actions,
+		factoryStore.actions,
+		submissionStore.actions,
 		zobjectStore.actions,
 		ztypeStore.actions,
 		zfunctionStore.actions,

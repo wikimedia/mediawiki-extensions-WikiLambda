@@ -6,14 +6,14 @@
  */
 'use strict';
 
-const Constants = require( '../../../Constants.js' );
-const { getParameterByName } = require( '../../../utils/urlUtils.js' );
+const Constants = require( '../../Constants.js' );
+const { getParameterByName } = require( '../../utils/urlUtils.js' );
 const {
 	getScaffolding,
 	initializePayloadForType,
 	isGenericType,
 	isTruthyOrEqual
-} = require( '../../../utils/typeUtils.js' );
+} = require( '../../utils/typeUtils.js' );
 
 module.exports = {
 	state: {},
