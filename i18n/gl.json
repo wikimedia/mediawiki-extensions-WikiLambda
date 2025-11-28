@@ -503,7 +503,7 @@
 	"wikilambda-tester-run-testers": "Executar todas as probas",
 	"wikilambda-tester-selector": "Seleccionar unha proba",
 	"wikilambda-tester-status-cancel": "Cancelar",
-	"wikilambda-tester-status-failed": "Fallida",
+	"wikilambda-tester-status-failed": "Errónea",
 	"wikilambda-tester-status-passed": "Superada",
 	"wikilambda-tester-status-ready": "Lista",
 	"wikilambda-tester-status-run": "Executar",
