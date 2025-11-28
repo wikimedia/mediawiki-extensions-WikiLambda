@@ -18,6 +18,11 @@
 			>{{ item.data.value }}</a>
 			<!-- eslint-disable-next-line vue/no-v-html -->
 			<span v-else-if="item.data.type === METADATA_CONTENT_TYPE.HTML" v-html="item.data.value"></span>
+			<wl-function-metadata-test-result
+				v-else-if="item.data.type === METADATA_CONTENT_TYPE.ZOBJECT"
+				:value="item.data.value"
+				:key-string="keyString"
+			></wl-function-metadata-test-result>
 			<span v-else-if="item.data.type === METADATA_CONTENT_TYPE.TEXT">{{ item.data.value }}</span>
 		</template>
 		<ul v-if="item.content" class="ext-wikilambda-app-function-metadata-item__content">
@@ -35,11 +40,13 @@
 const { defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
+const FunctionMetadataTestResult = require( './FunctionMetadataTestResult.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-item',
 	components: {
-		'wl-function-metadata-item': this
+		'wl-function-metadata-item': this,
+		'wl-function-metadata-test-result': FunctionMetadataTestResult
 	},
 	props: {
 		keyString: {

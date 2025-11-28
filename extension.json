@@ -411,6 +411,7 @@
 				"CdxTable",
 				"CdxTextInput",
 				"CdxTextArea",
+				"CdxToggleSwitch",
 				"CdxAccordion",
 				"CdxSearchInput"
 			],
@@ -552,6 +553,7 @@
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionEvaluator.vue",
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataDialog.vue",
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataItem.vue",
+				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataTestResult.vue",
 				"lib/ace/src/ace.js",
 				{
 					"name": "lib/icons.json",
@@ -796,6 +798,7 @@
 				"wikilambda-functioncall-metadata-expected-result",
 				"wikilambda-functioncall-metadata-actual-result",
 				"wikilambda-functioncall-metadata-select-label",
+				"wikilambda-functioncall-metadata-show-raw-json",
 				"wikilambda-function-details-summary",
 				"wikilambda-function-details-summary-learn-more",
 				"wikilambda-function-details-table-approve",

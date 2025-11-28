@@ -92,6 +92,6 @@ describe( 'metadataUtils', () => {
 		expect( transforms ).toContain( 'getErrorType' );
 		expect( transforms ).toContain( 'getErrorStringArgs' );
 		expect( transforms ).toContain( 'getErrorChildren' );
-		expect( transforms ).toContain( 'getStringValue' );
+		expect( transforms ).toContain( 'getTestResultValue' );
 	} );
 } );

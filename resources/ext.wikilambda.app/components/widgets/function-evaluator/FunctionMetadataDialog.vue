@@ -867,6 +867,21 @@ module.exports = exports = defineComponent( {
 			return metadata;
 		}
 
+		/**
+		 * Transform method.
+		 * Returns the raw zobject value for test results (expected/actual)
+		 * with a special type flag to render it with the toggle component.
+		 *
+		 * @param {Mixed} value
+		 * @return {Object}
+		 */
+		function getTestResultValue( value ) {
+			return {
+				type: Constants.METADATA_CONTENT_TYPE.ZOBJECT,
+				value
+			};
+		}
+
 		const transforms = {
 			getErrorType,
 			getErrorStringArgs,
@@ -874,7 +889,8 @@ module.exports = exports = defineComponent( {
 			getImplementationLink,
 			getStringValue,
 			toRelativeTime,
-			getDebugLogs
+			getDebugLogs,
+			getTestResultValue
 		};
 
 		/**

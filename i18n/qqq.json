@@ -369,6 +369,7 @@
 	"wikilambda-functioncall-metadata-execution": "Title for the execution keys in the metadata dialog.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Label for debugging strings produced by user code in the executor.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-expected-result": "Label for the expected result of a tester.\n\n{{doc-wikilambda}}",
+	"wikilambda-functioncall-metadata-show-raw-json": "Label for a toggle switch that allows users to view test result values (expected/actual) as raw JSON instead of the structured ZObject view.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-hostname": "Title for the hostname section in the function call metadata dialog.",
 	"wikilambda-functioncall-metadata-implementation": "Title for the implementation section in the function call metadata dialog.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-implementation-id": "A label in the function call metadata dialog. Refers to the persistent ID of the implementation used to run the function.\n\n{{doc-wikilambda}}",
