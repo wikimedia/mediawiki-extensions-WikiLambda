@@ -28,7 +28,11 @@
 			<cdx-info-chip
 				ref="chipComponent"
 				class="ext-wikilambda-app-monolingual-string__chip"
-				:class="{ 'ext-wikilambda-app-monolingual-string__chip--empty': hasEmptyLang }"
+				:class="{
+					'ext-wikilambda-app-monolingual-string__chip--empty': hasEmptyLang,
+					'ext-wikilambda-app-monolingual-string__chip--clickable': hasEmptyLang && edit
+				}"
+				@click="handleChipClick"
 			>
 				{{ langIso.toUpperCase() }}
 			</cdx-info-chip>
@@ -73,7 +77,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	emits: [ 'set-value' ],
+	emits: [ 'set-value', 'expand' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const { getZMonolingualTextValue, getZMonolingualLangValue } = useZObject( { keyPath: props.keyPath } );
@@ -154,6 +158,16 @@ module.exports = exports = defineComponent( {
 			chipWidth.value = chipComponent.value.$el.offsetWidth;
 		}
 
+		/**
+		 * Handles click on the language chip when it's empty.
+		 * Emits an expand event to encourage editors to fill it up.
+		 */
+		function handleChipClick() {
+			if ( hasEmptyLang.value && props.edit ) {
+				emit( 'expand', true );
+			}
+		}
+
 		// Watchers
 		watch( langIso, () => {
 			getAndStoreChipWidth();
@@ -169,6 +183,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			chipComponent,
+			handleChipClick,
 			hasEmptyLang,
 			inputCssVariablesStyle,
 			langIso,
@@ -194,6 +209,20 @@ module.exports = exports = defineComponent( {
 
 		&--empty::before {
 			content: '\200B';
+		}
+
+		&--clickable {
+			cursor: pointer;
+			transition: background-color 0.2s, border-color 0.2s;
+
+			&:hover {
+				background-color: @background-color-interactive-subtle;
+				border-color: @border-color-interactive;
+			}
+
+			&:active {
+				background-color: @background-color-interactive;
+			}
 		}
 	}
 

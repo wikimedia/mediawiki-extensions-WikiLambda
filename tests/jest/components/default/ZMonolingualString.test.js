@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const { waitFor } = require( '@testing-library/vue' );
 const { mount, shallowMount } = require( '@vue/test-utils' );
 
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
@@ -19,6 +20,12 @@ const objectValue = {
 	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
 	Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
 	Z11K2: { Z1K1: 'Z6', Z6K1: 'my label' }
+};
+
+const emptyObjectValue = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+	Z11K1: { Z1K1: 'Z9', Z9K1: '' },
+	Z11K2: { Z1K1: 'Z6', Z6K1: '' }
 };
 
 describe( 'ZMonolingualString', () => {
@@ -106,6 +113,74 @@ describe( 'ZMonolingualString', () => {
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_MONOLINGUALSTRING_VALUE,
 				Constants.Z_STRING_VALUE ], value: 'my new label' } ] ] );
+		} );
+
+		describe( 'with empty language', () => {
+			beforeEach( () => {
+				store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( '' );
+			} );
+
+			it( 'applies clickable class to chip when language is empty and in edit mode', () => {
+				const wrapper = renderZMonolingualStringFull( {
+					edit: true,
+					objectValue: emptyObjectValue
+				} );
+
+				const chip = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' );
+				expect( chip.classes() ).toContain( 'ext-wikilambda-app-monolingual-string__chip--clickable' );
+				expect( chip.classes() ).toContain( 'ext-wikilambda-app-monolingual-string__chip--empty' );
+			} );
+
+			it( 'does not apply clickable class when not in edit mode', () => {
+				const wrapper = renderZMonolingualStringFull( {
+					edit: false,
+					objectValue: emptyObjectValue
+				} );
+
+				const chip = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' );
+				expect( chip.classes() ).not.toContain( 'ext-wikilambda-app-monolingual-string__chip--clickable' );
+				expect( chip.classes() ).toContain( 'ext-wikilambda-app-monolingual-string__chip--empty' );
+			} );
+
+			it( 'emits expand event when clicking the empty language chip in edit mode', async () => {
+				const wrapper = renderZMonolingualStringFull( {
+					edit: true,
+					objectValue: emptyObjectValue
+				} );
+
+				const chip = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' );
+				await chip.trigger( 'click' );
+
+				await waitFor( () => {
+					expect( wrapper.emitted( 'expand' ) ).toBeTruthy();
+					expect( wrapper.emitted( 'expand' )[ 0 ] ).toEqual( [ true ] );
+				} );
+			} );
+
+			it( 'does not emit expand event when clicking the chip in view mode', async () => {
+				const wrapper = renderZMonolingualStringFull( {
+					edit: false,
+					objectValue: emptyObjectValue
+				} );
+
+				const chip = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' );
+				await chip.trigger( 'click' );
+
+				expect( wrapper.emitted( 'expand' ) ).toBeFalsy();
+			} );
+
+			it( 'does not emit expand event when language is set', async () => {
+				store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'EN' );
+				const wrapper = renderZMonolingualStringFull( {
+					edit: true,
+					objectValue
+				} );
+
+				const chip = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' );
+				await chip.trigger( 'click' );
+
+				expect( wrapper.emitted( 'expand' ) ).toBeFalsy();
+			} );
 		} );
 	} );
 } );
