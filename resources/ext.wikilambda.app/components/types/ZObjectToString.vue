@@ -41,6 +41,7 @@
 					>{{ labelData.label }}</a>
 					<span
 						v-else
+						class="ext-wikilambda-app-object-to-string__text"
 						data-testid="object-to-string-text"
 					>{{ textValue }}</span><!--
 				--></template>
@@ -622,6 +623,11 @@ module.exports = exports = defineComponent( {
 		border: 0;
 		background: none;
 		font-size: inherit;
+	}
+
+	// T343608: preserve leading whitespace in text value!
+	.ext-wikilambda-app-object-to-string__text {
+		white-space: pre-wrap;
 	}
 
 	.ext-wikilambda-app-object-to-string__icon.cdx-icon {

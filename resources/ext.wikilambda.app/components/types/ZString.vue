@@ -101,6 +101,8 @@ module.exports = exports = defineComponent( {
 		margin: 0;
 		color: @color-base;
 		word-break: break-word;
+		// T343608: preserve leading whitespace in text value!
+		white-space: pre-wrap;
 	}
 }
 </style>
