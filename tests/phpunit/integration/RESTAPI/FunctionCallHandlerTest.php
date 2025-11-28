@@ -10,6 +10,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Rest\LocalizedHttpException;
 use MediaWiki\Rest\RequestData;
 use MediaWiki\Tests\Rest\Handler\HandlerTestTrait;
@@ -30,6 +31,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	/** @var array */
 	private $standardCall;
+	private ZObjectStore $zobjectStore;
 
 	protected function setUp(): void {
 		parent::setUp();
