@@ -7,52 +7,69 @@
 <template>
 	<div
 		class="ext-wikilambda-app-wikidata-lexeme-sense"
-		data-testid="wikidata-lexeme-sense"
-	>
-		<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme-sense__read">
-			<cdx-icon
-				class="ext-wikilambda-app-wikidata-lexeme-sense__wd-icon"
-				:icon="wikidataIcon"
-				size="small"
-			></cdx-icon>
-			<a
-				v-if="lexemeSenseLabelData"
-				class="ext-wikilambda-app-wikidata-lexeme-sense__link"
-				:href="lexemeSenseUrl"
-				:lang="lexemeSenseLabelData.langCode"
-				:dir="lexemeSenseLabelData.langDir"
-				target="_blank"
-			>{{ lexemeSenseLabelData.label }}</a>
-		</div>
+		data-testid="wikidata-lexeme-sense">
+		<template v-if="hasTerminalId">
+			<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme-sense__read">
+				<cdx-icon
+					class="ext-wikilambda-app-wikidata-lexeme-sense__wd-icon"
+					:icon="wikidataIcon"
+				></cdx-icon>
+				<a
+					v-if="lexemeSenseLabelData && lexemeSenseUrl"
+					class="ext-wikilambda-app-wikidata-lexeme-sense__link"
+					:href="lexemeSenseUrl"
+					:lang="lexemeSenseLabelData.langCode"
+					:dir="lexemeSenseLabelData.langDir"
+					target="_blank"
+				>{{ lexemeSenseLabelData.label }}</a>
+				<!-- No link: value is not a valid Qid (unknown) -->
+				<span
+					v-else-if="lexemeSenseLabelData"
+					class="ext-wikilambda-app-wikidata-lexeme-sense__unknown"
+					:lang="lexemeSenseLabelData.langCode"
+					:dir="lexemeSenseLabelData.langDir"
+				>{{ lexemeSenseLabelData.label }}</span>
+				<!-- No label: value is empty -->
+				<span v-else class="ext-wikilambda-app-wikidata-lexeme-sense__empty">
+					{{ i18n( 'wikilambda-wikidata-entity-empty-value-placeholder' ).text() }}
+				</span>
+			</div>
 
-		<div v-else>
-			<wl-wikidata-entity-selector
-				v-if="isInitialized"
-				class="ext-wikilambda-app-wikidata-lexeme-sense__lexeme-selector"
-				:entity-id="lexemeId"
-				:entity-label="lexemeLabel"
-				:type="lexemeType"
-				data-testid="wikidata-lexeme-select"
-				@select-wikidata-entity="onSelectLexeme"
-			></wl-wikidata-entity-selector>
-			<cdx-select
-				class="ext-wikilambda-app-wikidata-lexeme-sense__sense-selector"
-				:disabled="!lexemeId || !lexemeSenseSelectMenuItems.length"
-				:selected="lexemeSenseId"
-				:default-label="lexemeSenseSelectPlaceholder"
-				:menu-items="lexemeSenseSelectMenuItems"
-				:menu-config="lexemeSenseSelectConfig"
-				data-testid="wikidata-lexeme-sense-select"
-				@update:selected="onSelectLexemeSense"
-			></cdx-select>
-			<cdx-message
-				v-if="shouldShowNoSensesMessage"
-				inline
-			>
-				<!-- eslint-disable-next-line vue/no-v-html -->
-				<div v-html="noSensesMessage"></div>
-			</cdx-message>
-		</div>
+			<div v-else>
+				<wl-wikidata-entity-selector
+					v-if="isInitialized"
+					class="ext-wikilambda-app-wikidata-lexeme-sense__lexeme-selector"
+					:entity-id="lexemeId"
+					:entity-label="lexemeLabel"
+					:type="lexemeType"
+					data-testid="wikidata-lexeme-select"
+					@select-wikidata-entity="onSelectLexeme"
+				></wl-wikidata-entity-selector>
+				<cdx-select
+					class="ext-wikilambda-app-wikidata-lexeme-sense__sense-selector"
+					:disabled="!lexemeId || !lexemeSenseSelectMenuItems.length"
+					:selected="lexemeSenseId"
+					:default-label="lexemeSenseSelectPlaceholder"
+					:menu-items="lexemeSenseSelectMenuItems"
+					:menu-config="lexemeSenseSelectConfig"
+					data-testid="wikidata-lexeme-sense-select"
+					@update:selected="onSelectLexemeSense"
+				></cdx-select>
+				<cdx-message
+					v-if="shouldShowNoSensesMessage"
+					inline
+				>
+					<!-- eslint-disable-next-line vue/no-v-html -->
+					<div v-html="noSensesMessage"></div>
+				</cdx-message>
+			</div>
+		</template>
+		<wl-z-object-to-string
+			v-else
+			:key-path="keyPath"
+			:object-value="objectValue"
+			:edit="edit"
+		></wl-z-object-to-string>
 	</div>
 </template>
 
@@ -66,16 +83,19 @@ const useMainStore = require( '../../../store/index.js' );
 
 // Wikidata components
 const WikidataEntitySelector = require( './EntitySelector.vue' );
+// Type components
+const ZObjectToString = require( '../ZObjectToString.vue' );
 // Codex components
 const { CdxIcon, CdxSelect, CdxMessage } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-lexeme-sense',
 	components: {
-		'cdx-icon': CdxIcon,
 		'wl-wikidata-entity-selector': WikidataEntitySelector,
-		'cdx-select': CdxSelect,
-		'cdx-message': CdxMessage
+		'wl-z-object-to-string': ZObjectToString,
+		'cdx-icon': CdxIcon,
+		'cdx-message': CdxMessage,
+		'cdx-select': CdxSelect
 	},
 	props: {
 		keyPath: {
@@ -111,12 +131,22 @@ module.exports = exports = defineComponent( {
 		const isLexemeLoading = ref( false );
 
 		/**
-		 * Returns the Lexeme Sense Id string value, if any Lexeme Sense is selected.
-		 * Else returns null (required as empty value for CdxLookup).
+		 * Returns the Lexeme Sense Id string terminal value if set, or empty string if unset.
+		 * If the Id is not determined by a terminal string, returns undefined.
 		 *
-		 * @return {string|null}
+		 * @return {string|undefined}
 		 */
 		const lexemeSenseId = computed( () => getWikidataEntityId( props.objectValue, lexemeSenseType ) );
+
+		/**
+		 * Returns whether the Wikidata Entity Id is a terminal string.
+		 * If it doesn't, the component will fallback to z-object-to-string so
+		 * that it informs of the object content but doesn't show blank values or
+		 * fields, and doesn't allow direct edit (e.g. requires previous expnsion)
+		 *
+		 * @return {boolean}
+		 */
+		const hasTerminalId = computed( () => typeof lexemeSenseId.value === 'string' );
 
 		/**
 		 * Returns the initial Lexeme Id string value, if any Lexeme Sense is selected on load.
@@ -150,10 +180,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		const lexemeUrl = computed( () => lexemeId.value ?
-			`${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ lexemeId.value }` :
-			undefined
-		);
+		const lexemeUrl = computed( () => store.getLexemeUrl( lexemeId.value ) );
 
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Sense.
@@ -313,6 +340,7 @@ module.exports = exports = defineComponent( {
 		} );
 
 		return {
+			hasTerminalId,
 			isInitialized,
 			lexemeId,
 			lexemeLabel,
@@ -327,7 +355,8 @@ module.exports = exports = defineComponent( {
 			onSelectLexeme,
 			onSelectLexemeSense,
 			shouldShowNoSensesMessage,
-			wikidataIcon
+			wikidataIcon,
+			i18n
 		};
 	}
 } );
@@ -350,6 +379,15 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-wikidata-lexeme-sense__link {
 		line-height: var( --line-height-current );
+	}
+
+	.ext-wikilambda-app-wikidata-lexeme-sense__unknown {
+		color: @color-subtle;
+	}
+
+	.ext-wikilambda-app-wikidata-lexeme-sense__empty {
+		color: @color-placeholder;
+		font-style: italic;
 	}
 
 	.ext-wikilambda-app-wikidata-lexeme-sense__wd-icon {

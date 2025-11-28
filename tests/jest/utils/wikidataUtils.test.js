@@ -7,7 +7,7 @@
 
 'use strict';
 
-const { extractWikidataLexemeIds } = require( '../../../resources/ext.wikilambda.app/utils/wikidataUtils.js' );
+const wikidataUtils = require( '../../../resources/ext.wikilambda.app/utils/wikidataUtils.js' );
 
 describe( 'wikidataUtils', () => {
 	describe( 'extractWikidataLexemeIds', () => {
@@ -31,7 +31,117 @@ describe( 'wikidataUtils', () => {
 			};
 
 			const expectedLids = [ 'L296026', 'L587336', 'L1161399' ];
-			expect( extractWikidataLexemeIds( zobject ) ).toEqual( expectedLids );
+			expect( wikidataUtils.extractWikidataLexemeIds( zobject ) ).toEqual( expectedLids );
+		} );
+	} );
+
+	describe( 'isWikidataQid', () => {
+		it( 'returns false with undefined', () => {
+			expect( wikidataUtils.isWikidataQid( undefined ) ).toBe( false );
+		} );
+
+		it( 'returns false with empty string', () => {
+			expect( wikidataUtils.isWikidataQid( '' ) ).toBe( false );
+		} );
+
+		it( 'returns false with arbitrary string', () => {
+			expect( wikidataUtils.isWikidataQid( 'banjo' ) ).toBe( false );
+		} );
+
+		it( 'returns true with another Wikidata id', () => {
+			expect( wikidataUtils.isWikidataQid( 'L123456' ) ).toBe( false );
+		} );
+
+		it( 'returns true with Qid', () => {
+			expect( wikidataUtils.isWikidataQid( 'Q123456' ) ).toBe( true );
+		} );
+	} );
+
+	describe( 'isWikidataLexemeId', () => {
+		it( 'returns false with undefined', () => {
+			expect( wikidataUtils.isWikidataLexemeId( undefined ) ).toBe( false );
+		} );
+
+		it( 'returns false with empty string', () => {
+			expect( wikidataUtils.isWikidataLexemeId( '' ) ).toBe( false );
+		} );
+
+		it( 'returns false with arbitrary string', () => {
+			expect( wikidataUtils.isWikidataLexemeId( 'harmonica' ) ).toBe( false );
+		} );
+
+		it( 'returns true with another Wikidata id', () => {
+			expect( wikidataUtils.isWikidataLexemeId( 'Q123456' ) ).toBe( false );
+		} );
+
+		it( 'returns true with Lexeme Id', () => {
+			expect( wikidataUtils.isWikidataLexemeId( 'L123456' ) ).toBe( true );
+		} );
+	} );
+
+	describe( 'isWikidataLexemeFormId', () => {
+		it( 'returns false with undefined', () => {
+			expect( wikidataUtils.isWikidataLexemeFormId( undefined ) ).toBe( false );
+		} );
+
+		it( 'returns false with empty string', () => {
+			expect( wikidataUtils.isWikidataLexemeFormId( '' ) ).toBe( false );
+		} );
+
+		it( 'returns false with arbitrary string', () => {
+			expect( wikidataUtils.isWikidataLexemeFormId( 'harmonica' ) ).toBe( false );
+		} );
+
+		it( 'returns true with another Wikidata id', () => {
+			expect( wikidataUtils.isWikidataLexemeFormId( 'L123456' ) ).toBe( false );
+		} );
+
+		it( 'returns true with Lexeme Form Id', () => {
+			expect( wikidataUtils.isWikidataLexemeFormId( 'L123456-F321' ) ).toBe( true );
+		} );
+	} );
+
+	describe( 'isWikidataLexemeSenseId', () => {
+		it( 'returns false with undefined', () => {
+			expect( wikidataUtils.isWikidataLexemeSenseId( undefined ) ).toBe( false );
+		} );
+
+		it( 'returns false with empty string', () => {
+			expect( wikidataUtils.isWikidataLexemeSenseId( '' ) ).toBe( false );
+		} );
+
+		it( 'returns false with arbitrary string', () => {
+			expect( wikidataUtils.isWikidataLexemeSenseId( 'harmonica' ) ).toBe( false );
+		} );
+
+		it( 'returns true with another Wikidata id', () => {
+			expect( wikidataUtils.isWikidataLexemeSenseId( 'L123456' ) ).toBe( false );
+		} );
+
+		it( 'returns true with Lexeme Sense Id', () => {
+			expect( wikidataUtils.isWikidataLexemeSenseId( 'L123456-S321' ) ).toBe( true );
+		} );
+	} );
+
+	describe( 'isWikidataPropertyId', () => {
+		it( 'returns false with undefined', () => {
+			expect( wikidataUtils.isWikidataPropertyId( undefined ) ).toBe( false );
+		} );
+
+		it( 'returns false with empty string', () => {
+			expect( wikidataUtils.isWikidataPropertyId( '' ) ).toBe( false );
+		} );
+
+		it( 'returns false with arbitrary string', () => {
+			expect( wikidataUtils.isWikidataPropertyId( 'harmonica' ) ).toBe( false );
+		} );
+
+		it( 'returns true with another Wikidata id', () => {
+			expect( wikidataUtils.isWikidataPropertyId( 'Q123456' ) ).toBe( false );
+		} );
+
+		it( 'returns true with Property Id', () => {
+			expect( wikidataUtils.isWikidataPropertyId( 'P123456' ) ).toBe( true );
 		} );
 	} );
 } );

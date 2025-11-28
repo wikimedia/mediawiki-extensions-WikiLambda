@@ -194,7 +194,11 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				expect( store.getLexemeUrl( undefined ) ).toBeUndefined();
 				expect( store.getLexemeUrl( '' ) ).toBeUndefined();
 			} );
+			it( 'returns undefined with non-valid lexeme Id', () => {
+				expect( store.getItemUrl( 'bad' ) ).toBeUndefined();
+			} );
 			it( 'returns correct URL for lexeme', () => {
+				expect( store.getLexemeUrl( 'L333333' ) ).toContain( Constants.WIKIDATA_BASE_URL );
 				expect( store.getLexemeUrl( 'L333333' ) ).toContain( 'Lexeme:L333333' );
 			} );
 		} );
@@ -204,8 +208,26 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				expect( store.getLexemeFormUrl( undefined ) ).toBeUndefined();
 				expect( store.getLexemeFormUrl( '' ) ).toBeUndefined();
 			} );
+			it( 'returns undefined with non-valid lexeme form Id', () => {
+				expect( store.getLexemeFormUrl( 'bad' ) ).toBeUndefined();
+			} );
 			it( 'returns correct URL for lexeme form', () => {
+				expect( store.getLexemeFormUrl( lexemeFormId ) ).toContain( Constants.WIKIDATA_BASE_URL );
 				expect( store.getLexemeFormUrl( lexemeFormId ) ).toContain( 'Lexeme:L333333#F5' );
+			} );
+		} );
+
+		describe( 'getLexemeSenseUrl', () => {
+			it( 'returns undefined if id is not provided', () => {
+				expect( store.getLexemeSenseUrl( undefined ) ).toBeUndefined();
+				expect( store.getLexemeSenseUrl( '' ) ).toBeUndefined();
+			} );
+			it( 'returns undefined with non-valid lexeme sense Id', () => {
+				expect( store.getLexemeSenseUrl( 'bad' ) ).toBeUndefined();
+			} );
+			it( 'returns correct URL for lexeme sense', () => {
+				expect( store.getLexemeSenseUrl( 'L333333-S1' ) ).toContain( Constants.WIKIDATA_BASE_URL );
+				expect( store.getLexemeSenseUrl( 'L333333-S1' ) ).toContain( 'Lexeme:L333333#S1' );
 			} );
 		} );
 
@@ -283,16 +305,6 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 
 				const result = store.getLexemeSenseLabelData( 'L333333-S1' );
 				expect( result ).toEqual( new LabelData( 'L333333-S1', 'L333333-S1', null ) );
-			} );
-		} );
-
-		describe( 'getLexemeSenseUrl', () => {
-			it( 'returns undefined if id is not provided', () => {
-				expect( store.getLexemeSenseUrl( undefined ) ).toBeUndefined();
-				expect( store.getLexemeSenseUrl( '' ) ).toBeUndefined();
-			} );
-			it( 'returns correct URL for lexeme sense', () => {
-				expect( store.getLexemeSenseUrl( 'L333333-S1' ) ).toContain( 'Lexeme:L333333#S1' );
 			} );
 		} );
 

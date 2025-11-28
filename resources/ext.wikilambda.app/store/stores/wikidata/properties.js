@@ -7,6 +7,7 @@
 
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
+const { isWikidataPropertyId } = require( '../../../utils/wikidataUtils.js' );
 
 module.exports = {
 	state: {
@@ -110,7 +111,9 @@ module.exports = {
 			 * @param {string} id
 			 * @return {string|undefined}
 			 */
-			const findPropertyUrl = ( id ) => id ? `${ Constants.WIKIDATA_BASE_URL }/wiki/Property:${ id }` : undefined;
+			const findPropertyUrl = ( id ) => isWikidataPropertyId( id ) ?
+				`${ Constants.WIKIDATA_BASE_URL }/wiki/Property:${ id }` :
+				undefined;
 			return findPropertyUrl;
 		}
 	},

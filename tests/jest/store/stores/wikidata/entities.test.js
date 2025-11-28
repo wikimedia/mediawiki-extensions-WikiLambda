@@ -74,6 +74,11 @@ describe( 'Wikidata Entities Pinia store', () => {
 				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM, 'L222222-F2' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222222#F2' );
 			} );
 
+			it( 'returns lexeme sense url for lexeme sense types', () => {
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_LEXEME_SENSE, 'L111111-S1' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L111111#S1' );
+				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE, 'L222222-S2' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222222#S2' );
+			} );
+
 			it( 'returns item url for item types', () => {
 				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_ITEM, 'Q111111' ) ).toBe( 'https://www.wikidata.org/wiki/Q111111' );
 				expect( store.getWikidataEntityUrl( Constants.Z_WIKIDATA_REFERENCE_ITEM, 'Q222222' ) ).toBe( 'https://www.wikidata.org/wiki/Q222222' );

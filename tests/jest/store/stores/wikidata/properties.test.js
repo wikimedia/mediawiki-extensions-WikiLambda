@@ -83,6 +83,20 @@ describe( 'Wikidata Properties Pinia store', () => {
 				expect( store.getPropertyDataAsync( 'P_NOT_PRESENT' ) ).rejects.toThrow( 'Property P_NOT_PRESENT not found' );
 			} );
 		} );
+
+		describe( 'getPropertyUrl', () => {
+			it( 'returns undefined if id is not provided', () => {
+				expect( store.getPropertyUrl( undefined ) ).toBeUndefined();
+				expect( store.getPropertyUrl( '' ) ).toBeUndefined();
+			} );
+			it( 'returns undefined with non-valid property Id', () => {
+				expect( store.getPropertyUrl( 'bad' ) ).toBeUndefined();
+			} );
+			it( 'returns wikidata item URL with valid property Id', () => {
+				expect( store.getPropertyUrl( 'P123' ) ).toContain( Constants.WIKIDATA_BASE_URL );
+				expect( store.getPropertyUrl( 'P123' ) ).toContain( 'Property:P123' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

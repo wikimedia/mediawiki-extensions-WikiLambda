@@ -51,7 +51,6 @@ module.exports = exports = defineComponent( {
 		'cdx-select': CdxSelect,
 		'cdx-progress-indicator': CdxProgressIndicator
 	},
-
 	props: {
 		keyPath: {
 			type: String,

@@ -119,6 +119,7 @@ module.exports = exports = defineComponent( {
 		const { hasChildErrors } = useError( { keyPath: props.keyPath } );
 		const {
 			getWikidataEntityId,
+			getWikidataEntityReference,
 			getZArgumentReferenceTerminalValue,
 			getZFunctionCallArgumentKeys,
 			getZFunctionCallFunctionId,
@@ -213,18 +214,52 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Returns the Wikidata entity ID for the object represented
-		 * in this component, or undefined if it is not a Wikidata type.
-		 * If the terminal wikidata entity ID is unset, returns undefined.
-		 * E.g. 'L313289'
+		 * Returns the terminal Wikidata entity ID for the object represented
+		 * in this component. E.g. 'L313289'
+		 * * If not a Wikidata type, returns undefined.
+		 * * If the Wikidata entity ID is not terminal, returns undefined.
+		 * * If the terminal wikidata entity ID is unset, returns empty string.
 		 *
 		 * @return {string|undefined}
 		 */
 		const wikidataEntityId = computed( () => (
 			isWikidataType.value ?
-				getWikidataEntityId( props.objectValue, wikidataType.value ) || undefined :
+				getWikidataEntityId( props.objectValue, wikidataType.value ) :
 				undefined
 		) );
+
+		/**
+		 * Returns whether the Wikidata entity ID is a terminal string
+		 * or is represented by a resolver object instead (E.g. a Z7 or a Z18)
+		 *
+		 * @return {boolean}
+		 */
+		const isWikidataTerminal = computed( () => typeof wikidataEntityId.value === 'string' );
+
+		/**
+		 * Returns the resolver object (E.g. a Z7 or a Z18) that returns a
+		 * Wikidata Reference or a Wikidata Reference string value, so that
+		 * it can be rendered recursively by z-object-to-string.
+		 * If it is not a Wikidata type, or the Wikidata entity has a terminal
+		 * ID, it exits early returning undefined.
+		 *
+		 * @return {Object|undefined}
+		 */
+		const wikidataResolver = computed( () => {
+			// Not a wikidata type, exit early
+			if ( !isWikidataType.value ) {
+				return;
+			}
+			// Wikidata reference has terminal value, exit early
+			if ( isWikidataTerminal.value ) {
+				return;
+			}
+			// Return the resolver object (either Z7 or Z18)
+			const refType = Constants.WIKIDATA_REFERENCE_TYPES[ wikidataType.value ];
+			const refValueKey = `${ refType }K1`;
+			const refObj = getWikidataEntityReference( props.objectValue, wikidataType.value );
+			return refValueKey in refObj ? refObj[ refValueKey ] : refObj;
+		} );
 
 		/**
 		 * Returns the label data for the Wikidata entity represented
@@ -261,7 +296,9 @@ module.exports = exports = defineComponent( {
 			}
 
 			if ( isWikidataType.value ) {
-				return wikidataEntityId.value;
+				return isWikidataTerminal.value ?
+					wikidataEntityId.value || undefined :
+					wikidataResolver.value;
 			}
 
 			if ( type.value === Constants.Z_FUNCTION_CALL ) {
@@ -271,6 +308,7 @@ module.exports = exports = defineComponent( {
 			// If type is empty string, return undefined value
 			return type.value || undefined;
 		} );
+
 		/**
 		 * Returns whether the value for this object is terminal
 		 *
@@ -337,7 +375,7 @@ module.exports = exports = defineComponent( {
 			// * The object is one of these types: string, reference, arg reference or html
 			// * The object is a wikidata entity
 			// * The object has a successfully rendered value
-			if ( isTerminalType || isWikidataType.value || isValueRendered.value ) {
+			if ( isTerminalType || isWikidataTerminal.value || isValueRendered.value ) {
 				return [];
 			}
 
@@ -371,25 +409,6 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Returns whether the object represented should link to somewhere
-		 * or not. Only non-blank terminal strings don't have a link.
-		 *
-		 * @return {boolean|undefined}
-		 */
-		const showLink = computed( () => {
-			if ( !isValueTerminal.value ) {
-				// If non terminal value, exit early
-				return;
-			}
-
-			return (
-				type.value !== Constants.Z_STRING &&
-				type.value !== Constants.Z_ARGUMENT_REFERENCE &&
-				!isValueRendered.value
-			);
-		} );
-
-		/**
 		 * Returns the link to the object if it has any.
 		 *
 		 * @return {string|undefined}
@@ -408,6 +427,26 @@ module.exports = exports = defineComponent( {
 				langCode: store.getUserLangCode,
 				zid: value.value
 			} );
+		} );
+
+		/**
+		 * Returns whether the object represented should link to somewhere
+		 * or not. Only non-blank terminal strings don't have a link.
+		 *
+		 * @return {boolean|undefined}
+		 */
+		const showLink = computed( () => {
+			if ( !isValueTerminal.value ) {
+				// If non terminal value, exit early
+				return;
+			}
+
+			return (
+				!!link.value &&
+				type.value !== Constants.Z_STRING &&
+				type.value !== Constants.Z_ARGUMENT_REFERENCE &&
+				!isValueRendered.value
+			);
 		} );
 
 		/**
@@ -547,8 +586,10 @@ module.exports = exports = defineComponent( {
 		 * @return {Promise | undefined}
 		 */
 		function fetchWikidataEntity() {
-			store.fetchWikidataEntitiesByType( { type: wikidataType.value, ids: [ wikidataEntityId.value ] } );
 			store.fetchZids( { zids: [ wikidataType.value ] } );
+			if ( wikidataEntityId.value ) {
+				store.fetchWikidataEntitiesByType( { type: wikidataType.value, ids: [ wikidataEntityId.value ] } );
+			}
 		}
 
 		// Watch
@@ -623,6 +664,7 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-object-to-string__blank {
 		.cdx-mixin-link();
 		border: 0;
+		padding: 0;
 		background: none;
 		font-size: inherit;
 	}

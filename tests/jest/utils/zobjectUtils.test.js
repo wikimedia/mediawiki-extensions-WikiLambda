@@ -1783,6 +1783,178 @@ describe( 'zobjectUtils', () => {
 		} );
 	} );
 
+	describe( 'getWikidataEntityReference', () => {
+		it( 'returns undefined when called with undefined', () => {
+			const zobject = undefined;
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when called with string', () => {
+			const zobject = 'Q123';
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when object is not a wikidata entity', () => {
+			const zobject = {
+				Z1K1: 'Z11',
+				Z11K1: 'Z1002',
+				Z11K2: 'not a function call'
+			};
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when object is a function call to a different function', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'L111111'
+			};
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when the wikidata entity type is wrong', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const wikidataType = 'Z6001'; // mismatching type
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) )
+				.toEqual( canonicalToHybrid( expected ) );
+		} );
+
+		it( 'returns reference object when input object is a wikidata literal', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) )
+				.toEqual( canonicalToHybrid( expected ) );
+		} );
+
+		it( 'returns reference object when input object is a wikidata reference', () => {
+			const zobject = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			const wikidataType = 'Z6005';
+			const expected = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) )
+				.toEqual( canonicalToHybrid( expected ) );
+		} );
+
+		it( 'returns reference object when input object is a wikidata fetch function call', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = {
+				Z1K1: 'Z6095',
+				Z6095K1: 'L111111'
+			};
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) )
+				.toEqual( canonicalToHybrid( expected ) );
+		} );
+
+		it( 'returns non terminal reference', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z18',
+					Z18K1: 'Z10000K1'
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = {
+				Z1K1: 'Z18',
+				Z18K1: 'Z10000K1'
+			};
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) )
+				.toEqual( canonicalToHybrid( expected ) );
+		} );
+
+		it( 'returns reference with non terminal Id', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z801',
+						Z801K1: 'L111111'
+					}
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = {
+				Z1K1: 'Z6095',
+				Z6095K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z801',
+					Z801K1: 'L111111'
+				}
+			};
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) )
+				.toEqual( canonicalToHybrid( expected ) );
+		} );
+
+		it( 'returns empty reference object', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: ''
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = {
+				Z1K1: 'Z6095',
+				Z6095K1: ''
+			};
+			expect( zobjectUtils.getWikidataEntityReference( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityReference( canonicalToHybrid( zobject ), wikidataType ) )
+				.toEqual( canonicalToHybrid( expected ) );
+		} );
+	} );
+
 	describe( 'getWikidataEntityId', () => {
 		it( 'returns undefined when called with undefined', () => {
 			const zobject = undefined;
@@ -1824,6 +1996,20 @@ describe( 'zobjectUtils', () => {
 			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
 		} );
 
+		it( 'returns undefined when the wikidata entity type is wrong', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: 'L111111'
+				}
+			};
+			const wikidataType = 'Z6001'; // mismatching type
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
 		it( 'returns identity when object is a wikidata literal', () => {
 			const zobject = {
 				Z1K1: 'Z6005',
@@ -1860,6 +2046,53 @@ describe( 'zobjectUtils', () => {
 			};
 			const wikidataType = 'Z6005';
 			const expected = 'L111111';
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when wikidata entity reference is not terminal', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z18',
+					Z18K1: 'Z10000K1'
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns undefined when wikidata entity reference Id is not terminal', () => {
+			const zobject = {
+				Z1K1: 'Z6005',
+				Z6005K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z801',
+						Z801K1: 'L111111'
+					}
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = undefined;
+			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
+			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
+		} );
+
+		it( 'returns empty string when reference Id is unset', () => {
+			const zobject = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6825',
+				Z6825K1: {
+					Z1K1: 'Z6095',
+					Z6095K1: ''
+				}
+			};
+			const wikidataType = 'Z6005';
+			const expected = '';
 			expect( zobjectUtils.getWikidataEntityId( zobject, wikidataType ) ).toEqual( expected );
 			expect( zobjectUtils.getWikidataEntityId( canonicalToHybrid( zobject ), wikidataType ) ).toEqual( expected );
 		} );

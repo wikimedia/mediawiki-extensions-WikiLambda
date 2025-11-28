@@ -84,6 +84,20 @@ describe( 'Wikidata Items Pinia store', () => {
 				expect( store.getItemDataAsync( 'Q_NOT_PRESENT' ) ).rejects.toThrow( 'Item Q_NOT_PRESENT not found' );
 			} );
 		} );
+
+		describe( 'getItemUrl', () => {
+			it( 'returns undefined if id is not provided', () => {
+				expect( store.getItemUrl( undefined ) ).toBeUndefined();
+				expect( store.getItemUrl( '' ) ).toBeUndefined();
+			} );
+			it( 'returns undefined with non-valid item Id', () => {
+				expect( store.getItemUrl( 'bad' ) ).toBeUndefined();
+			} );
+			it( 'returns wikidata item URL with valid item Id', () => {
+				expect( store.getItemUrl( 'Q123' ) ).toContain( Constants.WIKIDATA_BASE_URL );
+				expect( store.getItemUrl( 'Q123' ) ).toContain( 'Q123' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

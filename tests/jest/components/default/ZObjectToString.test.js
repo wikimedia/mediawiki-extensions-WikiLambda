@@ -63,7 +63,8 @@ describe( 'ZObjectToString', () => {
 			Z1002: 'English',
 			Z10001: 'And',
 			Z999K1: 'argument label',
-			Z89: 'HTML Fragment'
+			Z89: 'HTML Fragment',
+			Z6821: 'Fetch Wikidata item'
 		} );
 	} );
 
@@ -347,8 +348,7 @@ describe( 'ZObjectToString', () => {
 						'L42-F1': 'answered',
 						P42: 'is answer to'
 					};
-					const label = testLabels[ id ];
-					return label ? { zid: id, label } : undefined;
+					return { zid: id, label: ( testLabels[ id ] || id ) };
 				} );
 			} );
 
@@ -485,6 +485,54 @@ describe( 'ZObjectToString', () => {
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Property:P42' );
 					expect( referenceLink.text() ).toBe( 'is answer to' );
+				} );
+			} );
+
+			describe( 'non-terminal Wikidata entities', () => {
+				it( 'falls back to z-object-to-string when reference is non-terminal', () => {
+					objectValue = {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6821' },
+						Z6821K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+							Z18K1: { Z1K1: 'Z6', Z6K1: 'Z999K1' }
+						}
+					};
+
+					const wrapper = renderZObjectToString();
+
+					const parentElement = wrapper.find( '.ext-wikilambda-app-object-to-string__parent' );
+					const childElement = wrapper.findAll( '.ext-wikilambda-app-object-to-string__child' )[ 0 ];
+
+					expect( parentElement.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+					const functionLink = parentElement.find( 'a[data-testid=object-to-string-link]' );
+					expect( functionLink.attributes().href ).toBe( '/view/en/Z6821' );
+					expect( functionLink.text() ).toBe( 'Fetch Wikidata item' );
+
+					expect( childElement.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+					const argText = childElement.find( 'span[data-testid=object-to-string-text]' );
+					expect( argText.exists() ).toBe( true );
+					expect( argText.text() ).toBe( 'argument label' );
+				} );
+			} );
+
+			describe( 'wikidata entities with non-valid ID', () => {
+				it( 'shows no link when entity ID is not valid', () => {
+					objectValue = {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6821' },
+						Z6821K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6091' },
+							Z6091K1: { Z1K1: 'Z6', Z6K1: 'bad QID' }
+						}
+					};
+
+					const wrapper = renderZObjectToString();
+					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+					expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( false );
+					const text = wrapper.find( 'span[data-testid=object-to-string-text]' );
+					expect( text.exists() ).toBe( true );
+					expect( text.text() ).toBe( 'bad QID' );
 				} );
 			} );
 		} );

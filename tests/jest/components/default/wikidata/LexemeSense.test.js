@@ -56,6 +56,16 @@ const objectValueFetch = {
 	}
 };
 
+// Non terminal ID
+const objectValueNonTerminal = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+	Z7K1: { Z1K1: 'Z9', Z9K1: 'Z6826' },
+	Z6826K1: {
+		Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+		Z18K1: { Z1K1: 'Z6', Z6K1: 'Z10000K1' }
+	}
+};
+
 describe( 'WikidataLexemeSense', () => {
 	let store;
 
@@ -90,6 +100,13 @@ describe( 'WikidataLexemeSense', () => {
 		it( 'renders wikidata lexeme sense reference without errors', () => {
 			const wrapper = renderWikidataLexemeSense();
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-sense' ).exists() ).toBe( true );
+		} );
+
+		it( 'falls back to z-object-to-string when entity ID is not terminal', () => {
+			const wrapper = renderWikidataLexemeSense( {
+				objectValue: objectValueNonTerminal
+			} );
+			expect( wrapper.findComponent( { name: 'wl-z-object-to-string' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders wikidata lexeme sense fetch function without errors', () => {
@@ -132,6 +149,14 @@ describe( 'WikidataLexemeSense', () => {
 				edit: true
 			} );
 			expect( wrapper.find( '.ext-wikilambda-app-wikidata-lexeme-sense' ).exists() ).toBe( true );
+		} );
+
+		it( 'falls back to z-object-to-string when entity ID is not terminal', () => {
+			const wrapper = renderWikidataLexemeSense( {
+				edit: true,
+				objectValue: objectValueNonTerminal
+			} );
+			expect( wrapper.findComponent( { name: 'wl-z-object-to-string' } ).exists() ).toBe( true );
 		} );
 
 		it( 'renders lexeme selector and sense selector', async () => {

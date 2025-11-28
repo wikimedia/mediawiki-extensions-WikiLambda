@@ -9,6 +9,11 @@
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 const { getNestedProperty } = require( '../../../utils/miscUtils.js' );
+const {
+	isWikidataLexemeId,
+	isWikidataLexemeFormId,
+	isWikidataLexemeSenseId
+} = require( '../../../utils/wikidataUtils.js' );
 
 module.exports = {
 	state: {
@@ -220,7 +225,9 @@ module.exports = {
 			 * @param {string} id
 			 * @return {string|undefined}
 			 */
-			const findLexemeUrl = ( id ) => id ? `${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ id }` : undefined;
+			const findLexemeUrl = ( id ) => isWikidataLexemeId( id ) ?
+				`${ Constants.WIKIDATA_BASE_URL }/wiki/Lexeme:${ id }` :
+				undefined;
 			return findLexemeUrl;
 		},
 
@@ -236,7 +243,7 @@ module.exports = {
 			 * @return {string|undefined}
 			 */
 			const findLexemeFormUrl = ( id ) => {
-				if ( !id ) {
+				if ( !isWikidataLexemeFormId( id ) ) {
 					return undefined;
 				}
 				const [ lexemeId = '', formId = '' ] = id.split( '-' );
@@ -313,7 +320,7 @@ module.exports = {
 			 * @return {string|undefined}
 			 */
 			const findLexemeSenseUrl = ( id ) => {
-				if ( !id ) {
+				if ( !isWikidataLexemeSenseId( id ) ) {
 					return undefined;
 				}
 				const [ lexemeId = '', senseId = '' ] = id.split( '-' );

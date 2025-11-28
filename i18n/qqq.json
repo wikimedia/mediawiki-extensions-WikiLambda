@@ -567,6 +567,7 @@
 	"wikilambda-validation-error-name-toolong": "Validation error message when saving a name that is too long.\n\nParams:\n* $1 - The language for which the name is too long.\n* $2 - The character length limit.",
 	"wikilambda-viewmode-nojs": "Warning shown on a ZObject page to readers who do not have JavaScript.",
 	"wikilambda-wikidata-entity-selector-placeholder": "Placeholder text for the lookup component to search and select any kind of Wikidata entity.\n\n{{doc-wikilambda}}",
+	"wikilambda-wikidata-entity-empty-value-placeholder": "Placeholder text for an empty Wikidata entity value, in read mode.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-item-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Items.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Lexeme Forms.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Lexemes.\n\n{{doc-wikilambda}}",

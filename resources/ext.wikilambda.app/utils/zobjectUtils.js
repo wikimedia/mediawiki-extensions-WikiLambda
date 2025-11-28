@@ -553,13 +553,25 @@ const zobjectUtils = {
 		);
 	},
 	/**
+	 * Given an object and a simplified Wikidata entity type, returns the Wikidata entity
+	 * reference object that contains the entity Identity.
+	 *
+	 * Every Wikidata entity object has a Wikidata entity reference object which contains
+	 * its identity:
+	 * * If the object is a Wikidata Entity Reference (e.g. type Z6091), returns itself.
+	 * * If the object is a Wikidata Entity Type (e.g. type Z6001), returns the object
+	 *   contained in its first key (e.g. Z6001K1)
+	 * * If the object is a Wikidata Fetch Function (e.g. type Z6821), returns the object
+	 *   contained in its first argument (e.g. Z6821K1)
+	 *
+	 * If the input value is not a Wikidata entity object matching with the given type
+	 * returns undefined.
+	 *
 	 * @param {Object} value
 	 * @param {string} wikidataType
-	 * @return {string|undefined}
+	 * @return {Object|undefined}
 	 */
-	getWikidataEntityId: function ( value, wikidataType ) {
-		let wikidataRef;
-
+	getWikidataEntityReference: function ( value, wikidataType ) {
 		if ( !value || typeof value !== 'object' || !( Constants.Z_OBJECT_TYPE in value ) ) {
 			return undefined;
 		}
@@ -571,7 +583,7 @@ const zobjectUtils = {
 		// - Z1K1: refType
 		// - [refType]K1: entityId
 		if ( type === Constants.WIKIDATA_REFERENCE_TYPES[ wikidataType ] ) {
-			wikidataRef = value;
+			return value;
 		}
 
 		// If Wikidata type: The Wikidata entity reference is in the first key
@@ -579,9 +591,9 @@ const zobjectUtils = {
 		// - [wikidataType]K1:
 		//   - Z1K1: refType
 		//   - [refType]K1: entityId
-		if ( Constants.WIKIDATA_TYPES.includes( type ) ) {
+		if ( type === wikidataType && Constants.WIKIDATA_TYPES.includes( type ) ) {
 			const identityKey = `${ type }K1`;
-			wikidataRef = value[ identityKey ];
+			return value[ identityKey ];
 		}
 
 		// If Function call: The Wikidata entity reference is in the first argument
@@ -593,8 +605,28 @@ const zobjectUtils = {
 		if ( type === Constants.Z_FUNCTION_CALL ) {
 			const fetchFunction = Constants.WIKIDATA_FETCH_FUNCTIONS[ wikidataType ];
 			const fetchFunctionRefKey = `${ fetchFunction }K1`;
-			wikidataRef = value[ fetchFunctionRefKey ];
+			return value[ fetchFunctionRefKey ];
 		}
+
+		return undefined;
+	},
+
+	/**
+	 * Returns the terminal Wikidata ID string value of a given Wikidata Entity object of
+	 * a given Wikidata Entity simplified type (e.g. Z600*).
+	 *
+	 * If the Wikidata ID is a terminal string, but is empty/unset, returns an empty string.
+	 *
+	 * If the given Wikidata Entity object does NOT have a terminal string ID, returns undefined.
+	 * * E.g. Z6001K1 contains a Z7 or a Z18
+	 * * E.g. Z6821K1.Z6091 contains a Z7 or a Z18
+	 *
+	 * @param {Object} value
+	 * @param {string} wikidataType
+	 * @return {string|undefined}
+	 */
+	getWikidataEntityId: function ( value, wikidataType ) {
+		const wikidataRef = zobjectUtils.getWikidataEntityReference( value, wikidataType );
 
 		if ( !wikidataRef ) {
 			return undefined;

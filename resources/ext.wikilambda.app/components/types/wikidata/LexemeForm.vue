@@ -8,33 +8,51 @@
 	<div
 		class="ext-wikilambda-app-wikidata-lexeme-form"
 		data-testid="wikidata-lexeme-form">
-		<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme-form__read">
-			<cdx-icon
-				:icon="wikidataIcon"
-				class="ext-wikilambda-app-wikidata-lexeme-form__wd-icon"
-			></cdx-icon>
-			<a
-				v-if="lexemeFormLabelData"
-				class="ext-wikilambda-app-wikidata-lexeme-form__link"
-				:href="lexemeFormUrl"
-				:lang="lexemeFormLabelData.langCode"
-				:dir="lexemeFormLabelData.langDir"
-				target="_blank"
-			>{{ lexemeFormLabelData.label }}</a>
-		</div>
-		<wl-wikidata-entity-selector
+		<template v-if="hasTerminalId">
+			<div v-if="!edit" class="ext-wikilambda-app-wikidata-lexeme-form__read">
+				<cdx-icon
+					class="ext-wikilambda-app-wikidata-lexeme-form__wd-icon"
+					:icon="wikidataIcon"
+				></cdx-icon>
+				<a
+					v-if="lexemeFormLabelData && lexemeFormUrl"
+					class="ext-wikilambda-app-wikidata-lexeme-form__link"
+					:href="lexemeFormUrl"
+					:lang="lexemeFormLabelData.langCode"
+					:dir="lexemeFormLabelData.langDir"
+					target="_blank"
+				>{{ lexemeFormLabelData.label }}</a>
+				<!-- No link: value is not a valid Qid (unknown) -->
+				<span
+					v-else-if="lexemeFormLabelData"
+					class="ext-wikilambda-app-wikidata-lexeme-form__unknown"
+					:lang="lexemeFormLabelData.langCode"
+					:dir="lexemeFormLabelData.langDir"
+				>{{ lexemeFormLabelData.label }}</span>
+				<!-- No label: value is empty -->
+				<span v-else class="ext-wikilambda-app-wikidata-lexeme-form__empty">
+					{{ i18n( 'wikilambda-wikidata-entity-empty-value-placeholder' ).text() }}
+				</span>
+			</div>
+			<wl-wikidata-entity-selector
+				v-else
+				:entity-id="lexemeFormId"
+				:entity-label="lexemeFormLabel"
+				:type="lexemeFormType"
+				@select-wikidata-entity="onSelect"
+			></wl-wikidata-entity-selector>
+		</template>
+		<wl-z-object-to-string
 			v-else
-			:entity-id="lexemeFormId"
-			:entity-label="lexemeFormLabel"
-			:type="lexemeFormType"
-			@select-wikidata-entity="onSelect"
-		></wl-wikidata-entity-selector>
+			:key-path="keyPath"
+			:object-value="objectValue"
+			:edit="edit"
+		></wl-z-object-to-string>
 	</div>
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { computed, watch, onMounted } = require( 'vue' );
+const { defineComponent, computed, inject, watch, onMounted } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
 const Constants = require( '../../../Constants.js' );
@@ -43,6 +61,8 @@ const useMainStore = require( '../../../store/index.js' );
 
 // Wikidata components
 const WikidataEntitySelector = require( './EntitySelector.vue' );
+// Type components
+const ZObjectToString = require( '../ZObjectToString.vue' );
 // Codex components
 const { CdxIcon } = require( '../../../../codex.js' );
 
@@ -50,9 +70,9 @@ module.exports = exports = defineComponent( {
 	name: 'wl-wikidata-lexeme-form',
 	components: {
 		'wl-wikidata-entity-selector': WikidataEntitySelector,
+		'wl-z-object-to-string': ZObjectToString,
 		'cdx-icon': CdxIcon
 	},
-
 	props: {
 		keyPath: {
 			type: String,
@@ -73,6 +93,7 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
@@ -80,12 +101,22 @@ module.exports = exports = defineComponent( {
 		const lexemeFormType = Constants.Z_WIKIDATA_LEXEME_FORM;
 
 		/**
-		 * Returns the Lexeme Form Id string value, if any Lexeme Form is selected.
-		 * Else returns null (required as empty value for CdxLookup).
+		 * Returns the Wikidata Lexeme Form Id string terminal value if set, or empty string if unset.
+		 * If the Id is not determined by a terminal string, returns undefined.
 		 *
-		 * @return {string|null}
+		 * @return {string|undefined}
 		 */
 		const lexemeFormId = computed( () => getWikidataEntityId( props.objectValue, lexemeFormType ) );
+
+		/**
+		 * Returns whether the Wikidata Entity Id is a terminal string.
+		 * If it doesn't, the component will fallback to z-object-to-string so
+		 * that it informs of the object content but doesn't show blank values or
+		 * fields, and doesn't allow direct edit (e.g. requires previous expnsion)
+		 *
+		 * @return {boolean}
+		 */
+		const hasTerminalId = computed( () => typeof lexemeFormId.value === 'string' );
 
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Form.
@@ -147,13 +178,15 @@ module.exports = exports = defineComponent( {
 		} );
 
 		return {
+			hasTerminalId,
 			lexemeFormId,
 			lexemeFormLabel,
 			lexemeFormLabelData,
 			lexemeFormType,
 			lexemeFormUrl,
 			onSelect,
-			wikidataIcon
+			wikidataIcon,
+			i18n
 		};
 	}
 } );
@@ -177,6 +210,15 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-wikidata-lexeme-form__link {
 		line-height: var( --line-height-current );
 		word-break: break-word;
+	}
+
+	.ext-wikilambda-app-wikidata-lexeme-form__unknown {
+		color: @color-subtle;
+	}
+
+	.ext-wikilambda-app-wikidata-lexeme-form__empty {
+		color: @color-placeholder;
+		font-style: italic;
 	}
 
 	.ext-wikilambda-app-wikidata-lexeme-form__wd-icon {

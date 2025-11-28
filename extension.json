@@ -916,6 +916,7 @@
 				"wikilambda-object-selector-suggested-languages",
 				"wikilambda-edit-monolingual-text-placeholder",
 				"wikilambda-wikidata-entity-selector-placeholder",
+				"wikilambda-wikidata-entity-empty-value-placeholder",
 				"wikilambda-wikidata-item-selector-placeholder",
 				"wikilambda-wikidata-lexeme-selector-placeholder",
 				"wikilambda-wikidata-lexeme-form-selector-placeholder",

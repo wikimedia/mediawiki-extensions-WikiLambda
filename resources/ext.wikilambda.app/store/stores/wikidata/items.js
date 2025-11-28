@@ -8,6 +8,7 @@
 
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
+const { isWikidataQid } = require( '../../../utils/wikidataUtils.js' );
 
 module.exports = {
 	state: {
@@ -112,7 +113,9 @@ module.exports = {
 			 * @param {string} id
 			 * @return {string|undefined}
 			 */
-			const findItemUrl = ( id ) => id ? `${ Constants.WIKIDATA_BASE_URL }/wiki/${ id }` : undefined;
+			const findItemUrl = ( id ) => isWikidataQid( id ) ?
+				`${ Constants.WIKIDATA_BASE_URL }/wiki/${ id }` :
+				undefined;
 			return findItemUrl;
 		}
 	},

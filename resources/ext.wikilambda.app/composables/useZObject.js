@@ -35,7 +35,8 @@ const {
 	isWikidataLiteral,
 	isWikidataFetch,
 	isWikidataReference,
-	getWikidataEntityId
+	getWikidataEntityId,
+	getWikidataEntityReference
 } = require( '../utils/zobjectUtils.js' );
 
 /**
@@ -124,6 +125,7 @@ module.exports = function useZObject( { keyPath } = {} ) {
 		isWikidataLiteral,
 		isWikidataFetch,
 		isWikidataReference,
-		getWikidataEntityId
+		getWikidataEntityId,
+		getWikidataEntityReference
 	};
 };
