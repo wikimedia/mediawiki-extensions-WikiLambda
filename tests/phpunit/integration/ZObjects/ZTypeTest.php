@@ -190,16 +190,15 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @dataProvider provideIsEnumType
 	 */
-	public function testIsEnumType( $inputKeys, $expectedIsEnum ) {
+	public function testIsEnumType( $zid, $inputKeys, $expectedIsEnum ) {
 		// Ensure that Z40/Boolean is available
 		$this->insertZids( [ 'Z40' ] );
 
 		$listOfKeys = ZTypedList::buildType( new ZReference( 'Z3' ) );
 
-		$identity = 'Z1234';
 		$validator = 'Z101';
 		$testObject = new ZType(
-			new ZReference( $identity ),
+			new ZReference( $zid ),
 			new ZTypedList( $listOfKeys, $inputKeys ),
 			new ZReference( $validator )
 		);
@@ -208,6 +207,8 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public static function provideIsEnumType() {
+		$zid = 'Z1234';
+
 		$trueRef = new ZReference( ZTypeRegistry::Z_BOOLEAN_TRUE );
 		$falseRef = new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE );
 		$trueLiteral = new ZObject( new ZReference( ZTypeRegistry::Z_BOOLEAN ), [
@@ -217,18 +218,28 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 			'Z40K1' => new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE )
 		] );
 
-		$noIdentityKey = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [] );
-		$identityTrueRef = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $trueRef );
-		$identityFalseRef = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $falseRef );
-		$identityTrueLiteral = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $trueLiteral );
-		$identityFalseLiteral = new ZKey( new ZReference( 'Z1234' ), new ZString( 'Z1234K1' ), [], $falseLiteral );
+		$createIdentityKeyFor = static function ( $zid, $isIdentity = null ) {
+			return new ZKey( new ZReference( $zid ), new ZString( $zid . 'K1' ), [], $isIdentity );
+		};
+
+		$noIdentityKey = $createIdentityKeyFor( $zid );
+		$identityTrueRef = $createIdentityKeyFor( $zid, $trueRef );
+		$identityFalseRef = $createIdentityKeyFor( $zid, $falseRef );
+		$identityTrueLiteral = $createIdentityKeyFor( $zid, $trueLiteral );
+		$identityFalseLiteral = $createIdentityKeyFor( $zid, $falseLiteral );
 
 		return [
-			'identity key not set' => [ [ $noIdentityKey ], false ],
-			'identity key reference to true' => [ [ $identityTrueRef ], true ],
-			'identity key reference to false' => [ [ $identityFalseRef ], false ],
-			'identity key literal true' => [ [ $identityTrueLiteral ], true ],
-			'identity key literal false' => [ [ $identityFalseLiteral ], false ]
+			'identity key not set' => [ $zid, [ $noIdentityKey ], false ],
+			'identity key reference to true' => [ $zid, [ $identityTrueRef ], true ],
+			'identity key reference to false' => [ $zid, [ $identityFalseRef ], false ],
+			'identity key literal true' => [ $zid, [ $identityTrueLiteral ], true ],
+			'identity key literal false' => [ $zid, [ $identityFalseLiteral ], false ],
+			// Predefined types with identity key, but that are not enums:
+			'type/Z4 is not enum' => [ 'Z4', [ $createIdentityKeyFor( 'Z4', $trueRef ) ], false ],
+			'error type/Z50 is not enum' => [ 'Z50', [ $createIdentityKeyFor( 'Z50', $trueRef ) ], false ],
+			'function/Z8 is not enum' => [ 'Z8', [ $createIdentityKeyFor( 'Z8', $trueRef ) ], false ],
+			'deserializer/Z46 is not enum' => [ 'Z46', [ $createIdentityKeyFor( 'Z46', $trueRef ) ], false ],
+			'serializer/Z64 is not enum' => [ 'Z64', [ $createIdentityKeyFor( 'Z64', $trueRef ) ], false ],
 		];
 	}
 

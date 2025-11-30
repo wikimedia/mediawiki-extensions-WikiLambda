@@ -359,6 +359,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	public const EXCLUDE_TYPES_FROM_ENUMS = [
 		self::Z_TYPE,
+		self::Z_ERRORTYPE,
 		self::Z_FUNCTION,
 		self::Z_DESERIALISER,
 		self::Z_SERIALISER
