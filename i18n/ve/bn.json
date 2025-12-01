@@ -71,5 +71,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "বাতিল করা হয়েছে",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "পুনঃস্থাপন",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "বাতিল",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "আজকের তারিখ ব্যবহার করুন এবং ফলাফল হালনাগাদ রাখুন",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "এই পৃষ্ঠার ডিফল্ট উইকিউপাত্ত আইটেমটি ব্যবহার করুন",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "এই পাতার পূর্বনির্ধারিত ভাষা ব্যবহার করুন"
 }
