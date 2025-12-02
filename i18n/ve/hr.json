@@ -37,7 +37,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Čitati manje",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Čitati više",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Nema rezultata. Pokušaj upotrijebiti drugi upit za pretraživanje.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Traži među {{formatnum:2000}}+ funkcijama",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Traži među $1+ funkcijama",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Rezultati",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Unesi tekst",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Predložene funkcije",

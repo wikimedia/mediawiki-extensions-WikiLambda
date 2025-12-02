@@ -38,7 +38,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "कम पढ़ें",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "और पढ़ें",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "कोई परिणाम नहीं मिला. एक अलग खोज क्वेरी का उपयोग करके देखें.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "{{formatnum:2000}}+ फ़ंक्शनों में खोजें",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "$1+ फ़ंक्शनों में खोजें",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "परिणाम",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "टेक्स्ट दर्ज करें",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "सुझावित फ़ंक्शन्स",

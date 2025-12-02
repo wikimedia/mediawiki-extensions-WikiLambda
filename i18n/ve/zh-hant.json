@@ -36,7 +36,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "閱讀更少",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "閱讀更多",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "找不到結果。請嘗試使用其他搜尋查詢。",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "在 {{formatnum:2000}}+ 個函式中搜尋",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "在 $1+ 個函式中搜尋",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "結果",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "輸入文字",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "支援函式",

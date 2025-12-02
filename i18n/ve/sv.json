@@ -35,7 +35,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Läs mindre",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Läs mer",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Inga resultat hittades. Testa med en annan sökfråga.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Sök bland {{formatnum:2000}}+ funktioner",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Sök bland $1+ funktioner",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultat",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Ange text",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Föreslagna funktioner",

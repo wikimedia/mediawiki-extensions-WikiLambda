@@ -525,6 +525,7 @@
 	"wikilambda-validation-error-name-toolong": "Der Name in $1 darf maximal {{PLURAL:$2|$2 Zeichen}} lang sein.",
 	"wikilambda-viewmode-nojs": "Diese Seite wird ohne JavaScript nur in eingeschränkter Weise angezeigt.",
 	"wikilambda-wikidata-entity-selector-placeholder": "Wikidata-Entität auswählen",
+	"wikilambda-wikidata-entity-empty-value-placeholder": "Kein Wert",
 	"wikilambda-wikidata-item-selector-placeholder": "Wikidata-Datenobjekt auswählen",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Wikidata-Lexemform auswählen",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Wikidata-Lexem auswählen",

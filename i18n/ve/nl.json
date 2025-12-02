@@ -38,7 +38,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Minder lezen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Meer lezen",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Geen resultaten gevonden. Probeer een andere zoekopdracht.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Meer dan {{formatnum:2000}} functies doorzoeken",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Meer dan $1 functies doorzoeken",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Resultaten",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Voer tekst in",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Voorgestelde functies",

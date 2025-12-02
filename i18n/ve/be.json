@@ -36,7 +36,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Чытаць меней",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Чытаць больш",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Нічога не знойдзена. Паспрабуйце выкарыстаць іншы пошукавы запыт.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Пошук сярод {{formatnum:2000}}+ функцыяў",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "Пошук сярод $1+ функцыяў",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Вынікі",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Увядзіце тэкст",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Прапанаваныя функцыі",
