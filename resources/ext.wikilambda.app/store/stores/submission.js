@@ -644,7 +644,7 @@ module.exports = {
 
 		/**
 		 * Sets the flag to show publish success message
-		 * Uses sessionStorage to persist across page reloads
+		 * Uses mw.storage.session to persist across page reloads
 		 *
 		 * @param {string} zid - The ZObject ID that was published
 		 */
@@ -652,7 +652,7 @@ module.exports = {
 			if ( !zid ) {
 				return;
 			}
-			sessionStorage.setItem( `wikilambda-publish-success-${ zid }`, 'true' );
+			mw.storage.session.set( `wikilambda-publish-success-${ zid }`, 'true' );
 		},
 
 		/**
@@ -666,9 +666,9 @@ module.exports = {
 				return;
 			}
 			const key = `wikilambda-publish-success-${ zid }`;
-			const exists = sessionStorage.getItem( key ) === 'true';
+			const exists = mw.storage.session.get( key ) === 'true';
 			if ( exists ) {
-				sessionStorage.removeItem( key );
+				mw.storage.session.remove( key );
 				this.showPublishSuccess = true;
 				return;
 			}

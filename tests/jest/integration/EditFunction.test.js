@@ -132,7 +132,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 
 		// ASSERT: Publish success flag is set in sessionStorage (verifies the mechanism for showing success message).
 		await waitFor( () => {
-			expect( sessionStorage.getItem( 'wikilambda-publish-success-newPage' ) ).toBe( 'true' );
+			expect( mw.storage.session.get( 'wikilambda-publish-success-newPage' ) ).toBe( 'true' );
 		} );
 
 		// ASSERT: Correct ZID and ZObject were posted to the API.

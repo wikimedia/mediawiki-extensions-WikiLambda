@@ -135,7 +135,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ASSERT: Publish success flag is set in sessionStorage before navigation.
 		await waitFor( () => {
-			expect( sessionStorage.getItem( 'wikilambda-publish-success-newPage' ) ).toBe( 'true' );
+			expect( mw.storage.session.get( 'wikilambda-publish-success-newPage' ) ).toBe( 'true' );
 		} );
 
 		// ASSERT: Correct ZObject was posted to the API.

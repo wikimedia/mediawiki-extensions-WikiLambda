@@ -6,7 +6,7 @@
  */
 'use strict';
 
-/* global jest, mockLocalStorage, $ */
+/* global jest, mockLocalStorage, mockSessionStorage, $ */
 // Assign things to "global" here if you want them to be globally available during tests
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -17,6 +17,7 @@ const Constants = require( './resources/ext.wikilambda.app/Constants.js' );
 global.$ = require( 'jquery' );
 
 global.mockLocalStorage = {};
+global.mockSessionStorage = {};
 
 global.toQueryParam = function ( param ) {
 	return Object.keys( param )
@@ -147,7 +148,16 @@ global.mw = {
 		get: jest.fn( ( key ) => mockLocalStorage[ key ] ),
 		set: jest.fn( ( key, value ) => {
 			mockLocalStorage[ key ] = value;
-		} )
+		} ),
+		session: {
+			get: jest.fn( ( key ) => mockSessionStorage[ key ] || null ),
+			set: jest.fn( ( key, value ) => {
+				mockSessionStorage[ key ] = value;
+			} ),
+			remove: jest.fn( ( key ) => {
+				delete mockSessionStorage[ key ];
+			} )
+		}
 	},
 	track: jest.fn( ( trackkey, trackmessage ) => {
 

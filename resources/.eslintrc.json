@@ -37,6 +37,7 @@
 				"Row"
 			]
 		} ],
+		"mediawiki/no-storage": "error",
 		"vue/attributes-order": "error",
 		"vue/component-definition-name-casing": [
 			"error",

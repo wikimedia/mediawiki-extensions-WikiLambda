@@ -33,7 +33,7 @@ describe( 'FunctionViewer', () => {
 
 		mockWindowLocation( buildUrl( `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ functionZid }` ) );
 		// Clear sessionStorage before each test
-		sessionStorage.clear();
+		mw.storage.session.remove( `wikilambda-publish-success-${ functionZid }` );
 	} );
 
 	afterEach( () => {
@@ -55,11 +55,11 @@ describe( 'FunctionViewer', () => {
 
 	it( 'displays success message if publish success flag is set in store', async () => {
 		// Set the publish success flag in sessionStorage (simulating a publish action)
-		sessionStorage.setItem( `wikilambda-publish-success-${ functionZid }`, 'true' );
+		mw.storage.session.set( `wikilambda-publish-success-${ functionZid }`, 'true' );
 		// We need to mock the checkPublishSuccess method from the store
 		store.checkPublishSuccess = jest.fn().mockImplementation( () => {
 			store.getShowPublishSuccess = true;
-			sessionStorage.removeItem( `wikilambda-publish-success-${ functionZid }` );
+			mw.storage.session.remove( `wikilambda-publish-success-${ functionZid }` );
 		} );
 		const wrapper = renderFunctionViewer();
 
