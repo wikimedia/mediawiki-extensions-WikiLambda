@@ -5,9 +5,10 @@
  * @license MIT
  */
 
-const { config } = require( 'wdio-mediawiki/wdio-defaults.conf.js' );
-exports.config = {
-	...config,
+import { config as wdioDefaults } from 'wdio-mediawiki/wdio-defaults.conf.js';
+
+export const config = {
+	...wdioDefaults,
 	waitforTimeout: 5000, // milliseconds
 	before() {
 		browser.addLocatorStrategy( 'ancestor', ( selector, root ) => {
