@@ -139,9 +139,9 @@ global.mw = {
 		listToText: function () {
 			return 'list';
 		},
-		convertNumber: function ( number ) {
+		convertNumber: function ( num ) {
 			// Simple mock implementation: format numbers with comma separators
-			return number.toString().replace( /\B(?=(\d{3})+(?!\d))/g, ',' );
+			return new Intl.NumberFormat( 'en-US' ).format( num );
 		}
 	},
 	storage: {
