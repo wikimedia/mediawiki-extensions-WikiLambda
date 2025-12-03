@@ -363,6 +363,7 @@
 	"wikilambda-validation-error-name-toolong": "Den Numm op $1 däerf maximal {{PLURAL:$2|$2 Zeeche}} laang sinn.",
 	"wikilambda-viewmode-nojs": "Dës Säit gëtt ouni JavaScript op eng limitéiert Manéier ugewisen.",
 	"wikilambda-wikidata-entity-selector-placeholder": "Wikidata-Entitéit wielen",
+	"wikilambda-wikidata-entity-empty-value-placeholder": "Kee Wäert",
 	"wikilambda-wikidata-item-selector-placeholder": "Wikidata-Element wielen",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Wikidata-Lexeemform wielen",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Wikidata-Lexeem wielen",

@@ -518,6 +518,7 @@
 	"wikilambda-validation-error-name-toolong": "Il nome in $1 deve contenere {{PLURAL:$2|$2 carattere|$2 caratteri}} o meno.",
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",
 	"wikilambda-wikidata-entity-selector-placeholder": "Seleziona l'entità Wikidata",
+	"wikilambda-wikidata-entity-empty-value-placeholder": "Nessun valore",
 	"wikilambda-wikidata-item-selector-placeholder": "Seleziona l'elemento Wikidata",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Seleziona la forma lessemica Wikidata",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Seleziona il lessema Wikidata",
