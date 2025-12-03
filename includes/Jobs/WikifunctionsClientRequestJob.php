@@ -102,7 +102,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 					'value' => $output['value'],
 					'type' => $output['type'],
 				],
-				$this->objectCache::TTL_WEEK
+				// (T338243) Set all successful responses with TTL_MONTH
+				$this->objectCache::TTL_MONTH
 			);
 
 			$this->logger->debug(
@@ -115,6 +116,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		} catch ( WikifunctionCallException $callException ) {
 			// WikifunctionCallException: we know details of the error
 			$errorMessageKey = $callException->getErrorMessageKey();
+			$httpStatusCode = $callException->getHttpStatusCode();
 		} catch ( Exception $e ) {
 			// Unhandled exception: we have no details on how the error happened
 			$this->logger->error(
@@ -124,10 +126,24 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 					'exception' => $e
 				]
 			);
-
 			// Show unclear error or system failure
 			$errorMessageKey = 'wikilambda-functioncall-error-unclear';
+			$httpStatusCode = HttpStatus::INTERNAL_SERVER_ERROR;
 		}
+
+		// (T338243) Set TTL conditionally, so that:
+		// * success (http 200)           TTL_MONTH
+		// * bad request (http 400-422)   TTL_WEEK
+		// * too many requests (http 429) TTL_MINUTE
+		// * server error (http >= 500)   TTL_MINUTE
+		// So if the request fails due to 400, we can still cache for
+		// a week, but if it failes due to system outages or timeouts,
+		// we would benefit from reducing the TTL to something very short.
+		$errorTTL = (
+			( $httpStatusCode >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
+			( $httpStatusCode === HttpStatus::TOO_MANY_REQUESTS ) ) ?
+			$this->objectCache::TTL_MINUTE :
+			$this->objectCache::TTL_WEEK;
 
 		$this->objectCache->set(
 			$clientCacheKey,
@@ -135,7 +151,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				'success' => false,
 				'errorMessageKey' => $errorMessageKey,
 			],
-			$this->objectCache::TTL_WEEK
+			$errorTTL
 		);
 
 		$this->logger->debug(
@@ -180,7 +196,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			// Triggers use of messages:
 			// * wikilambda-functioncall-error-unclear-category
 			// * wikilambda-functioncall-error-unclear-category-desc
-			throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear' );
+			throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear',
+				HttpStatus::INTERNAL_SERVER_ERROR );
 		}
 
 		// Http 200: Response successful
@@ -219,7 +236,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			// Triggers use of messages:
 			// * wikilambda-functioncall-error-unclear-category
 			// * wikilambda-functioncall-error-unclear-category-desc
-			throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear' );
+			throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear',
+				HttpStatus::INTERNAL_SERVER_ERROR );
 		}
 
 		$this->logger->debug(
@@ -243,7 +261,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-unknown-zid-category
 						// * wikilambda-functioncall-error-unknown-zid-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unknown-zid' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unknown-zid',
+							$httpStatusCode );
 
 					case ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED:
 						// Error cases:
@@ -251,7 +270,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-invalid-zobject-category
 						// * wikilambda-functioncall-error-invalid-zobject-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-invalid-zobject' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-invalid-zobject',
+							$httpStatusCode );
 
 					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH:
 						switch ( $response->mode ) {
@@ -261,10 +281,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								// Triggers use of messages:
 								// * wikilambda-functioncall-error-nonfunction-category
 								// * wikilambda-functioncall-error-nonfunction-category-desc
-								throw new WikifunctionCallException(
-									$zerror,
-									'wikilambda-functioncall-error-nonfunction'
-								);
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-nonfunction',
+									$httpStatusCode );
 
 							case 'input':
 								// Error cases:
@@ -272,10 +291,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								// Triggers use of messages:
 								// * wikilambda-functioncall-error-bad-input-type-category
 								// * wikilambda-functioncall-error-bad-input-type-category-desc
-								throw new WikifunctionCallException(
-									$zerror,
-									'wikilambda-functioncall-error-bad-input-type'
-								);
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-bad-input-type',
+									$httpStatusCode );
 
 							default:
 								break;
@@ -290,7 +308,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-bad-langs-category
 						// * wikilambda-functioncall-error-bad-langs-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-langs' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-langs',
+							$httpStatusCode );
 
 					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH:
 						// Error cases:
@@ -298,7 +317,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-bad-inputs-category
 						// * wikilambda-functioncall-error-bad-inputs-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-inputs' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-inputs',
+							$httpStatusCode );
 
 					case ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET:
 						switch ( $response->mode ) {
@@ -309,10 +329,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								// Triggers use of messages:
 								// * wikilambda-functioncall-error-nonstringinput-category
 								// * wikilambda-functioncall-error-nonstringinput-category-desc
-								throw new WikifunctionCallException(
-									$zerror,
-									'wikilambda-functioncall-error-nonstringinput'
-								);
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-nonstringinput',
+									$httpStatusCode );
 
 							case 'output':
 								// Error cases:
@@ -321,10 +340,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								// Triggers use of messages:
 								// * wikilambda-functioncall-error-nonstringoutput-category
 								// * wikilambda-functioncall-error-nonstringoutput-category-desc
-								throw new WikifunctionCallException(
-									$zerror,
-									'wikilambda-functioncall-error-nonstringoutput'
-								);
+								throw new WikifunctionCallException( $zerror,
+									'wikilambda-functioncall-error-nonstringoutput',
+									$httpStatusCode );
 
 							default:
 								break;
@@ -338,7 +356,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-unclear-category
 						// * wikilambda-functioncall-error-unclear-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-unclear',
+							$httpStatusCode );
 
 					case ZErrorTypeRegistry::Z_ERROR_EVALUATION:
 						// Error cases:
@@ -346,7 +365,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-evaluation-category
 						// * wikilambda-functioncall-error-evaluation-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-evaluation' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-evaluation',
+							$httpStatusCode );
 
 					case ZErrorTypeRegistry::Z_ERROR_INVALID_EVALUATION_RESULT:
 						// Error cases:
@@ -354,7 +374,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-bad-output-category
 						// * wikilambda-functioncall-error-bad-output-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-output' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-bad-output',
+							$httpStatusCode );
 
 					default:
 						// Non zerror, or Unknown zerror:
@@ -382,7 +403,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Triggers use of messages:
 						// * wikilambda-functioncall-error-disabled-category
 						// * wikilambda-functioncall-error-disabled-category-desc
-						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-disabled' );
+						throw new WikifunctionCallException( $zerror, 'wikilambda-functioncall-error-disabled',
+							$httpStatusCode );
 
 					default:
 						$this->logger->error(
@@ -423,7 +445,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			// Triggers use of messages:
 			// * wikilambda-functioncall-error-category
 			// * wikilambda-functioncall-error-category-desc
-			'wikilambda-functioncall-error'
+			'wikilambda-functioncall-error',
+			$httpStatusCode
 		);
 	}
 

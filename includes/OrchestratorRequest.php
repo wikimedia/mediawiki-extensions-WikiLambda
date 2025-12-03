@@ -82,12 +82,33 @@ class OrchestratorRequest {
 			ZObjectUtils::makeCacheKeyFromZObject( $query )
 		);
 
+		// (T338243) Set TTL conditionally, so that:
+		// * success (http 200)           TTL_MONTH
+		// * bad request (http 400-422)   TTL_WEEK
+		// * too many requests (http 429) TTL_MINUTE
+		// * server error (http >= 500)   TTL_MINUTE
+		// So if the request fails due to 400, we can still cache for
+		// a week, but if it failes due to system outages or timeouts,
+		// we would benefit from reducing the TTL to something very short.
 		$response = $this->objectCache->getWithSetCallback(
 			$requestKey,
-			// TODO (T338243): Is this the right timeout? Maybe TTL_DAY or TTL_MONTH instead?
-			$this->objectCache::TTL_WEEK,
-			function () use ( $query, $requestHeaders ) {
-				return $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
+			$this->objectCache::TTL_MONTH,
+			function ( &$exptime ) use ( $query, $requestHeaders ) {
+				$guzzleResponse = $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
+				$httpStatus = $guzzleResponse['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
+
+				if (
+					( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
+					( $httpStatus === HttpStatus::TOO_MANY_REQUESTS )
+				) {
+					$exptime = $this->objectCache::TTL_MINUTE;
+				} elseif ( $httpStatus === HttpStatus::OK ) {
+					$exptime = $this->objectCache::TTL_MONTH;
+				} else {
+					$exptime = $this->objectCache::TTL_WEEK;
+				}
+
+				return $guzzleResponse;
 			}
 		);
 
