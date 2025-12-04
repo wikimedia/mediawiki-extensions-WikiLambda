@@ -861,10 +861,12 @@ module.exports = {
 		 */
 		lookupFunctions: function ( payload ) {
 			payload.language = this.getUserLangCode;
-			return new Promise( ( resolve ) => {
+			return new Promise( ( resolve, reject ) => {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout(
-					() => searchFunctions( payload ).then( ( data ) => resolve( data ) ),
+					() => searchFunctions( payload )
+						.then( ( data ) => resolve( data ) )
+						.catch( ( error ) => reject( error ) ),
 					DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT
 				);
 			} );
