@@ -15,6 +15,8 @@
 			class="ext-wikilambda-app-function-editor-language-block__row"
 			data-testid="function-editor-language-selector"
 			:z-language="zLanguage"
+			:function-languages="functionLanguages"
+			:index="index"
 			@language-changed="onLanguageChanged"
 		></wl-function-editor-language>
 		<!-- component that displays name for a language -->
@@ -96,6 +98,10 @@ module.exports = exports = defineComponent( {
 		index: {
 			type: Number,
 			default: 0
+		},
+		functionLanguages: {
+			type: Array,
+			default: () => [ ]
 		}
 	},
 	emits: [ 'language-changed', 'labels-updated' ],

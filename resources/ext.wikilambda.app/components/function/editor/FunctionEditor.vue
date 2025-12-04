@@ -13,9 +13,10 @@
 		<div class="ext-wikilambda-app-function-editor__container">
 			<wl-function-editor-language-block
 				v-for="( langZid, index ) in functionLanguages"
-				:key="'language-block-' + langZid"
+				:key="'language-block-' + index"
 				:index="index"
 				:z-language="langZid"
+				:function-languages="functionLanguages"
 				@language-changed="setLanguage"
 				@labels-updated="setHasUpdatedLabels"
 			></wl-function-editor-language-block>
@@ -236,6 +237,7 @@ module.exports = exports = defineComponent( {
 			// Initialize the local array with the collection of available languages
 			// and initialize first label block with user lang if there are none.
 			functionLanguages.value = store.getMultilingualDataLanguages.all;
+
 			if ( functionLanguages.value.length === 0 ) {
 				functionLanguages.value.push( store.getUserLangZid );
 			}

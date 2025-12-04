@@ -16,8 +16,8 @@
 			<wl-z-object-selector
 				class="ext-wikilambda-app-function-editor-language__add-language"
 				aria-labelledby="ext-wikilambda-app-function-editor-language__label-id"
-				:disabled="hasLanguage"
-				:exclude-zids="functionLanguages"
+				:disabled="hasContent"
+				:exclude-zids="excludedLanguages"
 				:selected-zid="zLanguage"
 				:type="naturalLanguageType"
 				@select-item="addNewLanguage"
@@ -47,6 +47,14 @@ module.exports = exports = defineComponent( {
 		zLanguage: {
 			type: String,
 			default: ''
+		},
+		functionLanguages: {
+			type: Array,
+			default: () => []
+		},
+		index: {
+			type: Number,
+			default: 0
 		}
 	},
 	emits: [ 'language-changed' ],
@@ -57,13 +65,14 @@ module.exports = exports = defineComponent( {
 		const naturalLanguageType = Constants.Z_NATURAL_LANGUAGE;
 
 		/**
-		 * Returns the available languages for the function definition,
-		 * which includes Name, Description, Aliases and Input labels.
+		 * Returns the list of languages that should be excluded from selection.
+		 * Excludes languages already selected in other language blocks (excluding current block).
 		 *
 		 * @return {Array}
 		 */
-		const functionLanguages = computed( () => store.getMultilingualDataLanguages.all );
-
+		const excludedLanguages = computed( () => props.functionLanguages
+			.filter( ( _, index ) => index !== props.index )
+		);
 		/**
 		 * Whether the language selector should be disabled.
 		 * Disabled when content has been entered in any field (name, description, aliases, or input labels).
@@ -71,7 +80,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {boolean}
 		 */
-		const hasLanguage = computed( () => {
+		const hasContent = computed( () => {
 			if ( !props.zLanguage ) {
 				return false;
 			}
@@ -119,8 +128,8 @@ module.exports = exports = defineComponent( {
 		return {
 			i18n,
 			addNewLanguage,
-			functionLanguages,
-			hasLanguage,
+			excludedLanguages,
+			hasContent,
 			naturalLanguageType
 		};
 	}

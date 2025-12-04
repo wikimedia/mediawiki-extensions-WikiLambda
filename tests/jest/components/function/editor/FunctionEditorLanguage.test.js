@@ -93,4 +93,64 @@ describe( 'FunctionEditorLanguage', () => {
 			expect( wrapper.emitted() ).toHaveProperty( 'language-changed', [ [ 'Z1002' ] ] );
 		} );
 	} );
+
+	describe( 'language exclusion behavior', () => {
+		it( 'prevents user from selecting languages already used in other blocks', () => {
+			const functionLanguages = [ 'Z1002', 'Z1004', 'Z1001' ];
+			const wrapper = renderFunctionEditorLanguage( {
+				zLanguage: 'Z1002',
+				functionLanguages: functionLanguages,
+				index: 0
+			} );
+
+			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+			const excludedZids = selector.props( 'excludeZids' );
+
+			// User should not be able to select Z1004 or Z1001 (from other blocks)
+			expect( excludedZids ).toContain( 'Z1004' );
+			expect( excludedZids ).toContain( 'Z1001' );
+			// User should be able to keep their current selection (Z1002)
+			expect( excludedZids ).not.toContain( 'Z1002' );
+		} );
+
+		it( 'allows user to select any language when no other blocks have languages', () => {
+			const wrapper = renderFunctionEditorLanguage( {
+				zLanguage: 'Z1002',
+				functionLanguages: [ 'Z1002' ],
+				index: 0
+			} );
+
+			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+			const excludedZids = selector.props( 'excludeZids' );
+
+			// No languages should be excluded - user can select any language
+			expect( excludedZids ).toEqual( [] );
+		} );
+
+		it( 'updates excluded languages when functionLanguages prop changes', async () => {
+			const wrapper = renderFunctionEditorLanguage( {
+				zLanguage: 'Z1002',
+				functionLanguages: [ 'Z1002', 'Z1004' ],
+				index: 0
+			} );
+
+			let selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+			let excludedZids = selector.props( 'excludeZids' );
+
+			// Initially excludes Z1004
+			expect( excludedZids ).toContain( 'Z1004' );
+
+			// Simulate another block selecting a new language
+			await wrapper.setProps( {
+				functionLanguages: [ 'Z1002', 'Z1001' ]
+			} );
+
+			selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+			excludedZids = selector.props( 'excludeZids' );
+
+			// Now excludes Z1001 instead of Z1004
+			expect( excludedZids ).toContain( 'Z1001' );
+			expect( excludedZids ).not.toContain( 'Z1004' );
+		} );
+	} );
 } );
