@@ -3,7 +3,8 @@
 		"authors": [
 			"Emma Franzen",
 			"Hamilton Abreu",
-			"Mansil alfalb"
+			"Mansil alfalb",
+			"Maria Manuela Silva"
 		]
 	},
 	"wikilambda-desc": "Fornecer funções para serem escritas, geridas, e avaliadas numa wiki central.",
@@ -59,8 +60,8 @@
 	"right-wikilambda-connect-implementation": "Ligar uma 'Implementação' à sua 'Função' para que esta possa ser executada",
 	"right-wikilambda-connect-tester": "Ligar um 'Caso de Teste' à sua 'Função'",
 	"right-wikilambda-create": "Criar novos 'Objetos' em absoluto",
-	"right-wikilambda-create-arbitrary-zid": "criar novo 'Objeto' num ZID arbitrário",
-	"right-wikilambda-create-boolean": "criar novos 'Objetos Boolianos'",
+	"right-wikilambda-create-arbitrary-zid": "Criar novo 'Objeto' num ZID arbitrário",
+	"right-wikilambda-create-boolean": "Criar novos 'Objetos Boolianos'",
 	"right-wikilambda-create-function": "Criar objetos de função novos",
 	"right-wikilambda-create-implementation": "Criar objetos de implementação novos",
 	"right-wikilambda-create-language": "Criar objetos de língua natural novos",

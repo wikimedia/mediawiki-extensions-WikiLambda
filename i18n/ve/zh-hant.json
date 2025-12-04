@@ -68,5 +68,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "該函式無法顯示結果。請稍後再試。",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "已取消",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "重新設定",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "取消"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "取消",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "使用今天日期並讓結果保持最新",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "使用頁面的預設維基數據項目",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "使用頁面的預設語言"
 }
