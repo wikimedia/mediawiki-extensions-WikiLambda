@@ -93,7 +93,11 @@ module.exports = exports = defineComponent( {
 		const functionLink = computed( () => i18n(
 			'wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer',
 			functionZid.value
-		).parse() );
+		)
+			.parse()
+			// TODO (T406155): how to open the link in a new tab using MediaWiki translations?
+			.replace( '<a ', '<a target="_blank" rel="noopener" ' )
+		);
 
 		/**
 		 * Returns the message notifying about missing content in the user language
