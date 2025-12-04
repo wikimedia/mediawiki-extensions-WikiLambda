@@ -11,6 +11,7 @@
 			data-testid="z-multilingual-string-dialog"
 			class="ext-wikilambda-app-z-multilingual-string-dialog"
 			:title="i18n( 'wikilambda-monolingual-string-list-dialog-accessible-title' ).text()"
+			:use-close-button="true"
 			@update:open="closeDialog"
 		>
 			<!-- Dialog Header -->

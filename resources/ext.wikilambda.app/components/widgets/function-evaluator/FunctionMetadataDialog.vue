@@ -9,6 +9,7 @@
 		class="ext-wikilambda-app-function-metadata-dialog"
 		:title="i18n( 'wikilambda-functioncall-metadata-accessible-title' ).text()"
 		:open="open"
+		use-close-button
 		@update:open="closeDialog"
 	>
 		<!-- Dialog Header -->

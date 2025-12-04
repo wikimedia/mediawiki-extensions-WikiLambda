@@ -11,6 +11,7 @@
 			data-testid="languages-dialog"
 			class="ext-wikilambda-app-about-languages-dialog"
 			:title="i18n( 'wikilambda-about-widget-view-languages-accessible-title' ).text()"
+			:use-close-button="true"
 			@update:open="closeDialog"
 		>
 			<!-- Dialog Header -->
