@@ -6,8 +6,9 @@
 	@license MIT
 -->
 <template>
-	<div
-		class="ext-wikilambda-app-function-select-item"
+	<button
+		type="button"
+		class="ext-wikilambda-app-button-reset ext-wikilambda-app-function-select-item"
 		@click="$emit( 'click' )"
 	>
 		<p
@@ -29,7 +30,7 @@
 			:description="description"
 			class="ext-wikilambda-app-function-select-item__description"
 		></wl-expandable-description>
-	</div>
+	</button>
 </template>
 
 <script>
@@ -65,6 +66,8 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-function-select-item {
 	position: relative;
+	width: 100%;
+	text-align: left;
 	padding: @spacing-50 @spacing-100;
 
 	&__title {

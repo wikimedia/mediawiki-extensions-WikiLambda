@@ -19,20 +19,20 @@
 			<template #header>
 				<div v-if="canConnect || canDisconnect">
 					<cdx-button
-						v-if="!( isMobile && !canConnect )"
+						v-if="!isMobile || canConnect"
 						:disabled="!canConnect || isLoading"
 						data-testid="connect"
 						@click="connect"
 					>
-						<label> {{ i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
+						{{ i18n( 'wikilambda-function-details-table-approve' ).text() }}
 					</cdx-button>
 					<cdx-button
-						v-if="!( isMobile && !canDisconnect )"
+						v-if="!isMobile || canDisconnect"
 						:disabled="!canDisconnect || isLoading"
 						data-testid="disconnect"
 						@click="disconnect"
 					>
-						<label> {{ i18n( 'wikilambda-function-details-table-deactivate' ).text() }} </label>
+						{{ i18n( 'wikilambda-function-details-table-deactivate' ).text() }}
 					</cdx-button>
 				</div>
 				<div v-else>

@@ -25,11 +25,11 @@
 
 		<!-- Widget main -->
 		<template #main>
-			<div v-if="hasItems">
-				<div
+			<ul v-if="hasItems" class="ext-wikilambda-app-list-reset ext-wikilambda-app-function-report-widget__list">
+				<li
 					v-for="item in zids"
 					:key="item"
-					class="ext-wikilambda-app-function-report-widget__items"
+					class="ext-wikilambda-app-function-report-widget__item"
 				>
 					<wl-function-report-item
 						class="ext-wikilambda-app-function-report-widget__result"
@@ -40,7 +40,7 @@
 						:content-type="contentType"
 						@set-keys="openMetricsDialog"
 					></wl-function-report-item>
-				</div>
+				</li>
 				<wl-function-metadata-dialog
 					:open="showMetrics"
 					:header-text="activeImplementationLabelData"
@@ -48,7 +48,7 @@
 					:error-id="errorId"
 					@close-dialog="closeMetricsDialog"
 				></wl-function-metadata-dialog>
-			</div>
+			</ul>
 			<div v-else>
 				<p> {{ i18n( 'wikilambda-tester-no-results' ).text() }} </p>
 			</div>
@@ -403,7 +403,7 @@ module.exports = exports = defineComponent( {
 @import '../../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-function-report-widget {
-	.ext-wikilambda-app-function-report-widget__items {
+	.ext-wikilambda-app-function-report-widget__item {
 		margin-bottom: @spacing-50;
 
 		&:last-child {

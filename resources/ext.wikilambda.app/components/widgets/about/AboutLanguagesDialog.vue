@@ -44,37 +44,51 @@
 			</template>
 			<!-- Dialog Body: Language Items block -->
 			<div class="ext-wikilambda-app-about-languages-dialog__items">
-				<div
-					v-for="( item, index ) in items"
-					:key="'dialog-lang-' + index"
+				<section
+					v-for="group in itemGroups"
+					:key="group.id"
+					class="ext-wikilambda-app-about-languages-dialog__group"
 				>
-					<div
-						v-if="item.disabled"
-						class="ext-wikilambda-app-about-languages-dialog__title"
+					<h3
+						v-if="group.title"
+						class="ext-wikilambda-app-about-languages-dialog__group-title"
 					>
-						{{ item.label }}
-					</div>
-					<div
-						v-else
-						class="ext-wikilambda-app-about-languages-dialog__item"
-						@click="editLanguage( item.langZid )"
-					>
-						<div
-							class="ext-wikilambda-app-about-languages-dialog__item-title"
-							:lang="item.langLabelData.langCode"
-							:dir="item.langLabelData.langDir"
+						{{ group.title }}
+					</h3>
+					<ul class="ext-wikilambda-app-list-reset ext-wikilambda-app-about-languages-dialog__list">
+						<li
+							v-for="( item, index ) in group.items"
+							:key="`dialog-lang-${group.id}-${index}`"
+							class="ext-wikilambda-app-about-languages-dialog__item"
 						>
-							{{ item.langLabelData.label }}
-						</div>
-						<div class="ext-wikilambda-app-about-languages-dialog__item-field">
-							<span
-								v-if="item.hasMultilingualData"
-								:class="{ 'ext-wikilambda-app-about-languages-dialog__item-untitled': !item.hasName }"
-							>{{ item.name }}</span>
-							<a v-else>{{ i18n( 'wikilambda-about-widget-add-language' ).text() }}</a>
-						</div>
-					</div>
-				</div>
+							<button
+								type="button"
+								class="ext-wikilambda-app-button-reset
+									ext-wikilambda-app-about-languages-dialog__item-button"
+								@click="editLanguage( item.langZid )"
+							>
+								<div
+									class="ext-wikilambda-app-about-languages-dialog__item-title"
+									:lang="item.langLabelData.langCode"
+									:dir="item.langLabelData.langDir"
+								>
+									{{ item.langLabelData.label }}
+								</div>
+								<div class="ext-wikilambda-app-about-languages-dialog__item-field">
+									<span
+										v-if="item.hasMultilingualData"
+										:class="{
+											'ext-wikilambda-app-about-languages-dialog__item-untitled': !item.hasName
+										}"
+									>{{ item.name }}</span>
+									<span v-else class="ext-wikilambda-app-about-languages-dialog__item-add-language">
+										{{ i18n( 'wikilambda-about-widget-add-language' ).text() }}
+									</span>
+								</div>
+							</button>
+						</li>
+					</ul>
+				</section>
 			</div>
 		</cdx-dialog>
 	</div>
@@ -133,25 +147,29 @@ module.exports = exports = defineComponent( {
 			.filter( ( lang ) => !suggestedLangs.value.includes( lang ) ) );
 
 		/**
-		 * Builds the list of items that correspond to the available
-		 * languages in the object. Each item contains the language Zid
-		 * and label, the Name/Label in that language, and the flags
-		 * hasMultilingualData and hasName that will condition the style.
+		 * Builds a language item object for a given language Zid.
+		 *
+		 * @param {string} langZid
+		 * @return {Object}
+		 */
+		function buildLangItem( langZid ) {
+			const name = store.getZPersistentName( langZid );
+			return {
+				langZid,
+				langLabelData: store.getLabelData( langZid ),
+				hasMultilingualData: true,
+				hasName: !!name,
+				name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
+			};
+		}
+
+		/**
+		 * Returns grouped language items for local languages.
+		 * Groups are: "Suggested" and "Other".
 		 *
 		 * @return {Array}
 		 */
 		const localItems = computed( () => {
-			function buildLangItem( langZid ) {
-				const name = store.getZPersistentName( langZid );
-				return {
-					langZid,
-					langLabelData: store.getLabelData( langZid ),
-					hasMultilingualData: true,
-					hasName: !!name,
-					name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
-				};
-			}
-
 			const sortByLabel = createLabelComparator(
 				store.getUserLangCode,
 				( item ) => item.langLabelData.label
@@ -160,32 +178,44 @@ module.exports = exports = defineComponent( {
 			const suggestedLangsList = store.getFallbackLanguageZids.map( ( zid ) => buildLangItem( zid ) );
 			const otherLangs = allLangs.value.map( ( zid ) => buildLangItem( zid ) ).sort( sortByLabel );
 
-			const itemsList = [];
+			const groups = [];
 			if ( suggestedLangsList.length > 0 ) {
-				itemsList.push( {
-					label: i18n( 'wikilambda-about-widget-view-languages-suggested' ).text(),
-					disabled: true
-				}, ...suggestedLangsList );
+				groups.push( {
+					id: 'suggested',
+					title: i18n( 'wikilambda-about-widget-view-languages-suggested' ).text(),
+					items: suggestedLangsList
+				} );
 			}
 			if ( otherLangs.length > 0 ) {
-				itemsList.push( {
-					label: i18n( 'wikilambda-about-widget-view-languages-other' ).text(),
-					disabled: true
-				}, ...otherLangs );
+				groups.push( {
+					id: 'other',
+					title: i18n( 'wikilambda-about-widget-view-languages-other' ).text(),
+					items: otherLangs
+				} );
 			}
-			return itemsList;
+			return groups;
 		} );
 
 		/**
-		 * Returns the list of items that will be rendered in the component.
-		 * This list can include the locally available languages and the ones
-		 * returned by a language lookup.
+		 * Returns grouped language items for both local languages and search results.
+		 * For local languages, groups are: "Suggested" and "Other".
+		 * For search results, returns a single group without a title.
 		 *
 		 * @return {Array}
 		 */
-		const items = computed( () => ( lookupResults.value.length > 0 ) ?
-			lookupResults.value :
-			localItems.value );
+		const itemGroups = computed( () => {
+			// If we have search results, return them as a single group without a title
+			if ( lookupResults.value.length > 0 ) {
+				return [ {
+					id: 'search-results',
+					title: '',
+					items: lookupResults.value
+				} ];
+			}
+
+			// Otherwise, return grouped local languages
+			return localItems.value;
+		} );
 
 		/**
 		 * Returns the i18n message for the language search box placeholder
@@ -322,7 +352,7 @@ module.exports = exports = defineComponent( {
 			clearSearch,
 			closeDialog,
 			editLanguage,
-			items,
+			itemGroups,
 			searchPlaceholder,
 			searchTerm,
 			showSearchCancel,
@@ -355,17 +385,25 @@ module.exports = exports = defineComponent( {
 		flex-grow: 0;
 	}
 
-	.ext-wikilambda-app-about-languages-dialog__title {
+	.ext-wikilambda-app-about-languages-dialog__group-title {
 		padding: @spacing-50 @spacing-150;
+		margin: 0;
 		font-weight: @font-weight-bold;
 		color: @color-subtle;
+		font-size: inherit;
 	}
 
 	.ext-wikilambda-app-about-languages-dialog__item {
+		margin: 0;
+		padding: 0;
+	}
+
+	.ext-wikilambda-app-about-languages-dialog__item-button {
+		width: 100%;
 		padding: @spacing-50 @spacing-150;
+		text-align: left;
 
 		&:hover {
-			cursor: pointer;
 			background-color: @background-color-interactive;
 		}
 	}
@@ -382,6 +420,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-about-languages-dialog__item-untitled {
 		color: @color-placeholder;
 		font-style: italic;
+	}
+
+	.ext-wikilambda-app-about-languages-dialog__item-add-language {
+		.cdx-mixin-link();
 	}
 }
 </style>

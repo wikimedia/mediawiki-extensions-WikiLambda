@@ -51,8 +51,11 @@
 					<div class="ext-wikilambda-app-about-language-block__field-title">
 						{{ i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
 					</div>
-					<template v-if="viewData.inputs.length > 0">
-						<div
+					<ul
+						v-if="viewData.inputs.length > 0"
+						class="ext-wikilambda-app-list-reset
+							ext-wikilambda-app-about-language-block__inputs-list">
+						<li
 							v-for="input in viewData.inputs"
 							:key="input.key"
 							class="ext-wikilambda-app-about-language-block__field-value
@@ -74,8 +77,8 @@
 								:object-value="input.type"
 								:edit="edit"
 							></wl-z-object-to-string>
-						</div>
-					</template>
+						</li>
+					</ul>
 					<div v-else class="ext-wikilambda-app-about-language-block__field-value">
 						<span class="ext-wikilambda-app-about-language-block__unavailable">
 							{{ i18n( 'wikilambda-about-widget-no-inputs' ).text() }}

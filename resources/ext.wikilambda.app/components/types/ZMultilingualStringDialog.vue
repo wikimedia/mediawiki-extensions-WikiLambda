@@ -44,37 +44,49 @@
 			</template>
 			<!-- Dialog Body: Language Items block -->
 			<div class="ext-wikilambda-app-z-multilingual-string-dialog__items">
-				<div
-					v-for="( item, index ) in visibleItems"
-					:key="'dialog-lang-' + index"
+				<section
+					v-for="group in itemGroups"
+					:key="group.id"
+					class="ext-wikilambda-app-z-multilingual-string-dialog__group"
 				>
-					<div
-						v-if="item.disabled"
-						class="ext-wikilambda-app-z-multilingual-string-dialog__title"
+					<h3
+						v-if="group.title"
+						class="ext-wikilambda-app-z-multilingual-string-dialog__group-title"
 					>
-						{{ item.label }}
-					</div>
-					<div
-						v-else
-						class="ext-wikilambda-app-z-multilingual-string-dialog__item"
-						@click="handleItemClick( item )"
-					>
-						<div
-							class="ext-wikilambda-app-z-multilingual-string-dialog__item-title"
-							:lang="item.langLabelData.langCode"
-							:dir="item.langLabelData.langDir"
+						{{ group.title }}
+					</h3>
+					<ul class="ext-wikilambda-app-list-reset ext-wikilambda-app-z-multilingual-string-dialog__list">
+						<li
+							v-for="( item, index ) in group.items"
+							:key="`dialog-lang-${group.id}-${index}`"
+							class="ext-wikilambda-app-z-multilingual-string-dialog__item"
 						>
-							{{ item.langLabelData.label }}
-						</div>
-						<div class="ext-wikilambda-app-z-multilingual-string-dialog__item-field">
-							<span v-if="item.isInList && !!item.value">{{ item.value }}</span>
-							<span
-								v-else
-								class="ext-wikilambda-app-z-multilingual-string-dialog__item-add-language"
-							>{{ i18n( 'wikilambda-monolingual-string-list-dialog-add-language' ).text() }}</span>
-						</div>
-					</div>
-				</div>
+							<button
+								type="button"
+								class="ext-wikilambda-app-button-reset
+									ext-wikilambda-app-z-multilingual-string-dialog__item-button"
+								@click="handleItemClick( item )"
+							>
+								<div
+									class="ext-wikilambda-app-z-multilingual-string-dialog__item-title"
+									:lang="item.langLabelData.langCode"
+									:dir="item.langLabelData.langDir"
+								>
+									{{ item.langLabelData.label }}
+								</div>
+								<div class="ext-wikilambda-app-z-multilingual-string-dialog__item-field">
+									<span v-if="item.isInList && !!item.value">{{ item.value }}</span>
+									<span
+										v-else
+										class="ext-wikilambda-app-z-multilingual-string-dialog__item-add-language"
+									>
+										{{ i18n( 'wikilambda-monolingual-string-list-dialog-add-language' ).text() }}
+									</span>
+								</div>
+							</button>
+						</li>
+					</ul>
+				</section>
 			</div>
 		</cdx-dialog>
 	</div>
@@ -207,46 +219,56 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Builds the list of items showing all available languages in the typed list
-		 * excluding already visible items. If no local items exist, shows common languages.
+		 * Returns grouped language items for local languages.
+		 * Groups are: "Available" (if dialog items exist) or "Suggested" (if no dialog items).
 		 *
 		 * @return {Array}
 		 */
 		const localItems = computed( () => {
-			const items = [];
-
 			const dialogItems = getDialogItems.value;
 			const suggestedItems = getSuggestedItems.value;
 
+			const groups = [];
+
 			if ( dialogItems.length > 0 ) {
-				// Add local items
-				items.push( {
-					label: i18n( 'wikilambda-monolingual-string-list-dialog-available' ).text(),
-					disabled: true
-				}, ...dialogItems );
-			} else {
-				// Add suggested languages
-				items.push( {
-					label: i18n( 'wikilambda-monolingual-string-list-dialog-suggested' ).text(),
-					disabled: true
-				}, ...suggestedItems );
+				// Add local items group
+				groups.push( {
+					id: 'available',
+					title: i18n( 'wikilambda-monolingual-string-list-dialog-available' ).text(),
+					items: dialogItems
+				} );
+			} else if ( suggestedItems.length > 0 ) {
+				// Add suggested languages group
+				groups.push( {
+					id: 'suggested',
+					title: i18n( 'wikilambda-monolingual-string-list-dialog-suggested' ).text(),
+					items: suggestedItems
+				} );
 			}
 
-			return items;
+			return groups;
 		} );
 
 		/**
-		 * Returns the list of items that will be rendered in the component.
-		 * This list can include the locally available languages and the ones
-		 * returned by a language lookup.
+		 * Returns grouped language items for both local languages and search results.
+		 * For local languages, groups are: "Available" or "Suggested".
+		 * For search results, returns a single group without a title.
 		 *
 		 * @return {Array}
 		 */
-		const visibleItems = computed( () => (
-			lookupResults.value.length > 0 ?
-				lookupResults.value :
-				localItems.value
-		) );
+		const itemGroups = computed( () => {
+			// If we have search results, return them as a single group without a title
+			if ( lookupResults.value.length > 0 ) {
+				return [ {
+					id: 'search-results',
+					title: '',
+					items: lookupResults.value
+				} ];
+			}
+
+			// Otherwise, return grouped local languages
+			return localItems.value;
+		} );
 
 		/**
 		 * Returns the i18n message for the language search box placeholder
@@ -456,11 +478,11 @@ module.exports = exports = defineComponent( {
 			clearSearch,
 			closeDialog,
 			handleItemClick,
+			itemGroups,
 			searchPlaceholder,
 			searchTerm,
 			showSearchCancel,
 			updateSearchTerm,
-			visibleItems,
 			i18n
 		};
 	}
@@ -489,15 +511,23 @@ module.exports = exports = defineComponent( {
 		flex-grow: 0;
 	}
 
-	.ext-wikilambda-app-z-multilingual-string-dialog__title {
+	.ext-wikilambda-app-z-multilingual-string-dialog__group-title {
 		padding: @spacing-50 @spacing-150;
+		margin: 0;
 		font-weight: @font-weight-bold;
 		color: @color-subtle;
+		font-size: inherit;
 	}
 
 	.ext-wikilambda-app-z-multilingual-string-dialog__item {
+		margin: 0;
+		padding: 0;
+	}
+
+	.ext-wikilambda-app-z-multilingual-string-dialog__item-button {
+		width: 100%;
 		padding: @spacing-50 @spacing-150;
-		cursor: pointer;
+		text-align: left;
 
 		&:hover {
 			background-color: @background-color-interactive;
@@ -514,8 +544,7 @@ module.exports = exports = defineComponent( {
 	}
 
 	.ext-wikilambda-app-z-multilingual-string-dialog__item-add-language {
-		color: @color-progressive;
-		font-weight: @font-weight-bold;
+		.cdx-mixin-link();
 	}
 }
 </style>

@@ -157,7 +157,7 @@ describe( 'ZMultilingualStringDialog', () => {
 		it( 'shows suggested languages section when no items are available', async () => {
 			const wrapper = renderZMultilingualStringDialog( { items: mockEmptyItems } );
 
-			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__title' );
+			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__group-title' );
 			expect( sectionTitles.length ).toBeGreaterThan( 0 );
 			// Check for suggested languages label
 			const suggestedSection = sectionTitles.some( ( title ) => title.text().toLowerCase().includes( 'suggest' ) );
@@ -275,8 +275,10 @@ describe( 'ZMultilingualStringDialog', () => {
 			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
-			// Find and click a language item (Spanish or Russian)
-			await languageItems[ 0 ].trigger( 'click' );
+			// Find and click the button inside the language item (Spanish or Russian)
+			const button = languageItems[ 0 ].find( 'button' );
+			expect( button.exists() ).toBe( true );
+			await button.trigger( 'click' );
 
 			// Should emit add-language event
 			expect( wrapper.emitted( 'add-language' ) ).toBeTruthy();
@@ -290,8 +292,10 @@ describe( 'ZMultilingualStringDialog', () => {
 			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
-			// Find and click a language item
-			await languageItems[ 0 ].trigger( 'click' );
+			// Find and click the button inside the language item
+			const button = languageItems[ 0 ].find( 'button' );
+			expect( button.exists() ).toBe( true );
+			await button.trigger( 'click' );
 
 			// Should emit add-language event
 			expect( wrapper.emitted( 'add-language' ) ).toBeTruthy();
@@ -312,20 +316,20 @@ describe( 'ZMultilingualStringDialog', () => {
 			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
 
 			// Find the English item by checking if it has a value (not "add language" text)
-			let englishItem;
+			let englishItemButton;
 			for ( const item of languageItems ) {
 				const field = item.find( '.ext-wikilambda-app-z-multilingual-string-dialog__item-field' );
 				const addLanguageSpan = field.find( '.ext-wikilambda-app-z-multilingual-string-dialog__item-add-language' );
 
 				// If it has a value (not "add language"), it's the visible one
 				if ( !addLanguageSpan.exists() && field.text() ) {
-					englishItem = item;
+					englishItemButton = item.find( 'button' );
 					break;
 				}
 			}
 
-			if ( englishItem ) {
-				await englishItem.trigger( 'click' );
+			if ( englishItemButton && englishItemButton.exists() ) {
+				await englishItemButton.trigger( 'click' );
 				expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy();
 			}
 		} );
@@ -355,8 +359,10 @@ describe( 'ZMultilingualStringDialog', () => {
 			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
-			// Click a language item that's not in the store
-			await languageItems[ 0 ].trigger( 'click' );
+			// Click the button inside a language item that's not in the store
+			const button = languageItems[ 0 ].find( 'button' );
+			expect( button.exists() ).toBe( true );
+			await button.trigger( 'click' );
 
 			// Should navigate to edit mode with proper hash
 			expect( window.location.href ).toContain( 'action=edit' );
@@ -408,7 +414,7 @@ describe( 'ZMultilingualStringDialog', () => {
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
 			// Should display section title for suggested languages
-			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__title' );
+			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__group-title' );
 			expect( sectionTitles.length ).toBeGreaterThan( 0 );
 		} );
 

@@ -134,8 +134,28 @@
 .mixin-generate-columns( 1 );
 
 /**
- * Empty chip
+ * Button reset utility class
+ * Resets default button styles to create a clean, unstyled button
+ * that inherits font properties from its parent.
  */
-.mixin-empty-chip() {
-	border: 1px dashed @border-color-base;
+.ext-wikilambda-app-button-reset {
+	background: none;
+	border: 0;
+	cursor: pointer;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	color: inherit;
+	padding: 0;
+}
+
+/**
+ * List reset utility class
+ * Resets default list styles to create a clean, unstyled list
+ * that can be used for semantic list structures.
+ */
+.ext-wikilambda-app-list-reset {
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }

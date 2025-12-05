@@ -25,14 +25,28 @@
 			class="ext-wikilambda-app-monolingual-string__edit-mode"
 			:style="inputCssVariablesStyle"
 		>
-			<cdx-info-chip
-				ref="chipComponent"
-				class="ext-wikilambda-app-monolingual-string__chip"
-				:class="{
-					'ext-wikilambda-app-monolingual-string__chip--empty': hasEmptyLang,
-					'ext-wikilambda-app-monolingual-string__chip--clickable': hasEmptyLang && edit
-				}"
+			<button
+				v-if="hasEmptyLang && edit"
+				type="button"
+				class="ext-wikilambda-app-button-reset ext-wikilambda-app-monolingual-string__chip-button
+					ext-wikilambda-app-monolingual-string__chip-positioner"
+				:aria-label="i18n( 'wikilambda-editor-monolingual-string-expand' ).text()"
 				@click="handleChipClick"
+			>
+				<cdx-info-chip
+					ref="chipComponent"
+					class="ext-wikilambda-app-monolingual-string__chip
+						ext-wikilambda-app-monolingual-string__chip--empty"
+				>
+					{{ langIso.toUpperCase() }}
+				</cdx-info-chip>
+			</button>
+			<cdx-info-chip
+				v-else
+				ref="chipComponent"
+				class="ext-wikilambda-app-monolingual-string__chip
+						ext-wikilambda-app-monolingual-string__chip-positioner"
+				:class="{ 'ext-wikilambda-app-monolingual-string__chip--empty': hasEmptyLang }"
 			>
 				{{ langIso.toUpperCase() }}
 			</cdx-info-chip>
@@ -210,20 +224,6 @@ module.exports = exports = defineComponent( {
 		&--empty::before {
 			content: '\200B';
 		}
-
-		&--clickable {
-			cursor: pointer;
-			transition: background-color 0.2s, border-color 0.2s;
-
-			&:hover {
-				background-color: @background-color-interactive-subtle;
-				border-color: @border-color-interactive;
-			}
-
-			&:active {
-				background-color: @background-color-interactive;
-			}
-		}
 	}
 
 	.ext-wikilambda-app-monolingual-string__view-mode {
@@ -247,10 +247,26 @@ module.exports = exports = defineComponent( {
 		position: relative;
 		z-index: 3;
 
-		.ext-wikilambda-app-monolingual-string__chip {
+		.ext-wikilambda-app-monolingual-string__chip-positioner {
 			position: absolute;
 			z-index: 3;
 			left: @spacing-50;
+		}
+
+		.ext-wikilambda-app-monolingual-string__chip-button {
+			.ext-wikilambda-app-monolingual-string__chip {
+				cursor: pointer;
+				transition: background-color 0.2s, border-color 0.2s;
+
+				&:hover {
+					background-color: @background-color-interactive-subtle;
+					border-color: @border-color-interactive;
+				}
+
+				&:active {
+					background-color: @background-color-interactive;
+				}
+			}
 		}
 	}
 

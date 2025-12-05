@@ -120,14 +120,16 @@ describe( 'ZMonolingualString', () => {
 				store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( '' );
 			} );
 
-			it( 'applies clickable class to chip when language is empty and in edit mode', () => {
+			it( 'wraps chip in button when language is empty and in edit mode', () => {
 				const wrapper = renderZMonolingualStringFull( {
 					edit: true,
 					objectValue: emptyObjectValue
 				} );
 
-				const chip = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' );
-				expect( chip.classes() ).toContain( 'ext-wikilambda-app-monolingual-string__chip--clickable' );
+				const button = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip-button' );
+				expect( button.exists() ).toBe( true );
+				const chip = button.find( '.ext-wikilambda-app-monolingual-string__chip' );
+				expect( chip.exists() ).toBe( true );
 				expect( chip.classes() ).toContain( 'ext-wikilambda-app-monolingual-string__chip--empty' );
 			} );
 
@@ -142,14 +144,15 @@ describe( 'ZMonolingualString', () => {
 				expect( chip.classes() ).toContain( 'ext-wikilambda-app-monolingual-string__chip--empty' );
 			} );
 
-			it( 'emits expand event when clicking the empty language chip in edit mode', async () => {
+			it( 'emits expand event when clicking the empty language chip button in edit mode', async () => {
 				const wrapper = renderZMonolingualStringFull( {
 					edit: true,
 					objectValue: emptyObjectValue
 				} );
 
-				const chip = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip' );
-				await chip.trigger( 'click' );
+				const button = wrapper.find( '.ext-wikilambda-app-monolingual-string__chip-button' );
+				expect( button.exists() ).toBe( true );
+				await button.trigger( 'click' );
 
 				await waitFor( () => {
 					expect( wrapper.emitted( 'expand' ) ).toBeTruthy();

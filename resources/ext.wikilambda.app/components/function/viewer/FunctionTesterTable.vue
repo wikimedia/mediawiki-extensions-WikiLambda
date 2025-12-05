@@ -13,11 +13,17 @@
 		<span class="ext-wikilambda-app-function-tester-table__status-message">
 			{{ statusMessage }}
 		</span>
-		<wl-status-icon
+		<button
 			v-if="testerStatus !== undefined"
-			status="info"
+			type="button"
+			class="ext-wikilambda-app-button-reset ext-wikilambda-app-function-tester-table__info-button"
+			:aria-label="detailsButtonLabel"
 			@click.stop="handleMessageIconClick"
-		></wl-status-icon>
+		>
+			<wl-status-icon
+				status="info"
+			></wl-status-icon>
+		</button>
 		<wl-function-metadata-dialog
 			:open="showMetadata"
 			:header-text="implementationLabelData"
@@ -148,6 +154,18 @@ module.exports = exports = defineComponent( {
 			undefined );
 
 		/**
+		 * Returns the accessible label for the details button
+		 *
+		 * @return {string}
+		 */
+		const detailsButtonLabel = computed( () => {
+			if ( implementationLabelData.value ) {
+				return i18n( 'wikilambda-tester-details-for', implementationLabelData.value.label ).text();
+			}
+			return i18n( 'wikilambda-tester-details' ).text();
+		} );
+
+		/**
 		 * Toggles the metadata dialog
 		 */
 		function handleMessageIconClick() {
@@ -155,6 +173,7 @@ module.exports = exports = defineComponent( {
 		}
 
 		return {
+			detailsButtonLabel,
 			errorId,
 			handleMessageIconClick,
 			implementationLabelData,
@@ -178,6 +197,11 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-tester-table__status-message {
 		display: inline-block;
 		margin: 0 8px;
+	}
+
+	.ext-wikilambda-app-function-tester-table__info-button {
+		display: inline-flex;
+		align-items: center;
 	}
 }
 </style>

@@ -27,12 +27,14 @@
 					<span class="ext-wikilambda-app-function-report-item__footer-status">
 						{{ statusMessage }}
 					</span>
-					<a
+					<button
 						v-if="!isRunning && status !== 'ready'"
-						role="button"
+						type="button"
+						class="ext-wikilambda-app-button-reset ext-wikilambda-app-function-report-item__footer-button"
 						@click="emitTesterKeys"
-					>{{ i18n( 'wikilambda-tester-details' ).text() }}
-					</a>
+					>
+						{{ i18n( 'wikilambda-tester-details' ).text() }}
+					</button>
 				</div>
 			</div>
 		</div>
@@ -241,6 +243,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-report-item__footer-status {
 		color: @color-subtle;
 		margin-right: @spacing-50;
+	}
+
+	.ext-wikilambda-app-function-report-item__footer-button {
+		.cdx-mixin-link();
 	}
 }
 </style>
