@@ -172,7 +172,7 @@
 	"wikilambda-editor-boolean-selector": "Select true/false",
 	"wikilambda-editor-clearitem": "🧽",
 	"wikilambda-editor-code-editor-debug-code-warning": "Consider removing <code>Wikifunctions.Debug</code> before publishing",
-	"wikilambda-editor-code-editor-zid-placeholder-error": "Every 'Z0' occurrence in your code will be replaced with a system-generated ID upon publishing.",
+	"wikilambda-editor-code-editor-zid-placeholder-error": "Every 'Z0' occurrence in your code will be replaced with a system-generated ID upon publishing. You can revert this substitution in a subsequent edit if needed.",
 	"wikilambda-editor-default-name": "Untitled",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Sorry! Only users with special permissions can change the function definition once a definition has been published.",
 	"wikilambda-editor-fn-step-function-about": "About",

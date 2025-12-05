@@ -167,7 +167,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {ErrorData[]}
 		 */
-		const codeNotices = computed( () => ( parentIsImplementation.value || !store.isCreateNewPage ) ? [] : [
+		const codeNotices = computed( () => ( !store.isCreateNewPage || !codeValue.value.includes( 'Z0' ) ) ? [] : [
 			ErrorData.buildErrorData( {
 				errorType: Constants.ERROR_TYPES.NOTICE,
 				errorMessageKey: 'wikilambda-editor-code-editor-zid-placeholder-error'

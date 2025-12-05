@@ -187,7 +187,7 @@
 	"wikilambda-editor-boolean-selector": "Label for selecting a true/false value for a boolean.",
 	"wikilambda-editor-clearitem": "{{ignore}}Label for button to clear item",
 	"wikilambda-editor-code-editor-debug-code-warning": "This warning message alerts users that they are attempting to publish code that still contains calls to Wikifunctions.Debug, which is intended solely for debugging purposes.",
-	"wikilambda-editor-code-editor-zid-placeholder-error": "This error message warns users that the string 'Z0' is a placeholder and will be substituted with a new identifier on publish.",
+	"wikilambda-editor-code-editor-zid-placeholder-error": "This error message warns users that the string 'Z0' is a placeholder and will be substituted with a new identifier on publish. It also informs users that they can revert this substitution in a subsequent edit if needed.",
 	"wikilambda-editor-default-name": "Default label for function name",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Tooltip shown when an non-privileged user is trying to modify a published function definition.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-fn-step-function-about": "Label for the step to view basic information about a function.",

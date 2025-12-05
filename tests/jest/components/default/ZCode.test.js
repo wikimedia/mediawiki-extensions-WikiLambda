@@ -265,7 +265,25 @@ describe( 'ZCode', () => {
 				} ] ] );
 			} );
 
-			it( 'displays notice message when creating a new converter', async () => {
+			it( 'displays notice message when creating a new converter and code contains Z0', async () => {
+				store.isCreateNewPage = true;
+
+				const wrapper = renderZCode( {
+					keyPath: converterKeyPath,
+					objectValue: {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z16' },
+						Z16K1: { Z1K1: 'Z9', Z9K1: 'Z610' },
+						Z16K2: { Z1K1: 'Z6', Z6K1: 'function Z0() {}' }
+					},
+					edit: true
+				} );
+
+				const message = wrapper.findComponent( { name: 'cdx-message' } );
+				expect( message.exists() ).toBe( true );
+				expect( message.props( 'type' ) ).toBe( 'notice' );
+			} );
+
+			it( 'does not display notice message when creating a new converter but code does not contain Z0', async () => {
 				store.isCreateNewPage = true;
 
 				const wrapper = renderZCode( {
@@ -274,8 +292,7 @@ describe( 'ZCode', () => {
 				} );
 
 				const message = wrapper.findComponent( { name: 'cdx-message' } );
-				expect( message.exists() ).toBe( true );
-				expect( message.props( 'type' ) ).toBe( 'notice' );
+				expect( message.exists() ).toBe( false );
 			} );
 		} );
 	} );
