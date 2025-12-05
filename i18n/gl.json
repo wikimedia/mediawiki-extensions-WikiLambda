@@ -331,6 +331,7 @@
 	"wikilambda-functioncall-metadata-execution": "Execución",
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Rexistros de depuración de execución",
 	"wikilambda-functioncall-metadata-expected-result": "Resultado esperado",
+	"wikilambda-functioncall-metadata-show-raw-json": "Mostrar o JSON sen procesar",
 	"wikilambda-functioncall-metadata-hostname": "Servidor",
 	"wikilambda-functioncall-metadata-implementation": "Implementación",
 	"wikilambda-functioncall-metadata-implementation-id": "ID",
