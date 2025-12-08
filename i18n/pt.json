@@ -3,7 +3,8 @@
 		"authors": [
 			"Emma Franzen",
 			"Hamilton Abreu",
-			"Mansil alfalb"
+			"Mansil alfalb",
+			"Maria Manuela Silva"
 		]
 	},
 	"wikilambda-desc": "Fornece às wikis da Wikimedia uma função de análise sintática de texto wiki para chamar a execução de funções escritas, geridas e executadas numa wiki central.",
