@@ -310,12 +310,9 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getStringForLanguage( $french )
 		);
 
+		// Expect an exception with repeated language
+		$this->expectException( ZErrorException::class );
 		$testObject->setMonoLingualString( $testMono );
-		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame(
-			'Bonjour',
-			$testObject->getStringForLanguage( $french )
-		);
 	}
 
 	public function testPersistentCreation() {

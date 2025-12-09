@@ -539,6 +539,10 @@ class ZErrorFactory {
 				$zErrorValue[] = new ZString( $payload['host'] );
 				break;
 
+			case ZErrorTypeRegistry::Z_ERROR_DUPLICATE_LANGUAGES:
+				$zErrorValue[] = new ZString( $payload['language'] );
+				break;
+
 			default:
 				break;
 		}

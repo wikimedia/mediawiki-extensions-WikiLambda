@@ -10,9 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
@@ -160,7 +162,14 @@ class ZMultiLingualString extends ZObject {
 	}
 
 	/**
+	 * Add a ZMonoLingualString to the ZMultilingualString object.
+	 *
+	 * As there is no dynamic use of these classes (only pre-write or pre-read
+	 * instantiation), setting a language that already exists is not a "set"
+	 * or "replace" nuclear operation, but a detection of a malformed object.
+	 *
 	 * @param ZMonoLingualString $value The new value to set.
+	 * @throws ZErrorException
 	 */
 	public function setMonoLingualString( ZMonoLingualString $value ): void {
 		$language = $value->getLanguage();
@@ -175,6 +184,19 @@ class ZMultiLingualString extends ZObject {
 				]
 			);
 			return;
+		}
+		if ( array_key_exists( $language, $this->getZValue() ) ) {
+			$logger = LoggerFactory::getInstance( 'WikiLambda' );
+			$logger->warning(
+				'Duplicate language in a MultiLingual String is not allowed: {language}',
+				[ 'language' => $language ]
+			);
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_DUPLICATE_LANGUAGES,
+					[ 'language' => $language ]
+				)
+			);
 		}
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language ] = $value;
 	}

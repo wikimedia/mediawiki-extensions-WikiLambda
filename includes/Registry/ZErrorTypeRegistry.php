@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
+use ReflectionClass;
 
 /**
  * A registry service for ZErrorType
@@ -75,55 +76,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_ORCHESTRATOR_RATE_LIMIT = 'Z570';
 	public const Z_ERROR_EVALUATOR_RATE_LIMIT = 'Z571';
 
-	private const BUILT_IN_ERRORS = [
-		'Z500' => 'Z_ERROR_UNKNOWN',
-		'Z501' => 'Z_ERROR_INVALID_SYNTAX',
-		'Z502' => 'Z_ERROR_NOT_WELLFORMED',
-		'Z503' => 'Z_ERROR_NOT_IMPLEMENTED_YET',
-		'Z504' => 'Z_ERROR_ZID_NOT_FOUND',
-		'Z505' => 'Z_ERROR_ARGUMENT_COUNT_MISMATCH',
-		'Z506' => 'Z_ERROR_ARGUMENT_TYPE_MISMATCH',
-		'Z507' => 'Z_ERROR_EVALUATION',
-		'Z509' => 'Z_ERROR_LIST',
-		'Z511' => 'Z_ERROR_MISSING_KEY',
-		'Z513' => 'Z_ERROR_MISSING_PERSISTENT_VALUE',
-		'Z519' => 'Z_ERROR_UNDEFINED_LIST_TYPE',
-		'Z521' => 'Z_ERROR_NOT_NUMBER_BOOLEAN_NULL',
-		'Z522' => 'Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED',
-		'Z523' => 'Z_ERROR_MISSING_TYPE',
-		'Z524' => 'Z_ERROR_TYPE_NOT_STRING_ARRAY',
-		'Z525' => 'Z_ERROR_INVALID_KEY',
-		'Z526' => 'Z_ERROR_KEY_VALUE_NOT_WELLFORMED',
-		'Z529' => 'Z_ERROR_CONNECTION_FAILURE',
-		'Z532' => 'Z_ERROR_STRING_VALUE_MISSING',
-		'Z533' => 'Z_ERROR_STRING_VALUE_WRONG_TYPE',
-		'Z535' => 'Z_ERROR_REFERENCE_VALUE_MISSING',
-		'Z536' => 'Z_ERROR_REFERENCE_VALUE_WRONG_TYPE',
-		'Z537' => 'Z_ERROR_REFERENCE_VALUE_INVALID',
-		'Z538' => 'Z_ERROR_WRONG_NAMESPACE',
-		'Z539' => 'Z_ERROR_WRONG_CONTENT_TYPE',
-		'Z540' => 'Z_ERROR_INVALID_LANG_CODE',
-		'Z541' => 'Z_ERROR_LANG_NOT_FOUND',
-		'Z542' => 'Z_ERROR_UNEXPECTED_ZTYPE',
-		'Z543' => 'Z_ERROR_ZTYPE_NOT_FOUND',
-		'Z544' => 'Z_ERROR_CONFLICTING_TYPE_NAMES',
-		'Z545' => 'Z_ERROR_CONFLICTING_TYPE_ZIDS',
-		'Z546' => 'Z_ERROR_BUILTIN_TYPE_NOT_FOUND',
-		'Z547' => 'Z_ERROR_INVALID_FORMAT',
-		'Z548' => 'Z_ERROR_INVALID_JSON',
-		'Z549' => 'Z_ERROR_INVALID_REFERENCE',
-		'Z550' => 'Z_ERROR_UNKNOWN_REFERENCE',
-		'Z551' => 'Z_ERROR_SCHEMA_TYPE_MISMATCH',
-		'Z552' => 'Z_ERROR_ARRAY_TYPE_MISMATCH',
-		'Z553' => 'Z_ERROR_DISALLOWED_ROOT_ZOBJECT',
-		'Z554' => 'Z_ERROR_LABEL_CLASH',
-		'Z555' => 'Z_ERROR_UNMATCHING_ZID',
-		'Z556' => 'Z_ERROR_INVALID_TITLE',
-		'Z557' => 'Z_ERROR_USER_CANNOT_EDIT',
-		'Z559' => 'Z_ERROR_USER_CANNOT_RUN',
-		'Z570' => 'Z_ERROR_ORCHESTRATOR_RATE_LIMIT',
-		'Z571' => 'Z_ERROR_EVALUATOR_RATE_LIMIT',
-	];
+	public const Z_ERROR_DUPLICATE_LANGUAGES = 'Z580';
 
 	/**
 	 * Initialize ZErrorTypeRegistry
@@ -185,7 +138,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 			return true;
 		}
 
-		if ( $this->isBuiltinZErrorType( $errorType ) ) {
+		if ( self::isBuiltinZErrorType( $errorType ) ) {
 			return true;
 		}
 
@@ -263,13 +216,17 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	}
 
 	/**
-	 * Check if the given Zid belongs to a builtin ZErrorType
+	 * Check if the given Zid belongs to a builtin ZErrorType (from the ones declared above)
 	 *
 	 * @param string $errorType
 	 * @return bool
 	 */
-	private function isBuiltinZErrorType( string $errorType ): bool {
-		return array_key_exists( $errorType, self::BUILT_IN_ERRORS );
+	private static function isBuiltinZErrorType( string $errorType ): bool {
+		static $lookup = null;
+		if ( $lookup === null ) {
+			$lookup = array_flip( ( new ReflectionClass( self::class ) )->getConstants() );
+		}
+		return isset( $lookup[ $errorType ] );
 	}
 
 	/**
