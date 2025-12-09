@@ -16,11 +16,15 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\Tidy\RemexCompatFormatter;
 use Psr\Log\LoggerInterface;
+use Wikimedia\RemexHtml\HTMLData;
 use Wikimedia\RemexHtml\Serializer\Serializer;
+use Wikimedia\RemexHtml\Serializer\Serializer as RemexSerializer;
 use Wikimedia\RemexHtml\Tokenizer\Attributes;
 use Wikimedia\RemexHtml\Tokenizer\PlainAttributes;
 use Wikimedia\RemexHtml\Tokenizer\RelayTokenHandler;
+use Wikimedia\RemexHtml\Tokenizer\Tokenizer as RemexTokenizer;
 use Wikimedia\RemexHtml\TreeBuilder\Dispatcher;
 use Wikimedia\RemexHtml\TreeBuilder\TreeBuilder;
 
@@ -223,5 +227,33 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 		} else {
 			$this->nextHandler->characters( $this->source, $sourceStart, $sourceLength, $sourceStart, $sourceLength );
 		}
+	}
+
+	/**
+	 * Sanitise an HTML fragment string using Remex, like MediaWiki's Sanitizer but with
+	 * more control (for both including and excluding things).
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	public static function sanitiseHtmlFragment( string $text ): string {
+		// Use RemexHtml to tokenize $text and remove the barred tags
+
+		$serializer = new RemexSerializer( new RemexCompatFormatter );
+
+		$tokenizer = new RemexTokenizer(
+			new WikifunctionsPFragmentSanitiserTokenHandler( $serializer, $text ),
+			$text,
+				[
+				'ignoreErrors' => true,
+				// Don't ignore char refs, as we want them to be decoded
+				'ignoreCharRefs' => false,
+				'ignoreNulls' => true,
+				'skipPreprocess' => true,
+			]
+		);
+		$tokenizer->execute( [ 'fragmentNamespace' => HTMLData::NS_HTML, 'fragmentName' => 'body', ] );
+
+		return $serializer->getResult();
 	}
 }
