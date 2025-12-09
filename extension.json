@@ -936,6 +936,7 @@
 		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectEditor",
 		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiFunctionCall",
 		"wikifunctions_run": "MediaWiki\\Extension\\WikiLambda\\PublicAPI\\PublicApiRun",
+		"wikifunctions_html_sanitiser": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiWikifunctionsHTMLSanitiser",
 		"wikilambda_perform_test": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiPerformTest",
 			"services": [
