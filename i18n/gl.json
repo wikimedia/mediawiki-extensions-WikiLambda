@@ -164,7 +164,7 @@
 	"wikilambda-editor-argument-list-label": "Lista de argumentos",
 	"wikilambda-editor-boolean-selector": "Seleccionar verdadeiro/falso",
 	"wikilambda-editor-code-editor-debug-code-warning": "Considera eliminar <code>Wikifunctions.Debug</code> antes da publicación",
-	"wikilambda-editor-code-editor-zid-placeholder-error": "Cada aparición de «Z0» no teu código será substituída por un identificador xerado polo sistema trala publicación.",
+	"wikilambda-editor-code-editor-zid-placeholder-error": "Cada aparición de «Z0» no teu código será substituída por un identificador xerado polo sistema trala publicación. Podes reverter esta substitución nunha edición posterior se fose necesario.",
 	"wikilambda-editor-default-name": "Sen título",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Sentímolo! Só os usuarios con permisos especiais poden cambiar a definición da función unha vez publicada.",
 	"wikilambda-editor-fn-step-function-about": "Acerca de",
