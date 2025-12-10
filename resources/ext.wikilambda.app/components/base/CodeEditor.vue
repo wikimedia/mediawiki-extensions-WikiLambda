@@ -83,14 +83,12 @@ module.exports = exports = defineComponent( {
 		 * @return {Array} List of annotation objects
 		 */
 		function getDisallowedTagAnnotations( session ) {
+			// Keep this in sync with WikifunctionsPFragmentSanitiserTokenHandler::ALLOWEDELEMENTS
 			const allowedTags = new Set( [
-				'abbr', 'b', 'bdi', 'bdo', 'big', 'blockquote', 'br', 'caption',
-				'center', 'cite', 'code', 'data', 'dd', 'del', 'dfn', 'div', 'dl',
-				'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i',
-				'ins', 'kbd', 'li', 'link', 'mark', 'meta', 'ol', 'p', 'pre', 'q',
-				'rb', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp', 'small', 'span',
-				'strike', 'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'th',
-				'thead', 'time', 'tr', 'tt', 'u', 'ul', 'var', 'wbr'
+				'a', 'abbr', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'caption', 'code', 'dd',
+				'del', 'dfn', 'div', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+				'hr', 'i', 'ins', 'kbd', 'li', 'ol', 'p', 'q', 's', 'span', 'strike',
+				'strong', 'sub', 'sup', 'table', 'td', 'th', 'tr', 'u', 'ul'
 			] );
 
 			const disallowedTagRegex = /<\/?([a-z0-9-]+)[^>]*?>/gi;

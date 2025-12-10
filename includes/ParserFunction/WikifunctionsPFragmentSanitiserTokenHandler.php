@@ -72,6 +72,7 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
 	// This is our list of allowed HTML elements. It should be kept extremely minimal, and any changes should
 	// be carefully considered in conjunction with the Security and MW Content Transformation team.
+	// Keep this in sync with CodeEditor.getDisallowedTagAnnotations()
 	private const ALLOWEDELEMENTS = [
 		// Headings
 		"h1",
