@@ -105,6 +105,10 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "Die Liste der zu testenden ZImplementierungs-IDs (oder Objekte)",
 	"apihelp-wikilambda_perform_test-param-ztesters": "Die Liste der zu prüfenden ZTester-IDs (oder Objekte)",
 	"apihelp-wikilambda_perform_test-param-nocache": "Ob der Cache verwendet werden soll oder nicht",
+	"apihelp-wikifunctions_html_sanitiser-summary": "API zur Bereinigung einer HTML-Zeichenkette für die Anzeige durch Benutzer auf Wikifunctions.org und Client-Wikis von Wikimedia.",
+	"apihelp-wikifunctions_html_sanitiser-param-html": "Der bereinigte HTML-String, geeignet für die Anzeige durch den Benutzer.",
+	"apihelp-wikifunctions_html_sanitiser-example-untouched": "Beispiel eines einfachen No-Op-Aufrufs.",
+	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Beispielaufruf mit unzulässigem HTML-Code.",
 	"wikilambda-restapi-disabled-repo-mode-only": "Diese API ist nur im Repo-Wiki Wikifunctions.org verfügbar.",
 	"wikilambda-restapi-fetch-too-many": "Du hast $1 angefordert, das sind zu viele Objekte auf einmal (maximal $2 sind zulässig)",
 	"wikilambda-restapi-revision-mismatch": "Du hast Version $1 von Objekt „$2“ angefordert, die nicht gefunden wurde"
