@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"GuoPC",
+			"Plana",
 			"Stang",
 			"U.T.",
 			"Zhang8569",
@@ -18,5 +19,6 @@
 	"apihelp-wikilambda_edit-summary": "创建或编辑 ZObject。",
 	"apihelp-wikilambda_edit-param-summary": "编辑摘要消息",
 	"apierror-wikilambda_function_call-concurrency-limit": "目前您执行了太多函数调用。",
-	"apihelp-wikilambda_perform_test-param-nocache": "是否使用缓存"
+	"apihelp-wikilambda_perform_test-param-nocache": "是否使用缓存",
+	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "带有禁止 HTML 的示例调用。"
 }

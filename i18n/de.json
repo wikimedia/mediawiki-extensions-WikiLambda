@@ -340,6 +340,7 @@
 	"wikilambda-functioncall-metadata-show-raw-json": "JSON im Rohformat anzeigen",
 	"wikilambda-functioncall-metadata-hostname": "Server",
 	"wikilambda-functioncall-metadata-implementation": "Implementierung",
+	"wikilambda-functioncall-metadata-implementation-how-chosen": "Über die Auswahl der Umsetzung",
 	"wikilambda-functioncall-metadata-implementation-id": "ID",
 	"wikilambda-functioncall-metadata-implementation-name": "Name",
 	"wikilambda-functioncall-metadata-implementation-type": "Typ",

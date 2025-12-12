@@ -98,6 +98,11 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "A lista de identificadores de ZImplementation (ou obxectos) a probar",
 	"apihelp-wikilambda_perform_test-param-ztesters": "A lista de identificadores de ZTester (ou obxectos) a probar",
 	"apihelp-wikilambda_perform_test-param-nocache": "Indica se utilizar a caché ou non",
+	"apihelp-wikifunctions_html_sanitiser-summary": "API para sanear unha cadea de texto HTML para a súa visualización por parte dos usuarios en Wikifunctions.org e nos wikis cliente da Wikimedia.",
+	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "Tes demasiadas chamadas a funcións de saneamento executándose nestes intres.",
+	"apihelp-wikifunctions_html_sanitiser-param-html": "A cadea HTML saneada axeitada para a súa visualización por parte dos usuarios.",
+	"apihelp-wikifunctions_html_sanitiser-example-untouched": "Exemplo de chamada básica sen operación.",
+	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Exemplo de chamada con HTML prohibido.",
 	"wikilambda-restapi-disabled-repo-mode-only": "Esta API non está dispoñible agás no wiki do repositorio principal, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "Solicitaches $1, que son demasiados obxectos á vez (permítese un máximo de $2)",
 	"wikilambda-restapi-revision-mismatch": "Solicitaches a revisión $1 do obxecto \"$2\", que non se atopou"
