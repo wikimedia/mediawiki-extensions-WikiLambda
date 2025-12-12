@@ -27,6 +27,7 @@ const wdItemsStore = require( './stores/wikidata/items.js' );
 const wdLexemesStore = require( './stores/wikidata/lexemes.js' );
 const wdPropertiesStore = require( './stores/wikidata/properties.js' );
 const zfunctionStore = require( './stores/zfunction.js' );
+const zhtmlStore = require( './stores/zhtml.js' );
 const zobjectStore = require( './stores/zobject.js' );
 const ztypeStore = require( './stores/ztype.js' );
 
@@ -53,6 +54,7 @@ module.exports = defineStore( 'main', {
 		zobjectStore.state,
 		ztypeStore.state,
 		zfunctionStore.state,
+		zhtmlStore.state,
 		// Wikidata
 		wdEntitiesStore.state,
 		wdLexemesStore.state,
@@ -83,6 +85,7 @@ module.exports = defineStore( 'main', {
 		zobjectStore.getters,
 		ztypeStore.getters,
 		zfunctionStore.getters,
+		zhtmlStore.getters,
 		// Wikidata
 		wdEntitiesStore.getters,
 		wdLexemesStore.getters,
@@ -113,6 +116,7 @@ module.exports = defineStore( 'main', {
 		zobjectStore.actions,
 		ztypeStore.actions,
 		zfunctionStore.actions,
+		zhtmlStore.actions,
 		// Wikidata
 		wdEntitiesStore.actions,
 		wdLexemesStore.actions,

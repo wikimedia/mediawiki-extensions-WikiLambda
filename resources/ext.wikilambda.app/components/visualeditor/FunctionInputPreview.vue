@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
 	<cdx-accordion
 		:model-value="isOpen"
@@ -14,7 +15,19 @@
 				{{ i18n( 'wikilambda-loading' ).text() }}
 			</cdx-progress-indicator>
 			<div v-else>
-				<span v-if="typeof functionCallResult === 'string'">{{ functionCallResult }}</span>
+				<div v-if="typeof functionCallResult === 'string'">
+					<html-fragment-viewer
+						v-if="isHTMLFragmentOutput"
+						:html="functionCallResult"
+						:toggle-label="i18n(
+							'wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle'
+						).text()"
+					></html-fragment-viewer>
+					<span
+						v-else
+						class="ext-wikilambda-app-function-input-preview__text"
+					>{{ functionCallResult }}</span>
+				</div>
 				<cdx-message
 					v-else-if="functionCallError"
 					type="error"
@@ -43,9 +56,11 @@
 <script>
 const { computed, defineComponent, inject, onBeforeUnmount, ref, watch } = require( 'vue' );
 const Constants = require( '../../Constants.js' );
-const { performFunctionCall } = require( '../../utils/apiUtils.js' );
+const apiUtils = require( '../../utils/apiUtils.js' );
+const { performFunctionCall } = apiUtils;
 const useType = require( '../../composables/useType.js' );
 const useZObject = require( '../../composables/useZObject.js' );
+const HTMLFragmentViewer = require( '../base/HTMLFragmentViewer.vue' );
 const { CdxAccordion, CdxIcon, CdxMessage, CdxProgressIndicator } = require( '../../../codex.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
@@ -57,7 +72,8 @@ module.exports = exports = defineComponent( {
 		'cdx-icon': CdxIcon,
 		'cdx-accordion': CdxAccordion,
 		'cdx-message': CdxMessage,
-		'cdx-progress-indicator': CdxProgressIndicator
+		'cdx-progress-indicator': CdxProgressIndicator,
+		'html-fragment-viewer': HTMLFragmentViewer
 	},
 	props: {
 		/**
@@ -150,6 +166,26 @@ module.exports = exports = defineComponent( {
 			}
 			return '';
 		} );
+
+		// ZHTMLFragment type detection
+		/**
+		 * Output type of the function call.
+		 *
+		 * @return {string|null}
+		 */
+		const outputType = computed( () => {
+			if ( !props.payload || !props.payload.functionZid ) {
+				return null;
+			}
+			return store.getOutputTypeOfFunctionZid( props.payload.functionZid );
+		} );
+
+		/**
+		 * Returns whether the output type is HTML Fragment (Z89).
+		 *
+		 * @return {boolean}
+		 */
+		const isHTMLFragmentOutput = computed( () => outputType.value === Constants.Z_HTML_FRAGMENT );
 
 		// Accordion actions
 		/**
@@ -270,8 +306,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Object} - The created function call object.
 		 */
 		function constructFunctionCall( functionZid, params ) {
-			const outputType = store.getOutputTypeOfFunctionZid( functionZid );
-			const rendererZid = store.getRendererZid( outputType );
+			const rendererZid = store.getRendererZid( outputType.value );
 
 			// Construct the main function call object
 			const functionCall = createFunctionCallMethod( functionZid, params );
@@ -360,7 +395,7 @@ module.exports = exports = defineComponent( {
 
 					// If the function call returns void or an unexpected type, set an error message
 					const type = typeToString( getZObjectType( response ) );
-					const isAllowedOutputType = type !== Constants.Z_STRING || type !== Constants.Z_HTML_FRAGMENT;
+					const isAllowedOutputType = type === Constants.Z_STRING || type === Constants.Z_HTML_FRAGMENT;
 					if ( response === Constants.Z_VOID || !isAllowedOutputType ) {
 						functionCallError.value = i18n( 'wikilambda-visualeditor-wikifunctionscall-preview-error' ).text();
 						isLoading.value = false;
@@ -442,6 +477,7 @@ module.exports = exports = defineComponent( {
 			handleAccordionClick,
 			handleActionButtonClick,
 			isCancelled,
+			isHTMLFragmentOutput,
 			isLoading,
 			isOpen,
 			i18n
@@ -467,6 +503,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-input-preview__cancelled-icon,
 	.ext-wikilambda-app-function-input-preview__no-result {
 		color: @color-placeholder;
+	}
+
+	.ext-wikilambda-app-function-input-preview__toggle-container {
+		margin-top: @spacing-50;
 	}
 }
 </style>

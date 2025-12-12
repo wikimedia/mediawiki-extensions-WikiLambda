@@ -192,6 +192,7 @@ class ClientHooks implements
 					'wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label',
 					'wikilambda-visualeditor-wikifunctionscall-preview-cancelled',
 					'wikilambda-visualeditor-wikifunctionscall-preview-error',
+					'wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle',
 					'wikilambda-visualeditor-wikifunctionscall-default-value-date',
 					'wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item',
 					'wikilambda-visualeditor-wikifunctionscall-default-value-language',

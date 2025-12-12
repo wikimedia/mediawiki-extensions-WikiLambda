@@ -363,6 +363,36 @@ const apiUtils = {
 			payload.signal ? { signal: payload.signal } : undefined
 		)
 			.then( ( response ) => response.json() );
+	},
+
+	/**
+	 * Calls the wikifunctions_html_sanitiser internal API
+	 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikifunctions_html_sanitiser
+	 *
+	 * Sanitises HTML fragments for safe user-facing display.
+	 *
+	 * @param {Object} payload
+	 * @param {string} payload.html The HTML string to sanitise
+	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
+	 * @return {Promise<string>} Promise resolving to the sanitised HTML string
+	 */
+	sanitiseHtmlFragment: function ( payload ) {
+		const api = apiUtils.newApi();
+
+		return new Promise( ( resolve, reject ) => {
+			api.postWithEditToken( {
+				action: 'wikifunctions_html_sanitiser',
+				format: 'json',
+				formatversion: '2',
+				html: payload.html
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => resolve( {
+					html: data.wikifunctions_html_sanitiser ? data.wikifunctions_html_sanitiser.value : ''
+				} ) )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
 	}
 };
 module.exports = apiUtils;

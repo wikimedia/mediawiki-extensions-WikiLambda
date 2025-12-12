@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <!--
 	WikiLambda Vue component for Z89/HTML Fragment objects.
 
@@ -7,16 +8,7 @@
 <template>
 	<div class="ext-wikilambda-app-html-fragment" data-testid="z-html-fragment">
 		<code-editor
-			v-if="!edit"
-			class="ext-wikilambda-app-html-fragment__code-editor"
-			mode="html"
-			:read-only="true"
-			:disabled="true"
-			:value="value"
-			data-testid="html-fragment-editor-read"
-		></code-editor>
-		<code-editor
-			v-else
+			v-if="edit"
 			class="ext-wikilambda-app-html-fragment__code-editor"
 			mode="html"
 			:read-only="false"
@@ -25,22 +17,29 @@
 			data-testid="html-fragment-editor-edit"
 			@change="setValue"
 		></code-editor>
+		<html-fragment-viewer
+			v-else
+			:html="value"
+			:toggle-label="i18n( 'wikilambda-html-fragment-toggle' ).text()"
+		></html-fragment-viewer>
 	</div>
 </template>
 
 <script>
-const { defineComponent, computed, ref, watch } = require( 'vue' );
+const { defineComponent, computed, inject, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useZObject = require( '../../composables/useZObject.js' );
 
 // Base components
 const CodeEditor = require( '../base/CodeEditor.vue' );
+const HTMLFragmentViewer = require( '../base/HTMLFragmentViewer.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-code',
 	components: {
-		'code-editor': CodeEditor
+		'code-editor': CodeEditor,
+		'html-fragment-viewer': HTMLFragmentViewer
 	},
 	props: {
 		keyPath: {
@@ -62,7 +61,7 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
-		// Data access
+		const i18n = inject( 'i18n' );
 		const { getZHTMLFragmentTerminalValue } = useZObject( { keyPath: props.keyPath } );
 
 		/**
@@ -113,6 +112,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			editorValue,
+			i18n,
 			setValue,
 			value
 		};
@@ -123,14 +123,9 @@ module.exports = exports = defineComponent( {
 <style lang="less">
 @import '../../ext.wikilambda.app.variables.less';
 
-.ext-wikilambda-app-code {
-	.ext-wikilambda-app-code__language-selector {
-		margin-top: @spacing-25;
-		margin-bottom: @spacing-50;
-	}
-
-	.ext-wikilambda-app-code__inline-error {
-		margin-top: @spacing-25;
+.ext-wikilambda-app-html-fragment {
+	.ext-wikilambda-app-html-fragment__toggle-container {
+		margin-top: @spacing-50;
 	}
 }
 </style>

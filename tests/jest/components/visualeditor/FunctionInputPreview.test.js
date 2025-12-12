@@ -580,9 +580,11 @@ describe( 'FunctionInputPreview', () => {
 			uselang: 'en'
 		}, { signal: expect.any( Object ) } );
 
-		// Wait for the result and verify it is displayed as the HTML fragment value
+		// Wait for the result and verify HTMLFragmentViewer is rendered with correct HTML
 		await waitFor( () => expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( false ) );
-		expect( wrapper.get( '.ext-wikilambda-app-function-input-preview__content' ).text() ).toBe( '<b>HTML Fragment</b>' );
+		const htmlFragmentViewer = wrapper.findComponent( { name: 'html-fragment-viewer' } );
+		expect( htmlFragmentViewer.exists() ).toBe( true );
+		expect( htmlFragmentViewer.props( 'html' ) ).toBe( '<b>HTML Fragment</b>' );
 	} );
 
 	it( 'executes a function call with a wikidata items and item references', async () => {

@@ -10,9 +10,21 @@
 // Assign things to "global" here if you want them to be globally available during tests
 const fs = require( 'fs' );
 const path = require( 'path' );
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
+const { webcrypto } = require( 'node:crypto' );
 const vueTestUtils = require( '@vue/test-utils' );
 const { createTestingPinia } = require( '@pinia/testing' );
 const Constants = require( './resources/ext.wikilambda.app/Constants.js' );
+
+// Use Node's webcrypto for Web Crypto API in tests
+// jsdom provides crypto but without subtle, so we replace it with webcrypto
+Object.defineProperty( global, 'crypto', { value: webcrypto, writable: true, configurable: true } );
+
+// jsdom usually has TextEncoder nowadays, but just in case:
+if ( !global.TextEncoder ) {
+	const { TextEncoder } = require( 'node:util' );
+	global.TextEncoder = TextEncoder;
+}
 
 global.$ = require( 'jquery' );
 

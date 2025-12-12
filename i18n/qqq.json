@@ -401,6 +401,7 @@
 	"wikilambda-helplink-button": "The label for a link to a page that explains the metadata shown in this dialog and what it means. See {{msg-mw|wikilambda-helplink-tooltip}} for the tooltip of the same link.\n\n{{doc-wikilambda}}",
 	"wikilambda-helplink-tooltip": "The tooltip for a link to a page that explains the metadata shown in this dialog and what it means. See {{msg-mw|wikilambda-helplink-button}} for the displayed text of the same link.\n\n{{doc-wikilambda}}",
 	"wikilambda-history-title": "Title of the page showing the history of edits to a ZObject, similar to {{msg-mw|wikibase-history-title-with-label}}.\n\nParameters:\n* $1 – The title in the user's language, or a fallback language if not set.\n* $2 – The ZID (actual wiki page title) of the page.",
+	"wikilambda-html-fragment-toggle": "Label for a toggle switch that allows users to view HTML Fragment (Z89) content as rendered HTML instead of raw HTML code.",
 	"wikilambda-implementation-create-new": "Label for adding a new implementation to a function",
 	"wikilambda-implementation-none-found": "Label for when no implementation for a function has yet been created.",
 	"wikilambda-implementation-selector": "Label for selecting an implementation to add to a function.",

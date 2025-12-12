@@ -35,14 +35,12 @@ describe( 'ZHTMLFragment', () => {
 	}
 
 	describe( 'in view mode', () => {
-		it( 'renders the code editor in read-only mode with the correct value', () => {
+		it( 'renders the HTMLFragmentViewer component with the correct value', () => {
 			const wrapper = renderZHTMLFragment();
 
-			const editor = wrapper.findComponent( { name: 'code-editor' } );
-			expect( editor.exists() ).toBe( true );
-			expect( editor.props( 'readOnly' ) ).toBe( true );
-			expect( editor.props( 'disabled' ) ).toBe( true );
-			expect( editor.props( 'value' ) ).toBe( '<b>hello</b>' );
+			const viewer = wrapper.findComponent( { name: 'html-fragment-viewer' } );
+			expect( viewer.exists() ).toBe( true );
+			expect( viewer.props( 'html' ) ).toBe( '<b>hello</b>' );
 		} );
 	} );
 

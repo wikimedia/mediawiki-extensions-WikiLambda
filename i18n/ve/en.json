@@ -70,6 +70,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Cancelled",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Reset",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Cancel",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Show rendered",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Use today's date and keep result up-to-date",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Use this page's default Wikidata item",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Use this page's default language"
