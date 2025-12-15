@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -30,13 +31,18 @@ class ApiWikifunctionsHTMLSanitiser extends WikiLambdaApiBase {
 	protected function run(): void {
 		$userHTMLToClean = $this->getParameter( 'html' );
 
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+
 		// Use a pool counter to limit concurrency; this is probably over-kill for simple HTML sanitisation.
 		$work = new PoolCounterWorkViaCallback(
 			'WikifunctionsSanitiseHTMLFragment',
 			$this->getUser()->getName(),
 			[
-				'doWork' => static function () use ( $userHTMLToClean ) {
-					return WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment( $userHTMLToClean );
+				'doWork' => static function () use ( $logger, $userHTMLToClean ) {
+					return WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
+						$logger,
+						$userHTMLToClean
+					);
 				},
 				'error' => function ( \MediaWiki\Status\Status $status ) {
 					$this->dieWithError(

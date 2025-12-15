@@ -510,7 +510,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 */
 	private function getSanitisedHtmlFragment( string $value ): string {
 		$html = $this->decodeHtmlFragmentValue( $value );
-		return WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment( $html );
+		return WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment( $this->logger, $html );
 	}
 
 	/**

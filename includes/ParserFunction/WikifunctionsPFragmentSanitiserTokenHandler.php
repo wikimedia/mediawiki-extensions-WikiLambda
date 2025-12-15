@@ -12,7 +12,6 @@
 namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
 use MediaWiki\Extension\SiteMatrix\SiteMatrix;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -34,7 +33,7 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 	private array $allowedUrls = [];
 	private LoggerInterface $logger;
 
-	public function __construct( Serializer $serializer, string $source ) {
+	public function __construct( LoggerInterface $logger, Serializer $serializer, string $source ) {
 		$this->nextHandler = new Dispatcher( new TreeBuilder( $serializer, [
 			'ignoreErrors' => true,
 			'ignoreNulls' => true,
@@ -42,8 +41,7 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
 		parent::__construct( $this->nextHandler );
 
-		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
-
+		$this->logger = $logger;
 		$this->source = $source;
 
 		// The local server URL is always allowed, so we can link to the current wiki
@@ -180,7 +178,7 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 						$fixedAttrs = [
 							'href' => $fixedAttrs['href']
 						];
-						$this->logger->debug(
+						$this->logger->info(
 							'WikifunctionsPFragmentSanitiserTokenHandler: Allowing <a> tag with href "{targetDomain}"',
 							[
 								'rawHref' => $fixedAttrs['href'] ?? '',
@@ -191,7 +189,7 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
 					} else {
 						$tagAllowed = false;
-						$this->logger->debug(
+						$this->logger->info(
 							'WikifunctionsPFragmentSanitiserTokenHandler: Rejecting <a> tag with href "{targetDomain}"',
 							[
 								'rawHref' => $fixedAttrs['href'] ?? '',
@@ -234,16 +232,17 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 	 * Sanitise an HTML fragment string using Remex, like MediaWiki's Sanitizer but with
 	 * more control (for both including and excluding things).
 	 *
+	 * @param LoggerInterface $logger
 	 * @param string $text
 	 * @return string
 	 */
-	public static function sanitiseHtmlFragment( string $text ): string {
+	public static function sanitiseHtmlFragment( LoggerInterface $logger, string $text ): string {
 		// Use RemexHtml to tokenize $text and remove the barred tags
 
 		$serializer = new RemexSerializer( new RemexCompatFormatter );
 
 		$tokenizer = new RemexTokenizer(
-			new WikifunctionsPFragmentSanitiserTokenHandler( $serializer, $text ),
+			new WikifunctionsPFragmentSanitiserTokenHandler( $logger, $serializer, $text ),
 			$text,
 				[
 				'ignoreErrors' => true,
