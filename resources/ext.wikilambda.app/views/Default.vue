@@ -26,19 +26,28 @@
 
 			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-12 ext-wikilambda-app-col-tablet-24">
 				<!-- Persistent Object content block -->
-				<div class="ext-wikilambda-app-default-view__content" data-testid="content">
-					<div class="ext-wikilambda-app-default-view__title">
+				<wl-widget-base data-testid="content">
+					<template #header>
 						{{ i18n( 'wikilambda-persistentzobject-contents' ).text() }}
-					</div>
-					<wl-z-object-key-value
-						v-if="objectValue"
-						:key-path="initialKeyPath"
-						:object-value="objectValue"
-						:edit="edit"
-						:skip-key="true"
-						:skip-indent="true"
-					></wl-z-object-key-value>
-				</div>
+					</template>
+					<template #header-action>
+						<div v-if="helpLink" class="ext-wikilambda-app-default-view__help-link">
+							<a :href="i18n( helpLink.link ).parse()" target="_blank">
+								{{ isMobile ? i18n( helpLink.shortText ).parse() : i18n( helpLink.text ).parse() }}
+							</a>
+						</div>
+					</template>
+					<template #main>
+						<wl-z-object-key-value
+							v-if="objectValue"
+							:key-path="initialKeyPath"
+							:object-value="objectValue"
+							:edit="edit"
+							:skip-key="true"
+							:skip-indent="true"
+						></wl-z-object-key-value>
+					</template>
+				</wl-widget-base>
 			</div>
 
 			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-6 ext-wikilambda-app-col-tablet-24">
@@ -71,10 +80,14 @@ const { computed, defineComponent, inject, onMounted } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
+const useBreakpoints = require( '../composables/useBreakpoints.js' );
 const useEventLog = require( '../composables/useEventLog.js' );
 const useType = require( '../composables/useType.js' );
 const useMainStore = require( '../store/index.js' );
+const { helpLinks } = require( '../utils/helpUtils.js' );
 
+// Base components
+const WidgetBase = require( '../components/base/WidgetBase.vue' );
 // Type components
 const ZObjectKeyValue = require( '../components/types/ZObjectKeyValue.vue' );
 // Widget components
@@ -92,6 +105,7 @@ module.exports = exports = defineComponent( {
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget,
 		'wl-function-explorer-widget': FunctionExplorerWidget,
 		'wl-function-report-widget': FunctionReportWidget,
+		'wl-widget-base': WidgetBase,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	emits: [ 'mounted' ],
@@ -101,6 +115,7 @@ module.exports = exports = defineComponent( {
 		const { isDirty } = storeToRefs( store );
 		const { submitInteraction } = useEventLog();
 		const { typeToString } = useType();
+		const breakpoint = useBreakpoints( Constants.BREAKPOINTS );
 
 		const initialKeyPath = `${ Constants.STORED_OBJECTS.MAIN }.${ Constants.Z_PERSISTENTOBJECT_VALUE }`;
 
@@ -186,6 +201,20 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		/**
+		 * Whether the display is of the size of a mobile screen
+		 *
+		 * @return {boolean}
+		 */
+		const isMobile = computed( () => breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE );
+
+		/**
+		 * Help link for this content type, or undefined if none
+		 *
+		 * @return {string|undefined}
+		 */
+		const helpLink = computed( () => helpLinks[ contentType.value ] );
+
 		// Lifecycle
 		onMounted( () => {
 			dispatchLoadEvent( edit.value );
@@ -200,6 +229,8 @@ module.exports = exports = defineComponent( {
 			dispatchLoadEventForEditMultilingualData,
 			edit,
 			hasFunctionWidgets,
+			helpLink,
+			isMobile,
 			i18n,
 			implementationMode,
 			initialKeyPath,
@@ -218,18 +249,8 @@ module.exports = exports = defineComponent( {
 		margin-bottom: @spacing-125;
 	}
 
-	.ext-wikilambda-app-default-view__content {
-		box-sizing: border-box;
-		padding: @spacing-75;
-		border: 1px solid @border-color-subtle;
-		border-radius: 2px;
-		margin-bottom: @spacing-100;
-	}
-
-	.ext-wikilambda-app-default-view__title {
-		font-weight: @font-weight-bold;
-		margin-bottom: @spacing-125;
-		font-size: @font-size-large;
+	.ext-wikilambda-app-default-view__help-link {
+		font-size: @font-size-small;
 	}
 }
 </style>
