@@ -334,6 +334,7 @@
 	"wikilambda-functioncall-metadata-show-raw-json": "Mostrar o JSON sen procesar",
 	"wikilambda-functioncall-metadata-hostname": "Servidor",
 	"wikilambda-functioncall-metadata-implementation": "Implementación",
+	"wikilambda-functioncall-metadata-implementation-how-chosen": "Acerca da selección de implementación",
 	"wikilambda-functioncall-metadata-implementation-id": "ID",
 	"wikilambda-functioncall-metadata-implementation-name": "Nome",
 	"wikilambda-functioncall-metadata-implementation-type": "Tipo",

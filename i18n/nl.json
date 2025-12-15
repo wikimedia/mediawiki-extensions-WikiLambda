@@ -174,7 +174,7 @@
 	"wikilambda-editor-argument-list-label": "Argumentenlijst",
 	"wikilambda-editor-boolean-selector": "Selecteer waar/onwaar",
 	"wikilambda-editor-code-editor-debug-code-warning": "Overweeg om <code>Wikifunctions.Debug</code> vóór het publiceren te verwijderen",
-	"wikilambda-editor-code-editor-zid-placeholder-error": "Elk voorkomen van ‘Z0’ in uw code wordt bij publicatie vervangen door een door het systeem gegenereerde ID.",
+	"wikilambda-editor-code-editor-zid-placeholder-error": "Elk voorkomen van ‘Z0’ in uw code wordt bij publicatie vervangen door een door het systeem gegenereerde ID. U kunt deze vervanging indien nodig in een latere bewerking ongedaan maken.",
 	"wikilambda-editor-default-name": "Zonder titel",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Sorry! Alleen gebruikers met speciale rechten kunnen de functiedefinitie wijzigen nadat een definitie is gepubliceerd.",
 	"wikilambda-editor-fn-step-function-about": "Over",
