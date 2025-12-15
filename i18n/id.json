@@ -10,7 +10,9 @@
 			"DARMAS BUDI SANTOSO",
 			"Rachmat04",
 			"Leapofod",
-			"Rebeccayoga"
+			"Rebeccayoga",
+			"Felianiwiki",
+			"Penyuwangi"
 		]
 	},
 	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
@@ -71,7 +73,7 @@
 	"wikilambda-cancel": "Batal",
 	"wikilambda-confirm": "Konfirmasi",
 	"wikilambda-savenew": "Simpan",
-	"wikilambda-fallback": "Editor cadangan",
+	"wikilambda-fallback": "Penyunting cadangan",
 	"wikilambda-publishchanges": "Terbitkan perubahan",
 	"wikilambda-savechanges": "Simpan perubahan",
 	"wikilambda-summarylabel": "Ringkasan:",
