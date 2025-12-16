@@ -15,6 +15,7 @@
 			"Minilammas"
 		]
 	},
+	"wikilambda-desc": "Mahdollistaa funktioiden kirjoittamisen, hallinnoinnin ja arvioinnin keskuswikissä.",
 	"action-wikifunctions-run": "suorittaa funktioita julkisessa API:ssa",
 	"action-wikilambda-connect-tester": "yhdistää testitapausta sen funktioon",
 	"action-wikilambda-create-boolean": "luoda uusia totuusarvo-objekteja",
