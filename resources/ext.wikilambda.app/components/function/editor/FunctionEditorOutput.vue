@@ -80,12 +80,14 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const outputTypeKeyPath = [
 			Constants.STORED_OBJECTS.MAIN,
 			Constants.Z_PERSISTENTOBJECT_VALUE,
 			Constants.Z_FUNCTION_RETURN_TYPE
 		].join( '.' );
 
+		// Output type data
 		/**
 		 * Returns the output type of the function
 		 *

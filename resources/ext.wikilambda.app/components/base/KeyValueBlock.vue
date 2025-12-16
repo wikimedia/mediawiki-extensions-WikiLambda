@@ -137,6 +137,7 @@ module.exports = exports = defineComponent( {
 			'ext-wikilambda-app-key-value-block__pre-button--disabled': props.edit && props.disableEdit
 		} ) );
 
+		// Actions
 		/**
 		 * Emits the toggle expand event
 		 */

@@ -83,8 +83,7 @@ module.exports = exports = defineComponent( {
 		const { isValidZidFormat } = useType();
 		const store = useMainStore();
 
-		const showSearchCancel = ref( false );
-		let lookupAbortController = null;
+		// Constants
 		const callsToAction = [
 			{
 				title: i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title' ).parse(),
@@ -100,7 +99,45 @@ module.exports = exports = defineComponent( {
 			}
 		];
 
-		// Computed properties
+		// Search data
+		const showSearchCancel = ref( false );
+
+		/**
+		 * Returns the current search term
+		 *
+		 * @return {string}
+		 */
+		const searchTerm = computed( () => store.getSearchTerm );
+
+		/**
+		 * Returns the search placeholder text
+		 *
+		 * @return {string}
+		 */
+		const searchPlaceholder = computed( () => i18n(
+			'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder',
+			// Note: This is currently a hard-coded value of 2000 Functions.
+			mw.language.convertNumber( 2000 )
+		).text() );
+
+		/**
+		 * Update the lookupResults when there's a new search
+		 * term in the language search box.
+		 *
+		 * @param {string} value
+		 */
+		function updateSearchTerm( value ) {
+			store.setSearchTerm( value );
+			if ( !value ) {
+				store.setLookupResults( [] );
+				return;
+			}
+			fetchLookupResults( value );
+			// Track the searching for a function
+			store.submitVEInteraction( 'search-change-query' );
+		}
+
+		// Suggested functions
 		/**
 		 * Returns the information of the suggested function Zids
 		 *
@@ -113,18 +150,14 @@ module.exports = exports = defineComponent( {
 		} ) ) );
 
 		/**
-		 * Returns the current search term
-		 *
-		 * @return {string}
-		 */
-		const searchTerm = computed( () => store.getSearchTerm );
-
-		/**
 		 * Returns true when search term is empty and there are suggestions to show
 		 *
 		 * @return {boolean}
 		 */
-		const showSuggested = computed( () => ( suggested.value.length > 0 ) && ( searchTerm.value.length === 0 ) );
+		const showSuggested = computed( () => !!suggested.value.length && !searchTerm.value.length );
+
+		// Lookup results
+		let lookupAbortController = null;
 
 		/**
 		 * Returns the current lookup results
@@ -142,7 +175,6 @@ module.exports = exports = defineComponent( {
 			.map( ( item ) => store.getDescription( item.zid ) )
 		);
 
-		// Methods
 		/**
 		 * Triggers a lookup API to search for matches for the
 		 * given substring and formats the results to be shown
@@ -187,23 +219,7 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
-		/**
-		 * Update the lookupResults when there's a new search
-		 * term in the language search box.
-		 *
-		 * @param {string} value
-		 */
-		function updateSearchTerm( value ) {
-			store.setSearchTerm( value );
-			if ( !value ) {
-				store.setLookupResults( [] );
-				return;
-			}
-			fetchLookupResults( value );
-			// Track the searching for a function
-			store.submitVEInteraction( 'search-change-query' );
-		}
-
+		// Selection actions
 		/**
 		 * If the selected value is a valid Zid, emit select event
 		 *
@@ -216,12 +232,6 @@ module.exports = exports = defineComponent( {
 				store.submitVEInteraction( 'search-choose-function' );
 			}
 		}
-
-		const searchPlaceholder = computed( () => i18n(
-			'wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder',
-			// Note: This is currently a hard-coded value of 2000 Functions.
-			mw.language.convertNumber( 2000 )
-		).text() );
 
 		return {
 			callsToAction,

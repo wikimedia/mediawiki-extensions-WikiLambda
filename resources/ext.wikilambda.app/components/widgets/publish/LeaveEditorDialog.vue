@@ -48,6 +48,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 
+		// Dialog actions
 		/**
 		 * Returns an object of type PrimaryModalAction that describes
 		 * the action of the primary (save or publish) dialog button.
@@ -69,6 +70,7 @@ module.exports = exports = defineComponent( {
 			label: i18n( 'wikilambda-continue-editing' ).text()
 		} ) );
 
+		// Actions
 		/**
 		 * On click "Continue editing" option, simply close the dialog
 		 */

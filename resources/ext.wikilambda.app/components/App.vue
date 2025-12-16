@@ -49,17 +49,20 @@ module.exports = exports = defineComponent( {
 	},
 	setup() {
 		const i18n = inject( 'i18n' );
-		const isAppSetup = ref( false );
-		const hasError = ref( false );
-
 		const store = useMainStore();
 		const { isInitialized, getCurrentView } = storeToRefs( store );
 
+		// State
+		const isAppSetup = ref( false );
+		const hasError = ref( false );
+
+		// Initialization
 		// Set up global clipboard manager for copyable elements
 		useClipboardManager( {
 			classNames: [ 'ext-wikilambda-viewpage-header__zid', 'ext-wikilambda-editpage-header__zid' ]
 		} );
 
+		// Lifecycle
 		onMounted( () => {
 			store.fetchUserRights();
 			store.prefetchZids()

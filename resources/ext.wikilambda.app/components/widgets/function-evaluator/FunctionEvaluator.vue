@@ -179,15 +179,19 @@ module.exports = exports = defineComponent( {
 		const { submitInteraction } = useEventLog();
 		const store = useMainStore();
 
-		const running = ref( false );
-		const hasResult = ref( false );
-		const isLoading = ref( true );
+		// Constants
 		const functionKey = Constants.Z_FUNCTION_CALL_FUNCTION;
 		const functionKeyPath = [
 			Constants.STORED_OBJECTS.FUNCTION_CALL,
 			Constants.Z_FUNCTION_CALL_FUNCTION
 		].join( '.' );
 
+		// State
+		const running = ref( false );
+		const hasResult = ref( false );
+		const isLoading = ref( true );
+
+		// Function call data
 		/**
 		 * The function call as set in the store
 		 *
@@ -214,6 +218,13 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Returns whether the function exists and has been fetched
+		 *
+		 * @return {boolean}
+		 */
+		const isSelectedFunctionFetched = computed( () => !!store.getStoredObject( selectedFunctionZid.value ) );
+
+		/**
 		 * Returns the keys of the inputs of the function call.
 		 *
 		 * @return {Array}
@@ -221,13 +232,6 @@ module.exports = exports = defineComponent( {
 		const inputKeys = computed( () => selectedFunctionZid.value ?
 			getZFunctionCallArgumentKeys( functionCall.value ) :
 			[] );
-
-		/**
-		 * Returns the API error returned by the orchestrator
-		 *
-		 * @return {Object}
-		 */
-		const apiErrors = computed( () => store.getErrors( Constants.STORED_OBJECTS.RESPONSE ) );
 
 		/**
 		 * Returns the array of implementation IDs for the selected function
@@ -239,26 +243,20 @@ module.exports = exports = defineComponent( {
 			[] );
 
 		/**
-		 * Returns whether the function exists and has been fetched
-		 *
-		 * @return {boolean}
-		 */
-		const isSelectedFunctionFetched = computed( () => !!store.getStoredObject( selectedFunctionZid.value ) );
-
-		/**
-		 * Whether the widget has a pre-defined function
-		 *
-		 * @return {boolean}
-		 */
-		const showFunctionSelector = computed( () => !props.functionZid );
-
-		/**
 		 * Returns whether the selected Function has any implementations
 		 * and hence it can be run.
 		 *
 		 * @return {boolean}
 		 */
 		const hasImplementations = computed( () => implementations.value.length > 0 );
+
+		// UI display
+		/**
+		 * Whether the widget has a pre-defined function
+		 *
+		 * @return {boolean}
+		 */
+		const showFunctionSelector = computed( () => !props.functionZid );
 
 		/**
 		 * Returns whether the function can be run, which can only happen
@@ -305,6 +303,14 @@ module.exports = exports = defineComponent( {
 		const forImplementation = computed( () => props.contentType === Constants.Z_IMPLEMENTATION );
 
 		/**
+		 * Returns the API error returned by the orchestrator
+		 *
+		 * @return {Object}
+		 */
+		const apiErrors = computed( () => store.getErrors( Constants.STORED_OBJECTS.RESPONSE ) );
+
+		// Helpers
+		/**
 		 * Returns the ZIDs of the arguments for the given functionZid
 		 *
 		 * @param {string} functionZid
@@ -326,14 +332,7 @@ module.exports = exports = defineComponent( {
 			return [ Constants.STORED_OBJECTS.FUNCTION_CALL, inputKey ].join( '.' );
 		}
 
-		/**
-		 * Clears the orchestration result object
-		 */
-		function clearResult() {
-			hasResult.value = false;
-			running.value = false;
-		}
-
+		// Initialization
 		/**
 		 * Fetches a function and its argument types
 		 *
@@ -344,6 +343,36 @@ module.exports = exports = defineComponent( {
 			return store.fetchZids( { zids: [ functionZid ] } ).then( () => {
 				const inputTypeZids = getInputTypeZids( functionZid );
 				return store.fetchZids( { zids: inputTypeZids } );
+			} );
+		}
+
+		/**
+		 * Loads a shared function call from the prop
+		 */
+		function loadSharedFunctionCall() {
+			// Get the function ZID from the shared function call
+			const functionZid = getZFunctionCallFunctionId( props.sharedFunctionCall );
+
+			// Extract all ZIDs from the function call
+			const allZids = extractZIDs( props.sharedFunctionCall );
+
+			// Set the entire function call object in the store at once
+			store.setJsonObject( {
+				namespace: Constants.STORED_OBJECTS.FUNCTION_CALL,
+				zobject: canonicalToHybrid( props.sharedFunctionCall )
+			} );
+
+			// Fetch all ZIDs mentioned in the function call, plus the function and argument types
+			Promise.all( [
+				store.fetchZids( { zids: allZids } ),
+				fetchFunctionAndArguments( functionZid )
+			] ).then( () => {
+				isLoading.value = false;
+
+				// Always auto-run when loading from shared URL
+				if ( canRunFunction.value ) {
+					waitAndCallFunction();
+				}
 			} );
 		}
 
@@ -393,42 +422,21 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Function execution
+		/**
+		 * Clears the orchestration result object
+		 */
+		function clearResult() {
+			hasResult.value = false;
+			running.value = false;
+		}
+
 		/**
 		 * Waits for running parsers to return and persist
 		 * changes before going ahead and running the function call
 		 */
 		function waitAndCallFunction() {
 			store.waitForRunningParsers.then( () => callFunction() );
-		}
-
-		/**
-		 * Loads a shared function call from the prop
-		 */
-		function loadSharedFunctionCall() {
-			// Get the function ZID from the shared function call
-			const functionZid = getZFunctionCallFunctionId( props.sharedFunctionCall );
-
-			// Extract all ZIDs from the function call
-			const allZids = extractZIDs( props.sharedFunctionCall );
-
-			// Set the entire function call object in the store at once
-			store.setJsonObject( {
-				namespace: Constants.STORED_OBJECTS.FUNCTION_CALL,
-				zobject: canonicalToHybrid( props.sharedFunctionCall )
-			} );
-
-			// Fetch all ZIDs mentioned in the function call, plus the function and argument types
-			Promise.all( [
-				store.fetchZids( { zids: allZids } ),
-				fetchFunctionAndArguments( functionZid )
-			] ).then( () => {
-				isLoading.value = false;
-
-				// Always auto-run when loading from shared URL
-				if ( canRunFunction.value ) {
-					waitAndCallFunction();
-				}
-			} );
 		}
 
 		/**
@@ -491,7 +499,7 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
-		// Watchers
+		// Watch
 		watch( () => props.functionZid, () => {
 			initialize( props.functionZid );
 		} );

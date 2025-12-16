@@ -44,11 +44,14 @@ module.exports = exports = defineComponent( {
 	},
 	setup( props ) {
 		const i18n = inject( 'i18n' );
+
+		// State
 		const isExpanded = ref( false );
 		const isExpandable = ref( false );
-		let throttledResizeHandler = null;
 		const descriptionComponent = ref( null );
+		let throttledResizeHandler = null;
 
+		// Expansion actions
 		/**
 		 * Checks if the description is clamped and updates `isExpandable`.
 		 */
@@ -64,6 +67,7 @@ module.exports = exports = defineComponent( {
 			isExpanded.value = !isExpanded.value;
 		}
 
+		// Watch
 		/**
 		 * Re-checks clamping when the description changes.
 		 * This is needed because on mounted the scrollHeight and clientHeight might be 0
@@ -72,6 +76,7 @@ module.exports = exports = defineComponent( {
 			checkClamped();
 		} );
 
+		// Lifecycle
 		/**
 		 * Sets up resize handling and checks clamping on mount.
 		 */

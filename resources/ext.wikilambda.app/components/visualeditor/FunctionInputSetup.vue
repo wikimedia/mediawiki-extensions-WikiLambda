@@ -74,10 +74,14 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const icon = wikifunctionsIconSvg;
+
+		// State
 		const inputFields = ref( [] );
 		const allTypesFetched = ref( false );
 
+		// Function data
 		/**
 		 * Returns the VisualEditor function ID.
 		 *
@@ -98,17 +102,6 @@ module.exports = exports = defineComponent( {
 			// TODO (T406155): how to open the link in a new tab using MediaWiki translations?
 			.replace( '<a ', '<a target="_blank" rel="noopener" ' )
 		);
-
-		/**
-		 * Returns the message notifying about missing content in the user language
-		 * with a link to the Wikifunctions page for the function.
-		 *
-		 * @return {string}
-		 */
-		const missingContentMsg = computed( () => i18n(
-			'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
-			functionZid.value
-		).parse() );
 
 		/**
 		 * Returns the LabelData object for the function name
@@ -138,6 +131,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const functionOutputType = computed( () => store.getOutputTypeOfFunctionZid( functionZid.value ) );
 
+		// Function call payload
 		/**
 		 * Prepares the payload for the function call.
 		 *
@@ -151,6 +145,7 @@ module.exports = exports = defineComponent( {
 			} ) )
 		} ) );
 
+		// Validation
 		/**
 		 * Checks if all input fields are valid.
 		 *
@@ -158,6 +153,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const areInputFieldsValid = computed( () => inputFields.value.every( ( field ) => field.isValid ) );
 
+		// Content status
 		/**
 		 * Returns whether any of the shown multilingual labels
 		 * are missing in the user language. Will determine whether
@@ -170,6 +166,44 @@ module.exports = exports = defineComponent( {
 			!functionDescription.value || !functionDescription.value.isUserLang ||
 			!inputFields.value.every( ( item ) => item.labelData.isUserLang )
 		) );
+
+		/**
+		 * Returns the message notifying about missing content in the user language
+		 * with a link to the Wikifunctions page for the function.
+		 *
+		 * @return {string}
+		 */
+		const missingContentMsg = computed( () => i18n(
+			'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
+			functionZid.value
+		).parse() );
+
+		// Input field initialisation
+		/**
+		 * Builds a single input field object from an argument definition and value.
+		 *
+		 * @param {Object} arg - The argument definition.
+		 * @param {string} value - The value for the field.
+		 * @return {Object} The input field object.
+		 */
+		const buildInputField = ( arg, value ) => ( {
+			inputKey: arg[ Constants.Z_ARGUMENT_KEY ],
+			inputType: arg[ Constants.Z_ARGUMENT_TYPE ],
+			labelData: store.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
+			value,
+			hasChanged: false
+		} );
+
+		/**
+		 * Pads veFunctionParams so it's at least as long as functionInputs.
+		 */
+		function syncFunctionParamsLength() {
+			if ( functionInputs.value.length > store.getVEFunctionParams.length ) {
+				for ( let i = store.getVEFunctionParams.length; i < functionInputs.value.length; i++ ) {
+					store.setVEFunctionParam( i, '' );
+				}
+			}
+		}
 
 		/**
 		 * Initializes the function input fields with the current Visual Editor function params.
@@ -202,34 +236,7 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
-		/**
-		 * Pads veFunctionParams so it's at least as long as functionInputs.
-		 */
-		function syncFunctionParamsLength() {
-			if ( functionInputs.value.length > store.getVEFunctionParams.length ) {
-				for ( let i = store.getVEFunctionParams.length; i < functionInputs.value.length; i++ ) {
-					store.setVEFunctionParam( i, '' );
-				}
-			}
-		}
-
-		/**
-		 * Builds a single input field object from an argument definition and value.
-		 *
-		 * @param {Object} arg - The argument definition.
-		 * @param {string} value - The value for the field.
-		 * @return {Object} The input field object.
-		 */
-		function buildInputField( arg, value ) {
-			return {
-				inputKey: arg[ Constants.Z_ARGUMENT_KEY ],
-				inputType: arg[ Constants.Z_ARGUMENT_TYPE ],
-				labelData: store.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ),
-				value,
-				hasChanged: false
-			};
-		}
-
+		// Field actions
 		/**
 		 * Updates the value of a specific input field in the Visual Editor.
 		 *
@@ -262,6 +269,19 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Show validation message if:
+		 * * is not a new parameter setup screen (initialized with values)
+		 * * is blank param screen and the field has changed
+		 *
+		 * @param {boolean} hasChanged
+		 * @return {boolean}
+		 */
+		function showValidation( hasChanged ) {
+			return !store.isNewParameterSetup || hasChanged;
+		}
+
+		// Data fetching
+		/**
 		 * Fetches the ZIDs for all input types and the output type.
 		 * Show a loading state in VisualEditor while fetching.
 		 *
@@ -274,32 +294,22 @@ module.exports = exports = defineComponent( {
 				outputType
 			];
 
-			if ( zidsToFetch.length > 0 ) {
-				emit( 'loading-start' );
-
-				store.fetchZids( { zids: zidsToFetch } )
-					.then( () => {
-						allTypesFetched.value = true;
-					} )
-					.finally( () => {
-						emit( 'loading-end' );
-					} );
+			if ( !zidsToFetch.length ) {
+				return;
 			}
+
+			emit( 'loading-start' );
+
+			store.fetchZids( { zids: zidsToFetch } )
+				.then( () => {
+					allTypesFetched.value = true;
+				} )
+				.finally( () => {
+					emit( 'loading-end' );
+				} );
 		}
 
-		/**
-		 * Show validation message if:
-		 * * is not a new parameter setup screen (initialized with values)
-		 * * is blank param screen and the field has changed
-		 *
-		 * @param {boolean} hasChanged
-		 * @return {boolean}
-		 */
-		function showValidation( hasChanged ) {
-			return !store.isNewParameterSetup || hasChanged;
-		}
-
-		// Watchers
+		// Watch
 		/**
 		 * Watches the form validity and updates the VisualEditor validity state
 		 * so the submit button can be enabled/disabled depending on the state.
@@ -318,7 +328,6 @@ module.exports = exports = defineComponent( {
 		watch( functionInputs, ( newInputs ) => {
 			fetchInputAndOutputTypes( newInputs, functionOutputType.value );
 		}, { immediate: true } );
-
 		watch( functionOutputType, ( newOutputType ) => {
 			fetchInputAndOutputTypes( functionInputs.value, newOutputType );
 		}, { immediate: true } );

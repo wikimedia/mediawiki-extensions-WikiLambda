@@ -191,6 +191,7 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const { hasFieldErrors, hasChildErrors } = useError( { keyPath: props.keyPath } );
 
+		// Expansion state
 		/**
 		 * Expanded is a property of the key-value and it
 		 * passes down only into its direct child. Every
@@ -199,14 +200,13 @@ module.exports = exports = defineComponent( {
 		 */
 		const expanded = ref( props.defaultExpanded );
 
-		// Computed properties
 		/**
 		 * Track whether this component has been auto-expanded due to errors.
 		 * This prevents forcing expansion after the user manually collapses.
 		 */
 		const hasBeenAutoExpanded = ref( false );
 
-		// Computed properties
+		// Key label
 		/**
 		 * Returns whether to show the key label or not
 		 *
@@ -249,6 +249,7 @@ module.exports = exports = defineComponent( {
 			return store.getLabelData( key.value );
 		} );
 
+		// Type data
 		/**
 		 * Returns the type of the object represented in this node,
 		 * in string format, and without arguments if it's a function call.
@@ -279,6 +280,7 @@ module.exports = exports = defineComponent( {
 			return key.value ? store.getExpectedTypeOfKey( key.value ) : undefined;
 		} );
 
+		// Parent type data
 		/**
 		 * Returns the expected type of the parent key. If the key is of
 		 * a typed list item, it returns the list item expected type.
@@ -299,6 +301,7 @@ module.exports = exports = defineComponent( {
 			return parentKey.value ? store.getExpectedTypeOfKey( parentKey.value ) : undefined;
 		} );
 
+		// Layout configuration
 		/**
 		 * Returns the layout configuration for the object value.
 		 * The layout config contains the following config properties:
@@ -397,6 +400,7 @@ module.exports = exports = defineComponent( {
 			return layout;
 		} );
 
+		// Component rendering
 		/**
 		 * Returns the name of the child component to render, depending on:
 		 * * the layoutConfig, which depends on the type
@@ -425,6 +429,7 @@ module.exports = exports = defineComponent( {
 			return 'wl-z-object-key-value-set';
 		} );
 
+		// Expansion display and actions
 		/**
 		 * Whether to show the expansion toggle icon (chevron) or a bullet icon.
 		 *
@@ -457,13 +462,17 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Whether the main block is preceded by the button and
-		 * indentation column.
+		 * Sets the expanded flag to a given value. If the type
+		 * cannot be expanded (because it's terminal), it persistently
+		 * sets the expanded flag to false.
 		 *
-		 * @return {boolean}
+		 * @param {boolean} value
 		 */
-		const hasPreColumn = computed( () => !props.skipIndent || hasToggle.value );
+		function setExpanded( value ) {
+			expanded.value = value;
+		}
 
+		// Edit state
 		/**
 		 * Returns whether the key-value should be in disabled edit mode
 		 *
@@ -523,6 +532,15 @@ module.exports = exports = defineComponent( {
 			);
 		} );
 
+		// UI display
+		/**
+		 * Whether the main block is preceded by the button and
+		 * indentation column.
+		 *
+		 * @return {boolean}
+		 */
+		const hasPreColumn = computed( () => !props.skipIndent || hasToggle.value );
+
 		/**
 		 * Returns the id value for the key-value div
 		 *
@@ -530,8 +548,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const idValue = computed( () => props.keyPath.replace( /\./g, '-' ) );
 
-		// Methods
-
+		// Helpers
 		/**
 		 * If the current object is the main object, set the dirty flag to true.
 		 */
@@ -572,6 +589,7 @@ module.exports = exports = defineComponent( {
 			document.getElementById( 'firstHeading' ).textContent = pageTitle;
 		}
 
+		// Type actions
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a type. To set a new type, the mutations must:
@@ -637,6 +655,7 @@ module.exports = exports = defineComponent( {
 			setDirtyIfMainObject();
 		}
 
+		// Value actions
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a value.
@@ -751,6 +770,7 @@ module.exports = exports = defineComponent( {
 			setDirtyIfMainObject();
 		}
 
+		// List item actions
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a typed list and the user adds a new item.
@@ -805,6 +825,7 @@ module.exports = exports = defineComponent( {
 			setDirtyIfMainObject();
 		}
 
+		// Function call argument actions
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
 		 * is a function call and the user adds a new argument.
@@ -828,17 +849,7 @@ module.exports = exports = defineComponent( {
 			setDirtyIfMainObject();
 		}
 
-		/**
-		 * Sets the expanded flag to a given value. If the type
-		 * cannot be expanded (because it's terminal), it persistently
-		 * sets the expanded flag to false.
-		 *
-		 * @param {boolean} value
-		 */
-		function setExpanded( value ) {
-			expanded.value = value;
-		}
-
+		// Watch
 		/**
 		 * Auto-expand when field errors appear (only the first time)
 		 *
@@ -863,6 +874,7 @@ module.exports = exports = defineComponent( {
 			}
 		} );
 
+		// Lifecycle
 		onBeforeUnmount( () => {
 			store.clearErrors( props.keyPath, true );
 		} );

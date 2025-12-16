@@ -76,10 +76,12 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	setup( props ) {
+		// Constants
 		const subjectKey = Constants.Z_WIKIDATA_STATEMENT_SUBJECT;
 		const predicateKey = Constants.Z_WIKIDATA_STATEMENT_PREDICATE;
 		const valueKey = Constants.Z_WIKIDATA_STATEMENT_VALUE;
 
+		// Statement values
 		/**
 		 * Get subject value (Z6003K1)
 		 */

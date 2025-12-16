@@ -222,12 +222,15 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { copyToClipboard, showValueOrCopiedMessage, getCopiedText } = useClipboard();
 
-		const currentFunctionZid = ref( props.functionZid );
+		// Constants
 		const functionType = Constants.Z_FUNCTION;
 		const implementationCode = Constants.Z_IMPLEMENTATION_CODE;
 		const resetIcon = icons.cdxIconHistory;
 
-		// Computed properties
+		// State
+		const currentFunctionZid = ref( props.functionZid );
+
+		// Function data
 		/**
 		 * Returns the LabelData object for the selected function Zid
 		 *
@@ -241,28 +244,6 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		const functionObject = computed( () => store.getStoredObject( currentFunctionZid.value ) );
-
-		/**
-		 * Returns the zid, type and LabelData object for each function
-		 * argument given a selected function Zid
-		 *
-		 * @return {Array}
-		 */
-		const functionArguments = computed( () => {
-			const args = store.getInputsOfFunctionZid( currentFunctionZid.value );
-
-			return args.map( ( arg ) => {
-				const key = arg[ Constants.Z_ARGUMENT_KEY ];
-				const type = arg[ Constants.Z_ARGUMENT_TYPE ];
-				const label = store.getLabelData( key );
-
-				return {
-					key,
-					label,
-					type
-				};
-			} );
-		} );
 
 		/**
 		 * Returns whether the function exists and has been fetched
@@ -295,6 +276,29 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Returns the zid, type and LabelData object for each function
+		 * argument given a selected function Zid
+		 *
+		 * @return {Array}
+		 */
+		const functionArguments = computed( () => {
+			const args = store.getInputsOfFunctionZid( currentFunctionZid.value );
+
+			return args.map( ( arg ) => {
+				const key = arg[ Constants.Z_ARGUMENT_KEY ];
+				const type = arg[ Constants.Z_ARGUMENT_TYPE ];
+				const label = store.getLabelData( key );
+
+				return {
+					key,
+					label,
+					type
+				};
+			} );
+		} );
+
+		// UI display
+		/**
 		 * Returns whether the reset button must be disabled (the
 		 * selected function is the same as the initialized function)
 		 *
@@ -302,7 +306,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const resetButtonDisabled = computed( () => currentFunctionZid.value === props.functionZid );
 
-		// Methods
+		// Actions
 		/**
 		 * Updates the selected function to the provided Zid.
 		 *
@@ -326,7 +330,7 @@ module.exports = exports = defineComponent( {
 			window.open( functionUrl.value, '_blank' );
 		}
 
-		// Watchers
+		// Watch
 		watch( () => props.functionZid, () => {
 			resetFunction();
 		} );

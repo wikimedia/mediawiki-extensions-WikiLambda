@@ -70,34 +70,16 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
-		// Use ZObject utilities composable
 		const { getZBooleanValue } = useZObject( { keyPath: props.keyPath } );
-
-		// Use main store
 		const store = useMainStore();
 
-		// Computed properties
+		// Selected value
 		/**
 		 * Returns the boolean value from the object.
 		 *
 		 * @return {string}
 		 */
 		const value = computed( () => getZBooleanValue( props.objectValue ) );
-
-		/**
-		 * Sets the boolean value by emitting a setValue event.
-		 *
-		 * @param {string} newValue
-		 */
-		function setValue( newValue ) {
-			emit( 'set-value', {
-				keyPath: [
-					Constants.Z_BOOLEAN_IDENTITY,
-					Constants.Z_REFERENCE_ID
-				],
-				value: newValue
-			} );
-		}
 
 		/**
 		 * Returns the LabelData object for the selected value of the boolean
@@ -116,6 +98,7 @@ module.exports = exports = defineComponent( {
 			zid: value.value
 		} ) );
 
+		// Radio choices
 		/**
 		 * Returns the radio choices for True and False, with their value
 		 * and their LabelData object
@@ -132,6 +115,21 @@ module.exports = exports = defineComponent( {
 				value: Constants.Z_BOOLEAN_FALSE
 			}
 		] );
+
+		/**
+		 * Sets the boolean value by emitting a setValue event.
+		 *
+		 * @param {string} newValue
+		 */
+		function setValue( newValue ) {
+			emit( 'set-value', {
+				keyPath: [
+					Constants.Z_BOOLEAN_IDENTITY,
+					Constants.Z_REFERENCE_ID
+				],
+				value: newValue
+			} );
+		}
 
 		return {
 			radioChoices,

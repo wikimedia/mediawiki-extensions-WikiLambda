@@ -113,12 +113,9 @@ module.exports = exports = defineComponent( {
 		const { getZTesterFunctionZid } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Data
+		// Function Selection
 		const functionKey = Constants.Z_TESTER_FUNCTION;
-		const callKey = Constants.Z_TESTER_CALL;
-		const validationKey = Constants.Z_TESTER_VALIDATION;
 
-		// Computed properties
 		/**
 		 * Returns the LabelData object for the test Function/Z20K1 key
 		 *
@@ -143,6 +140,9 @@ module.exports = exports = defineComponent( {
 		 */
 		const storedFunction = computed( () => store.getStoredObject( functionZid.value ) );
 
+		// Function Call
+		const callKey = Constants.Z_TESTER_CALL;
+
 		/**
 		 * Returns the label data for the tester call key
 		 *
@@ -151,27 +151,46 @@ module.exports = exports = defineComponent( {
 		const testerCallLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_CALL ) );
 
 		/**
+		 * Initializes Test call/Z20K2 with a function call to the given functionZid
+		 */
+		function initializeTestCall() {
+			if ( store.isCreateNewPage && !!functionZid.value ) {
+				// Set test call function call Zid
+				emit( 'set-value', {
+					keyPath: [
+						Constants.Z_TESTER_CALL,
+						Constants.Z_FUNCTION_CALL_FUNCTION,
+						Constants.Z_REFERENCE_ID
+					],
+					value: functionZid.value
+				} );
+				// Set test call function arguments
+				store.setFunctionCallArguments( {
+					keyPath: [ ...props.keyPath.split( '.' ), Constants.Z_TESTER_CALL ],
+					functionZid: functionZid.value
+				} );
+				// Get function output type and dismiss anything that's not a reference
+				const outputType = storedFunction.value[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_RETURN_TYPE ];
+				if ( !outputType || ( typeof outputType !== 'string' ) || !isValidZidFormat( outputType ) ) {
+					return;
+				}
+				store.fetchZids( { zids: [ outputType ] } ).then( () => {
+					initializeTestValidation( outputType );
+				} );
+			}
+		}
+
+		// Function Validation
+		const validationKey = Constants.Z_TESTER_VALIDATION;
+
+		/**
 		 * Returns the label data for the tester validation key
 		 *
 		 * @return {LabelData}
 		 */
 		const testerValidationLabelData = computed( () => store.getLabelData( Constants.Z_TESTER_VALIDATION ) );
 
-		/**
-		 * Returns whether tester call and validation sections should be expanded
-		 * by default. This is true only when creating a brand new tester so users
-		 * can immediately edit both areas.
-		 *
-		 * @return {boolean}
-		 */
-		const defaultExpanded = computed( () => {
-			if ( !store.isCreateNewPage ) {
-				return false;
-			}
-			return true;
-		} );
-
-		// Methods
 		/**
 		 * Initializes Test validator/Z20K3 with a function call to the equality function
 		 * of the type returned by the Test call/Z20K2, which is passed as input parameter.
@@ -209,38 +228,17 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		// UI display
 		/**
-		 * Initializes Test call/Z20K2 with a function call to the given functionZid
+		 * Returns whether tester call and validation sections should be expanded
+		 * by default. This is true only when creating a brand new tester so users
+		 * can immediately edit both areas.
+		 *
+		 * @return {boolean}
 		 */
-		function initializeTestCall() {
-			if ( store.isCreateNewPage && !!functionZid.value ) {
-				// Set test call function call Zid
-				emit( 'set-value', {
-					keyPath: [
-						Constants.Z_TESTER_CALL,
-						Constants.Z_FUNCTION_CALL_FUNCTION,
-						Constants.Z_REFERENCE_ID
-					],
-					value: functionZid.value
-				} );
-				// Set test call function arguments
-				store.setFunctionCallArguments( {
-					keyPath: [ ...props.keyPath.split( '.' ), Constants.Z_TESTER_CALL ],
-					functionZid: functionZid.value
-				} );
-				// Get function output type and dismiss anything that's not a reference
-				const outputType = storedFunction.value[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_RETURN_TYPE ];
-				if ( !outputType || ( typeof outputType !== 'string' ) || !isValidZidFormat( outputType ) ) {
-					return;
-				}
-				store.fetchZids( { zids: [ outputType ] } ).then( () => {
-					initializeTestValidation( outputType );
-				} );
-			}
-		}
+		const defaultExpanded = computed( () => !!store.isCreateNewPage );
 
-		// Watchers
+		// Watch
 		watch( storedFunction, ( newFunction ) => {
 			if ( newFunction ) {
 				initializeTestCall();

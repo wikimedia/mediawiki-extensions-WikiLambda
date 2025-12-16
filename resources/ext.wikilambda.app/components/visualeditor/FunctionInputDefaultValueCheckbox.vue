@@ -42,6 +42,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 
+		// Checkbox label
 		/**
 		 * Returns the appropriate label for the checkbox based on the input type
 		 *
@@ -61,6 +62,7 @@ module.exports = exports = defineComponent( {
 			}
 		} );
 
+		// Actions
 		/**
 		 * Handles checkbox change and emits the new state
 		 *

@@ -67,9 +67,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		const showMetadata = ref( false );
+		// Constants
 		const errorId = Constants.ERROR_IDS.TEST_RESULTS;
 
+		// Tester status
 		/**
 		 * Returns whether the tester passed
 		 *
@@ -98,7 +99,6 @@ module.exports = exports = defineComponent( {
 			}
 			return Constants.TESTER_STATUS.RUNNING;
 		} );
-
 		/**
 		 * Returns the status message
 		 *
@@ -132,6 +132,9 @@ module.exports = exports = defineComponent( {
 			// This will be used both for ready and running statuses
 			return icons.cdxIconAlert;
 		} );
+
+		// Metadata dialog
+		const showMetadata = ref( false );
 
 		/**
 		 * Returns the tester metadata if stored, else returns undefined

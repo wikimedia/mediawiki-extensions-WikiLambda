@@ -89,8 +89,10 @@ module.exports = exports = defineComponent( {
 	setup( props ) {
 		const i18n = inject( 'i18n' );
 
+		// State
 		const showRawJson = ref( false );
 
+		// Value data
 		/**
 		 * Returns whether the value is a zobject (not just a string)
 		 *

@@ -108,6 +108,7 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { getExpectedTypeOfKey, getLabelData } = storeToRefs( store );
 
+		// Constants
 		/**
 		 * Returns the zids to be excluded from the type selector.
 		 * for now, we exclude the Wikidata enum type.
@@ -116,7 +117,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const excludeZids = [ Constants.Z_WIKIDATA_ENUM, Constants.Z_OBJECT_ENUM ];
 
-		// Computed properties
+		// Selected type data
 		/**
 		 * Returns the string type (mode) of the selected value,
 		 * which can be a Reference/Z9 or a Function call/Z7.
@@ -151,7 +152,7 @@ module.exports = exports = defineComponent( {
 			[] :
 			getZFunctionCallArgumentKeys( props.objectValue ) );
 
-		// Methods
+		// Actions
 		/**
 		 * Clears the type selector and persist a blank reference value
 		 */
@@ -204,10 +205,8 @@ module.exports = exports = defineComponent( {
 		}
 
 		return {
-		// Reactive store data
 			getExpectedTypeOfKey,
 			getLabelData,
-			// Other data
 			excludeZids,
 			genericTypeArgKeys,
 			selectedIsTerminal,

@@ -83,10 +83,12 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { submitInteraction } = useEventLog();
 
+		// Dialog state
 		const leaveEditorCallback = ref( undefined );
 		const showLeaveEditorDialog = ref( false );
 		const showPublishDialog = ref( false );
 
+		// Publish button state
 		/**
 		 * If 'oldid' or 'undo' exist in the query (and are not empty), return true.
 		 * If true, this enables the Publish button without needing an event.
@@ -98,6 +100,7 @@ module.exports = exports = defineComponent( {
 			( typeof store.getQueryParams.undo === 'string' && store.getQueryParams.undo.trim() !== '' )
 		) ) );
 
+		// Dialog actions
 		/**
 		 * Handle cancel event from Publish dialog
 		 */
@@ -112,6 +115,7 @@ module.exports = exports = defineComponent( {
 			showLeaveEditorDialog.value = false;
 		}
 
+		// Publish actions
 		/**
 		 * Waits for running parsers to return and persist
 		 * changes before going ahead and running the function call
@@ -134,6 +138,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Warnings
 		/**
 		 * Check if there are any empty reference warnings in the errors.
 		 *
@@ -161,6 +166,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Navigation handling
 		/**
 		 * Handle click event on Cancel button: opens
 		 * the leave editor confirmation dialog.
@@ -261,6 +267,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Event listeners
 		/**
 		 * Add event listeners.
 		 */

@@ -27,7 +27,7 @@
 						:model-value="searchTerm"
 						data-testid="search-language"
 						class="ext-wikilambda-app-z-multilingual-string-dialog__search-input"
-						:placeholder="searchPlaceholder"
+						:placeholder="i18n( 'wikilambda-monolingual-string-list-dialog-search-placeholder' ).text()"
 						@update:model-value="updateSearchTerm"
 						@focus="showSearchCancel = true"
 					></cdx-search-input>
@@ -137,12 +137,7 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		const searchTerm = ref( '' );
-		const showSearchCancel = ref( false );
-		const lookupResults = ref( [] );
-		let lookupAbortController = null;
-
-		// Computed properties
+		// Data access
 		/**
 		 * Returns true if the component is in the main namespace (editable mode).
 		 *
@@ -150,174 +145,9 @@ module.exports = exports = defineComponent( {
 		 */
 		const isMainObject = computed( () => props.keyPath.startsWith( Constants.STORED_OBJECTS.MAIN ) );
 
-		/**
-		 * Returns suggested language items when there are no local items available.
-		 * These are common languages that users can add to their multilingual string.
-		 * In read-only mode (non-main namespace), only returns items already in the list.
-		 *
-		 * @return {Array} Array of suggested language items
-		 */
-		const getSuggestedItems = computed( () => Constants.SUGGESTIONS.LANGUAGES
-			.map( ( langZid ) => {
-				const langLabelData = store.getLabelData( langZid );
-				const listItem = props.items.find(
-					( itemData ) => itemData.langZid === langZid
-				);
-				const value = listItem ? listItem.value : '';
-				const isInList = !!listItem;
-				const isInVisibleList = listItem ? listItem.isInVisibleList : false;
-
-				return {
-					langZid,
-					langLabelData,
-					isInList,
-					isInVisibleList,
-					value,
-					hasValue: false
-				};
-			} )
-			.filter( ( item ) => {
-				if ( !isMainObject.value && !item.isInList ) {
-					return false;
-				}
-				return true;
-			} ) );
-
-		/**
-		 * Returns the list of items that are not already visible.
-		 *
-		 * @return {Array} Array of available items
-		 */
-		const getAvailableLanguages = computed( () => props.items.filter( ( item ) => !item.isInVisibleList ) );
-
-		/**
-		 * Returns the items available for the dialog.
-		 *
-		 * @return {Array} Array of dialog items
-		 */
-		const getDialogItems = computed( () => {
-			const sortByLabel = createLabelComparator(
-				store.getUserLangCode,
-				( item ) => item.langLabelData.label
-			);
-
-			return getAvailableLanguages.value
-				.map( ( { langZid, value = '' } ) => {
-					const isInList = true; // All the items are already in the list
-					const isInVisibleList = false; // All Items are not visible in the list, we just filtered them out
-					const langLabelData = store.getLabelData( langZid );
-					return {
-						langZid,
-						langLabelData,
-						isInList,
-						isInVisibleList,
-						value,
-						hasValue: !!value
-					};
-				} )
-				.sort( sortByLabel );
-		} );
-
-		/**
-		 * Returns grouped language items for local languages.
-		 * Groups are: "Available" (if dialog items exist) or "Suggested" (if no dialog items).
-		 *
-		 * @return {Array}
-		 */
-		const localItems = computed( () => {
-			const dialogItems = getDialogItems.value;
-			const suggestedItems = getSuggestedItems.value;
-
-			const groups = [];
-
-			if ( dialogItems.length > 0 ) {
-				// Add local items group
-				groups.push( {
-					id: 'available',
-					title: i18n( 'wikilambda-monolingual-string-list-dialog-available' ).text(),
-					items: dialogItems
-				} );
-			} else if ( suggestedItems.length > 0 ) {
-				// Add suggested languages group
-				groups.push( {
-					id: 'suggested',
-					title: i18n( 'wikilambda-monolingual-string-list-dialog-suggested' ).text(),
-					items: suggestedItems
-				} );
-			}
-
-			return groups;
-		} );
-
-		/**
-		 * Returns grouped language items for both local languages and search results.
-		 * For local languages, groups are: "Available" or "Suggested".
-		 * For search results, returns a single group without a title.
-		 *
-		 * @return {Array}
-		 */
-		const itemGroups = computed( () => {
-			// If we have search results, return them as a single group without a title
-			if ( lookupResults.value.length > 0 ) {
-				return [ {
-					id: 'search-results',
-					title: '',
-					items: lookupResults.value
-				} ];
-			}
-
-			// Otherwise, return grouped local languages
-			return localItems.value;
-		} );
-
-		/**
-		 * Returns the i18n message for the language search box placeholder
-		 *
-		 * @return {string}
-		 */
-		const searchPlaceholder = computed( () => i18n( 'wikilambda-monolingual-string-list-dialog-search-placeholder' ).text() );
-
-		// Methods
-		/**
-		 * Closes the dialog and resets its state.
-		 * Clears the search term, lookup results, and emits the 'close-dialog'
-		 * event to notify the parent component that the dialog has been closed.
-		 */
-		function closeDialog() {
-			searchTerm.value = '';
-			lookupResults.value = [];
-			showSearchCancel.value = false;
-			emit( 'close-dialog' );
-		}
-
-		/**
-		 * Navigates to the edit page when in read mode.
-		 * Adds the 'action=edit' parameter to the current URL and redirects.
-		 * This allows users to switch to edit mode to add new languages.
-		 * The hash will be used to scroll to the relevant multilingual string component.
-		 */
-		function navigateToEdit() {
-			const url = urlUtils.generateEditUrl( {
-				langCode: store.getUserLangCode,
-				zid: store.getCurrentZObjectId,
-				hash: props.keyPath.replace( /\./g, '-' )
-			} );
-
-			// Navigate to the edit page with hash for automatic scrolling
-			window.location.href = url;
-		}
-
-		/**
-		 * Emits the 'add-language' event to notify the parent component.
-		 * This event triggers the addition of a new monolingual text item
-		 * to the typed list. After emitting, the dialog is closed.
-		 *
-		 * @param {string} langZid - The ZID of the language to add
-		 */
-		function addLanguage( langZid ) {
-			emit( 'add-language', langZid );
-			closeDialog();
-		}
+		// Lookup
+		const lookupResults = ref( [] );
+		let lookupAbortController = null;
 
 		/**
 		 * Performs a language lookup search and formats the results.
@@ -399,6 +229,10 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		// Search
+		const searchTerm = ref( '' );
+		const showSearchCancel = ref( false );
+
 		/**
 		 * Updates the search term and triggers search results update.
 		 * When a new search term is entered, it clears previous results
@@ -424,6 +258,169 @@ module.exports = exports = defineComponent( {
 			searchTerm.value = '';
 			updateSearchTerm( '' );
 			showSearchCancel.value = false;
+		}
+
+		// Language Items
+		/**
+		 * Returns the list of items that are not already visible.
+		 *
+		 * @return {Array} Array of available items
+		 */
+		const getAvailableLanguages = computed( () => props.items.filter( ( item ) => !item.isInVisibleList ) );
+
+		/**
+		 * Returns the items available for the dialog.
+		 *
+		 * @return {Array} Array of dialog items
+		 */
+		const getDialogItems = computed( () => {
+			const sortByLabel = createLabelComparator(
+				store.getUserLangCode,
+				( item ) => item.langLabelData.label
+			);
+
+			return getAvailableLanguages.value
+				.map( ( { langZid, value = '' } ) => {
+					const isInList = true; // All the items are already in the list
+					const isInVisibleList = false; // All Items are not visible in the list, we just filtered them out
+					const langLabelData = store.getLabelData( langZid );
+					return {
+						langZid,
+						langLabelData,
+						isInList,
+						isInVisibleList,
+						value,
+						hasValue: !!value
+					};
+				} )
+				.sort( sortByLabel );
+		} );
+
+		/**
+		 * Returns suggested language items when there are no local items available.
+		 * These are common languages that users can add to their multilingual string.
+		 * In read-only mode (non-main namespace), only returns items already in the list.
+		 *
+		 * @return {Array} Array of suggested language items
+		 */
+		const getSuggestedItems = computed( () => Constants.SUGGESTIONS.LANGUAGES
+			.map( ( langZid ) => {
+				const langLabelData = store.getLabelData( langZid );
+				const listItem = props.items.find(
+					( itemData ) => itemData.langZid === langZid
+				);
+				const value = listItem ? listItem.value : '';
+				const isInList = !!listItem;
+				const isInVisibleList = listItem ? listItem.isInVisibleList : false;
+
+				return {
+					langZid,
+					langLabelData,
+					isInList,
+					isInVisibleList,
+					value,
+					hasValue: false
+				};
+			} )
+			.filter( ( item ) => {
+				if ( !isMainObject.value && !item.isInList ) {
+					return false;
+				}
+				return true;
+			} ) );
+
+		/**
+		 * Returns grouped language items for local languages.
+		 * Groups are: "Available" (if dialog items exist) or "Suggested" (if no dialog items).
+		 *
+		 * @return {Array}
+		 */
+		const localItems = computed( () => {
+			const dialogItems = getDialogItems.value;
+			const suggestedItems = getSuggestedItems.value;
+
+			const groups = [];
+
+			if ( dialogItems.length > 0 ) {
+				// Add local items group
+				groups.push( {
+					id: 'available',
+					title: i18n( 'wikilambda-monolingual-string-list-dialog-available' ).text(),
+					items: dialogItems
+				} );
+			} else if ( suggestedItems.length > 0 ) {
+				// Add suggested languages group
+				groups.push( {
+					id: 'suggested',
+					title: i18n( 'wikilambda-monolingual-string-list-dialog-suggested' ).text(),
+					items: suggestedItems
+				} );
+			}
+
+			return groups;
+		} );
+
+		/**
+		 * Returns grouped language items for both local languages and search results.
+		 * For local languages, groups are: "Available" or "Suggested".
+		 * For search results, returns a single group without a title.
+		 *
+		 * @return {Array}
+		 */
+		const itemGroups = computed( () => {
+			// If we have search results, return them as a single group without a title
+			if ( lookupResults.value.length > 0 ) {
+				return [ {
+					id: 'search-results',
+					title: '',
+					items: lookupResults.value
+				} ];
+			}
+
+			// Otherwise, return grouped local languages
+			return localItems.value;
+		} );
+
+		// Dialog actions
+		/**
+		 * Closes the dialog and resets its state.
+		 * Clears the search term, lookup results, and emits the 'close-dialog'
+		 * event to notify the parent component that the dialog has been closed.
+		 */
+		function closeDialog() {
+			searchTerm.value = '';
+			lookupResults.value = [];
+			showSearchCancel.value = false;
+			emit( 'close-dialog' );
+		}
+
+		/**
+		 * Emits the 'add-language' event to notify the parent component.
+		 * This event triggers the addition of a new monolingual text item
+		 * to the typed list. After emitting, the dialog is closed.
+		 *
+		 * @param {string} langZid - The ZID of the language to add
+		 */
+		function addLanguage( langZid ) {
+			emit( 'add-language', langZid );
+			closeDialog();
+		}
+
+		/**
+		 * Navigates to the edit page when in read mode.
+		 * Adds the 'action=edit' parameter to the current URL and redirects.
+		 * This allows users to switch to edit mode to add new languages.
+		 * The hash will be used to scroll to the relevant multilingual string component.
+		 */
+		function navigateToEdit() {
+			const url = urlUtils.generateEditUrl( {
+				langCode: store.getUserLangCode,
+				zid: store.getCurrentZObjectId,
+				hash: props.keyPath.replace( /\./g, '-' )
+			} );
+
+			// Navigate to the edit page with hash for automatic scrolling
+			window.location.href = url;
 		}
 
 		/**
@@ -453,6 +450,7 @@ module.exports = exports = defineComponent( {
 			addLanguage( item.langZid );
 		}
 
+		// Data fetching
 		/**
 		 * Checks if there are no visible local items and fetches common language ZIDs if needed.
 		 * This helper method centralizes the logic for determining when to fetch common languages.
@@ -479,7 +477,6 @@ module.exports = exports = defineComponent( {
 			closeDialog,
 			handleItemClick,
 			itemGroups,
-			searchPlaceholder,
 			searchTerm,
 			showSearchCancel,
 			updateSearchTerm,

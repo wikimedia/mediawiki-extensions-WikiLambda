@@ -81,60 +81,20 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		/**
-		 * Icon for the reset action.
-		 *
-		 * @type {string}
-		 */
+		// Constants
 		const resetIcon = icons.cdxIconReload;
-		/**
-		 * Icon for the cancel action.
-		 *
-		 * @type {string}
-		 */
 		const cancelIcon = icons.cdxIconCancel;
-		/**
-		 * Result of the function call.
-		 *
-		 * @type {string|null}
-		 */
+
+		// State
 		const functionCallResult = ref( null );
-		/**
-		 * Error message from the function call.
-		 *
-		 * @type {string|null}
-		 */
 		const functionCallError = ref( null );
-		/**
-		 * Loading state of the function call.
-		 *
-		 * @type {boolean}
-		 */
 		const isLoading = ref( false );
-		/**
-		 * State of the accordion.
-		 *
-		 * @type {boolean}
-		 */
 		const isOpen = ref( false );
-		/**
-		 * Flag to indicate if the function call was cancelled by the user.
-		 *
-		 * @type {boolean}
-		 */
 		const isCancelled = ref( false );
-		/**
-		 * Tracks the last processed params to avoid redundant function calls.
-		 *
-		 * @type {Array|null}
-		 */
 		let lastProcessedParams = null;
-		/**
-		 * Abort Controller for managing function calls.
-		 *
-		 * @type {Object|null}
-		 */
 		let abortController = null;
+
+		// Default value callbacks
 		/**
 		 * Collection of callbacks that produce default values for empty args
 		 * indexed by the argument type.
@@ -157,7 +117,7 @@ module.exports = exports = defineComponent( {
 			[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: () => mw.config.get( 'wgWikibaseItemId' ) || ''
 		};
 
-		// Computed properties
+		// Action button display
 		/**
 		 * Determines the icon for the action button.
 		 *
@@ -191,19 +151,7 @@ module.exports = exports = defineComponent( {
 			return '';
 		} );
 
-		// Methods
-		/**
-		 * Cancels the current function call by setting the `isCancelled` flag to `true`,
-		 * aborting the Abort Controller if it exists and stopping the loading state.
-		 */
-		function cancelFunctionCall() {
-			if ( abortController ) {
-				abortController.abort();
-			}
-			isCancelled.value = true;
-			isLoading.value = false;
-		}
-
+		// Accordion actions
 		/**
 		 * Handles the click event for the accordion.
 		 *
@@ -213,6 +161,7 @@ module.exports = exports = defineComponent( {
 			isOpen.value = value;
 		}
 
+		// Function call construction helpers
 		/**
 		 * Checks if a parser ZID exists for the given type.
 		 *
@@ -336,6 +285,19 @@ module.exports = exports = defineComponent( {
 			return createRendererCallMethod( rendererZid, functionCall );
 		}
 
+		// Function call execution
+		/**
+		 * Cancels the current function call by setting the `isCancelled` flag to `true`,
+		 * aborting the Abort Controller if it exists and stopping the loading state.
+		 */
+		function cancelFunctionCall() {
+			if ( abortController ) {
+				abortController.abort();
+			}
+			isCancelled.value = true;
+			isLoading.value = false;
+		}
+
 		/**
 		 * Starts the loading state and resets result/error states.
 		 */
@@ -454,22 +416,15 @@ module.exports = exports = defineComponent( {
 		}
 
 		// Watch
-		/**
-		 * Watches for changes to the `isOpen` property.
-		 * When opened, triggers the function call if the payload is updated
-		 */
 		watch( isOpen, () => {
 			processFunctionCall( props.payload );
 		} );
 
-		/**
-		 * Watches for changes to the function call payload's params.
-		 * When updated, fetches the new function call result.
-		 */
 		watch( () => props.payload, ( newPayload ) => {
 			processFunctionCall( newPayload );
 		}, { deep: true } );
 
+		// Lifecycle
 		onBeforeUnmount( () => {
 			// Clean up the Abort Controller if it exists
 			if ( abortController ) {

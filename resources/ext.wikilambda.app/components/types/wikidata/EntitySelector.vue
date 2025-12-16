@@ -65,7 +65,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const wikidataIcon = wikidataIconSvg;
+
+		// Lookup
 		const inputValue = ref( '' );
 		const lookupResults = ref( [] );
 		const lookupConfig = ref( {
@@ -195,6 +198,7 @@ module.exports = exports = defineComponent( {
 				.catch( ( error ) => handleLookupError( error, searchTerm ) );
 		}
 
+		// Input handlers
 		/**
 		 * On field input, perform a backend lookup and
 		 * save the returned objects in lookupResults array.
@@ -292,7 +296,7 @@ module.exports = exports = defineComponent( {
 			getLookupResults( lookupConfig.value.searchQuery );
 		}
 
-		// Watchers
+		// Watch
 		watch( () => props.entityLabel, ( label ) => {
 			inputValue.value = label;
 		} );

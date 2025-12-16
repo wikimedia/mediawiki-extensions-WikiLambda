@@ -72,14 +72,16 @@ module.exports = exports = defineComponent( {
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
-
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
+		// Constants
 		const enumSelectConfig = { visibleItemLimit: 5 };
+
+		// State
 		const loadingCount = ref( 0 );
 
-		// Computed properties
+		// Enum data
 		/**
 		 * Returns the type of Wikidata entities of this enum type. It does that by
 		 * getting the type object from the library store and returning its Z6884K1.
@@ -122,6 +124,7 @@ module.exports = exports = defineComponent( {
 				null;
 		} );
 
+		// Selector display
 		/**
 		 * Returns the placeholder text for the Wikidata enum selector.
 		 * Falls back to a generic message if no type-specific placeholder is found.
@@ -156,6 +159,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const isLoading = computed( () => loadingCount.value > 0 );
 
+		// Actions
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new Wikidata enum selection.
@@ -171,6 +175,7 @@ module.exports = exports = defineComponent( {
 			emit( 'set-value', { value, keyPath } );
 		}
 
+		// Data fetching
 		/**
 		 * Fetches all the Wikidata entities in the selector component (only for edit)
 		 */
@@ -195,7 +200,7 @@ module.exports = exports = defineComponent( {
 			fetchEntities();
 		} );
 
-		// Lifecycle
+		// Lifecycle hooks
 		onMounted( () => {
 			fetchEntities();
 		} );

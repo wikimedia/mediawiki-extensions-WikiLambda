@@ -91,7 +91,7 @@ module.exports = exports = defineComponent( {
 		const { getZReferenceTerminalValue, key, parentKey } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Computed properties
+		// Selected value
 		/**
 		 * Returns the value of the selected reference.
 		 *
@@ -116,6 +116,14 @@ module.exports = exports = defineComponent( {
 			langCode: store.getUserLangCode,
 			zid: value.value
 		} ) );
+
+		// Object Selector configuration
+		/**
+		 * Returns true if the key is a Wikidata enum type.
+		 *
+		 * @return {boolean}
+		 */
+		const isWikidataEnum = computed( () => key.value === Constants.Z_WIKIDATA_ENUM_TYPE );
 
 		/**
 		 * Returns the bound type to configure the ZObjectSelector:
@@ -184,13 +192,6 @@ module.exports = exports = defineComponent( {
 			}
 			return [ Constants.Z_WIKIDATA_ENUM ];
 		} );
-
-		/**
-		 * Returns true if the key is a Wikidata enum type.
-		 *
-		 * @return {boolean}
-		 */
-		const isWikidataEnum = computed( () => key.value === Constants.Z_WIKIDATA_ENUM_TYPE );
 
 		/**
 		 * Emits the event setValue so that ZObjectKey can update

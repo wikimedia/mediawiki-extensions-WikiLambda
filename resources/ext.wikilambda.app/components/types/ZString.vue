@@ -59,7 +59,6 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
-		// Use ZObject utilities composable
 		const { getZStringTerminalValue, key } = useZObject( { keyPath: props.keyPath } );
 
 		/**

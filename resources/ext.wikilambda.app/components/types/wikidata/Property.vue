@@ -98,9 +98,11 @@ module.exports = exports = defineComponent( {
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
+		// Constants
 		const wikidataIcon = wikidataIconSvg;
 		const propertyType = Constants.Z_WIKIDATA_PROPERTY;
 
+		// Entity ID data
 		/**
 		 * Returns the Wikidata Property Id string value if set, or empty string if unset.
 		 * If the Id is not determined by a terminal string, returns undefined.
@@ -119,6 +121,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const hasTerminalId = computed( () => typeof propertyId.value === 'string' );
 
+		// Entity display data
 		/**
 		 * Returns the Wikidata URL for the selected Property.
 		 *
@@ -141,6 +144,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const propertyLabel = computed( () => propertyLabelData.value ? propertyLabelData.value.label : '' );
 
+		// Actions
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -163,9 +167,12 @@ module.exports = exports = defineComponent( {
 			emit( 'set-value', { value: value || '', keyPath } );
 		}
 
+		// Watchers
 		watch( propertyId, ( id ) => {
 			store.fetchProperties( { ids: [ id ] } );
 		} );
+
+		// Lifecycle hooks
 		onMounted( () => {
 			if ( propertyId.value ) {
 				store.fetchProperties( { ids: [ propertyId.value ] } );

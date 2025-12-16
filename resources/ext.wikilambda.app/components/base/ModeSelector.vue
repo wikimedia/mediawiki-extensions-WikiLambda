@@ -65,9 +65,10 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
+		// Constants
 		const icon = icons.cdxIconEllipsis;
 
-		// Computed properties
+		// Type data
 		/**
 		 * Returns the type of the value of the the ZObject represented
 		 * in this component. When it's not set, it's undefined.
@@ -167,13 +168,13 @@ module.exports = exports = defineComponent( {
 			0
 		);
 
-		// Helper methods for menu items
+		// Menu item helpers
 		/**
 		 * Return the menu options for resolver types
 		 *
 		 * @return {Array}
 		 */
-		function getResolverMenuItems() {
+		const getResolverMenuItems = () => {
 			const resolvers = [];
 
 			// Function call: Always available
@@ -206,14 +207,14 @@ module.exports = exports = defineComponent( {
 				} );
 			}
 			return resolvers;
-		}
+		};
 
 		/**
 		 * Return the menu options for creating literal types
 		 *
 		 * @return {Array}
 		 */
-		function getLiteralMenuItems() {
+		const getLiteralMenuItems = () => {
 			const literals = [];
 
 			// Add literal parent expected type when:
@@ -260,7 +261,7 @@ module.exports = exports = defineComponent( {
 			}
 
 			return literals;
-		}
+		};
 
 		/**
 		 * Returns the available options for the type mode selector.
@@ -377,7 +378,7 @@ module.exports = exports = defineComponent( {
 			return items;
 		} );
 
-		// Methods
+		// Actions
 		/**
 		 * Emit the event that corresponds to the selected menu item
 		 *

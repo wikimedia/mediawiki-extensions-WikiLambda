@@ -49,7 +49,7 @@
 					class="ext-wikilambda-app-wikidata-lexeme-sense__sense-selector"
 					:disabled="!lexemeId || !lexemeSenseSelectMenuItems.length"
 					:selected="lexemeSenseId"
-					:default-label="lexemeSenseSelectPlaceholder"
+					:default-label="i18n( 'wikilambda-wikidata-lexeme-sense-selector-placeholder' ).text()"
 					:menu-items="lexemeSenseSelectMenuItems"
 					:menu-config="lexemeSenseSelectConfig"
 					data-testid="wikidata-lexeme-sense-select"
@@ -118,18 +118,21 @@ module.exports = exports = defineComponent( {
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
-
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
+		// Constants
 		const wikidataIcon = wikidataIconSvg;
 		const lexemeType = Constants.Z_WIKIDATA_LEXEME;
 		const lexemeSenseType = Constants.Z_WIKIDATA_LEXEME_SENSE;
 		const lexemeSenseSelectConfig = { visibleItemLimit: 5 };
+
+		// State
 		const lexemeId = ref( null );
 		const isInitialized = ref( false );
 		const isLexemeLoading = ref( false );
 
+		// Lexeme Sense ID data
 		/**
 		 * Returns the Lexeme Sense Id string terminal value if set, or empty string if unset.
 		 * If the Id is not determined by a terminal string, returns undefined.
@@ -161,6 +164,7 @@ module.exports = exports = defineComponent( {
 			return null;
 		} );
 
+		// Lexeme data
 		/**
 		 * Returns the LabelData object for the selected Lexeme.
 		 *
@@ -182,6 +186,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const lexemeUrl = computed( () => store.getLexemeUrl( lexemeId.value ) );
 
+		// Lexeme Sense data
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Sense.
 		 *
@@ -196,6 +201,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const lexemeSenseLabelData = computed( () => store.getLexemeSenseLabelData( lexemeSenseId.value ) );
 
+		// Sense selector display
 		/**
 		 * Returns the menu items for the senses of the selected lexeme.
 		 * Each item has a label (from store.getLexemeSenseLabelData) and value (the sense id).
@@ -222,15 +228,6 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Returns the placeholder for the senses select dropdown.
-		 *
-		 * @return {string}
-		 */
-		const lexemeSenseSelectPlaceholder = computed( () => i18n(
-			'wikilambda-wikidata-lexeme-sense-selector-placeholder'
-		).text() );
-
-		/**
 		 * Returns true if we should show the "no senses" message.
 		 * Only shows when lexeme is selected, not loading, and has no senses.
 		 *
@@ -255,6 +252,7 @@ module.exports = exports = defineComponent( {
 			.replace( '<a ', '<a target="_blank" rel="noopener" ' )
 		);
 
+		// Data fetching
 		/**
 		 * Fetch lexeme data and senses data and set loading state.
 		 *
@@ -269,6 +267,7 @@ module.exports = exports = defineComponent( {
 				} );
 		}
 
+		// Actions
 		/**
 		 * Handles selection of a lexeme from the entity selector.
 		 * Updates lexemeId, fetches the lexeme, and clears the sense selection.
@@ -313,7 +312,7 @@ module.exports = exports = defineComponent( {
 			emit( 'set-value', { value: value || '', keyPath } );
 		}
 
-		// Watchers
+		// Watch
 		watch( lexemeSenseId, ( id ) => {
 			if ( id ) {
 				const [ newLexemeId ] = id.split( '-' );
@@ -348,15 +347,14 @@ module.exports = exports = defineComponent( {
 			lexemeSenseLabelData,
 			lexemeSenseSelectConfig,
 			lexemeSenseSelectMenuItems,
-			lexemeSenseSelectPlaceholder,
+			i18n,
 			lexemeSenseUrl,
 			lexemeType,
 			noSensesMessage,
 			onSelectLexeme,
 			onSelectLexemeSense,
 			shouldShowNoSensesMessage,
-			wikidataIcon,
-			i18n
+			wikidataIcon
 		};
 	}
 } );

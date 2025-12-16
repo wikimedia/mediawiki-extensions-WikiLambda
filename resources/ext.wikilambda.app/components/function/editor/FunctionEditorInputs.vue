@@ -12,13 +12,15 @@
 		:tooltip-icon="tooltipIcon">
 		<template #label>
 			<label :id="inputsFieldId">
-				{{ inputsLabel }}
-				<span>{{ inputsOptional }}</span>
+				{{ i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
+				<span>{{ i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 			</label>
 		</template>
 		<template #description>
-			{{ inputsFieldDescription }}
-			<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
+			{{ i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
+			<a :href="listObjectsUrl" target="_blank">
+				{{ i18n( 'wikilambda-function-definition-input-types' ).text() }}
+			</a>
 		</template>
 		<template #body>
 			<div :aria-labelledby="inputsFieldId">
@@ -37,11 +39,15 @@
 				></wl-function-editor-inputs-item>
 				<cdx-button
 					v-if="canEdit"
-					:class="addInputButtonClass"
+					:class="inputs.length === 0 ?
+						'ext-wikilambda-app-function-editor-inputs__action-add' :
+						'ext-wikilambda-app-function-editor-inputs__action-add-another'"
 					@click="addNewItem"
 				>
 					<cdx-icon :icon="iconAdd"></cdx-icon>
-					{{ addNewItemText }}
+					{{ inputs.length === 0 ?
+						i18n( 'wikilambda-function-definition-inputs-item-add-first-input-button' ).text() :
+						i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text() }}
 				</cdx-button>
 			</div>
 		</template>
@@ -125,8 +131,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const iconAdd = icons.cdxIconAdd;
 
+		// Inputs data
 		/**
 		 * List of inputs, in hybrid format (without benjamin item)
 		 *
@@ -134,36 +142,13 @@ module.exports = exports = defineComponent( {
 		 */
 		const inputs = computed( () => store.getZFunctionInputLabels( props.zLanguage ) );
 
-		/**
-		 * Returns the label for the inputs field
-		 *
-		 * TODO (T335583): Replace i18n message with key label
-		 * return store.getLabelData( Constants.Z_FUNCTION_ARGUMENTS );
-		 *
-		 * @return {string}
-		 */
-		const inputsLabel = computed( () => i18n( 'wikilambda-function-definition-inputs-label' ).text() );
-
-		/**
-		 * Returns the "optional" caption for the inputs field
-		 *
-		 * @return {string}
-		 */
-		const inputsOptional = computed( () => i18n( 'parentheses', [ i18n( 'wikilambda-optional' ).text() ] ).text() );
-
+		// Field display
 		/**
 		 * Returns the id for the input field
 		 *
 		 * @return {string}
 		 */
 		const inputsFieldId = computed( () => `ext-wikilambda-app-function-editor-inputs__label-${ props.zLanguage }` );
-
-		/**
-		 * Returns the description for the inputs field
-		 *
-		 * @return {string}
-		 */
-		const inputsFieldDescription = computed( () => i18n( 'wikilambda-function-definition-inputs-description' ).text() );
 
 		/**
 		 * Returns the URL to the Special page List Object by Type
@@ -174,33 +159,7 @@ module.exports = exports = defineComponent( {
 			.getUrl( { uselang: store.getUserLangCode } )
 		);
 
-		/**
-		 * Returns the text for the link to the Special page List Object by Type
-		 *
-		 * @return {string}
-		 */
-		const listObjectsLink = computed( () => i18n( 'wikilambda-function-definition-input-types' ).text() );
-
-		/**
-		 * Returns the text of the button to add a new input
-		 *
-		 * @return {string}
-		 */
-		const addNewItemText = computed( () => inputs.value.length === 0 ?
-			i18n( 'wikilambda-function-definition-inputs-item-add-first-input-button' ).text() :
-			i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text()
-		);
-
-		/**
-		 * Returns the class name of the button to add a new input
-		 *
-		 * @return {string}
-		 */
-		const addInputButtonClass = computed( () => inputs.value.length === 0 ?
-			'ext-wikilambda-app-function-editor-inputs__action-add' :
-			'ext-wikilambda-app-function-editor-inputs__action-add-another'
-		);
-
+		// Actions
 		/**
 		 * Add a new input item to the function inputs list
 		 */
@@ -241,16 +200,11 @@ module.exports = exports = defineComponent( {
 		}
 
 		return {
-			addInputButtonClass,
 			addNewItem,
-			addNewItemText,
 			iconAdd,
 			inputs,
-			inputsFieldDescription,
 			inputsFieldId,
-			inputsLabel,
-			inputsOptional,
-			listObjectsLink,
+			i18n,
 			listObjectsUrl,
 			removeItem,
 			updateArgumentLabel

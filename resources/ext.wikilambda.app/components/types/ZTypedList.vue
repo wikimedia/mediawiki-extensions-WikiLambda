@@ -67,12 +67,11 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'add-list-item' ],
 	setup( props, { emit } ) {
-		// Use ZObject utilities composable
+		// Data access
 		const { depth } = useZObject( { keyPath: props.keyPath } );
-
-		// Use main store
 		const store = useMainStore();
 
+		// List item type
 		/**
 		 * Returns the string representation of the expected
 		 * type for the list items.
@@ -86,6 +85,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const listItemType = computed( () => hybridToCanonical( props.objectValue[ 0 ] ) );
 
+		// UI display
 		/**
 		 * Returns the css class that identifies the nesting level
 		 *
@@ -101,6 +101,7 @@ module.exports = exports = defineComponent( {
 			return [];
 		} );
 
+		// Actions
 		/**
 		 * When the typed list item type (benjamin item) has
 		 * changed, we keep track of the items that were present

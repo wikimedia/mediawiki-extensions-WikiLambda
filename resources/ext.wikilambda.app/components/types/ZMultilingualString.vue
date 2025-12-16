@@ -119,13 +119,12 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
+		// Constants and configuration
 		const listItemType = Constants.Z_MONOLINGUALSTRING;
 		const iconLanguage = icons.cdxIconLanguage;
 		const iconAdd = icons.cdxIconAdd;
-		const showLoadMoreDialog = ref( false );
-		const visibleLangZids = ref( [] );
 
-		// Computed properties
+		// Data access
 		/**
 		 * Returns the array of all the monolingual text objects.
 		 *
@@ -148,24 +147,6 @@ module.exports = exports = defineComponent( {
 		const listKeyPath = computed( () => `${ props.keyPath }.${ Constants.Z_MULTILINGUALSTRING_VALUE }` );
 
 		/**
-		 * Returns the total count of store items.
-		 *
-		 * @return {number}
-		 */
-		const loadMoreItemsCount = computed( () => values.value.length );
-
-		/**
-		 * Checks if an item is blank (no language and no text content).
-		 * Blank items should be automatically expanded to allow easy editing.
-		 *
-		 * @param {Object} item - The item to check
-		 * @return {boolean} True if the item is blank
-		 */
-		function isBlankItem( item ) {
-			return !item.langZid;
-		}
-
-		/**
 		 * Returns all items from the store with their metadata.
 		 * Maps each store item to include index, objectValue, langZid, keyPath, and uniqueKey.
 		 * Handles conversion from ISO codes to ZIDs for consistent language references.
@@ -186,6 +167,16 @@ module.exports = exports = defineComponent( {
 			};
 		} )
 		);
+
+		// Showing languages
+		const visibleLangZids = ref( [] );
+
+		/**
+		 * Returns the total count of store items.
+		 *
+		 * @return {number}
+		 */
+		const loadMoreItemsCount = computed( () => values.value.length );
 
 		/**
 		 * Returns a numeric priority for a given language ZID:
@@ -269,6 +260,45 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Initializes the multilingual string list with its initial set of visible languages.
+		 * Populates visibleLangZids with priority languages in order:
+		 * 1) User language, 2) Fallback languages, 3) Suggested languages.
+		 * Respects the display limit and adds a fallback item if no priority languages are found.
+		 * The remaining languages will be available through the ZMultilingualStringDialog component.
+		 */
+		function initializeMultilingualStringList() {
+			const candidates = [ ...new Set( [
+				store.getUserLangZid,
+				...store.getFallbackLanguageZids,
+				...Constants.SUGGESTIONS.LANGUAGES
+			] ) ];
+
+			// Filter items that match any of the candidate ZIDs
+			const matchingItems = allViewItemsSorted.value.filter(
+				( item ) => item.langZid && candidates.includes( item.langZid )
+			);
+
+			// Extract the ZIDs from matching items
+			let visibleLangs = matchingItems.map( ( item ) => item.langZid );
+
+			// Enforce maximum length
+			visibleLangs = visibleLangs.slice( 0, Constants.LIST_LIMIT_MULTILINGUAL_STRING );
+
+			// Fallback to first language in list if still empty
+			if (
+				!visibleLangs.length &&
+				allViewItemsSorted.value[ 0 ] &&
+				allViewItemsSorted.value[ 0 ].langZid
+			) {
+				visibleLangs = [ allViewItemsSorted.value[ 0 ].langZid ];
+			}
+			visibleLangZids.value = visibleLangs;
+		}
+
+		// Dialog
+		const showLoadMoreDialog = ref( false );
+
+		/**
 		 * Returns items available for the dialog (not currently visible in the typed list).
 		 * Filters out items without language ZIDs and maps them to the structure expected by the dialog.
 		 * Used to populate the ZMultilingualStringDialog with available languages.
@@ -283,6 +313,36 @@ module.exports = exports = defineComponent( {
 				langZid,
 				isInVisibleList: visibleLangZids.value.includes( langZid )
 			} ) ) );
+
+		/**
+		 * Opens the load more dialog.
+		 * Sets the showLoadMoreDialog flag to true, which displays
+		 * the ZMultilingualStringDialog component.
+		 */
+		function openLoadMoreDialog() {
+			showLoadMoreDialog.value = true;
+		}
+
+		/**
+		 * Closes the load more dialog.
+		 * Sets the showLoadMoreDialog flag to false, which hides
+		 * the ZMultilingualStringDialog component.
+		 */
+		function closeLoadMoreDialog() {
+			showLoadMoreDialog.value = false;
+		}
+
+		// Item management
+		/**
+		 * Checks if an item is blank (no language and no text content).
+		 * Blank items should be automatically expanded to allow easy editing.
+		 *
+		 * @param {Object} item - The item to check
+		 * @return {boolean} True if the item is blank
+		 */
+		function isBlankItem( item ) {
+			return !item.langZid;
+		}
 
 		/**
 		 * Sets object isDirty flag as true only if the changes
@@ -331,60 +391,7 @@ module.exports = exports = defineComponent( {
 			visibleLangZids.value = [ ...new Set( [ ...visibleLangZids.value, langZid ] ) ];
 		}
 
-		/**
-		 * Opens the load more dialog.
-		 * Sets the showLoadMoreDialog flag to true, which displays
-		 * the ZMultilingualStringDialog component.
-		 */
-		function openLoadMoreDialog() {
-			showLoadMoreDialog.value = true;
-		}
-
-		/**
-		 * Closes the load more dialog.
-		 * Sets the showLoadMoreDialog flag to false, which hides
-		 * the ZMultilingualStringDialog component.
-		 */
-		function closeLoadMoreDialog() {
-			showLoadMoreDialog.value = false;
-		}
-
-		/**
-		 * Initializes the multilingual string list with its initial set of visible languages.
-		 * Populates visibleLangZids with priority languages in order:
-		 * 1) User language, 2) Fallback languages, 3) Suggested languages.
-		 * Respects the display limit and adds a fallback item if no priority languages are found.
-		 * The remaining languages will be available through the ZMultilingualStringDialog component.
-		 */
-		function initializeMultilingualStringList() {
-			const candidates = [ ...new Set( [
-				store.getUserLangZid,
-				...store.getFallbackLanguageZids,
-				...Constants.SUGGESTIONS.LANGUAGES
-			] ) ];
-
-			// Filter items that match any of the candidate ZIDs
-			const matchingItems = allViewItemsSorted.value.filter(
-				( item ) => item.langZid && candidates.includes( item.langZid )
-			);
-
-			// Extract the ZIDs from matching items
-			let visibleLangs = matchingItems.map( ( item ) => item.langZid );
-
-			// Enforce maximum length
-			visibleLangs = visibleLangs.slice( 0, Constants.LIST_LIMIT_MULTILINGUAL_STRING );
-
-			// Fallback to first language in list if still empty
-			if (
-				!visibleLangs.length &&
-				allViewItemsSorted.value[ 0 ] &&
-				allViewItemsSorted.value[ 0 ].langZid
-			) {
-				visibleLangs = [ allViewItemsSorted.value[ 0 ].langZid ];
-			}
-			visibleLangZids.value = visibleLangs;
-		}
-
+		// Data fetching
 		/**
 		 * Fetches ZIDs for languages that were converted from ISO codes to ZIDs.
 		 * This ensures that language objects are available in the store for proper display.
@@ -405,6 +412,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Store synchronization
 		/**
 		 * Watches for changes in the store to detect additions/deletions.
 		 * Keep any newly added languages visible and remove stale ones.

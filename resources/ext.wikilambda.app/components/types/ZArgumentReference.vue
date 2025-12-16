@@ -20,7 +20,7 @@
 			v-else
 			:selected="argumentKey"
 			:menu-items="argumentOptions"
-			:default-label="argumentSelectorPlaceholder"
+			:default-label="i18n( 'wikilambda-argument-reference-selector-placeholder' ).text()"
 			:status="errorSelectStatus"
 			@update:selected="setValue"
 		></cdx-select>
@@ -87,10 +87,10 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Data
+		// Constants
 		const icon = icons.cdxIconFunctionArgument;
 
-		// Computed properties
+		// Argument data
 		/**
 		 * Returns the key of the selected argument reference,
 		 * if any. Else, returns empty string.
@@ -126,12 +126,7 @@ module.exports = exports = defineComponent( {
 				icon: icons.cdxIconFunctionArgument
 			} ) ) );
 
-		/**
-		 * Returns the placeholder for the argument reference selector
-		 *
-		 * @return {string}
-		 */
-		const argumentSelectorPlaceholder = computed( () => i18n( 'wikilambda-argument-reference-selector-placeholder' ).text() );
+		// Select
 
 		/**
 		 * Status property for the Select component (ValidateStatusType).
@@ -168,7 +163,7 @@ module.exports = exports = defineComponent( {
 			argumentKey,
 			argumentLabelData,
 			argumentOptions,
-			argumentSelectorPlaceholder,
+			i18n,
 			errorSelectStatus,
 			fieldErrors,
 			hasFieldErrors,

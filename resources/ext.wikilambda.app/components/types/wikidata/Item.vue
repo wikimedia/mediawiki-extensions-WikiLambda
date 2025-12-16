@@ -95,17 +95,14 @@ module.exports = exports = defineComponent( {
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
-
-		// Use ZObject utilities composable
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
-
-		// Use main store
 		const store = useMainStore();
 
-		// Data
+		// Constants
 		const wikidataIcon = wikidataIconSvg;
 		const itemType = Constants.Z_WIKIDATA_ITEM;
 
+		// Entity ID data
 		/**
 		 * Returns the Wikidata Item Id string terminal value if set, or empty string if unset.
 		 * If the Id is not determined by a terminal string, returns undefined.
@@ -124,6 +121,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const hasTerminalId = computed( () => typeof itemId.value === 'string' );
 
+		// Entity display data
 		/**
 		 * Returns the Wikidata URL for the selected Item.
 		 *
@@ -146,6 +144,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const itemLabel = computed( () => itemLabelData.value ? itemLabelData.value.label : '' );
 
+		// Actions
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -175,12 +174,12 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
-		// Watch itemId
+		// Watchers
 		watch( itemId, ( id ) => {
 			store.fetchItems( { ids: [ id ] } );
 		} );
 
-		// On mounted
+		// Lifecycle hooks
 		onMounted( () => {
 			if ( itemId.value ) {
 				store.fetchItems( { ids: [ itemId.value ] } );

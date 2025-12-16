@@ -106,7 +106,16 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 
+		// Constants
 		const iconAdd = icons.cdxIconAdd;
+
+		// List items data
+		/**
+		 * Returns the list item indexes (all excluding zero)
+		 *
+		 * @return {Array}
+		 */
+		const listItemIndexes = computed( () => Object.keys( props.objectValue ).slice( 1 ) );
 
 		/**
 		 * Returns the key label for the list of items.
@@ -116,13 +125,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const itemsLabel = computed( () => LabelData.fromString( i18n( 'wikilambda-list-items-label' ).text() ) );
 
-		/**
-		 * Returns the list item indexes (all excluding zero)
-		 *
-		 * @return {Array}
-		 */
-		const listItemIndexes = computed( () => Object.keys( props.objectValue ).slice( 1 ) );
-
+		// Actions
 		/**
 		 * Emits add-list-item event
 		 */

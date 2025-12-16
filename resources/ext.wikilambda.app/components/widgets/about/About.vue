@@ -81,7 +81,7 @@
 		<!-- Widget footer -->
 		<template #footer>
 			<div class="ext-wikilambda-app-about__button-languages">
-				<cdx-button data-testid="languages-button" @click="openLanguagesDialog">
+				<cdx-button data-testid="languages-button" @click="showLanguagesDialog = true">
 					<cdx-icon :icon="iconLanguage"></cdx-icon>
 					{{ i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
 				</cdx-button>
@@ -134,19 +134,54 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { updatePageTitle } = usePageTitle();
 
+		// Constants and configuration
 		const iconEdit = icons.cdxIconEdit;
 		const iconLanguage = icons.cdxIconLanguage;
-		const displayLanguages = ref( [] );
-		const showLanguagesDialog = ref( false );
-		const showPublishDialog = ref( false );
 
-		// Computed properties
+		// Language data
+		const displayLanguages = ref( [] );
+
 		/**
 		 * Returns whether the current object is a function
 		 *
 		 * @return {boolean}
 		 */
 		const isFunction = computed( () => props.type === Constants.Z_FUNCTION );
+
+		/**
+		 * Returns the available languages for each field
+		 *
+		 * @return {Object}
+		 */
+		const fieldLangs = computed( () => {
+			const { name, description, aliases, inputs } = store.getMultilingualDataLanguages;
+			return { name, description, aliases, inputs };
+		} );
+
+		/**
+		 * Returns a list of all the language Zids that are present in
+		 * the multilingual data collection (must have at least a name,
+		 * a description, a set of aliases or an input label in case the
+		 * object is a function).
+		 *
+		 * @return {Array}
+		 */
+		const allLangs = computed( () => store.getMultilingualDataLanguages.all );
+
+		/**
+		 * Returns the count of the list of unique available languages
+		 *
+		 * @return {number}
+		 */
+		const languageCount = computed( () => allLangs.value.length );
+
+		/**
+		 * Returns the list of fallback languages in their Zid
+		 * representation, excluding the first (user selected language)
+		 *
+		 * @return {Array}
+		 */
+		const fallbackLanguageZids = computed( () => store.getFallbackLanguageZids.slice( 1 ) );
 
 		/**
 		 * Returns the multilingual data for a given language
@@ -194,120 +229,6 @@ module.exports = exports = defineComponent( {
 		const displayData = computed( () => displayLanguages.value.map(
 			( lang ) => getMultilingualDataForLanguage( lang.zid )
 		) );
-
-		/**
-		 * Returns whether the user can edit the function
-		 *
-		 * @return {boolean}
-		 */
-		const canEditObject = computed( () => ( store.isCreateNewPage ? true : store.isUserLoggedIn ) );
-
-		/**
-		 * Returns whether any of the language blocks is being edited
-		 *
-		 * @return {boolean}
-		 */
-		const isEditing = computed( () => !!displayLanguages.value.find( ( item ) => item.edit ) );
-
-		/**
-		 * Returns the available languages for each field
-		 *
-		 * @return {Object}
-		 */
-		const fieldLangs = computed( () => {
-			const { name, description, aliases, inputs } = store.getMultilingualDataLanguages;
-			return { name, description, aliases, inputs };
-		} );
-
-		/**
-		 * Returns a list of all the language Zids that are present in
-		 * the multilingual data collection (must have at least a name,
-		 * a description, a set of aliases or an input label in case the
-		 * object is a function).
-		 *
-		 * @return {Array}
-		 */
-		const allLangs = computed( () => store.getMultilingualDataLanguages.all );
-
-		/**
-		 * Returns the count of the list of unique available languages
-		 *
-		 * @return {number}
-		 */
-		const languageCount = computed( () => allLangs.value.length );
-
-		/**
-		 * Returns the list of fallback languages in their Zid
-		 * representation, excluding the first (user selected language)
-		 *
-		 * @return {Array}
-		 */
-		const fallbackLanguageZids = computed( () => store.getFallbackLanguageZids.slice( 1 ) );
-
-		/**
-		 * Creates a deep copy of the edit data
-		 *
-		 * @param {Object} data
-		 * @return {Object}
-		 */
-		function editCopy( data ) {
-			return JSON.parse( JSON.stringify( data ) );
-		}
-
-		/**
-		 * Opens the AboutLanguagesDialog
-		 */
-		function openLanguagesDialog() {
-			showLanguagesDialog.value = true;
-		}
-
-		/**
-		 * Adds the selected language to the collection
-		 * of displayed languages.
-		 *
-		 * @param {string} newLang
-		 */
-		function addLanguage( newLang ) {
-			// Ignore if already displayed
-			const found = displayLanguages.value.find( ( lang ) => lang.zid === newLang );
-			if ( found ) {
-				return;
-			}
-			displayLanguages.value.push( {
-				zid: newLang,
-				edit: props.edit,
-				open: false,
-				editData: props.edit ?
-					editCopy( getMultilingualDataForLanguage( newLang ).viewData ) :
-					undefined
-			} );
-		}
-
-		/**
-		 * Initialize the local editable data collection for a given
-		 * language block given its index.
-		 *
-		 * @param {number} index
-		 */
-		function initializeEdit( index ) {
-			displayLanguages.value[ index ].edit = true;
-			displayLanguages.value[ index ].open = true;
-			displayLanguages.value[ index ].editData = editCopy( displayData.value[ index ].viewData );
-			emit( 'edit-multilingual-data' );
-		}
-
-		/**
-		 * Restores original view state and cancels publish
-		 * action. This only happens when we are in a view page
-		 * and after editing information, we proceed to publish
-		 * and then we cancel.
-		 */
-		function cancelPublish() {
-			if ( store.isDirty ) {
-				store.resetMultilingualData();
-			}
-			showPublishDialog.value = false;
-		}
 
 		/**
 		 * Initializes the collection of languages to display in
@@ -375,43 +296,56 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		// Editing
 		/**
-		 * Discards all edits and sets all language blocks to view mode.
+		 * Returns whether the user can edit the function
+		 *
+		 * @return {boolean}
 		 */
-		function resetEditState() {
-			displayLanguages.value.forEach( ( lang ) => {
-				lang.edit = false;
-				lang.editData = undefined;
-			} );
+		const canEditObject = computed( () => store.isCreateNewPage ? true : store.isUserLoggedIn );
+
+		/**
+		 * Returns whether any of the language blocks is being edited
+		 *
+		 * @return {boolean}
+		 */
+		const isEditing = computed( () => !!displayLanguages.value.find( ( item ) => item.edit ) );
+
+		/**
+		 * Creates a deep copy of the edit data
+		 *
+		 * @param {Object} data
+		 * @return {Object}
+		 */
+		function editCopy( data ) {
+			return JSON.parse( JSON.stringify( data ) );
 		}
 
 		/**
-		 * Only in view pages (functions and others):
-		 * Persists all accummulated changes in the store and initiates publish process.
-		 * Triggered when user clicks the "Publish" button from the About widget header.
+		 * Initialize the local editable data collection for a given
+		 * language block given its index.
+		 *
+		 * @param {number} index
 		 */
-		function saveAllChanges() {
-			if ( props.edit ) {
-				return;
-			}
-			persistState();
-			showPublishDialog.value = true;
+		function initializeEdit( index ) {
+			displayLanguages.value[ index ].edit = true;
+			displayLanguages.value[ index ].open = true;
+			displayLanguages.value[ index ].editData = editCopy( displayData.value[ index ].viewData );
+			emit( 'edit-multilingual-data' );
 		}
 
 		/**
-		 * Only in edit page (non functions):
-		 * Persists a field change in the store and updates the page title if needed.
-		 * Triggered every time that a field emits a "change" event. Field changes
-		 * are persisted as they are entered, and published when the page Publish
-		 * button is clicked.
+		 * Persists locally all the changes in the Language Block fields
+		 *
+		 * @param {Object} payload
+		 * @param {Object} payload.data
+		 * @param {Array|string} payload.value
 		 */
-		function saveFieldChange() {
-			if ( !props.edit ) {
-				return;
-			}
-			persistState();
+		function updateEditValue( payload ) {
+			payload.data.value = payload.value;
 		}
 
+		// Save field changes
 		/**
 		 * Persist in the global state a new value for name in the given language
 		 *
@@ -544,16 +478,85 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
-		 * Persists locally all the changes in the Language Block fields
-		 *
-		 * @param {Object} payload
-		 * @param {Object} payload.data
-		 * @param {Array|string} payload.value
+		 * Only in edit page (non functions):
+		 * Persists a field change in the store and updates the page title if needed.
+		 * Triggered every time that a field emits a "change" event. Field changes
+		 * are persisted as they are entered, and published when the page Publish
+		 * button is clicked.
 		 */
-		function updateEditValue( payload ) {
-			payload.data.value = payload.value;
+		function saveFieldChange() {
+			if ( !props.edit ) {
+				return;
+			}
+			persistState();
 		}
 
+		// Languages dialog
+		const showLanguagesDialog = ref( false );
+
+		/**
+		 * Adds the selected language to the collection
+		 * of displayed languages.
+		 *
+		 * @param {string} newLang
+		 */
+		function addLanguage( newLang ) {
+			// Ignore if already displayed
+			const found = displayLanguages.value.find( ( lang ) => lang.zid === newLang );
+			if ( found ) {
+				return;
+			}
+			displayLanguages.value.push( {
+				zid: newLang,
+				edit: props.edit,
+				open: false,
+				editData: props.edit ?
+					editCopy( getMultilingualDataForLanguage( newLang ).viewData ) :
+					undefined
+			} );
+		}
+
+		// Publish dialog
+		const showPublishDialog = ref( false );
+
+		/**
+		 * Restores original view state and cancels publish
+		 * action. This only happens when we are in a view page
+		 * and after editing information, we proceed to publish
+		 * and then we cancel.
+		 */
+		function cancelPublish() {
+			if ( store.isDirty ) {
+				store.resetMultilingualData();
+			}
+			showPublishDialog.value = false;
+		}
+
+		// Actions
+		/**
+		 * Discards all edits and sets all language blocks to view mode.
+		 */
+		function resetEditState() {
+			displayLanguages.value.forEach( ( lang ) => {
+				lang.edit = false;
+				lang.editData = undefined;
+			} );
+		}
+
+		/**
+		 * Only in view pages (functions and others):
+		 * Persists all accummulated changes in the store and initiates publish process.
+		 * Triggered when user clicks the "Publish" button from the About widget header.
+		 */
+		function saveAllChanges() {
+			if ( props.edit ) {
+				return;
+			}
+			persistState();
+			showPublishDialog.value = true;
+		}
+
+		// UI helpers
 		/**
 		 * Returns special class for the accordion description
 		 * depending on the availability of the title.
@@ -565,7 +568,7 @@ module.exports = exports = defineComponent( {
 			return hasName ? '' : 'ext-wikilambda-app-about__accordion--untitled';
 		}
 
-		// Watchers
+		// Watch
 		watch( fallbackLanguageZids, () => {
 			initializeDisplayLanguages();
 		} );
@@ -589,7 +592,6 @@ module.exports = exports = defineComponent( {
 			isEditing,
 			isFunction,
 			languageCount,
-			openLanguagesDialog,
 			resetEditState,
 			saveAllChanges,
 			saveFieldChange,

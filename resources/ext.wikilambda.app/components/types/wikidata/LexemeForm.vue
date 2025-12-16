@@ -97,9 +97,11 @@ module.exports = exports = defineComponent( {
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
+		// Constants
 		const wikidataIcon = wikidataIconSvg;
 		const lexemeFormType = Constants.Z_WIKIDATA_LEXEME_FORM;
 
+		// Entity ID data
 		/**
 		 * Returns the Wikidata Lexeme Form Id string terminal value if set, or empty string if unset.
 		 * If the Id is not determined by a terminal string, returns undefined.
@@ -118,6 +120,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const hasTerminalId = computed( () => typeof lexemeFormId.value === 'string' );
 
+		// Entity display data
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme Form.
 		 *
@@ -141,6 +144,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const lexemeFormLabel = computed( () => lexemeFormLabelData.value ? lexemeFormLabelData.value.label : '' );
 
+		// Actions
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -163,6 +167,7 @@ module.exports = exports = defineComponent( {
 			emit( 'set-value', { value: value || '', keyPath } );
 		}
 
+		// Watchers
 		watch( lexemeFormId, ( id ) => {
 			if ( id ) {
 				const [ lexemeId ] = id.split( '-' );
@@ -170,6 +175,7 @@ module.exports = exports = defineComponent( {
 			}
 		} );
 
+		// Lifecycle hooks
 		onMounted( () => {
 			if ( lexemeFormId.value ) {
 				const [ lexemeId ] = lexemeFormId.value.split( '-' );

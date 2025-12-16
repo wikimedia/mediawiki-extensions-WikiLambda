@@ -72,14 +72,16 @@ module.exports = exports = defineComponent( {
 		const { getZObjectType } = useZObject();
 		const store = useMainStore();
 
+		// Constants
 		const debounceDelay = 1000;
+
+		// State
+		const areTestsFetched = ref( false );
+		const isParserRunning = ref( false );
 		let debounceTimer = null;
 		let parserAbortController = null;
 
-		const areTestsFetched = ref( false );
-		const isParserRunning = ref( false );
-
-		// Computed properties
+		// Parser and renderer data
 		/**
 		 * Return renderer function Zid
 		 *
@@ -103,6 +105,23 @@ module.exports = exports = defineComponent( {
 		const renderedExamples = computed( () => store.getRendererExamples( rendererZid.value ) );
 
 		/**
+		 * Filters the passing test zids array and returns an array with the
+		 * test objects for those which are wellformed. We consider wellformed
+		 * tests those which have a call to the renderer function on the first
+		 * level, directly under the Test call key/Z20K1.
+		 *
+		 * @return {Array}
+		 */
+		const validRendererTests = computed( () => {
+			// Return an empty array if tests are not fetched
+			if ( !areTestsFetched.value ) {
+				return [];
+			}
+			return store.getValidRendererTests( rendererZid.value );
+		} );
+
+		// Placeholder
+		/**
 		 * Return the default value if the default value checkbox is checked,
 		 * otherwise return the first example of the rendered examples.
 		 * If no examples are available, return an empty string.
@@ -121,22 +140,7 @@ module.exports = exports = defineComponent( {
 			return '';
 		} );
 
-		/**
-		 * Filters the passing test zids array and returns an array with the
-		 * test objects for those which are wellformed. We consider wellformed
-		 * tests those which have a call to the renderer function on the first
-		 * level, directly under the Test call key/Z20K1.
-		 *
-		 * @return {Array}
-		 */
-		const validRendererTests = computed( () => {
-			// Return an empty array if tests are not fetched
-			if ( !areTestsFetched.value ) {
-				return [];
-			}
-			return store.getValidRendererTests( rendererZid.value );
-		} );
-
+		// Error handling
 		/**
 		 * Return error message for the parser function
 		 *
@@ -147,6 +151,7 @@ module.exports = exports = defineComponent( {
 			errorParams: [ props.inputType ]
 		} ) );
 
+		// Validation configuration
 		/**
 		 * Whether this input type allows for empty fields
 		 *
@@ -154,7 +159,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const allowsEmptyField = computed( () => Constants.VE_ALLOW_EMPTY_FIELD.includes( props.inputType ) );
 
-		// Methods
+		// Validation
 		/**
 		 * Validates the value by triggering the Parser function for the input type.
 		 * Passes the current value and resolves the promise with the parsed value.
@@ -292,6 +297,7 @@ module.exports = exports = defineComponent( {
 				} );
 		}
 
+		// Event handlers
 		/**
 		 * Validates the new value asynchronously and emits
 		 * the update event once the validation has finished.
@@ -324,6 +330,7 @@ module.exports = exports = defineComponent( {
 			}, debounceDelay );
 		}
 
+		// Renderer examples
 		/**
 		 * Runs the test results for the renderer function asynchronously.
 		 * Updates the `areTestsFetched` flag during the process.
@@ -342,11 +349,6 @@ module.exports = exports = defineComponent( {
 		}
 
 		// Watch
-		/**
-		 * Watch for changes to shouldUseDefaultValue and handle component-specific cleanup
-		 *
-		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
-		 */
 		watch( () => props.shouldUseDefaultValue, ( newValue ) => {
 			if ( newValue ) {
 				// Cancel any ongoing parser validation
@@ -360,28 +362,6 @@ module.exports = exports = defineComponent( {
 			}
 		} );
 
-		/**
-		 * Watch for changes to shouldUseDefaultValue and handle component-specific cleanup
-		 *
-		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
-		 */
-		watch( () => props.shouldUseDefaultValue, ( newValue ) => {
-			if ( newValue ) {
-				// Cancel any ongoing parser validation
-				if ( parserAbortController ) {
-					parserAbortController.abort();
-				}
-				// Clear any pending debounced validation
-				clearTimeout( debounceTimer );
-				// Reset parser state
-				isParserRunning.value = false;
-			}
-		} );
-
-		/**
-		 * Watches the computed property `validRendererTests` and triggers the renderer function test
-		 * for each valid test. The renderer function is executed with the user language as the second input.
-		 */
 		watch( validRendererTests, ( tests ) => {
 			for ( const test of tests ) {
 				store.runRendererTest( {
@@ -394,10 +374,6 @@ module.exports = exports = defineComponent( {
 		} );
 
 		// Lifecycle
-		/**
-		 * Lifecycle hook that runs after the component is mounted.
-		 * Validates the initial value and triggers the generation of renderer examples.
-		 */
 		onMounted( () => {
 			generateRendererExamples();
 			validate( props.value );

@@ -62,8 +62,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const naturalLanguageType = Constants.Z_NATURAL_LANGUAGE;
 
+		// Language selector
 		/**
 		 * Returns the list of languages that should be excluded from selection.
 		 * Excludes languages already selected in other language blocks (excluding current block).
@@ -73,6 +75,7 @@ module.exports = exports = defineComponent( {
 		const excludedLanguages = computed( () => props.functionLanguages
 			.filter( ( _, index ) => index !== props.index )
 		);
+
 		/**
 		 * Whether the language selector should be disabled.
 		 * Disabled when content has been entered in any field (name, description, aliases, or input labels).
@@ -116,6 +119,7 @@ module.exports = exports = defineComponent( {
 			return false;
 		} );
 
+		// Actions
 		/**
 		 * Emits a change event when the selector is set to a new language.
 		 *

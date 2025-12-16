@@ -78,19 +78,43 @@ module.exports = exports = defineComponent( {
 		const { isValidZidFormat } = useType();
 		const store = useMainStore();
 
-		/* Local state for function implementations */
+		// State
+		const currentToast = ref( null );
+
+		// Table helpers
+		/**
+		 * Returns true if all rows in the given state are checked
+		 *
+		 * @param {Object} rows
+		 * @return {boolean}
+		 */
+		const areAllRowsChecked = ( rows ) => Object.keys( rows ).every( ( zid ) => rows[ zid ].checked );
+
+		/**
+		 * Returns true if some rows in the given state are checked
+		 *
+		 * @param {Object} rows
+		 * @return {boolean}
+		 */
+		const areSomeRowsChecked = ( rows ) => Object.keys( rows ).some( ( zid ) => rows[ zid ].checked );
+
+		/**
+		 * Checks or unchecks all rows in the given state
+		 *
+		 * @param {Object} rows
+		 * @param {boolean} value
+		 */
+		function checkAllRows( rows, value ) {
+			for ( const zid in rows ) {
+				rows[ zid ].checked = value;
+			}
+		}
+
+		// Implementations data
 		const implementationsState = ref( {} );
 		const implementationsFetched = ref( false );
 		const implementationsLoading = ref( false );
 
-		/* Local state for function tests */
-		const testsState = ref( {} );
-		const testsFetched = ref( false );
-		const testsLoading = ref( false );
-
-		const currentToast = ref( null );
-
-		// Computed properties
 		/**
 		 * Zids of all implementations for this function
 		 *
@@ -135,35 +159,6 @@ module.exports = exports = defineComponent( {
 			zid: Constants.Z_IMPLEMENTATION,
 			[ Constants.Z_IMPLEMENTATION_FUNCTION ]: store.getCurrentZObjectId
 		} ) );
-
-		// Helper methods for table row management
-		/**
-		 * Returns true if all rows in the given state are checked
-		 *
-		 * @param {Object} rows
-		 * @return {boolean}
-		 */
-		const areAllRowsChecked = ( rows ) => Object.keys( rows ).every( ( zid ) => rows[ zid ].checked );
-
-		/**
-		 * Returns true if some rows in the given state are checked
-		 *
-		 * @param {Object} rows
-		 * @return {boolean}
-		 */
-		const areSomeRowsChecked = ( rows ) => Object.keys( rows ).some( ( zid ) => rows[ zid ].checked );
-
-		/**
-		 * Checks or unchecks all rows in the given state
-		 *
-		 * @param {Object} rows
-		 * @param {boolean} value
-		 */
-		function checkAllRows( rows, value ) {
-			for ( const zid in rows ) {
-				rows[ zid ].checked = value;
-			}
-		}
 
 		/**
 		 * Build the columns for the Implementations table
@@ -290,6 +285,80 @@ module.exports = exports = defineComponent( {
 			}
 			return tableData;
 		} );
+
+		/**
+		 * Sets the local implementations state with the properties
+		 * checked (set to false) and available
+		 *
+		 * @param {Array|null} zids
+		 */
+		function setImplementationsState( zids = null ) {
+			const allZids = zids === null ? allImplementations.value : zids;
+
+			for ( const zid of allZids ) {
+				const isConnected = store.getConnectedImplementations.includes( zid );
+				implementationsState.value[ zid ] = {
+					available: isConnected,
+					checked: false
+				};
+			}
+		}
+
+		/**
+		 * Get the set of checked implementations and connect them to the current function
+		 */
+		function connectCheckedImplementations() {
+			const zids = Object.keys( implementationsState.value ).filter(
+				( zid ) => implementationsState.value[ zid ].checked && !implementationsState.value[ zid ].available
+			);
+
+			implementationsLoading.value = true;
+
+			store.connectImplementations( { zids } ).then( () => {
+				closeToast();
+				setImplementationsState();
+			} ).catch( ( error ) => {
+				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+			} ).finally( () => {
+				implementationsLoading.value = false;
+			} );
+		}
+
+		/**
+		 * Get the set of checked implementations and disconnect them from the current function
+		 */
+		function disconnectCheckedImplementations() {
+			const zids = Object.keys( implementationsState.value ).filter(
+				( zid ) => implementationsState.value[ zid ].checked && implementationsState.value[ zid ].available
+			);
+
+			implementationsLoading.value = true;
+			store.disconnectImplementations( { zids } ).then( () => {
+				closeToast();
+				setImplementationsState();
+			} ).catch( ( error ) => {
+				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+			} ).finally( () => {
+				implementationsLoading.value = false;
+			} );
+		}
+
+		/**
+		 * Fetches all the associated implementations and
+		 * initializes the local state variables
+		 */
+		function initializeImplementations() {
+			// Fetch implementations for the current Function Zid
+			store.fetchImplementations( store.getCurrentZObjectId ).then( ( zids ) => {
+				setImplementationsState( zids );
+				implementationsFetched.value = true;
+			} );
+		}
+
+		// Tests data
+		const testsState = ref( {} );
+		const testsFetched = ref( false );
+		const testsLoading = ref( false );
 
 		/**
 		 * Zids of all tests for this function
@@ -453,41 +522,6 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Computed property to watch the value of the
-		 * fetch flags. The hook will re-run the tests
-		 * every time that a change is observed
-		 *
-		 * @return {boolean}
-		 */
-		const fetchedObjects = computed( () => implementationsFetched.value && testsFetched.value );
-
-		// Methods
-		/**
-		 * Closes the warning toast message
-		 */
-		function closeToast() {
-			currentToast.value = null;
-		}
-
-		/**
-		 * Sets the local implementations state with the properties
-		 * checked (set to false) and available
-		 *
-		 * @param {Array|null} zids
-		 */
-		function setImplementationsState( zids = null ) {
-			const allZids = zids === null ? allImplementations.value : zids;
-
-			for ( const zid of allZids ) {
-				const isConnected = store.getConnectedImplementations.includes( zid );
-				implementationsState.value[ zid ] = {
-					available: isConnected,
-					checked: false
-				};
-			}
-		}
-
-		/**
 		 * Sets the local implementations state with the properties
 		 * checked (set to false) and available
 		 *
@@ -502,69 +536,6 @@ module.exports = exports = defineComponent( {
 					checked: false
 				};
 			}
-		}
-
-		/**
-		 * Fetches all the associated implementations and
-		 * initializes the local state variables
-		 */
-		function initializeImplementations() {
-			// Fetch implementations for the current Function Zid
-			store.fetchImplementations( store.getCurrentZObjectId ).then( ( zids ) => {
-				setImplementationsState( zids );
-				implementationsFetched.value = true;
-			} );
-		}
-
-		/**
-		 * Fetches all the associated tests and
-		 * initializes the local state variables
-		 */
-		function initializeTests() {
-			// Fetch tests for the current Function Zid
-			store.fetchTests( store.getCurrentZObjectId ).then( ( zids ) => {
-				setTestsState( zids );
-				testsFetched.value = true;
-			} );
-		}
-
-		/**
-		 * Get the set of checked implementations and connect them to the current function
-		 */
-		function connectCheckedImplementations() {
-			const zids = Object.keys( implementationsState.value ).filter(
-				( zid ) => implementationsState.value[ zid ].checked && !implementationsState.value[ zid ].available
-			);
-
-			implementationsLoading.value = true;
-
-			store.connectImplementations( { zids } ).then( () => {
-				closeToast();
-				setImplementationsState();
-			} ).catch( ( error ) => {
-				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
-			} ).finally( () => {
-				implementationsLoading.value = false;
-			} );
-		}
-
-		/**
-		 * Get the set of checked implementations and disconnect them from the current function
-		 */
-		function disconnectCheckedImplementations() {
-			const zids = Object.keys( implementationsState.value ).filter(
-				( zid ) => implementationsState.value[ zid ].checked && implementationsState.value[ zid ].available
-			);
-
-			implementationsLoading.value = true;
-			store.disconnectImplementations( { zids } ).then( () => {
-				closeToast();
-				setImplementationsState();
-			} ).catch( ( error ) => {
-				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
-			} ).finally( () => {
-				implementationsLoading.value = false;
-			} );
 		}
 
 		/**
@@ -602,6 +573,36 @@ module.exports = exports = defineComponent( {
 				testsLoading.value = false;
 			} );
 		}
+
+		/**
+		 * Fetches all the associated tests and
+		 * initializes the local state variables
+		 */
+		function initializeTests() {
+			// Fetch tests for the current Function Zid
+			store.fetchTests( store.getCurrentZObjectId ).then( ( zids ) => {
+				setTestsState( zids );
+				testsFetched.value = true;
+			} );
+		}
+
+		// Toast
+		/**
+		 * Closes the warning toast message
+		 */
+		function closeToast() {
+			currentToast.value = null;
+		}
+
+		// Test execution
+		/**
+		 * Computed property to watch the value of the
+		 * fetch flags. The hook will re-run the tests
+		 * every time that a change is observed
+		 *
+		 * @return {boolean}
+		 */
+		const fetchedObjects = computed( () => implementationsFetched.value && testsFetched.value );
 
 		/**
 		 * Triggers the re-run of all the tests and sets the result

@@ -16,10 +16,10 @@
 			<cdx-button
 				v-if="hasItems"
 				weight="quiet"
-				:aria-label="reloadLabel"
+				:aria-label="reloadButton.label"
 				@click="runTesters"
 			>
-				<cdx-icon :icon="reloadIcon"></cdx-icon>
+				<cdx-icon :icon="reloadButton.icon"></cdx-icon>
 			</cdx-button>
 		</template>
 
@@ -99,14 +99,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		const activeImplementationZid = ref( null );
-		const activeTesterZid = ref( null );
+		// Constants
 		const errorId = Constants.ERROR_IDS.TEST_RESULTS;
-		const showMetrics = ref( false );
-		const fetching = ref( false );
-		let abortController = null;
 
-		// Computed properties
+		// Report type
 		/**
 		 * Whether it is a report for an implementation page.
 		 *
@@ -121,6 +117,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const isTesterReport = computed( () => props.contentType === Constants.Z_TESTER );
 
+		// Data access
 		/**
 		 * Returns the selected Implementation zid if we are in an implementation
 		 * page; else returns null.
@@ -199,6 +196,11 @@ module.exports = exports = defineComponent( {
 		 */
 		const hasItems = computed( () => props.functionZid && zids.value.length > 0 );
 
+		// Metrics dialog
+		const activeImplementationZid = ref( null );
+		const activeTesterZid = ref( null );
+		const showMetrics = ref( false );
+
 		/**
 		 * Returns the metadata object for the current open metrics dialog;
 		 * else, returns null
@@ -226,37 +228,6 @@ module.exports = exports = defineComponent( {
 		) );
 
 		/**
-		 * Returns the icon for the top right corner of the widget,
-		 * depending on the running state.
-		 *
-		 * @return {string}
-		 */
-		const reloadIcon = computed( () => fetching.value ? icons.cdxIconCancel : icons.cdxIconReload );
-
-		/**
-		 * Returns the title of the widget, depending on the page type
-		 *
-		 * @return {string}
-		 */
-		const title = computed( () => (
-			isTesterReport.value ?
-				i18n( 'wikilambda-function-implementation-table-header' ).text() :
-				i18n( 'wikilambda-function-test-cases-table-header' ).text()
-		) );
-
-		/**
-		 * Returns the label of the reload button
-		 *
-		 * @return {string}
-		 */
-		const reloadLabel = computed( () => (
-			fetching.value ?
-				i18n( 'wikilambda-tester-status-cancel' ).text() :
-				i18n( 'wikilambda-tester-status-run' ).text()
-		) );
-
-		// Methods
-		/**
 		 * Sets the target zids and opens the metrics dialog
 		 *
 		 * @param {Object} keys
@@ -275,6 +246,11 @@ module.exports = exports = defineComponent( {
 			activeTesterZid.value = null;
 			showMetrics.value = false;
 		}
+
+		// Test execution
+		const fetching = ref( false );
+		let abortController = null;
+
 		/**
 		 * Cancels the current test request
 		 */
@@ -335,7 +311,32 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
-		// Watch
+		// UI display
+		/**
+		 * Returns the title of the widget, depending on the page type
+		 *
+		 * @return {string}
+		 */
+		const title = computed( () => (
+			isTesterReport.value ?
+				i18n( 'wikilambda-function-implementation-table-header' ).text() :
+				i18n( 'wikilambda-function-test-cases-table-header' ).text()
+		) );
+
+		/**
+		 * Returns the reload button configuration (icon and label)
+		 * depending on the running state.
+		 *
+		 * @return {Object}
+		 */
+		const reloadButton = computed( () => ( {
+			icon: fetching.value ? icons.cdxIconCancel : icons.cdxIconReload,
+			label: fetching.value ?
+				i18n( 'wikilambda-tester-status-cancel' ).text() :
+				i18n( 'wikilambda-tester-status-run' ).text()
+		} ) );
+
+		// Watch implementations and testers
 		watch( implementations, ( newValue, oldValue ) => {
 			if ( !arraysAreEqual( oldValue, newValue ) ) {
 				store.fetchZids( { zids: implementations.value } );
@@ -386,8 +387,7 @@ module.exports = exports = defineComponent( {
 			isTesterReport,
 			metadata,
 			openMetricsDialog,
-			reloadIcon,
-			reloadLabel,
+			reloadButton,
 			runTesters,
 			showMetrics,
 			testerZid,

@@ -125,32 +125,22 @@ module.exports = exports = defineComponent( {
 		const eventLogUtils = useEventLog();
 		const store = useMainStore();
 
+		// Dialog state
 		const summary = ref( '' );
 		const hasKeyboardSubmitWarning = ref( false );
 		const isPublishing = ref( false );
 
-		// Computed properties
 		/**
-		 * Returns the status of the summary text field.
-		 *
-		 * @return {string}
+		 * Clears the error notifications and emits a close-dialog
+		 * event for the Publish widget to close the dialog.
 		 */
-		const status = computed( () => hasKeyboardSubmitWarning.value ? 'warning' : 'default' );
+		function closeDialog() {
+			hasKeyboardSubmitWarning.value = false;
 
-		/**
-		 * Returns the array of errors and warnings of the page
-		 *
-		 * @return {Array}
-		 */
-		const errors = computed( () => store.getErrors( Constants.STORED_OBJECTS.MAIN ) );
-
-		/**
-		 * Returns whether there are any errors in the page
-		 * to show in the publish dialog
-		 *
-		 * @return { boolean }
-		 */
-		const hasErrors = computed( () => errors.value.length !== 0 );
+			// Clear all publish dialog errors/warnings (errorId: "main"), preserve field-level warnings
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+			emit( 'close-dialog' );
+		}
 
 		/**
 		 * Returns an object of type PrimaryModalAction that describes
@@ -170,64 +160,34 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Object}
 		 */
-		const defaultAction = computed( () => ( {
+		const defaultAction = {
 			label: i18n( 'wikilambda-cancel' ).text()
-		} ) );
+		};
+
+		// Errors and warnings
+		/**
+		 * Returns the array of errors and warnings of the page
+		 *
+		 * @return {Array}
+		 */
+		const errors = computed( () => store.getErrors( Constants.STORED_OBJECTS.MAIN ) );
 
 		/**
-		 * Returns the title for the Publish dialog
+		 * Returns whether there are any errors in the page
+		 * to show in the publish dialog
+		 *
+		 * @return { boolean }
+		 */
+		const hasErrors = computed( () => errors.value.length !== 0 );
+
+		/**
+		 * Returns the status of the summary text field.
 		 *
 		 * @return {string}
 		 */
-		/**
-		 * Returns the legal text to display in the Publish Dialog, depending
-		 * on the type of object that is being submitted:
-		 * * Special message for implementations (Apache 2.0 licence for code).
-		 * * General message for all other kinds of ZObjects (CC0).
-		 *
-		 * @return { string }
-		 */
-		const legalText = computed( () => (
-			store.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ?
-				i18n( 'wikifunctions-editing-copyrightwarning-implementation' ).parse() :
-				i18n( 'wikifunctions-editing-copyrightwarning-function' ).parse()
-		) );
+		const status = computed( () => hasKeyboardSubmitWarning.value ? 'warning' : 'default' );
 
-		/**
-		 * Returns a warning message which informs the user that they can submit using Ctrl/CMD + Enter;
-		 *
-		 * @return {string}
-		 */
-		const keyboardSubmitMessage = computed( () => {
-			const isMac = /Mac|iPod|iPhone|iPad/.test( navigator.userAgent );
-			// Make sure the message is escaped, but insert the key HTML without escaping it
-			return i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning' ).escaped()
-				.replace( '$1', isMac ? cmdKeyChar : ctrlKeyChar )
-				.replace( '$2', enterKeyChar );
-		} );
-
-		// Methods
-		/**
-		 * Handle pressing the Enter key on the summary field.
-		 *
-		 * @param {Event} event The keydown event.
-		 */
-		function handleSummaryEnter( event ) {
-			event.preventDefault();
-			hasKeyboardSubmitWarning.value = true;
-		}
-
-		/**
-		 * Clears the error notifications and emits a close-dialog
-		 * event for the Publish widget to close the dialog.
-		 */
-		function closeDialog() {
-			hasKeyboardSubmitWarning.value = false;
-
-			// Clear all publish dialog errors/warnings (errorId: "main"), preserve field-level warnings
-			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
-			emit( 'close-dialog' );
-		}
+		// Submission state
 
 		/**
 		 * Navigates to the page specified by the pageTitle parameter.
@@ -302,6 +262,30 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		// Keyboard handling
+		/**
+		 * Handle pressing the Enter key on the summary field.
+		 *
+		 * @param {Event} event The keydown event.
+		 */
+		function handleSummaryEnter( event ) {
+			event.preventDefault();
+			hasKeyboardSubmitWarning.value = true;
+		}
+
+		/**
+		 * Returns a warning message which informs the user that they can submit using Ctrl/CMD + Enter;
+		 *
+		 * @return {string}
+		 */
+		const keyboardSubmitMessage = computed( () => {
+			const isMac = /Mac|iPod|iPhone|iPad/.test( navigator.userAgent );
+			// Make sure the message is escaped, but insert the key HTML without escaping it
+			return i18n( 'wikilambda-editor-publish-dialog-keyboard-submit-warning' ).escaped()
+				.replace( '$1', isMac ? cmdKeyChar : ctrlKeyChar )
+				.replace( '$2', enterKeyChar );
+		} );
+
 		/**
 		 * Handles the keydown event on the summary text field.
 		 * - If the user presses Ctrl/Cmd + Enter, publishes the ZObject.
@@ -323,6 +307,21 @@ module.exports = exports = defineComponent( {
 				handleSummaryEnter( event );
 			}
 		}
+
+		// Legal text
+		/**
+		 * Returns the legal text to display in the Publish Dialog, depending
+		 * on the type of object that is being submitted:
+		 * * Special message for implementations (Apache 2.0 licence for code).
+		 * * General message for all other kinds of ZObjects (CC0).
+		 *
+		 * @return { string }
+		 */
+		const legalText = computed( () => (
+			store.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ?
+				i18n( 'wikifunctions-editing-copyrightwarning-implementation' ).parse() :
+				i18n( 'wikifunctions-editing-copyrightwarning-function' ).parse()
+		) );
 
 		// Return all properties and methods for the template
 		return {

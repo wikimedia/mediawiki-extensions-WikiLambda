@@ -84,6 +84,7 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Title
 		/**
 		 * Returns the label data for the item title
 		 *
@@ -103,6 +104,7 @@ module.exports = exports = defineComponent( {
 			return urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid } );
 		} );
 
+		// Tester status
 		/**
 		 * Returns whether the tester passed
 		 *
@@ -134,6 +136,13 @@ module.exports = exports = defineComponent( {
 			}
 			return Constants.TESTER_STATUS.READY;
 		} );
+
+		/**
+		 * Returns whether the tester is currently running
+		 *
+		 * @return {boolean}
+		 */
+		const isRunning = computed( () => status.value === Constants.TESTER_STATUS.RUNNING );
 
 		/**
 		 * Returns the status message
@@ -169,13 +178,7 @@ module.exports = exports = defineComponent( {
 			return icons.cdxIconClock;
 		} );
 
-		/**
-		 * Returns whether the tester is currently running
-		 *
-		 * @return {boolean}
-		 */
-		const isRunning = computed( () => status.value === Constants.TESTER_STATUS.RUNNING );
-
+		// Actions
 		/**
 		 * Emits set-keys event with implementation and tester zids
 		 */

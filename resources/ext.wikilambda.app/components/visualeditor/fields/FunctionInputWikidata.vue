@@ -72,8 +72,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// State
 		const isValidating = ref( false );
 
+		// Entity data
 		/**
 		 * Get the Wikidata entity type based on the input type
 		 *
@@ -98,6 +100,7 @@ module.exports = exports = defineComponent( {
 			return labelData ? labelData.label : '';
 		} );
 
+		// Validation configuration
 		/**
 		 * Whether this input type allows for empty fields
 		 *
@@ -105,6 +108,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const allowsEmptyField = computed( () => Constants.VE_ALLOW_EMPTY_FIELD.includes( props.inputType ) );
 
+		// Placeholder
 		/**
 		 * Returns the placeholder text.
 		 * If the default value checkbox is checked, return the default value label,
@@ -124,6 +128,8 @@ module.exports = exports = defineComponent( {
 			}
 			return '';
 		} );
+
+		// Validation
 		/**
 		 * Updates the validation state
 		 *
@@ -220,6 +226,7 @@ module.exports = exports = defineComponent( {
 			validateEntity( value, emitUpdate );
 		}
 
+		// Event handlers
 		/**
 		 * Handle Wikidata entity selection:
 		 * * emits 'input' event to set the local variable to the new value
@@ -233,6 +240,7 @@ module.exports = exports = defineComponent( {
 			validateEntity( value, true );
 		}
 
+		// Data fetching
 		/**
 		 * Fetches the default value from wikidata.
 		 */
@@ -242,16 +250,12 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
-		/**
-		 * Watch for changes to shouldUseDefaultValue and re-validate
-		 *
-		 * @param {string} value
-		 * @param {boolean} emitUpdate
-		 */
+		// Watch
 		watch( () => props.shouldUseDefaultValue, () => {
 			validate( entityId.value );
 		} );
 
+		// Lifecycle
 		onMounted( () => {
 			fetchDefaultValue();
 			validate( entityId.value );

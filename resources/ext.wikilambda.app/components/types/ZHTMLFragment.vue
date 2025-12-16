@@ -62,17 +62,19 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
+		// Data access
 		const { getZHTMLFragmentTerminalValue } = useZObject( { keyPath: props.keyPath } );
 
-		const editorValue = ref( '' );
-		const allowSetEditorValue = ref( true );
-
 		/**
-		 * Returns the value of the selected reference.
+		 * Returns the value of the HTML fragment.
 		 *
 		 * @return {string}
 		 */
 		const value = computed( () => getZHTMLFragmentTerminalValue( props.objectValue ) );
+
+		// Editor state
+		const editorValue = ref( '' );
+		const allowSetEditorValue = ref( true );
 
 		/**
 		 * Updates the value of the HTML fragment value (Z89K1)
@@ -98,7 +100,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
-		// Watchers
+		// Watch
 		watch( value, () => {
 			// Check allowSetEditorValue to ensure we only set value in the editor when its current value should be
 			// overridden (e.g. when the editor is first loaded). Ensuring this

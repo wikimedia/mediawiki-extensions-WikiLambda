@@ -137,10 +137,14 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const iconTrash = icons.cdxIconTrash;
 		const maxInputLabelChars = Constants.INPUT_CHARS_MAX;
+
+		// State
 		const remainingChars = ref( Constants.INPUT_CHARS_MAX );
 
+		// Input display
 		/**
 		 * Returns the label and index for the current input.
 		 * If not active, returns label, index and selected type.
@@ -161,6 +165,7 @@ module.exports = exports = defineComponent( {
 			i18n( 'wikilambda-function-definition-input-item-type' ).text()
 		) );
 
+		// Actions
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K2 field
 		 *

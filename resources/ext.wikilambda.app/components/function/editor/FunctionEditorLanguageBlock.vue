@@ -51,7 +51,7 @@
 			:can-edit="canEditFunction"
 			:lang-label-data="langLabelData"
 			:tooltip-icon="iconLock"
-			:tooltip-message="adminTooltipMessage"
+			:tooltip-message="i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text()"
 			@argument-label-updated="onLabelsUpdated"
 		></wl-function-editor-inputs>
 		<!-- component that displays output for a language -->
@@ -61,7 +61,7 @@
 			data-testid="function-editor-output"
 			:can-edit="canEditFunction"
 			:tooltip-icon="iconLock"
-			:tooltip-message="adminTooltipMessage"
+			:tooltip-message="i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text()"
 		></wl-function-editor-output>
 	</div>
 </template>
@@ -109,8 +109,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const iconLock = icons.cdxIconLock;
 
+		// Language block data
 		/**
 		 * Returns whether the current language block is the first (main) one
 		 *
@@ -118,6 +120,14 @@ module.exports = exports = defineComponent( {
 		 */
 		const isMainLanguageBlock = computed( () => props.index === 0 );
 
+		/**
+		 * Returns the label data of the blocks language
+		 *
+		 * @return {LabelData}
+		 */
+		const langLabelData = computed( () => store.getLabelDataForLangCode( props.zLanguage ) );
+
+		// Edit permissions
 		/**
 		 * Returns whether the user can edit the function
 		 *
@@ -127,22 +137,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const canEditFunction = computed( () => store.isCreateNewPage ? true : store.isUserLoggedIn );
 
-		/**
-		 * Message for admin tooltip
-		 *
-		 * TODO (T299604): Check which group has the right and display it
-		 *
-		 * @return {string}
-		 */
-		const adminTooltipMessage = computed( () => i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text() );
-
-		/**
-		 * Returns the label data of the blocks language
-		 *
-		 * @return {LabelData}
-		 */
-		const langLabelData = computed( () => store.getLabelDataForLangCode( props.zLanguage ) );
-
+		// Actions
 		/**
 		 * Emits a language changed event
 		 *
@@ -163,11 +158,11 @@ module.exports = exports = defineComponent( {
 		}
 
 		return {
-			adminTooltipMessage,
 			canEditFunction,
 			iconLock,
 			isMainLanguageBlock,
 			langLabelData,
+			i18n,
 			onLanguageChanged,
 			onLabelsUpdated
 		};

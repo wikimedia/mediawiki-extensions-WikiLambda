@@ -150,10 +150,10 @@ module.exports = exports = defineComponent( {
 		} = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		// Data
+		// Constants
 		const functionKey = Constants.Z_IMPLEMENTATION_FUNCTION;
 
-		// Computed properties
+		// Function data
 		/**
 		 * Returns the LabelData object for the implementation Function/Z14K1 key
 		 *
@@ -168,6 +168,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const functionZid = computed( () => getZImplementationFunctionZid( props.objectValue ) );
 
+		// Implementation type data
 		/**
 		 * Returns the implementation type or key which is selected.
 		 * The values are Z14K2 for composition, Z14K3 for code or
@@ -176,21 +177,6 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		const implementationType = computed( () => getZImplementationContentType( props.objectValue ) );
-
-		/**
-		 * Sets the implementation type and initializes the value
-		 * to a blank scaffolding depending on what key is selected.
-		 *
-		 * @param {string} value
-		 */
-		function setImplementationType( value ) {
-			if ( props.edit ) {
-				emit( 'set-value', {
-					keyPath: [ value ],
-					value: ''
-				} );
-			}
-		}
 
 		/**
 		 * Returns the LabelData object for the implementation type
@@ -236,6 +222,21 @@ module.exports = exports = defineComponent( {
 				value: Constants.Z_IMPLEMENTATION_COMPOSITION
 			}
 		] );
+
+		/**
+		 * Sets the implementation type and initializes the value
+		 * to a blank scaffolding depending on what key is selected.
+		 *
+		 * @param {string} value
+		 */
+		function setImplementationType( value ) {
+			if ( props.edit ) {
+				emit( 'set-value', {
+					keyPath: [ value ],
+					value: ''
+				} );
+			}
+		}
 
 		return {
 			functionKey,

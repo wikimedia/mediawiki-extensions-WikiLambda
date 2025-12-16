@@ -140,10 +140,11 @@ module.exports = exports = defineComponent( {
 		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
+		// State
 		const blankObject = ref( undefined );
+		const userInputValue = ref( '' );
 		const renderTestsInitialized = ref( false );
 		const renderedValue = ref( '' );
-		const userInputValue = ref( '' );
 		const rendererRunning = ref( false );
 		const showExamplesDialog = ref( false );
 		const showExamplesLink = ref( false );
@@ -151,7 +152,7 @@ module.exports = exports = defineComponent( {
 		const pendingPromises = [];
 		let parserAbortController = null;
 
-		// Computed properties
+		// Type data
 		/**
 		 * Return the stored type object
 		 *
@@ -159,6 +160,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const typeObject = computed( () => store.getStoredObject( props.type ) );
 
+		// Renderer data
 		/**
 		 * Return renderer function Zid
 		 *
@@ -182,13 +184,6 @@ module.exports = exports = defineComponent( {
 			langCode: store.getUserLangCode,
 			zid: rendererZid.value
 		} ) );
-
-		/**
-		 * Return parser function Zid
-		 *
-		 * @return {string}
-		 */
-		const parserZid = computed( () => store.getParserZid( props.type ) );
 
 		/**
 		 * Returns the rendered examples in case the renderer
@@ -238,55 +233,6 @@ module.exports = exports = defineComponent( {
 		 */
 		const noRenderedValue = computed( () => props.edit ? '' : i18n( 'wikilambda-renderer-view-invalid-result' ).text() );
 
-		// Methods
-		/**
-		 * Sets the given error message for current errorId
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.errorMessage - raw error message, unsafe for HTML rendering
-		 * @param {string} payload.errorMessageKey - i18n message, safe for HTML rendering
-		 * @param {Array} payload.errorParams - i18n message parameters (if any)
-		 */
-		function setFieldError( payload ) {
-			const errorData = Object.assign( {
-				errorId: props.keyPath,
-				errorType: Constants.ERROR_TYPES.ERROR
-			}, payload );
-
-			store.setError( errorData );
-		}
-
-		/**
-		 * Clears renderer field errors
-		 */
-		function clearRendererError() {
-			showExamplesLink.value = false;
-			showErrorFooter.value = false;
-			rendererRunning.value = false;
-			clearFieldErrors();
-		}
-
-		/**
-		 * Create the model for a blank object of this type and store it locally.
-		 * This initialization will only be run once, and only when we know for
-		 * sure that the typeObject is available.
-		 * The blank object is in canonical form, but it must be transformed into
-		 * hybrid form before setting it up in the store zobject.
-		 */
-		function initializeBlankObject() {
-			blankObject.value = hybridToCanonical( store.createObjectByType( { type: props.type } ) );
-		}
-
-		/**
-		 * If the object type is changed, surface the event so that
-		 * the ZObjectKeyValue parent component makes the type change.
-		 *
-		 * @param {Object} payload
-		 */
-		function setType( payload ) {
-			emit( 'set-type', payload );
-		}
-
 		/**
 		 * Update the local renderedValue variable with the new
 		 * value and trigger the function call to generate the new
@@ -299,6 +245,7 @@ module.exports = exports = defineComponent( {
 			userInputValue.value = event.target.value;
 			generateParsedValue();
 		}
+
 		/**
 		 * Trigger the call to the Renderer function for this type
 		 * passing the current object values, and set the returned string
@@ -370,6 +317,25 @@ module.exports = exports = defineComponent( {
 				setFieldError( { errorMessageKey: 'wikilambda-renderer-api-error' } );
 			} );
 		}
+
+		/**
+		 * Clears renderer field errors
+		 */
+		function clearRendererError() {
+			showExamplesLink.value = false;
+			showErrorFooter.value = false;
+			rendererRunning.value = false;
+			clearFieldErrors();
+		}
+
+		// Parser data
+		/**
+		 * Return parser function Zid
+		 *
+		 * @return {string}
+		 */
+		const parserZid = computed( () => store.getParserZid( props.type ) );
+
 		/**
 		 * Trigger the call to the Parser function for this type
 		 * passing the current rendererValue, and set the returned object
@@ -454,6 +420,48 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		// Error handling
+		/**
+		 * Sets the given error message for current errorId
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.errorMessage - raw error message, unsafe for HTML rendering
+		 * @param {string} payload.errorMessageKey - i18n message, safe for HTML rendering
+		 * @param {Array} payload.errorParams - i18n message parameters (if any)
+		 */
+		function setFieldError( payload ) {
+			const errorData = Object.assign( {
+				errorId: props.keyPath,
+				errorType: Constants.ERROR_TYPES.ERROR
+			}, payload );
+
+			store.setError( errorData );
+		}
+
+		// Initialization
+		/**
+		 * Create the model for a blank object of this type and store it locally.
+		 * This initialization will only be run once, and only when we know for
+		 * sure that the typeObject is available.
+		 * The blank object is in canonical form, but it must be transformed into
+		 * hybrid form before setting it up in the store zobject.
+		 */
+		function initializeBlankObject() {
+			blankObject.value = hybridToCanonical( store.createObjectByType( { type: props.type } ) );
+		}
+
+		// Key-value set actions
+		/**
+		 * If the object type is changed, surface the event so that
+		 * the ZObjectKeyValue parent component makes the type change.
+		 *
+		 * @param {Object} payload
+		 */
+		function setType( payload ) {
+			emit( 'set-type', payload );
+		}
+
+		// Examples dialog
 		/**
 		 * Runs the test results for the renderer function. This
 		 * call must be treated asynchronously, so all the results
@@ -487,6 +495,7 @@ module.exports = exports = defineComponent( {
 			showExamplesDialog.value = true;
 		}
 
+		// Watch
 		/**
 		 * Watch the prop expanded. When the field is collapsed
 		 * generate the rendered value. When the field is expanded

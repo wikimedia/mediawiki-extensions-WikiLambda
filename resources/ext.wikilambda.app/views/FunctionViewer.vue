@@ -86,8 +86,10 @@ module.exports = exports = defineComponent( {
 			loadFunctionCallFromUrl
 		} = useShareUrl();
 
+		// Constants
 		const functionType = Constants.Z_FUNCTION;
 
+		// UI display
 		/**
 		 * Returns whether to display the success message
 		 *
@@ -95,6 +97,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const displaySuccessMessage = computed( () => store.getShowPublishSuccess );
 
+		// Actions
 		/**
 		 * Dispatch event after a click of the edit icon in the About widget.
 		 */

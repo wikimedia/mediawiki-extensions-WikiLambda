@@ -131,22 +131,7 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
 
-		const inputValue = ref( '' );
-		const lookupResults = ref( [] );
-		const lookupConfig = ref( {
-			boldLabel: true,
-			searchQuery: '',
-			visibleItemLimit: 5,
-			searchContinue: null
-		} );
-		let lookupDelayTimer = null;
-		const lookupDelayMs = 300;
-		let lookupAbortController = null;
-		const selectConfig = {
-			visibleItemLimit: 5
-		};
-
-		// Computed properties
+		// Shared data
 		/**
 		 * Value model for the internal codex lookup component. It
 		 * must be null or the value (Zid) of the selected MenuItem.
@@ -166,14 +151,7 @@ module.exports = exports = defineComponent( {
 			store.getLabelData( props.selectedZid ).label :
 			'' );
 
-		/**
-		 * Returns whether the type is an enumeration
-		 *
-		 * @return {boolean}
-		 */
-		const isEnum = computed( () => store.isEnumType( props.type ) );
-
-		// Helper method for getLabelOrZid (defined early for use in computed)
+		// Helpers
 		/**
 		 * Returns the label for the given value if it exists, otherwise returns the value itself.
 		 * If the requested language is 'qqx', return (value/zid) as the label.
@@ -209,6 +187,107 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		const isExcludedZid = ( zid ) => props.excludeZids.includes( zid ) || isDisallowedType( zid );
+
+		// Select (enum) feature
+		const selectConfig = {
+			visibleItemLimit: 5
+		};
+
+		/**
+		 * Returns whether the type is an enumeration
+		 *
+		 * @return {boolean}
+		 */
+		const isEnum = computed( () => store.isEnumType( props.type ) );
+
+		/**
+		 * Returns the menu items for the enum selector, sorted by their ZID.
+		 *
+		 * By passing selected Zid to store.getEnumValues getter, it will manually
+		 * include this item in the enum list if:
+		 * * it's not part of the first page of enum values
+		 * * it's a valid instance of the enum type
+		 *
+		 * @return {Array}
+		 */
+		const enumValues = computed( () => {
+			const items = store.getEnumValues( props.type, props.selectedZid )
+				.slice()
+				// (T368497) We sort by page_title (which will be the ZID), in English for stability.
+				.sort( createLabelComparator( 'en', 'page_title' ) );
+			return items.map( ( item ) => {
+				const value = item.page_title;
+				const label = getLabelOrZid( value, item.label );
+				return { value, label };
+			} );
+		} );
+
+		/**
+		 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
+		 * and there are more results to load.
+		 */
+		function onLoadMoreSelect() {
+			store.fetchEnumValues( { type: props.type } );
+		}
+
+		// Lookup feature
+		// State
+		const inputValue = ref( '' );
+		const lookupResults = ref( [] );
+		const lookupConfig = ref( {
+			boldLabel: true,
+			searchQuery: '',
+			visibleItemLimit: 5,
+			searchContinue: null
+		} );
+		const lookupDelayMs = 300;
+		let lookupDelayTimer = null;
+		let lookupAbortController = null;
+
+		// Configuration
+		/**
+		 * Returns the array of zids to pass as the wikilambdasearch_type
+		 * parameter to the wikilambdasearch_labels API.
+		 *
+		 * @return {Array}
+		 */
+		const lookupTypes = computed( () => {
+			const types = [];
+			// If type is set, add to the array
+			if ( props.type ) {
+				types.push( props.type );
+			}
+			// If type=Z4, we allow Z7s that return Z4s
+			if ( props.type === Constants.Z_TYPE ) {
+				types.push( Constants.Z_FUNCTION_CALL );
+			}
+			// Return array of types if any
+			return types.length ? types : undefined;
+		} );
+
+		/**
+		 * Returns the array of zids to pass as the wikilambdasearch_return_type
+		 * parameter to the wikilambdasearch_labels API.
+		 *
+		 * @return {Array}
+		 */
+		const lookupReturnTypes = computed( () => {
+			const types = [];
+			// If return type is set, we add type and Z1
+			if ( props.returnType ) {
+				types.push( props.returnType );
+			}
+			// If type=Z4, we allow Z7s that return Z4s or Z1s
+			if ( props.type === Constants.Z_TYPE ) {
+				types.push( Constants.Z_TYPE );
+			}
+			// If return type is defined but strictReturnType=false, we add Z1
+			if ( types.length > 0 && !props.strictReturnType ) {
+				types.push( Constants.Z_OBJECT );
+			}
+			// Return array of return types if any
+			return types.length ? types : undefined;
+		} );
 
 		/**
 		 * Returns the computed suggestions for the given type.
@@ -282,28 +361,6 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Returns the menu items for the enum selector, sorted by their ZID.
-		 *
-		 * By passing selected Zid to store.getEnumValues getter, it will manually
-		 * include this item in the enum list if:
-		 * * it's not part of the first page of enum values
-		 * * it's a valid instance of the enum type
-		 *
-		 * @return {Array}
-		 */
-		const enumValues = computed( () => {
-			const items = store.getEnumValues( props.type, props.selectedZid )
-				.slice()
-				// (T368497) We sort by page_title (which will be the ZID), in English for stability.
-				.sort( createLabelComparator( 'en', 'page_title' ) );
-			return items.map( ( item ) => {
-				const value = item.page_title;
-				const label = getLabelOrZid( value, item.label );
-				return { value, label };
-			} );
-		} );
-
-		/**
 		 * Returns the placeholder for the Lookup selector, either
 		 * the value passed as an input prop, or a built-in message
 		 * depending on the type.
@@ -347,72 +404,6 @@ module.exports = exports = defineComponent( {
 			// All field errors are warnings
 			return 'warning';
 		} );
-
-		/**
-		 * Returns the array of zids to pass as the wikilambdasearch_type
-		 * parameter to the wikilambdasearch_labels API.
-		 *
-		 * @return {Array}
-		 */
-		const lookupTypes = computed( () => {
-			const types = [];
-			// If type is set, add to the array
-			if ( props.type ) {
-				types.push( props.type );
-			}
-			// If type=Z4, we allow Z7s that return Z4s
-			if ( props.type === Constants.Z_TYPE ) {
-				types.push( Constants.Z_FUNCTION_CALL );
-			}
-			// Return array of types if any
-			return types.length ? types : undefined;
-		} );
-
-		/**
-		 * Returns the array of zids to pass as the wikilambdasearch_return_type
-		 * parameter to the wikilambdasearch_labels API.
-		 *
-		 * @return {Array}
-		 */
-		const lookupReturnTypes = computed( () => {
-			const types = [];
-			// If return type is set, we add type and Z1
-			if ( props.returnType ) {
-				types.push( props.returnType );
-			}
-			// If type=Z4, we allow Z7s that return Z4s or Z1s
-			if ( props.type === Constants.Z_TYPE ) {
-				types.push( Constants.Z_TYPE );
-			}
-			// If return type is defined but strictReturnType=false, we add Z1
-			if ( types.length > 0 && !props.strictReturnType ) {
-				types.push( Constants.Z_OBJECT );
-			}
-			// Return array of return types if any
-			return types.length ? types : undefined;
-		} );
-
-		// Methods
-		/**
-		 * Load more values for the enumeration selector when the user scrolls to the bottom of the list
-		 * and there are more results to load.
-		 */
-		function onLoadMoreSelect() {
-			store.fetchEnumValues( { type: props.type } );
-		}
-
-		/**
-		 * Reset the abort controller and return the signal.
-		 *
-		 * @return {AbortSignal}
-		 */
-		function resetAbortController() {
-			if ( lookupAbortController ) {
-				lookupAbortController.abort();
-			}
-			lookupAbortController = new AbortController();
-			return lookupAbortController.signal;
-		}
 
 		/**
 		 * Determines the appropriate icon for a lookup result based on its type.
@@ -532,6 +523,19 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Reset the abort controller and return the signal.
+		 *
+		 * @return {AbortSignal}
+		 */
+		function resetAbortController() {
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
+			}
+			lookupAbortController = new AbortController();
+			return lookupAbortController.signal;
+		}
+
+		/**
 		 * Handle get zObject lookup.
 		 * update lookup results with label and update in store.
 		 *
@@ -562,6 +566,7 @@ module.exports = exports = defineComponent( {
 			getLookupResults( lookupConfig.value.searchQuery );
 		}
 
+		// Event handlers
 		/**
 		 * On field input, perform a backend lookup and set the lookupResults
 		 * array. When searching for a Zid, validate and select.
@@ -687,19 +692,10 @@ module.exports = exports = defineComponent( {
 		}
 
 		// Watch
-		/**
-		 * When label of selected Zid is updated, updates
-		 * the input value shown in the field.
-		 */
 		watch( selectedLabel, ( label ) => {
 			inputValue.value = label;
 		} );
 
-		/**
-		 * When isEnum flag changes (due to a type change, or
-		 * due to delayed retrieval of type data), it initializes
-		 * the fetching of the enum values.
-		 */
 		watch( isEnum, ( value ) => {
 			if ( value ) {
 				store.fetchEnumValues( { type: props.type, limit: Constants.API_ENUMS_FIRST_LIMIT } );

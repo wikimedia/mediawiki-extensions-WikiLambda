@@ -68,10 +68,14 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		const ignoreChangeEvent = ref( false );
+		// Constants
 		const maxDescriptionChars = Constants.DESCRIPTION_CHARS_MAX;
+
+		// State
+		const ignoreChangeEvent = ref( false );
 		const remainingChars = ref( Constants.DESCRIPTION_CHARS_MAX );
 
+		// Description data
 		/**
 		 * Finds the Description (Z2K5) for the given language
 		 *
@@ -89,6 +93,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const descriptionInputId = computed( () => `ext-wikilambda-app-function-editor-description__input${ props.zLanguage }` );
 
+		// Actions
 		/**
 		 * Updates the remainingChars as the user types
 		 *
@@ -123,6 +128,7 @@ module.exports = exports = defineComponent( {
 			emit( 'description-updated' );
 		}
 
+		// Lifecycle
 		onMounted( () => {
 			remainingChars.value = maxDescriptionChars - ( description.value ? description.value.value.length : 0 );
 		} );

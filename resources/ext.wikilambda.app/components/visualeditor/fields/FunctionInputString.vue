@@ -48,6 +48,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 
+		// Placeholder
 		/**
 		 * Returns the placeholder text.
 		 * If the default value checkbox is checked, return the default value,
@@ -61,6 +62,8 @@ module.exports = exports = defineComponent( {
 			}
 			return i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder' ).text();
 		} );
+
+		// Event handlers
 		/**
 		 * Handles the update model value event and emits:
 		 * * 'input' event, to set the local value of the field
@@ -73,6 +76,7 @@ module.exports = exports = defineComponent( {
 			emit( 'update', value );
 		}
 
+		// Lifecycle
 		onMounted( () => {
 			emit( 'validate', { isValid: true } );
 		} );

@@ -111,8 +111,8 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
-		const shouldUseDefaultValue = ref( false );
 
+		// Input type data
 		/**
 		 * Checks if the input type is an enumeration
 		 *
@@ -127,27 +127,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const hasParserFunction = computed( () => store.hasParser( props.inputType ) );
 
-		/**
-		 * Whether this input type has a default value
-		 *
-		 * @return {boolean}
-		 */
-		const hasDefaultValue = computed( () => store.hasDefaultValueForType( props.inputType ) );
-
-		/**
-		 * Returns the default value for the input type.
-		 *
-		 * @return {string}
-		 */
-		const getDefaultValue = computed( () => store.getDefaultValueForType( props.inputType ) );
-
-		/**
-		 * Return the status of the field
-		 *
-		 * @return {string}
-		 */
-		const status = computed( () => props.showValidation && props.error ? 'error' : 'default' );
-
+		// Component rendering
 		/**
 		 * Determine the component type based on the inputType
 		 *
@@ -171,6 +151,15 @@ module.exports = exports = defineComponent( {
 			return 'wl-function-input-string';
 		} );
 
+		// Field status
+		/**
+		 * Return the status of the field
+		 *
+		 * @return {string}
+		 */
+		const status = computed( () => props.showValidation && props.error ? 'error' : 'default' );
+
+		// Event handlers
 		/**
 		 * Handle the update event
 		 *
@@ -198,6 +187,26 @@ module.exports = exports = defineComponent( {
 			emit( 'validate', payload );
 		}
 
+		// Default value feature
+		// State
+		const shouldUseDefaultValue = ref( false );
+
+		// Data
+		/**
+		 * Whether this input type has a default value
+		 *
+		 * @return {boolean}
+		 */
+		const hasDefaultValue = computed( () => store.hasDefaultValueForType( props.inputType ) );
+
+		/**
+		 * Returns the default value for the input type.
+		 *
+		 * @return {string}
+		 */
+		const getDefaultValue = computed( () => store.getDefaultValueForType( props.inputType ) );
+
+		// Actions
 		/**
 		 * Check the default value checkbox.
 		 *

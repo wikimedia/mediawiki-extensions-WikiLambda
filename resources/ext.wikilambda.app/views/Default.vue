@@ -117,9 +117,10 @@ module.exports = exports = defineComponent( {
 		const { typeToString } = useType();
 		const breakpoint = useBreakpoints( Constants.BREAKPOINTS );
 
+		// Constants
 		const initialKeyPath = `${ Constants.STORED_OBJECTS.MAIN }.${ Constants.Z_PERSISTENTOBJECT_VALUE }`;
 
-		// Computed properties
+		// Data access
 		/**
 		 * Returns the initial persistent object content ZObject
 		 *
@@ -162,7 +163,22 @@ module.exports = exports = defineComponent( {
 		 */
 		const implementationMode = computed( () => store.getCurrentZImplementationType );
 
-		// Methods
+		// Help link
+		/**
+		 * Whether the display is of the size of a mobile screen
+		 *
+		 * @return {boolean}
+		 */
+		const isMobile = computed( () => breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE );
+
+		/**
+		 * Help link for this content type, or undefined if none
+		 *
+		 * @return {string|undefined}
+		 */
+		const helpLink = computed( () => helpLinks[ contentType.value ] );
+
+		// Actions
 		/**
 		 * Dispatch event (via Metrics Platform) to record loading this view,
 		 * or editing the About widget content.
@@ -200,20 +216,6 @@ module.exports = exports = defineComponent( {
 				dispatchLoadEvent( true );
 			}
 		}
-
-		/**
-		 * Whether the display is of the size of a mobile screen
-		 *
-		 * @return {boolean}
-		 */
-		const isMobile = computed( () => breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE );
-
-		/**
-		 * Help link for this content type, or undefined if none
-		 *
-		 * @return {string|undefined}
-		 */
-		const helpLink = computed( () => helpLinks[ contentType.value ] );
 
 		// Lifecycle
 		onMounted( () => {

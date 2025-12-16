@@ -54,11 +54,11 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'expand' ],
 	setup( props ) {
-		// Use ZObject utilities composable
 		const { getZFunctionCallFunctionId } = useZObject( { keyPath: props.keyPath } );
-
-		// Data
+		// Constants
 		const icon = icons.cdxIconFunction;
+
+		// Function data
 
 		/**
 		 * Returns whether the function call has a blank value at some point.
@@ -69,6 +69,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const hasBlankValue = computed( () => !getZFunctionCallFunctionId( props.objectValue, true ) );
 
+		// UI display
 		/**
 		 * Returns a special class name when the function call is undefined
 		 *

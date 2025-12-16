@@ -9,7 +9,7 @@
 		class="ext-wikilambda-app-wikidata-reference-selector"
 		data-testid="z-wikidata-reference-selector">
 		<cdx-select
-			:default-label="placeholder"
+			:default-label="i18n( 'wikilambda-typeselector-label' ).text()"
 			:selected="selectedValue"
 			:disabled="disabled || !enumsFetched"
 			:menu-items="enumValues"
@@ -49,24 +49,12 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const selectConfig = {
 			visibleItemLimit: 5
 		};
 
-		/**
-		 * Returns a placeholder text for the select input.
-		 *
-		 * @return {string} The placeholder text.
-		 */
-		const placeholder = computed( () => i18n( 'wikilambda-typeselector-label' ).text() );
-
-		/**
-		 * Retrieves the value of the selected reference.
-		 *
-		 * @return {string|null} The selected reference value, or null if none is selected.
-		 */
-		const selectedValue = computed( () => props.selectedZid || null );
-
+		// Enum data
 		/**
 		 * Determines whether all Wikidata enum reference types have been fetched.
 		 *
@@ -88,6 +76,16 @@ module.exports = exports = defineComponent( {
 				value: zid
 			} ) ) );
 
+		// Selector display
+
+		/**
+		 * Retrieves the value of the selected reference.
+		 *
+		 * @return {string|null} The selected reference value, or null if none is selected.
+		 */
+		const selectedValue = computed( () => props.selectedZid || null );
+
+		// Actions
 		/**
 		 * Handles the selection of a value from the dropdown.
 		 * Emits an event to update the parent component with the selected value.
@@ -104,10 +102,9 @@ module.exports = exports = defineComponent( {
 			emit( 'select-item', value || '' );
 		}
 
-		/**
-		 * Fetches the Zids for the Wikidata enum reference types when the component is mounted.
-		 */
+		// Lifecycle hooks
 		onMounted( () => {
+			// Fetches the Zids for the Wikidata enum reference types when the component is mounted.
 			const references = Object.keys( Constants.WIKIDATA_REFERENCE_TYPES )
 				.map( ( k ) => Constants.WIKIDATA_REFERENCE_TYPES[ k ] );
 			store.fetchZids( { zids: references } );
@@ -117,7 +114,7 @@ module.exports = exports = defineComponent( {
 			enumValues,
 			enumsFetched,
 			onSelect,
-			placeholder,
+			i18n,
 			selectConfig,
 			selectedValue
 		};

@@ -9,7 +9,6 @@
 	<div class="ext-wikilambda-app-function-call-setup">
 		<wl-function-select
 			v-if="!hasValidFunction"
-			ref="functionSelectComponent"
 			@select="selectFunction"
 		></wl-function-select>
 		<wl-function-input-setup
@@ -22,7 +21,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, ref, watch } = require( 'vue' );
+const { computed, defineComponent, inject, watch } = require( 'vue' );
 
 const useMainStore = require( '../../store/index.js' );
 const FunctionSelect = require( './FunctionSelect.vue' );
@@ -39,8 +38,7 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		const functionSelectComponent = ref( null );
-
+		// Function data
 		/**
 		 * Returns the function id as stored in wikitext,
 		 * or null if function is not yet selected.
@@ -67,6 +65,7 @@ module.exports = exports = defineComponent( {
 			store.getLabelData( functionZid.value ) :
 			undefined );
 
+		// Actions
 		/**
 		 * Set the wikitext function value with the new selected Function ID
 		 * Set function params to blank state
@@ -100,6 +99,7 @@ module.exports = exports = defineComponent( {
 			emit( 'loading-end' );
 		}
 
+		// Watch
 		/**
 		 * When function updates and we have the new name,
 		 * emit a 'function-name-updated' event to VisualEditor
@@ -114,7 +114,6 @@ module.exports = exports = defineComponent( {
 
 		return {
 			endLoading,
-			functionSelectComponent,
 			hasValidFunction,
 			selectFunction,
 			startLoading,

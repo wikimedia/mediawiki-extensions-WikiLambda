@@ -151,8 +151,11 @@ module.exports = exports = defineComponent( {
 	setup( _, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const breakpoint = useBreakpoints( Constants.BREAKPOINTS );
+
+		// Constants
 		const iconAdd = icons.cdxIconAdd;
 
+		// UI display
 		/**
 		 * Whether the display is of the size of a mobile screen
 		 *
@@ -160,6 +163,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const isMobile = computed( () => breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE );
 
+		// Actions
 		/**
 		 * Emits an event when the connect button is clicked
 		 */

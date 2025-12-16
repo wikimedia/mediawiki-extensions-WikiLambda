@@ -90,15 +90,18 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const clipboard = useClipboard();
 		const eventLog = useEventLog();
-		const linkCopied = ref( false );
+
+		// Constants
 		const iconLink = icons.cdxIconLink;
 		const iconCheck = icons.cdxIconCheck;
-		const showMetadata = ref( false );
 		const responseKey = Constants.Z_RESPONSEENVELOPE_VALUE;
 		const responseKeyPath = [
 			Constants.STORED_OBJECTS.RESPONSE,
 			Constants.Z_RESPONSEENVELOPE_VALUE
 		].join( '.' );
+
+		// Response data
+		const showMetadata = ref( false );
 
 		/**
 		 * The function call response object as set in the store
@@ -125,6 +128,7 @@ module.exports = exports = defineComponent( {
 			hybridToCanonical( responseObject.value[ Constants.Z_RESPONSEENVELOPE_METADATA ] ) :
 			undefined );
 
+		// Function call data
 		/**
 		 * Returns the selected function call object
 		 *
@@ -146,6 +150,9 @@ module.exports = exports = defineComponent( {
 			return getZFunctionCallFunctionId( selectedFunctionCall.value );
 		} );
 
+		// Share button
+		const linkCopied = ref( false );
+
 		/**
 		 * Returns whether the share button should be shown
 		 * (hidden on tester and implementation pages)
@@ -155,27 +162,6 @@ module.exports = exports = defineComponent( {
 		const showShareButton = computed( () => selectedFunctionZid.value &&
 				props.contentType !== Constants.Z_TESTER &&
 				props.contentType !== Constants.Z_IMPLEMENTATION );
-
-		/**
-		 * Returns whether the implementation has been chosen
-		 *
-		 * @return {boolean}
-		 */
-		const hasChosenImplementation = computed( () => props.contentType !== Constants.Z_IMPLEMENTATION );
-
-		/**
-		 * If we are in an implementation page, return the implementation
-		 * label in the user language. Else return undefined
-		 *
-		 * @return {string|undefined}
-		 */
-		const implementationName = computed( () => {
-			// If the page is an implementation, return implementation label
-			if ( store.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				return store.getLabelData( store.getCurrentZObjectId );
-			}
-			return undefined;
-		} );
 
 		/**
 		 * Generates a shareable URL for the current function call and copies it to clipboard
@@ -210,6 +196,28 @@ module.exports = exports = defineComponent( {
 				// Do nothing for now
 			}
 		}
+
+		// Implementation data
+		/**
+		 * Returns whether the implementation has been chosen
+		 *
+		 * @return {boolean}
+		 */
+		const hasChosenImplementation = computed( () => props.contentType !== Constants.Z_IMPLEMENTATION );
+
+		/**
+		 * If we are in an implementation page, return the implementation
+		 * label in the user language. Else return undefined
+		 *
+		 * @return {string|undefined}
+		 */
+		const implementationName = computed( () => {
+			// If the page is an implementation, return implementation label
+			if ( store.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
+				return store.getLabelData( store.getCurrentZObjectId );
+			}
+			return undefined;
+		} );
 
 		return {
 			i18n,

@@ -63,19 +63,21 @@ module.exports = exports = defineComponent( {
 	setup( props ) {
 		const { depth } = useZObject( { keyPath: props.keyPath } );
 
-		/**
-		 * Returns the css class that identifies the nesting level
-		 *
-		 * @return {string}
-		 */
-		const nestingDepthClass = computed( () => `ext-wikilambda-app-key-level--${ depth.value || 0 }` );
-
+		// Child keys
 		/**
 		 * Returns the array of child keys to render with ZObjectKeyValue components
 		 *
 		 * @return {Array}
 		 */
 		const childKeys = computed( () => props.objectValue ? Object.keys( props.objectValue ) : [] );
+
+		// UI display
+		/**
+		 * Returns the css class that identifies the nesting level
+		 *
+		 * @return {string}
+		 */
+		const nestingDepthClass = computed( () => `ext-wikilambda-app-key-level--${ depth.value || 0 }` );
 
 		return {
 			childKeys,

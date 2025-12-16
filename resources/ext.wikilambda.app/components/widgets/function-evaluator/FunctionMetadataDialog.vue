@@ -27,7 +27,7 @@
 					<div class="ext-wikilambda-app-function-metadata-dialog__helplink">
 						<cdx-icon :icon="iconHelpNotice"></cdx-icon>
 						<a
-							:title="tooltipMetaDataHelpLink"
+							:title="i18n( 'wikilambda-helplink-tooltip' ).text()"
 							:href="parsedMetaDataHelpLink"
 							target="_blank">
 							{{ i18n( 'wikilambda-helplink-button' ).text() }}
@@ -181,18 +181,14 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const iconHelpNotice = icons.cdxIconHelpNotice;
 		const iconLinkExternal = icons.cdxIconLinkExternal || icons.cdxIconLink;
+
+		// State
 		const selectedMetadataPath = ref( '0' );
 
-		/**
-		 * Returns all api errors saved in the store by the errorId passed
-		 * as a property. If none or errorId is undefined, returns emtpy array.
-		 *
-		 * @return {Array}
-		 */
-		const apiErrors = computed( () => ( props.errorId !== undefined ? store.getErrors( props.errorId ) : [] ) );
-
+		// Metadata
 		/**
 		 * Returns the available keys present in the given metadata object
 		 *
@@ -219,17 +215,6 @@ module.exports = exports = defineComponent( {
 				pair[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]
 			] ) );
 		}
-
-		/**
-		 * Returns whether the root level metadata object has
-		 * nested metadata children.
-		 *
-		 * @return {boolean}
-		 */
-		const hasNestedMetadata = computed( () => {
-			const metadataKeyValues = getKeyValues( props.metadata );
-			return metadataKeyValues ? metadataKeyValues.has( 'nestedMetadata' ) : false;
-		} );
 
 		/**
 		 * Returns the metadata collection for the selected function
@@ -272,6 +257,16 @@ module.exports = exports = defineComponent( {
 
 			return undefined;
 		}
+		/**
+		 * Returns whether the root level metadata object has
+		 * nested metadata children.
+		 *
+		 * @return {boolean}
+		 */
+		const hasNestedMetadata = computed( () => {
+			const metadataKeyValues = getKeyValues( props.metadata );
+			return metadataKeyValues ? metadataKeyValues.has( 'nestedMetadata' ) : false;
+		} );
 
 		/**
 		 * Returns the selected metadata collection given the
@@ -290,12 +285,13 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Returns the help link from the Metadata dialog
+		 * Returns the available keys present in the metadata object
 		 *
-		 * @return {string}
+		 * @return {Map|undefined}
 		 */
-		const tooltipMetaDataHelpLink = computed( () => i18n( 'wikilambda-helplink-tooltip' ).text() );
+		const keyValues = computed( () => getKeyValues( selectedMetadata.value ) );
 
+		// Help link
 		/**
 		 * Returns the parsed help link from the Metadata dialog
 		 *
@@ -306,12 +302,22 @@ module.exports = exports = defineComponent( {
 			return mw.internalWikiUrlencode( unformattedLink );
 		} );
 
+		// Errors
 		/**
-		 * Returns the available keys present in the metadata object
+		 * Returns all api errors saved in the store by the errorId passed
+		 * as a property. If none or errorId is undefined, returns emtpy array.
 		 *
-		 * @return {Map|undefined}
+		 * @return {Array}
 		 */
-		const keyValues = computed( () => getKeyValues( selectedMetadata.value ) );
+		const apiErrors = computed( () => props.errorId !== undefined ? store.getErrors( props.errorId ) : [] );
+
+		/**
+		 * Returns if there are any errors in the metadata
+		 *
+		 * @return {boolean}
+		 */
+		const hasMetadataErrors = computed( () => hasExplicitErrors( keyValues.value ) ||
+			hasTestFailure( keyValues.value ) );
 
 		/**
 		 * Returns if there are explicit errors in the metadata
@@ -342,54 +348,7 @@ module.exports = exports = defineComponent( {
 			return false;
 		}
 
-		/**
-		 * Transform method.
-		 * Given a mixed type value returns a string
-		 * either by returning its Z6K1, or strigifying it
-		 *
-		 * @param {Mixed} value
-		 * @return {string}
-		 */
-		function getStringValue( value ) {
-			if ( typeof value === 'string' ) {
-				return value;
-			}
-			if ( ( typeof value === 'object' ) && ( value[ Constants.Z_STRING_VALUE ] ) ) {
-				return value[ Constants.Z_STRING_VALUE ];
-			}
-			return JSON.stringify( value );
-		}
-
-		/**
-		 * Transform method.
-		 * Given an array of logs, return a renderable list.
-		 *
-		 * @param {Array} logs
-		 * @return {string}
-		 */
-		function getDebugLogs( logs ) {
-			if ( typeof logs === 'string' ) {
-				return {
-					type: Constants.METADATA_CONTENT_TYPE.TEXT,
-					value: logs
-				};
-			}
-			if ( Array.isArray( logs ) ) {
-				const list = [];
-				for ( const log of logs.slice( 1 ) ) {
-					// TODO (T385176) Enable representation of non-string values
-					const safeLog = escapeHtml( getStringValue( log ) );
-					list.push( `<li>${ safeLog }</li>` );
-					getStringValue( log );
-				}
-				return {
-					type: Constants.METADATA_CONTENT_TYPE.HTML,
-					value: `<ul>${ list.join( '' ) }</ul>`
-				};
-			}
-			return undefined;
-		}
-
+		// Menu items
 		/**
 		 * Returns the array of menu items to feed the CdxSelect
 		 * component. Each menu item identifies the metadata collection
@@ -505,14 +464,7 @@ module.exports = exports = defineComponent( {
 				'';
 		} );
 
-		/**
-		 * Returns if there are any errors in the metadata
-		 *
-		 * @return {boolean}
-		 */
-		const hasMetadataErrors = computed( () => hasExplicitErrors( keyValues.value ) ||
-			hasTestFailure( keyValues.value ) );
-
+		// Helpers
 		/**
 		 * Returns the URL for a given ZID
 		 *
@@ -531,6 +483,16 @@ module.exports = exports = defineComponent( {
 		 */
 		function isValidZidFormat( zid ) {
 			return /^Z\d+$/.test( zid );
+		}
+
+		/**
+		 * Checks if the payload is an instance of LabelData
+		 *
+		 * @param {*} payload
+		 * @return {boolean}
+		 */
+		function isLabelData( payload ) {
+			return payload instanceof LabelData;
 		}
 
 		/**
@@ -649,6 +611,54 @@ module.exports = exports = defineComponent( {
 			return `${ total.toPrecision( 4 ) } ${ unit }`;
 		}
 
+		// Transform functions
+		/**
+		 * Transform method.
+		 * Given a mixed type value returns a string
+		 * either by returning its Z6K1, or strigifying it
+		 *
+		 * @param {Mixed} value
+		 * @return {string}
+		 */
+		function getStringValue( value ) {
+			if ( typeof value === 'string' ) {
+				return value;
+			}
+			if ( ( typeof value === 'object' ) && ( value[ Constants.Z_STRING_VALUE ] ) ) {
+				return value[ Constants.Z_STRING_VALUE ];
+			}
+			return JSON.stringify( value );
+		}
+
+		/**
+		 * Transform method.
+		 * Given an array of logs, return a renderable list.
+		 *
+		 * @param {Array} logs
+		 * @return {string}
+		 */
+		function getDebugLogs( logs ) {
+			if ( typeof logs === 'string' ) {
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.TEXT,
+					value: logs
+				};
+			}
+			if ( Array.isArray( logs ) ) {
+				const list = [];
+				for ( const log of logs.slice( 1 ) ) {
+					// TODO (T385176) Enable representation of non-string values
+					const safeLog = escapeHtml( getStringValue( log ) );
+					list.push( `<li>${ safeLog }</li>` );
+					getStringValue( log );
+				}
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.HTML,
+					value: `<ul>${ list.join( '' ) }</ul>`
+				};
+			}
+			return undefined;
+		}
 		/**
 		 * Transform method.
 		 * Returns the linked label of the root error from the given
@@ -784,6 +794,56 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Transform method.
+		 * Returns the raw zobject value for test results (expected/actual)
+		 * with a special type flag to render it with the toggle component.
+		 *
+		 * @param {Mixed} value
+		 * @return {Object}
+		 */
+		function getTestResultValue( value ) {
+			return {
+				type: Constants.METADATA_CONTENT_TYPE.ZOBJECT,
+				value
+			};
+		}
+
+		const transforms = {
+			getErrorType,
+			getErrorStringArgs,
+			getErrorChildren,
+			getImplementationLink,
+			getStringValue,
+			toRelativeTime,
+			getDebugLogs,
+			getTestResultValue
+		};
+
+		/**
+		 * Transforms metadata values based on the transform method specified
+		 *
+		 * @param {Object} item
+		 * @return {Object|undefined}
+		 */
+		function getTransformedValue( item ) {
+			let value = keyValues.value.get( item.key );
+
+			if ( item.transform && transforms[ item.transform ] ) {
+				value = transforms[ item.transform ]( value );
+			}
+
+			if ( !value ) {
+				return undefined;
+			}
+
+			// Wrap in text object if value is still a string
+			return ( typeof value === 'string' ) ?
+				{ type: Constants.METADATA_CONTENT_TYPE.TEXT, value } :
+				value;
+		}
+
+		// Section compilation
+		/**
 		 * Returns the compiled metadata sections. Each item in the
 		 * array contains the following properties:
 		 * * title: the section title
@@ -888,55 +948,7 @@ module.exports = exports = defineComponent( {
 			return metadata;
 		}
 
-		/**
-		 * Transform method.
-		 * Returns the raw zobject value for test results (expected/actual)
-		 * with a special type flag to render it with the toggle component.
-		 *
-		 * @param {Mixed} value
-		 * @return {Object}
-		 */
-		function getTestResultValue( value ) {
-			return {
-				type: Constants.METADATA_CONTENT_TYPE.ZOBJECT,
-				value
-			};
-		}
-
-		const transforms = {
-			getErrorType,
-			getErrorStringArgs,
-			getErrorChildren,
-			getImplementationLink,
-			getStringValue,
-			toRelativeTime,
-			getDebugLogs,
-			getTestResultValue
-		};
-
-		/**
-		 * Transforms metadata values based on the transform method specified
-		 *
-		 * @param {Object} item
-		 * @return {Object|undefined}
-		 */
-		function getTransformedValue( item ) {
-			let value = keyValues.value.get( item.key );
-
-			if ( item.transform && transforms[ item.transform ] ) {
-				value = transforms[ item.transform ]( value );
-			}
-
-			if ( !value ) {
-				return undefined;
-			}
-
-			// Wrap in text object if value is still a string
-			return ( typeof value === 'string' ) ?
-				{ type: Constants.METADATA_CONTENT_TYPE.TEXT, value } :
-				value;
-		}
-
+		// Dialog actions
 		/**
 		 * Sets the selected metadata path
 		 *
@@ -954,16 +966,6 @@ module.exports = exports = defineComponent( {
 			emit( 'close-dialog' );
 		}
 
-		/**
-		 * Checks if the payload is an instance of LabelData
-		 *
-		 * @param {*} payload
-		 * @return {boolean}
-		 */
-		function isLabelData( payload ) {
-			return ( payload instanceof LabelData );
-		}
-
 		return {
 			apiErrors,
 			closeDialog,
@@ -978,7 +980,6 @@ module.exports = exports = defineComponent( {
 			selectedMetadataPath,
 			selectedMenuItemClass,
 			setSelectedMetadata,
-			tooltipMetaDataHelpLink,
 			i18n
 		};
 	}

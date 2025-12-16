@@ -27,7 +27,7 @@
 						:model-value="searchTerm"
 						data-testid="search-language"
 						class="ext-wikilambda-app-about-languages-dialog__search-input"
-						:placeholder="searchPlaceholder"
+						:placeholder="i18n( 'wikilambda-about-widget-search-language-placeholder' ).text()"
 						@update:model-value="updateSearchTerm"
 						@focus="showSearchCancel = true"
 					></cdx-search-input>
@@ -123,11 +123,39 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Search functionality
 		const searchTerm = ref( '' );
-		const lookupResults = ref( [] );
 		const showSearchCancel = ref( false );
+
+		// Lookup results
+		const lookupResults = ref( [] );
 		let lookupAbortController = null;
 
+		// Dialog state
+		/**
+		 * Close the dialog and make sure that the selected language
+		 * and unsaved changes are cleared.
+		 */
+		function closeDialog() {
+			searchTerm.value = '';
+			lookupResults.value = [];
+			showSearchCancel.value = false;
+			emit( 'close-dialog' );
+		}
+
+		/**
+		 * Emits the add-language event so that we can edit or
+		 * create multilingual data in a given language by adding a new
+		 * block in the About widget accordion.
+		 *
+		 * @param {string} lang
+		 */
+		function editLanguage( lang ) {
+			emit( 'add-language', lang );
+			closeDialog();
+		}
+
+		// Language data
 		/**
 		 * Returns a list of all the fallback language Zids.
 		 *
@@ -147,12 +175,23 @@ module.exports = exports = defineComponent( {
 			.filter( ( lang ) => !suggestedLangs.value.includes( lang ) ) );
 
 		/**
+		 * Returns grouped language items for local languages.
+		 * Groups are: "Suggested" and "Other".
+		 * Returns whether the given language Zid has any metadata
+		 * in the current object (either name, description or aliases)
+		 *
+		 * @param {string} langZid
+		 * @return {boolean}
+		 */
+		const hasMultilingualData = ( langZid ) => allLangs.value.includes( langZid );
+
+		/**
 		 * Builds a language item object for a given language Zid.
 		 *
 		 * @param {string} langZid
 		 * @return {Object}
 		 */
-		function buildLangItem( langZid ) {
+		const buildLangItem = ( langZid ) => {
 			const name = store.getZPersistentName( langZid );
 			return {
 				langZid,
@@ -161,11 +200,13 @@ module.exports = exports = defineComponent( {
 				hasName: !!name,
 				name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
 			};
-		}
+		};
 
 		/**
-		 * Returns grouped language items for local languages.
-		 * Groups are: "Suggested" and "Other".
+		 * Builds the list of items that correspond to the available
+		 * languages in the object. Each item contains the language Zid
+		 * and label, the Name/Label in that language, and the flags
+		 * hasMultilingualData and hasName that will condition the style.
 		 *
 		 * @return {Array}
 		 */
@@ -196,67 +237,7 @@ module.exports = exports = defineComponent( {
 			return groups;
 		} );
 
-		/**
-		 * Returns grouped language items for both local languages and search results.
-		 * For local languages, groups are: "Suggested" and "Other".
-		 * For search results, returns a single group without a title.
-		 *
-		 * @return {Array}
-		 */
-		const itemGroups = computed( () => {
-			// If we have search results, return them as a single group without a title
-			if ( lookupResults.value.length > 0 ) {
-				return [ {
-					id: 'search-results',
-					title: '',
-					items: lookupResults.value
-				} ];
-			}
-
-			// Otherwise, return grouped local languages
-			return localItems.value;
-		} );
-
-		/**
-		 * Returns the i18n message for the language search box placeholder
-		 *
-		 * @return {string}
-		 */
-		const searchPlaceholder = computed( () => i18n( 'wikilambda-about-widget-search-language-placeholder' ).text() );
-
-		/**
-		 * Returns whether the given language Zid has any metadata
-		 * in the current object (either name, description or aliases)
-		 *
-		 * @param {string} langZid
-		 * @return {boolean}
-		 */
-		function hasMultilingualData( langZid ) {
-			return ( allLangs.value.includes( langZid ) );
-		}
-
-		/**
-		 * Emits the add-language event so that we can edit or
-		 * create multilingual data in a given language by adding a new
-		 * block in the About widget accordion.
-		 *
-		 * @param {string} lang
-		 */
-		function editLanguage( lang ) {
-			emit( 'add-language', lang );
-			closeDialog();
-		}
-
-		/**
-		 * Close the dialog and make sure that the selected language
-		 * and unsaved changes are cleared.
-		 */
-		function closeDialog() {
-			searchTerm.value = '';
-			lookupResults.value = [];
-			showSearchCancel.value = false;
-			emit( 'close-dialog' );
-		}
+		// Search functionality
 
 		/**
 		 * Clear the search field and results
@@ -282,6 +263,7 @@ module.exports = exports = defineComponent( {
 			getLookupResults( value );
 		}
 
+		// Lookup results
 		/**
 		 * Triggers a lookup API to search for matches for the
 		 * given substring and formats the results to be shown
@@ -348,16 +330,37 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		// Display items
+		/**
+		 * Returns grouped language items for both local languages and search results.
+		 * For local languages, groups are: "Suggested" and "Other".
+		 * For search results, returns a single group without a title.
+		 *
+		 * @return {Array}
+		 */
+		const itemGroups = computed( () => {
+			// If we have search results, return them as a single group without a title
+			if ( lookupResults.value.length > 0 ) {
+				return [ {
+					id: 'search-results',
+					title: '',
+					items: lookupResults.value
+				} ];
+			}
+
+			// Otherwise, return grouped local languages
+			return localItems.value;
+		} );
+
 		return {
 			clearSearch,
 			closeDialog,
 			editLanguage,
 			itemGroups,
-			searchPlaceholder,
+			i18n,
 			searchTerm,
 			showSearchCancel,
-			updateSearchTerm,
-			i18n
+			updateSearchTerm
 		};
 	}
 } );

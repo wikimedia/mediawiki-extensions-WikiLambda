@@ -95,17 +95,14 @@ module.exports = exports = defineComponent( {
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
-
-		// Use ZObject utilities composable
 		const { getWikidataEntityId } = useZObject( { keyPath: props.keyPath } );
-
-		// Use main store
 		const store = useMainStore();
 
-		// Data
+		// Constants
 		const wikidataIcon = wikidataIconSvg;
 		const lexemeType = Constants.Z_WIKIDATA_LEXEME;
 
+		// Entity ID data
 		/**
 		 * Returns the Wikidata Lexeme Id string terminal value if set, or empty string if unset.
 		 * If the Id is not determined by a terminal string, returns undefined.
@@ -124,6 +121,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const hasTerminalId = computed( () => typeof lexemeId.value === 'string' );
 
+		// Entity display data
 		/**
 		 * Returns the Wikidata URL for the selected Lexeme.
 		 *
@@ -146,6 +144,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const lexemeLabel = computed( () => lexemeLabelData.value ? lexemeLabelData.value.label : '' );
 
+		// Actions
 		/**
 		 * Emit a set-value event to persist in the store
 		 * the changes made by a new wikidata entity selection,
@@ -175,14 +174,14 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
-		// Watch lexemeId
+		// Watchers
 		watch( lexemeId, ( id ) => {
 			if ( id ) {
 				store.fetchLexemes( { ids: [ id ] } );
 			}
 		} );
 
-		// On mounted
+		// Lifecycle hooks
 		onMounted( () => {
 			if ( lexemeId.value ) {
 				store.fetchLexemes( { ids: [ lexemeId.value ] } );

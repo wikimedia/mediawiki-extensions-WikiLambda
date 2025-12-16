@@ -46,8 +46,11 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'change' ],
 	setup( props, { emit } ) {
+		// State
 		const editorComponent = ref( null );
 		const editor = ref( null );
+
+		// Editor configuration
 		const options = {
 			minLines: 5,
 			maxLines: 20,
@@ -56,6 +59,7 @@ module.exports = exports = defineComponent( {
 			useSoftTabs: false
 		};
 
+		// HTML annotations
 		/**
 		 * Returns a custom annotation object for disallowed HTML.
 		 *
@@ -64,15 +68,13 @@ module.exports = exports = defineComponent( {
 		 * @param {string} text
 		 * @return {Object} Annotation object
 		 */
-		function createCustomAnnotation( row, column, text ) {
-			return {
-				row,
-				column,
-				text,
-				type: 'error',
-				code: 'DISALLOWED_HTML'
-			};
-		}
+		const createCustomAnnotation = ( row, column, text ) => ( {
+			row,
+			column,
+			text,
+			type: 'error',
+			code: 'DISALLOWED_HTML'
+		} );
 
 		/**
 		 * Returns ACE annotations for disallowed HTML tags.
@@ -188,6 +190,7 @@ module.exports = exports = defineComponent( {
 			return annotations;
 		}
 
+		// Editor initialization
 		/**
 		 * Handles custom HTML annotations for disallowed tags, event attributes, and JavaScript URLs.
 		 * Called when the ACE editor's annotation changes and mode is 'html'.
@@ -223,7 +226,6 @@ module.exports = exports = defineComponent( {
 				// This will trigger the changeAnnotation event
 				session.setAnnotations( filteredAnnotations );
 			}
-
 		}
 
 		/**
@@ -270,7 +272,7 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
-		// Watchers
+		// Watch
 		watch( () => props.value, ( newValue ) => {
 			editor.value.setValue( newValue, 1 );
 		} );

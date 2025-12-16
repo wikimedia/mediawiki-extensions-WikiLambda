@@ -76,11 +76,14 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { updatePageTitle } = usePageTitle();
 
-		const ignoreChangeEvent = ref( false );
+		// Constants
 		const maxLabelChars = Constants.LABEL_CHARS_MAX;
+
+		// State
+		const ignoreChangeEvent = ref( false );
 		const remainingChars = ref( Constants.LABEL_CHARS_MAX );
 
-		// Computed properties
+		// Name data
 		/**
 		 * Finds the Name (Z2K3) for the given language and returns
 		 * its keyPath and value if found. Else, returns undefined.
@@ -96,7 +99,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const nameFieldId = computed( () => `ext-wikilambda-app-function-editor-name__input-${ props.zLanguage }` );
 
-		// Methods
+		// Actions
 		/**
 		 * Updates the remainingChars data property as the user types into the Z2K5 field
 		 *

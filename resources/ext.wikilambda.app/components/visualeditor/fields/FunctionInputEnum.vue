@@ -66,10 +66,12 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const selectConfig = {
 			visibleItemLimit: 5
 		};
 
+		// Enum data
 		/**
 		 * Returns the menu items for the enum selector.
 		 *
@@ -86,6 +88,7 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		const allowsEmptyField = computed( () => Constants.VE_ALLOW_EMPTY_FIELD.includes( props.inputType ) );
+
 		/**
 		 * Returns the placeholder text.
 		 * If the default value checkbox is checked, return the default value,
@@ -104,6 +107,8 @@ module.exports = exports = defineComponent( {
 			}
 			return i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder' ).text();
 		} );
+
+		// Validation helpers
 		/**
 		 * Checks if the given value exists in the enum values.
 		 *
@@ -130,6 +135,7 @@ module.exports = exports = defineComponent( {
 			return typeUtils.isValidZidFormat( value ) && isValueInEnumValues( value );
 		}
 
+		// Validation
 		/**
 		 * Updates the validation state of the field.
 		 *
@@ -156,6 +162,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Event handlers
 		/**
 		 * Load more values for the enumeration selector
 		 */
@@ -180,6 +187,7 @@ module.exports = exports = defineComponent( {
 			validate( value, true );
 		}
 
+		// Data fetching
 		/**
 		 * Fetches all enum values for the input type
 		 */
@@ -193,24 +201,18 @@ module.exports = exports = defineComponent( {
 				} );
 		};
 
-		/**
-		 * Watcher for `enumValues` to ensure validation after store update
-		 */
+		// Watch
 		watch( enumValues, ( newEnumValues ) => {
 			if ( newEnumValues.length ) {
 				validate( props.value );
 			}
 		} );
 
-		/**
-		 * Watch for changes to shouldUseDefaultValue and re-validate
-		 *
-		 * @param {boolean} newValue - The new value of shouldUseDefaultValue
-		 */
 		watch( () => props.shouldUseDefaultValue, () => {
 			validate( props.value );
 		} );
 
+		// Lifecycle
 		onMounted( () => {
 			fetchAndValidateEnumValues();
 		} );

@@ -97,10 +97,7 @@ module.exports = exports = defineComponent( {
 		const { getZMonolingualTextValue, getZMonolingualLangValue } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
 
-		const chipComponent = ref( null );
-		const chipWidth = ref( 72 );
-
-		// Computed properties
+		// Text value
 		/**
 		 * Returns the terminal value of the string represented
 		 * in this component.
@@ -129,6 +126,7 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		// Language
 		/**
 		 * Returns the language Zid of the Monolingual string
 		 * object represented in this component, or the language code
@@ -149,28 +147,11 @@ module.exports = exports = defineComponent( {
 		const langIso = computed( () => store.getLanguageIsoCodeOfZLang( lang.value ) || '' );
 
 		/**
-		 * Returns the dynamically calculated width of the inner language chip
-		 *
-		 * @return {string}
-		 */
-		const inputCssVariablesStyle = computed( () => ( {
-			'--chipWidthPx': `${ chipWidth.value }px`
-		} ) );
-
-		/**
 		 * Whether the language is still not defined, so langIso is an empty string
 		 *
 		 * @return {boolean}
 		 */
 		const hasEmptyLang = computed( () => langIso.value === '' );
-
-		// Methods
-		function getAndStoreChipWidth() {
-			if ( !chipComponent.value ) {
-				return;
-			}
-			chipWidth.value = chipComponent.value.$el.offsetWidth;
-		}
 
 		/**
 		 * Handles click on the language chip when it's empty.
@@ -180,6 +161,26 @@ module.exports = exports = defineComponent( {
 			if ( hasEmptyLang.value && props.edit ) {
 				emit( 'expand', true );
 			}
+		}
+
+		// Chip width management
+		const chipComponent = ref( null );
+		const chipWidth = ref( 72 );
+
+		/**
+		 * Returns the dynamically calculated width of the inner language chip
+		 *
+		 * @return {string}
+		 */
+		const inputCssVariablesStyle = computed( () => ( {
+			'--chipWidthPx': `${ chipWidth.value }px`
+		} ) );
+
+		function getAndStoreChipWidth() {
+			if ( !chipComponent.value ) {
+				return;
+			}
+			chipWidth.value = chipComponent.value.$el.offsetWidth;
 		}
 
 		// Watchers

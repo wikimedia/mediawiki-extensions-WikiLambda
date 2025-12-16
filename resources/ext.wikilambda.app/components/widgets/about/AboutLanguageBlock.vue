@@ -293,6 +293,7 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants and configuration
 		const outputTypeKeyPath = [
 			Constants.STORED_OBJECTS.MAIN,
 			Constants.Z_PERSISTENTOBJECT_VALUE,
@@ -301,8 +302,8 @@ module.exports = exports = defineComponent( {
 		const maxNameChars = Constants.LABEL_CHARS_MAX;
 		const maxInputChars = Constants.INPUT_CHARS_MAX;
 		const maxDescriptionChars = Constants.DESCRIPTION_CHARS_MAX;
-		const seeAllAliases = ref( false );
 
+		// Data access
 		/**
 		 * Returns the list of fallback languages in their Zid
 		 * representation, excluding the language of the current block
@@ -312,6 +313,34 @@ module.exports = exports = defineComponent( {
 		const fallbackLanguageZids = computed( () => store.getFallbackLanguageZids
 			.filter( ( zid ) => zid !== props.language )
 		);
+
+		/**
+		 * Returns the output type
+		 *
+		 * @return {Object|undefined}
+		 */
+		const outputType = computed( () => {
+			if ( !props.isFunction ) {
+				return undefined;
+			}
+			return store.getZFunctionOutput;
+		} );
+
+		// Name field
+		/**
+		 * Returns the label for the name input field (Z2K3)
+		 *
+		 * @return {LabelData}
+		 */
+		const nameLabelData = computed( () => store.getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL ) );
+
+		/**
+		 * Returns the number of characters left to reach the
+		 * label field maximum allowed.
+		 *
+		 * @return {number}
+		 */
+		const nameCharsLeft = computed( () => maxNameChars - props.editData.name.value.length );
 
 		/**
 		 * Returns the name for the closest available fallback language
@@ -336,6 +365,32 @@ module.exports = exports = defineComponent( {
 			return undefined;
 		} );
 
+		// Description field
+		/**
+		 * Returns the label for the description input field (Z2K5)
+		 *
+		 * @return {LabelData}
+		 */
+		const descriptionLabelData = computed( () => store.getLabelData(
+			Constants.Z_PERSISTENTOBJECT_DESCRIPTION
+		) );
+
+		/**
+		 * Returns the number of characters left to reach the
+		 * description field maximum allowed.
+		 *
+		 * @return {number}
+		 */
+		const descriptionCharsLeft = computed( () => maxDescriptionChars - props.editData.description.value.length );
+
+		/**
+		 * Returns whether the object has any available description
+		 * (in any language)
+		 *
+		 * @return {boolean}
+		 */
+		const hasDescription = computed( () => !!props.viewData.description.value );
+
 		/**
 		 * Returns the description for the closest available fallback language
 		 *
@@ -359,6 +414,34 @@ module.exports = exports = defineComponent( {
 			return undefined;
 		} );
 
+		// Aliases field
+		/**
+		 * Returns the label for the aliases input field (Z2K4)
+		 *
+		 * @return {LabelData}
+		 */
+		const aliasesLabelData = computed( () => store.getLabelData( Constants.Z_PERSISTENTOBJECT_ALIASES ) );
+
+		/**
+		 * Returns whether the object has any available aliases
+		 * (in any language)
+		 *
+		 * @return {boolean}
+		 */
+		const hasAliases = computed( () => props.viewData.aliases.value.length > 0 );
+
+		const seeAllAliases = ref( false );
+
+		/**
+		 * Returns the visible aliases depending on
+		 * the seeAllAliases flag.
+		 *
+		 * @return {Array}
+		 */
+		const visibleAliases = computed( () => ( seeAllAliases.value ?
+			props.viewData.aliases.value :
+			props.viewData.aliases.value.slice( 0, 3 ) ) );
+
 		/**
 		 * Returns the alias for the closest available fallback language
 		 *
@@ -381,6 +464,17 @@ module.exports = exports = defineComponent( {
 			// Or return undefined if no value was found
 			return undefined;
 		} );
+
+		// Inputs field
+		/**
+		 * Returns the number of characters left to reach each
+		 * input field maximum allowed.
+		 *
+		 * @return {Array}
+		 */
+		const inputCharsLeft = computed( () => props.editData.inputs
+			.map( ( input ) => maxInputChars - input.value.length )
+		);
 
 		/**
 		 * Returns the function inputs for the fallback language
@@ -407,93 +501,7 @@ module.exports = exports = defineComponent( {
 			return undefined;
 		} ) );
 
-		/**
-		 * Returns the label for the name input field (Z2K3)
-		 *
-		 * @return {LabelData}
-		 */
-		const nameLabelData = computed( () => store.getLabelData( Constants.Z_PERSISTENTOBJECT_LABEL ) );
-
-		/**
-		 * Returns the number of characters left to reach the
-		 * label field maximum allowed.
-		 *
-		 * @return {number}
-		 */
-		const nameCharsLeft = computed( () => maxNameChars - props.editData.name.value.length );
-
-		/**
-		 * Returns whether the object has any available description
-		 * (in any language)
-		 *
-		 * @return {boolean}
-		 */
-		const hasDescription = computed( () => !!props.viewData.description.value );
-
-		/**
-		 * Returns the label for the description input field (Z2K5)
-		 *
-		 * @return {LabelData}
-		 */
-		const descriptionLabelData = computed( () => store.getLabelData(
-			Constants.Z_PERSISTENTOBJECT_DESCRIPTION
-		) );
-
-		/**
-		 * Returns the number of characters left to reach the
-		 * description field maximum allowed.
-		 *
-		 * @return {number}
-		 */
-		const descriptionCharsLeft = computed( () => maxDescriptionChars - props.editData.description.value.length );
-
-		/**
-		 * Returns whether the object has any available aliases
-		 * (in any language)
-		 *
-		 * @return {boolean}
-		 */
-		const hasAliases = computed( () => props.viewData.aliases.value.length > 0 );
-
-		/**
-		 * Returns the label for the aliases input field (Z2K4)
-		 *
-		 * @return {LabelData}
-		 */
-		const aliasesLabelData = computed( () => store.getLabelData( Constants.Z_PERSISTENTOBJECT_ALIASES ) );
-
-		/**
-		 * Returns the visible aliases depending on
-		 * the seeAllAliases flag.
-		 *
-		 * @return {Array}
-		 */
-		const visibleAliases = computed( () => ( seeAllAliases.value ?
-			props.viewData.aliases.value :
-			props.viewData.aliases.value.slice( 0, 3 ) ) );
-
-		/**
-		 * Returns the number of characters left to reach each
-		 * input field maximum allowed.
-		 *
-		 * @return {Array}
-		 */
-		const inputCharsLeft = computed( () => props.editData.inputs
-			.map( ( input ) => maxInputChars - input.value.length )
-		);
-
-		/**
-		 * Returns the output type
-		 *
-		 * @return {Object|undefined}
-		 */
-		const outputType = computed( () => {
-			if ( !props.isFunction ) {
-				return undefined;
-			}
-			return store.getZFunctionOutput;
-		} );
-
+		// Edit mode
 		/**
 		 * Emits an 'update-edit-value' event with the changes done to
 		 * the fields, so that the parent component can update the editData

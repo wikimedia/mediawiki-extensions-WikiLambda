@@ -52,11 +52,13 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
 		const iconExpand = icons.cdxIconExpand;
 		const iconBullet = {
 			path: 'M8 8h4v4H8z'
 		};
 
+		// UI display
 		/**
 		 * Returns the icon class based on expanded state
 		 *
@@ -65,13 +67,15 @@ module.exports = exports = defineComponent( {
 		const iconClass = computed( () => {
 			if ( !props.hasExpandedMode ) {
 				return 'ext-wikilambda-app-expanded-toggle__icon--disabled';
-			} else {
-				return props.expanded ?
-					'ext-wikilambda-app-expanded-toggle__icon--expanded' :
-					'ext-wikilambda-app-expanded-toggle__icon--collapsed';
 			}
+			if ( props.expanded ) {
+				return 'ext-wikilambda-app-expanded-toggle__icon--expanded';
+			}
+			return 'ext-wikilambda-app-expanded-toggle__icon--collapsed';
+
 		} );
 
+		// Actions
 		/**
 		 * Emits the toggle-expand event
 		 *

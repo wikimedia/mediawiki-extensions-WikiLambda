@@ -59,13 +59,19 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const store = useMainStore();
 
-		const isValidating = ref( false );
+		// Constants
 		const languageType = Constants.Z_NATURAL_LANGUAGE;
 
+		// State
+		const isValidating = ref( false );
+
+		// Placeholder
 		/**
-		 * Updates the validation state
+		 * Returns the placeholder text for the language selector.
+		 * If the default value checkbox is checked, return the default value label,
+		 * otherwise return an empty string.
 		 *
-		 * @param {boolean} isValid
+		 * @return {string}
 		 */
 		const placeholder = computed( () => {
 			if ( props.shouldUseDefaultValue ) {
@@ -80,6 +86,7 @@ module.exports = exports = defineComponent( {
 			return '';
 		} );
 
+		// Validation configuration
 		/**
 		 * Whether this input type allows for empty fields
 		 *
@@ -87,6 +94,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const allowsEmptyField = Constants.VE_ALLOW_EMPTY_FIELD.includes( Constants.Z_NATURAL_LANGUAGE );
 
+		// Validation
 		/**
 		 * Updates the validation state of the field by emitting a 'validate'
 		 * event with the result of the validation and the error message (if any)
@@ -176,6 +184,7 @@ module.exports = exports = defineComponent( {
 			validateLanguage( value, emitUpdate );
 		}
 
+		// Event handlers
 		/**
 		 * Handles the update event
 		 *
@@ -186,6 +195,7 @@ module.exports = exports = defineComponent( {
 			validate( value, true );
 		}
 
+		// Data fetching
 		/**
 		 * Fetches suggested languages
 		 */
@@ -193,16 +203,12 @@ module.exports = exports = defineComponent( {
 			store.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
 		}
 
-		/**
-		 * Watch for changes to shouldUseDefaultValue and re-validate
-		 *
-		 * @param {string} value
-		 * @param {boolean} emitUpdate
-		 */
+		// Watch
 		watch( () => props.shouldUseDefaultValue, () => {
 			validate( props.value );
 		} );
 
+		// Lifecycle
 		onMounted( () => {
 			fetchSuggestedLangs();
 			validate( props.value );

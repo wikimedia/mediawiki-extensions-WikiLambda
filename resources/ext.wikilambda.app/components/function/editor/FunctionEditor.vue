@@ -72,13 +72,16 @@ module.exports = exports = defineComponent( {
 		const { submitInteraction } = useEventLog();
 		const store = useMainStore();
 
+		// Constants
 		const iconLanguage = icons.cdxIconLanguage;
+
+		// State
 		const initialInputTypes = ref( [] );
 		const initialOutputType = ref( '' );
 		const hasUpdatedLabels = ref( false );
 		const functionLanguages = ref( [] );
 
-		// Computed properties
+		// Function signature data
 		/**
 		 * Returns an array with the string representation of the
 		 * currently selected input types. Filters out the undefined
@@ -162,15 +165,7 @@ module.exports = exports = defineComponent( {
 			return '';
 		} );
 
-		// Methods
-		/**
-		 * Saves the initial values for initialInputTypes and initialOutputType
-		 */
-		function saveInitialFunctionSignature() {
-			initialInputTypes.value = currentInputTypes.value;
-			initialOutputType.value = currentOutputType.value;
-		}
-
+		// Language management
 		/**
 		 * Sets the hasUpdatedLabels flag to true
 		 */
@@ -199,6 +194,7 @@ module.exports = exports = defineComponent( {
 			functionLanguages.value[ payload.index ] = payload.language;
 		}
 
+		// Warnings
 		/**
 		 * Set warnings when there are changes in the function signature
 		 * to announce that
@@ -220,7 +216,7 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
-		// Watchers
+		// Watch
 		watch( isFunctionDirty, ( newValue ) => {
 			if ( newValue === true ) {
 				const interactionData = {
@@ -231,6 +227,15 @@ module.exports = exports = defineComponent( {
 				submitInteraction( 'change', interactionData );
 			}
 		} );
+
+		// Initialization
+		/**
+		 * Saves the initial values for initialInputTypes and initialOutputType
+		 */
+		function saveInitialFunctionSignature() {
+			initialInputTypes.value = currentInputTypes.value;
+			initialOutputType.value = currentOutputType.value;
+		}
 
 		// Lifecycle
 		onMounted( () => {

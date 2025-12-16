@@ -61,6 +61,7 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Aliases data
 		/**
 		 * Finds the Alias set (Z2K4) for the given language
 		 *
@@ -82,6 +83,7 @@ module.exports = exports = defineComponent( {
 		 */
 		const aliasFieldId = computed( () => `ext-wikilambda-app-function-editor-aliases__input${ props.zLanguage }` );
 
+		// Actions
 		/**
 		 * Persists the aliases in the data store.
 		 *
