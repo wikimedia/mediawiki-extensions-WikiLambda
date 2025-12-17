@@ -33,14 +33,12 @@
 				<cdx-message :type="fieldErrors[0].type" :inline="true">
 					<wl-safe-message :error="fieldErrors[0]"></wl-safe-message>
 				</cdx-message>
-				<cdx-button
+				<button
 					v-if="showExamplesLink"
-					weight="quiet"
-					action="progressive"
-					class="ext-wikilambda-app-object-string-renderer__examples-link"
+					class="ext-wikilambda-app-button-reset ext-wikilambda-app-object-string-renderer__examples-link"
 					@click="openExamplesDialog">
 					{{ i18n( 'wikilambda-string-renderer-examples-title' ).text() }}
-				</cdx-button>
+				</button>
 				<!-- eslint-disable vue/no-v-html -->
 				<p
 					v-if="showErrorFooter"
@@ -102,13 +100,12 @@ const SafeMessage = require( '../base/SafeMessage.vue' );
 // Type components:
 const ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' );
 // Codex components:
-const { CdxButton, CdxDialog, CdxMessage, CdxTextInput } = require( '../../../codex.js' );
+const { CdxDialog, CdxMessage, CdxTextInput } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-string-renderer',
 	components: {
 		'cdx-dialog': CdxDialog,
-		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage,
 		'cdx-text-input': CdxTextInput,
 		'wl-safe-message': SafeMessage,
@@ -587,6 +584,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-object-string-renderer__error-footer {
 		margin: 0;
 		color: @color-subtle;
+	}
+
+	.ext-wikilambda-app-object-string-renderer__examples-link {
+		.cdx-mixin-link();
 	}
 }
 </style>
