@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
@@ -79,6 +80,7 @@ class SpecialRunFunction extends SpecialPage {
 
 		$output = $this->getOutput();
 		$output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
+		$output->addModuleStyles( [ 'ext.wikilambda.special.styles' ] );
 
 		$output->addWikiMsg( 'wikilambda-special-runfunction-intro' );
 
@@ -88,10 +90,17 @@ class SpecialRunFunction extends SpecialPage {
 		$userLang = $this->getLanguage();
 
 		// Fallback no-JS notice.
-		$output->addHtml( Html::element(
+		$output->addHtml( Html::rawElement(
+			'noscript',
+			[],
+			$this->msg( 'wikilambda-nojs' )->inLanguage( $userLang )->parse()
+		) );
+		// Vue app element with Codex progress indicator
+		$loadingMessage = $this->msg( 'wikilambda-loading' )->inLanguage( $userLang )->text();
+		$output->addHtml( Html::rawElement(
 			'div',
-			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
-			$this->msg( 'wikilambda-special-runfunction-nojs' )->inLanguage( $userLang )->text()
+			[ 'id' => 'ext-wikilambda-app' ],
+			UIUtils::createCodexProgressIndicator( $loadingMessage )
 		) );
 
 		$userLangCode = $userLang->getCode();
@@ -112,8 +121,5 @@ class SpecialRunFunction extends SpecialPage {
 		];
 
 		$output->addJsConfigVars( 'wgWikiLambda', $editingData );
-
-		// Vue app element
-		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] ) );
 	}
 }

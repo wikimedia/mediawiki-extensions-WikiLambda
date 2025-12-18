@@ -28,12 +28,23 @@ trait ZObjectEditingPageTrait {
 	) {
 		$userLang = $context->getLanguage();
 
-		// Fallback no-JS notice.
-		$output->addHtml( Html::element(
-			'div',
-			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
-			$context->msg( 'wikilambda-special-createobject-nojs' )->inLanguage( $userLang )->text()
-		) );
+		// Only add no-JS notice for edit/create modes, not view mode (content handler handles it)
+		$isViewMode = ( $jsEditingConfigVarOverride['viewmode'] ?? false ) === true;
+		if ( !$isViewMode ) {
+			// Fallback no-JS notice.
+			$output->addHtml( Html::rawElement(
+				'noscript',
+				[],
+				$context->msg( 'wikilambda-nojs' )->inLanguage( $userLang )->parse()
+			) );
+			// Vue app element with Codex progress indicator
+			$loadingMessage = $context->msg( 'wikilambda-loading' )->inLanguage( $userLang )->text();
+			$output->addHtml( Html::rawElement(
+				'div',
+				[ 'id' => 'ext-wikilambda-app' ],
+				UIUtils::createCodexProgressIndicator( $loadingMessage )
+			) );
+		}
 
 		$userLangCode = $userLang->getCode();
 
@@ -52,8 +63,5 @@ trait ZObjectEditingPageTrait {
 		$jsEditingConfigVar = array_merge( $jsEditingConfigVarBase, $jsEditingConfigVarOverride );
 
 		$output->addJsConfigVars( 'wgWikiLambda', $jsEditingConfigVar );
-
-		// Vue app element
-		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] ) );
 	}
 }

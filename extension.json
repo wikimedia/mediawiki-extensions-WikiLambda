@@ -326,16 +326,31 @@
 	},
 	"ResourceModules": {
 		"ext.wikilambda.viewpage.styles": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
+			"codexComponents": [
+				"CdxProgressIndicator"
+			],
+			"codexStyleOnly": true,
 			"styles": [
 				"ext.wikilambda.viewpage/ext.wikilambda.viewpage.less"
 			]
 		},
 		"ext.wikilambda.editpage.styles": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
+			"codexComponents": [
+				"CdxProgressIndicator"
+			],
+			"codexStyleOnly": true,
 			"styles": [
 				"ext.wikilambda.editpage/ext.wikilambda.editpage.less"
 			]
 		},
 		"ext.wikilambda.special.styles": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
+			"codexComponents": [
+				"CdxProgressIndicator"
+			],
+			"codexStyleOnly": true,
 			"styles": [
 				"ext.wikilambda.special/ext.wikilambda.special.less"
 			]

@@ -166,15 +166,15 @@ class ZObjectEditAction extends Action {
 			->getLanguageProvided() ?? $userLangCode;
 		$nameLangLabel = $services->getLanguageNameUtils()->getLanguageName( $nameLangCode );
 
-		$BCP47CodeObjectName = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+		$BCP47CodeObjectName = UIUtils::wrapBCP47CodeInFakeCodexChip(
 			$nameLangCode,
 			$nameLangLabel,
-			ZObjectUtils::getBCP47ClassName( 'name', $nameLangCode, $userLangCode ),
+			UIUtils::getBCP47ClassName( 'name', $nameLangCode, $userLangCode ),
 		);
-		$BCP47CodeObjectType = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+		$BCP47CodeObjectType = UIUtils::wrapBCP47CodeInFakeCodexChip(
 			$typeLangCode,
 			$typeLangLabel,
-			ZObjectUtils::getBCP47ClassName( 'type', $typeLangCode, $userLangCode ),
+			UIUtils::getBCP47ClassName( 'type', $typeLangCode, $userLangCode ),
 		);
 
 		return [ $BCP47CodeObjectName, $BCP47CodeObjectType ];

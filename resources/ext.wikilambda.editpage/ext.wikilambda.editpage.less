@@ -39,3 +39,17 @@
 		}
 	}
 }
+
+/**
+ * Progress indicator visibility
+ * Hide by default (when JS is disabled), show only when JS is enabled
+ */
+/* stylelint-disable selector-max-id */
+#ext-wikilambda-app > .cdx-progress-indicator {
+	display: none;
+}
+
+.client-js #ext-wikilambda-app > .cdx-progress-indicator {
+	display: block;
+}
+/* stylelint-enable selector-max-id */

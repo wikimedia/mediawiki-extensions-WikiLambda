@@ -19,13 +19,14 @@
 			<span v-html="i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"></span>
 		</cdx-message>
 		<span v-else>
-			{{ i18n( 'wikilambda-loading' ).text() }}
+
+			<cdx-progress-indicator>{{ i18n( 'wikilambda-loading' ).text() }}</cdx-progress-indicator>
 		</span>
 	</div>
 </template>
 
 <script>
-const { defineComponent, inject, onMounted, ref } = require( 'vue' );
+const { defineComponent, inject, onMounted, ref, onErrorCaptured } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 const FunctionEditorView = require( '../views/FunctionEditor.vue' );
 const FunctionEvaluatorView = require( '../views/FunctionEvaluator.vue' );
@@ -34,7 +35,7 @@ const { removeHashFromURL } = require( '../utils/urlUtils.js' );
 const DefaultView = require( '../views/Default.vue' );
 const useMainStore = require( '../store/index.js' );
 const useClipboardManager = require( '../composables/useClipboardManager.js' );
-const { CdxMessage } = require( '../../codex.js' );
+const { CdxMessage, CdxProgressIndicator } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'app',
@@ -43,7 +44,8 @@ module.exports = exports = defineComponent( {
 		'wl-function-editor-view': FunctionEditorView,
 		'wl-function-viewer-view': FunctionViewerView,
 		'wl-default-view': DefaultView,
-		'cdx-message': CdxMessage
+		'cdx-message': CdxMessage,
+		'cdx-progress-indicator': CdxProgressIndicator
 	},
 	setup() {
 		const i18n = inject( 'i18n' );
@@ -101,6 +103,13 @@ module.exports = exports = defineComponent( {
 			};
 		} );
 
+		onErrorCaptured( ( err, instance, info ) => {
+			// TODO: we should probably log the error somewhere so we can investigate it
+			// eslint-disable-next-line no-console
+			console.error( 'Captured error:', err, info );
+			hasError.value = true;
+			return false;
+		} );
 		return {
 			// Reactive store data
 			getCurrentView,
@@ -115,8 +124,5 @@ module.exports = exports = defineComponent( {
 </script>
 
 <style lang="less">
-.ext-wikilambda-view-nojsfallback,
-.ext-wikilambda-editor-nojswarning {
-	display: none;
-}
+// No-JS messages are now in <noscript> tags, so no CSS hiding needed
 </style>

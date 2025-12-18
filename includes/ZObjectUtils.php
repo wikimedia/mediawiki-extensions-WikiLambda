@@ -20,7 +20,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
-use MediaWiki\Html\Html;
 use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
@@ -39,41 +38,6 @@ class ZObjectUtils {
 	 * @param string $class The name of the class for the HTML element in which to wrap the label
 	 * @return string The HTML of the element to be rendered
 	 */
-	public static function wrapBCP47CodeInFakeCodexChip(
-		string $code,
-		string $label,
-		string $class
-	) {
-		$attributes = [
-			'title' => $label,
-			'class' => $class,
-		];
-		return Html::element(
-			'span',
-			$attributes,
-			$code
-		);
-	}
-
-	/**
-	 * Get the CSS class name for the BCP47 code based on the type and language codes.
-	 *
-	 * @param string $type
-	 * @param string $langCode
-	 * @param string $userLangCode
-	 * @return string
-	 */
-	public static function getBCP47ClassName( string $type, string $langCode, string $userLangCode ) {
-		$baseClass = 'ext-wikilambda-editpage-header__bcp47-code';
-		$modifierClass = $type === 'name'
-			? 'ext-wikilambda-editpage-header__bcp47-code-name'
-			: 'ext-wikilambda-editpage-header__bcp47-code-type';
-		$className = $baseClass . ' ' . $modifierClass;
-		if ( $langCode === $userLangCode ) {
-			$className .= ' ext-wikilambda-editpage-header__bcp47-code--hidden';
-		}
-		return $className;
-	}
 
 	/**
 	 * @param string $input

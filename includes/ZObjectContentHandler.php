@@ -440,22 +440,19 @@ class ZObjectContentHandler extends ContentHandler {
 		// Add language mapping for multilingual string dialog
 		$parserOutput->setJsConfigVar( 'wgWikiLambdaLangs', $this->zObjectStore->fetchAllZLanguageObjects() );
 
+		$loadingMessage = wfMessage( 'wikilambda-loading' )->inLanguage( $userLang )->text();
 		$parserOutput->setContentHolderText(
-			// Placeholder div for the Vue template.
-			Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] )
-			// Fallback div for the warning.
-			. Html::rawElement(
+			// Placeholder div for the Vue template with Codex progress indicator.
+			Html::rawElement(
 				'div',
-				[
-					'class' => [ 'ext-wikilambda-view-nojsfallback', 'client-nojs' ],
-				],
-				Html::element(
-					'div',
-					[
-						'class' => [ 'ext-wikilambda-view-nojswarning', 'warning' ],
-					],
-					wfMessage( 'wikilambda-viewmode-nojs' )->inLanguage( $userLang )->text()
-				)
+				[ 'id' => 'ext-wikilambda-app' ],
+				UIUtils::createCodexProgressIndicator( $loadingMessage )
+			)
+			// Fallback message for users without JavaScript.
+			. Html::rawElement(
+				'noscript',
+				[],
+				wfMessage( 'wikilambda-nojs' )->inLanguage( $userLang )->parse()
 			)
 		);
 	}
@@ -530,7 +527,7 @@ class ZObjectContentHandler extends ContentHandler {
 		// If the object type label (e.g. 'Function') is not in the user's language, show a BCP47 code widget
 		// for the language used instead
 		if ( $targetLabelLanguageCode !== $userLang->getCode() ) {
-			$targetDisplayLabelWidget = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+			$targetDisplayLabelWidget = UIUtils::wrapBCP47CodeInFakeCodexChip(
 				$targetLabelLanguageCode, $targetDisplayLabelLanguageName, $bcp47CodeClassName
 			);
 		}
@@ -539,7 +536,7 @@ class ZObjectContentHandler extends ContentHandler {
 		// If the object label (e.g. 'Echo') is not in the user's language, show a BCP47 code widget
 		// for the language used instead
 		if ( $targetTypeDisplayCode !== $userLang->getCode() ) {
-			$targetDisplayTypeWidget = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
+			$targetDisplayTypeWidget = UIUtils::wrapBCP47CodeInFakeCodexChip(
 				$targetTypeDisplayCode, $targetTypeDisplayLabelLanguageName, $bcp47CodeClassName
 			);
 		}

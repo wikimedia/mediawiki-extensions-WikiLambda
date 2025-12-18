@@ -80,7 +80,7 @@ describe( 'App.vue', () => {
 		expect( store.evaluateUri ).toHaveBeenCalled();
 	} );
 
-	it( 'Renders loading when isInitialized and `isAppSetup`(data property) is false', () => {
+	it( 'Renders progress indicator when isInitialized and `isAppSetup`(data property) is false', () => {
 		store.$patch( {
 			isInitialized: false
 		} );
@@ -89,7 +89,7 @@ describe( 'App.vue', () => {
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( false );
 		expect( wrapper.findComponent( { name: 'wl-function-editor-view' } ).exists() ).toBe( false );
-		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
+		expect( wrapper.findComponent( { name: 'cdx-progress-indicator' } ).exists() ).toBe( true );
 	} );
 
 	it( 'Does not render the router view when isInitialized is true but initializeView has not yet completed', () => {

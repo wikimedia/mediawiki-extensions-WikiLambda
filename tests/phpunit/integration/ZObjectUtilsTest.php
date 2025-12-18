@@ -18,7 +18,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Html\Html;
 use MediaWiki\Json\FormatJson;
 use Wikimedia\TestingAccessWrapper;
 
@@ -1382,41 +1381,6 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			. '"item type":"Z6"},"K1":"string"}';
 		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
 		$this->assertSame( $translated, json_encode( $result ) );
-	}
-
-	public function testWrapBCP47CodeInFakeCodexChip() {
-		$actual = ZObjectUtils::wrapBCP47CodeInFakeCodexChip(
-			'en', 'English', 'ext-wikilambda-viewpage-header__bcp47-code'
-		);
-		$expected = Html::element(
-			'span',
-			[
-				'title' => 'English',
-				'class' => 'ext-wikilambda-viewpage-header__bcp47-code'
-			],
-			'en'
-		);
-		$this->assertIsString( $actual );
-
-		// correctly generates BCP47 code
-		$this->assertSame( $expected, $actual );
-	}
-
-	public function testGetBCP47ClassName() {
-		$actual1 = ZObjectUtils::getBCP47ClassName(
-			'name', 'en', 'en'
-		);
-		$expected1 = 'ext-wikilambda-editpage-header__bcp47-code '
-			. 'ext-wikilambda-editpage-header__bcp47-code-name '
-			. 'ext-wikilambda-editpage-header__bcp47-code--hidden';
-		$this->assertSame( $expected1, $actual1 );
-
-		$actual2 = ZObjectUtils::getBCP47ClassName(
-			'type', 'en', 'es'
-		);
-		$expected2 = 'ext-wikilambda-editpage-header__bcp47-code '
-			. 'ext-wikilambda-editpage-header__bcp47-code-type';
-		$this->assertSame( $expected2, $actual2 );
 	}
 
 	/**
