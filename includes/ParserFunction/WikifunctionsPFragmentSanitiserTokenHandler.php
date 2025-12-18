@@ -12,6 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
 use MediaWiki\Extension\SiteMatrix\SiteMatrix;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockSiteMatrix;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -45,27 +46,52 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 		$this->source = $source;
 
 		// The local server URL is always allowed, so we can link to the current wiki
-		$this->allowedUrls = [ MediaWikiServices::getInstance()->getMainConfig()->get( 'Server' ) ];
+		$localServer = MediaWikiServices::getInstance()->getMainConfig()->get( 'Server' );
+		$canonicalServer = MediaWikiServices::getInstance()->getMainConfig()->get( 'CanonicalServer' );
 
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
-			// If loaded, SiteMatrix can give us a list of cluster wikis and thus their server URLs
-			$sitematrix = new SiteMatrix();
+		$this->allowedUrls = array_filter( [
+			$this->toProtocolRelative( $localServer ),
+			$this->toProtocolRelative( $canonicalServer )
+		] );
 
+		// If loaded, SiteMatrix can give us a list of cluster wikis and thus their server URLs
+		$sitematrix = $this->newSiteMatrix();
+		if ( $sitematrix ) {
 			$languages = $sitematrix->getLangList();
 			$families = $sitematrix->getSites();
 			foreach ( $languages as $key => $langCode ) {
 				foreach ( $families as $family ) {
 					if ( $sitematrix->exist( $langCode, $family ) ) {
-						$this->allowedUrls[] = $sitematrix->getUrl( $langCode, $family );
+						$this->allowedUrls[] = $this->toProtocolRelative( $sitematrix->getUrl( $langCode, $family ) );
 					}
 				}
 			}
 
 			$specials = $sitematrix->getSpecials();
 			foreach ( $specials as $special ) {
-				$this->allowedUrls[] = $sitematrix->getUrl( $special[0], $special[1] );
+				$this->allowedUrls[] = $this->toProtocolRelative( $sitematrix->getUrl( $special[0], $special[1] ) );
 			}
 		}
+	}
+
+	/**
+	 * Returns the appropriate SiteMatrixProvider depending on the environment:
+	 * * If running Phpunit tests: return MockSiteMatrixProvider
+	 * * If production and SiteMatrix is loaded: return WikiLambdaSiteMatrixProvider
+	 * * Else return nothing
+	 *
+	 * @return ?SiteMatrix
+	 */
+	protected function newSiteMatrix(): ?SiteMatrix {
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
+			if ( defined( 'MW_PHPUNIT_TEST' ) ) {
+				// Phan is unhappy because, altough it's a sub-class, this is not loaded in prod code.
+				// @phan-suppress-next-line PhanTypeMismatchReturn, PhanUndeclaredClassMethod
+				return new MockSiteMatrix();
+			}
+			return new SiteMatrix();
+		}
+		return null;
 	}
 
 	// This is our list of allowed HTML elements. It should be kept extremely minimal, and any changes should
@@ -128,6 +154,18 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 	];
 
 	/**
+	 * Convert a URL to a protocol-relative URL
+	 *
+	 * @param string $url
+	 * @return string
+	 */
+	private function toProtocolRelative( string $url ): string {
+		return preg_match( '#^https?://#i', trim( $url ) ) ?
+			'//' . preg_replace( '#^https?://#i', '', $url ) :
+			trim( $url );
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function startTag( $name, Attributes $attrs, $selfClose, $sourceStart, $sourceLength ) {
@@ -161,12 +199,14 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 			if ( $tagName === 'a' ) {
 				$parsedLink = MediaWikiServices::getInstance()->getUrlUtils()->parse( $fixedAttrs['href'] ?? '' );
 
-				if ( !$parsedLink || !isset( $parsedLink['host'] ) ) {
+				if ( !$parsedLink || empty( $parsedLink['host'] ) ) {
 					// If the link is not parseable, or has no host, we will not allow it
+					// This is already filtered out by MediaWiki's Sanitizer
 					$tagAllowed = false;
 					$fixedAttrs = [];
 				} else {
-					$targetDomain = $parsedLink['scheme'] . $parsedLink['delimiter'] . $parsedLink['host'];
+					// (T407640) Use protocol-relative urls to compare with allowed urls
+					$targetDomain = '//' . $parsedLink['host'];
 
 					// Mostly for local testing!
 					if ( isset( $parsedLink['port'] ) ) {
@@ -179,25 +219,27 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 							'href' => $fixedAttrs['href']
 						];
 						$this->logger->info(
-							'WikifunctionsPFragmentSanitiserTokenHandler: Allowing <a> tag with href "{targetDomain}"',
+							__METHOD__ . ': Allowing <a> tag with href "{targetDomain}"',
 							[
 								'rawHref' => $fixedAttrs['href'] ?? '',
-								'targetDomain' => $targetDomain,
-								'allowedDomains' => $this->allowedUrls,
+								'targetDomain' => $targetDomain
 							]
 						);
 
 					} else {
 						$tagAllowed = false;
 						$this->logger->info(
-							'WikifunctionsPFragmentSanitiserTokenHandler: Rejecting <a> tag with href "{targetDomain}"',
+							__METHOD__ . ': Rejecting <a> tag with href "{targetDomain}"',
 							[
 								'rawHref' => $fixedAttrs['href'] ?? '',
 								'targetDomain' => $targetDomain,
-								'allowedDomains' => $this->allowedUrls,
+								'allowedDomainsCount' => count( $this->allowedUrls ),
+								'allowedDomainsMatch' => $this->getMatchingDomains(
+									$this->allowedUrls,
+									$parsedLink[ 'host' ]
+								)
 							]
 						);
-
 					}
 				}
 			}
@@ -213,6 +255,27 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
 		// If we've reached this point, the tag is not allowed, so we will escape it as text
 		$this->nextHandler->characters( $this->source, $sourceStart, $sourceLength, $sourceStart, $sourceLength );
+	}
+
+	/**
+	 * Returns the allowedDomains that match the host to enable easier
+	 * debugging if link is not parsed. Passing the whole allowedDomains
+	 * to the logger will mostly end up in a discarded log due to the
+	 * size of the whole allowedDomains list, so we will log substring
+	 * matches with the host part of the url.
+	 *
+	 * @param array $allowedDomains
+	 * @param string $targetHost
+	 * @return array
+	 */
+	private function getMatchingDomains( $allowedDomains, $targetHost ) {
+		$matches = [];
+		foreach ( $allowedDomains as $allowed ) {
+			if ( strpos( $targetHost, $allowed ) !== false ) {
+				$matches[] = $allowed;
+			}
+		}
+		return $matches;
 	}
 
 	/**
