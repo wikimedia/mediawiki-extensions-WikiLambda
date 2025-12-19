@@ -25,7 +25,7 @@ class ZObjectFactory {
 
 	/**
 	 * Validates and creates a ZPersistentObject from the given input data.
-	 * If the input already has the ZPersistentObejct keys, it uses
+	 * If the input already has the ZPersistentObject keys, it uses
 	 * them to construct the wrapper object. If not, it builds a wrapper
 	 * ZPersistentObject with empty values. The resulting ZObject will be
 	 * structurally valid or well-formed.

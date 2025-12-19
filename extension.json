@@ -120,6 +120,8 @@
 		"wikilambda-edit-attached-implementation",
 		"wikilambda-edit-attached-tester",
 		"wikilambda-edit-boolean",
+		"wikilambda-edit-function-attached-implementation",
+		"wikilambda-edit-function-attached-tester",
 		"wikilambda-edit-builtin-function",
 		"wikilambda-edit-connected-converter",
 		"wikilambda-edit-converter",
@@ -207,7 +209,9 @@
 			"wikilambda-edit-programming": true,
 			"wikilambda-edit-running-function-definition": true,
 			"wikilambda-edit-type": true,
-			"wikilambda-edit-unit": true
+			"wikilambda-edit-unit": true,
+			"wikilambda-edit-function-attached-implementation": true,
+			"wikilambda-edit-function-attached-tester": true
 		}
 	},
 	"RateLimits": {

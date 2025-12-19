@@ -319,6 +319,177 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $status->isValid(), 'User is authorized to edit a detached tester' );
 	}
 
+	public function testChangeFunctionZidWhenAttached() {
+		$user = $this->getTestUser()->getUser();
+		$functioneer = $this->getTestUser( [ "functioneer" ] )->getUser();
+		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
+
+		// SETUP:
+		$this->insertZids( [ 'Z17', 'Z14', 'Z16', 'Z20' ] );
+
+		// Get implementation and tester JSONs
+		$filePath = dirname( __DIR__, 2 ) . '/test_data/authorization/function-implementation-tester.json';
+		$fileData = json_decode( file_get_contents( $filePath ) );
+		$function = $fileData->function;
+
+		// Create function 1 with implementation and tester already referenced (they get created automatically)
+		$functionPage1 = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
+			FormatJson::encode( $function ),
+			'Insert function 1',
+			$user
+		);
+		$this->assertTrue( $functionPage1->isOK() );
+		$functionZid1 = $functionPage1->getTitle()->getBaseText();
+
+		// Create function 2 (for the new function ZID) without testers and implementations
+		$functionWithoutImplAndTester = json_decode( str_replace(
+			[ '"Z8K3": [ "Z20", "Z10022" ]', '"Z8K4": [ "Z14", "Z10021" ]' ],
+			[ '"Z8K3": [ "Z20" ]', '"Z8K4": [ "Z14" ]' ],
+			json_encode( $function )
+		) );
+		$functionPage2 = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(),
+			FormatJson::encode( $functionWithoutImplAndTester ),
+			'Insert function 2',
+			$user
+		);
+		$this->assertTrue( $functionPage2->isOK() );
+		$functionZid2 = $functionPage2->getTitle()->getBaseText();
+
+		// TEST IMPLEMENTATION:
+		// Use oldValue with functionZid1, and create newValue with functionZid2 (changing function ZID)
+		$implementationOldValue = json_decode( str_replace(
+			'FUNCTIONZID',
+			$functionZid1,
+			json_encode( $fileData->implementation->oldValue )
+		) );
+		$implementationNewValue = json_decode( str_replace(
+			'FUNCTIONZID',
+			$functionZid2,
+			json_encode( $fileData->implementation->oldValue )
+		) );
+		$title = Title::newFromText( $fileData->implementation->zid, NS_MAIN );
+
+		// Create and validate ZObjectContent objects
+		$oldContent = new ZObjectContent( FormatJson::encode( $implementationOldValue ) );
+		$newContent = new ZObjectContent( FormatJson::encode( $implementationNewValue ) );
+		$this->assertTrue( $oldContent->isValid() );
+		$this->assertTrue( $newContent->isValid() );
+
+		// Assert that the correct rights are detected
+		$rights = $this->zobjectAuthorization->getRequiredEditRights(
+			$oldContent,
+			$newContent,
+			$title
+		);
+		$this->assertEquals( [
+			'edit',
+			'wikilambda-edit-function-attached-implementation',
+			'wikilambda-edit-attached-implementation'
+		], $rights );
+
+		// Request authorization
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$user,
+			$title
+		);
+		$this->assertFalse(
+			$status->isValid(),
+			'User is not authorized to change function ZID of attached implementation'
+		);
+
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$functioneer,
+			$title
+		);
+		$this->assertFalse(
+			$status->isValid(),
+			'Functioneer is not authorized to change function ZID of attached implementation'
+		);
+
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$maintainer,
+			$title
+		);
+		$this->assertTrue(
+			$status->isValid(),
+			'Function maintainer is authorized to change function ZID of attached implementation'
+		);
+
+		// TESTER:
+		// Use oldValue with functionZid1, and create newValue with functionZid2 (changing function ZID)
+		$testerOldValue = json_decode( str_replace(
+			'FUNCTIONZID',
+			$functionZid1,
+			json_encode( $fileData->tester->oldValue )
+		) );
+		$testerNewValue = json_decode( str_replace(
+			'FUNCTIONZID',
+			$functionZid2,
+			json_encode( $fileData->tester->oldValue )
+		) );
+		$title = Title::newFromText( $fileData->tester->zid, NS_MAIN );
+
+		// Create and validate ZObjectContent objects
+		$oldContent = new ZObjectContent( FormatJson::encode( $testerOldValue ) );
+		$newContent = new ZObjectContent( FormatJson::encode( $testerNewValue ) );
+		$this->assertTrue( $oldContent->isValid() );
+		$this->assertTrue( $newContent->isValid() );
+
+		// Assert that the correct rights are detected
+		$rights = $this->zobjectAuthorization->getRequiredEditRights(
+			$oldContent,
+			$newContent,
+			$title
+		);
+		$this->assertEquals( [
+			'edit',
+			'wikilambda-edit-function-attached-tester',
+			'wikilambda-edit-attached-tester'
+		], $rights );
+
+		// Request authorization
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$user,
+			$title
+		);
+		$this->assertFalse(
+			$status->isValid(),
+			'User is not authorized to change function ZID of attached tester'
+		);
+
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$functioneer,
+			$title
+		);
+		$this->assertFalse(
+			$status->isValid(),
+			'Functioneer is not authorized to change function ZID of attached tester'
+		);
+
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$maintainer,
+			$title
+		);
+		$this->assertTrue(
+			$status->isValid(),
+			'Function maintainer is authorized to change function ZID of attached tester'
+		);
+	}
+
 	public function testNotRunningFunction() {
 		$loggedout = $this->getServiceContainer()->getUserFactory()->newAnonymous();
 		$user = $this->getTestUser()->getUser();

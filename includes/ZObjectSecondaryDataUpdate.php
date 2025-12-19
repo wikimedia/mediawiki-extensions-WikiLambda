@@ -148,88 +148,105 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$this->zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
 		}
 
-		// Save function information in function table, if appropriate
-		// TODO (T362248): Have insertZFunctionReference do an update, and only delete if changing the type/target?
+		// ========================================================
+		// General delete actions:
+		// ========================================================
+		// * Delete old function reference from wikilambda_zobject_function_join table
+		// * Delete related ZObjects from wikilambda_zobject_join table
 		$this->zObjectStore->deleteZFunctionReference( $zid );
-		switch ( $ztype ) {
-			case ZTypeRegistry::Z_IMPLEMENTATION:
-				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION );
-				break;
-
-			case ZTypeRegistry::Z_TESTER:
-				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_TESTER_FUNCTION );
-				break;
-
-			default:
-				$zFunction = null;
-				break;
-		}
-
-		if ( $zFunction && $zFunction->getZValue() ) {
-			$this->zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
-		}
-
-		// Delete and restore related ZObjects from wikilambda_zobject_join table:
 		$this->zObjectStore->deleteRelatedZObjects( $zid );
-		if ( $ztype === ZTypeRegistry::Z_TYPE ) {
-			// If object is a type, remove all instanceofenum from wikilambda_zobject_join table:
-			$this->zObjectStore->deleteRelatedZObjects( null, $zid, self::INSTANCEOFENUM_DB_KEY );
-		}
-		$relatedZObjects = $this->getRelatedZObjects( $zid, $ztype, $innerZObject );
-		if ( count( $relatedZObjects ) > 0 ) {
-			$this->zObjectStore->insertRelatedZObjects( $relatedZObjects );
-		}
 
-		// If appropriate, clear wikilambda_ztester_results for this ZID
-		// TODO (T338247): Only do this for the old revision not the new one.
+		// ========================================================
+		// Type specific actions:
+		// ========================================================
+		// * Function:
+		//   - clear test results cache
+		// * Implementation:
+		//   - delete old function→implementation relations
+		//   - clear test results cache
+		//   - insert new function→implementation relation
+		// * Tester:
+		//   - delete old function→tester relations
+		//   - clear test results cache
+		//   - insert new function→tester relation
+		// * Type:
+		//   - remove all instanceofenum from wikilambda_zobject_join table
+		// * Language:
+		//   - remove old language codes from wikilambda_zlanguage
+		//   - add new language codes
+		//   - add as fake aliases under Z1360/MUL (multi-lingual value)
 		switch ( $ztype ) {
 			case ZTypeRegistry::Z_FUNCTION:
+				// TODO (T338247): Only clear test results cache for the old revision, not the new one
 				$this->zObjectStore->deleteZFunctionFromZTesterResultsCache( $zid );
 				break;
 
 			case ZTypeRegistry::Z_IMPLEMENTATION:
+				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION );
+				// TODO (T338247): Only clear test results cache for the old revision, not the new one
 				$this->zObjectStore->deleteZImplementationFromZTesterResultsCache( $zid );
+				// TODO (T362248): Have insertZFunctionReference do an update,
+				// and only delete if changing the type/target?
+				$this->zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 				break;
 
 			case ZTypeRegistry::Z_TESTER:
+				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_TESTER_FUNCTION );
+				// TODO (T338247): Only clear test results cache for the old revision, not the new one
 				$this->zObjectStore->deleteZTesterFromZTesterResultsCache( $zid );
+				// TODO (T362248): Have insertZFunctionReference do an update,
+				// and only delete if changing the type/target?
+				$this->zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
+				break;
+
+			case ZTypeRegistry::Z_TYPE:
+				// Remove all instanceofenum from wikilambda_zobject_join table
+				$this->zObjectStore->deleteRelatedZObjects( null, $zid, self::INSTANCEOFENUM_DB_KEY );
+				break;
+
+			case ZTypeRegistry::Z_LANGUAGE:
+				// Clear old values, if any
+				$this->zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
+
+				// Set primary language code
+				$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
+				$languageCodes = [ $targetLanguage ];
+				$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
+
+				// Set secondary language codes, if any
+				$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
+				if ( $secondaryLanguagesObject !== null ) {
+					'@phan-var ZTypedList $secondaryLanguagesObject';
+					$secondaryLanguages = $secondaryLanguagesObject->getAsArray();
+
+					foreach ( $secondaryLanguages as $key => $secondaryLanguage ) {
+						// $secondaryLanguage is a ZString but we want the actual string
+						$secondaryLanguageString = $secondaryLanguage->getZValue();
+						$languageCodes[] = $secondaryLanguageString;
+						$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguageString );
+					}
+				}
+
+				// (T343465) Add the language codes as fake aliases under Z1360/MUL (multi-lingual value)
+				$this->zObjectStore->insertZObjectAliases(
+					$zid,
+					$ztype,
+					[ ZLangRegistry::MULTILINGUAL_VALUE => $languageCodes ],
+					$returnType
+				);
 				break;
 
 			default:
 				// No action.
 		}
 
-		// If appropriate, add entry to wikilambda_zlanguages for this ZID
-		if ( $ztype === ZTypeRegistry::Z_LANGUAGE ) {
-			// Clear old values, if any
-			$this->zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
-
-			// Set primary language code
-			$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
-			$languageCodes = [ $targetLanguage ];
-			$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
-
-			// Set secondary language codes, if any
-			$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
-			if ( $secondaryLanguagesObject !== null ) {
-				'@phan-var ZTypedList $secondaryLanguagesObject';
-				$secondaryLanguages = $secondaryLanguagesObject->getAsArray();
-
-				foreach ( $secondaryLanguages as $key => $secondaryLanguage ) {
-					// $secondaryLanguage is a ZString but we want the actual string
-					$secondaryLanguageString = $secondaryLanguage->getZValue();
-					$languageCodes[] = $secondaryLanguageString;
-					$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguageString );
-				}
-			}
-
-			// (T343465) Add the language codes as fake aliases under Z1360/MUL (multi-lingual value)
-			$this->zObjectStore->insertZObjectAliases(
-				$zid,
-				$ztype,
-				[ ZLangRegistry::MULTILINGUAL_VALUE => $languageCodes ],
-				$returnType
-			);
+		// ========================================================
+		// General insert actions:
+		// ========================================================
+		// * Add related ZObjects to wikilambda_zobject_join table
+		$relatedZObjects = $this->getRelatedZObjects( $zid, $ztype, $innerZObject );
+		if ( count( $relatedZObjects ) > 0 ) {
+			$this->zObjectStore->insertRelatedZObjects( $relatedZObjects );
 		}
 	}
 

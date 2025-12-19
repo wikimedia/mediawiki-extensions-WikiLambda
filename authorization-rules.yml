@@ -327,6 +327,14 @@
 # Rules for implementations
 # =========================
 
+# Change implementation function zid when implementation is connected to a function
+- path: '^Z2K2\.Z14K1(\..*)?$'
+  type: Z14
+  filter: [ ZObjectFilterIsAttached ]
+  operations:
+    any:
+      - wikilambda-edit-function-attached-implementation
+
 # Change implementation that's connected to a function
 - path: '^Z2K2\.(.*)?$'
   type: Z14
@@ -345,6 +353,14 @@
 # ===============
 # Rules for tests
 # ===============
+
+# Change test function zid when test is connected to a function
+- path: '^Z2K2\.Z20K1(\..*)?$'
+  type: Z20
+  filter: [ ZObjectFilterIsAttached ]
+  operations:
+    any:
+      - wikilambda-edit-function-attached-tester
 
 # Change test that's connected to a function
 - path: '^Z2K2\.(.*)?$'
