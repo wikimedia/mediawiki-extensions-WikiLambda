@@ -146,6 +146,7 @@
 	"wikilambda-summarylabel": "Опис:",
 	"wikilambda-tester-create-new": "Додај тест",
 	"wikilambda-tester-details": "Детаљи",
+	"wikilambda-tester-details-for": "Детаљи за $1",
 	"wikilambda-tester-no-results": "Нису пронађени тестни резултати. Додајте имплементацију и тест да би сте видели резултате.",
 	"wikilambda-tester-none-found": "Тестови које направите ће бити приказани овде.",
 	"wikilambda-tester-results-current-implementation": "Тренутна имплементација",

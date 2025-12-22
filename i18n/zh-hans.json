@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Anterdc99",
 			"CrownedWharf566",
 			"Googology",
 			"GraceL",
@@ -12,6 +13,7 @@
 			"Lantianjialiang",
 			"LittlePaw365",
 			"NACHOgao3",
+			"Pawsdt",
 			"Qeqo",
 			"SkyEye FAST",
 			"StarrySky",
@@ -194,6 +196,8 @@
 	"wikilambda-editor-fn-step-function-about": "关于",
 	"wikilambda-editor-fn-step-function-definition": "函数定义",
 	"wikilambda-editor-fn-step-function-details": "详情",
+	"wikilambda-editor-howto-short-text": "如何...？",
+	"wikilambda-editor-howto-implementation-text": "如何创建实现？",
 	"wikilambda-editor-implementation-list-label": "履行列表",
 	"wikilambda-editor-implementation-title": "实现",
 	"wikilambda-editor-input-default-label": "输入",
@@ -279,6 +283,7 @@
 	"wikilambda-function-evaluator-title-implementation": "试用此实现",
 	"wikilambda-function-explorer-accessible-label": "将函数信息框重置为此页面的主体上下文",
 	"wikilambda-function-explorer-copied-text": "已复制！",
+	"wikilambda-function-explorer-copied-aria-text": "已将$1复制到剪贴板",
 	"wikilambda-function-explorer-name-title": "名称",
 	"wikilambda-function-explorer-title": "函数信息",
 	"wikilambda-function-implementation-language-label": "语言",
@@ -448,6 +453,7 @@
 	"wikilambda-summarylabel": "摘要：",
 	"wikilambda-tester-create-new": "添加测试",
 	"wikilambda-tester-details": "详情",
+	"wikilambda-tester-details-for": "$1的详情",
 	"wikilambda-tester-no-results": "未找到测试结果。请添加实现和测试以查看结果。",
 	"wikilambda-tester-none-found": "您创建的测试将在这里显示。",
 	"wikilambda-tester-results-current-implementation": "当前实现",

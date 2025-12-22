@@ -100,6 +100,11 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "قائمة معرفات (أو كائنات) ZImplementation للاختبار",
 	"apihelp-wikilambda_perform_test-param-ztesters": "قائمة معرفات ZTester (أو الكائنات) التي سيتم اختبارها",
 	"apihelp-wikilambda_perform_test-param-nocache": "هل يجب استخدام ذاكرة التخزين المؤقت أم لا",
+	"apihelp-wikifunctions_html_sanitiser-summary": "واجهة برمجة تطبيقات لتنظيف سلسلة من HTML لعرضها للمستخدم على Wikifunctions.org ومواقع ويكيميديا العميلة.",
+	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "لديك عدد كبير جدًا من مكالمات التعقيم قيد التشغيل حاليًا.",
+	"apihelp-wikifunctions_html_sanitiser-param-html": "سلسلة HTML المنقحة والمناسبة للعرض أمام المستخدم.",
+	"apihelp-wikifunctions_html_sanitiser-example-untouched": "مثال على استدعاء أساسي لا يقوم بأي عملية.",
+	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "مثال على استدعاء باستخدام لغة HTML المحظورة.",
 	"wikilambda-restapi-disabled-repo-mode-only": "هذه الواجهة البرمجية غير متاحة إلا على موقع \"مستودع\" ويكي الرئيسي، Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "لقد طلبت $1 ، وهو عدد كبير جدًا من العناصر في وقت واحد (الحد الأقصى المسموح به هو $2 )",
 	"wikilambda-restapi-revision-mismatch": "لقد طلبت المراجعة $1 للكائن ' $2 '، والتي لم يتم العثور عليها"

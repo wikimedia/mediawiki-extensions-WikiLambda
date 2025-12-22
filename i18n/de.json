@@ -176,6 +176,8 @@
 	"wikilambda-editor-fn-step-function-about": "Über",
 	"wikilambda-editor-fn-step-function-definition": "Funktionsdefinition",
 	"wikilambda-editor-fn-step-function-details": "Details",
+	"wikilambda-editor-howto-short-text": "Wie geht das …?",
+	"wikilambda-editor-howto-implementation-text": "Wie erstellt man Implementierungen?",
 	"wikilambda-editor-implementation-list-label": "Implementierungsliste",
 	"wikilambda-editor-implementation-title": "Implementierung",
 	"wikilambda-editor-input-default-label": "Eingabe",

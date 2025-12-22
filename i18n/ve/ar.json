@@ -40,7 +40,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "اقرأ أقل",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "اقرأ المزيد",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "لم يُعثر على نتائج. حاول استخدام استعلام بحث آخر.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "البحث بين $1+ دالة",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "ابحث ضمن وظائف $1",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "النتائج",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "أدخل النص",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "الدوال المقترحة",
