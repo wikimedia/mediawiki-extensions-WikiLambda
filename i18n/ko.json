@@ -216,7 +216,7 @@
 	"wikilambda-function-details-table-deactivate": "연결 끊기",
 	"wikilambda-function-evaluation-restriction-notrunnable": "이 함수에는 연결된 구현이 없습니다.",
 	"wikilambda-function-evaluation-restriction-warning": "죄송합니다! 현재 로그인한 사용자만 함수를 실행할 수 있습니다.",
-	"wikilambda-function-evaluator-enter-inputs": "입력값 입력",
+	"wikilambda-function-evaluator-enter-inputs": "입력 값 입력",
 	"wikilambda-function-evaluator-result": "결과",
 	"wikilambda-function-evaluator-result-details": "자세한 사항",
 	"wikilambda-function-evaluator-run-function": "함수 실행",

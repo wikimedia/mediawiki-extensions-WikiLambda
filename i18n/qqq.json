@@ -252,7 +252,7 @@
 	"wikilambda-function-evaluator-title-function": "Title of the Function Evaluator widget in the Function page",
 	"wikilambda-function-evaluator-title-implementation": "Title of the Function Evaluator widget when we are in an implementation page",
 	"wikilambda-function-explorer-accessible-label": "Label for the function explorer reset button for accessibility, available for screen readers.",
-	"wikilambda-function-explorer-copied-text": "Text displayed when something is copied to the clipboard, for example after clicking a Z number in the function page title.",
+	"wikilambda-function-explorer-copied-text": "Text displayed when something is copied to the clipboard, for example after clicking a ZID in the function page title.",
 	"wikilambda-function-explorer-name-title": "The title shown before the function name in the function explorer",
 	"wikilambda-function-explorer-title": "The title of the function explorer panel on an implementation page. The panel shows information about one function: {{msg-mw|wikilambda-function-explorer-name-title}}, {{msg-mw|wikilambda-function-inputs-title}}, and {{msg-mw|wikilambda-function-definition-output-label}}.",
 	"wikilambda-function-implementation-language-label": "Label for the Language column of the implementations table\n{{identical|Language}}",
