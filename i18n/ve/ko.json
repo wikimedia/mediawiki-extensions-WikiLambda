@@ -20,7 +20,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "덜 읽기",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "더 읽어보기",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "결과가 없습니다. 다른 검색어를 사용해 보세요.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "함수 검색",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "$1+ 함수 중에서 검색",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "결과",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "텍스트 입력",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "함수 제안",
