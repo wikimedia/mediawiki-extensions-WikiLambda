@@ -11,14 +11,10 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Actions\Action;
-use MediaWiki\Context\IContextSource;
-use MediaWiki\Extension\WikiLambda\UIUtils;
-use MediaWiki\Html\Html;
-use MediaWiki\MainConfigNames;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Output\OutputPage;
 
 class AbstractContentEditAction extends Action {
+	use AbstractContentPageTrait;
+
 	/**
 	 * @inheritDoc
 	 */
@@ -27,104 +23,54 @@ class AbstractContentEditAction extends Action {
 	}
 
 	/**
-	 * Get page title meta tag
-	 * @return string
+	 * @inheritDoc
 	 */
-	protected function getPageMetaTitle() {
-		// If the page doesn't exist (e.g. it's been deleted), return nothing.
-		if ( !$this->getTitle()->exists() ) {
-			return '';
-		}
-
-		$sitename = MediaWikiServices::getInstance()->getMainConfig()->get( MainConfigNames::Sitename );
-
-		return $this->msg( 'wikilambda-abstract-edit-metatitle' )->text() . ' ' . $this->getTitle()->getText()
-			. ' - ' . $sitename;
-	}
-
-	/**
-	 * Get page header message
-	 * @return string
-	 */
-	protected function getPageTitleMsg() {
-		// If the page doesn't exist (e.g. it's been deleted), return nothing.
-		if ( !$this->getTitle()->exists() ) {
-			return '';
-		}
-
-		return Html::rawElement(
-			'span',
-			[ 'class' => 'ext-wikilambda-abstractcontent-editpage-header' ],
-			$this->getTitle()->getText()
-		);
-	}
-
-	/**
-	 * Generate the edition or creation header and render it in the output.
-	 *
-	 * @param OutputPage $output
-	 * @param IContextSource $context
-	 * @param array $jsEditingConfigVarOverride variables to pass to the mw.config in JavaScript.
-	 */
-	private function generateAbstractObjectPayload(
-		OutputPage $output, IContextSource $context, array $jsEditingConfigVarOverride
-	) {
-		// TODO (T411705): Provide the edit page content
-
-		$userLang = $context->getLanguage();
-
-		// Only add no-JS notice for edit/create modes, not view mode (content handler handles it)
-		$isViewMode = ( $jsEditingConfigVarOverride['viewmode'] ?? false ) === true;
-		if ( !$isViewMode ) {
-			// Fallback no-JS notice.
-			$output->addHtml( Html::rawElement(
-				'noscript',
-				[],
-				$context->msg( 'wikilambda-nojs' )->inLanguage( $userLang )->parse()
-			) );
-			// Vue app element with Codex progress indicator
-			$loadingMessage = $context->msg( 'wikilambda-loading' )->inLanguage( $userLang )->text();
-			$output->addHtml( Html::rawElement(
-				'div',
-				[ 'id' => 'ext-wikilambda-app' ],
-				UIUtils::createCodexProgressIndicator( $loadingMessage )
-			) );
-		}
-	}
-
 	public function show() {
 		$output = $this->getOutput();
+
+		// Load styles and Vue app module
+		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );
 		$output->addModules( [ 'ext.wikilambda.app' ] );
 
-		$qId = $this->getTitle()->getBaseText();
+		$pageTitle = $this->getTitle()->getPrefixedText();
 
-		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );
+		$configVars = $this->generateAbstractContentPayload(
+			$output,
+			$this->getContext(),
+			$pageTitle
+		);
 
-		if ( !$this->getTitle()->exists() ) {
-			$this->generateAbstractObjectPayload( $output, $this->getContext(), [
-				'createNewPage' => true,
-				'qId' => $qId,
-			] );
-			return;
-		}
+		// Set page header (edit or create, depending on the returned config vars)
+		$output->setPageTitle( $this->getPageTitleMsg( $configVars ) );
+	}
 
-		// (T290217) Set page header
-		$output->setPageTitle( $this->getPageTitleMsg() );
+	/**
+	 * Get page header title for an edit page:
+	 * * when content is new: show create title
+	 * * when content exists: show edit tile
+	 *
+	 * @param array $configVars
+	 * @return string
+	 */
+	protected function getPageTitleMsg( $configVars ) {
+		$newPage = $configVars[ 'createNewPage' ];
+		$title = $configVars[ 'title' ];
 
-		// (T360169) Set page title meta tag
-		$output->setHTMLTitle( $this->getPageMetaTitle() );
+		return $newPage ?
+			$this->msg( 'wikilambda-special-create-abstract-qid' )->params( $title )->text() :
+			$this->msg( 'wikilambda-abstract-edit-title' )->params( $title )->text();
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getRestriction() {
-		// This is a very basic check; proper type-specific checking depends on the attemped
-		// edit/creation content, which isn't available yet
 		return 'wikilambda-abstract-create';
 	}
 
-	/** @inheritDoc */
+	/**
+	 * @inheritDoc
+	 */
 	public function doesWrites() {
 		return true;
 	}

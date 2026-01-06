@@ -81,16 +81,20 @@ class ClientHooks implements
 	 * @param OutputPage $out
 	 */
 	public function onMakeGlobalVariablesScript( &$vars, $out ): void {
-		// Client mode is disabled, no foreign Wikifunctions url to add:
-		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
-			return;
+		// 1. Add configuration flags
+		$vars['wgWikiLambdaEnableAbstractMode'] = $this->config->get( 'WikiLambdaEnableAbstractMode' );
+		$vars['wgWikiLambdaEnableRepoMode'] = $this->config->get( 'WikiLambdaEnableRepoMode' );
+
+		// 2. Add wgWikifunctionsBaseUrl when the setup is non-repo
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$vars['wgWikifunctionsBaseUrl'] = $this->getClientTargetUrl();
 		}
-		// Repo mode is enabled, no foreign Wikifunctions url to add:
-		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			return;
+
+		// 3. Add primary namespace for Abstract content
+		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			$namespaces = $this->config->get( 'WikiLambdaAbstractNamespaces' );
+			$vars['wgWikiLambdaAbstractPrimaryNamespace'] = array_values( $namespaces )[0][0];
 		}
-		// Pass targetUri onto JavaScript vars
-		$vars['wgWikifunctionsBaseUrl'] = $this->getClientTargetUrl();
 	}
 
 	/**

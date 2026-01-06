@@ -21,10 +21,14 @@ const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.
 
 describe( 'Publish Dialog', () => {
 	let store;
+	let mockSubmitAction;
+	let mockSuccessCallback;
 
 	function renderPublishDialog( props = {}, options = {} ) {
 		const defaultProps = {
-			showDialog: true
+			showDialog: true,
+			submitAction: mockSubmitAction,
+			successCallback: mockSuccessCallback
 		};
 		const defaultOptions = {
 			global: {
@@ -41,6 +45,9 @@ describe( 'Publish Dialog', () => {
 	}
 
 	beforeEach( () => {
+		mockSubmitAction = jest.fn().mockResolvedValue( { success: true } );
+		mockSuccessCallback = jest.fn();
+
 		store = useMainStore();
 		store.getErrors = createGettersWithFunctionsMock( [] );
 		store.getCurrentZObjectId = 'Z0';
@@ -120,8 +127,7 @@ describe( 'Publish Dialog', () => {
 
 	it( 'proceeds to publish when click publish button and disables button while publishing', async () => {
 		const wrapper = renderPublishDialog( {
-			showDialog: true,
-			functionSignatureChanged: false
+			showDialog: true
 		} );
 
 		// Set the summary value by triggering input event
@@ -131,9 +137,8 @@ describe( 'Publish Dialog', () => {
 		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
 		// Verify the store method was called with correct parameters
-		expect( store.submitZObject ).toHaveBeenCalledWith( {
-			summary: 'mock summary',
-			shouldDisconnectFunctionObjects: false
+		expect( mockSubmitAction ).toHaveBeenCalledWith( {
+			summary: 'mock summary'
 		} );
 
 		// Wait for the publishing process to complete
@@ -146,8 +151,7 @@ describe( 'Publish Dialog', () => {
 
 	it( 'closes dialog and navigates out when submission is successful', async () => {
 		const wrapper = renderPublishDialog( {
-			showDialog: true,
-			functionSignatureChanged: false
+			showDialog: true
 		} );
 
 		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -156,11 +160,11 @@ describe( 'Publish Dialog', () => {
 
 	it( 'shows error when submission is not successful', async () => {
 		const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
-		store.submitZObject.mockRejectedValue( error );
+		const mockFailedSubmission = jest.fn().mockRejectedValue( error );
 
 		const wrapper = renderPublishDialog( {
 			showDialog: true,
-			functionSignatureChanged: false
+			submitAction: mockFailedSubmission
 		} );
 
 		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -173,10 +177,13 @@ describe( 'Publish Dialog', () => {
 
 	it( 'shows loggedout error message when submission fails with badtoken error', async () => {
 		const error = new ApiError( 'badtoken', { error: { message: 'Invalid token' } } );
-		store.submitZObject.mockRejectedValue( error );
+		const mockFailedSubmission = jest.fn().mockRejectedValue( error );
 
 		const wrapper = mount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
+			props: {
+				showDialog: true,
+				submitAction: mockFailedSubmission
+			},
 			global: { stubs: dialogGlobalStubs }
 		} );
 
@@ -190,8 +197,7 @@ describe( 'Publish Dialog', () => {
 
 	it( 'shows a keyboard warning when trying to submit with the Enter key', async () => {
 		const wrapper = renderPublishDialog( {
-			showDialog: true,
-			functionSignatureChanged: false
+			showDialog: true
 		}, {
 			stubs: {
 				CdxMessage: false
@@ -215,10 +221,8 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'proceeds to publish when pressing Ctrl + Enter on Windows', async () => {
-
 		const wrapper = renderPublishDialog( {
-			showDialog: true,
-			functionSignatureChanged: false
+			showDialog: true
 		} );
 
 		// Find the input element
@@ -228,14 +232,12 @@ describe( 'Publish Dialog', () => {
 		await triggerKeydown( input, 'Enter', 13, 'ctrlKey' );
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
-		expect( store.submitZObject ).toHaveBeenCalled();
+		expect( mockSubmitAction ).toHaveBeenCalled();
 	} );
 
 	it( 'proceeds to publish when pressing CMD + Enter on Mac', async () => {
-
 		const wrapper = renderPublishDialog( {
-			showDialog: true,
-			functionSignatureChanged: false
+			showDialog: true
 		} );
 
 		// Find the input element
@@ -245,7 +247,7 @@ describe( 'Publish Dialog', () => {
 		await triggerKeydown( input, 'Enter', 13, 'metaKey' );
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
-		expect( store.submitZObject ).toHaveBeenCalled();
+		expect( mockSubmitAction ).toHaveBeenCalled();
 	} );
 
 	describe( 'Event logging', () => {
@@ -256,8 +258,7 @@ describe( 'Publish Dialog', () => {
 			store.getCurrentZImplementationType = 'Z14K3';
 
 			const wrapper = renderPublishDialog( {
-				showDialog: true,
-				functionSignatureChanged: false
+				showDialog: true
 			} );
 
 			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -281,8 +282,7 @@ describe( 'Publish Dialog', () => {
 			store.getCurrentZImplementationType = undefined;
 
 			const wrapper = renderPublishDialog( {
-				showDialog: true,
-				functionSignatureChanged: false
+				showDialog: true
 			} );
 
 			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );

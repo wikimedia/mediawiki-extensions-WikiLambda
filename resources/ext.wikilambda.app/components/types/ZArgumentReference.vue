@@ -117,9 +117,8 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array} Array of codex MenuItemData objects
 		 */
-		const argumentOptions = computed( () => store.getInputsOfFunctionZid(
-			store.getCurrentTargetFunctionZid
-		)
+		const argumentOptions = computed( () => store
+			.getInputsOfFunctionZid( store.getCurrentTargetFunctionZid )
 			.map( ( arg ) => ( {
 				value: arg[ Constants.Z_ARGUMENT_KEY ],
 				label: store.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ).label,

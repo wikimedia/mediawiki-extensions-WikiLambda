@@ -95,34 +95,38 @@ module.exports = {
 				title = path.slice( path.lastIndexOf( '/' ) + 1 );
 			}
 
-			// 1. if Special page Create
+			// 1. if Special page Create Object
 			if ( this.isCreatePath( title ) ) {
 				const zid = params.get( 'zid' );
-				this.changeCurrentView(
-					zid && zid.toUpperCase() === Constants.Z_FUNCTION ?
-						Constants.VIEWS.FUNCTION_EDITOR :
-						Constants.VIEWS.DEFAULT
-				);
+				const specialCreateView = zid && zid.toUpperCase() === Constants.Z_FUNCTION ?
+					Constants.VIEWS.FUNCTION_EDITOR :
+					Constants.VIEWS.DEFAULT;
+				this.changeCurrentView( specialCreateView );
 				return;
 			}
 
-			// 2. if Special page Run Function
+			// 2. if Special page Create Abstract
+			if ( this.isAbstractContent() ) {
+				this.changeCurrentView( Constants.VIEWS.ABSTRACT );
+				return;
+			}
+
+			// 3. if Special page Run Function
 			if ( this.isEvaluateFunctionCallPath( title ) ) {
 				this.changeCurrentView( Constants.VIEWS.FUNCTION_EVALUATOR );
 				return;
 			}
 
-			// 3. if Function page (edit or view)
+			// 4. if Function page (edit or view)
 			if ( this.isFunctionRootObject() ) {
-				this.changeCurrentView(
-					this.getViewMode ?
-						Constants.VIEWS.FUNCTION_VIEWER :
-						Constants.VIEWS.FUNCTION_EDITOR
-				);
+				const functionView = this.getViewMode ?
+					Constants.VIEWS.FUNCTION_VIEWER :
+					Constants.VIEWS.FUNCTION_EDITOR;
+				this.changeCurrentView( functionView );
 				return;
 			}
 
-			// 4. Default view
+			// 5. Default view
 			this.changeCurrentView( Constants.VIEWS.DEFAULT );
 		},
 
@@ -148,6 +152,7 @@ module.exports = {
 		},
 
 		/**
+		 * TODO move to getters
 		 * Check if  the given url path 'view' string is a known view in Constants.VIEWS
 		 *
 		 * @param {string} view
@@ -163,6 +168,7 @@ module.exports = {
 		},
 
 		/**
+		 * TODO move to getters
 		 * Check if the path is for Special:CreateZObject
 		 *
 		 * @param {string} title
@@ -173,6 +179,17 @@ module.exports = {
 		},
 
 		/**
+		 * TODO move to getters
+		 * Check if the path is for Special:CreateAbstract
+		 *
+		 * @return {boolean}
+		 */
+		isAbstractContent: function () {
+			return this.getWikilambdaConfig.abstractContent;
+		},
+
+		/**
+		 * TODO move to getters
 		 * Check if the path is for Special:EvaluateFunctionCall
 		 *
 		 * @param {string} title
@@ -183,9 +200,9 @@ module.exports = {
 		},
 
 		/**
+		 * TODO move to getters
 		 * Check if the current ZObject is a Z8/Function
 		 *
-		 * @param {string} title
 		 * @return {boolean}
 		 */
 		isFunctionRootObject: function () {

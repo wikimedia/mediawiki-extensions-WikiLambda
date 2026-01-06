@@ -68,7 +68,6 @@ class RepoHooks implements
 	 * @param MediaWikiServices $services MediaWikiServices instance
 	 */
 	public function onMediaWikiServices( $services ) {
-		//
 		$config = $services->getMainConfig();
 		if ( !$config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			// Nothing for us to do.

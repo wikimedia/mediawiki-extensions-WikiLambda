@@ -54,7 +54,7 @@ class ZObjectEditAction extends Action {
 			return '';
 		}
 
-		$sitename = MediaWikiServices::getInstance()->getMainConfig()->get( MainConfigNames::Sitename );
+		$sitename = $this->getContext()->getConfig()->get( MainConfigNames::Sitename );
 
 		$zid = $targetZObject->getZid();
 		$label = $targetZObject->getLabels()

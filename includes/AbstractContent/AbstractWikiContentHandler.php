@@ -16,14 +16,17 @@ use MediaWiki\Content\Content;
 use MediaWiki\Content\ContentHandler;
 use MediaWiki\Content\ContentHandlerFactory;
 use MediaWiki\Content\Renderer\ContentParseParams;
+use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWContentSerializationException;
+use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
+use StatusValue;
 use TextSlotDiffRenderer;
 
 class AbstractWikiContentHandler extends ContentHandler {
@@ -61,8 +64,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 		}
 
 		$enabledNamespace = $this->config->get( 'WikiLambdaAbstractNamespaces' );
-
-		if ( in_array( $title->getNamespace(), $enabledNamespace, true ) ) {
+		if ( array_key_exists( $title->getNamespace(), $enabledNamespace ) ) {
 			return true;
 		}
 
@@ -130,6 +132,20 @@ class AbstractWikiContentHandler extends ContentHandler {
 	/**
 	 * @inheritDoc
 	 */
+	public function validateSave( Content $content, ValidationParams $validationParams ) {
+		'@phan-var AbstractWikiContent $content';
+
+		$title = Title::newFromPageIdentity( $validationParams->getPageIdentity() );
+
+		if ( $content->isValidForTitle( $title ) ) {
+			return StatusValue::newGood();
+		}
+		return $content->getStatus();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function getSecondaryDataUpdates(
 		Title $title,
 		Content $content,
@@ -150,7 +166,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * @inheritDoc
 	 */
 	public function supportsDirectEditing() {
-		return false;
+		return true;
 	}
 
 	/**
@@ -186,10 +202,10 @@ class AbstractWikiContentHandler extends ContentHandler {
 		ParserOutput &$parserOutput
 	) {
 		$userLang = RequestContext::getMain()->getLanguage();
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 
-		// Ensure the stored content is an AbstractWikiContent
-		if ( !( $content instanceof AbstractWikiContent ) ) {
+		// Ensure the stored content is a valid AbstractWikiContent
+		if ( !( $content instanceof AbstractWikiContent ) || !$content->isValid() ) {
 			$parserOutput->setContentHolderText(
 				Html::element(
 					'div',
@@ -209,24 +225,41 @@ class AbstractWikiContentHandler extends ContentHandler {
 			return;
 		}
 
-		// TODO (T411693): Provide the read page code
+		// TODO (T362245): Re-work our code to use PageReferences rather than Titles
+		$pageIdentity = $cpoParams->getPage();
+		$title = Title::castFromPageReference( $pageIdentity );
+		'@phan-var Title $title';
 
+		// Set config variables
+		$wikilambdaConfig = [
+			'abstractContent' => true,
+			'content' => $content->getText(),
+			'createNewPage' => false,
+			'title' => $title->getBaseText(),
+			'page' => $title->getPrefixedDBkey(),
+			'zlang' => $userLang->getCode(),
+			'viewmode' => true
+		];
+		$parserOutput->setJsConfigVar( 'wgWikiLambda', $wikilambdaConfig );
+
+		// Load styles and Vue app modules
+		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
+		$parserOutput->addModules( [ 'ext.wikilambda.app' ] );
+
+		// Build HTML fragments to load Vue app
+		$loadingMessage = wfMessage( 'wikilambda-loading' )->inLanguage( $userLang )->text();
 		$parserOutput->setContentHolderText(
-			// Placeholder div for the Vue template.
-			Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] )
-			// Fallback div for the warning.
-			. Html::rawElement(
+			// Placeholder div for the Vue template with Codex progress indicator.
+			Html::rawElement(
 				'div',
-				[
-					'class' => [ 'ext-wikilambda-view-nojsfallback', 'client-nojs' ],
-				],
-				Html::element(
-					'div',
-					[
-						'class' => [ 'ext-wikilambda-view-nojswarning', 'warning' ],
-					],
-					wfMessage( 'wikilambda-viewmode-nojs' )->inLanguage( $userLang )->text()
-				)
+				[ 'id' => 'ext-wikilambda-app' ],
+				UIUtils::createCodexProgressIndicator( $loadingMessage )
+			)
+			// Fallback message for users without JavaScript.
+			. Html::rawElement(
+				'noscript',
+				[],
+				wfMessage( 'wikilambda-nojs' )->inLanguage( $userLang )->parse()
 			)
 		);
 	}

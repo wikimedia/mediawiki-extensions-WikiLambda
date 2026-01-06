@@ -131,6 +131,18 @@ const urlUtils = {
 		url.searchParams.set( 'call', jsonString );
 
 		return url.toString();
+	},
+	/**
+	 * Build title of an Abstract Wiki page given the namespace
+	 * and the Wikidata Item Id (qid), where namespace can be
+	 * empty or non-empty string
+	 *
+	 * @param {string} ns
+	 * @param {string} qid
+	 * @return {string}
+	 */
+	buildAbstractWikiTitle: function ( ns, qid ) {
+		return ns ? `${ ns }:${ qid }` : qid;
 	}
 };
 

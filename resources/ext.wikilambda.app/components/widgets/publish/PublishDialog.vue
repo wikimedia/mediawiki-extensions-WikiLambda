@@ -16,7 +16,7 @@
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
 			@default="closeDialog"
-			@primary="publishZObject"
+			@primary="publishPage"
 			@update:open="closeDialog"
 		>
 			<!-- Error and Warning section -->
@@ -72,7 +72,6 @@ const { computed, defineComponent, inject, ref } = require( 'vue' );
 const Constants = require( '../../../Constants.js' );
 const useEventLog = require( '../../../composables/useEventLog.js' );
 const useMainStore = require( '../../../store/index.js' );
-const urlUtils = require( '../../../utils/urlUtils.js' );
 
 // Base components:
 const SafeMessage = require( '../../base/SafeMessage.vue' );
@@ -113,10 +112,15 @@ module.exports = exports = defineComponent( {
 			required: true,
 			default: false
 		},
-		functionSignatureChanged: {
-			type: Boolean,
+		submitAction: {
+			type: Function,
 			required: false,
-			default: false
+			default: undefined
+		},
+		successCallback: {
+			type: Function,
+			required: false,
+			default: undefined
 		}
 	},
 	emits: [ 'before-exit', 'close-dialog' ],
@@ -188,78 +192,53 @@ module.exports = exports = defineComponent( {
 		const status = computed( () => hasKeyboardSubmitWarning.value ? 'warning' : 'default' );
 
 		// Submission state
-
 		/**
-		 * Navigates to the page specified by the pageTitle parameter.
-		 *
-		 * @param {string} pageTitle The title of the page to navigate to.
-		 */
-		function navigateToPage( pageTitle ) {
-			window.location.href = !pageTitle ?
-				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				urlUtils.generateViewUrl( {
-					langCode: store.getUserLangCode,
-					zid: pageTitle
-				} );
-		}
-
-		/**
-		 * Before exiting the page after successful publishing, handle
-		 * state and remove exit event listeners.
-		 *
-		 * @param {string | undefined} pageTitle
-		 */
-		function successfulExit( pageTitle ) {
-			emit( 'before-exit' );
-			store.setDirty( false );
-			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
-			// Set publish success flag in store before navigating
-			store.setPublishSuccess( pageTitle );
-			closeDialog();
-			navigateToPage( pageTitle );
-		}
-
-		/**
-		 * Submits the ZObject to the wikilambda_edit API
-		 * and handles the return value:
+		 * Submits the page to the appropriate API and handles the return value:
 		 * 1. If the response contains an error, saves the error
 		 *    in the store/errors module and displays the error messages
 		 *    in the Publish Dialog notification block.
-		 * 2. If the response is successful, navigates to the ZObject
-		 *    page.
+		 * 2. If the response is successful, navigates to the content page.
 		 */
-		function publishZObject() {
-			const summaryValue = summary.value;
-			const shouldDisconnectFunctionObjects = props.functionSignatureChanged;
+		function publishPage() {
+			if ( props.submitAction ) {
+				isPublishing.value = true;
 
-			isPublishing.value = true;
+				props.submitAction( {
+					summary: summary.value
+				} ).then( ( response ) => {
+					// Successful submission: push event, unset dirty and close
+					emit( 'before-exit' );
+					store.setDirty( false );
+					closeDialog();
+					// Finally, run additional success actions passed by parent
+					if ( props.successCallback ) {
+						props.successCallback( response );
+					}
+				} ).catch( ( /* ApiError */ error ) => {
 
-			store.submitZObject( {
-				summary: summaryValue,
-				shouldDisconnectFunctionObjects
-			} ).then( ( response ) => {
-				successfulExit( response.page );
-			} ).catch( ( /* ApiError */ error ) => {
-				store.clearErrors( Constants.STORED_OBJECTS.MAIN );
-				const errorMessage = error.code === 'badtoken' ?
-					i18n( 'wikilambda-loggedout-error-message' ).text() :
-					error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
-				store.setError( {
-					errorId: Constants.STORED_OBJECTS.MAIN,
-					errorType: Constants.ERROR_TYPES.ERROR,
-					errorMessage
+					// TODO error handling for abstract content
+					store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+					const errorMessage = error.code === 'badtoken' ?
+						i18n( 'wikilambda-loggedout-error-message' ).text() :
+						error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+					store.setError( {
+						errorId: Constants.STORED_OBJECTS.MAIN,
+						errorType: Constants.ERROR_TYPES.ERROR,
+						errorMessage
+					} );
+				} ).finally( () => {
+					isPublishing.value = false;
+					// TODO event submission for abstract content
+					const interactionData = {
+						zobjecttype: store.getCurrentZObjectType || null,
+						zobjectid: store.getCurrentZObjectId || null,
+						zlang: store.getUserLangZid || null,
+						implementationtype: store.getCurrentZImplementationType || null,
+						haserrors: hasErrors.value
+					};
+					eventLogUtils.submitInteraction( 'publish', interactionData );
 				} );
-			} ).finally( () => {
-				isPublishing.value = false;
-				const interactionData = {
-					zobjecttype: store.getCurrentZObjectType || null,
-					zobjectid: store.getCurrentZObjectId || null,
-					zlang: store.getUserLangZid || null,
-					implementationtype: store.getCurrentZImplementationType || null,
-					haserrors: hasErrors.value
-				};
-				eventLogUtils.submitInteraction( 'publish', interactionData );
-			} );
+			}
 		}
 
 		// Keyboard handling
@@ -288,7 +267,7 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Handles the keydown event on the summary text field.
-		 * - If the user presses Ctrl/Cmd + Enter, publishes the ZObject.
+		 * - If the user presses Ctrl/Cmd + Enter, publishes the page.
 		 * - If the user presses Enter, shows a warning message.
 		 *
 		 * @param {Event} event The keydown event.
@@ -296,9 +275,9 @@ module.exports = exports = defineComponent( {
 		function handleSummaryKeydown( event ) {
 			const enterKey = event.key === 'Enter';
 
-			// If the user presses Ctrl/Cmd + Enter, publish the ZObject
+			// If the user presses Ctrl/Cmd + Enter, publish the page
 			if ( ( event.metaKey || event.ctrlKey ) && enterKey ) {
-				publishZObject();
+				publishPage();
 				return;
 			}
 
@@ -335,7 +314,7 @@ module.exports = exports = defineComponent( {
 			keyboardSubmitMessage,
 			legalText,
 			primaryAction,
-			publishZObject,
+			publishPage,
 			status,
 			summary
 		};

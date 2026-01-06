@@ -93,16 +93,8 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		// require wikilambda-execute-unsaved-code, so that it can be independently
 		// activated/deactivated (to run an arbitrary implementation, you have to
 		// pass a custom function with the raw implementation rather than a ZID string.)
-		if (
-			property_exists( $zObjectAsStdClass, 'Z7K1' ) &&
-			is_object( $zObjectAsStdClass->Z7K1 ) &&
-			property_exists( $zObjectAsStdClass->Z7K1, 'Z8K4' ) &&
-			count( $zObjectAsStdClass->Z7K1->Z8K4 ) > 1
-		) {
-			$implementation = $zObjectAsStdClass->Z7K1->Z8K4[ 1 ];
-			if ( is_object( $implementation ) && property_exists( $implementation, 'Z14K1' ) ) {
-				$flags[ 'isUnsavedCode' ] = true;
-			}
+		if ( $this->hasUnsavedCode( $zObjectAsStdClass ) ) {
+			$flags[ 'isUnsavedCode' ] = true;
 		}
 
 		try {

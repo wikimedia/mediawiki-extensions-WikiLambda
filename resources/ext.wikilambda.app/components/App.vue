@@ -8,9 +8,7 @@
 	<div id="ext-wikilambda-app" class="ext-wikilambda-app">
 		<template v-if="isInitialized && isAppSetup">
 			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
-			<component
-				:is="`wl-${getCurrentView}`"
-			></component>
+			<component :is="`wl-${ getCurrentView }`"></component>
 		</template>
 		<!-- Provide a nice error message when fetching zids or initializing the page fails  -->
 		<cdx-message v-else-if="hasError" type="warning">
@@ -19,7 +17,6 @@
 			<span v-html="i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"></span>
 		</cdx-message>
 		<span v-else>
-
 			<cdx-progress-indicator>{{ i18n( 'wikilambda-loading' ).text() }}</cdx-progress-indicator>
 		</span>
 	</div>
@@ -28,18 +25,25 @@
 <script>
 const { defineComponent, inject, onMounted, ref, onErrorCaptured } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
+
+const useClipboardManager = require( '../composables/useClipboardManager.js' );
+const useMainStore = require( '../store/index.js' );
+const { removeHashFromURL } = require( '../utils/urlUtils.js' );
+
+// Views:
+const AbstractView = require( '../views/Abstract.vue' );
 const FunctionEditorView = require( '../views/FunctionEditor.vue' );
 const FunctionEvaluatorView = require( '../views/FunctionEvaluator.vue' );
 const FunctionViewerView = require( '../views/FunctionViewer.vue' );
-const { removeHashFromURL } = require( '../utils/urlUtils.js' );
 const DefaultView = require( '../views/Default.vue' );
-const useMainStore = require( '../store/index.js' );
-const useClipboardManager = require( '../composables/useClipboardManager.js' );
+
+// Codex components:
 const { CdxMessage, CdxProgressIndicator } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'app',
 	components: {
+		'wl-abstract-view': AbstractView,
 		'wl-function-evaluator-view': FunctionEvaluatorView,
 		'wl-function-editor-view': FunctionEditorView,
 		'wl-function-viewer-view': FunctionViewerView,
@@ -65,20 +69,18 @@ module.exports = exports = defineComponent( {
 		// Lifecycle
 		onMounted( () => {
 			store.fetchUserRights();
-			store.prefetchZids()
-				.then( () => {
-					store.initializeView()
-						.then( () => {
-							store.evaluateUri();
-							isAppSetup.value = true;
-						} )
-						.catch( () => {
-							hasError.value = true;
-						} );
-				} )
-				.catch( () => {
-					hasError.value = true;
-				} );
+			store.prefetchData().then( () => {
+				store.initializeView()
+					.then( () => {
+						store.evaluateUri();
+						isAppSetup.value = true;
+					} )
+					.catch( () => {
+						hasError.value = true;
+					} );
+			} ).catch( () => {
+				hasError.value = true;
+			} );
 
 			window.onpopstate = function ( event ) {
 				/**
@@ -102,6 +104,7 @@ module.exports = exports = defineComponent( {
 					return;
 				}
 
+				// Reevaluate Uri
 				store.evaluateUri();
 			};
 		} );
@@ -113,6 +116,7 @@ module.exports = exports = defineComponent( {
 			hasError.value = true;
 			return false;
 		} );
+
 		return {
 			// Reactive store data
 			getCurrentView,

@@ -22,6 +22,19 @@ const wikidataUtils = {
 		return [ ...new Set( allMatches ) ];
 	},
 	/**
+	 * Extract Wikidata Item IDs from a ZObject
+	 *
+	 * @param {Object} zobject
+	 * @return {Array}
+	 */
+	extractWikidataItemIds: function ( zobject ) {
+		const str = JSON.stringify( zobject );
+		const regexp = /(Q[1-9]\d*)/g;
+		const matches = [ ...str.matchAll( regexp ) ];
+		const allMatches = matches.map( ( groups ) => groups[ 0 ] );
+		return [ ...new Set( allMatches ) ];
+	},
+	/**
 	 * Whether the input string is a valid Wikidata Item ID (Qid)
 	 *
 	 * @param {string} str

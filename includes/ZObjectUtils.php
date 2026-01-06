@@ -508,6 +508,16 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Is the input a null Wikidata item reference (Q0)?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isNullWikidataItemReference( string $input ): bool {
+		return ( $input === 'Q0' );
+	}
+
+	/**
 	 * Is the input a null reference (Z0)?
 	 *
 	 * @param string $input

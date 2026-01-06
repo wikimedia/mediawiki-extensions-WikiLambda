@@ -206,7 +206,7 @@ class ZObjectContent extends AbstractContent {
 	}
 
 	/**
-	 * @inheritDoc
+	 * @return string
 	 */
 	public function getText() {
 		return $this->text;

@@ -110,6 +110,22 @@ module.exports = exports = defineComponent( {
 		const isInsideComposition = computed( () => props.keyPath.split( '.' ).includes( Constants.Z_IMPLEMENTATION_COMPOSITION ) );
 
 		/**
+		 * Returns whether the current path is a fragment in an
+		 * abstract content section object.
+		 *
+		 * @return {boolean}
+		 */
+		const isAbstractFragment = computed( () => {
+			const parts = props.keyPath.split( '.' );
+			return (
+				parts.length > 5 &&
+				parts[ 0 ] === Constants.STORED_OBJECTS.ABSTRACT &&
+				parts[ 1 ] === Constants.ABSTRACT_WIKI_SECTIONS &&
+				parts[ 3 ] === Constants.ABSTRACT_WIKI_SECTION_FRAGMENTS
+			);
+		} );
+
+		/**
 		 * Whether the key expects a Wikidata item type.
 		 *
 		 * @return {boolean}
@@ -198,7 +214,7 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Argument reference: Only available if inside a composition
-			if ( isInsideComposition.value ) {
+			if ( isInsideComposition.value || isAbstractFragment.value ) {
 				resolvers.push( {
 					label: store.getLabelData( Constants.Z_ARGUMENT_REFERENCE ).label,
 					value: Constants.Z_ARGUMENT_REFERENCE,

@@ -10,6 +10,16 @@
 			"Wladek92"
 		]
 	},
+	"apihelp-abstractwiki_run_fragment-summary": "{{doc-apihelp-summary|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_run_fragment-param-qid": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_run_fragment-param-language": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_run_fragment-param-date": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "{{doc-apihelp-example|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_run_fragment-example-composition": "{{doc-apihelp-example|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Error message when Abstract Mode is not enabled or not properly configured.\n\n{{doc-wikilambda}}",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "Error message when the Abstract Wikipedia fragment sent to the API is a not well-formed JSON\n\n{{doc-wikilambda}}",
+	"apierror-abstractwiki_run_fragment-bad-response": "Error message when Abstract Wikipedia got a failed response from Wikifunctions trying to execute an Abstract Wikipedia content fragment\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_fetch-summary": "{{doc-apihelp-summary|wikilambda_fetch}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_fetch-param-zids": "{{doc-apihelp-param|wikilambda_fetch|zids}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_fetch-param-revisions": "{{doc-apihelp-param|wikilambda_fetch|revisions}}\n\n{{doc-wikilambda}}",

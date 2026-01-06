@@ -439,6 +439,7 @@
 				"jquery.uls.data",
 				"mediawiki.Title",
 				"mediawiki.api",
+				"mediawiki.ForeignApi",
 				"mediawiki.jqueryMsg",
 				"mediawiki.DateFormatter",
 				"mediawiki.router",
@@ -477,6 +478,7 @@
 				"ext.wikilambda.app/store/classes/ApiError.js",
 				"ext.wikilambda.app/store/classes/ErrorData.js",
 				"ext.wikilambda.app/store/classes/LabelData.js",
+				"ext.wikilambda.app/store/stores/abstractWiki.js",
 				"ext.wikilambda.app/store/stores/router.js",
 				"ext.wikilambda.app/store/stores/zobject.js",
 				"ext.wikilambda.app/store/stores/currentPage.js",
@@ -522,12 +524,17 @@
 				"ext.wikilambda.app/utils/urlUtils.js",
 				"ext.wikilambda.app/utils/wikidataUtils.js",
 				"ext.wikilambda.app/utils/zobjectUtils.js",
+				"ext.wikilambda.app/views/Abstract.vue",
 				"ext.wikilambda.app/views/FunctionEvaluator.vue",
 				"ext.wikilambda.app/views/FunctionEditor.vue",
 				"ext.wikilambda.app/views/FunctionViewer.vue",
 				"ext.wikilambda.app/views/Default.vue",
 				"ext.wikilambda.app/components/index.js",
 				"ext.wikilambda.app/components/App.vue",
+				"ext.wikilambda.app/components/abstract/AbstractContent.vue",
+				"ext.wikilambda.app/components/abstract/AbstractPreview.vue",
+				"ext.wikilambda.app/components/abstract/AbstractPreviewFragment.vue",
+				"ext.wikilambda.app/components/abstract/AbstractTitle.vue",
 				"ext.wikilambda.app/components/base/ZObjectSelector.vue",
 				"ext.wikilambda.app/components/base/CodeEditor.vue",
 				"ext.wikilambda.app/components/base/CustomDialogHeader.vue",
@@ -1011,7 +1018,13 @@
 				"WikiLambdaZObjectStore"
 			]
 		},
-		"wikilambda_supported_programming_languages": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiSupportedProgrammingLanguages"
+		"wikilambda_supported_programming_languages": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiSupportedProgrammingLanguages",
+		"abstractwiki_run_fragment": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiAbstractWikiRunFragment",
+			"services": [
+				"HttpRequestFactory"
+			]
+		}
 	},
 	"APIListModules": {
 		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZObjectLabels",
@@ -1075,6 +1088,7 @@
 				"WikiLambdaZObjectStore"
 			]
 		},
+		"CreateAbstract": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateAbstract",
 		"CreateObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateObject",
 		"RunFunction": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialRunFunction",
 		"ListDuplicateObjectNames": {

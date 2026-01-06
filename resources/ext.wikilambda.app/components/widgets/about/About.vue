@@ -74,6 +74,8 @@
 			<wl-publish-dialog
 				v-if="!edit"
 				:show-dialog="showPublishDialog"
+				:submit-action="submitAction"
+				:success-callback="successCallback"
 				@close-dialog="cancelPublish"
 			></wl-publish-dialog>
 		</template>
@@ -97,6 +99,7 @@ const icons = require( '../../../../lib/icons.json' );
 const Constants = require( '../../../Constants.js' );
 const usePageTitle = require( '../../../composables/usePageTitle.js' );
 const useMainStore = require( '../../../store/index.js' );
+const urlUtils = require( '../../../utils/urlUtils.js' );
 
 // Base components
 const WidgetBase = require( '../../base/WidgetBase.vue' );
@@ -568,6 +571,37 @@ module.exports = exports = defineComponent( {
 			return hasName ? '' : 'ext-wikilambda-app-about__accordion--untitled';
 		}
 
+		// Publish actions
+		/**
+		 * Call store action for ZObject submission
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.summary
+		 * @return {Promise}
+		 */
+		function submitAction( { summary } ) {
+			return store.submitZObject( { summary } );
+		}
+
+		/**
+		 * Actions to run after a publish action has finished
+		 * successfully.
+		 *
+		 * @param {Object} response
+		 */
+		function successCallback( response ) {
+			const pageTitle = response.page;
+
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
+			store.setPublishSuccess( pageTitle );
+
+			// FIXME: we are already in the view page, so we don't really need to navigate
+			// See if we can do it with just a store refresh and closing the dialog.
+			window.location.href = !pageTitle ?
+				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
+				urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid: pageTitle } );
+		}
+
 		// Watch
 		watch( fallbackLanguageZids, () => {
 			initializeDisplayLanguages();
@@ -597,6 +631,8 @@ module.exports = exports = defineComponent( {
 			saveFieldChange,
 			showLanguagesDialog,
 			showPublishDialog,
+			submitAction,
+			successCallback,
 			updateEditValue,
 			i18n
 		};

@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
+use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
 use MediaWiki\SpecialPage\SpecialPage;
@@ -49,7 +50,9 @@ class SpecialCreateObject extends SpecialPage {
 		return $description;
 	}
 
-	/** @inheritDoc */
+	/**
+	 * @inheritDoc
+	 */
 	public function isListed() {
 		// No usage allowed on client-mode wikis.
 		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
@@ -57,16 +60,8 @@ class SpecialCreateObject extends SpecialPage {
 
 	/**
 	 * @inheritDoc
-	 *
-	 * @param User $user
-	 * @return bool
 	 */
 	public function userCanExecute( User $user ) {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			// No usage allowed on client-mode wikis.
-			return false;
-		}
-
 		$block = $user->getBlock();
 
 		return (
@@ -78,9 +73,27 @@ class SpecialCreateObject extends SpecialPage {
 	}
 
 	/**
+	 * Output an error message telling the user that the Repo Mode is not enabled
+	 *
+	 * @throws ErrorPageError
+	 * @return never
+	 */
+	private function displayNotAvailableError() {
+		$titleMessage = $this->msg( 'wikilambda-special-create-zobject-not-enabled-title' );
+		$errorMessage = $this->msg( 'wikilambda-special-create-zobject-not-enabled' );
+		throw new ErrorPageError( $titleMessage, $errorMessage );
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function execute( $subPage ) {
+		// Throw ErrorPageError if Abtract Mode is not enabled
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$this->displayNotAvailableError();
+		}
+
+		// Throw PermissionsError if user doesn't have the necessary rights
 		if ( !$this->userCanExecute( $this->getUser() ) ) {
 			$this->displayRestrictionError();
 		}

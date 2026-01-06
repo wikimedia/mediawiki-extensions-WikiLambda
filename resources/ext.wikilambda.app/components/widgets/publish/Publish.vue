@@ -27,7 +27,8 @@
 			</cdx-button>
 			<wl-publish-dialog
 				:show-dialog="showPublishDialog"
-				:function-signature-changed="functionSignatureChanged"
+				:submit-action="submitAction"
+				:success-callback="successCallback"
 				@close-dialog="closePublishDialog"
 				@before-exit="removeListeners"
 			></wl-publish-dialog>
@@ -284,6 +285,40 @@ module.exports = exports = defineComponent( {
 			window.removeEventListener( 'beforeunload', handleUnload );
 		}
 
+		// Publish actions
+		/**
+		 * Call store action for ZObject submission, with summary and
+		 * flag to know whether to disconnect implementations and tests.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.summary
+		 * @return {Promise}
+		 */
+		function submitAction( { summary } ) {
+			return store.submitZObject( {
+				summary,
+				shouldDisconnectFunctionObjects: props.functionSignatureChanged
+			} );
+		}
+
+		/**
+		 * Actions to run after a publish action has finished
+		 * successfully.
+		 *
+		 * @param {Object} response
+		 */
+		function successCallback( response ) {
+			const pageTitle = response.page;
+
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
+			store.setPublishSuccess( pageTitle );
+
+			// Navigate to page
+			window.location.href = !pageTitle ?
+				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
+				urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid: pageTitle } );
+		}
+
 		// Lifecycle
 		onMounted( () => {
 			addListeners();
@@ -302,6 +337,8 @@ module.exports = exports = defineComponent( {
 			revertToEdit,
 			showLeaveEditorDialog,
 			showPublishDialog,
+			submitAction,
+			successCallback,
 			waitAndHandlePublish,
 			i18n
 		};

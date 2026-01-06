@@ -218,6 +218,16 @@ class ZTypeRegistry extends ZObjectRegistry {
 	// Wikidata enum
 	public const Z_WIKIDATA_ENUM = 'Z6884';
 
+	// Abstract Wiki
+	public const Z_RUN_ABSTRACT_FRAGMENT = 'Z825';
+	public const Z_RUN_ABSTRACT_FRAGMENT_QID = 'Z825K1';
+	public const Z_RUN_ABSTRACT_FRAGMENT_LANGUAGE = 'Z825K2';
+	public const Z_RUN_ABSTRACT_FRAGMENT_DATE = 'Z825K3';
+
+	public const Z_DATE_PARSER = 'Z20808';
+	public const Z_DATE_PARSER_STRING = 'Z20808K1';
+	public const Z_DATE_PARSER_LANGUAGE = 'Z20808K2';
+
 	/**
 	 * DRY mapping for Wikidata entity types to their fetch function and reference key.
 	 *

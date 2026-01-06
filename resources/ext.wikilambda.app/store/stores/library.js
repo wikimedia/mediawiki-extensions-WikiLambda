@@ -1187,10 +1187,48 @@ module.exports = {
 		/**
 		 * Pre-fetch information of the Zids most commonly used within the UI
 		 *
+		 * NOTE: We only mount App.vue in Repo mode (wikifunctions.org UI) and
+		 * in Abstract mode (abstract.wikipedia.org UI), never on Client pages.
+		 * This method is only run during the initialization of App.vue, so we know
+		 * that we are necessarily in one of these two configurations.
+		 * * In production env: the config will be exclusively either Abstract or Repo
+		 * * In development env (with both services running in one mediawiki instance)
+		 *   the configuration should be:
+		 *   * when seeing Abstract pages, both Abstract and Repo flags should be enabled
+		 *   * when seeing ZObject pages, only Repo flag should be enabled
+		 *
 		 * @return {Promise}
 		 */
-		prefetchZids: function () {
-			const zids = [
+		prefetchData: function () {
+			let zids = [];
+
+			// Prefetch smaller array of zids in Abstract mode:
+			if ( mw.config.get( 'wgWikiLambdaEnableAbstractMode' ) ) {
+				// NOTE #1: Unless we are in dev environment with both Abstract and Repo
+				// activated, this request will be external, from abstract.wikipedia.org
+				// to wikifunctions.org, so we benefit from making this set as small
+				// as possible.
+				// NOTE #2: Because a dev environment might need both Abstract and Repo
+				// mode activated, the order of these blocks is important. If Abstract
+				// mode is set, we will be prioritizing Abstract content and just using
+				// ZObject content as support (fetch labels, etc., from wikifunctions)
+				zids = [
+					// Needed for Mode selector
+					Constants.Z_OBJECT,
+					Constants.Z_FUNCTION_CALL,
+					Constants.Z_REFERENCE,
+					Constants.Z_ARGUMENT_REFERENCE,
+					// Abstract objects
+					Constants.Z_ABSTRACT_RENDER_FUNCTION,
+					// Needed for ZObject selector
+					... Constants.SUGGESTIONS.LANGUAGES,
+					... Constants.SUGGESTIONS.TYPES
+				];
+				return this.fetchZids( { zids } );
+			}
+
+			// Prefetch most frequently used Zids if we are in Repo mode:
+			zids = [
 				Constants.Z_OBJECT,
 				Constants.Z_PERSISTENTOBJECT,
 				Constants.Z_MULTILINGUALSTRING,

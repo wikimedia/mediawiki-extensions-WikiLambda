@@ -592,4 +592,67 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			);
 		}
 	}
+
+	/**
+	 * Determines whether the input function call might execute unsaved code.
+	 *
+	 * To do this, we look at the function called by the function call (Z7K1)
+	 * and, if the function is a literal, we explore its implementations.
+	 * If any of the implementations is a literal, we consider it unsaved
+	 * code, unless it's implementing Run Abstract Fragment/Z825 function.
+	 *
+	 * TODO figure out a better way to allow execution of fragments, which
+	 * are unsaved code in the strict sense, but should be allowed to run:
+	 * * E.g. if the implementation is literal, but is a composition, we can
+	 *   allow it, but if any nested implementation has code, we should stop it.
+	 * * E.g. if the literal implementation implements Z825, but does it by
+	 *   a code implementation, we should mark it as unsaved code.
+	 *
+	 * @param \stdClass $functionCall
+	 * @return bool
+	 */
+	protected function hasUnsavedCode( $functionCall ): bool {
+		// If function is not an object, no danger; exit early
+		if (
+			!property_exists( $functionCall, ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ) ||
+			!is_object( $functionCall->{ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION } )
+		) {
+			return false;
+		}
+
+		$function = $functionCall->{ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION };
+
+		// If function has no implementations, no danger; exit early
+		if (
+			!property_exists( $function, ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS ) ||
+			count( $function->{ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS } ) <= 1
+		) {
+			return false;
+		}
+
+		$implementations = $function->{ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS };
+
+		// We loop through all implementations for a chance of unsaved code;
+		// the orchestrator will try them in order, and if it finds a non valid
+		// implementation, it will continue with the next, making it possible to
+		// bypass this security check if we only checked for the first.
+		foreach ( array_slice( $implementations, 1 ) as $implementation ) {
+			// If implementation is a zid, no danger; continue
+			if ( !is_object( $implementation ) ) {
+				continue;
+			}
+
+			// If implementation is a literal, danger! mark as unsaved code,
+			// except when implementing Run Abstract Fragment/Z825 function.
+			if (
+				property_exists( $implementation, ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION ) &&
+				$implementation->{ ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION } !== ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT
+			) {
+				return true;
+			}
+		}
+
+		// All checks passed, no danger
+		return false;
+	}
 }

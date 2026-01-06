@@ -779,14 +779,14 @@ describe( 'library Pinia store', () => {
 			} );
 		} );
 
-		describe( 'prefetchZids', () => {
-			it( 'prefetchZids function performs expected actions', () => {
+		describe( 'prefetchData', () => {
+			it( 'prefetchData function performs expected actions', () => {
 				store.fetchZids = jest.fn();
 				Object.defineProperty( store, 'getUserLangZid', {
 					value: 'Z1002'
 				} );
 
-				store.prefetchZids();
+				store.prefetchData();
 
 				expect( store.fetchZids ).toHaveBeenCalledTimes( 1 );
 				// No need to check specific prefetched keys, just that keys are being fetched

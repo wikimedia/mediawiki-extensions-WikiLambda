@@ -33,7 +33,8 @@ const zobjectStore = {
 		jsonObject: {
 			main: {},
 			call: {},
-			response: {}
+			response: {},
+			abstractwiki: {}
 		}
 	},
 
@@ -98,6 +99,10 @@ const zobjectStore = {
 		 * @return {string}
 		 */
 		getCurrentTargetFunctionZid: function ( state ) {
+			if ( this.getAbstractWikiId ) {
+				return Constants.Z_ABSTRACT_RENDER_FUNCTION;
+			}
+
 			const objectValue = state.jsonObject[ Constants.STORED_OBJECTS.MAIN ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
 			if ( !objectValue ) {
 				return undefined;
@@ -981,20 +986,24 @@ const zobjectStore = {
 		 * @return {Promise}
 		 */
 		initializeView: function () {
-			const { createNewPage, runFunction, zId } = this.getWikilambdaConfig;
+			const { abstractContent, createNewPage, runFunction, zId } = this.getWikilambdaConfig;
 
-			// If createNewPage is true, ignore runFunction and any specified ZID.
-			if ( createNewPage ) {
+			if ( abstractContent ) {
+				// If abstractContent is true, fully initialize for abstract view
+				return this.initializeAbstractWikiContent();
+
+			} else if ( createNewPage ) {
+				// If createNewPage is true, ignore runFunction and any specified ZID.
 				return this.initializeCreateNewPage();
 
+			} else if ( runFunction || !zId ) {
 				// If runFunction is true, ignore any specified ZID.
 				// If no ZID specified, assume runFunction is true.
-			} else if ( runFunction || !zId ) {
 				return this.initializeEvaluateFunction();
 
+			} else {
 				// Else, this is a view or edit page of an existing ZObject, so we
 				// fetch the info and set the root ZObject with the persisted data.
-			} else {
 				return this.initializeRootZObject( zId );
 			}
 		},

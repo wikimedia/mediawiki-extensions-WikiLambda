@@ -130,8 +130,10 @@ const Constants = {
 	Z_TYPED_MAP: 'Z883',
 	Z_TYPED_MAP_TYPE1: 'Z883K1',
 	Z_TYPED_MAP_TYPE2: 'Z883K2',
-	Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type',
-	Z_GREGORIAN_CALENDAR_DATE: 'Z20420'
+	Z_GREGORIAN_CALENDAR_DATE: 'Z20420',
+	Z_ABSTRACT_CONTENT: 'Z25',
+	Z_ABSTRACT_CONTENT_SUBJECT: 'Z25K1',
+	Z_ABSTRACT_CONTENT_VALUE: 'Z25K2'
 };
 
 // Wikidata:
@@ -464,7 +466,8 @@ Constants.EXCLUDE_FROM_ENUMS = [
 	Constants.Z_FUNCTION,
 	Constants.Z_ERRORTYPE,
 	Constants.Z_DESERIALISER,
-	Constants.Z_SERIALISER
+	Constants.Z_SERIALISER,
+	Constants.Z_ABSTRACT_CONTENT
 ];
 
 // EXCLUDE_FROM_PERSISTENT_CONTENT:
@@ -478,6 +481,7 @@ Constants.EXCLUDE_FROM_PERSISTENT_CONTENT = [
 	Constants.Z_KEY_REFERENCE,
 	Constants.Z_ARGUMENT,
 	Constants.Z_CODE,
+	Constants.Z_ABSTRACT_CONTENT,
 	...Constants.WIKIDATA_TYPES,
 	...Object.keys( Constants.WIKIDATA_REFERENCE_TYPES ).map( ( k ) => Constants.WIKIDATA_REFERENCE_TYPES[ k ] )
 ];
@@ -490,7 +494,8 @@ Constants.EXCLUDE_FROM_SELECTOR = [
 	Constants.Z_PERSISTENTOBJECT,
 	Constants.Z_REFERENCE,
 	Constants.Z_ARGUMENT_REFERENCE,
-	Constants.Z_RESPONSEENVELOPE
+	Constants.Z_RESPONSEENVELOPE,
+	Constants.Z_ABSTRACT_CONTENT
 ];
 
 // EXCLUDE_FROM_LITERAL_MODE_SELECTION:
@@ -539,6 +544,7 @@ Constants.LIST_MENU_OPTIONS = {
 
 Constants.PATHS = {
 	MAIN_PAGE: 'Wikifunctions:Main_Page',
+	CREATE_ABSTRACT_TITLE: 'Special:CreateAbstract',
 	CREATE_OBJECT_TITLE: 'Special:CreateObject',
 	RUN_FUNCTION_TITLE: 'Special:RunFunction',
 	LIST_OBJECTS_BY_TYPE_TYPE: 'Special:ListObjectsByType/Z4',
@@ -587,7 +593,8 @@ Constants.VIEWS = {
 	FUNCTION_EDITOR: 'function-editor-view',
 	FUNCTION_VIEWER: 'function-viewer-view',
 	FUNCTION_EVALUATOR: 'function-evaluator-view',
-	DEFAULT: 'default-view'
+	DEFAULT: 'default-view',
+	ABSTRACT: 'abstract-view'
 };
 
 Constants.Z_ERRORS = {
@@ -623,7 +630,8 @@ Constants.VE_ALLOW_EMPTY_FIELD = [
 Constants.STORED_OBJECTS = {
 	MAIN: 'main',
 	FUNCTION_CALL: 'call',
-	RESPONSE: 'response'
+	RESPONSE: 'response',
+	ABSTRACT: 'abstractwiki'
 };
 
 Constants.METADATA_CONTENT_TYPE = {
@@ -639,5 +647,12 @@ Constants.QUEUE_STATUS = {
 	RESOLVED: 3,
 	REJECTED: 4
 };
+
+Constants.ABSTRACT_WIKI_QID = 'qid';
+Constants.ABSTRACT_WIKI_SECTIONS = 'sections';
+Constants.ABSTRACT_WIKI_SECTION_LEDE = 'Q8776414';
+Constants.ABSTRACT_WIKI_SECTION_FRAGMENTS = 'fragments';
+
+Constants.Z_ABSTRACT_RENDER_FUNCTION = 'Z825';
 
 module.exports = Constants;

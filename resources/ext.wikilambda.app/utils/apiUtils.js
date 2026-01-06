@@ -82,6 +82,7 @@ const apiUtils = {
 	 * @return {Promise}
 	 */
 	saveZObject: function ( payload ) {
+		// Should never work with foreign API
 		const api = new mw.Api();
 
 		return new Promise( ( resolve, reject ) => {
@@ -344,7 +345,7 @@ const apiUtils = {
 	 *
 	 * @param {Object} payload
 	 * @param {string} payload.language user language code
-	 * @param {Array} payload.ids entity Ids to fetch, seperated by pipes and max 50 (API limit)
+	 * @param {Array} payload.ids entity Ids to fetch, separated by pipes and max 50 (API limit)
 	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -391,6 +392,110 @@ const apiUtils = {
 				.then( ( data ) => resolve( {
 					html: data.wikifunctions_html_sanitiser ? data.wikifunctions_html_sanitiser.value : ''
 				} ) )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
+	},
+
+	/**
+	 * Calls mediawiki query Action API go get basic page info given a list of Ids
+	 * https://www.mediawiki.org/w/api.php?action=help&modules=query%2Binfo
+	 *
+	 * @param {Object} payload
+	 * @param {Array} payload.titles page Ids to fetch
+	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
+	 * @return {Promise}
+	 */
+	fetchPageInfo: function ( payload ) {
+		const api = apiUtils.newApi();
+
+		return new Promise( ( resolve, reject ) => {
+			api.get( {
+				action: 'query',
+				prop: 'info',
+				titles: payload.titles,
+				format: 'json',
+				formatversion: '2'
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => {
+					const pages = data.query.pages.map( ( page ) => {
+						const normalized = page.title;
+						const denormalized = data.query.normalized.find( ( item ) => item.to === normalized );
+						return Object.assign( {
+							denormalized: denormalized.from
+						}, page );
+					} );
+					resolve( pages );
+				} )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
+	},
+
+	/**
+	 * Calls the action=edit API for saving abstract wiki content.
+	 *
+	 * Needs error handling.
+	 *
+	 * @param {Object} payload
+	 * @param {Object} payload.content
+	 * @param {string} payload.title
+	 * @param {string} payload.summary
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @return {Promise}
+	 */
+	saveAbstractWikiContent: function ( payload ) {
+		// Should never work with foreign API
+		const api = new mw.Api();
+
+		return new Promise( ( resolve, reject ) => {
+			api.postWithEditToken( {
+				action: 'edit',
+				format: 'json',
+				formatversion: '2',
+				summary: payload.summary || '',
+				title: payload.title,
+				text: JSON.stringify( payload.content, null, 4 )
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => resolve( data.edit ) )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
+	},
+
+	/**
+	 * Calls the action=abstractwiki_run_fragment API for generating the sanitized
+	 * preview of a given Abstract Wiki content fragment.
+	 *
+	 * Needs error handling.
+	 *
+	 * @param {Object} payload
+	 * @param {string} payload.qid
+	 * @param {string} payload.language
+	 * @param {string} payload.date
+	 * @param {Object} payload.fragment
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @return {Promise}
+	 */
+	runAbstractWikiFragment: function ( payload ) {
+		// Should never work with foreign API
+		const api = new mw.Api();
+		const canonicalJson = JSON.stringify( hybridToCanonical( payload.fragment ) );
+
+		return new Promise( ( resolve, reject ) => {
+			api.get( {
+				action: 'abstractwiki_run_fragment',
+				format: 'json',
+				formatversion: '2',
+				abstractwiki_run_fragment_qid: payload.qid,
+				abstractwiki_run_fragment_language: payload.language,
+				abstractwiki_run_fragment_date: payload.date,
+				abstractwiki_run_fragment_fragment: canonicalJson
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => resolve( data.abstractwiki_run_fragment.data ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );
 	}

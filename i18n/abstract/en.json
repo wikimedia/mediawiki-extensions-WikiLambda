@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Genoveva Galarza",
 			"James D. Forrester"
 		]
 	},
@@ -9,7 +10,11 @@
 	"content-model-abstractwiki": "Abstract Content",
 	"right-wikilambda-abstract-create": "Create new Abstract Content pages",
 	"right-wikilambda-abstract-edit": "Edit existing Abstract Content pages",
+	"specialpages-group-abstractwiki": "Abstract Wikipedia pages",
+	"wikilambda-abstract-edit-title": "Edit Abstract Article for $1",
 	"wikilambda-invalidabstractcontent": "The provided content is not a valid Abstract Content object.",
-	"wikilambda-invalidabstractcontenttitle": "The provided title '$1' is not valid for an Abstract Content object."
-
+	"wikilambda-invalidabstractcontenttitle": "The provided title '$1' is not valid for an Abstract Content object.",
+	"wikilambda-special-create-abstract": "Create a New Abstract Article",
+	"wikilambda-special-create-abstract-qid": "Create a New Abstract Article for $1",
+	"wikilambda-special-create-abstract-intro": "Some intro about creation of Abstract Articles. By creating this page you agree to terms of use and you irrevocably agree to release your contribution under Some-License-Here"
 }

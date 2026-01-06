@@ -556,6 +556,10 @@ module.exports = exports = defineComponent( {
 			if ( props.keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
 				store.setDirty();
 			}
+			if ( props.keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.ABSTRACT ) {
+				store.setDirty();
+				store.setDirtyFragment( props.keyPath );
+			}
 		}
 
 		/**

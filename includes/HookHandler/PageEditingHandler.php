@@ -12,7 +12,6 @@
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\Api\ApiMessage;
-use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
@@ -22,6 +21,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\RecentChanges\RecentChange;
@@ -29,8 +29,6 @@ use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
-use MediaWiki\User\User;
-use MediaWiki\User\UserIdentity;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Message\MessageSpecifier;
 use Wikimedia\Rdbms\IConnectionProvider;
@@ -63,13 +61,12 @@ class PageEditingHandler implements
 
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/NamespaceIsMovable
-	 *
-	 * @param int $index
-	 * @param bool &$result
-	 * @return bool|void
+	 * @inheritDoc
 	 */
 	public function onNamespaceIsMovable( $index, &$result ) {
+		// For Repo Mode:
 		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// If Repo Mode is enabled, NS_MAIN will always be ZObject content
 			if ( $index === NS_MAIN ) {
 				$result = false;
 				// Over-ride any other extensions which might have other ideas
@@ -77,6 +74,7 @@ class PageEditingHandler implements
 			}
 		}
 
+		// For Abstract Mode:
 		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			foreach ( $this->config->get( 'WikiLambdaAbstractNamespaces' ) as $configuredIndex ) {
 				if ( $index === $configuredIndex ) {
@@ -88,163 +86,210 @@ class PageEditingHandler implements
 				}
 			}
 		}
-
-		// Nothing for us to do.
-		return null;
 	}
 
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/MultiContentSave
-	 *
-	 * @param RenderedRevision $renderedRevision
-	 * @param UserIdentity $user
-	 * @param CommentStoreComment $summary
-	 * @param int $flags
-	 * @param Status $hookStatus
-	 * @return bool|void
+	 * @inheritDoc
 	 */
 	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $hookStatus ) {
-		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
-			if ( !$title->inNamespace( NS_MAIN ) ) {
-				return true;
-			}
-
-			$zid = $title->getDBkey();
-			if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
-				$hookStatus->fatal( 'wikilambda-invalidzobjecttitle', $zid );
-				return false;
-			}
-
-			$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
-
-			if ( !( $content instanceof ZObjectContent ) ) {
-				$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
-				return false;
-			}
-
-			if ( !$content->isValid() ) {
-				$hookStatus->fatal( 'wikilambda-invalidzobject' );
-				return false;
-			}
-
-			// (T260751) Ensure uniqueness of type / label / language triples on save.
-			$newLabels = $content->getLabels()->getValueAsList();
-
-			if ( $newLabels === [] ) {
-				// Unlabelled; don't error.
-				return true;
-			}
-
-			$clashes = $this->zObjectStore->findZObjectLabelConflicts(
-				$zid,
-				$content->getZType(),
-				$newLabels
-			);
-
-			if ( $clashes === [] ) {
-				return true;
-			}
-
-			foreach ( $clashes as $language => $clash_zid ) {
-				$hookStatus->fatal( 'wikilambda-labelclash', $clash_zid, $language );
-			}
-
-			return false;
-		}
-
+		// Abstract Mode is enabled
 		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
-			$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
+			$linkTarget = $renderedRevision->getRevision()->getPageAsLinkTarget();
 
 			$configuredNamespaces = array_keys( $this->config->get( 'WikiLambdaAbstractNamespaces' ) );
 
-			if ( !in_array( $title->getNamespace(), $configuredNamespaces, true ) ) {
-				// Not one of ours; nothing for us to do.
-				return;
+			// If namespace is one of the Abstract Namespaces, check for title and content type
+			if ( in_array( $linkTarget->getNamespace(), $configuredNamespaces, true ) ) {
+				return $this->abstractContentSave( $linkTarget, $renderedRevision, $hookStatus );
 			}
+			// Abstract Mode but not an Abstract namespace: not our content
+		}
 
-			$qid = $title->getDBkey();
-			if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
-				$hookStatus->fatal( 'wikilambda-invalidabstracttitle', $qid );
-				return false;
+		// Repo Mode is enabled
+		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$linkTarget = $renderedRevision->getRevision()->getPageAsLinkTarget();
+
+			// If namespace is Main (ZObjects) check title, content type and validity:
+			if ( $linkTarget->inNamespace( NS_MAIN ) ) {
+				return $this->repoContentSave( $linkTarget, $renderedRevision, $hookStatus );
 			}
+			// Repo Mode but not Main namespace: not our content
+		}
 
-			$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
+		// Nothing for us to do
+	}
 
-			if ( !( $content instanceof AbstractWikiContent ) ) {
-				$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
-				return false;
-			}
+	/**
+	 * Given a page being saved on Repo Enabled mode and in the Main namespace,
+	 * this method makes sure that:
+	 * * the title is well formed (is a ZObject Id),
+	 * * the content is of the right kind (ZObjectContent),
+	 * * the content passes validation checks, and
+	 * * the labels don't clash with existing ones
+	 *
+	 * @param LinkTarget $linkTarget
+	 * @param RenderedRevision $renderedRevision
+	 * @param Status $hookStatus
+	 * @return bool
+	 */
+	private function repoContentSave( $linkTarget, $renderedRevision, $hookStatus ): bool {
+		$zid = $linkTarget->getDBkey();
+		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
+			// Title not valid; exit with error
+			$hookStatus->fatal( 'wikilambda-invalidzobjecttitle', $zid );
+			return false;
+		}
 
-			// One of ours, and not known-to-be-bad, so let it through.
+		$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
+
+		if ( !( $content instanceof ZObjectContent ) ) {
+			// Not the right type of content; exit with error
+			$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
+			return false;
+		}
+
+		if ( !$content->isValid() ) {
+			// Repo content not valid; exit with error
+			$hookStatus->fatal( 'wikilambda-invalidzobject' );
+			return false;
+		}
+
+		// (T260751) Ensure uniqueness of type / label / language triples on save.
+		$newLabels = $content->getLabels()->getValueAsList();
+
+		if ( $newLabels === [] ) {
+			// Unlabelled; don't error.
 			return true;
 		}
 
-		// Nothing for us to do.
+		$clashes = $this->zObjectStore->findZObjectLabelConflicts(
+			$zid,
+			$content->getZType(),
+			$newLabels
+		);
+
+		if ( $clashes === [] ) {
+			// No clashes; success
+			return true;
+		}
+
+		// Label clashes found; exit with error
+		foreach ( $clashes as $language => $clash_zid ) {
+			$hookStatus->fatal( 'wikilambda-labelclash', $clash_zid, $language );
+		}
+		return false;
+	}
+
+	/**
+	 * Given a page being saved on Abstract Enabled mode, and in an Abstract namespace,
+	 * this method makes sure that:
+	 * * the title is well formed (is a Wikidata Item Qid), and
+	 * * the content is of the right kind (AbstractWikiContent).
+	 *
+	 * @param LinkTarget $linkTarget
+	 * @param RenderedRevision $renderedRevision
+	 * @param Status $hookStatus
+	 * @return bool
+	 */
+	private function abstractContentSave( $linkTarget, $renderedRevision, $hookStatus ): bool {
+		$qid = $linkTarget->getDBkey();
+		if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
+			// Title not valid; exit with error
+			$hookStatus->fatal( 'wikilambda-invalidabstracttitle', $qid );
+			return false;
+		}
+
+		$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
+
+		if ( !( $content instanceof AbstractWikiContent ) ) {
+			// Not the right type of content; exit with error
+			$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
+			return false;
+		}
+
+		// All checks passed for Abstract Content; success
+		return true;
 	}
 
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/getUserPermissionsErrors
-	 *
-	 * @param Title $title
-	 * @param User $user
-	 * @param string $action
-	 * @param array|string|MessageSpecifier &$result
-	 * @return bool|void
+	 * @inheritDoc
 	 */
 	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
 		// TODO (T362234): Is there a nicer way of getting 'all change actions'?
 		$knownBlockedActions = [ 'create', 'edit', 'upload' ];
-
-		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			if ( !$title->inNamespace( NS_MAIN ) ) {
-				// Not one of ours; nothing for us to do.
-				return;
-			}
-
-			if ( !in_array( $action, $knownBlockedActions, true ) ) {
-				// Not an action we care about; nothing for us to do.
-				return;
-			}
-
-			$zid = $title->getDBkey();
-			if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
-				$result = ApiMessage::create(
-					wfMessage( 'wikilambda-invalidzobjecttitle', $zid ),
-					'wikilambda-invalidzobjecttitle'
-				);
-				return false;
-			}
-			// NOTE: We don't do per-user rights checks here; that's left to ZObjectAuthorization
-			return true;
+		if ( !in_array( $action, $knownBlockedActions, true ) ) {
+			// Not an action we care about; nothing for us to do.
+			return;
 		}
 
+		// Repo Mode is enabled
+		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			if ( $title->inNamespace( NS_MAIN ) ) {
+				// Main namespace; check for errors in Repo content and exit
+				return $this->getRepoUserPermissionsErrors( $title, $result );
+			}
+		}
+
+		// Abstract Mode is enabled
 		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			$configuredNamespaces = array_keys( $this->config->get( 'WikiLambdaAbstractNamespaces' ) );
-
-			if ( !in_array( $title->getNamespace(), $configuredNamespaces, true ) ) {
-				// Not one of ours; nothing for us to do.
-				return;
+			if ( in_array( $title->getNamespace(), $configuredNamespaces, true ) ) {
+				// Abstract Wiki namespace; check for errors in Abstract content and exit
+				return $this->getAbstractUserPermissionsErrors( $title, $result );
 			}
-
-			if ( !in_array( $action, $knownBlockedActions, true ) ) {
-				// Not an action we care about; nothing for us to do.
-				return;
-			}
-
-			$qid = $title->getDBkey();
-			if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
-				$result = ApiMessage::create(
-					wfMessage( 'wikilambda-invalidabstracttitle', $qid ),
-					'wikilambda-invalidabstracttitle'
-				);
-				return false;
-			}
-			return true;
 		}
 
-		// Not one of ours; don't claim that we allowed it through, we didn't make a decision.
-		return null;
+		// Nothing for us to do
+	}
+
+	/**
+	 * For change actions over Repo content (Repo mode enabled, and Main namespace),
+	 * check title validity.
+	 *
+	 * NOTE: We don't do per-user rights checks here; that's left to ZObjectAuthorization
+	 *
+	 * @param Title $title Title being checked against
+	 * @param array|string|MessageSpecifier &$result User permissions error to add.
+	 * @return bool|void True or no return value to continue or false to abort
+	 */
+	private function getRepoUserPermissionsErrors( $title, &$result ) {
+		$zid = $title->getDBkey();
+
+		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
+			// ZObject content, but title is not a valid Zid; return error
+			$result = ApiMessage::create(
+				wfMessage( 'wikilambda-invalidzobjecttitle', $zid ),
+				'wikilambda-invalidzobjecttitle'
+			);
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * For change actions over Abstract content (Abstract mode enabled, and Abstract namespace),
+	 * check title validity.
+	 *
+	 * @param Title $title Title being checked against
+	 * @param array|string|MessageSpecifier &$result User permissions error to add.
+	 * @return bool|void True or no return value to continue or false to abort
+	 */
+	private function getAbstractUserPermissionsErrors( $title, &$result ) {
+		$qid = $title->getDBkey();
+
+		if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
+			// Abstract Wiki content, but title is not a Wikidata Item Id; return error
+			$result = ApiMessage::create(
+				wfMessage( 'wikilambda-invalidabstracttitle', $qid ),
+				'wikilambda-invalidabstracttitle'
+			);
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

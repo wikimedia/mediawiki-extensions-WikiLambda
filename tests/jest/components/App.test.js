@@ -32,7 +32,7 @@ describe( 'App.vue', () => {
 	beforeEach( () => {
 		store = useMainStore();
 		store.initializeView.mockResolvedValue();
-		store.prefetchZids.mockResolvedValue();
+		store.prefetchData.mockResolvedValue();
 		store.isInitialized = true;
 		store.isCreateNewPage = false;
 		store.getCurrentView = 'function-editor-view';

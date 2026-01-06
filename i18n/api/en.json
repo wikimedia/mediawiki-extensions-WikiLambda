@@ -7,6 +7,16 @@
 			"James D. Forrester"
 		]
 	},
+	"apihelp-abstractwiki_run_fragment-summary": "Render an Abstract Wikipedia content fragment for the given Wikidata Item Id, language Zid and date",
+	"apihelp-abstractwiki_run_fragment-param-qid": "The Wikidata Item Id used to render the fragment. It should be a valid Qid.",
+	"apihelp-abstractwiki_run_fragment-param-language": "The Language ZObject Id used to render the fragment. It should be a valid Zid.",
+	"apihelp-abstractwiki_run_fragment-param-date": "The date string used to render the fragment.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "A fragment composition JSON. It should be a valid ZObject and should output an object of type HTML Fragment/Z89",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "Run a fragment with a literal HTML object",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Run a fragment with a composition that uses qid and language arguments",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Unable to render Abstract Wikipedia content fragments: this feature is not enabled.",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "Could not render the Abstract Wikipedia fragment: the fragment is not a valid JSON.",
+	"apierror-abstractwiki_run_fragment-bad-response": "Cound not render the Abstract Wikipedia fragment: Wikifunctions returned a failed response.",
 	"apihelp-wikilambda_fetch-summary": "Fetch the JSON model of ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "The ZObject ZIDs to fetch.",
 	"apihelp-wikilambda_fetch-param-revisions": "The revisions of the relevant ZIDs to fetch. If unset, this will fetch the latest revisions.",

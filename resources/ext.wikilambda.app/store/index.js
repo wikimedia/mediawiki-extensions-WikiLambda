@@ -8,6 +8,7 @@
 
 const { defineStore } = require( 'pinia' );
 
+const abstractWikiStore = require( './stores/abstractWiki.js' );
 const currentPageStore = require( './stores/currentPage.js' );
 const errorsStore = require( './stores/errors.js' );
 const factoryStore = require( './stores/factory.js' );
@@ -61,7 +62,9 @@ module.exports = defineStore( 'main', {
 		wdItemsStore.state,
 		wdPropertiesStore.state,
 		// VisualEditor
-		visualeditorStore.state
+		visualeditorStore.state,
+		// Abstract Wikipedia
+		abstractWikiStore.state
 	),
 	getters: Object.assign(
 		// Router
@@ -92,7 +95,9 @@ module.exports = defineStore( 'main', {
 		wdItemsStore.getters,
 		wdPropertiesStore.getters,
 		// VisualEditor
-		visualeditorStore.getters
+		visualeditorStore.getters,
+		// Abstract Wikipedia
+		abstractWikiStore.getters
 	),
 	actions: Object.assign(
 		// Router
@@ -123,6 +128,8 @@ module.exports = defineStore( 'main', {
 		wdItemsStore.actions,
 		wdPropertiesStore.actions,
 		// VisualEditor
-		visualeditorStore.actions
+		visualeditorStore.actions,
+		// Abstract Wikipedia
+		abstractWikiStore.actions
 	)
 } );

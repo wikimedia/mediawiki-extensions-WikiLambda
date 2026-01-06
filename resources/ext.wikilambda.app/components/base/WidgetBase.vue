@@ -23,7 +23,10 @@
 			</div>
 		</div>
 		<!-- Main slot -->
-		<div class="ext-wikilambda-app-widget-base__main ext-wikilambda-app-field-overrides">
+		<div
+			class="ext-wikilambda-app-widget-base__main"
+			:class="{ 'ext-wikilambda-app-field-overrides': !noOverrides }"
+		>
 			<slot name="main"></slot>
 		</div>
 		<!-- Footer action slot -->
@@ -38,6 +41,13 @@ const { defineComponent, computed, useSlots } = require( 'vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-widget-base',
+	props: {
+		noOverrides: {
+			type: Boolean,
+			required: false,
+			default: false
+		}
+	},
 	setup() {
 		const slots = useSlots();
 

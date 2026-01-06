@@ -13,6 +13,7 @@ $specialPageAliases = [];
 /** English (English) */
 $specialPageAliases['en'] = [
 	'ViewObject' => [ 'ViewObject' ],
+	'CreateAbstract' => [ 'CreateAbstract' ],
 	'CreateObject' => [ 'CreateObject', 'CreateZObject', 'NewZObject' ],
 	'RunFunction' => [ 'RunFunction', 'EvaluateFunctionCall' ],
 	'ListDuplicateObjectNames' => [ 'ListDuplicateObjectNames', 'ListDuplicateZObjectLabels' ],
