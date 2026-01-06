@@ -43,6 +43,13 @@
 				"WikiLambdaZObjectStore",
 				"WikiLambdaZObjectStash"
 			]
+		},
+		"abstractwiki": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\AbstractContent\\AbstractWikiContentHandler",
+			"services": [
+				"MainConfig",
+				"ContentHandlerFactory"
+			]
 		}
 	},
 	"config": {
@@ -89,12 +96,35 @@
 		"WikifunctionsEnableWikidataInputTypes": {
 			"description": "If true, allow Wikidata types (Z6001, Z6005, Z6091, Z6095) as renderable input types in Visual Editor.",
 			"value": true
+		},
+		"WikiLambdaEnableAbstractMode": {
+			"description": "If true, enable the 'abstract' mode of WikiLambda that powers Abstract Wikipedia, and so hosting Abstract Wiki content in the relevant namespace(s).",
+			"value": false
+		},
+		"WikiLambdaAbstractNamespaces": {
+			"description": "Map of namespaces to Wikidata concept types to use for Abstract Wiki content.",
+			"value": {
+				"2300": [
+					"Abstract_Wikipedia",
+					"Q50081413"
+				],
+				"2302": [
+					"Draft_Abstract_Wikipedia",
+					"Q560361"
+				],
+				"2304": [
+					"Abstract_Wiktionary",
+					"Q15138389"
+				]
+			}
 		}
 	},
 	"ConfigRegistry": {
 		"WikiLambda": "MediaWiki\\Config\\GlobalVarConfig::newInstance"
 	},
 	"AvailableRights": [
+		"wikilambda-abstract-create",
+		"wikilambda-abstract-edit",
 		"wikilambda-bypass-cache",
 		"wikilambda-connect-implementation",
 		"wikilambda-connect-tester",
@@ -152,6 +182,8 @@
 	],
 	"GroupPermissions": {
 		"*": {
+			"wikilambda-abstract-create": false,
+			"wikilambda-abstract-edit": false,
 			"wikilambda-bypass-cache": false,
 			"wikilambda-create-function-call": false,
 			"wikilambda-edit-function-call": false,
@@ -159,6 +191,8 @@
 			"wikifunctions-run": true
 		},
 		"user": {
+			"wikilambda-abstract-create": true,
+			"wikilambda-abstract-edit": true,
 			"wikilambda-execute-unsaved-code": true,
 			"wikilambda-create": true,
 			"wikilambda-create-converter": true,
@@ -299,6 +333,7 @@
 		"ChangesListSpecialPageQuery": "WikiLambdaClientChangeHooks",
 		"GetPreferences": "WikiLambdaClientChangeHooks",
 		"LoadExtensionSchemaUpdates": "WikiLambdaRepoHooks",
+		"MediaWikiServices": "WikiLambdaRepoHooks",
 		"getUserPermissionsErrors": "PageEditingHandler",
 		"MultiContentSave": "PageEditingHandler",
 		"NamespaceIsMovable": "PageEditingHandler",
@@ -316,6 +351,7 @@
 	"MessagesDirs": {
 		"WikiLambda": [
 			"i18n",
+			"i18n/abstract",
 			"i18n/api",
 			"i18n/ve"
 		]

@@ -14,6 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\Api\ApiMessage;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -68,17 +69,27 @@ class PageEditingHandler implements
 	 * @return bool|void
 	 */
 	public function onNamespaceIsMovable( $index, &$result ) {
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			// Nothing for us to do.
-			return;
+		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			if ( $index === NS_MAIN ) {
+				$result = false;
+				// Over-ride any other extensions which might have other ideas
+				return false;
+			}
 		}
 
-		if ( $index === NS_MAIN ) {
-			$result = false;
-			// Over-ride any other extensions which might have other ideas
-			return false;
+		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			foreach ( $this->config->get( 'WikiLambdaAbstractNamespaces' ) as $configuredIndex ) {
+				if ( $index === $configuredIndex ) {
+					// NOTE: If we want to later support moving abstract content pages (e.g. draft-to-main), we'll
+					// need to adjust this.
+					$result = false;
+					// Over-ride any other extensions which might have other ideas
+					return false;
+				}
+			}
 		}
 
+		// Nothing for us to do.
 		return null;
 	}
 
@@ -93,57 +104,83 @@ class PageEditingHandler implements
 	 * @return bool|void
 	 */
 	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $hookStatus ) {
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			// Nothing for us to do.
-			return;
-		}
+		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
+			if ( !$title->inNamespace( NS_MAIN ) ) {
+				return true;
+			}
 
-		$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
-		if ( !$title->inNamespace( NS_MAIN ) ) {
-			return true;
-		}
+			$zid = $title->getDBkey();
+			if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
+				$hookStatus->fatal( 'wikilambda-invalidzobjecttitle', $zid );
+				return false;
+			}
 
-		$zid = $title->getDBkey();
-		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
-			$hookStatus->fatal( 'wikilambda-invalidzobjecttitle', $zid );
+			$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
+
+			if ( !( $content instanceof ZObjectContent ) ) {
+				$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
+				return false;
+			}
+
+			if ( !$content->isValid() ) {
+				$hookStatus->fatal( 'wikilambda-invalidzobject' );
+				return false;
+			}
+
+			// (T260751) Ensure uniqueness of type / label / language triples on save.
+			$newLabels = $content->getLabels()->getValueAsList();
+
+			if ( $newLabels === [] ) {
+				// Unlabelled; don't error.
+				return true;
+			}
+
+			$clashes = $this->zObjectStore->findZObjectLabelConflicts(
+				$zid,
+				$content->getZType(),
+				$newLabels
+			);
+
+			if ( $clashes === [] ) {
+				return true;
+			}
+
+			foreach ( $clashes as $language => $clash_zid ) {
+				$hookStatus->fatal( 'wikilambda-labelclash', $clash_zid, $language );
+			}
+
 			return false;
 		}
 
-		$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
+		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
 
-		if ( !( $content instanceof ZObjectContent ) ) {
-			$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
-			return false;
-		}
+			$configuredNamespaces = array_keys( $this->config->get( 'WikiLambdaAbstractNamespaces' ) );
 
-		if ( !$content->isValid() ) {
-			$hookStatus->fatal( 'wikilambda-invalidzobject' );
-			return false;
-		}
+			if ( !in_array( $title->getNamespace(), $configuredNamespaces, true ) ) {
+				// Not one of ours; nothing for us to do.
+				return;
+			}
 
-		// (T260751) Ensure uniqueness of type / label / language triples on save.
-		$newLabels = $content->getLabels()->getValueAsList();
+			$qid = $title->getDBkey();
+			if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
+				$hookStatus->fatal( 'wikilambda-invalidabstracttitle', $qid );
+				return false;
+			}
 
-		if ( $newLabels === [] ) {
-			// Unlabelled; don't error.
+			$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
+
+			if ( !( $content instanceof AbstractWikiContent ) ) {
+				$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
+				return false;
+			}
+
+			// One of ours, and not known-to-be-bad, so let it through.
 			return true;
 		}
 
-		$clashes = $this->zObjectStore->findZObjectLabelConflicts(
-			$zid,
-			$content->getZType(),
-			$newLabels
-		);
-
-		if ( $clashes === [] ) {
-			return true;
-		}
-
-		foreach ( $clashes as $language => $clash_zid ) {
-			$hookStatus->fatal( 'wikilambda-labelclash', $clash_zid, $language );
-		}
-
-		return false;
+		// Nothing for us to do.
 	}
 
 	/**
@@ -156,32 +193,58 @@ class PageEditingHandler implements
 	 * @return bool|void
 	 */
 	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			// Nothing for us to do.
-			return;
-		}
-
-		if ( !$title->inNamespace( NS_MAIN ) ) {
-			return;
-		}
-
 		// TODO (T362234): Is there a nicer way of getting 'all change actions'?
-		if ( !( $action === 'create' || $action === 'edit' || $action === 'upload' ) ) {
-			return;
+		$knownBlockedActions = [ 'create', 'edit', 'upload' ];
+
+		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			if ( !$title->inNamespace( NS_MAIN ) ) {
+				// Not one of ours; nothing for us to do.
+				return;
+			}
+
+			if ( !in_array( $action, $knownBlockedActions, true ) ) {
+				// Not an action we care about; nothing for us to do.
+				return;
+			}
+
+			$zid = $title->getDBkey();
+			if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
+				$result = ApiMessage::create(
+					wfMessage( 'wikilambda-invalidzobjecttitle', $zid ),
+					'wikilambda-invalidzobjecttitle'
+				);
+				return false;
+			}
+			// NOTE: We don't do per-user rights checks here; that's left to ZObjectAuthorization
+			return true;
 		}
 
-		$zid = $title->getDBkey();
-		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
-			$result = ApiMessage::create(
-				wfMessage( 'wikilambda-invalidzobjecttitle', $zid ),
-				'wikilambda-invalidzobjecttitle'
-			);
-			return false;
+		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			$configuredNamespaces = array_keys( $this->config->get( 'WikiLambdaAbstractNamespaces' ) );
+
+			if ( !in_array( $title->getNamespace(), $configuredNamespaces, true ) ) {
+				// Not one of ours; nothing for us to do.
+				return;
+			}
+
+			if ( !in_array( $action, $knownBlockedActions, true ) ) {
+				// Not an action we care about; nothing for us to do.
+				return;
+			}
+
+			$qid = $title->getDBkey();
+			if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
+				$result = ApiMessage::create(
+					wfMessage( 'wikilambda-invalidabstracttitle', $qid ),
+					'wikilambda-invalidabstracttitle'
+				);
+				return false;
+			}
+			return true;
 		}
 
-		// NOTE: We don't do per-user rights checks here; that's left to ZObjectAuthorization
-
-		return true;
+		// Not one of ours; don't claim that we allowed it through, we didn't make a decision.
+		return null;
 	}
 
 	/**

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"James D. Forrester"
+		]
+	},
+	"action-wikilambda-abstract-create": "{{doc-action|wikilambda-abstract-create}}",
+	"action-wikilambda-abstract-edit": "{{doc-action|wikilambda-abstract-edit}}",
+	"content-model-abstractwiki": "The label used when describing the page contents for the Abstract Content content.",
+	"right-wikilambda-abstract-create": "{{doc-right|wikilambda-abstract-create}}",
+	"right-wikilambda-abstract-edit": "{{doc-right|wikilambda-abstract-edit}}",
+	"wikilambda-invalidabstractcontent": "Error shown when an invalid Abstract Content definition edit is made.",
+	"wikilambda-invalidabstractcontenttitle": "Error shown when a user tries to create an Abstract Content object with an invalid title.\n\nParameters:\n* $1 - The given, invalid title."
+}

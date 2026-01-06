@@ -52,10 +52,16 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 		parent::setUp();
 
 		$this->mockHashConfigRepoMode = $this->createMock( HashConfig::class );
-		$this->mockHashConfigRepoMode->method( 'get' )->with( 'WikiLambdaEnableRepoMode' )->willReturn( true );
+		$this->mockHashConfigRepoMode->method( 'get' )->willReturnMap( [
+			[ 'WikiLambdaEnableRepoMode', true ],
+			[ 'WikiLambdaEnableAbstractMode', false ],
+		] );
 
 		$this->mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
-		$this->mockHashConfigNotRepoMode->method( 'get' )->with( 'WikiLambdaEnableRepoMode' )->willReturn( false );
+		$this->mockHashConfigNotRepoMode->method( 'get' )->willReturnMap( [
+			[ 'WikiLambdaEnableRepoMode', false ],
+			[ 'WikiLambdaEnableAbstractMode', false ],
+		] );
 
 		$mockSQB = $this->createMock( SelectQueryBuilder::class );
 		$mockSQB->method( 'select' )->willReturnSelf();

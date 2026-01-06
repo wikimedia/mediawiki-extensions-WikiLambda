@@ -46,7 +46,10 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/test_definitions' );
 
 		$mockHashConfigRepoMode = $this->createMock( HashConfig::class );
-		$mockHashConfigRepoMode->method( 'get' )->with( 'WikiLambdaEnableRepoMode' )->willReturn( true );
+		$mockHashConfigRepoMode->method( 'get' )->willReturnMap( [
+			[ 'WikiLambdaEnableRepoMode', true ],
+			[ 'WikiLambdaEnableAbstractMode', false ],
+		] );
 
 		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
 		$mockUserOptionsLookup->method( 'getOption' )->willReturn( 'de' );
@@ -66,7 +69,10 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
-		$mockHashConfigNotRepoMode->method( 'get' )->with( 'WikiLambdaEnableRepoMode' )->willReturn( false );
+		$mockHashConfigNotRepoMode->method( 'get' )->willReturnMap( [
+			[ 'WikiLambdaEnableRepoMode', false ],
+			[ 'WikiLambdaEnableAbstractMode', false ],
+		] );
 
 		$this->pageRenderingHandlerRepoModeOff = new PageRenderingHandler(
 			$mockHashConfigNotRepoMode,

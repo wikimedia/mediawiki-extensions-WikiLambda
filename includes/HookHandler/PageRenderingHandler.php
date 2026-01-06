@@ -312,6 +312,7 @@ class PageRenderingHandler implements
 	 */
 	public function onWebRequestPathInfoRouter( $router ) {
 		// We only do this in repo mode
+		// TODO (T411704): Add this for AbstractContent pages too, once we have a view page for them
 		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			return;
 		}
@@ -352,6 +353,7 @@ class PageRenderingHandler implements
 	 */
 	public function onBeforeDisplayNoArticleText( $article ): bool {
 		// We only do this in repo mode
+		// TODO (T411705): Add this for AbstractContent pages too, once we have an edit page for them
 		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			return true;
 		}

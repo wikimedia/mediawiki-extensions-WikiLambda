@@ -4,7 +4,7 @@ WikiLambda provides for hosting, and letting users call evaluation, of functions
 
 ## Development instructions
 
-### Quick start
+### Setup quick start
 
 From whatever directory you wish to set up your development environment, run:
 
@@ -20,7 +20,7 @@ Note that all of the docker container locations mentioned here and in `docker-co
 have the `mediawiki-` prefix. This is derived from the name of the directory to which
 you have cloned the `mediawiki/core` repository.
 
-### Full instructions
+### Full setup instructions
 
 * Bring up a [development environment](https://www.mediawiki.org/wiki/How_to_become_a_MediaWiki_hacker) for MediaWiki (e.g. [Docker](https://www.mediawiki.org/wiki/MediaWiki-Docker) or [Vagrant](https://www.mediawiki.org/wiki/MediaWiki-Vagrant)). Be sure to install docker compose v2 instead of v1.
 * In your `mediawiki/extensions/` subdirectory, clone the extension as follows:
@@ -55,6 +55,7 @@ you have cloned the `mediawiki/core` repository.
   wfLoadExtension( 'WikiLambda' );
   $wgWikiLambdaEnableRepoMode = true;
   $wgWikiLambdaEnableClientMode = true;
+  $wgWikiLambdaEnableAbstractMode = true;
   wfLoadExtension( 'WikimediaMessages' );
   wfLoadExtension( 'UniversalLanguageSelector' );
   ```
@@ -480,9 +481,9 @@ npm run lint:fix
 npm run test:unit
 ```
 
-### Selenium Tests
+### Browser ("selenium") Tests
 
-#### Quickstart
+#### Browser test quick start
 
 From your `extensions/WikiLambda` directory run:
 
@@ -490,7 +491,7 @@ From your `extensions/WikiLambda` directory run:
 npm run local:selenium
 ```
 
-#### Full instructions
+#### Full browser test instructions
 
 A set of Selenium tests, used to run end-to-end tests of the application, is available within the project. The tests require an environment with specific versions of things to run, and so it is suggested you use "fresh-node" to run them locally without the need to modify your personal environment.
 
@@ -585,6 +586,28 @@ Now try to use your new Function as an embedded call:
   {{#function:Z12345|Q42|en}}
 
 Note that for embedded Function calls, we default blank language parameter values to the page content render language, and Wikidata item parameter values to the associated QID of the page on which the fragment is being rendered, if available. Consequently, on https://en.wikipedia.org/wiki/Douglas_Adams, the above could be written simply as {{#function:Z12345}}.
+
+
+## Abstract mode
+
+To develop in abstract mode, you need to TKTKTKTK
+
+### Configuring your environment for abstract mode
+
+On a mediawiki-docker environment for local development, there are two options for developing Abstract Wikipedia:
+* Local environment serving as Wikifunctions repo. In this environment, when accessing Abstract Wikipedia pages, the requests to fetch Wikifunctions zobjects and labels will be made to the local environment, and to avoid errors, the local environment should be able to respond as if it were Wikifunctions. However, as long as EnableAbstractMode is set to true, Wikifunctions will not work normally, only to respond to Abstract request as if it were a remote service. If you need to work with Wikifunctions locally, make sure to set again the EnableAbstractMode flag to false
+
+  $wgWikiLambdaClientTargetAPI = 'http://mediawiki-web:8080';
+  $wgWikiLambdaEnableRepoMode = true;
+  $wgWikiLambdaEnableClientMode = true;
+  $wgWikiLambdaEnableAbstractMode = true;
+
+* Another possibility is to set the local environment only to work as Abstract Wikipedia and set production Wikifunctions as the repo. This should work, too, although means more load for production Wikifunctions
+
+  $wgWikiLambdaClientTargetAPI = 'https://www.wikifunctions.org';
+  $wgWikiLambdaEnableRepoMode = false;
+  $wgWikiLambdaEnableClientMode = true;
+  $wgWikiLambdaEnableAbstractMode = true;
 
 
 ## See also

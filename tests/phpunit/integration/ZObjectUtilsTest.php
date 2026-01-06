@@ -821,6 +821,23 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @dataProvider provideIsValidWikidataItemReference
+	 */
+	public function testIsValidWikidataItemReference( $input, $expected ) {
+		$this->assertSame( $expected, ZObjectUtils::isValidWikidataItemReference( $input ) );
+	}
+
+	public static function provideIsValidWikidataItemReference() {
+		return [
+			'empty string' => [ '', false ],
+
+			'Simple QID' => [ 'Q1', true ],
+			'Big QID' => [ 'Q1234567890', true ],
+			'Null QID' => [ 'Q0', false ],
+		];
+	}
+
+	/**
 	 * @dataProvider provideIsValidOrNullZObjectReference
 	 */
 	public function testIsValidOrNullZObjectReference( $input, $expected ) {

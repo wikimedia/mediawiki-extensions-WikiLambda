@@ -498,6 +498,16 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Is the input a Wikidata item reference key (e.g. Q1 or Q12345)?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidWikidataItemReference( string $input ): bool {
+		return preg_match( "/^Q[1-9]\d*$/", $input );
+	}
+
+	/**
 	 * Is the input a null reference (Z0)?
 	 *
 	 * @param string $input

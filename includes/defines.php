@@ -12,3 +12,5 @@
  * @codeCoverageIgnore
  */
 define( 'CONTENT_MODEL_ZOBJECT', 'zobject' );
+
+define( 'CONTENT_MODEL_ABSTRACT', 'abstractwiki' );

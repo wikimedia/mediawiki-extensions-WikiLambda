@@ -14,6 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -28,7 +29,10 @@ use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use Wikimedia\Services\NoSuchServiceException;
 
-class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook {
+class RepoHooks implements
+	\MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook,
+	\MediaWiki\Hook\MediaWikiServicesHook
+	{
 
 	public static function registerExtension() {
 		// We define the content model regardless of if 'repo mode' is enabled
@@ -36,14 +40,17 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 
 		// Can't use MediaWikiServices or config objects yet, so use globals
 		global $wgWikiLambdaEnableRepoMode;
+
 		if ( !$wgWikiLambdaEnableRepoMode ) {
 			// Nothing for us to do.
 			return;
 		}
 
+		// Register the namespace as using content our content model
 		global $wgNamespaceContentModels;
 		$wgNamespaceContentModels[ NS_MAIN ] = CONTENT_MODEL_ZOBJECT;
 
+		// Ensure that the namespace is protected with the right permissions
 		global $wgNamespaceProtection;
 		$wgNamespaceProtection[ NS_MAIN ] = [ 'wikilambda-edit', 'wikilambda-create' ];
 
@@ -51,6 +58,64 @@ class RepoHooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesH
 		// an extension.json attribute as of yet.
 		global $wgNonincludableNamespaces;
 		$wgNonincludableNamespaces[] = NS_MAIN;
+	}
+
+	/**
+	 * We do this here because registerExtension() is called too early to use i18n messages.
+	 *
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/MediaWikiServices
+	 *
+	 * @param MediaWikiServices $services MediaWikiServices instance
+	 */
+	public function onMediaWikiServices( $services ) {
+		//
+		$config = $services->getMainConfig();
+		if ( !$config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
+		$contentHandler = $services->getContentHandlerFactory();
+		if ( !$contentHandler->isDefinedModel( CONTENT_MODEL_ABSTRACT ) ) {
+			if ( method_exists( $contentHandler, 'defineContentHandler' ) ) {
+				// @phan-suppress-next-line PhanUndeclaredMethod this apparently phan doesn't take the hint above
+				$contentHandler->defineContentHandler( CONTENT_MODEL_ABSTRACT, AbstractWikiContentHandler::class );
+			} else {
+				throw new ConfigException( 'Abstract content model is not registered and we cannot inject it.' );
+			}
+		}
+
+		$abstractNamespaceConfig = $config->get( 'WikiLambdaAbstractNamespaces' );
+
+		// We support multiple abstract namespaces, so loop through; initial deployment will only be for one.
+		foreach ( $abstractNamespaceConfig as $namespaceID => $nsdata ) {
+
+			// We only need to do the below steps if we're in dev-mode, and not occupying the main namespace
+			if ( $namespaceID !== NS_MAIN ) {
+				$namespaceEnglishName = $nsdata[0];
+
+				// Register the namespace at all (plus its talk)
+				global $wgExtraNamespaces;
+				$wgExtraNamespaces[ $namespaceID ] = $namespaceEnglishName;
+				$wgExtraNamespaces[ $namespaceID + 1 ] = $namespaceEnglishName . ' talk';
+
+				// Register the namespace as including content
+				global $wgContentNamespaces;
+				$wgContentNamespaces[] = $namespaceID;
+			}
+
+			// Register the namespace as using content our content model
+			global $wgNamespaceContentModels;
+			$wgNamespaceContentModels[ $namespaceID ] = CONTENT_MODEL_ABSTRACT;
+
+			// Ensure that the namespace is protected with the right permissions
+			global $wgNamespaceProtection;
+			$wgNamespaceProtection[ $namespaceID ] = [ 'wikilambda-abstract-edit', 'wikilambda-abstract-create' ];
+
+			// Set that our namespace cannot be transcluded
+			global $wgNonincludableNamespaces;
+			$wgNonincludableNamespaces[] = $namespaceID;
+		}
 	}
 
 	/**

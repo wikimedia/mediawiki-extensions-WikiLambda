@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"James D. Forrester"
+		]
+	},
+	"action-wikilambda-abstract-create": "create new Abstract Content pages",
+	"action-wikilambda-abstract-edit": "edit existing Abstract Content pages",
+	"content-model-abstractwiki": "Abstract Content",
+	"right-wikilambda-abstract-create": "Create new Abstract Content pages",
+	"right-wikilambda-abstract-edit": "Edit existing Abstract Content pages",
+	"wikilambda-invalidabstractcontent": "The provided content is not a valid Abstract Content object.",
+	"wikilambda-invalidabstractcontenttitle": "The provided title '$1' is not valid for an Abstract Content object."
+
+}
