@@ -1,12 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"Stefan2255"
 		]
 	},
 	"wikilambda-fragment-disabled": "Wikifunctions-anrop är för närvarande inaktiverade. Du kanske vill ersätta detta anrop.",
 	"wikilambda-fragment-pending": "⏳ Funktionen anropas…",
 	"wikilambda-recentchanges-edit-legend": "Redigera från Wikifunctions",
+	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunctions-redigering",
 	"wikilambda-recentchanges-entry-function": "Funktion",
 	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Ansluten implementering|$1 anslutna implementeringar:}} $2",
