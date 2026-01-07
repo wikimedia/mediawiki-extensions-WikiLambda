@@ -678,8 +678,10 @@ class ZObjectContentHandler extends ContentHandler {
 
 	/**
 	 * @inheritDoc
+	 *
+	 * Access level widened to public for use in ZObjectContentDifferenceEngine
 	 */
-	protected function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
+	public function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
 		// TODO (T362246): Dependency-inject (if we haven't replaced this by then)
 		$slotDiffRenderer = MediaWikiServices::getInstance()
 			->getContentHandlerFactory()

@@ -14,7 +14,7 @@ use DifferenceEngine;
 use MediaWiki\Content\Content;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use TextSlotDiffRenderer;
 
 class ZObjectContentDifferenceEngine extends DifferenceEngine {
@@ -35,15 +35,14 @@ class ZObjectContentDifferenceEngine extends DifferenceEngine {
 		// HACK (T339348): For now, provide users with the raw JSON diff
 		$oldText = $oldContent->getText();
 		$newText = $newContent->getText();
-		/** @var TextSlotDiffRenderer $slotDiffRenderer */
 
-		// TODO (T362246): Dependency-inject (if we haven't replaced this by then),
-		// and de-duplicate with ZObjectContentHandler::getSlotDiffRendererWithOptions()
-		$slotDiffRenderer = MediaWikiServices::getInstance()
-			->getContentHandlerFactory()
-			->getContentHandler( CONTENT_MODEL_TEXT )
-			->getSlotDiffRenderer( RequestContext::getMain() );
+		$zObjectContentHandler = $newContent->getContentHandler();
+		'@phan-var ZObjectContentHandler $zObjectContentHandler';
+
+		$slotDiffRenderer = $zObjectContentHandler
+			->getSlotDiffRendererWithOptions( RequestContext::getMain() );
 		'@phan-var TextSlotDiffRenderer $slotDiffRenderer';
+
 		return $slotDiffRenderer->getTextDiff( $oldText, $newText );
 	}
 }
