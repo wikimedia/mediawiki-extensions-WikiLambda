@@ -240,7 +240,7 @@
 	"wikilambda-functioncall-error-message-bad-langs": "De Funktiounsopruff benotzt ongülteg Sproochcoden. Ännert den Artikel mam Quelltext-Editeur fir dat ze verbesseren. [[$1|Fir méi gewuer ze ginn]]",
 	"wikilambda-functioncall-error-message-disabled": "D'Wikifunctions-Funktioune sinn am Moment desaktivéiert a ginn deemnächst aktivéiert. [[$1|Méi gewuer ginn]]",
 	"wikilambda-functioncall-error-category": "Säite mat feelerhafte Wikifunctions-Opriff",
-	"wikilambda-functioncall-error-category-desc": "Säite mat Wikifunctions-Opriff, déi zu engem allgemeng Feeler féieren",
+	"wikilambda-functioncall-error-category-desc": "Säite mat Wikifunctions-Opriff, déi zu engem allgemenge Feeler féieren",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Säite mat Wikifunctions-Opriff vun ongültegen Objeten",
 	"wikilambda-functioncall-error-nonfunction-category": "Säite mat Wikifunctions-Opriff vun Objeten, déi keng Funktioune sinn",
 	"wikilambda-functioncall-metadata-actual-result": "Wierklecht Resultat",

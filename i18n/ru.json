@@ -18,7 +18,8 @@
 			"UniCollab",
 			"WindEwriX",
 			"Артём 13327",
-			"Загребин Илья"
+			"Загребин Илья",
+			"Vonavy"
 		]
 	},
 	"wikilambda-desc": "Обеспечение возможности написания и вычисления функций и управлению ими на центральном вики-сайте.",
@@ -367,8 +368,8 @@
 	"wikilambda-labelclash": "Метка предоставленного содержания несопоставима с Объектом «$1» для метки {{GRAMMAR:languageadverb|$2}}.",
 	"wikilambda-languagelabel": "Язык",
 	"wikilambda-list-item-label": "Элемент $1",
-	"wikilambda-list-items-label": "Элементы списка",
-	"wikilambda-list-items-type-label": "Тип элементов списка",
+	"wikilambda-list-items-label": "Элементы",
+	"wikilambda-list-items-type-label": "Тип элементов",
 	"wikilambda-list-type-change-warning": "Вы изменили тип одного или нескольких списков. При публикации некоторые элементы списка будут удалены",
 	"wikilambda-literal-type": "Буквальный объект типа $1",
 	"wikilambda-loading": "Загрузка данных",
