@@ -44,6 +44,7 @@
 	"wikilambda-invalidcontenttype": "A megadott tartalom nem sorolható be egyetlen ZObject osztályba sem.",
 	"wikilambda-labelclash": "A megadott tartalom címe ütközik a '$1' ZObjecttel '$2' cím miatt.",
 	"wikilambda-metadata-labels-table-label": "Címkék",
+	"wikilambda-nojs": "Az oldal használatához JavaScript szükséges.",
 	"wikilambda-persistentzobject-contents": "Tartalomjegyzék",
 	"wikilambda-publishchanges": "Változtatások közzététele",
 	"wikilambda-publishnew": "Közzététel",
@@ -52,7 +53,6 @@
 	"wikilambda-savenew": "Mentés",
 	"wikilambda-special-createobject": "Új ZObject létrehozása",
 	"wikilambda-special-createobject-intro": "Kövesd a közösségi irányelveket és tartsd tiszteletben a szabadalmi és szerzői jogokat.",
-	"wikilambda-special-createobject-nojs": "Az oldal használatához JavaScript szükséges.",
 	"wikilambda-special-listduplicateobjectlabels-conflicting": "ZObject ütközés",
 	"wikilambda-special-listduplicateobjectlabels-empty": "Nincs két címmel rendelkező ZObject.",
 	"wikilambda-special-listduplicateobjectlabels-existing": "Létező ZObject",
@@ -62,6 +62,5 @@
 	"wikilambda-tester-create-new": "Teszt hozzáadása",
 	"wikilambda-tester-status-failed": "Sikertelen",
 	"wikilambda-typeselector-label": "Érték típusa",
-	"wikilambda-viewmode-nojs": "JavaScript hiányában az oldal csökkentett verzióban jelenik meg.",
 	"wikilambda-zobject-to-string-select-object": "$1 kiválasztása"
 }

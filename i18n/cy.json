@@ -13,6 +13,5 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "Ychwanegu mewnbwn arall",
 	"wikilambda-function-definition-inputs-label": "Mewnbwn",
 	"wikilambda-function-definition-output-label": "Allbwn",
-	"wikilambda-function-definition-output-type-label": "Math",
-	"wikilambda-viewmode-nojs": "Arddangosir y dudalen hon yn rhannol, heb JavaScript."
+	"wikilambda-function-definition-output-type-label": "Math"
 }

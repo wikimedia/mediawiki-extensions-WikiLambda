@@ -295,10 +295,8 @@
 	"wikilambda-monolingual-string-list-dialog-search-placeholder": "Dili axtar",
 	"wikilambda-monolingual-string-list-dialog-suggested": "Təklif edilən dillər",
 	"wikilambda-monolingual-string-list-dialog-title": "Digər dillərdə məlumat",
+	"wikilambda-nojs": "Bu səhifədən istifadə etmək üçün JavaScript tələb olunur.",
 	"wikilambda-object-selector-suggested-languages": "Təklif edilən dillər",
 	"wikilambda-object-selector-suggested-types": "Tövsiyə edilən dəyərlər",
-	"wikilambda-publishnew": "Yayımla",
-	"wikilambda-special-createobject-nojs": "Bu səhifədən istifadə etmək üçün JavaScript tələb olunur.",
-	"wikilambda-special-runfunction-nojs": "Bu səhifədən istifadə etmək üçün JavaScript tələb olunur.",
-	"wikilambda-viewmode-nojs": "Bu səhifə JavaScript olmadan məhdud şəkildə göstərilir."
+	"wikilambda-publishnew": "Yayımla"
 }

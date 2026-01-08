@@ -100,6 +100,7 @@
 	"wikilambda-metadata-language-column": "Idioma",
 	"wikilambda-metadata-show-languages": "Mostrar caixa de rótulos",
 	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos",
+	"wikilambda-nojs": "Esta página requer o uso de JavaScript.",
 	"wikilambda-persistentzobject-contents": "Conteúdo",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Você alterou o campo de entrada e o tipo de saída desta função. <strong>Todas as implementações e testes existentes serão removidos da função atual.</strong> Deseja continuar?",
 	"wikilambda-publish-input-changed-impact-prompt": "Você alterou o campo de entrada desta função. <strong>Todas as implementações e testes existentes serão removidos da função atual.</strong> Deseja continuar?",
@@ -112,7 +113,6 @@
 	"wikilambda-savenew": "Salvar",
 	"wikilambda-special-createobject": "Crie um novo ZObject",
 	"wikilambda-special-createobject-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",
-	"wikilambda-special-createobject-nojs": "Esta página requer o uso de JavaScript.",
 	"wikilambda-special-listduplicateobjectlabels": "Páginas ZObject com rótulos duplicados",
 	"wikilambda-special-listduplicateobjectlabels-conflicting": "ZObject conflitante",
 	"wikilambda-special-listduplicateobjectlabels-empty": "Nenhum ZObjects tem rótulos duplicados atualmente.",
@@ -121,7 +121,6 @@
 	"wikilambda-special-listduplicateobjectlabels-summary": "Esta página mostra quais ZObjects foram criados com rótulos duplicados. Apenas o primeiro aparecerá em pesquisas, então devem ser corrigidos.",
 	"wikilambda-special-runfunction": "Avalie uma chamada de função",
 	"wikilambda-special-runfunction-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",
-	"wikilambda-special-runfunction-nojs": "Esta página requer o uso de JavaScript.",
 	"wikilambda-special-runfunction-summary": "Este formulario permite avaliar uma chamada de função.",
 	"wikilambda-summarylabel": "Resumo:",
 	"wikilambda-tester-details": "Detalhes",
@@ -134,6 +133,5 @@
 	"wikilambda-tester-status-run": "Executar",
 	"wikilambda-tester-status-running": "Executando...",
 	"wikilambda-typeselector-label": "Selecione um tipo",
-	"wikilambda-typeunavailable": "Tipo não reconhecido",
-	"wikilambda-viewmode-nojs": "Esta página é exibida de forma limitada sem JavaScript."
+	"wikilambda-typeunavailable": "Tipo não reconhecido"
 }
