@@ -1513,6 +1513,136 @@ EOT;
 		$this->assertEquals( $expected, $transformed );
 	}
 
+	/**
+	 * Test that replaceNullReferencePlaceholder preserves backslashes in regex patterns
+	 * within JavaScript code strings. This is critical for preserving valid JSON and
+	 * correct JavaScript regex patterns like \p{Mn} and \.
+	 *
+	 * @dataProvider provideReplaceNullReferencePlaceholderPreservesBackslashes
+	 */
+	public function testReplaceNullReferencePlaceholder_PreservesBackslashes( $input, $zid, $codeMustContain ) {
+		$transformed = ZObjectUtils::replaceNullReferencePlaceholder( $input, $zid );
+
+		// Verify the result is valid JSON
+		$decoded = json_decode( $transformed, true );
+		$this->assertNotNull( $decoded, 'Result should be valid JSON' );
+
+		// Verify Z0 was replaced with the new zid
+		$this->assertStringNotContainsString( '"Z0"', $transformed, 'Z0 reference should be replaced' );
+		$this->assertStringContainsString( $zid, $transformed, 'Result should contain the new zid' );
+
+		// Extract the code content from Z16K2 and verify backslashes are preserved
+		$code = $decoded['Z2K2']['Z14K3']['Z16K2'] ?? null;
+		$this->assertNotNull( $code, 'Code content should exist' );
+
+		// Verify that backslashes in regex patterns are preserved in the actual code string
+		foreach ( $codeMustContain as $pattern ) {
+			$this->assertStringContainsString( $pattern, $code, "Code should contain preserved pattern: $pattern" );
+		}
+	}
+
+	public static function provideReplaceNullReferencePlaceholderPreservesBackslashes() {
+		// [T413466]: JavaScript code with regex patterns containing backslashes
+		// The input contains Z0 which should be replaced, but backslashes in regex patterns
+		// like \p{Mn} and \. must be preserved. Build as array and use json_encode which
+		// will properly escape backslashes (single \ becomes \\ in JSON)
+		$codeString = "function Z30837( Z30837K1 ) {\n"
+			. "\tlet s = Z30837K1.normalize(\"NFC\");\n"
+			. "//\ts = s.replace(/(?<![aeiouyæøœɐɑɒɔɘəɛɜɞɤɨɪɯɵɶʉʊʌʏ])\\.(?![aeiouyæøœɐɑɒɔɘəɛɜɞɤɨɪɯɵɶʉʊʌʏ])/g, \"\"); "
+			. "// remove redundant syllable breaks (leaving only those adjacent to vowels)\n"
+			. "\ts = s.replace(/[aeiouyæøœɐɑɒɔɘəɛɜɞɤɨɪɯɵɶʉʊʌʏ][\\u0311\\u032F]/g, \"C\"); "
+			. "// replace non-syllabic vowels with non-syllable marker //TODO does this always work in NFC?\n"
+			. "\ts = s.replace(/.[\\u030D\\u0329]/g, \".V.\"); "
+			. "// replace syllabic consonants with syllable marker //TODO same question\n"
+			. "\ts = s.normalize(\"NFKD\").replace(/\\p{Mn}+/gu, \"\"); // strip all diacritics\n"
+			. "\ts = s.replace(/[Vaeiouyæøœɐɑɒɔɘəɛɜɞɤɨɪɯɵɶʉʊʌʏ]+/g, \"V\"); // coalesce consecutive vowels\n"
+			. "//\ts = s.replace(/[^V]+/g, \".\"); // coalesce consecutive non-vowels\n"
+			. "//\ts = `\${s}.`;\n"
+			. "\treturn s.split('V').length - 1;\n"
+			. "}";
+
+		$jsonArray = [
+			'Z1K1' => 'Z2',
+			'Z2K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'Z0' ],
+			'Z2K2' => [
+				'Z1K1' => 'Z14',
+				'Z14K1' => 'Z30837',
+				'Z14K3' => [
+					'Z1K1' => 'Z16',
+					'Z16K1' => 'Z600',
+					'Z16K2' => $codeString
+				]
+			],
+			'Z2K3' => [ 'Z1K1' => 'Z12', 'Z12K1' => [ 'Z11' ] ],
+			'Z2K4' => [ 'Z1K1' => 'Z32', 'Z32K1' => [ 'Z31' ] ],
+			'Z2K5' => [ 'Z1K1' => 'Z12', 'Z12K1' => [ 'Z11' ] ]
+		];
+		$inputWithBackslashes = json_encode( $jsonArray, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+
+		return [
+			'preserves backslashes in regex patterns' => [
+				$inputWithBackslashes,
+				'Z30994',
+				[
+					// Unicode property escape (backslash preserved)
+					'/\\p{Mn}+/gu',
+					// Escaped dot in regex (backslash preserved)
+					'\\.',
+					// Unicode escape sequence (backslash preserved)
+					'\\u0311',
+					// Unicode escape sequence (backslash preserved)
+					'\\u032F',
+					// Unicode escape sequence (backslash preserved)
+					'\\u030D',
+					// Unicode escape sequence (backslash preserved)
+					'\\u0329',
+				]
+			],
+			'preserves backslashes in Unicode escapes' => [
+				json_encode( [
+					'Z1K1' => 'Z2',
+					'Z2K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'Z0' ],
+					'Z2K2' => [
+						'Z1K1' => 'Z14',
+						'Z14K1' => 'Z30837',
+						'Z14K3' => [
+							'Z1K1' => 'Z16',
+							'Z16K1' => 'Z600',
+							'Z16K2' => 's.replace(/[\\u0311\\u032F]/g, "C")'
+						]
+					]
+				], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ),
+				'Z30994',
+				[
+					// Unicode escape (backslash preserved)
+					'\\u0311',
+					// Unicode escape (backslash preserved)
+					'\\u032F',
+				]
+			],
+			'preserves escaped dots in regex' => [
+				json_encode( [
+					'Z1K1' => 'Z2',
+					'Z2K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'Z0' ],
+					'Z2K2' => [
+						'Z1K1' => 'Z14',
+						'Z14K1' => 'Z30837',
+						'Z14K3' => [
+							'Z1K1' => 'Z16',
+							'Z16K1' => 'Z600',
+							'Z16K2' => 's.replace(/\\./g, "")'
+						]
+					]
+				], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ),
+				'Z30994',
+				[
+					// Escaped dot (backslash preserved)
+					'\\.',
+				]
+			],
+		];
+	}
+
 	public function testNetworkSafeEncoding() {
 		$this->assertEquals(
 			'Foo',

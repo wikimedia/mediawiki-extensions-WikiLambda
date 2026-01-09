@@ -1042,19 +1042,26 @@ class ZObjectUtils {
 		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
 		$zObjectString = preg_replace( $zPlaceholderRegex, "\"$zid$1\"", $data );
 
-		// Match code
-		$codeRegex = '/\"' . ZTypeRegistry::Z_CODE_CODE . '\":\\s*\"((\\\\\"|[^\"])*)\"/';
-		$codeMatches = [];
-		preg_match( $codeRegex, $zObjectString, $codeMatches );
+		// Match code value and replace Z0s inside of it
+		// Use preg_replace_callback to avoid preg_replace interpreting backslashes in replacement
+		$codeRegex = '/\"' . preg_quote( ZTypeRegistry::Z_CODE_CODE, '/' ) . '\":(\s*)\"((?:\\\\\"|[^\"])*)\"/';
+		$z0Regex = '/' . preg_quote( ZTypeRegistry::Z_NULL_REFERENCE, '/' ) . '(K[1-9]\d*)?/';
+		$zObjectString = preg_replace_callback(
+			$codeRegex,
+			static function ( $matches ) use ( $zid, $z0Regex ) {
+				// $matches[0] is the full match: "Z16K2":"...code..."
+				// $matches[1] is the whitespace between colon and value
+				// $matches[2] is the code content (without the outer quotes)
+				$whitespace = $matches[1];
+				$codeContent = $matches[2];
+				// Replace Z0 references in the code content only
+				$newCodeContent = preg_replace( $z0Regex, "$zid$1", $codeContent );
+				// Reconstruct the JSON key-value pair, preserving the original structure and whitespace
+				return '"' . ZTypeRegistry::Z_CODE_CODE . '":' . $whitespace . '"' . $newCodeContent . '"';
+			},
 
-		// Match and replace Z0s inside of the code
-		if ( $codeMatches ) {
-			$code = $codeMatches[ 0 ];
-			$z0Regex = '/' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?/';
-			$newCode = preg_replace( $z0Regex, "$zid$1", $code );
-			$zObjectString = preg_replace( $codeRegex, $newCode, $zObjectString );
-		}
-
+			$zObjectString
+		);
 		return $zObjectString;
 	}
 
