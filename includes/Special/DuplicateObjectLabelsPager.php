@@ -10,10 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use MediaWiki\Cache\LinkBatchFactory;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Page\LinkBatchFactory;
 use MediaWiki\Pager\TablePager;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;

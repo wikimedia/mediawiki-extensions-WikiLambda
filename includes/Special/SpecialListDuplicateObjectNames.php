@@ -10,8 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use MediaWiki\Cache\LinkBatchFactory;
 use MediaWiki\Language\LanguageNameUtils;
+use MediaWiki\Page\LinkBatchFactory;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
