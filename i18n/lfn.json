@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": [
+			"Earldridge Jazzed Pineda"
+		]
+	},
+	"group-functioneer": "Funsionores",
+	"group-functioneer-member": "{{GENDER:$1|funsionor}}",
+	"group-functionmaintainer": "Mantenores",
+	"group-functionmaintainer-member": "{{GENDER:$1|mantenor}}",
+	"grouppage-functioneer": "{{ns:project}}:Funsionores",
+	"grouppage-functionmaintainer": "{{ns:project}}:Mantenores",
+	"specialpages-group-wikilambda": "Pajes de Vicifunsionas",
+	"wikilambda-about-widget-add-language": "Ajunta lingua",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 lingua|$1 linguas}}",
+	"wikilambda-about-widget-title": "Sur",
+	"wikilambda-about-widget-unlabelled-input": "Noneticetida",
+	"wikilambda-about-widget-view-languages-other": "Otra linguas",
+	"wikilambda-edit": "Edita",
+	"wikilambda-editor-default-name": "Nontitulida",
+	"wikilambda-editor-fn-step-function-about": "Sur",
+	"wikilambda-editor-implementation-title": "Reali",
+	"wikilambda-editor-input-default-label": "enflue",
+	"wikilambda-editor-input-title": "Enflue",
+	"wikilambda-editor-output-title": "Esflue",
+	"wikilambda-function-definition-inputs-label": "Enflues",
+	"wikilambda-function-definition-name-label": "Nom",
+	"wikilambda-function-inputs-title": "Enflues"
+}
