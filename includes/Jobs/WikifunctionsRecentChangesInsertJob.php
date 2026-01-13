@@ -33,6 +33,12 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 	private LoggerInterface $logger;
 	private ?CentralIdLookup $centralIdLookup;
 
+	/**
+	 * @var array Array of job parameters
+	 * @phan-var array<string,mixed>
+	 */
+	public $params;
+
 	public function __construct( array $params ) {
 		// This job, triggered from RecentChanges activity, takes the edit and fans it out to each
 		// relevant client wiki to process locally.
