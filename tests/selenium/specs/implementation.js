@@ -187,6 +187,8 @@ describe( 'Implementation (CUJ 5)', () => {
 			aboutBlockEntriesHindi;
 
 		before( async () => {
+			// Reloading browser session to try prevent gitlab CI session id failures between tests https://phabricator.wikimedia.org/T414611
+			await browser.reloadSession();
 			await LoginPage.loginAdmin();
 			const time = Date.now();
 			aboutBlockEntriesEnglish = {
