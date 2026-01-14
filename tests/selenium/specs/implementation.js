@@ -210,6 +210,8 @@ describe( 'Implementation (CUJ 5)', () => {
 				{ timeout: 10000, timeoutMsg: 'Login failed - page did not redirect to Main_Page' }
 			);
 			await FunctionPage.open( functionDetails.ZId );
+			await expect( await FunctionPage.functionTitle )
+				.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
 			await FunctionPage.goToCreateImplementationLink();
 
 			// Add About block entries in English

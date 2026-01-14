@@ -193,6 +193,7 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateImplementationLink() {
+		await this.functionTitle.waitForDisplayed();
 		await this.implementationsTableBlock.waitForExist();
 		await ElementActions.doClick( this.addImplementationButton );
 	}
