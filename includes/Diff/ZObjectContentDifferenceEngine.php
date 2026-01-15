@@ -10,12 +10,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
-use DifferenceEngine;
 use MediaWiki\Content\Content;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Diff\DifferenceEngine;
+use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use TextSlotDiffRenderer;
 
 class ZObjectContentDifferenceEngine extends DifferenceEngine {
 

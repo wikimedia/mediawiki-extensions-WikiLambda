@@ -11,7 +11,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use HtmlArmor;
 use MediaWiki\Config\Config;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Context\IContextSource;
@@ -31,12 +30,13 @@ use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\User;
 use Psr\Log\LoggerInterface;
+use Wikimedia\HtmlArmor\HtmlArmor;
 use Wikimedia\Rdbms\IConnectionProvider;
 
 class ClientChangeHooks implements
-	\MediaWiki\Hook\EnhancedChangesListModifyLineDataHook,
-	\MediaWiki\Hook\EnhancedChangesListModifyBlockLineDataHook,
-	\MediaWiki\Hook\OldChangesListRecentChangesLineHook,
+	\MediaWiki\RecentChanges\Hook\EnhancedChangesListModifyLineDataHook,
+	\MediaWiki\RecentChanges\Hook\EnhancedChangesListModifyBlockLineDataHook,
+	\MediaWiki\RecentChanges\Hook\OldChangesListRecentChangesLineHook,
 	\MediaWiki\SpecialPage\Hook\ChangesListSpecialPageQueryHook,
 	\MediaWiki\SpecialPage\Hook\ChangesListSpecialPageStructuredFiltersHook,
 	\MediaWiki\Preferences\Hook\GetPreferencesHook

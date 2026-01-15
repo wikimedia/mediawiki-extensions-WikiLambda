@@ -20,6 +20,7 @@ use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectContentDifferenceEngine;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -35,7 +36,6 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
-use TextSlotDiffRenderer;
 use Wikimedia\ObjectCache\BagOStuff;
 
 class ZObjectContentHandler extends ContentHandler {

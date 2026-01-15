@@ -20,10 +20,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\Language;
+use MediaWiki\Language\MessageLocalizer;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
-use MessageLocalizer;
 
 /**
  * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is

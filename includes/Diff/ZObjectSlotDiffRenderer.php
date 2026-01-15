@@ -11,8 +11,8 @@
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
 use MediaWiki\Content\Content;
+use MediaWiki\Diff\SlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use SlotDiffRenderer;
 
 class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 

@@ -36,10 +36,10 @@ use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IReadableDatabase;
 
 class PageEditingHandler implements
-	\MediaWiki\Hook\NamespaceIsMovableHook,
+	\MediaWiki\Title\Hook\NamespaceIsMovableHook,
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook,
-	\MediaWiki\Hook\RecentChange_saveHook
+	\MediaWiki\RecentChanges\Hook\RecentChange_saveHook
 {
 	private Config $config;
 	private ZObjectStore $zObjectStore;

@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use HtmlArmor;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
@@ -31,16 +30,17 @@ use MediaWiki\Parser\PPFrame;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 class PageRenderingHandler implements
-	\MediaWiki\Hook\SkinTemplateNavigation__UniversalHook,
+	\MediaWiki\Skin\Hook\SkinTemplateNavigation__UniversalHook,
 	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
 	\MediaWiki\Output\Hook\BeforePageDisplayHook,
-	\Mediawiki\Page\Hook\BeforeDisplayNoArticleTextHook,
+	\MediaWiki\Page\Hook\BeforeDisplayNoArticleTextHook,
 	\MediaWiki\Hook\GetMagicVariableIDsHook,
-	\MediaWiki\Hook\ParserFirstCallInitHook,
-	\MediaWiki\Hook\ParserGetVariableValueSwitchHook,
-	\MediaWiki\Hook\SpecialStatsAddExtraHook
+	\MediaWiki\Parser\Hook\ParserFirstCallInitHook,
+	\MediaWiki\Parser\Hook\ParserGetVariableValueSwitchHook,
+	\MediaWiki\Specials\Hook\SpecialStatsAddExtraHook
 {
 	private Config $config;
 	private UserOptionsLookup $userOptionsLookup;
