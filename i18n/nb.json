@@ -4,7 +4,8 @@
 			"Avilena",
 			"EdoAug",
 			"Jon Harald Søby",
-			"Telaneo"
+			"Telaneo",
+			"Yupik"
 		]
 	},
 	"wikilambda-desc": "Gir mulighet til å skrive, behandle og evaluere funksjoner på en sentral wiki.",
@@ -292,8 +293,8 @@
 	"wikilambda-labelclash": "Det gitte innholdets etikett konflikterer med objektet «$1» for etiketten på «$2».",
 	"wikilambda-languagelabel": "Språk",
 	"wikilambda-list-item-label": "Element $1",
-	"wikilambda-list-items-label": "Listeelementer",
-	"wikilambda-list-items-type-label": "Listeelementenens type",
+	"wikilambda-list-items-label": "Elementer",
+	"wikilambda-list-items-type-label": "Elementenens type",
 	"wikilambda-list-type-change-warning": "Du endret typen til én eller flere lister. Ved publisering blir alle listeelementene slettet",
 	"wikilambda-loading": "Laster data",
 	"wikilambda-metadata-add-alias": "Legg til alias",
@@ -307,6 +308,7 @@
 	"wikilambda-metadata-show-languages": "Vis etikettboks",
 	"wikilambda-missing-function-input-type-error-message": "Inndatatypen er tom. Velg én.",
 	"wikilambda-missing-function-output-error-message": "Utdatatypen er tom. Velg én.",
+	"wikilambda-monolingual-string-list-dialog-search-placeholder": "Søk i språk",
 	"wikilambda-multilingualstring-nofallback": "Ingen etikett definert på dette språket eller godkjente tilbakefallsspråk",
 	"wikilambda-nojs": "Denne siden krever at JavaScript er slått på.",
 	"wikilambda-object-selector-suggested-languages": "Foreslåtte språk",

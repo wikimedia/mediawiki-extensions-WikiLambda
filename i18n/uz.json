@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Malikxan",
+			"Procedural human",
 			"Zafar Shamsiddinov"
 		]
 	},
+	"wikilambda-desc": "Markaziy vikida funksiyalarni yozish, boshqarish va baholashni ta'minlash.",
 	"specialpages-group-wikilambda": "Vikifunksiyalar sahifalari",
 	"wikilambda-nojs": "Ushbu sahifadan foydalanish uchun JavaScript talab etiladi.",
 	"wikilambda-persistentzobject-contents": "Mundarija"
