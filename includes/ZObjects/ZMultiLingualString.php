@@ -10,11 +10,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
-use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
@@ -186,16 +184,13 @@ class ZMultiLingualString extends ZObject {
 			return;
 		}
 		if ( array_key_exists( $language, $this->getZValue() ) ) {
+			// When detecting a duplicate language, we log a warning so that
+			// we can correct the content issue, but we should not be throwing
+			// an exception, as this will break unrelated objects, too.
 			$logger = LoggerFactory::getInstance( 'WikiLambda' );
 			$logger->warning(
 				'Duplicate language in a MultiLingual String is not allowed: {language}',
 				[ 'language' => $language ]
-			);
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_DUPLICATE_LANGUAGES,
-					[ 'language' => $language ]
-				)
 			);
 		}
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language ] = $value;
