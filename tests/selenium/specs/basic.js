@@ -19,7 +19,7 @@ describe( 'Installation checks', () => {
 	describe( 'CreateObject', () => {
 		it( 'page should exist on installation but deny to logged-out user', async () => {
 			await CreateObjectPage.open();
-			await expect( await CreateObjectPage.title ).toHaveText( 'Permission error' );
+			await expect( await CreateObjectPage.title ).toHaveText( 'Login required' );
 		} );
 		it( 'page should exist on installation and work when logged in', async () => {
 			await LoginPage.loginAdmin();
