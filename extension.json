@@ -395,6 +395,45 @@
 				"ext.wikilambda.special/ext.wikilambda.special.less"
 			]
 		},
+		"ext.wikilambda.references.styles": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
+			"codexStyleOnly": true,
+			"styles": [
+				"ext.wikilambda.references/ext.wikilambda.references.less"
+			]
+		},
+		"ext.wikilambda.references": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
+			"dependencies": [
+				"vue"
+			],
+			"codexComponents": [
+				"CdxIcon",
+				"CdxButton",
+				"CdxPopover"
+			],
+			"messages": [
+				"wikilambda-reference"
+			],
+			"packageFiles": [
+				"ext.wikilambda.references/index.js",
+				"ext.wikilambda.references/Constants.js",
+				"ext.wikilambda.references/composables/useBreakpoints.js",
+				"ext.wikilambda.references/composables/useFocusTrap.js",
+				"ext.wikilambda.references/composables/useReferenceTriggers.js",
+				"ext.wikilambda.references/composables/useScrollLock.js",
+				"ext.wikilambda.references/components/base/Drawer.vue",
+				"ext.wikilambda.references/components/reference/ReferenceManager.vue",
+				"ext.wikilambda.references/components/reference/ReferencePopover.vue",
+				{
+					"name": "lib/icons.json",
+					"callback": "MediaWiki\\ResourceLoader\\CodexModule::getIcons",
+					"callbackParam": [
+						"cdxIconClose"
+					]
+				}
+			]
+		},
 		"ext.wikilambda.languageselector": {
 			"class": "MediaWiki\\ResourceLoader\\CodexModule",
 			"styles": [],
@@ -446,7 +485,9 @@
 				"mediawiki.storage",
 				"mediawiki.user",
 				"mediawiki.util",
-				"oojs"
+				"oojs",
+				"ext.wikilambda.references.styles",
+				"ext.wikilambda.references"
 			],
 			"codexComponents": [
 				"CdxIcon",

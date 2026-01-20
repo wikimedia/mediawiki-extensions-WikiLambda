@@ -12,7 +12,24 @@ const path = require( 'path' );
 function loadCodexComponents() {
 	const extensionJsonPath = path.resolve( __dirname, '../../../extension.json' );
 	const extensionJson = JSON.parse( fs.readFileSync( extensionJsonPath, 'utf8' ) );
-	return extensionJson.ResourceModules[ 'ext.wikilambda.app' ].codexComponents;
+	const modules = [
+		'ext.wikilambda.app',
+		'ext.wikilambda.languageselector',
+		'ext.wikilambda.references'
+	];
+
+	// Collect all unique Codex components from all modules
+	const allComponents = new Set();
+	modules.forEach( ( moduleName ) => {
+		const module = extensionJson.ResourceModules[ moduleName ];
+		if ( module && module.codexComponents ) {
+			module.codexComponents.forEach( ( component ) => {
+				allComponents.add( component );
+			} );
+		}
+	} );
+
+	return Array.from( allComponents );
 }
 
 const codexComponents = loadCodexComponents();

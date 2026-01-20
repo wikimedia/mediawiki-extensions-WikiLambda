@@ -1,0 +1,93 @@
+/*!
+ * WikiLambda references styles
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+@import ( reference ) 'mediawiki.skin.variables.less';
+
+body {
+	counter-reset: ext-wikilambda-reference-counter;
+}
+
+.button-reset() {
+	padding: 0;
+	border: 0;
+	font: inherit;
+	color: inherit;
+	background-color: transparent;
+	cursor: pointer;
+	appearance: none;
+}
+
+.ext-wikilambda-reference__button {
+	.button-reset();
+	.cdx-mixin-link();
+
+	// Use CSS counter to set the button content to numbered reference (e.g., [1], [2], [3])
+	&::before {
+		content: '[' counter( ext-wikilambda-reference-counter, decimal ) ']';
+		font-size: 0.8rem;
+	}
+
+	&:focus {
+		outline: 0;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var( --color-progressive, #36c );
+	}
+}
+
+// Prevents FOUC: show numbered marker immediately, hide text content
+.ext-wikilambda-reference {
+	font-size: 0;
+	line-height: 1;
+	vertical-align: super;
+	counter-increment: ext-wikilambda-reference-counter;
+
+	// Show numbered marker immediately on load (e.g., [1], [2], [3])
+	&::before {
+		content: '[' counter( ext-wikilambda-reference-counter, decimal ) ']';
+		font-size: 0.8rem;
+		.cdx-mixin-link();
+	}
+
+	// Hide ::before when JS has processed it (button shows counter instead)
+	&[ data-wikilambda-reference-init ]::before {
+		display: none;
+	}
+}
+
+.ext-wikilambda-reference__note {
+	display: none;
+}
+
+// CSS-only fallback for no-JS: show number normally, full text on hover
+html.client-nojs {
+	.ext-wikilambda-reference {
+		// On hover, hide the ::before counter and show the full text content
+		&:hover {
+			// Hide the ::before counter marker
+			&::before {
+				display: none;
+			}
+
+			// Show the text content (override font-size: 0)
+			font-size: inherit;
+			line-height: inherit;
+			position: absolute;
+			z-index: @z-index-overlay;
+
+			// Style it like a popover/tooltip
+			background-color: @background-color-base;
+			border: @border-base;
+			border-radius: @border-radius-base;
+			padding: @spacing-25;
+			box-shadow: @box-shadow-drop-medium;
+			white-space: normal;
+			max-width: 400px;
+			cursor: pointer;
+		}
+	}
+}

@@ -65,7 +65,10 @@ module.exports = {
 		// Ignore our Vector search integration
 		'resources/ext.wikilambda.languageselector/vector-2022SearchIntegration.js',
 		// Ignore VisualEditor initialization scripts
-		'resources/ext.wikilambda.visualeditor/'
+		'resources/ext.wikilambda.visualeditor/',
+		// Ignore references initialization scripts and trigger composable (might change)
+		'resources/ext.wikilambda.references/index.js',
+		'resources/ext.wikilambda.references/composables/useReferenceTriggers.js'
 	],
 
 	coverageThreshold: {

@@ -4,5 +4,11 @@
 		"ignoreDependencies": true,
 		"resourceModule": "ext.wikilambda.languageselector",
 		"maxSize": "11.0 kB"
+	},
+	{
+		"@note": "WikiLamba loads Vue on page load unlike other projects.",
+		"ignoreDependencies": true,
+		"resourceModule": "ext.wikilambda.references",
+		"maxSize": "22.0 kB"
 	}
 ]
