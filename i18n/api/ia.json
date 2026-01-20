@@ -98,6 +98,11 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "Le lista de IDs (o objectos) del ZImplementation a testar",
 	"apihelp-wikilambda_perform_test-param-ztesters": "Le lista de IDs (o objectos) del ZTester a testar",
 	"apihelp-wikilambda_perform_test-param-nocache": "Si se debe usar le cache o non",
+	"apihelp-wikifunctions_html_sanitiser-summary": "API pro normalisar un catena de HTML a monstrar al usator sur Wikifunctions.org e sur le wikis Wikimedia cliente.",
+	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "Tu ha troppo de appellos de normalisation in curso al momento.",
+	"apihelp-wikifunctions_html_sanitiser-param-html": "Le catena HTML normalisate, apte pro monstrar al usator.",
+	"apihelp-wikifunctions_html_sanitiser-example-untouched": "Exemplo de appello basic sin operation.",
+	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Appello de exemplo con codice HTML prohibite.",
 	"wikilambda-restapi-disabled-repo-mode-only": "Iste API es solmente disponibile sur le wiki del repositorio principal, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "Non es possibile requestar $1 objectos in un sol vice. Le maximo permittite es $2.",
 	"wikilambda-restapi-revision-mismatch": "Le requestate version $1 del objecto ‘$2’ non ha essite trovate."
