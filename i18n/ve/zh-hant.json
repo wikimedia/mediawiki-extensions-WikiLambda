@@ -69,6 +69,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "已取消",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "重新設定",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "取消",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "顯示呈現結果",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "使用今天日期並讓結果保持最新",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "使用頁面的預設維基數據項目",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "使用頁面的預設語言"

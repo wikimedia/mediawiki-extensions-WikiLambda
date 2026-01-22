@@ -367,6 +367,7 @@
 	"wikilambda-helplink-button": "Hilfe",
 	"wikilambda-helplink-tooltip": "Du kannst eine Hilfeseite lesen, die diese Metadaten erklärt",
 	"wikilambda-history-title": "Versionsgeschichte von „$1“ ($2)",
+	"wikilambda-html-fragment-toggle": "Gerendertes Ergebnis anzeigen",
 	"wikilambda-implementation-create-new": "Implementierung hinzufügen",
 	"wikilambda-implementation-none-found": "Von dir erstellte Implementierungen werden hier angezeigt.",
 	"wikilambda-implementation-selector": "Eine Implementierung auswählen",

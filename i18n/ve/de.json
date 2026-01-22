@@ -67,6 +67,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Abgebrochen.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Zurücksetzen",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Abbrechen",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Gerendertes Ergebnis anzeigen",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Verwende das heutige Datum und halte das Ergebnis aktuell",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Verwende das Standard-Wikidata-Element dieser Seite",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Verwende die Standardsprache dieser Seite"

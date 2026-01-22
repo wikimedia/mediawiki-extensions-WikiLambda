@@ -6,6 +6,7 @@
 			"Escargot bleu",
 			"Goombiis",
 			"JLTRY",
+			"Jdforrester",
 			"McDutchie",
 			"TimHBD",
 			"VIGNERON"
@@ -76,6 +77,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Annulé",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Réinitialiser",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Annuler",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Afficher ce rendu",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Utilisez la date du jour et gardez le résultat à jour",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Utiliser l'élément Wikidata par défaut de cette page",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Utiliser la langue par défaut de cette page"

@@ -73,6 +73,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "أُلغيت",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "إعادة ضبط",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "إلغاء",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "عرضت",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "استخدم تاريخ اليوم وحافظ على النتيجة محدّثة",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "استخدم عنصر ويكي بيانات الافتراضي لهذه الصفحة",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "استخدم اللغة الافتراضية لهذه الصفحة"
