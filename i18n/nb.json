@@ -4,7 +4,8 @@
 			"Avilena",
 			"EdoAug",
 			"Jon Harald Søby",
-			"Telaneo"
+			"Telaneo",
+			"Yupik"
 		]
 	},
 	"wikilambda-desc": "Gir mulighet til å skrive, behandle og evaluere funksjoner på en sentral wiki.",
@@ -124,6 +125,7 @@
 	"wikilambda-create-type": "Opprett type",
 	"wikilambda-delete-list-item": "Slett element",
 	"wikilambda-dialog-close": "Lukk dialogboksen",
+	"wikilambda-monolingual-string-list-dialog-search-placeholder": "Søk i språk",
 	"wikilambda-diff-incompatible": "Systemet kan ikke vise forskjellen mellom et objekt og noe som ikke er et objekt.",
 	"wikilambda-discard-edits": "Forkast redigeringer",
 	"wikilambda-edit": "Rediger",
@@ -291,8 +293,8 @@
 	"wikilambda-labelclash": "Det gitte innholdets etikett konflikterer med objektet «$1» for etiketten på «$2».",
 	"wikilambda-languagelabel": "Språk",
 	"wikilambda-list-item-label": "Element $1",
-	"wikilambda-list-items-label": "Listeelementer",
-	"wikilambda-list-items-type-label": "Listeelementenens type",
+	"wikilambda-list-items-label": "Elementer",
+	"wikilambda-list-items-type-label": "Elementenens type",
 	"wikilambda-list-type-change-warning": "Du endret typen til én eller flere lister. Ved publisering blir alle listeelementene slettet",
 	"wikilambda-loading": "Laster data",
 	"wikilambda-initialize-error": "En feil oppsto under lasting av siden.",
