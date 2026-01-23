@@ -17,11 +17,9 @@ const mockUseBreakpoints = {
 };
 
 jest.mock( '../../../../../resources/ext.wikilambda.references/composables/useBreakpoints.js', () => jest.fn( () => mockUseBreakpoints ) );
-jest.mock( '../../../../../resources/ext.wikilambda.references/composables/useReferenceTriggers.js', () => jest.fn() );
 
 // Import component after mocks are set up
 const ReferenceManager = require( '../../../../../resources/ext.wikilambda.references/components/reference/ReferenceManager.vue' );
-const useReferenceTriggers = require( '../../../../../resources/ext.wikilambda.references/composables/useReferenceTriggers.js' );
 
 describe( 'ReferenceManager', () => {
 	let triggerButton, noteElement;
@@ -99,13 +97,11 @@ describe( 'ReferenceManager', () => {
 			expect( wrapper.exists() ).toBe( true );
 		} );
 
-		it( 'initializes useReferenceTriggers with handlers', async () => {
-			renderReferenceManager();
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			expect( handlers ).toHaveProperty( 'onMouseenter' );
-			expect( handlers ).toHaveProperty( 'onMouseleave' );
-			expect( handlers ).toHaveProperty( 'onClick' );
+		it( 'exposes handler methods', async () => {
+			const wrapper = renderReferenceManager();
+			expect( wrapper.vm.handleMouseenter ).toBeDefined();
+			expect( wrapper.vm.handleMouseleave ).toBeDefined();
+			expect( wrapper.vm.handleClick ).toBeDefined();
 		} );
 	} );
 
@@ -139,10 +135,7 @@ describe( 'ReferenceManager', () => {
 
 			const wrapper = renderReferenceManager();
 
-			// Get the onClick handler from useReferenceTriggers
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 
 			expect( wrapper.vm.drawerOpen ).toBe( true );
 			expect( wrapper.vm.referenceHtml ).toBe( '<p>Reference content</p>' );
@@ -155,10 +148,7 @@ describe( 'ReferenceManager', () => {
 
 			const wrapper = renderReferenceManager();
 
-			// Get the onClick handler from useReferenceTriggers
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 
 			expect( wrapper.vm.popoverOpen ).toBe( true );
 			expect( wrapper.vm.popoverMode ).toBe( 'click' );
@@ -166,11 +156,9 @@ describe( 'ReferenceManager', () => {
 		} );
 
 		it( 'sets aria-expanded on trigger button', async () => {
-			renderReferenceManager();
+			const wrapper = renderReferenceManager();
 
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 
 			expect( triggerButton.getAttribute( 'aria-expanded' ) ).toBe( 'true' );
 		} );
@@ -183,9 +171,7 @@ describe( 'ReferenceManager', () => {
 
 			const wrapper = renderReferenceManager();
 
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 
 			expect( wrapper.vm.popoverOpen ).toBe( false );
 			expect( wrapper.vm.drawerOpen ).toBe( false );
@@ -202,9 +188,7 @@ describe( 'ReferenceManager', () => {
 		it( 'opens popover on mouseenter in hover mode', async () => {
 			const wrapper = renderReferenceManager();
 
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onMouseenter( triggerButton );
+			wrapper.vm.handleMouseenter( triggerButton );
 
 			expect( wrapper.vm.popoverOpen ).toBe( true );
 			expect( wrapper.vm.popoverMode ).toBe( 'hover' );
@@ -213,15 +197,13 @@ describe( 'ReferenceManager', () => {
 		it( 'does not open on hover if already in click mode', async () => {
 			const wrapper = renderReferenceManager();
 
-			expect( useReferenceTriggers ).toHaveBeenCalled();
 			// First open in click mode
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 
 			expect( wrapper.vm.popoverMode ).toBe( 'click' );
 
 			// Try to hover - should not change mode
-			handlers.onMouseenter( triggerButton );
+			wrapper.vm.handleMouseenter( triggerButton );
 
 			expect( wrapper.vm.popoverMode ).toBe( 'click' );
 		} );
@@ -230,16 +212,13 @@ describe( 'ReferenceManager', () => {
 			jest.useFakeTimers();
 			const wrapper = renderReferenceManager();
 
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-
 			// Open via hover
-			handlers.onMouseenter( triggerButton );
+			wrapper.vm.handleMouseenter( triggerButton );
 			expect( wrapper.vm.popoverOpen ).toBe( true );
 			expect( wrapper.vm.popoverMode ).toBe( 'hover' );
 
 			// Leave trigger
-			handlers.onMouseleave();
+			wrapper.vm.handleMouseleave();
 
 			// Should still be open (delay not expired)
 			expect( wrapper.vm.popoverOpen ).toBe( true );
@@ -263,9 +242,7 @@ describe( 'ReferenceManager', () => {
 			const wrapper = renderReferenceManager();
 
 			// Open drawer
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 
 			expect( wrapper.vm.drawerOpen ).toBe( true );
 
@@ -285,9 +262,7 @@ describe( 'ReferenceManager', () => {
 			const wrapper = renderReferenceManager();
 
 			// Open popover
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 
 			expect( wrapper.vm.popoverOpen ).toBe( true );
 
@@ -306,15 +281,12 @@ describe( 'ReferenceManager', () => {
 
 			const wrapper = renderReferenceManager();
 
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-
 			// First click opens
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 			expect( wrapper.vm.popoverOpen ).toBe( true );
 
 			// Second click closes
-			handlers.onClick( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
 			expect( wrapper.vm.popoverOpen ).toBe( false );
 		} );
 	} );
@@ -328,14 +300,11 @@ describe( 'ReferenceManager', () => {
 
 			const wrapper = renderReferenceManager();
 
-			expect( useReferenceTriggers ).toHaveBeenCalled();
-			const handlers = useReferenceTriggers.mock.calls[ 0 ][ 0 ];
-
 			// Open via hover
-			handlers.onMouseenter( triggerButton );
+			wrapper.vm.handleMouseenter( triggerButton );
 
 			// Leave (schedules close)
-			handlers.onMouseleave();
+			wrapper.vm.handleMouseleave();
 
 			// Unmount before timeout expires
 			wrapper.unmount();

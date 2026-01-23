@@ -149,6 +149,14 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			[ 'ext.wikilambda.languageselector' ], $outputPage->getModules(),
 			'We register ext.wikilambda.languageselector; make sure that\'s set'
 		);
+		$this->assertArrayContains(
+			[ 'ext.wikilambda.references' ], $outputPage->getModules(),
+			'We register ext.wikilambda.references; make sure that\'s set'
+		);
+		$this->assertArrayContains(
+			[ 'ext.wikilambda.references.styles' ], $outputPage->getModuleStyles(),
+			'We register ext.wikilambda.references.styles; make sure that\'s set'
+		);
 
 		$outputPage = new OutputPage( $context );
 		$this->pageRenderingHandlerRepoModeOff->onBeforePageDisplay( $outputPage, $mockSkin );
@@ -160,6 +168,10 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertArrayEquals(
 			[], $outputPage->getModules(),
 			'We should not register ext.wikilambda.languageselector in non-repo mode'
+		);
+		$this->assertArrayEquals(
+			[], $outputPage->getModuleStyles(),
+			'We should not register ext.wikilambda.references.styles in non-repo mode'
 		);
 	}
 

@@ -26,7 +26,6 @@ describe( 'useError', () => {
 			const [ errorComposable ] = loadComposable( () => useError( { keyPath: 'main.Z2K2' } ) );
 			errorComposable.clearFieldErrors();
 
-			// console.log( 'store.clearErrors', store, store.clearErrors );
 			expect( store.clearErrors ).toHaveBeenCalledWith( 'main.Z2K2' );
 		} );
 

@@ -15,7 +15,7 @@ function loadCodexComponents() {
 	const modules = [
 		'ext.wikilambda.app',
 		'ext.wikilambda.languageselector',
-		'ext.wikilambda.references'
+		'ext.wikilambda.references.vue'
 	];
 
 	// Collect all unique Codex components from all modules

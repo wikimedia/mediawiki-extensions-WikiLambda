@@ -44,14 +44,15 @@ For convenience of users, you can also use other elements (like `<span>`) - they
 
 ### Loading the Module
 
-The module consists of two parts:
+The module consists of three parts:
 
 1. **`ext.wikilambda.references.styles`** - CSS-only module (should be loaded early to prevent FOUC)
-2. **`ext.wikilambda.references`** - JavaScript module (includes styles as a dependency)
+2. **`ext.wikilambda.references`** - Vanilla JS initialization (scans DOM, creates buttons)
+3. **`ext.wikilambda.references.vue`** - Vue app (lazy-loaded on first interaction)
 
 #### In ResourceLoader modules
 
-When including as a dependency in `extension.json`, the styles are automatically included:
+When including as a dependency in `extension.json`, the module is automatically loaded:
 
 ```json
 {
@@ -61,6 +62,8 @@ When including as a dependency in `extension.json`, the styles are automatically
 }
 ```
 
+The Vue app is lazy-loaded automatically when a user interacts with a reference (hover/click).
+
 #### In PHP (Special Pages, etc.)
 
 For early CSS loading to prevent FOUC (Flash of Unstyled Content), load the styles module separately:
@@ -69,6 +72,8 @@ For early CSS loading to prevent FOUC (Flash of Unstyled Content), load the styl
 $output->addModuleStyles( 'ext.wikilambda.references.styles' );
 $output->addModules( 'ext.wikilambda.references' );
 ```
+
+This will load `ext.wikilambda.references` immediately (which scans the DOM and creates buttons). The Vue app (`ext.wikilambda.references.vue`) is automatically lazy-loaded when a user interacts with a reference.
 
 ### Dynamic Content
 
@@ -80,11 +85,19 @@ mw.hook('wikilambda.references.content').fire( containerElement );
 
 Where `containerElement` is the DOM element or jQuery object containing the new reference elements.
 
+## Architecture
+
+The module uses a lazy-loading architecture to minimize initial JavaScript payload:
+
+1. **`init.js`** (vanilla JS) - Loads immediately, scans DOM, creates buttons
+2. **`vue.js`** - Lazy-loaded only when a user interacts with a reference
+3. This reduces the initial bundle size in read mode (Vue is only loaded on interaction)
+
 ## Components
 
 ### ReferenceManager
 
-The main component that orchestrates popovers and drawers. Automatically mounted on page load.
+The main Vue component that orchestrates popovers and drawers. Lazy-mounted when first needed.
 
 ### ReferencePopover
 
@@ -95,14 +108,6 @@ Desktop popover component using Codex's `CdxPopover`. Supports hover and click m
 Mobile drawer component that slides up from the bottom. Includes focus trapping and scroll locking.
 
 ## Composables
-
-### useReferenceTriggers
-
-Manages DOM scanning and button creation for reference triggers. Handles:
-- Finding unprocessed references
-- Transforming HTML structure
-- Attaching event handlers
-- Listening to MediaWiki hooks for dynamic content
 
 ### useFocusTrap
 

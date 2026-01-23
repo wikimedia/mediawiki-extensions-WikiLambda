@@ -343,6 +343,9 @@ class PageRenderingHandler implements
 
 		// Add language selector module to all pages
 		$out->addModules( 'ext.wikilambda.languageselector' );
+		// Add references module to all pages to enable references on all pages
+		$out->addModuleStyles( 'ext.wikilambda.references.styles' );
+		$out->addModules( 'ext.wikilambda.references' );
 	}
 
 	/**

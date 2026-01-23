@@ -67,8 +67,8 @@ module.exports = {
 		// Ignore VisualEditor initialization scripts
 		'resources/ext.wikilambda.visualeditor/',
 		// Ignore references initialization scripts and trigger composable (might change)
-		'resources/ext.wikilambda.references/index.js',
-		'resources/ext.wikilambda.references/composables/useReferenceTriggers.js'
+		'resources/ext.wikilambda.references/init.js',
+		'resources/ext.wikilambda.references/vue.js'
 	],
 
 	coverageThreshold: {

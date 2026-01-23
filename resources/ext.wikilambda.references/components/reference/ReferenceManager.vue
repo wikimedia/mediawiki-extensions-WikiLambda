@@ -36,7 +36,6 @@ const { defineComponent, ref, computed, onUnmounted } = require( 'vue' );
 const Drawer = require( '../base/Drawer.vue' );
 const ReferencePopover = require( './ReferencePopover.vue' );
 const useBreakpoints = require( '../../composables/useBreakpoints.js' );
-const useReferenceTriggers = require( '../../composables/useReferenceTriggers.js' );
 const Constants = require( '../../Constants.js' );
 
 module.exports = exports = defineComponent( {
@@ -45,7 +44,7 @@ module.exports = exports = defineComponent( {
 		'wl-drawer': Drawer,
 		'wl-reference-popover': ReferencePopover
 	},
-	setup() {
+	setup( props, { expose } ) {
 		const breakpoint = useBreakpoints( Constants.BREAKPOINTS );
 		const isMobile = computed( () => breakpoint.current.value === Constants.BREAKPOINT_TYPES.MOBILE );
 
@@ -235,52 +234,70 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
-		// DOM scanning and initialization
-		const triggerHandlers = {
-			onMouseenter: ( button ) => {
-				// Desktop hover-open (mouse only)
-				// Do nothing if:
-				// - Mobile
-				// - Popover is pinned open
-				if ( isMobile.value || popoverMode.value === 'click' ) {
-					return;
-				}
-				popoverMode.value = 'hover';
-				openReferenceForTrigger( button );
-			},
-			onMouseleave: () => {
-				// Do nothing if:
-				// - Mobile
-				// - Popover mode is not hover
-				if ( isMobile.value || popoverMode.value !== 'hover' ) {
-					return;
-				}
-				// Schedule close with delay to allow mouse to move into popover.
-				// If mouse enters popover, its mouseenter handler will cancel this.
-				scheduleHoverClose();
-			},
-			onClick: ( button ) => {
-				// Mobile: open drawer
-				if ( isMobile.value ) {
-					return openReferenceForTrigger( button );
-				}
-
-				// Desktop: Popover
-				popoverMode.value = 'click';
-
-				// Click always pins the popover open (disables hover-close logic).
-				// If it was hover-opened, clicking converts it to pinned mode instead of closing.
-				if ( popoverOpen.value && anchor.value === button ) {
-					return setPopoverOpen( false );
-				}
-
-				cancelHoverClose();
-				openReferenceForTrigger( button );
+		// Handlers exposed for vanilla JS (via vue-app.js)
+		/**
+		 * Handle mouseenter on reference button.
+		 *
+		 * @param {HTMLElement} button - The button element
+		 */
+		function handleMouseenter( button ) {
+			// Desktop hover-open (mouse only)
+			// Do nothing if:
+			// - Mobile
+			// - Popover is pinned open
+			if ( isMobile.value || popoverMode.value === 'click' ) {
+				return;
 			}
-		};
+			popoverMode.value = 'hover';
+			openReferenceForTrigger( button );
+		}
 
-		// Initialize reference triggers
-		useReferenceTriggers( triggerHandlers );
+		/**
+		 * Handle mouseleave on reference button.
+		 */
+		function handleMouseleave() {
+			// Do nothing if:
+			// - Mobile
+			// - Popover mode is not hover
+			if ( isMobile.value || popoverMode.value !== 'hover' ) {
+				return;
+			}
+			// Schedule close with delay to allow mouse to move into popover.
+			// If mouse enters popover, its mouseenter handler will cancel this.
+			scheduleHoverClose();
+		}
+
+		/**
+		 * Handle click on reference button.
+		 *
+		 * @param {HTMLElement} button - The button element
+		 * @return {void}
+		 */
+		function handleClick( button ) {
+			// Mobile: open drawer
+			if ( isMobile.value ) {
+				return openReferenceForTrigger( button );
+			}
+
+			// Desktop: Popover
+			popoverMode.value = 'click';
+
+			// Click always pins the popover open (disables hover-close logic).
+			// If it was hover-opened, clicking converts it to pinned mode instead of closing.
+			if ( popoverOpen.value && anchor.value === button ) {
+				return setPopoverOpen( false );
+			}
+
+			cancelHoverClose();
+			openReferenceForTrigger( button );
+		}
+
+		// Expose handlers for external access (from vue-app.js)
+		expose( {
+			handleMouseenter,
+			handleMouseleave,
+			handleClick
+		} );
 
 		onUnmounted( () => {
 			cancelHoverClose();
