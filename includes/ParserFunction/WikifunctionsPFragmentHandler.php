@@ -151,8 +151,22 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		] );
 		$this->jobQueueGroup->lazyPush( $usageJob );
 
-		// Set a special flag on the page, so that we can track usage of pages with at least one function call.
-		$extApi->getMetadata()->setExtensionData( 'wikilambda', 'present' );
+		// (T414848) Set a special flag on the page, so that we can track usage of pages with function calls, and find
+		// pages that use a lot of them.
+		// Note: Page properties must be strings for Parsoid's StubMetadataCollector to be happy; this also works IRL.
+		$newWikifunctionsUseCount = strval( intval(
+			// @phan-suppress-next-line PhanUndeclaredMethod — ContentMetadataCollector interface lacks, but we have it
+			$extApi->getMetadata()->getPageProperty( 'wikilambda' ) ?? 0
+		) + 1 );
+		$extApi->getMetadata()->setNumericPageProperty( 'wikilambda', $newWikifunctionsUseCount );
+
+		// (T414848) Also track specifically usage of our target ZID
+		$targetFunctionPageProp = 'wikilambda-' . $expansion['target'];
+		$newTargetUseCount = strval( intval(
+			// @phan-suppress-next-line PhanUndeclaredMethod — ContentMetadataCollector interface lacks, but we have it
+			$extApi->getMetadata()->getPageProperty( $targetFunctionPageProp ) ?? 0
+		 ) + 1 );
+		$extApi->getMetadata()->setNumericPageProperty( $targetFunctionPageProp, $newTargetUseCount );
 
 		// (Temporarily not done, as it doesn't seem we need it immediately.)
 		// Add our special styles to the page, we know they're likely to be used somewhere

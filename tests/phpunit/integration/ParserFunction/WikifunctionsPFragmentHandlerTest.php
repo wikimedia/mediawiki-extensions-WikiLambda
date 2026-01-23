@@ -174,6 +174,15 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$requestJob = $pushedJobs[1];
 		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $requestJob );
 		$this->assertSame( $expectedRequest, $requestJob->getParams()['request'] );
+
+		$this->assertSame(
+			1, $extApi->getMetadata()->getPageProperty( 'wikilambda' ),
+			'Usage on the page should be tracked'
+		);
+		$this->assertSame(
+			1, $extApi->getMetadata()->getPageProperty( 'wikilambda-' . $inputArguments[0] ),
+			'Usage of the target function should be tracked'
+		);
 	}
 
 	public static function provideWikifunctionsFragments() {
