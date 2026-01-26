@@ -69,6 +69,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Cancelada",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Restablecer",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Cancelar",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Mostrar a renderización",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Usar a data de hoxe e manter o resultado actualizado",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Usar o elemento de Wikidata predeterminado desta páxina",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Usar a lingua predeterminada desta páxina"

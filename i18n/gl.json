@@ -361,6 +361,7 @@
 	"wikilambda-helplink-button": "Axuda",
 	"wikilambda-helplink-tooltip": "Podes ler unha páxina de axuda que explica estes metadatos",
 	"wikilambda-history-title": "Historial de revisións de «$1» ($2)",
+	"wikilambda-html-fragment-toggle": "Mostrar a renderización",
 	"wikilambda-implementation-create-new": "Engadir unha implementación",
 	"wikilambda-implementation-none-found": "As implementacións que crees aparecerán aquí.",
 	"wikilambda-implementation-selector": "Selecciona unha implementación",
