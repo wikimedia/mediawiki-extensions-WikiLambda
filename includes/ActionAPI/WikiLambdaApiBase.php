@@ -462,6 +462,29 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			return $this->getFailedResponseEnvelope( $zError );
 		}
 
+		// (T414752) Trivial check if server hasn't responded with a ZObject, rather than loading all of ZObjectFactory
+		// e.g. "{"error":"Payload too large"}"
+		if ( !property_exists( $responseContents, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
+			$this->getLogger()->warning(
+				__METHOD__ . ' failed to execute, server response was not a ZObject: {response}',
+				[
+					'request' => $call,
+					'response' => $response
+				]
+			);
+			// ZError: Invalid ZObject returned by the evaluator
+			$zErrorType = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_OBJECT_TYPE_MISMATCH, [
+				'expected' => ZTypeRegistry::Z_RESPONSEENVELOPE,
+				// If it's not a ZObject at all, just say it's a string
+				'actual' => ZTypeRegistry::Z_STRING
+			] );
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
+				'functionCall' => $call,
+				'error' => $zErrorType
+			] );
+			return $this->getFailedResponseEnvelope( $zError );
+		}
+
 		// Convert stdClass into ZObject by passing it through ZObjectFactory::create
 		try {
 			$responseObject = ZObjectFactory::create( $responseContents );
@@ -494,7 +517,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			// ZError: Invalid ZObject returned by the evaluator
 			$zErrorType = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_OBJECT_TYPE_MISMATCH, [
 				'expected' => ZTypeRegistry::Z_RESPONSEENVELOPE,
-				'actual' => $response
+				'actual' => $responseObject->getZType()
 			] );
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
 				'functionCall' => $call,
