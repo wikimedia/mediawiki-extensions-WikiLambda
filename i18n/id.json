@@ -12,7 +12,8 @@
 			"Syman51",
 			"Veracious",
 			"Felianiwiki",
-			"Penyuwangi"
+			"Penyuwangi",
+			"Bennylin"
 		]
 	},
 	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
@@ -56,11 +57,11 @@
 	"action-wikilambda-execute": "menjalankan Fungsi",
 	"action-wikilambda-execute-unsaved-code": "menjalankan kode penerapan yang tak tersimpan",
 	"content-model-zobject": "Objek WikiLambda",
-	"group-functioneer": "Pemfungsi",
-	"group-functioneer-member": "{{GENDER:$1|pemfungsi}}",
+	"group-functioneer": "Penatafungsi",
+	"group-functioneer-member": "{{GENDER:$1|penatafungsi}}",
 	"group-functionmaintainer": "Pemelihara",
 	"group-functionmaintainer-member": "{{GENDER:$1|pemelihara}}",
-	"grouppage-functioneer": "{{ns:project}}:Pemfungsi",
+	"grouppage-functioneer": "{{ns:project}}:Penatafungsi",
 	"grouppage-functionmaintainer": "{{ns:project}}:Pemelihara",
 	"right-wikifunctions-run": "Jalankan Fungsi di API publik",
 	"right-wikilambda-connect-implementation": "Menyambungkan Penerapan ke Fungsinya agar bisa dijalankan",
