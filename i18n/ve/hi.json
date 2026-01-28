@@ -70,5 +70,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "फ़ंक्शन परिणाम नहीं दिखा पा रहा है। कृपया बाद में पुनः प्रयास करें।",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "रद्द",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "रीसेट करें",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "रद्द करें"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "रद्द करें",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "रेंडर किया हुआ दिखाएँ"
 }
