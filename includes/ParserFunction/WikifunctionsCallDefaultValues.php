@@ -15,7 +15,7 @@ use DateTimeZone;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
-use Wikimedia\Parsoid\Utils\Title as ParsoidTitle;
+use Wikimedia\Parsoid\Core\LinkTarget;
 
 class WikifunctionsCallDefaultValues {
 
@@ -110,7 +110,7 @@ class WikifunctionsCallDefaultValues {
 	public static function getWikidataItem( array $context = [] ): string {
 		// Context doesn't have info of the page title; return empty string
 		if ( !isset( $context['linkTarget'] ) ||
-			!( $context['linkTarget'] instanceof Title || $context['linkTarget'] instanceof ParsoidTitle ) ) {
+			!( $context['linkTarget'] instanceof LinkTarget ) ) {
 			return '';
 		}
 
@@ -119,7 +119,7 @@ class WikifunctionsCallDefaultValues {
 			return '';
 		}
 
-		$prefixedTitle = $context['linkTarget']->getPrefixedText();
+		$prefixedTitle = Title::newFromLinkTarget( $context['linkTarget'] )->getPrefixedText();
 		$wbSiteLinkLookup = \Wikibase\Client\WikibaseClient::getStore()->getSiteLinkLookup();
 		$wbClientSettings = \Wikibase\Client\WikibaseClient::getSettings();
 
