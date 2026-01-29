@@ -93,10 +93,6 @@
 			"description": "If true, allow Functions that return HTML output.",
 			"value": true
 		},
-		"WikifunctionsEnableWikidataInputTypes": {
-			"description": "If true, allow Wikidata types (Z6001, Z6005, Z6091, Z6095) as renderable input types in Visual Editor.",
-			"value": true
-		},
 		"WikiLambdaEnableAbstractMode": {
 			"description": "If true, enable the 'abstract' mode of WikiLambda that powers Abstract Wikipedia, and so hosting Abstract Wiki content in the relevant namespace(s).",
 			"value": false

@@ -1761,7 +1761,7 @@ class ZObjectStore {
 		];
 
 		// Add renderable input types
-		foreach ( ZTypeRegistry::getParseableInputTypes( $this->config ) as $type ) {
+		foreach ( ZTypeRegistry::PARSEABLE_INPUT_TYPES as $type ) {
 			$renderableOrExpr[] = $dbr->andExpr(
 				[ 'f.wlzo_key' => 'Z8K1', 'f.wlzo_related_zobject' => $type ]
 			);

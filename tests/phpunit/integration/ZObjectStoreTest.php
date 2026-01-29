@@ -1570,7 +1570,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	public function testFindFunctionsByRenderableIO() {
 		// Force-enable HTML output:
 		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
 
 		// Insert functions with various renderable input/output types
 		// Z6 (String) input, Z6 (String) output
@@ -1591,9 +1590,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( [ 'Z404', 'Z405', 'Z406', 'Z407', 'Z408' ], $res );
 	}
 
-	public function testFindFunctionsByRenderableIOWithoutFeatureFlags() {
+	public function testFindFunctionsByRenderableIOWithoutHTMLFeatureFlag() {
 		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', false );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', false );
 
 		// Insert functions with various renderable input/output types
 		// Z6 (String) input, Z6 (String) output
@@ -1610,8 +1608,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$res = $this->zobjectStore->findFunctionsByRenderableIO();
 		// On postgres the result may not be in order
 		sort( $res );
-		$this->assertCount( 2, $res, 'Should find Z404 and Z408 as renderable' );
-		$this->assertEquals( [ 'Z404', 'Z408' ], $res );
+		$this->assertCount( 4, $res, 'Should find Z404, Z406, Z407, and Z408 as renderable (not Z405)' );
+		$this->assertEquals( [ 'Z404', 'Z406', 'Z407', 'Z408' ], $res );
 	}
 
 	public function testFetchZFunctionReturnType() {

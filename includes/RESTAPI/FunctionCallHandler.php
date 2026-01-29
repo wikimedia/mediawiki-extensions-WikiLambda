@@ -14,7 +14,6 @@ use Exception;
 use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
-use MediaWiki\Config\Config;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
@@ -113,7 +112,6 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$arguments,
 			$parseLanguageZid,
 			$targetFunction,
-			$config,
 			$span
 		);
 
@@ -370,7 +368,6 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 	 * @param string $argumentsString
 	 * @param string $parseLanguageZid
 	 * @param ZFunction $targetFunction
-	 * @param Config $config
 	 * @param SpanInterface $span
 	 * @return array
 	 */
@@ -379,7 +376,6 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$argumentsString,
 		$parseLanguageZid,
 		$targetFunction,
-		$config,
 		$span
 	): array {
 		// 1. Split and decode arguments
@@ -438,53 +434,51 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				continue;
 			}
 
-			// B) If Wikidata input types feature flag is enabled:
+			// B) For Wikidata input types:
 			//    * If expected type is Wikidata entity: build wikidata fetch function call object
 			//    * If expected type is Wikidata reference: build wikidata reference object
-			if ( $config->get( 'WikifunctionsEnableWikidataInputTypes' ) ) {
-				$allowedEntityTypes = [
-					ZTypeRegistry::Z_WIKIDATA_LEXEME,
-					ZTypeRegistry::Z_WIKIDATA_ITEM
-				];
-				$allowedReferenceTypes = [
-					ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME,
-					ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM
-				];
+			$allowedEntityTypes = [
+				ZTypeRegistry::Z_WIKIDATA_LEXEME,
+				ZTypeRegistry::Z_WIKIDATA_ITEM
+			];
+			$allowedReferenceTypes = [
+				ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME,
+				ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM
+			];
 
-				// Handle Wikidata entity types (e.g., Z6001, Z6005, etc.) as function arguments:
-				// We build a ZFunctionCall to the appropriate Wikidata fetch function (e.g., Z6825 for lexeme),
-				// with the argument being a Wikidata reference type (e.g., { Z1K1: Z6095, Z6095K1: 'L123' })
-				if ( in_array( $targetTypeZid, $allowedEntityTypes ) ) {
-					$entityMap = ZTypeRegistry::WIKIDATA_ENTITY_TYPE_MAP[$targetTypeZid] ?? null;
-					if ( $entityMap ) {
-						$referenceType = $entityMap['reference_type'];
-						$referenceKey = $entityMap['reference_key'];
-						$fetchFunction = $entityMap['fetch_function'];
-						$fetchKey = $entityMap['fetch_key'];
+			// Handle Wikidata entity types (e.g., Z6001, Z6005, etc.) as function arguments:
+			// We build a ZFunctionCall to the appropriate Wikidata fetch function (e.g., Z6825 for lexeme),
+			// with the argument being a Wikidata reference type (e.g., { Z1K1: Z6095, Z6095K1: 'L123' })
+			if ( in_array( $targetTypeZid, $allowedEntityTypes ) ) {
+				$entityMap = ZTypeRegistry::WIKIDATA_ENTITY_TYPE_MAP[$targetTypeZid] ?? null;
+				if ( $entityMap ) {
+					$referenceType = $entityMap['reference_type'];
+					$referenceKey = $entityMap['reference_key'];
+					$fetchFunction = $entityMap['fetch_function'];
+					$fetchKey = $entityMap['fetch_key'];
 
-						// Build the reference ZObject for the entity (e.g., { Z1K1: Z6095, Z6095K1: 'L123' })
-						$referenceObject = new ZObject(
-							new ZReference( $referenceType ),
-							[ $referenceKey => new ZString( $providedArgument ) ]
-						);
-						// Build the ZFunctionCall to the fetch function, passing the reference object as the argument
-						$argumentsForCall[$argumentKey] = new ZFunctionCall(
-							new ZReference( $fetchFunction ),
-							[ $fetchKey => $referenceObject ]
-						);
-						continue;
-					}
-				}
-
-				// Handle Wikidata reference types (e.g., Z6091, Z6095, etc.) as function arguments:
-				// We build a ZObject of the given Wikidata reference type.
-				if ( in_array( $targetTypeZid, $allowedReferenceTypes ) ) {
-					$argumentsForCall[$argumentKey] = new ZObject(
-						new ZReference( $targetTypeZid ),
-						[ $targetTypeZid . 'K1' => new ZString( $providedArgument ) ]
-					 );
+					// Build the reference ZObject for the entity (e.g., { Z1K1: Z6095, Z6095K1: 'L123' })
+					$referenceObject = new ZObject(
+						new ZReference( $referenceType ),
+						[ $referenceKey => new ZString( $providedArgument ) ]
+					);
+					// Build the ZFunctionCall to the fetch function, passing the reference object as the argument
+					$argumentsForCall[$argumentKey] = new ZFunctionCall(
+						new ZReference( $fetchFunction ),
+						[ $fetchKey => $referenceObject ]
+					);
 					continue;
 				}
+			}
+
+			// Handle Wikidata reference types (e.g., Z6091, Z6095, etc.) as function arguments:
+			// We build a ZObject of the given Wikidata reference type.
+			if ( in_array( $targetTypeZid, $allowedReferenceTypes ) ) {
+				$argumentsForCall[$argumentKey] = new ZObject(
+					new ZReference( $targetTypeZid ),
+					[ $targetTypeZid . 'K1' => new ZString( $providedArgument ) ]
+					);
+				continue;
 			}
 
 			// C) If any other type, build either parser function call or reference to enum instance

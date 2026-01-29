@@ -573,11 +573,7 @@ Now try to use your new Function as an embedded call:
 
 You should see that the HTML is rendered into the article, suitably sanitised. For example, bad user input of `<script>…</script>` should get escaped or silently dropped (depending on how it is passed into the system), Functions that try to output unpermitted HTML like `<meta>` tags will see them dropped, and `<a>` links will only be allowed to the local server (or, if in a SiteMatrix cluster, local servers) without any attributes beyond the `href`.
 
-### Enabling use of Wikidata item references
-
-Enable the new functionality in your LocalSettings.php file:
-
-  $wgWikifunctionsEnableWikidataInputTypes = true;
+### Using Wikidata item references
 
 Create a Function and connected Implementation that uses a Wikidata item reference, such as one that displays the label of a given item in a given language. You should be able to use it directly as expected.
 

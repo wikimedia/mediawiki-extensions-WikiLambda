@@ -419,7 +419,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ 'Z17', 'Z16005' ] );
 
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
 		$lexemeId = 'L123';
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['zid'] = 'Z16005';
@@ -438,7 +437,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ 'Z17', 'Z16001' ] );
 
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
 		$itemId = 'Q456';
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['zid'] = 'Z16001';
@@ -457,7 +455,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ 'Z17', 'Z16095' ] );
 
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
 		$lexemeId = 'L789';
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['zid'] = 'Z16095';
@@ -477,7 +474,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ 'Z17', 'Z16091' ] );
 
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
 		$itemId = 'Q999';
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['zid'] = 'Z16091';
@@ -624,7 +620,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testBuildArgumentsForCall(
 		$args,
-		$enableWikidata,
 		$success,
 		$expectedArgs,
 		$expectedError = [],
@@ -634,17 +629,15 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', $enableWikidata );
 		$spanMock = $this->getSpanMock();
-		$configMock = $this->getServiceContainer()->getMainConfig();
 
 		if ( $success ) {
 			$actualArgs = $this->runPrivateMethod(
-				$handler, 'buildArgumentsForCall', [ ...$args, $configMock, $spanMock ] );
+				$handler, 'buildArgumentsForCall', [ ...$args, $spanMock ] );
 			$this->assertEquals( $expectedArgs, $actualArgs );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'buildArgumentsForCall', [ ...$args, $configMock, $spanMock ] );
+				$this->runPrivateMethod( $handler, 'buildArgumentsForCall', [ ...$args, $spanMock ] );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}
@@ -672,7 +665,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				$getZFunctionObject( 'Z801' ),
 			],
 			false,
-			false,
 			null,
 			[ HttpStatus::BAD_REQUEST, ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH, [] ]
 		];
@@ -684,7 +676,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				'Z1002',
 				$getZFunctionObject( 'Z802' ),
 			],
-			false,
 			true,
 			[
 				'Z802K1' => new ZReference( 'Z41' ),
@@ -702,7 +693,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				'Z1002',
 				$getZFunctionObject( 'Z10000' )
 			],
-			false,
 			true,
 			[
 				'Z10000K1' => new ZString( 'Hello, ' ),
@@ -717,7 +707,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				'Z1002',
 				$getZFunctionObject( 'Z10000' )
 			],
-			false,
 			true,
 			[
 				'Z10000K1' => new ZString( 'Z999' ),
@@ -733,27 +722,12 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				$getZFunctionObject( 'Z16001' )
 			],
 			true,
-			true,
 			[
 				'Z16001K1' => ZObjectFactory::create( json_decode(
 					'{"Z1K1":"Z7", "Z7K1":"Z6821", "Z6821K1":'
 					. '{"Z1K1":"Z6091", "Z6091K1":"Q42"}}'
 				) )
 			]
-		];
-
-		yield 'Raise an error when using wikidata items but they are not enabled' => [
-			[
-				'Z16001',
-				$encodeArgs( [ 'Q42' ] ),
-				'Z1002',
-				$getZFunctionObject( 'Z16001' )
-			],
-			false,
-			false,
-			null,
-			[ HttpStatus::BAD_REQUEST, ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET, [] ],
-			[ 'Z6001' ]
 		];
 
 		yield 'Build simple parser function calls for input types with parser' => [
@@ -763,7 +737,6 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 				'Z1004',
 				$getZFunctionObject( 'Z20040' )
 			],
-			true,
 			true,
 			[
 				'Z20040K1' => ZObjectFactory::create( json_decode(

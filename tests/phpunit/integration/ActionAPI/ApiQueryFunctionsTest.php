@@ -327,7 +327,6 @@ class ApiQueryFunctionsTest extends WikiLambdaApiTestCase {
 
 	public function testRenderable() {
 		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
 		$response = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_functions',
@@ -347,28 +346,6 @@ class ApiQueryFunctionsTest extends WikiLambdaApiTestCase {
 			'Z10012',
 			'Z10013'
 		];
-
-		// Assert total result count
-		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
-		$this->assertSameSize( $expectedZids, $results );
-
-		// Assert correct zids are returned
-		$returnedZids = $this->getReturnedZids( $results );
-		$this->assertEqualsCanonicalizing( $expectedZids, $returnedZids );
-	}
-
-	public function testRenderableWithoutFeatureFlags() {
-		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', false );
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', false );
-		$response = $this->doApiRequest( [
-			'action' => 'query',
-			'list' => 'wikilambdasearch_functions',
-			'wikilambdasearch_functions_search' => 'Eng',
-			'wikilambdasearch_functions_language' => 'en',
-			'wikilambdasearch_functions_renderable' => true
-		] );
-
-		$expectedZids = [ 'Z10001', 'Z10002', 'Z10003', 'Z10007', 'Z10008', 'Z10009', 'Z10013' ];
 
 		// Assert total result count
 		$results = $response[0][ 'query' ][ 'wikilambdasearch_functions' ];
@@ -501,7 +478,6 @@ class ApiQueryFunctionsTest extends WikiLambdaApiTestCase {
 	}
 
 	public function testTokenizedSearch() {
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
 		$response = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_functions',

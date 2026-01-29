@@ -440,25 +440,14 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $registry->getZFunctionBuiltInName( 'Z801' ) );
 	}
 
-	public function testGetParseableInputTypes() {
-		// Test with feature flags enabled
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', true );
-		$parseableTypes = ZTypeRegistry::getParseableInputTypes( $this->getServiceContainer()->getMainConfig() );
+	public function testParseableInputTypes() {
+		$parseableTypes = ZTypeRegistry::PARSEABLE_INPUT_TYPES;
 		$this->assertContains( ZTypeRegistry::Z_STRING, $parseableTypes );
 		$this->assertContains( ZTypeRegistry::Z_LANGUAGE, $parseableTypes );
 		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_ITEM, $parseableTypes );
 		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_LEXEME, $parseableTypes );
 		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM, $parseableTypes );
 		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME, $parseableTypes );
-
-		// Test with feature flags disabled
-		$this->overrideConfigValue( 'WikifunctionsEnableWikidataInputTypes', false );
-		$parseableTypes = ZTypeRegistry::getParseableInputTypes( $this->getServiceContainer()->getMainConfig() );
-		$this->assertContains( ZTypeRegistry::Z_STRING, $parseableTypes );
-		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_ITEM, $parseableTypes );
-		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_LEXEME, $parseableTypes );
-		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM, $parseableTypes );
-		$this->assertNotContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME, $parseableTypes );
 	}
 
 	public function testGetRenderableOutputTypes() {
