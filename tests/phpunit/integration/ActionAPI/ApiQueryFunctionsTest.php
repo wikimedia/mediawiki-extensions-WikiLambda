@@ -326,7 +326,6 @@ class ApiQueryFunctionsTest extends WikiLambdaApiTestCase {
 	}
 
 	public function testRenderable() {
-		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
 		$response = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_functions',
@@ -336,15 +335,7 @@ class ApiQueryFunctionsTest extends WikiLambdaApiTestCase {
 		] );
 
 		$expectedZids = [
-			'Z10001',
-			'Z10002',
-			'Z10003',
-			'Z10007',
-			'Z10008',
-			'Z10009',
-			'Z10011',
-			'Z10012',
-			'Z10013'
+			'Z10001', 'Z10002', 'Z10003', 'Z10007', 'Z10008', 'Z10009', 'Z10011', 'Z10012', 'Z10013'
 		];
 
 		// Assert total result count

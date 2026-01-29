@@ -173,17 +173,9 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 					isset( $cachedValue['type'] )
 					&& $cachedValue['type'] === ZTypeRegistry::Z_HTML_FRAGMENT
 				) {
-					if ( $this->config->get( 'WikifunctionsEnableHTMLOutput' ) ) {
-						$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
-						$html = $this->getSanitisedHtmlFragment( $cachedValue['value'] ?? '' );
-						return HtmlPFragment::newFromHtmlString( $html, null );
-					} else {
-						$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
-						return $this->createErrorfulFragment(
-							$extApi,
-							'wikilambda-functioncall-error-nonstringoutput'
-						);
-					}
+					$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
+					$html = $this->getSanitisedHtmlFragment( $cachedValue['value'] ?? '' );
+					return HtmlPFragment::newFromHtmlString( $html, null );
 				}
 				// Otherwise, return as literal
 				$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();

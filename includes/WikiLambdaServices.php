@@ -65,8 +65,7 @@ class WikiLambdaServices {
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),
 			$services->getUserGroupManager(),
-			LoggerFactory::getInstance( 'WikiLambda' ),
-			$services->getMainConfig()
+			LoggerFactory::getInstance( 'WikiLambda' )
 		);
 	}
 

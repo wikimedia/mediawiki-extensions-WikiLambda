@@ -127,7 +127,6 @@ class LoadPreDefinedObject extends Maintenance {
 			$services->getRevisionStore(),
 			$services->getUserGroupManager(),
 			LoggerFactory::getInstance( 'WikiLambda' ),
-			$services->getMainConfig(),
 		);
 
 		// Base path:

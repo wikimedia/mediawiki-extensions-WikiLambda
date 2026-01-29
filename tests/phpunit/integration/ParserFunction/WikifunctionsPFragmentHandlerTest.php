@@ -396,9 +396,6 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 	}
 
 	public function testReturnsHtmlFragmentWhenOutputTypeIsZ89() {
-		// Force-enable HTML output:
-		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
-
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 
@@ -495,55 +492,6 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$this->assertStringContainsString(
 			'&lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/'
 			. 'Dabin-Unicorn-Main-Product-Image.jpg/1200px-Dabin-Unicorn-Main-Product-Image.jpg" alt="unicorns"/&gt;',
-			$html
-		);
-	}
-
-	public function testReturnsErrorWhenHtmlOutputDisabled() {
-		// Force-disable HTML output:
-		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', false );
-
-		$mainConfig = $this->getServiceContainer()->getMainConfig();
-		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
-
-		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
-		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
-		$mockClientStore->method( 'fetchFromFunctionCallCache' )->willReturn( [
-			'success' => true,
-			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
-			'value' => '<b>HTML!</b>'
-		] );
-		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
-
-		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
-		$fragmentHandler = new WikifunctionsPFragmentHandler(
-			$mainConfig,
-			$mockJobQueueGroup,
-			$mockHttpRequestFactory
-		);
-
-		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
-		$mockArguments = $this->getMockArguments( [ 'Z10000', 'foo' ] );
-
-		$fragment = $fragmentHandler->sourceToFragment(
-			$extApi,
-			$mockArguments,
-			false
-		);
-
-		// Should return an errorful fragment
-		$this->assertInstanceOf( HtmlPFragment::class, $fragment );
-		$html = $fragment->asHtmlString( $extApi );
-		$this->assertStringContainsString(
-			'wikilambda-functioncall-error-nonstringoutput',
-			$html
-		);
-		$this->assertStringContainsString(
-			'Content error',
-			$html
-		);
-		$this->assertStringContainsString(
-			'<span class="cdx-info-chip',
 			$html
 		);
 	}

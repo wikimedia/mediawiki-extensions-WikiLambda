@@ -89,10 +89,6 @@
 			"description": "Whether to persist changed objects to backend cache",
 			"value": false
 		},
-		"WikifunctionsEnableHTMLOutput": {
-			"description": "If true, allow Functions that return HTML output.",
-			"value": true
-		},
 		"WikiLambdaEnableAbstractMode": {
 			"description": "If true, enable the 'abstract' mode of WikiLambda that powers Abstract Wikipedia, and so hosting Abstract Wiki content in the relevant namespace(s).",
 			"value": false

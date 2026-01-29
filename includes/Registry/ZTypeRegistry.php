@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Registry;
 
-use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -287,21 +286,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 */
 	public const RENDERABLE_OUTPUT_TYPES = [
 		self::Z_STRING,
+		self::Z_HTML_FRAGMENT,
 	];
-
-	/**
-	 * Get the list of renderable output types, including HTML fragment if enabled.
-	 *
-	 * @param Config|null $config MediaWiki config object
-	 * @return string[] Array of renderable output type ZIDs
-	 */
-	public static function getRenderableOutputTypes( ?Config $config = null ): array {
-		$types = self::RENDERABLE_OUTPUT_TYPES;
-		if ( $config && $config->get( 'WikifunctionsEnableHTMLOutput' ) ) {
-			$types = array_merge( $types, [ self::Z_HTML_FRAGMENT ] );
-		}
-		return array_values( $types );
-	}
 
 	// Keep in sync with function-schemata's `typesBuiltIntoWikiLambda`
 	private const BUILT_IN_TYPES = [

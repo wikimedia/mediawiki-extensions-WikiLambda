@@ -559,11 +559,7 @@ If your function takes parameters, they can be passed in pipe-delimited, e.g.:
 
 Much further functionality is to come.
 
-### Enabling use of rich text output from embedded calls
-
-Enable the new functionality in your LocalSettings.php file:
-
-  $wgWikifunctionsEnableHTMLOutput = true;
+### Using rich text output from embedded calls
 
 Create a Function and connected Implementation that outputs an HTML fragment, such as one that wraps a given input string in "<b>…</b>". Note that all direct use of the Function will show you HTML fragment Objects in the interface with the source HTML displayed, and never try to render it as HTML.
 

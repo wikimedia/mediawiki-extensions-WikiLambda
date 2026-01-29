@@ -450,19 +450,10 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertContains( ZTypeRegistry::Z_WIKIDATA_REFERENCE_LEXEME, $parseableTypes );
 	}
 
-	public function testGetRenderableOutputTypes() {
-		// Test with feature flags enabled
-		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', true );
-		$renderableTypes = ZTypeRegistry::getRenderableOutputTypes( $this->getServiceContainer()->getMainConfig() );
+	public function testRenderableOutputTypes() {
+		$renderableTypes = ZTypeRegistry::RENDERABLE_OUTPUT_TYPES;
 		$this->assertCount( 2, $renderableTypes );
 		$this->assertContains( ZTypeRegistry::Z_STRING, $renderableTypes );
 		$this->assertContains( ZTypeRegistry::Z_HTML_FRAGMENT, $renderableTypes );
-
-		// Test with feature flags disabled
-		$this->overrideConfigValue( 'WikifunctionsEnableHTMLOutput', false );
-		$renderableTypes = ZTypeRegistry::getRenderableOutputTypes( $this->getServiceContainer()->getMainConfig() );
-		$this->assertCount( 1, $renderableTypes );
-		$this->assertContains( ZTypeRegistry::Z_STRING, $renderableTypes );
-		$this->assertNotContains( ZTypeRegistry::Z_HTML_FRAGMENT, $renderableTypes );
 	}
 }

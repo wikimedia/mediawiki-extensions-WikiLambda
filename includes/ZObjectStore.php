@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Exception;
-use MediaWiki\Config\Config;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -46,7 +45,6 @@ use Wikimedia\Rdbms\Subquery;
 
 class ZObjectStore {
 
-	private Config $config;
 	private IConnectionProvider $dbProvider;
 	private TitleFactory $titleFactory;
 	private WikiPageFactory $wikiPageFactory;
@@ -76,8 +74,7 @@ class ZObjectStore {
 		WikiPageFactory $wikiPageFactory,
 		RevisionStore $revisionStore,
 		UserGroupManager $userGroupManager,
-		LoggerInterface $logger,
-		Config $config
+		LoggerInterface $logger
 	) {
 		$this->dbProvider = $dbProvider;
 		$this->titleFactory = $titleFactory;
@@ -85,7 +82,6 @@ class ZObjectStore {
 		$this->revisionStore = $revisionStore;
 		$this->userGroupManager = $userGroupManager;
 		$this->logger = $logger;
-		$this->config = $config;
 
 		$this->zObjectCache = WikiLambdaServices::getZObjectStash();
 	}
@@ -1768,7 +1764,7 @@ class ZObjectStore {
 		}
 
 		 // Add renderable output types
-		foreach ( ZTypeRegistry::getRenderableOutputTypes( $this->config ) as $type ) {
+		foreach ( ZTypeRegistry::RENDERABLE_OUTPUT_TYPES as $type ) {
 			$renderableOrExpr[] = $dbr->andExpr(
 				[ 'f.wlzo_key' => 'Z8K2', 'f.wlzo_related_zobject' => $type ]
 			);

@@ -64,7 +64,6 @@ class MigrateZ16K1StringsToZ61s extends Maintenance {
 			$services->getRevisionStore(),
 			$services->getUserGroupManager(),
 			LoggerFactory::getInstance( 'WikiLambda' ),
-			$services->getMainConfig(),
 		);
 
 		$implement = $this->getOption( 'implement' );
