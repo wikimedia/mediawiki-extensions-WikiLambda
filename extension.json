@@ -91,7 +91,7 @@
 		},
 		"WikiLambdaEnableAbstractMode": {
 			"description": "If true, enable the 'abstract' mode of WikiLambda that powers Abstract Wikipedia, and so hosting Abstract Wiki content in the relevant namespace(s).",
-			"value": false
+			"value": true
 		},
 		"WikiLambdaAbstractNamespaces": {
 			"description": "Map of namespaces to Wikidata concept types to use for Abstract Wiki content.",
@@ -99,14 +99,6 @@
 				"2300": [
 					"Abstract_Wikipedia",
 					"Q50081413"
-				],
-				"2302": [
-					"Draft_Abstract_Wikipedia",
-					"Q560361"
-				],
-				"2304": [
-					"Abstract_Wiktionary",
-					"Q15138389"
 				]
 			}
 		}
