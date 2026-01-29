@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
+			"Merrahtar",
 			"Okras",
 			"Vonavy"
 		]
@@ -22,7 +23,7 @@
 	"wikilambda-recentchanges-explanation-restore-function": "Восстановлено определение Функции",
 	"wikilambda-recentchanges-explanation-restore-implementation": "Восстановлена Реализация $1",
 	"wikilambda-recentchanges-explanation-restore-tester": "Восстановлен Тестовый случай $1",
-	"wikilambda-recentchanges-filter-description": "Правки, которые сделаны на Викифункциях",
+	"wikilambda-recentchanges-filter-description": "Правки, которые сделаны на Викифункциях.",
 	"wikilambda-recentchanges-filter-label": "Правки Викифункций",
 	"wikilambda-recentchanges-filter-rc-pref": "Показывать правки Викифункций в списке свежих правок",
 	"wikilambda-recentchanges-filter-wl-pref": "Показывать правки Викифункций в вашем списке наблюдения",
