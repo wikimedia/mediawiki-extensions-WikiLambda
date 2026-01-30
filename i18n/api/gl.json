@@ -4,6 +4,16 @@
 			"Toliño"
 		]
 	},
+	"apihelp-abstractwiki_run_fragment-summary": "Renderizar un fragmento de contido resumido da Wikipedia para o ID do elemento de Wikidata, o código Zid da lingua e a data indicados",
+	"apihelp-abstractwiki_run_fragment-param-qid": "O ID do elemento de Wikidata empregado para renderizar o fragmento. Debe ser un Qid válido.",
+	"apihelp-abstractwiki_run_fragment-param-language": "O ID do ZObject de lingua empregado para renderizar o fragmento. Debe ser un Zid válido.",
+	"apihelp-abstractwiki_run_fragment-param-date": "A cadea de data empregada para renderizar o fragmento.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "Un JSON de composición de fragmentos. Debe ser un ZObject válido e debe xerar un obxecto de tipo HTML Fragment/Z89.",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "Executar un fragmento cun obxecto HTML literal",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Executar un fragmento cunha composición que usa argumentos Qid e de lingua",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Non se poden renderizar os fragmentos de contido resumido da Wikipedia: esta funcionalidade non está activada.",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "Non se pode renderizar o fragmento de contido resumido da Wikipedia: o fragmento non é un JSON válido.",
+	"apierror-abstractwiki_run_fragment-bad-response": "Non se pode renderizar o fragmento de contido resumido da Wikipedia: Wikifuncións devolveu unha resposta cun erro.",
 	"apihelp-wikilambda_fetch-summary": "Obter o modelo JSON dos ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "Os ZID dos ZObjects a obter.",
 	"apihelp-wikilambda_fetch-param-revisions": "As revisións dos ZID relevantes a obter. Se non se define, buscará as últimas revisións.",

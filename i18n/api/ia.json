@@ -4,6 +4,16 @@
 			"McDutchie"
 		]
 	},
+	"apihelp-abstractwiki_run_fragment-summary": "Rende un fragmento de contento de Abstract Wikipedia pro le date identificator de elemento Wikidata, lingua Zid e data",
+	"apihelp-abstractwiki_run_fragment-param-qid": "Le ID del elemento Wikidata usate pro visualisar le fragmento. Illo debe esser un Qid valide.",
+	"apihelp-abstractwiki_run_fragment-param-language": "Le ID del ZObject Language usate pro visualisar le fragmento. Illo debe esser un Zid valide.",
+	"apihelp-abstractwiki_run_fragment-param-date": "Le catena de data usate pro visualisar le fragmento.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "Un JSON de composition de fragmento. Illo debe esser un ZObject valide e debe producer un objecto del typo HTML Fragment/Z89",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "Executar un fragmento con un objecto HTML litteral",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Executar un fragmento con un composition que usa le argumentos qid e language",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Impossibile visualisar fragmentos de contento Abstract Wikipedia: iste function non ha essite activate.",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "Impossibile visualisar le fragmento Abstract Wikipedia: le fragmento non es un JSON valide.",
+	"apierror-abstractwiki_run_fragment-bad-response": "Impossibile visualisar le fragmento Abstract Wikipedia: Wikifunctions ha restituite un responsa de fallimento.",
 	"apihelp-wikilambda_fetch-summary": "Obtener le modello JSON de ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "Le ZIDs del ZObject a obtener.",
 	"apihelp-wikilambda_fetch-param-revisions": "Le versiones del ZIDs relevante a obtener. Si non es definite, isto obtenera le ultime versiones.",

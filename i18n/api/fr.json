@@ -11,10 +11,12 @@
 			"MasterSinge",
 			"Pols12",
 			"Scratcheur-2020Send",
+			"Urhixidur",
 			"Verdy p",
 			"Wladek92"
 		]
 	},
+	"apihelp-abstractwiki_run_fragment-param-date": "La chaîne de date utilisée pour afficher le fragment.",
 	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON des Z-Objets.",
 	"apihelp-wikilambda_fetch-param-zids": "Les Z-ID des Z-Objets à récupérer.",
 	"apihelp-wikilambda_fetch-param-revisions": "Les révisions des ZID pertinents à récupérer. Si cela n’est pas défini, cela récupérera les dernières révisions.",
