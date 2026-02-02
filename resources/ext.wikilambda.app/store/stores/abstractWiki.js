@@ -231,8 +231,7 @@ const abstractWikiStore = {
 			} else {
 				this.fragments[ keyPath ].error = false;
 				this.fragments[ keyPath ].isDirty = false;
-				// FIXME: when do we check that the type is correct?
-				this.fragments[ keyPath ].html = fragment.Z89K1;
+				this.fragments[ keyPath ].html = fragment;
 			}
 
 			this.fragments[ keyPath ].isLoading = false;

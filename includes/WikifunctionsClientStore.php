@@ -144,7 +144,8 @@ class WikifunctionsClientStore {
 	}
 
 	/**
-	 * Store the given Function call in the cache, given its cache key.
+	 * Fetch a Function call result from the cache, given its cache key, or delete it
+	 * if not properly set.
 	 *
 	 * @param string $clientCacheKey
 	 * @return ?array{success:bool, value:?string, type:?string, errorMessageKey:?string}

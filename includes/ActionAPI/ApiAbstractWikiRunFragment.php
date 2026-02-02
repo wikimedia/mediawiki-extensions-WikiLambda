@@ -13,14 +13,23 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
+use MediaWiki\Logger\LoggerFactory;
+use Psr\Log\LoggerInterface;
+use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiAbstractWikiRunFragment extends ApiBase {
 
+	public const ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX = 'WikiLambdaAbstractFragment';
+
 	private HttpRequestFactory $httpRequestFactory;
+	private BagOStuff $objectCache;
+	private LoggerInterface $logger;
 
 	public function __construct(
 		ApiMain $mainModule,
@@ -29,6 +38,8 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	) {
 		parent::__construct( $mainModule, $moduleName, 'abstractwiki_run_fragment_' );
 		$this->httpRequestFactory = $httpRequestFactory;
+		$this->objectCache = WikiLambdaServices::getZObjectStash();
+		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
 
 	/**
@@ -64,14 +75,30 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		// Build function call for the input fragment and arguments
 		$functionCall = $this->buildFragmentFunctionCall( $fragment, $qid, $language, $date );
 
-		// TODO get from cache
+		$fragmentCacheKey = $this->objectCache->makeKey(
+			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
+			ZObjectUtils::makeCacheKeyFromZObject( $functionCall )
+		);
 
-		// Call public function call API from wikifunctions.org
-		$htmlFragment = $this->remoteCall( $functionCall );
+		$htmlFragment = $this->objectCache->getWithSetCallback(
+			$fragmentCacheKey,
+			$this->objectCache::TTL_MONTH,
+			// If cache miss, run callback
+			function () use ( $functionCall ) {
+				// Run fragment function call, should return a Z89/Html fragment object
+				$htmlFragment = $this->remoteCall( $functionCall );
 
-		// TODO sanitize response before caching and returning
+				// Sanitize the Z89K1/Html fragment value
+				$sanitizedHtml = WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
+					$this->logger,
+					$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
+				);
 
-		// TODO cache response fragment in the client
+				// Success! The returned sanitized html fragment will
+				// be stored in the cache.
+				return $sanitizedHtml;
+			}
+		);
 
 		// Everything went well: build output object
 		$result = [
@@ -139,7 +166,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 * Perform remote call to Wikifunctions' wikilambda_function_call Action API
 	 *
 	 * @param array $functionCall
-	 * @return array|void sanitized HTML fragment (Z89) response object
+	 * @return array sanitized HTML fragment (Z89) response object
 	 */
 	private function remoteCall( $functionCall ) {
 		// Base API URL from config
@@ -211,7 +238,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		$htmlFragment = $responseEnvelope[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ];
 
 		// We make sure that the result is a Z89/HTML fragment
-		if ( !is_array( $htmlFragment ) && !array_key_exists( ZTypeRegistry::Z_HTML_FRAGMENT, $htmlFragment ) ) {
+		if ( !is_array( $htmlFragment ) || !array_key_exists( ZTypeRegistry::Z_HTML_FRAGMENT_VALUE, $htmlFragment ) ) {
 			$this->dieWithError(
 				[ 'apierror-abstractwiki_run_fragment-bad-response' ],
 				null, null, HttpStatus::BAD_REQUEST
