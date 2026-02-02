@@ -21,12 +21,12 @@ use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\ParserOptions;
-use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\SpecialPage\UnlistedSpecialPage;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\Utils\UrlUtils;
 
-class SpecialViewObject extends SpecialPage {
+class SpecialViewObject extends UnlistedSpecialPage {
 	use ZObjectEditingPageTrait;
 
 	private ContentRenderer $contentRenderer;
@@ -40,7 +40,7 @@ class SpecialViewObject extends SpecialPage {
 		UrlUtils $urlUtils,
 		ZObjectStore $zObjectStore
 	) {
-		parent::__construct( 'ViewObject', 'read', false );
+		parent::__construct( 'ViewObject', 'read' );
 		$this->contentRenderer = $contentRenderer;
 		$this->languageFactory = $languageFactory;
 		$this->urlUtils = $urlUtils;
