@@ -39,7 +39,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "לקרוא פחות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "לקרוא יותר",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "לא נמצאו תוצאות. נא לנסות להשתמש בשאילתת חיפוש אחרת.",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "חיפוש של יותר מ־2000 פונקציות",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-placeholder": "חיפוש של יותר מ־$1 פונקציות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "תוצאות",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "נא להזין טקסט",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "פונקציות מוצעות",
@@ -72,6 +72,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "בוטל",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "איפוס",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "ביטול",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "הצגה עם עיצוב",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "להשתמש בתאריך של היום ולשמור על כך שהתוצאה תהיה עדכנית",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "להשתמש בפריט הוויקינתונים של הדף הזה בתור ברירת מחדל",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "להשתמש בדף ברירת המחדל של השפה הזאת"
