@@ -107,7 +107,10 @@ class SpecialCreateObject extends SpecialPage {
 		$output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 		$output->addModuleStyles( [ 'ext.wikilambda.special.styles' ] );
 
-		$output->addWikiMsg( 'wikilambda-special-createobject-intro' );
+		$output->addWikiMsg(
+			'wikilambda-special-createobject-intro',
+			'Special:MyLanguage/Wikifunctions:List_of_policies_and_guidelines'
+		);
 
 		$this->addHelpLink( 'Extension:WikiLambda/Creating Objects' );
 

@@ -82,7 +82,10 @@ class SpecialRunFunction extends SpecialPage {
 		$output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 		$output->addModuleStyles( [ 'ext.wikilambda.special.styles' ] );
 
-		$output->addWikiMsg( 'wikilambda-special-runfunction-intro' );
+		$output->addWikiMsg(
+			'wikilambda-special-runfunction-intro',
+			'Special:MyLanguage/Wikifunctions:List_of_policies_and_guidelines'
+		);
 
 		$this->addHelpLink( 'Help:Wikifunctions/Run function' );
 
