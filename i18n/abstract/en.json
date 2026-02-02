@@ -16,5 +16,5 @@
 	"wikilambda-invalidabstractcontenttitle": "The provided title '$1' is not valid for an Abstract Content object.",
 	"wikilambda-special-create-abstract": "Create a New Abstract Article",
 	"wikilambda-special-create-abstract-qid": "Create a New Abstract Article for $1",
-	"wikilambda-special-create-abstract-intro": "Some intro about creation of Abstract Articles. By creating this page you agree to terms of use and you irrevocably agree to release your contribution under Some-License-Here"
+	"wikilambda-special-create-abstract-intro": "Some intro about creation of Abstract Articles. By creating this page, you agree to the terms of use, to follow [[$1|community policies]], and to irrevocably release your contribution under Some-License-Here."
 }

@@ -16,5 +16,5 @@
 	"wikilambda-invalidabstractcontenttitle": "Error shown when a user tries to create an Abstract Content object with an invalid title.\n\nParameters:\n* $1 - The given, invalid title.",
 	"wikilambda-special-create-abstract": "Title for the Special page to create a new Abstract Article",
 	"wikilambda-special-create-abstract-qid": "Title for the Special page to create a new Abstract Article for a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page.",
-	"wikilambda-special-create-abstract-intro": "Intro text for the Special page to create a new Abstract Article"
+	"wikilambda-special-create-abstract-intro": "Intro text for the Special page to create a new Abstract Article.\n\nParameters:\n* $1 - link to the community rules page, hard-coded for now to Special:MyLanguage/Abstract:List_of_policies_and_guidelines."
 }

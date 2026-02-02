@@ -106,7 +106,10 @@ class SpecialCreateAbstract extends SpecialPage {
 		$output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 		$output->addModuleStyles( [ 'ext.wikilambda.special.styles' ] );
 
-		$output->addWikiMsg( 'wikilambda-special-create-abstract-intro' );
+		$output->addWikiMsg(
+			'wikilambda-special-create-abstract-intro',
+			'Special:MyLanguage/Abstract:List_of_policies_and_guidelines'
+		);
 
 		// TODO (T411722): Add and link help page for creating Abstract articles
 		$this->addHelpLink( 'Extension:WikiLambda/Creating Objects' );
