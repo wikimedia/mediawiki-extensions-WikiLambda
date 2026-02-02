@@ -78,6 +78,8 @@ class SpecialViewObject extends UnlistedSpecialPage {
 
 	/**
 	 * @inheritDoc
+	 *
+	 * @throws ConfigException
 	 */
 	public function execute( $subPage ) {
 		if ( !$this->userCanExecute( $this->getUser() ) ) {

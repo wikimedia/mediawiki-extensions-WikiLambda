@@ -1124,6 +1124,15 @@
 		}
 	],
 	"SpecialPages": {
+		"ViewAbstract": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialViewAbstract",
+			"services": [
+				"ContentRenderer",
+				"LanguageFactory",
+				"LanguageNameUtils",
+				"UrlUtils"
+			]
+		},
 		"ViewObject": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialViewObject",
 			"services": [

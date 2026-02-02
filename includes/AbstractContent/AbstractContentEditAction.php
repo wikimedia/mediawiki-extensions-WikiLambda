@@ -11,9 +11,10 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Actions\Action;
+use MediaWiki\Title\Title;
 
 class AbstractContentEditAction extends Action {
-	use AbstractContentPageTrait;
+	use AbstractContentEditPageTrait;
 
 	/**
 	 * @inheritDoc
@@ -28,20 +29,15 @@ class AbstractContentEditAction extends Action {
 	public function show() {
 		$output = $this->getOutput();
 
+		$pageTitle = $this->getTitle();
+		$this->generateAbstractContentPayload( $this->getContext(), $output, $pageTitle );
+
 		// Load styles and Vue app module
 		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );
 		$output->addModules( [ 'ext.wikilambda.app' ] );
 
-		$pageTitle = $this->getTitle()->getPrefixedText();
-
-		$configVars = $this->generateAbstractContentPayload(
-			$output,
-			$this->getContext(),
-			$pageTitle
-		);
-
 		// Set page header (edit or create, depending on the returned config vars)
-		$output->setPageTitle( $this->getPageTitleMsg( $configVars ) );
+		$output->setPageTitle( $this->getPageTitleMsg( $pageTitle ) );
 	}
 
 	/**
@@ -49,16 +45,14 @@ class AbstractContentEditAction extends Action {
 	 * * when content is new: show create title
 	 * * when content exists: show edit tile
 	 *
-	 * @param array $configVars
+	 * @param Title $title
 	 * @return string
 	 */
-	protected function getPageTitleMsg( $configVars ) {
-		$newPage = $configVars[ 'createNewPage' ];
-		$title = $configVars[ 'title' ];
-
-		return $newPage ?
-			$this->msg( 'wikilambda-abstract-special-create-qid' )->params( $title )->text() :
-			$this->msg( 'wikilambda-abstract-edit-title' )->params( $title )->text();
+	protected function getPageTitleMsg( Title $title ): string {
+		$pageExists = $title->exists();
+		return $pageExists ?
+			$this->msg( 'wikilambda-abstract-edit-title' )->params( $title->getText() )->text() :
+			$this->msg( 'wikilambda-abstract-special-create-qid' )->params( $title->getText() )->text();
 	}
 
 	/**
