@@ -431,6 +431,8 @@
 	"wikilambda-zobjectselector-no-results": "未找到结果。",
 	"wikilambda-ztester-missing-call-function": "调用为空。请选择一个函数。",
 	"wikilambda-ztester-missing-validation-function": "结果验证为空。请选择一个函数。",
+	"wikilambda-ztyped-map-description": "地图类型",
+	"wikilambda-ztyped-map-placeholder": "选择地图类型",
 	"wikilambda-ztyped-pair-key-label": "键",
 	"wikilambda-ztyped-pair-placeholder": "选择类型",
 	"wikilambda-ztyped-pair-value-label": "值"
