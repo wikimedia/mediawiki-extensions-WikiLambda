@@ -130,7 +130,7 @@
 	"wikilambda-renderer-view-invalid-result": "Без вредности за приказ",
 	"wikilambda-savechanges": "Сачувај измене",
 	"wikilambda-savenew": "Сачувај",
-	"wikilambda-special-createobject-intro": "Молимо поштујте правила заједнице, ауторска права и правила о патентима.",
+	"wikilambda-special-createobject-intro": "Молимо поштујте [[$1|правила заједнице]], ауторска права и правила о патентима.",
 	"wikilambda-special-functionsbytests-form-status-connected": "Повезано",
 	"wikilambda-special-listduplicateobjectlabels-language": "Језик",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Име",
