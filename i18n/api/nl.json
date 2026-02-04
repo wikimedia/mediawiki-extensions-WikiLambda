@@ -7,6 +7,11 @@
 			"Siebrand"
 		]
 	},
+	"apihelp-abstractwiki_run_fragment-summary": "Geef een abstract Wikipedia-inhoudsfragment weer voor het gegeven Wikidata-item-ID, taal-ZID en datum.",
+	"apihelp-abstractwiki_run_fragment-param-qid": "Het Wikidata-item-ID dat gebruikt is om het fragment weer te geven. Het moet een geldige Qid zijn.",
+	"apihelp-abstractwiki_run_fragment-param-language": "De Language ZObject Id die gebruikt wordt om het fragment weer te geven. Het moet een geldige Zid zijn.",
+	"apihelp-abstractwiki_run_fragment-param-date": "De datumstring die gebruikt wordt om het fragment weer te geven.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "Een JSON-bestand voor de samenstelling van een fragment. Het moet een geldig ZObject zijn en een object van het type HTML Fragment/Z89 opleveren.",
 	"apihelp-wikilambda_fetch-summary": "Het JSON-model van ZObjects opvragen.",
 	"apihelp-wikilambda_fetch-param-zids": "De op te vragen ZObject-ZID’s.",
 	"apihelp-wikilambda_fetch-param-revisions": "De versies van de op te vragen relevante ZID’s. Als dit niet is ingesteld, worden de nieuwste versies opgevraagd.",
