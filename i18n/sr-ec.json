@@ -5,6 +5,7 @@
 			"Milicevic01"
 		]
 	},
+	"group-functioneer-member": "{{GENDER:$1|функционер|функционерка}}",
 	"wikilambda-about-widget-add-language": "Додај језик",
 	"wikilambda-about-widget-aliases-placeholder": "Унеси псеудониме",
 	"wikilambda-about-widget-description-placeholder": "Унесите опис",
