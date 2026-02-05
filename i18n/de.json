@@ -523,6 +523,7 @@
 	"wikilambda-wikidata-item-selector-placeholder": "Wikidata-Datenobjekt auswählen",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Wikidata-Lexemform auswählen",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Wikidata-Lexem auswählen",
+	"wikilambda-wikidata-lexeme-sense-no-senses-message": "Lexem hat keine Bedeutung. [$1 Füge eine Bedeutung auf Wikidata hinzu], um die Daten zu verbessern.",
 	"wikilambda-wikidata-property-selector-placeholder": "Wikidata-Eigenschaft auswählen",
 	"wikilambda-wikifunctionswiki-sidebar-createfunction": "Funktion erstellen",
 	"wikilambda-wikifunctionswiki-sidebar-createobject": "Objekt erstellen",
