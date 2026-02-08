@@ -507,6 +507,30 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 			} );
 
+			it( 'sets fragment dirty flag for affected items if the moved item is in an abstract fragment', () => {
+				keyPath = 'abstractwiki.sections.Q8776414.fragments.2';
+				const nextKeyPath = 'abstractwiki.sections.Q8776414.fragments.3';
+
+				const wrapper = renderZObjectKeyValue( {
+					edit: true
+				}, {
+					stubs: {
+						WlKeyBlock: false
+					}
+				} );
+
+				const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+				modeSelector.vm.$emit( 'move-after' );
+
+				expect( store.setDirty ).toHaveBeenCalled();
+				expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath );
+				expect( store.setDirtyFragment ).toHaveBeenCalledWith( nextKeyPath );
+				expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'abstractwiki', 'sections', 'Q8776414', 'fragments', '2' ],
+					offset: 1
+				} );
+			} );
+
 			it( 'adds local argument to function call if the mode selector emits add-arg', () => {
 				keyPath = 'main.Z2K2.Z7K1';
 

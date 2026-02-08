@@ -550,15 +550,23 @@ module.exports = exports = defineComponent( {
 
 		// Helpers
 		/**
-		 * If the current object is the main object, set the dirty flag to true.
+		 * Set dirty flag for a given keyPath:
+		 * * If the changed object is the main object, set page-level dirty flag to true.
+		 * * If the changed object is abstract fragment, set page-level dirty flag to true
+		 *   and set fragment-level dirty flag to true.
+		 *
+		 * @param {string} keyPath
 		 */
-		function setDirtyIfMainObject() {
-			if ( props.keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
+		function setDirtyKeyPath( keyPath ) {
+			// For main, set dirty page
+			if ( keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
 				store.setDirty();
+				return;
 			}
-			if ( props.keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.ABSTRACT ) {
+			// For fragments, set dirty page and fragment
+			if ( keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.ABSTRACT ) {
 				store.setDirty();
-				store.setDirtyFragment( props.keyPath );
+				store.setDirtyFragment( keyPath );
 			}
 		}
 
@@ -656,7 +664,7 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Else remain in default view page and set to dirty
-			setDirtyIfMainObject();
+			setDirtyKeyPath( props.keyPath );
 		}
 
 		// Value actions
@@ -771,7 +779,7 @@ module.exports = exports = defineComponent( {
 				payload.callback();
 			}
 
-			setDirtyIfMainObject();
+			setDirtyKeyPath( props.keyPath );
 		}
 
 		// List item actions
@@ -787,7 +795,7 @@ module.exports = exports = defineComponent( {
 				keyPath: props.keyPath.split( '.' ),
 				values: [ value ]
 			} );
-			setDirtyIfMainObject();
+			setDirtyKeyPath( props.keyPath );
 		}
 
 		/**
@@ -802,7 +810,7 @@ module.exports = exports = defineComponent( {
 				keyPath: listKeyPath,
 				indexes: lastItem
 			} );
-			setDirtyIfMainObject();
+			setDirtyKeyPath( props.keyPath );
 		}
 
 		/**
@@ -814,7 +822,14 @@ module.exports = exports = defineComponent( {
 				keyPath: props.keyPath.split( '.' ),
 				offset: -1
 			} );
-			setDirtyIfMainObject();
+
+			// Set as dirty this and previous keyPath
+			const parts = props.keyPath.split( '.' );
+			parts[ parts.length - 1 ] = String( Number( parts[ parts.length - 1 ] ) - 1 );
+			const previousKeyPath = parts.join( '.' );
+
+			setDirtyKeyPath( props.keyPath );
+			setDirtyKeyPath( previousKeyPath );
 		}
 
 		/**
@@ -826,7 +841,14 @@ module.exports = exports = defineComponent( {
 				keyPath: props.keyPath.split( '.' ),
 				offset: 1
 			} );
-			setDirtyIfMainObject();
+
+			// Set as dirty this and next keyPath
+			const parts = props.keyPath.split( '.' );
+			parts[ parts.length - 1 ] = String( Number( parts[ parts.length - 1 ] ) + 1 );
+			const nextKeyPath = parts.join( '.' );
+
+			setDirtyKeyPath( props.keyPath );
+			setDirtyKeyPath( nextKeyPath );
 		}
 
 		// Function call argument actions
@@ -836,7 +858,7 @@ module.exports = exports = defineComponent( {
 		 */
 		function addArgument() {
 			store.addLocalArgumentToFunctionCall( { keyPath: props.keyPath.split( '.' ) } );
-			setDirtyIfMainObject();
+			setDirtyKeyPath( props.keyPath );
 		}
 
 		/**
@@ -850,7 +872,7 @@ module.exports = exports = defineComponent( {
 				keyPath: props.keyPath.split( '.' ),
 				key: argKey
 			} );
-			setDirtyIfMainObject();
+			setDirtyKeyPath( props.keyPath );
 		}
 
 		// Watch
