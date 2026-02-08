@@ -6,15 +6,18 @@
 -->
 <template>
 	<div class="ext-wikilambda-app-abstract-preview-fragment">
-		<cdx-progress-indicator v-if="!fragmentPreview || fragmentPreview.isLoading">
+		<cdx-progress-indicator
+			v-if="!fragmentPreview || fragmentPreview.isLoading"
+			class="ext-wikilambda-app-abstract-preview-fragment-loading"
+		>
 			{{ i18n( 'wikilambda-loading' ).text() }}
 		</cdx-progress-indicator>
 		<!-- eslint-disable vue/no-v-html -->
-		<p
+		<div
 			v-else
 			class="ext-wikilambda-app-abstract-preview-fragment-html"
 			v-html="fragmentPreview.html"
-		></p>
+		></div>
 		<!-- eslint-enable vue/no-v-html -->
 	</div>
 </template>
@@ -93,6 +96,14 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-abstract-preview-fragment {
-	/* something */
+	display: contents;
+
+	.ext-wikilambda-app-abstract-preview-fragment-loading {
+		margin: 0 @spacing-25;
+	}
+
+	.ext-wikilambda-app-abstract-preview-fragment-html {
+		display: contents;
+	}
 }
 </style>
