@@ -89,7 +89,7 @@ module.exports = {
 		'./resources/ext.wikilambda.app/': {
 			branches: 85,
 			lines: 95,
-			functions: 94,
+			functions: 95,
 			statements: 95
 		},
 		'./resources/ext.wikilambda.app/composables': {
@@ -101,13 +101,13 @@ module.exports = {
 		'./resources/ext.wikilambda.app/utils': {
 			branches: 82,
 			lines: 88,
-			functions: 94,
+			functions: 98,
 			statements: 88
 		},
 		'./resources/ext.wikilambda.app/store': {
 			branches: 84,
 			lines: 94,
-			functions: 96,
+			functions: 97,
 			statements: 94
 		}
 	},

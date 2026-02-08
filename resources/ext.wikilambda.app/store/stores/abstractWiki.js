@@ -18,20 +18,12 @@ const DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT = 2000;
 const abstractWikiStore = {
 	state: {
 		qid: undefined,
-		fragments: {}
+		fragments: {},
+		highlight: undefined
 	},
 	getters: {
 		/**
-		 * FIXME add jsdoc
-		 * FIXME we should make naming decisions before starting to write too much code.
-		 * For example, how do we refer to (internally) to the the Wikidata Item Qid which
-		 * identifies the Abstract Content page being rendered here? Options:
-		 * * id
-		 * * qid
-		 * * abstractWikiId
-		 * * pageId
-		 * * title
-		 * * ...
+		 * Returns the Abstract Wiki content Id
 		 *
 		 * @param {Object} state
 		 * @return {string}
@@ -59,7 +51,7 @@ const abstractWikiStore = {
 			}, sections[ qid ] ) );
 		},
 		/**
-		 * FIXME add jsdoc
+		 * Returns the name of the Abstract Wiki Content primary namespace
 		 *
 		 * @return {string}
 		 */
@@ -67,19 +59,40 @@ const abstractWikiStore = {
 			return mw.config.get( 'wgWikiLambdaAbstractPrimaryNamespace' );
 		},
 		/**
+		 * Returns the cached value of the Abstract Wiki Content fragment preview,
+		 * given its key path.
+		 *
 		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getRenderedFragment: function ( state ) {
+		getFragmentPreview: function ( state ) {
 			/**
 			 * @param {string} keyPath
-			 * @return {Object}
+			 * @return {Object|undefined}
 			 */
 			const storedFragment = ( keyPath ) => state.fragments[ keyPath ];
 			return storedFragment;
+		},
+		/**
+		 * FIXME add jsdoc
+		 *
+		 * @param {Object} state
+		 * @return {boolean}
+		 */
+		getHighlightedFragment: function ( state ) {
+			return state.highlight;
 		}
 	},
 	actions: {
+		/**
+		 * Sets the Abstract Wiki content Id in the store and inside the Abstract Content json
+		 *
+		 * @param {string} qid
+		 */
+		setAbstractWikiId: function ( qid ) {
+			this.qid = qid;
+			this.jsonObject[ Constants.STORED_OBJECTS.ABSTRACT ][ Constants.ABSTRACT_WIKI_QID ] = qid;
+		},
 		/**
 		 * Initializes the store for reading or editing an Abstract Content page,
 		 * given the values passed down through mw.config.
@@ -118,10 +131,6 @@ const abstractWikiStore = {
 
 			// Prefetch mentioned qids in content
 			const qids = extractWikidataItemIds( content );
-			// Prefetch the title Qid if not null
-			if ( this.getWikilambdaConfig.title ) {
-				qids.push( this.getWikilambdaConfig.title );
-			}
 			this.fetchItems( { ids: qids } );
 
 			// Set as initialized
@@ -132,22 +141,14 @@ const abstractWikiStore = {
 		/**
 		 * FIXME add jsdoc
 		 *
-		 * @param {string} qid
-		 */
-		setAbstractWikiId: function ( qid ) {
-			this.qid = qid;
-			this.jsonObject[ Constants.STORED_OBJECTS.ABSTRACT ][ Constants.ABSTRACT_WIKI_QID ] = qid;
-		},
-		/**
-		 * FIXME add jsdoc
-		 *
 		 * @return {boolean}
 		 */
 		validateAbstractWikiContent: function () {
+			// TODO
 			return true;
 		},
 		/**
-		 * FIXME add jsdoc
+		 * Submits a valid Abstract Wiki Content object for creation/edit
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.summary
@@ -182,6 +183,11 @@ const abstractWikiStore = {
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.keyPath
+		 * @param {string} payload.qid
+		 * @param {string} payload.language
+		 * @param {string} payload.date
+		 * @param {Object} payload.fragment
+		 * @return {Promise}
 		 */
 		renderFragmentPreview: function ( payload ) {
 			const { keyPath } = payload;
@@ -192,22 +198,23 @@ const abstractWikiStore = {
 			}
 
 			const fragmentStatus = this.fragments[ keyPath ];
-			if ( fragmentStatus.isDirty && !fragmentStatus.isLoading ) {
-				this.fragments[ keyPath ].isLoading = true;
 
-				runAbstractWikiFragment( payload ).then( ( response ) => {
-					this.setRenderedFragment( {
-						keyPath,
-						fragment: response
-					} );
-				} ).catch( () => {
-					// TODO better handle errors
-					this.setRenderedFragment( {
-						keyPath,
-						error: 'some error happened'
-					} );
-				} );
+			// If fragment is already generated or request ongoing, resolve
+			if ( !fragmentStatus.isDirty || fragmentStatus.isLoading ) {
+				return Promise.resolve();
 			}
+
+			// Else, initiate rendering call
+			this.fragments[ keyPath ].isLoading = true;
+			return runAbstractWikiFragment( payload )
+				.then( ( fragment ) => {
+					this.setRenderedFragment( { keyPath, fragment } );
+				} )
+				.catch( () => {
+					// FIXME i18n, detailed error info, etc
+					const error = 'Unable to render fragment';
+					this.setRenderedFragment( { keyPath, error } );
+				} );
 		},
 		/**
 		 * Save fragment rendered output and dirty/loading status in the state
@@ -226,7 +233,6 @@ const abstractWikiStore = {
 			if ( error ) {
 				this.fragments[ keyPath ].error = true;
 				this.fragments[ keyPath ].isDirty = false;
-				// FIXME: what to do when we receive an error?
 				this.fragments[ keyPath ].html = error;
 			} else {
 				this.fragments[ keyPath ].error = false;
@@ -259,6 +265,76 @@ const abstractWikiStore = {
 				fragment.isDirty = true;
 				fragment.debounce = undefined;
 			}, DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT );
+		},
+		/**
+		 * Swap the fragment preview data for two given fragment key paths
+		 *
+		 * @param {string} keyPath1
+		 * @param {string} keyPath2
+		 */
+		swapFragmentPreviews: function ( keyPath1, keyPath2 ) {
+			if ( !( keyPath1 in this.fragments ) ) {
+				throw new Error( `Unable to swap fragments: Fragment not found: "${ keyPath1 }"` );
+			}
+
+			if ( !( keyPath2 in this.fragments ) ) {
+				throw new Error( `Unable to swap fragments: Fragment not found: "${ keyPath2 }"` );
+			}
+
+			const temp = this.fragments[ keyPath1 ];
+			this.fragments[ keyPath1 ] = this.fragments[ keyPath2 ];
+			this.fragments[ keyPath2 ] = temp;
+		},
+		/**
+		 * Shift all fragments, starting from keyPath, a number of
+		 * positions given an offset (negative or positive)
+		 *
+		 * @param {string} keyPath
+		 * @param {number} offset
+		 */
+		shiftFragmentPreviews: function ( keyPath, offset ) {
+			if ( !offset || !Number.isInteger( offset ) ) {
+				throw new Error( `Unable to shift fragments: Invalid offset: "${ offset }"` );
+			}
+
+			const parts = keyPath.split( '.' );
+			const startIndex = Number( parts.pop() );
+
+			if ( !Number.isInteger( startIndex ) ) {
+				throw new Error( `Unable to shift fragments: Invalid starting index: "${ startIndex }"` );
+			}
+
+			const shiftKeys = Object.keys( this.fragments )
+				.filter( ( key ) => {
+					// Filter in only the keys that need to be shifted
+					const index = Number( key.split( '.' ).slice( -1 )[ 0 ] );
+					return index >= startIndex;
+				} )
+				.sort( ( a, b ) => {
+					// Sort in descending order for possitive offset
+					// Sort in ascending order for negative offset
+					const aIndex = Number( a.split( '.' ).slice( -1 )[ 0 ] );
+					const bIndex = Number( b.split( '.' ).slice( -1 )[ 0 ] );
+					return offset > 0 ? bIndex - aIndex : aIndex - bIndex;
+				} );
+
+			// For each key to be shifted, assign its value on the new
+			// key (added offset) and delete the current one.
+			for ( const key of shiftKeys ) {
+				const thisIndex = Number( key.split( '.' ).slice( -1 )[ 0 ] );
+				const newIndex = thisIndex + offset;
+				const newKey = [ ...parts, newIndex ].join( '.' );
+				this.fragments[ newKey ] = this.fragments[ key ];
+				delete this.fragments[ key ];
+			}
+		},
+		/**
+		 * Set a given fragment keyPath as highlighted
+		 *
+		 * @param {string|undefined} keyPath
+		 */
+		setHighlightedFragment: function ( keyPath ) {
+			this.highlight = keyPath;
 		}
 	}
 };

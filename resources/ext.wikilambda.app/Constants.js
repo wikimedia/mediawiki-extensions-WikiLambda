@@ -539,7 +539,11 @@ Constants.LIST_MENU_OPTIONS = {
 	MOVE_BEFORE: 'move-before',
 	MOVE_AFTER: 'move-after',
 	ADD_ARG: 'add-arg',
-	DELETE_ARG: 'delete-arg'
+	ADD_BEFORE: 'add-before',
+	ADD_AFTER: 'add-after',
+	DELETE_ARG: 'delete-arg',
+	COPY_CLIPBOARD: 'copy',
+	PASTE_CLIPBOARD: 'paste'
 };
 
 Constants.PATHS = {

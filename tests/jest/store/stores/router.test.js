@@ -652,6 +652,22 @@ describe( 'Router Pinia store', () => {
 					expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.FUNCTION_EVALUATOR );
 				} );
 			} );
+
+			describe( 'Abstract Content route loads Abstract view', () => {
+				beforeEach( () => {
+					store.changeCurrentView = jest.fn();
+					window.mw.config = {
+						get: jest.fn( () => ( {
+							abstractContent: true
+						} ) )
+					};
+				} );
+
+				it( 'loads abstract content view', () => {
+					store.evaluateUri();
+					expect( store.changeCurrentView ).toHaveBeenCalledWith( Constants.VIEWS.ABSTRACT );
+				} );
+			} );
 		} );
 
 		describe( 'changeCurrentView', () => {

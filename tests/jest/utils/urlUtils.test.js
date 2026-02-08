@@ -13,7 +13,8 @@ const {
 	isLinkCurrentPath,
 	generateViewUrl,
 	generateEditUrl,
-	generateShareUrl
+	generateShareUrl,
+	buildAbstractWikiTitle
 } = require( '../../../resources/ext.wikilambda.app/utils/urlUtils.js' );
 const { mockWindowLocation } = require( '../fixtures/location.js' );
 
@@ -217,6 +218,16 @@ describe( 'urlUtils', () => {
 			const urlObj = new URL( url );
 			const decodedCall = urlObj.searchParams.get( 'call' );
 			expect( decodedCall ).toBe( JSON.stringify( functionCall ) );
+		} );
+	} );
+
+	describe( 'buildAbstractWikiTitle', () => {
+		it( 'builds url with namespace:qid if namespace is not empty', () => {
+			expect( buildAbstractWikiTitle( 'Abstract Wikipedia', 'Q319' ) ).toBe( 'Abstract Wikipedia:Q319' );
+		} );
+
+		it( 'builds url with qid if namespace is empty', () => {
+			expect( buildAbstractWikiTitle( '', 'Q319' ) ).toBe( 'Q319' );
 		} );
 	} );
 } );

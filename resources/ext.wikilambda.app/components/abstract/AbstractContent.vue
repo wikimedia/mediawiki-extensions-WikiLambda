@@ -32,29 +32,12 @@
 			<!-- TODO add leave-editor-dialog? -->
 		</template>
 		<template #main>
-			<div
+			<wl-abstract-content-section
 				v-for="section in sections"
 				:key="`${section.index}-${section.qid}`"
-				class="ext-wikilambda-app-abstract-content__section"
-			>
-				<!-- Section title: label of section Qid in the user language -->
-				<div class="ext-wikilambda-app-abstract-content__section-title">
-					<h2>
-						{{ section.labelData.label }} <span>({{ section.qid }})</span>
-					</h2>
-				</div>
-				<!-- Section fragments: default component node -->
-				<div class="ext-wikilambda-app-abstract-content__section-fragments">
-					<wl-z-object-key-value
-						v-if="section.fragments"
-						:key-path="section.fragmentsPath"
-						:object-value="section.fragments"
-						:edit="edit"
-						:skip-key="true"
-						:skip-indent="true"
-					></wl-z-object-key-value>
-				</div>
-			</div>
+				:edit="edit"
+				:section="section"
+			></wl-abstract-content-section>
 			<!-- FIXME: Stretch goal: add new sections -->
 			<!-- <cdx-button
 				v-if="edit"
@@ -73,21 +56,21 @@ const { storeToRefs } = require( 'pinia' );
 
 const useMainStore = require( '../../store/index.js' );
 
+// Abstract components
+const AbstractContentSection = require( './AbstractContentSection.vue' );
 // Base components
 const WidgetBase = require( '../base/WidgetBase.vue' );
-// Type components
-const ZObjectKeyValue = require( '../types/ZObjectKeyValue.vue' );
-// Codex components
-const { CdxButton } = require( '../../../codex.js' );
 // Widget components
 const PublishDialog = require( '../widgets/publish/PublishDialog.vue' );
+// Codex components
+const { CdxButton } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-content',
 	components: {
+		'wl-abstract-content-section': AbstractContentSection,
 		'wl-widget-base': WidgetBase,
 		'wl-publish-dialog': PublishDialog,
-		'wl-z-object-key-value': ZObjectKeyValue,
 		'cdx-button': CdxButton
 	},
 	props: {

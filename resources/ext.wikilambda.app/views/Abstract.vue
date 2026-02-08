@@ -31,9 +31,7 @@
 					class="ext-wikilambda-app-col
 					ext-wikilambda-app-col-12
 					ext-wikilambda-app-col-tablet-24">
-					<wl-abstract-preview
-						:edit="edit"
-					></wl-abstract-preview>
+					<wl-abstract-preview></wl-abstract-preview>
 				</div>
 			</template>
 		</div>

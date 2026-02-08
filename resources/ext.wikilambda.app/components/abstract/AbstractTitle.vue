@@ -148,11 +148,7 @@ module.exports = exports = defineComponent( {
 				.then( ( response ) => {
 					for ( const pageid of Object.keys( response ) ) {
 						const page = response[ pageid ];
-						if (
-							!page.missing && (
-								( page.denormalized === title ) ||
-							( page.title === title ) )
-						) {
+						if ( !page.missing && ( ( page.denormalized === title ) || ( page.title === title ) ) ) {
 							itemPage.value = page;
 							return;
 						}

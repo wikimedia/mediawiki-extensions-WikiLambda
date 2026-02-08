@@ -34,9 +34,9 @@
 					:disabled="disableEdit"
 					:expected-type="expectedType"
 					@set-type="setType"
-					@delete-list-item="deleteListItem"
-					@move-before="moveBefore"
-					@move-after="moveAfter"
+					@delete-list-item="deleteListItem( keyPath )"
+					@move-before="moveBefore( keyPath )"
+					@move-after="moveAfter( keyPath )"
 					@add-arg="addArgument"
 					@delete-arg="deleteArgument"
 				></wl-mode-selector>
@@ -57,7 +57,7 @@
 					:parent-list-item-type="parentListItemType"
 					@set-value="setValue"
 					@set-type="setType"
-					@add-list-item="addListItem"
+					@add-list-item="addListItem( $event, keyPath, listItemCount )"
 					@expand="setExpanded"
 				></component>
 			</template>
@@ -73,8 +73,8 @@ const useMainStore = require( '../../store/index.js' );
 const useError = require( '../../composables/useError.js' );
 const useType = require( '../../composables/useType.js' );
 const useZObject = require( '../../composables/useZObject.js' );
+const useMenuAction = require( '../../composables/useMenuAction.js' );
 const LabelData = require( '../../store/classes/LabelData.js' );
-const { canonicalToHybrid } = require( '../../utils/schemata.js' );
 
 // Base components
 const ExpandedToggle = require( '../base/ExpandedToggle.vue' );
@@ -190,6 +190,13 @@ module.exports = exports = defineComponent( {
 			getZFunctionCallFunctionId
 		} = useZObject( { keyPath: props.keyPath } );
 		const { hasFieldErrors, hasChildErrors } = useError( { keyPath: props.keyPath } );
+		const {
+			setDirtyKeyPath,
+			moveBefore,
+			moveAfter,
+			addListItem,
+			deleteListItem
+		} = useMenuAction();
 
 		// Expansion state
 		/**
@@ -248,6 +255,10 @@ module.exports = exports = defineComponent( {
 			}
 			return store.getLabelData( key.value );
 		} );
+
+		const listItemCount = computed( () => Array.isArray( props.objectValue ) ?
+			props.objectValue.length :
+			undefined );
 
 		// Type data
 		/**
@@ -549,26 +560,6 @@ module.exports = exports = defineComponent( {
 		const idValue = computed( () => props.keyPath.replace( /\./g, '-' ) );
 
 		// Helpers
-		/**
-		 * Set dirty flag for a given keyPath:
-		 * * If the changed object is the main object, set page-level dirty flag to true.
-		 * * If the changed object is abstract fragment, set page-level dirty flag to true
-		 *   and set fragment-level dirty flag to true.
-		 *
-		 * @param {string} keyPath
-		 */
-		function setDirtyKeyPath( keyPath ) {
-			// For main, set dirty page
-			if ( keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
-				store.setDirty();
-				return;
-			}
-			// For fragments, set dirty page and fragment
-			if ( keyPath.split( '.' )[ 0 ] === Constants.STORED_OBJECTS.ABSTRACT ) {
-				store.setDirty();
-				store.setDirtyFragment( keyPath );
-			}
-		}
 
 		/**
 		 * If the current object is the main object and we are creating a new page,
@@ -782,75 +773,6 @@ module.exports = exports = defineComponent( {
 			setDirtyKeyPath( props.keyPath );
 		}
 
-		// List item actions
-		/**
-		 * Handles the modification of the ZObject when the changed key-value
-		 * is a typed list and the user adds a new item.
-		 *
-		 * @param {Object} payload
-		 */
-		function addListItem( payload ) {
-			const value = canonicalToHybrid( store.createObjectByType( payload ) );
-			store.pushItemsByKeyPath( {
-				keyPath: props.keyPath.split( '.' ),
-				values: [ value ]
-			} );
-			setDirtyKeyPath( props.keyPath );
-		}
-
-		/**
-		 * Handles the modification of the ZObject when the changed key-value
-		 * is a typed list item and the user deletes it.
-		 * TODO (T331132): Create a 'revert delete' workflow.
-		 */
-		function deleteListItem() {
-			const listKeyPath = props.keyPath.split( '.' ).slice( 0, -1 );
-			const lastItem = props.keyPath.split( '.' ).slice( -1 );
-			store.deleteListItemsByKeyPath( {
-				keyPath: listKeyPath,
-				indexes: lastItem
-			} );
-			setDirtyKeyPath( props.keyPath );
-		}
-
-		/**
-		 * Handles the modification of the ZObject when the changed key-value
-		 * is a typed list item and the user moves it before the previous item.
-		 */
-		function moveBefore() {
-			store.moveListItemByKeyPath( {
-				keyPath: props.keyPath.split( '.' ),
-				offset: -1
-			} );
-
-			// Set as dirty this and previous keyPath
-			const parts = props.keyPath.split( '.' );
-			parts[ parts.length - 1 ] = String( Number( parts[ parts.length - 1 ] ) - 1 );
-			const previousKeyPath = parts.join( '.' );
-
-			setDirtyKeyPath( props.keyPath );
-			setDirtyKeyPath( previousKeyPath );
-		}
-
-		/**
-		 * Handles the modification of the ZObject when the changed key-value
-		 * is a typed list item and the user moves it after the next item.
-		 */
-		function moveAfter() {
-			store.moveListItemByKeyPath( {
-				keyPath: props.keyPath.split( '.' ),
-				offset: 1
-			} );
-
-			// Set as dirty this and next keyPath
-			const parts = props.keyPath.split( '.' );
-			parts[ parts.length - 1 ] = String( Number( parts[ parts.length - 1 ] ) + 1 );
-			const nextKeyPath = parts.join( '.' );
-
-			setDirtyKeyPath( props.keyPath );
-			setDirtyKeyPath( nextKeyPath );
-		}
-
 		// Function call argument actions
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
@@ -918,6 +840,7 @@ module.exports = exports = defineComponent( {
 			idValue,
 			isExpanded,
 			keyLabel,
+			listItemCount,
 			moveAfter,
 			moveBefore,
 			parentExpectedType,

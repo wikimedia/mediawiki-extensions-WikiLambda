@@ -1203,7 +1203,7 @@ module.exports = {
 			let zids = [];
 
 			// Prefetch smaller array of zids in Abstract mode:
-			if ( mw.config.get( 'wgWikiLambdaEnableAbstractMode' ) ) {
+			if ( this.isAbstractContent() ) {
 				// NOTE #1: Unless we are in dev environment with both Abstract and Repo
 				// activated, this request will be external, from abstract.wikipedia.org
 				// to wikifunctions.org, so we benefit from making this set as small
@@ -1215,6 +1215,7 @@ module.exports = {
 				zids = [
 					// Needed for Mode selector
 					Constants.Z_OBJECT,
+					Constants.Z_FUNCTION,
 					Constants.Z_FUNCTION_CALL,
 					Constants.Z_REFERENCE,
 					Constants.Z_ARGUMENT_REFERENCE,

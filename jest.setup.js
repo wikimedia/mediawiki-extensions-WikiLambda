@@ -118,6 +118,8 @@ global.mw = {
 					};
 				case 'wgWikifunctionsBaseUrl':
 					return null;
+				case 'wgWikiLambdaAbstractPrimaryNamespace':
+					return 'Abstract_Wikipedia';
 				case 'wgUserLanguage':
 					return 'en';
 				case 'wgPageContentLanguage':

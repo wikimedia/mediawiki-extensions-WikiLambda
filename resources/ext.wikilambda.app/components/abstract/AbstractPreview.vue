@@ -53,7 +53,6 @@ module.exports = exports = defineComponent( {
 		'wl-widget-base': WidgetBase,
 		'wl-abstract-preview-fragment': AbstractPreviewFragment
 	},
-	props: {},
 	setup() {
 		const store = useMainStore();
 
@@ -70,7 +69,7 @@ module.exports = exports = defineComponent( {
 		/**
 		 * @return {LabelData}
 		 */
-		const languageLabelData = computed( () => store.getLabelData( 'Z1002' ) );
+		const languageLabelData = computed( () => store.getLabelData( store.getUserLangZid ) );
 
 		return {
 			abstractTitle,

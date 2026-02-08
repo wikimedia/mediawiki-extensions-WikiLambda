@@ -35,6 +35,30 @@ describe( 'wikidataUtils', () => {
 		} );
 	} );
 
+	describe( 'extractWikidataItemIds', () => {
+		it( 'extracts all Wikidata Item Qids', () => {
+			const abstractContent = {
+				qid: 'Q96807071',
+				sections: {
+					Q8776414: {
+						index: 0,
+						fragments: [
+							'Z89',
+							{
+								Z1K1: 'Z7',
+								Z7K1: 'Z444',
+								Z444K1: { Z1K1: 'Z6091', Z6091K1: 'Q319' },
+								Z444K2: { Z1K1: 'Z6091', Z6091K1: 'L3333' }
+							}
+						]
+					}
+				}
+			};
+			const expectedQids = [ 'Q96807071', 'Q8776414', 'Q319' ];
+			expect( wikidataUtils.extractWikidataItemIds( abstractContent ) ).toEqual( expectedQids );
+		} );
+	} );
+
 	describe( 'isWikidataQid', () => {
 		it( 'returns false with undefined', () => {
 			expect( wikidataUtils.isWikidataQid( undefined ) ).toBe( false );

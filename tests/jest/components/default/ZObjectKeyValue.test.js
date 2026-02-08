@@ -507,9 +507,8 @@ describe( 'ZObjectKeyValue', () => {
 				} );
 			} );
 
-			it( 'sets fragment dirty flag for affected items if the moved item is in an abstract fragment', () => {
-				keyPath = 'abstractwiki.sections.Q8776414.fragments.2';
-				const nextKeyPath = 'abstractwiki.sections.Q8776414.fragments.3';
+			it( 'sets fragment dirty flag for affected items if the moved item is inside an abstract fragment', () => {
+				keyPath = 'abstractwiki.sections.Q8776414.fragments.2.Z444K3.4';
 
 				const wrapper = renderZObjectKeyValue( {
 					edit: true
@@ -524,9 +523,8 @@ describe( 'ZObjectKeyValue', () => {
 
 				expect( store.setDirty ).toHaveBeenCalled();
 				expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath );
-				expect( store.setDirtyFragment ).toHaveBeenCalledWith( nextKeyPath );
 				expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
-					keyPath: [ 'abstractwiki', 'sections', 'Q8776414', 'fragments', '2' ],
+					keyPath: [ 'abstractwiki', 'sections', 'Q8776414', 'fragments', '2', 'Z444K3', '4' ],
 					offset: 1
 				} );
 			} );

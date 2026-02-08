@@ -552,6 +552,7 @@
 				"ext.wikilambda.app/composables/useClipboardManager.js",
 				"ext.wikilambda.app/composables/useError.js",
 				"ext.wikilambda.app/composables/useEventLog.js",
+				"ext.wikilambda.app/composables/useMenuAction.js",
 				"ext.wikilambda.app/composables/usePageTitle.js",
 				"ext.wikilambda.app/composables/useScroll.js",
 				"ext.wikilambda.app/composables/useShareUrl.js",
@@ -578,6 +579,8 @@
 				"ext.wikilambda.app/components/index.js",
 				"ext.wikilambda.app/components/App.vue",
 				"ext.wikilambda.app/components/abstract/AbstractContent.vue",
+				"ext.wikilambda.app/components/abstract/AbstractContentFragment.vue",
+				"ext.wikilambda.app/components/abstract/AbstractContentSection.vue",
 				"ext.wikilambda.app/components/abstract/AbstractPreview.vue",
 				"ext.wikilambda.app/components/abstract/AbstractPreviewFragment.vue",
 				"ext.wikilambda.app/components/abstract/AbstractTitle.vue",
@@ -702,7 +705,13 @@
 						"cdxIconHistory",
 						"cdxIconNotBright",
 						"cdxIconLinkExternal",
-						"cdxIconLogoWikifunctions"
+						"cdxIconLogoWikifunctions",
+						"cdxIconTableMoveRowAfter",
+						"cdxIconTableMoveRowBefore",
+						"cdxIconTableAddRowAfter",
+						"cdxIconTableAddRowBefore",
+						"cdxIconCopy",
+						"cdxIconPaste"
 					]
 				}
 			],

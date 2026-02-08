@@ -838,6 +838,22 @@ describe( 'zobject Pinia store', () => {
 				expect( store.initializeRootZObject ).toHaveBeenCalledWith( 'Z10000' );
 			} );
 
+			it( 'calls initializeAbstractWikiContent when viewing or editing abstract content', async () => {
+				store.initializeAbstractWikiContent = jest.fn();
+				mockMWGetConfig( {
+					wgWikiLambda: {
+						abstractContent: true,
+						createNewPage: false,
+						runFunction: false,
+						zId: null
+					}
+				} );
+
+				await store.initializeView();
+
+				expect( store.initializeAbstractWikiContent ).toHaveBeenCalled();
+			} );
+
 			describe( 'initializeCreateNewPage', () => {
 				beforeEach( () => {
 					Object.defineProperty( store, 'createObjectByType', {
@@ -853,7 +869,7 @@ describe( 'zobject Pinia store', () => {
 					} );
 				} );
 
-				it( 'Initialize ZObject, create new page, no initial type', async () => {
+				it( 'initializes ZObject, create new page, no initial type', async () => {
 					store.fetchZids = jest.fn().mockResolvedValue();
 					store.setCreateNewPage = jest.fn();
 					store.setCurrentZid = jest.fn();
@@ -880,7 +896,7 @@ describe( 'zobject Pinia store', () => {
 					expect( store.setInitialized ).toHaveBeenCalledWith( true );
 				} );
 
-				it( 'Initialize ZObject, create new page, zid url parameter not well formed', async () => {
+				it( 'initializes ZObject, create new page, zid url parameter not well formed', async () => {
 					store.fetchZids = jest.fn().mockResolvedValue();
 					store.setCreateNewPage = jest.fn();
 					store.setCurrentZid = jest.fn();
@@ -916,7 +932,7 @@ describe( 'zobject Pinia store', () => {
 					expect( store.setInitialized ).toHaveBeenCalledWith( true );
 				} );
 
-				it( 'Initialize ZObject, create new page, zid url parameter not a type', async () => {
+				it( 'initializes ZObject, create new page, zid url parameter not a type', async () => {
 					store.fetchZids = jest.fn().mockResolvedValue();
 					store.setCreateNewPage = jest.fn();
 					store.setCurrentZid = jest.fn();
@@ -952,7 +968,7 @@ describe( 'zobject Pinia store', () => {
 					expect( store.setInitialized ).toHaveBeenCalledWith( true );
 				} );
 
-				it( 'Initialize ZObject, create new page, initial type for Z2K2', async () => {
+				it( 'initializes ZObject, create new page, initial type for Z2K2', async () => {
 					store.fetchZids = jest.fn().mockResolvedValue();
 					store.setCreateNewPage = jest.fn();
 					store.setCurrentZid = jest.fn();
@@ -1473,7 +1489,7 @@ describe( 'zobject Pinia store', () => {
 			} );
 
 			describe( 'initializeEvaluateFunction', () => {
-				it( 'Initialize evaluate function call page', async () => {
+				it( 'initializes evaluate function call page', async () => {
 					store.setCurrentZid = jest.fn();
 					store.setJsonObject = jest.fn();
 					store.changeTypeByKeyPath = jest.fn().mockResolvedValue();

@@ -638,6 +638,30 @@ const zobjectStore = {
 		},
 
 		/**
+		 * Inserts an item in a typed list at the given position
+		 *
+		 * @param {Object} payload
+		 * @param {Array} payload.keyPath
+		 * @param {Object} payload.value
+		 */
+		insertListItemAtKeyPath: function ( payload ) {
+			const { keyPath, value } = payload;
+			const { target, finalKey } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
+
+			if ( !Array.isArray( target ) ) {
+				throw new Error( `Unable to mutate state: Expected Array at key path, found ${ typeof target }` );
+			}
+
+			const index = Number( finalKey );
+			if ( !Number.isInteger( index ) || index < 0 || index > target.length ) {
+				throw new Error( `Unable to mutate state: Invalid array index: "${ finalKey }"` );
+			}
+
+			// Perform mutation:
+			target.splice( index, 0, value );
+		},
+
+		/**
 		 * Adds the next available local key (K1, K2, ...Kn) to the given function call
 		 *
 		 * @param {Object} payload

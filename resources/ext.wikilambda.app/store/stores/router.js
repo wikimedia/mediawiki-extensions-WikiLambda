@@ -152,7 +152,6 @@ module.exports = {
 		},
 
 		/**
-		 * TODO move to getters
 		 * Check if  the given url path 'view' string is a known view in Constants.VIEWS
 		 *
 		 * @param {string} view
@@ -168,7 +167,6 @@ module.exports = {
 		},
 
 		/**
-		 * TODO move to getters
 		 * Check if the path is for Special:CreateZObject
 		 *
 		 * @param {string} title
@@ -179,7 +177,6 @@ module.exports = {
 		},
 
 		/**
-		 * TODO move to getters
 		 * Check if the path is for Special:CreateAbstract
 		 *
 		 * @return {boolean}
@@ -189,7 +186,6 @@ module.exports = {
 		},
 
 		/**
-		 * TODO move to getters
 		 * Check if the path is for Special:EvaluateFunctionCall
 		 *
 		 * @param {string} title
@@ -200,7 +196,6 @@ module.exports = {
 		},
 
 		/**
-		 * TODO move to getters
 		 * Check if the current ZObject is a Z8/Function
 		 *
 		 * @return {boolean}
