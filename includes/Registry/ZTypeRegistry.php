@@ -360,6 +360,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_KEYREFERENCE,
 		self::Z_ERROR,
 		self::Z_CODE,
+		self::Z_ABSTRACTCONTENT,
+
 		// Wikidata types
 		...self::WIKIDATA_TYPES,
 		...self::WIKIDATA_REFERENCE_TYPES
@@ -396,6 +398,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_ARGUMENTREFERENCE = 'Z18';
 	public const Z_UNIT = 'Z21';
 	public const Z_NULL = 'Z23';
+	public const Z_ABSTRACTCONTENT = 'Z25';
 
 	// These are provided for ease of use
 	public const Z_VOID = 'Z24';
