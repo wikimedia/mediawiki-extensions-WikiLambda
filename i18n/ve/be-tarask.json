@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Renessaince"
+			"Renessaince",
+			"Ucukor"
 		]
 	},
 	"wikilambda-recentchanges-filter-rc-pref": "Паказваць рэдагаваньні Вікіфункцыяў у сьпісе апошніх зьменаў",
-	"wikilambda-recentchanges-filter-wl-pref": "Паказваць рэдагаваньні Вікіфункцыяў у вашым сьпісе назіраньня"
+	"wikilambda-recentchanges-filter-wl-pref": "Паказваць рэдагаваньні Вікіфункцыяў у вашым сьпісе назіраньня",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Ладаваньне"
 }
