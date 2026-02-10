@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Renessaince"
+			"Renessaince",
+			"Ucukor"
 		]
 	},
 	"group-functioneer": "Функцыянэры",
@@ -39,6 +40,7 @@
 	"right-wikilambda-edit-running-function-definition": "Рэдагаваньне ўводу/вываду функцыі, якая мае далучанае ўвасабленьне",
 	"right-wikilambda-edit-tester": "Рэдагаваньне існых аб’ектаў тэставых прыкладаў",
 	"right-wikilambda-edit-user-function": "Рэдагаваньне існай прадстаўленай карыстальнікам функцыі",
+	"wikilambda-cancel": "Скасаваць",
 	"wikilambda-functioncall-metadata-select-label": "Выклікі функцыяў",
 	"wikilambda-loading": "Загрузка зьвестак",
 	"wikilambda-special-edit-function-definition-description": "Вы рэдагуеце старонку апісаньня функцыі. Зьмяняць азначэньне функцыі могуць $1. Рэдагаваць меткі можа кожны. Пераканайцеся, што зьбераглі свой унёсак, націснуўшы блакітную кнопку „Апублікаваць“ ніжэй.",

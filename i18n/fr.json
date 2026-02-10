@@ -36,7 +36,7 @@
 	"action-wikifunctions-run": "exécuter des fonctions dans l'API publique",
 	"action-wikilambda-connect-implementation": "connecter une implémentation à sa fonction afin qu’elle puisse être exécutée",
 	"action-wikilambda-connect-tester": "connecter un cas de test à sa fonction",
-	"action-wikilambda-create": "créer du tout de nouveaux Objets",
+	"action-wikilambda-create": "créer de nouveaux objets",
 	"action-wikilambda-create-converter": "créer un nouveau Sérialiseur ou Désérialiseur",
 	"action-wikilambda-create-boolean": "créer de nouveaux objets booléens",
 	"action-wikilambda-create-enum-value": "créer une nouvelle instance d'un type Enum",
