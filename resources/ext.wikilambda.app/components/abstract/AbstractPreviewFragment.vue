@@ -30,6 +30,7 @@
 			<!-- eslint-disable vue/no-v-html -->
 			<div
 				v-else
+				ref="contentRef"
 				class="ext-wikilambda-app-abstract-preview-fragment-html"
 				v-html="fragmentPreview.html"
 			></div>
@@ -41,6 +42,7 @@
 <script>
 const { computed, defineComponent, inject, onMounted, onUnmounted, watch } = require( 'vue' );
 
+const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useMainStore = require( '../../store/index.js' );
 
 // Codex components
@@ -75,6 +77,7 @@ module.exports = exports = defineComponent( {
 			return `${ d }-${ m }-${ yyyy }`;
 		} );
 
+		const { contentRef, initReferences } = useInitReferences();
 		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
 		const fragmentDirty = computed( () => fragmentPreview.value && fragmentPreview.value.isDirty );
 
@@ -121,7 +124,14 @@ module.exports = exports = defineComponent( {
 			if ( !preview ) {
 				renderPreview();
 			}
-		} );
+		}, { immediate: true } );
+
+		// Watch when fragment HTML is ready – init references (store mutates in place, so watch the property)
+		watch( () => fragmentPreview.value && fragmentPreview.value.html, ( html ) => {
+			if ( html ) {
+				initReferences();
+			}
+		}, { immediate: true } );
 
 		// On mount, render preview
 		onMounted( () => {
@@ -135,6 +145,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			fragmentPreview,
+			contentRef,
 			isHighlighted,
 			setHighlight,
 			unsetHighlight,

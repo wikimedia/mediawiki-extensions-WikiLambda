@@ -25,7 +25,7 @@
 			<!-- eslint-disable-next-line vue/no-v-html -->
 			<div
 				v-else
-				ref="renderedContainer"
+				ref="contentRef"
 				v-html="sanitisedHtml"></div>
 		</div>
 		<div class="ext-wikilambda-app-html-fragment-viewer__toggle-container">
@@ -41,8 +41,9 @@
 </template>
 
 <script>
-const { defineComponent, inject, ref, watch, nextTick } = require( 'vue' );
+const { defineComponent, inject, ref, watch } = require( 'vue' );
 const CodeEditor = require( './CodeEditor.vue' );
+const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useMainStore = require( '../../store/index.js' );
 const { CdxToggleSwitch, CdxProgressIndicator } = require( '../../../codex.js' );
 
@@ -80,25 +81,7 @@ module.exports = exports = defineComponent( {
 		const showRendered = ref( true );
 		const sanitisedHtml = ref( '' );
 		const isSanitising = ref( false );
-		const renderedContainer = ref( null );
-
-		/**
-		 * Initialize references in the rendered HTML container.
-		 * Triggers MediaWiki hook for reference initialization.
-		 *
-		 * This requires the ext.wikilambda.references module to be loaded and initialized!
-		 */
-		function initReferences() {
-			// Wait for DOM to update after v-html
-			nextTick( () => {
-				if ( !renderedContainer.value || typeof mw === 'undefined' || !mw.hook ) {
-					return;
-				}
-				// Trigger custom hook that ReferenceManager in ext.wikilambda.references listens to
-				// This allows references to be initialized in dynamically loaded content
-				mw.hook( 'wikilambda.references.content' ).fire( renderedContainer.value );
-			} );
-		}
+		const { contentRef, initReferences } = useInitReferences();
 
 		/**
 		 * Sanitises the HTML fragment value for safe rendering.
@@ -138,7 +121,7 @@ module.exports = exports = defineComponent( {
 			isSanitising,
 			sanitisedHtml,
 			showRendered,
-			renderedContainer
+			contentRef
 		};
 	}
 } );

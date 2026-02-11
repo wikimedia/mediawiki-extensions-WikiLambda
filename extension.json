@@ -546,6 +546,7 @@
 				"ext.wikilambda.app/composables/useError.js",
 				"ext.wikilambda.app/composables/useEventLog.js",
 				"ext.wikilambda.app/composables/useLeaveEditorDialog.js",
+				"ext.wikilambda.app/composables/useInitReferences.js",
 				"ext.wikilambda.app/composables/useMenuAction.js",
 				"ext.wikilambda.app/composables/usePageTitle.js",
 				"ext.wikilambda.app/composables/useScroll.js",
