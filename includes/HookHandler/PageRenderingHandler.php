@@ -154,10 +154,8 @@ class PageRenderingHandler implements
 				. '?' . wfArrayToCgi( $editParams );
 		}
 
-		// Rewrite the 'main' namespace link to the Special page
-		// We have to set under 'namespaces' and 'associated-pages' due to a migration in SkinTemplate.
+		// Rewrite the 'main' namespace link to the Special page in "associated-pages"
 		$contentCanonicalHref = '/view/' . $lang . '/' . $zid;
-		$links['namespaces']['main']['href'] = $contentCanonicalHref;
 		$links['associated-pages']['main']['href'] = $contentCanonicalHref;
 
 		// Re-write the 'view' link as well
@@ -168,15 +166,13 @@ class PageRenderingHandler implements
 		$talkParams = $generalParams;
 
 		// Do some special magic if the href already has a query string, usually as it's a red link
-		if ( strpos( $links['namespaces']['talk']['href'] ?? '', '?' ) ) {
+		if ( strpos( $links['associated-pages']['talk']['href'] ?? '', '?' ) ) {
 			// We slice out the zeroth input, as it's the path
-			$talkHrefArray = array_slice( wfCgiToArray( $links['namespaces']['talk']['href'] ?? '' ), 1 );
+			$talkHrefArray = array_slice( wfCgiToArray( $links['associated-pages']['talk']['href'] ?? '' ), 1 );
 			$talkParams = $generalParams + $talkHrefArray;
 		}
 		$talkRewrittenHref = '/wiki/Talk:' . $zid . '?' . wfArrayToCgi( $talkParams );
 
-		// Again, we have to set it twice due to the migration in SkinTemplate
-		$links['namespaces']['talk']['href'] = $talkRewrittenHref;
 		$links['associated-pages']['talk']['href'] = $talkRewrittenHref;
 	}
 

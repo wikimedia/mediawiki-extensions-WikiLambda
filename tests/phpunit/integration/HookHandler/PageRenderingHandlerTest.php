@@ -337,10 +337,6 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			'associated-pages' => [
 				'talk' => [ 'href' => $talkPath ]
 			],
-			// Duplicated because upstream (SkinTemplate) is migrating from 'namespaces' to 'associated-pages'
-			'namespaces' => [
-				'talk' => [ 'href' => $talkPath ]
-			]
 		];
 		$linksOriginal = $links;
 
@@ -387,11 +383,6 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals(
 			$expectedTalk, $links['associated-pages']['talk']['href'],
 			'Check that we\'ve re-written the link to the talk page correctly'
-		);
-
-		$this->assertEquals(
-			$expectedTalk, $links['namespaces']['talk']['href'],
-			'Check that we\'ve re-written the link to the talk page correctly in the old namespaces field too'
 		);
 
 		// Re-set our fake 'links' to the original value, and test that we don't modify them in non-repo mode
