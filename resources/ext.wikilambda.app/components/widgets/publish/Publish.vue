@@ -43,10 +43,11 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref } = require( 'vue' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useEventLog = require( '../../../composables/useEventLog.js' );
+const useLeaveEditorDialog = require( '../../../composables/useLeaveEditorDialog.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
 
@@ -84,9 +85,32 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { submitInteraction } = useEventLog();
 
+		// Leave editor dialog (link clicks, beforeunload, dialog)
+		const {
+			closeLeaveDialog,
+			leaveEditorCallback,
+			removeListeners,
+			showLeaveEditorDialog,
+			leaveTo
+		} = useLeaveEditorDialog( {
+			isDirty: computed( () => props.isDirty ),
+			onBeforeLeave: submitCancelInteraction
+		} );
+
+		/**
+		 * Submit cancel interaction metric for event logging.
+		 */
+		function submitCancelInteraction() {
+			const interactionData = {
+				zobjecttype: store.getCurrentZObjectType || null,
+				zobjectid: store.getCurrentZObjectId,
+				zlang: store.getUserLangZid || null,
+				implementationtype: store.getCurrentZImplementationType || null
+			};
+			submitInteraction( 'cancel', interactionData );
+		}
+
 		// Dialog state
-		const leaveEditorCallback = ref( undefined );
-		const showLeaveEditorDialog = ref( false );
 		const showPublishDialog = ref( false );
 
 		// Publish button state
@@ -107,13 +131,6 @@ module.exports = exports = defineComponent( {
 		 */
 		function closePublishDialog() {
 			showPublishDialog.value = false;
-		}
-
-		/**
-		 * Handle cancel event from Leave dialog
-		 */
-		function closeLeaveDialog() {
-			showLeaveEditorDialog.value = false;
 		}
 
 		// Publish actions
@@ -173,116 +190,13 @@ module.exports = exports = defineComponent( {
 		 * the leave editor confirmation dialog.
 		 */
 		function handleCancel() {
-			// Emit click cancel event
+			// emit event to start cancel
 			emit( 'start-cancel' );
 			// Get redirect url
 			const cancelTargetUrl = store.isCreateNewPage ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
 				urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid: store.getCurrentZObjectId } );
 			leaveTo( cancelTargetUrl );
-		}
-
-		/**
-		 * Handles navigation away from the page.
-		 * Currently only handles navigation out when
-		 * clicking a link.
-		 *
-		 * @param {Object} e the click event
-		 */
-		function handleClickAway( e ) {
-			let target = e.target;
-			// If the click element is not a link, exit
-			while ( target && target.tagName !== 'A' ) {
-				target = target.parentNode;
-				if ( !target ) {
-					return;
-				}
-			}
-			/**
-			 * if the link:
-			 * - doesn't have a target,
-			 * - target property is _blank,
-			 * - the link is to the current page, (usually when it's a hash link)
-			 * - the link is a button
-			 * we are staying in this page, so there's no need to handle cancelation
-			 */
-			if (
-				!target.href ||
-				target.target === '_blank' ||
-				urlUtils.isLinkCurrentPath( target.href ) ||
-				target.role === 'button'
-			) {
-				return;
-			}
-			// Else, abandon the page
-			e.preventDefault();
-			leaveTo( target.href );
-		}
-
-		/**
-		 * Handles navigation away from the page using the browser
-		 * beforeunload event. The dialog shown will be the browser
-		 * provided dialog, and when existing through this way we
-		 * won't be able to track cancel events with our event
-		 * logging system. The beforeunload event has compatibility
-		 * and performance issues.
-		 *
-		 * See:
-		 * https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-		 * https://developer.chrome.com/blog/page-lifecycle-api/#the-beforeunload-event
-		 *
-		 * @param {Object} e the beforeunload event
-		 */
-		function handleUnload( e ) {
-			if ( props.isDirty ) {
-				e.preventDefault();
-			}
-		}
-
-		/**
-		 * Handle actions before leaving the edit page:
-		 * Show confirmation dialog if there are unsaved changes
-		 * and sends a cancelation event when/if we finally leave.
-		 *
-		 * @param {string} targetUrl
-		 */
-		function leaveTo( targetUrl ) {
-			function leaveAction() {
-				removeListeners();
-				// Log an event using Metrics Platform's core interaction events
-				const interactionData = {
-					zobjecttype: store.getCurrentZObjectType || null,
-					zobjectid: store.getCurrentZObjectId,
-					zlang: store.getUserLangZid || null,
-					implementationtype: store.getCurrentZImplementationType || null
-				};
-				submitInteraction( 'cancel', interactionData );
-				window.location.href = targetUrl;
-			}
-
-			if ( props.isDirty ) {
-				leaveEditorCallback.value = leaveAction;
-				showLeaveEditorDialog.value = true;
-			} else {
-				leaveAction();
-			}
-		}
-
-		// Event listeners
-		/**
-		 * Add event listeners.
-		 */
-		function addListeners() {
-			window.addEventListener( 'click', handleClickAway );
-			window.addEventListener( 'beforeunload', handleUnload );
-		}
-
-		/**
-		 * Remove event listeners.
-		 */
-		function removeListeners() {
-			window.removeEventListener( 'click', handleClickAway );
-			window.removeEventListener( 'beforeunload', handleUnload );
 		}
 
 		// Publish actions
@@ -318,15 +232,6 @@ module.exports = exports = defineComponent( {
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
 				urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid: pageTitle } );
 		}
-
-		// Lifecycle
-		onMounted( () => {
-			addListeners();
-		} );
-
-		onBeforeUnmount( () => {
-			removeListeners();
-		} );
 
 		return {
 			closeLeaveDialog,

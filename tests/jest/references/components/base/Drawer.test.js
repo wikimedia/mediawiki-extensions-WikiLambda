@@ -6,6 +6,9 @@
  */
 'use strict';
 
+// Mock usePreventScrollIOS so it does not inject @layer CSS (jsdom's CSS parser does not support it)
+jest.mock( '../../../../../resources/ext.wikilambda.references/composables/usePreventScrollIOS.js', () => jest.fn() );
+
 const { mount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const Drawer = require( '../../../../../resources/ext.wikilambda.references/components/base/Drawer.vue' );
@@ -160,25 +163,10 @@ describe( 'Drawer', () => {
 		} );
 	} );
 
-	describe( 'focus trap integration', () => {
-		it( 'traps focus when drawer is open', async () => {
-			const wrapper = renderDrawer( { open: true } );
-			await wrapper.vm.$nextTick();
-
-			const drawer = wrapper.find( '.ext-wikilambda-drawer' );
-			expect( drawer.exists() ).toBe( true );
-
-			// Focus should be on drawer
-			await wrapper.vm.$nextTick();
-			// Note: Actual focus trap behavior is tested in useFocusTrap.test.js
-		} );
-	} );
-
 	describe( 'cleanup', () => {
 		it( 'removes Escape key listener on unmount', async () => {
 			const removeEventListenerSpy = jest.spyOn( document, 'removeEventListener' );
 			const wrapper = renderDrawer( { open: true } );
-			await wrapper.vm.$nextTick();
 
 			wrapper.unmount();
 
@@ -188,7 +176,6 @@ describe( 'Drawer', () => {
 
 		it( 'unlocks scroll on unmount if still open', async () => {
 			const wrapper = renderDrawer( { open: true } );
-			await wrapper.vm.$nextTick();
 
 			expect( document.body.style.overflow ).toBe( 'hidden' );
 

@@ -134,9 +134,9 @@ describe( 'AbstractPreviewFragment', () => {
 			isLoading: false
 		} );
 
-		await wrapper.vm.$nextTick();
-
-		expect( store.renderFragmentPreview ).toHaveBeenCalledTimes( 2 );
+		await waitFor( () => {
+			expect( store.renderFragmentPreview ).toHaveBeenCalledTimes( 2 );
+		} );
 	} );
 
 	describe( 'highlight fragments', () => {

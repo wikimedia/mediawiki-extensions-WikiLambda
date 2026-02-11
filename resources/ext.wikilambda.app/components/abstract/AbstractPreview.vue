@@ -9,7 +9,7 @@
 		<template #header>
 			<!-- FIXME not sure if we want title -->
 			<!-- FIXME if we do, do we want the language? -->
-			{{ $i18n( 'wikilambda-abstract-preview-in-language', [ languageLabelData.label ] ).text() }}
+			{{ i18n( 'wikilambda-abstract-preview-in-language', [ languageLabelData.label ] ).text() }}
 		</template>
 		<template #header-action>
 			<!-- TODO (T411694): Add a select language button,
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-const { computed, defineComponent } = require( 'vue' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const useMainStore = require( '../../store/index.js' );
 
@@ -53,6 +53,7 @@ module.exports = exports = defineComponent( {
 		'wl-abstract-preview-fragment': AbstractPreviewFragment
 	},
 	setup() {
+		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
 		/**
@@ -71,6 +72,7 @@ module.exports = exports = defineComponent( {
 		const languageLabelData = computed( () => store.getLabelData( store.getUserLangZid ) );
 
 		return {
+			i18n,
 			abstractTitle,
 			languageLabelData,
 			sections

@@ -7,7 +7,6 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const { nextTick } = require( 'vue' );
 const { waitFor } = require( '@testing-library/vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractTitle = require( '../../../../resources/ext.wikilambda.app/components/abstract/AbstractTitle.vue' );
@@ -93,9 +92,9 @@ describe( 'AbstractTitle', () => {
 		const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
 		lookup.vm.$emit( 'select-wikidata-entity', 'Q42' );
 
-		await nextTick();
-
-		expect( wrapper.vm.itemId ).toBe( 'Q42' );
+		await waitFor( () => {
+			expect( wrapper.vm.itemId ).toBe( 'Q42' );
+		} );
 		expect( wrapper.vm.isLoading ).toBe( true );
 		expect( store.fetchItems ).toHaveBeenCalledWith( {
 			ids: [ 'Q42' ]
@@ -120,7 +119,7 @@ describe( 'AbstractTitle', () => {
 		lookup.vm.$emit( 'select-wikidata-entity', 'Q42' );
 
 		// Wait till promises resolve and status is no longer loading
-		await nextTick();
+
 		await Promise.resolve();
 		await waitFor( () => {
 			expect( wrapper.vm.isLoading ).toBe( false );
@@ -139,7 +138,7 @@ describe( 'AbstractTitle', () => {
 		lookup.vm.$emit( 'select-wikidata-entity', 'Q42' );
 
 		// Wait till promises resolve and status is no longer loading
-		await nextTick();
+
 		await Promise.resolve();
 		await waitFor( () => {
 			expect( wrapper.vm.isLoading ).toBe( false );
@@ -163,7 +162,7 @@ describe( 'AbstractTitle', () => {
 		lookup.vm.$emit( 'select-wikidata-entity', 'Q42' );
 
 		// Wait till promises resolve and status is no longer loading
-		await nextTick();
+
 		await Promise.resolve();
 		await waitFor( () => {
 			expect( wrapper.vm.isLoading ).toBe( false );
@@ -182,7 +181,7 @@ describe( 'AbstractTitle', () => {
 		lookup.vm.$emit( 'select-wikidata-entity', 'Q42' );
 
 		// Wait till promises resolve and status is no longer loading
-		await nextTick();
+
 		await Promise.resolve();
 		await waitFor( () => {
 			expect( wrapper.vm.isLoading ).toBe( false );
