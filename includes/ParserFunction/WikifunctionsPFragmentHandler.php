@@ -168,12 +168,9 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		 ) + 1 );
 		$extApi->getMetadata()->setNumericPageProperty( $targetFunctionPageProp, $newTargetUseCount );
 
-		// (Temporarily not done, as it doesn't seem we need it immediately.)
-		// Add our special styles to the page, we know they're likely to be used somewhere
-		// $extApi->getMetadata()->appendOutputStrings(
-		// 	\MediaWiki\Parser\ParserOutputStringSets::MODULE_STYLE,
-		// 	[ 'ext.wikilambda.client.styles' ]
-		// );
+		// Add our special reference code and style modules to the page, we know they're likely to be used somewhere
+		$extApi->getMetadata()->addModules( [ 'ext.wikilambda.references' ] );
+		$extApi->getMetadata()->addModuleStyles( [ 'ext.wikilambda.references.styles' ] );
 
 		$cachedValue = $this->wikifunctionsClientStore->fetchFromFunctionCallCache( $clientCacheKey );
 

@@ -175,6 +175,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $requestJob );
 		$this->assertSame( $expectedRequest, $requestJob->getParams()['request'] );
 
+		// Assert that the page properties are set on the page by the fragment handler
 		$this->assertSame(
 			1, $extApi->getMetadata()->getPageProperty( 'wikilambda' ),
 			'Usage on the page should be tracked'
@@ -182,6 +183,16 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$this->assertSame(
 			1, $extApi->getMetadata()->getPageProperty( 'wikilambda-' . $inputArguments[0] ),
 			'Usage of the target function should be tracked'
+		);
+
+		// Assert that the reference RL modules are set on the page by the fragment handler
+		$this->assertArrayContains(
+			[ 'ext.wikilambda.references' ], $extApi->getMetadata()->getModules(),
+			'We register ext.wikilambda.references for pages with our fragment; make sure that\'s set'
+		);
+		$this->assertArrayContains(
+			[ 'ext.wikilambda.references.styles' ], $extApi->getMetadata()->getModuleStyles(),
+			'We register ext.wikilambda.references.styles for pages with our fragment; make sure that\'s set'
 		);
 	}
 
