@@ -12,37 +12,52 @@ const { watch, onBeforeUnmount } = require( 'vue' );
  * Composable to lock body scroll and prevent page jump.
  * Uses position: fixed technique (more reliable on iOS Safari).
  *
- * @param {Object} options
- * @param {Object} options.isActive - Vue ref/computed (boolean): when true, scroll is locked
+ * @param {Object} isActive - Vue ref/computed (boolean): when true, scroll is locked
  */
-module.exports = function useScrollLock( options ) {
-	const { isActive } = options;
-	let scrollPosition = 0;
-
+module.exports = function useScrollLock( isActive ) {
 	/**
-	 * Get scrollbar width to compensate for layout shift.
+	 * Calculate the width of the browser's vertical scrollbar.
 	 *
-	 * @return {number}
+	 * Using window.innerWidth can be thrown off by horizontal overflow on the page,
+	 * so measure using a temporary element instead.
+	 *
+	 * @return {number} Scrollbar width in pixels
 	 */
 	function getScrollbarWidth() {
-		return window.innerWidth - document.documentElement.clientWidth;
+		const root = document.documentElement;
+
+		// If there's no vertical overflow, no scrollbar is visible.
+		if ( root.scrollHeight <= root.clientHeight ) {
+			return 0;
+		}
+
+		const measurement = document.createElement( 'div' );
+		measurement.style.position = 'absolute';
+		measurement.style.top = '-9999px';
+		measurement.style.width = '100px';
+		measurement.style.height = '100px';
+		measurement.style.overflow = 'scroll';
+
+		document.body.appendChild( measurement );
+		const scrollbarWidth = measurement.offsetWidth - measurement.clientWidth;
+		document.body.removeChild( measurement );
+
+		return scrollbarWidth;
 	}
 
 	/**
 	 * Lock the scroll.
 	 */
 	function lockScroll() {
-		scrollPosition = window.scrollY;
 		const body = document.body;
 		const scrollbarWidth = getScrollbarWidth();
+
 		if ( scrollbarWidth > 0 ) {
 			body.style.paddingRight = `${ scrollbarWidth }px`;
+
 		}
 
 		body.style.overflow = 'hidden';
-		body.style.position = 'fixed';
-		body.style.top = `-${ scrollPosition }px`;
-		body.style.width = '100%';
 	}
 
 	/**
@@ -50,14 +65,8 @@ module.exports = function useScrollLock( options ) {
 	 */
 	function unlockScroll() {
 		const body = document.body;
-
 		body.style.removeProperty( 'overflow' );
-		body.style.removeProperty( 'position' );
-		body.style.removeProperty( 'top' );
-		body.style.removeProperty( 'width' );
 		body.style.removeProperty( 'padding-right' );
-
-		window.scrollTo( 0, scrollPosition );
 	}
 
 	watch( isActive, ( active ) => {

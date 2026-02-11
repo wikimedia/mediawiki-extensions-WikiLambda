@@ -411,6 +411,7 @@
 				"ext.wikilambda.references/composables/useBreakpoints.js",
 				"ext.wikilambda.references/composables/useFocusTrap.js",
 				"ext.wikilambda.references/composables/useScrollLock.js",
+				"ext.wikilambda.references/composables/usePreventScrollIOS.js",
 				"ext.wikilambda.references/components/base/Drawer.vue",
 				"ext.wikilambda.references/components/reference/ReferenceManager.vue",
 				"ext.wikilambda.references/components/reference/ReferencePopover.vue",

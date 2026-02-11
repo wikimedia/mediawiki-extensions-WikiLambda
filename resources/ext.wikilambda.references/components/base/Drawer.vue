@@ -42,6 +42,7 @@ const { defineComponent, computed, ref, watch, onUnmounted } = require( 'vue' );
 const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 const icons = require( '../../../lib/icons.json' );
 const useScrollLock = require( '../../composables/useScrollLock.js' );
+const usePreventScrollIOS = require( '../../composables/usePreventScrollIOS.js' );
 const useFocusTrap = require( '../../composables/useFocusTrap.js' );
 
 module.exports = exports = defineComponent( {
@@ -53,7 +54,8 @@ module.exports = exports = defineComponent( {
 	props: {
 		open: {
 			type: Boolean,
-			required: true
+			required: true,
+			default: false
 		},
 		title: {
 			type: String,
@@ -82,30 +84,56 @@ module.exports = exports = defineComponent( {
 		const closeIcon = icons.cdxIconClose;
 		const drawerEl = ref( null );
 		const isOpen = computed( () => props.open );
+		/**
+		 * Use scroll lock composable to prevent body scrolling.
+		 * Uses position: fixed technique which is more reliable on iOS Safari.
+		 */
+		useScrollLock( isOpen );
 
-		useScrollLock( {
-			isActive: isOpen
-		} );
+		/**
+		 * Use iOS-specific scroll prevention for additional iOS Safari handling.
+		 * Prevents scroll when inputs are focused and handles iOS-specific edge cases.
+		 */
+		usePreventScrollIOS( isOpen );
 
+		/**
+		 * Use focus trap composable to trap focus within the drawer.
+		 */
 		useFocusTrap( {
 			getRootEl: () => drawerEl.value,
 			isActive: isOpen
 		} );
 
+		/**
+		 * Close the drawer.
+		 */
 		function close() {
 			emit( 'close' );
 		}
 
+		/**
+		 * Handle overlay click.
+		 */
 		function onOverlayClick() {
 			close();
 		}
 
+		/**
+		 * Handle keydown event.
+		 *
+		 * @param {KeyboardEvent} e - The keyboard event
+		 */
 		function handleKeydown( e ) {
 			if ( e.key === 'Escape' && props.open ) {
 				close();
 			}
 		}
 
+		/**
+		 * Watch isOpen and add/remove keydown event listener.
+		 *
+		 * @param {boolean} open - Whether the drawer is open
+		 */
 		watch( isOpen, ( open ) => {
 			if ( open ) {
 				document.addEventListener( 'keydown', handleKeydown );
