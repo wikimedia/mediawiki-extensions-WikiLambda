@@ -7,8 +7,7 @@
 <template>
 	<wl-widget-base class="ext-wikilambda-app-abstract-title" :no-overrides="true">
 		<template #header>
-			<!-- FIXME decide copy and internationalize -->
-			Create an Abstract Article for a Wikidata Item
+			{{ i18n( 'wikilambda-abstract-special-create' ).text() }}
 		</template>
 		<template #main>
 			<cdx-field>
@@ -36,11 +35,9 @@
 				class="ext-wikilambda-app-abstract-title__notice"
 				type="warning"
 			>
-				<!-- FIXME decide copy and internationalize -->
-				<p>The selected Wikidata Item already has an associated <b>Abstract Article</b>:</p>
-				<p><a :href="itemPage.title">{{ itemLabel }} ({{ itemId }})</a></p>
+				{{ i18n( 'wikilambda-abstract-special-create-existing' ).text() }}
+				<p><a :href="itemPage.title">{{ itemLabel }} {{ i18n( 'parentheses', [ itemId ] ).text() }}</a></p>
 			</cdx-message>
-			<!-- FIXME internationalize button label -->
 			<cdx-button
 				class="ext-wikilambda-app-abstract-title__button"
 				action="progressive"
@@ -48,8 +45,7 @@
 				:disabled="!canCreateNewPage"
 				@click="createAbstractForQid"
 			>
-				<!-- FIXME internationalize -->
-				Create
+				{{ i18n( 'wikilambda-abstract-special-create-createbutton-label' ).text() }}
 			</cdx-button>
 		</template>
 	</wl-widget-base>

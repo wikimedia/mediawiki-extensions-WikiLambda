@@ -57,7 +57,7 @@ class AbstractContentEditAction extends Action {
 		$title = $configVars[ 'title' ];
 
 		return $newPage ?
-			$this->msg( 'wikilambda-special-create-abstract-qid' )->params( $title )->text() :
+			$this->msg( 'wikilambda-abstract-special-create-qid' )->params( $title )->text() :
 			$this->msg( 'wikilambda-abstract-edit-title' )->params( $title )->text();
 	}
 

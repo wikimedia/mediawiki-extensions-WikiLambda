@@ -11,12 +11,16 @@
 	"right-wikilambda-abstract-create": "Create new Abstract Content pages",
 	"right-wikilambda-abstract-edit": "Edit existing Abstract Content pages",
 	"specialpages-group-abstractwiki": "Abstract Wikipedia pages",
+	"wikilambda-abstract-content-object": "Abstract content object",
 	"wikilambda-abstract-edit-title": "Edit Abstract Article for $1",
-	"wikilambda-invalidabstractcontent": "The provided content is not a valid Abstract Content object.",
-	"wikilambda-invalidabstractcontenttitle": "The provided title '$1' is not valid for an Abstract Content object.",
-	"wikilambda-special-create-abstract": "Create a New Abstract Article",
-	"wikilambda-special-create-abstract-intro": "Some intro about creation of Abstract Articles. By creating this page, you agree to the terms of use, to follow [[$1|community policies]], and to irrevocably release your contribution under Some-License-Here.",
-	"wikilambda-special-create-abstract-not-enabled": "The creation of Abstract Articles is not currently enabled. Please check back later.",
-	"wikilambda-special-create-abstract-not-enabled-title": "Abstract Article creation not enabled",
-	"wikilambda-special-create-abstract-qid": "Create a New Abstract Article for $1"
+	"wikilambda-abstract-invalidcontent": "The provided content is not a valid Abstract Content object.",
+	"wikilambda-abstract-invalidcontenttitle": "The provided title '$1' is not valid for an Abstract Content object.",
+	"wikilambda-abstract-preview-in-language": "Auto-article preview in $1",
+	"wikilambda-abstract-special-create": "Create a New Abstract Article",
+	"wikilambda-abstract-special-create-createbutton-label": "Create",
+	"wikilambda-abstract-special-create-existing": "The selected Wikidata Item already has an associated Abstract Article:",
+	"wikilambda-abstract-special-create-intro": "Some intro about creation of Abstract Articles. By creating this page, you agree to the terms of use, to follow [[$1|community policies]], and to irrevocably release your contribution under Some-License-Here.",
+	"wikilambda-abstract-special-create-not-enabled": "The creation of Abstract Articles is not currently enabled. Please check back later.",
+	"wikilambda-abstract-special-create-not-enabled-title": "Abstract Article creation not enabled",
+	"wikilambda-abstract-special-create-qid": "Create a New Abstract Article for $1"
 }

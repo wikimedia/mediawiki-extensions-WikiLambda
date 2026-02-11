@@ -34,7 +34,7 @@ class SpecialCreateAbstract extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-create-abstract' );
+		return $this->msg( 'wikilambda-abstract-special-create' );
 	}
 
 	/**
@@ -65,8 +65,8 @@ class SpecialCreateAbstract extends SpecialPage {
 	 * @return never
 	 */
 	private function displayNotAvailableError() {
-		$titleMessage = $this->msg( 'wikilambda-special-create-abstract-not-enabled-title' );
-		$errorMessage = $this->msg( 'wikilambda-special-create-abstract-not-enabled' );
+		$titleMessage = $this->msg( 'wikilambda-abstract-special-create-not-enabled-title' );
+		$errorMessage = $this->msg( 'wikilambda-abstract-special-create-not-enabled' );
 		throw new ErrorPageError( $titleMessage, $errorMessage );
 	}
 
@@ -98,7 +98,7 @@ class SpecialCreateAbstract extends SpecialPage {
 		// * we are editing an existing page
 		if ( $configVars[ 'title' ] !== '' ) {
 			$titleMsg = $configVars[ 'createNewPage' ] ?
-				$this->msg( 'wikilambda-special-create-abstract-qid' )->params( $configVars[ 'title' ] ) :
+				$this->msg( 'wikilambda-abstract-special-create-qid' )->params( $configVars[ 'title' ] ) :
 				$this->msg( 'wikilambda-abstract-edit-title' )->params( $configVars[ 'title' ] );
 			$output->setPageTitleMsg( $titleMsg );
 		}
@@ -107,7 +107,7 @@ class SpecialCreateAbstract extends SpecialPage {
 		$output->addModuleStyles( [ 'ext.wikilambda.special.styles' ] );
 
 		$output->addWikiMsg(
-			'wikilambda-special-create-abstract-intro',
+			'wikilambda-abstract-special-create-intro',
 			'Special:MyLanguage/Abstract:List_of_policies_and_guidelines'
 		);
 

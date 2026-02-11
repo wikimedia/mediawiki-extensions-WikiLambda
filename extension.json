@@ -980,6 +980,11 @@
 				"wikilambda-about-widget-no-inputs",
 				"wikilambda-about-widget-unlabelled-input",
 				"wikilambda-about-widget-input-label",
+				"wikilambda-abstract-content-object",
+				"wikilambda-abstract-preview-in-language",
+				"wikilambda-abstract-special-create-createbutton-label",
+				"wikilambda-abstract-special-create-existing",
+				"wikilambda-abstract-special-create-existing",
 				"wikilambda-function-explorer-accessible-label",
 				"wikilambda-function-explorer-title",
 				"wikilambda-function-inputs-title",
@@ -1037,10 +1042,10 @@
 				"wikilambda-wikidata-entity-selector-placeholder",
 				"wikilambda-wikidata-entity-empty-value-placeholder",
 				"wikilambda-wikidata-item-selector-placeholder",
-				"wikilambda-wikidata-lexeme-selector-placeholder",
 				"wikilambda-wikidata-lexeme-form-selector-placeholder",
-				"wikilambda-wikidata-lexeme-sense-selector-placeholder",
+				"wikilambda-wikidata-lexeme-selector-placeholder",
 				"wikilambda-wikidata-lexeme-sense-no-senses-message",
+				"wikilambda-wikidata-lexeme-sense-selector-placeholder",
 				"wikilambda-wikidata-property-selector-placeholder"
 			]
 		}

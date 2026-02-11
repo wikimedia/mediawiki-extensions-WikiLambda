@@ -61,9 +61,10 @@ const upstreami18n = {
 	parentheses: '($1)',
 	'quotation-marks': '"$1"'
 };
-let englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
+const baseEnglishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
 const englishVeMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/ve/en.json' ) ) );
-englishMessages = Object.assign( englishMessages, englishVeMessages, upstreami18n );
+const englishAbstractMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/abstract/en.json' ) ) );
+const englishMessages = Object.assign( {}, baseEnglishMessages, englishVeMessages, englishAbstractMessages, upstreami18n );
 
 class Mocki18n {
 	constructor( string, param ) {

@@ -11,12 +11,16 @@
 	"right-wikilambda-abstract-create": "{{doc-right|wikilambda-abstract-create}}",
 	"right-wikilambda-abstract-edit": "{{doc-right|wikilambda-abstract-edit}}",
 	"specialpages-group-abstractwiki": "{{doc-special-group|that=are related to Abstract Wikipedia}}",
+	"wikilambda-abstract-content-object": "Label shown at the top of the Abstract Content object editor.",
 	"wikilambda-abstract-edit-title": "Title for the page for editing the Abstract Article of a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page.",
-	"wikilambda-invalidabstractcontent": "Error shown when an invalid Abstract Content definition edit is made.",
-	"wikilambda-invalidabstractcontenttitle": "Error shown when a user tries to create an Abstract Content object with an invalid title.\n\nParameters:\n* $1 - The given, invalid title.",
-	"wikilambda-special-create-abstract": "Title for the Special page to create a new Abstract Article",
-	"wikilambda-special-create-abstract-not-enabled": "Intro text for the Special page to create a new Abstract Article when the feature is not enabled.",
-	"wikilambda-special-create-abstract-not-enabled-title": "Title for the Special page to create a new Abstract Article when the feature is not enabled.",
-	"wikilambda-special-create-abstract-qid": "Title for the Special page to create a new Abstract Article for a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page.",
-	"wikilambda-special-create-abstract-intro": "Intro text for the Special page to create a new Abstract Article.\n\nParameters:\n* $1 - link to the community rules page, hard-coded for now to Special:MyLanguage/Abstract:List_of_policies_and_guidelines."
+	"wikilambda-abstract-preview-in-language": "Label for the preview of the Abstract Article rendered into a user-specified language.\n\nParameters:\n* $1 - The name of the specified language for the auto-article in the user's language.",
+	"wikilambda-abstract-invalidcontent": "Error shown when an invalid Abstract Content definition edit is made.",
+	"wikilambda-abstract-invalidcontenttitle": "Error shown when a user tries to create an Abstract Content object with an invalid title.\n\nParameters:\n* $1 - The given, invalid title.",
+	"wikilambda-abstract-special-create": "Title for the Special page to create a new Abstract Article",
+	"wikilambda-abstract-special-create-createbutton-label": "Label for the button to create a new Abstract Article on the Special:CreateAbstract page.",
+	"wikilambda-abstract-special-create-existing": "Warning message to users who try to create an Abstract Article about an existing topic. The next line following the colon is the label and QID of the Abstract Article, as a link.",
+	"wikilambda-abstract-special-create-intro": "Intro text for the Special page to create a new Abstract Article.\n\nParameters:\n* $1 - link to the community rules page, hard-coded for now to Special:MyLanguage/Abstract:List_of_policies_and_guidelines.",
+	"wikilambda-abstract-special-create-not-enabled": "Intro text for the Special page to create a new Abstract Article when the feature is not enabled.",
+	"wikilambda-abstract-special-create-not-enabled-title": "Title for the Special page to create a new Abstract Article when the feature is not enabled.",
+	"wikilambda-abstract-special-create-qid": "Title for the Special page to create a new Abstract Article for a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page."
 }

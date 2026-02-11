@@ -68,7 +68,7 @@ describe( 'AbstractPreview', () => {
 	it( 'renders preview header with language label', () => {
 		const wrapper = renderPreview();
 
-		expect( wrapper.text() ).toContain( 'Preview in English' );
+		expect( wrapper.text() ).toContain( 'Auto-article preview in English' );
 	} );
 
 	it( 'renders abstract title', () => {

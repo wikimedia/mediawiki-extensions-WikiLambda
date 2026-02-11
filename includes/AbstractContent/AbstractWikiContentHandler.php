@@ -212,7 +212,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 					[
 						'class' => [ 'ext-wikilambda-view-invalidcontent', 'warning' ],
 					],
-					wfMessage( 'wikilambda-invalidabstractcontent' )->inLanguage( $userLang )->text()
+					wfMessage( 'wikilambda-abstract-invalidcontent' )->inLanguage( $userLang )->text()
 				)
 			);
 			// Exit early, as the rest of the code relies on the stored content being ours.

@@ -151,7 +151,7 @@ describe( 'AbstractTitle', () => {
 		const warningMessage = wrapper.findComponent( { name: 'cdx-message' } );
 		expect( warningMessage.exists() ).toBe( true );
 		expect( warningMessage.text() ).toBe(
-			'The selected Wikidata Item already has an associated Abstract Article: (Q42)' );
+			'The selected Wikidata Item already has an associated Abstract Article:  (Q42)' );
 	} );
 
 	it( 'sets new Abstract Wiki content Id when clicking create', async () => {

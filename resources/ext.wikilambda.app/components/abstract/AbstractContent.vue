@@ -7,8 +7,7 @@
 <template>
 	<wl-widget-base class="ext-wikilambda-app-abstract-content">
 		<template #header>
-			<!-- FIXME internationalize when we have decided naming -->
-			Abstract content object
+			{{ i18n( 'wikilambda-abstract-content-object' ).text() }}
 		</template>
 		<template #header-action>
 			<!-- FIXME where to put the Publish button? -->

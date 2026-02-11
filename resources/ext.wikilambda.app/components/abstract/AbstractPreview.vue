@@ -9,8 +9,7 @@
 		<template #header>
 			<!-- FIXME not sure if we want title -->
 			<!-- FIXME if we do, do we want the language? -->
-			<!-- FIXME internationalize -->
-			Preview in {{ languageLabelData.label }}
+			{{ $i18n( 'wikilambda-abstract-preview-in-language', [ languageLabelData.label ] ).text() }}
 		</template>
 		<template #header-action>
 			<!-- TODO (T411694): Add a select language button,
