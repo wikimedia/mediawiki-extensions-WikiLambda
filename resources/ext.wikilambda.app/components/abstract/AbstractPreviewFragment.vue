@@ -86,7 +86,7 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Renders the preview of the given fragment for the
-		 * current page arguments: qid, language and today's date
+		 * current preview language: qid, language and today's date
 		 */
 		function renderPreview() {
 			store.renderFragmentPreview( {
@@ -94,7 +94,7 @@ module.exports = exports = defineComponent( {
 				fragment: props.fragment,
 				qid: store.getAbstractWikiId,
 				date: dateForToday.value,
-				language: store.getUserLangZid
+				language: store.getPreviewLanguageZid
 			} );
 		}
 

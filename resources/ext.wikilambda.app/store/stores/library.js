@@ -1161,7 +1161,7 @@ module.exports = {
 								break;
 
 							case Constants.Z_NATURAL_LANGUAGE:
-								// If the zObject is a natural langugae, save the
+								// If the zObject is a natural language, save the
 								// code and the zid in the store for easy access
 								this.setLanguageCode( {
 									code: objectValue[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ],
@@ -1221,6 +1221,9 @@ module.exports = {
 					Constants.Z_ARGUMENT_REFERENCE,
 					// Abstract objects
 					Constants.Z_ABSTRACT_RENDER_FUNCTION,
+					// Needed for Abstract Preview language selector
+					this.getUserLangZid,
+					Constants.Z_NATURAL_LANGUAGE,
 					// Needed for ZObject selector
 					... Constants.SUGGESTIONS.LANGUAGES,
 					... Constants.SUGGESTIONS.TYPES

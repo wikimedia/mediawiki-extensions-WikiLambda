@@ -12,8 +12,13 @@
 			{{ i18n( 'wikilambda-abstract-preview-in-language', [ languageLabelData.label ] ).text() }}
 		</template>
 		<template #header-action>
-			<!-- TODO (T411694): Add a select language button,
-				or a select language field that we can change? -->
+			<wl-z-object-selector
+				class="ext-wikilambda-app-abstract-preview__language-selector"
+				:selected-zid="previewLanguageZid"
+				:exclude-zids="excludedLanguageZids"
+				:type="naturalLanguageType"
+				@select-item="onPreviewLanguageSelect"
+			></wl-z-object-selector>
 		</template>
 		<template #main>
 			<h1>{{ abstractTitle.label }}</h1>
@@ -39,18 +44,21 @@
 <script>
 const { computed, defineComponent, inject } = require( 'vue' );
 
+const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 
 // Abstract components
 const AbstractPreviewFragment = require( './AbstractPreviewFragment.vue' );
 // Base components
 const WidgetBase = require( '../base/WidgetBase.vue' );
+const ZObjectSelector = require( '../base/ZObjectSelector.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-preview',
 	components: {
 		'wl-widget-base': WidgetBase,
-		'wl-abstract-preview-fragment': AbstractPreviewFragment
+		'wl-abstract-preview-fragment': AbstractPreviewFragment,
+		'wl-z-object-selector': ZObjectSelector
 	},
 	setup() {
 		const i18n = inject( 'i18n' );
@@ -66,15 +74,41 @@ module.exports = exports = defineComponent( {
 		 */
 		const abstractTitle = computed( () => store.getItemLabelData( store.getAbstractWikiId ) );
 
+		// Preview language
 		/**
 		 * @return {LabelData}
 		 */
-		const languageLabelData = computed( () => store.getLabelData( store.getUserLangZid ) );
+		const previewLanguageZid = computed( () => store.getPreviewLanguageZid );
+
+		/**
+		 * @return {LabelData}
+		 */
+		const languageLabelData = computed( () => store.getLabelData( store.getPreviewLanguageZid ) );
+
+		/**
+		 * Exclude the currently selected preview language from the selector.
+		 *
+		 * @return {Array<string>}
+		 */
+		const excludedLanguageZids = computed( () => [ store.getPreviewLanguageZid ] );
+
+		/**
+		 * Handle the selection of a new preview language.
+		 *
+		 * @param {string} zid
+		 */
+		function onPreviewLanguageSelect( zid ) {
+			store.setPreviewLanguageZid( zid );
+		}
 
 		return {
 			i18n,
 			abstractTitle,
+			excludedLanguageZids,
 			languageLabelData,
+			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE,
+			onPreviewLanguageSelect,
+			previewLanguageZid,
 			sections
 		};
 	}

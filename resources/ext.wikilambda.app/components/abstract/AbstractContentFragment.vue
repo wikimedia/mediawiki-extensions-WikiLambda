@@ -13,8 +13,10 @@
 		@focus="setHighlight"
 		@blur="unsetHighlight"
 	>
+		<!-- FIXME: i18n the aria-label for the fragment actions menu -->
 		<cdx-menu-button
 			v-if="edit"
+			:aria-label="i18n( 'wikilambda-abstract-fragment-actions-menu' ).text()"
 			class="ext-wikilambda-app-abstract-content-fragment-menu"
 			:menu-items="menuItems"
 			:selected="null"
@@ -38,7 +40,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, onUnmounted } = require( 'vue' );
+const { computed, defineComponent, inject, onUnmounted } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -72,6 +74,7 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'action' ],
 	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
 		// Constants
@@ -182,6 +185,7 @@ module.exports = exports = defineComponent( {
 		} );
 
 		return {
+			i18n,
 			icon,
 			isHighlighted,
 			setHighlight,

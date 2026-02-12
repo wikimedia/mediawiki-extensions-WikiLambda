@@ -553,6 +553,7 @@
 				"ext.wikilambda.app/composables/useShareUrl.js",
 				"ext.wikilambda.app/composables/useType.js",
 				"ext.wikilambda.app/composables/useZObject.js",
+				"ext.wikilambda.app/utils/abstractUtils.js",
 				"ext.wikilambda.app/utils/apiUtils.js",
 				"ext.wikilambda.app/utils/errorUtils.js",
 				"ext.wikilambda.app/utils/eventLogUtils.js",

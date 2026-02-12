@@ -12,6 +12,7 @@
 	"right-wikilambda-abstract-edit": "Edit existing Abstract Content pages",
 	"specialpages-group-abstractwiki": "Abstract Wikipedia pages",
 	"wikilambda-abstract-content-object": "Abstract content object",
+	"wikilambda-abstract-fragment-actions-menu": "Fragment actions menu",
 	"wikilambda-abstract-edit-title": "Edit Abstract Article for $1",
 	"wikilambda-abstract-invalidcontent": "The provided content is not a valid Abstract Content object.",
 	"wikilambda-abstract-invalidcontenttitle": "The provided title '$1' is not valid for an Abstract Content object.",

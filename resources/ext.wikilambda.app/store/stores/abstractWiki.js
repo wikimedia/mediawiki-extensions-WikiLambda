@@ -12,6 +12,7 @@ const { extractZIDs } = require( '../../utils/schemata.js' );
 const { buildAbstractWikiTitle } = require( '../../utils/urlUtils.js' );
 const { extractWikidataItemIds } = require( '../../utils/wikidataUtils.js' );
 const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
+const { getFragmentCacheKey } = require( '../../utils/abstractUtils.js' );
 
 const DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT = 2000;
 
@@ -19,7 +20,8 @@ const abstractWikiStore = {
 	state: {
 		qid: undefined,
 		fragments: {},
-		highlight: undefined
+		highlight: undefined,
+		previewLanguageZid: undefined
 	},
 	getters: {
 		/**
@@ -59,8 +61,17 @@ const abstractWikiStore = {
 			return mw.config.get( 'wgWikiLambdaAbstractPrimaryNamespace' );
 		},
 		/**
+		 * Returns the preview language Zid (defaults to user/page language).
+		 *
+		 * @param {Object} state
+		 * @return {string}
+		 */
+		getPreviewLanguageZid: function ( state ) {
+			return state.previewLanguageZid || this.getUserLangZid;
+		},
+		/**
 		 * Returns the cached value of the Abstract Wiki Content fragment preview,
-		 * given its key path.
+		 * given its key path. Cache is keyed by keyPath and current preview language.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -70,8 +81,7 @@ const abstractWikiStore = {
 			 * @param {string} keyPath
 			 * @return {Object|undefined}
 			 */
-			const storedFragment = ( keyPath ) => state.fragments[ keyPath ];
-			return storedFragment;
+			return ( keyPath ) => state.fragments[ getFragmentCacheKey( keyPath, this.getPreviewLanguageZid ) ];
 		},
 		/**
 		 * FIXME add jsdoc
@@ -92,6 +102,14 @@ const abstractWikiStore = {
 		setAbstractWikiId: function ( qid ) {
 			this.qid = qid;
 			this.jsonObject[ Constants.STORED_OBJECTS.ABSTRACT ][ Constants.ABSTRACT_WIKI_QID ] = qid;
+		},
+		/**
+		 * Sets the language Zid used for rendering the Abstract preview.
+		 *
+		 * @param {string} zid
+		 */
+		setPreviewLanguageZid: function ( zid ) {
+			this.previewLanguageZid = zid;
 		},
 		/**
 		 * Initializes the store for reading or editing an Abstract Content page,
@@ -190,14 +208,15 @@ const abstractWikiStore = {
 		 * @return {Promise}
 		 */
 		renderFragmentPreview: function ( payload ) {
-			const { keyPath } = payload;
+			const { keyPath, language } = payload;
+			const cacheKey = getFragmentCacheKey( keyPath, language );
 
 			// Not initialized yet, set blank object
-			if ( !( keyPath in this.fragments ) ) {
-				this.fragments[ keyPath ] = { isDirty: true };
+			if ( !( cacheKey in this.fragments ) ) {
+				this.fragments[ cacheKey ] = { isDirty: true };
 			}
 
-			const fragmentStatus = this.fragments[ keyPath ];
+			const fragmentStatus = this.fragments[ cacheKey ];
 
 			// If fragment is already generated or request ongoing, resolve
 			if ( !fragmentStatus.isDirty || fragmentStatus.isLoading ) {
@@ -205,15 +224,15 @@ const abstractWikiStore = {
 			}
 
 			// Else, initiate rendering call
-			this.fragments[ keyPath ].isLoading = true;
+			this.fragments[ cacheKey ].isLoading = true;
 			return runAbstractWikiFragment( payload )
 				.then( ( fragment ) => {
-					this.setRenderedFragment( { keyPath, fragment } );
+					this.setRenderedFragment( { keyPath, language, fragment } );
 				} )
 				.catch( () => {
 					// FIXME i18n, detailed error info, etc
 					const error = 'Unable to render fragment';
-					this.setRenderedFragment( { keyPath, error } );
+					this.setRenderedFragment( { keyPath, language, error } );
 				} );
 		},
 		/**
@@ -221,26 +240,28 @@ const abstractWikiStore = {
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.keyPath
+		 * @param {string} payload.language
 		 * @param {Object} payload.fragment
 		 * @param {string} payload.error
 		 */
 		setRenderedFragment: function ( payload ) {
-			const { keyPath, fragment, error } = payload;
-			if ( !( keyPath in this.fragments ) ) {
-				this.fragments[ keyPath ] = { isLoading: true };
+			const { keyPath, language, fragment, error } = payload;
+			const cacheKey = getFragmentCacheKey( keyPath, language );
+			if ( !( cacheKey in this.fragments ) ) {
+				this.fragments[ cacheKey ] = { isLoading: true };
 			}
 
 			if ( error ) {
-				this.fragments[ keyPath ].error = true;
-				this.fragments[ keyPath ].isDirty = false;
-				this.fragments[ keyPath ].html = error;
+				this.fragments[ cacheKey ].error = true;
+				this.fragments[ cacheKey ].isDirty = false;
+				this.fragments[ cacheKey ].html = error;
 			} else {
-				this.fragments[ keyPath ].error = false;
-				this.fragments[ keyPath ].isDirty = false;
-				this.fragments[ keyPath ].html = fragment;
+				this.fragments[ cacheKey ].error = false;
+				this.fragments[ cacheKey ].isDirty = false;
+				this.fragments[ cacheKey ].html = fragment;
 			}
 
-			this.fragments[ keyPath ].isLoading = false;
+			this.fragments[ cacheKey ].isLoading = false;
 		},
 		/**
 		 * Set fragment data as dirty after DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT ms
@@ -249,14 +270,15 @@ const abstractWikiStore = {
 		 */
 		setDirtyFragment: function ( keyPath ) {
 			const fragmentPath = keyPath.split( '.' ).slice( 0, 5 ).join( '.' );
+			const cacheKey = getFragmentCacheKey( fragmentPath, this.getPreviewLanguageZid );
 
 			// If fragment is not initialized, do nothing
-			if ( !( fragmentPath in this.fragments ) ) {
+			if ( !( cacheKey in this.fragments ) ) {
 				return;
 			}
 
 			// Debounce setting fragment as dirty to avoid stream of updates
-			const fragment = this.fragments[ fragmentPath ];
+			const fragment = this.fragments[ cacheKey ];
 			if ( fragment.debounce ) {
 				clearTimeout( fragment.debounce );
 			}
@@ -273,17 +295,21 @@ const abstractWikiStore = {
 		 * @param {string} keyPath2
 		 */
 		swapFragmentPreviews: function ( keyPath1, keyPath2 ) {
-			if ( !( keyPath1 in this.fragments ) ) {
+			const lang = this.getPreviewLanguageZid;
+			const cacheKey1 = getFragmentCacheKey( keyPath1, lang );
+			const cacheKey2 = getFragmentCacheKey( keyPath2, lang );
+
+			if ( !( cacheKey1 in this.fragments ) ) {
 				throw new Error( `Unable to swap fragments: Fragment not found: "${ keyPath1 }"` );
 			}
 
-			if ( !( keyPath2 in this.fragments ) ) {
+			if ( !( cacheKey2 in this.fragments ) ) {
 				throw new Error( `Unable to swap fragments: Fragment not found: "${ keyPath2 }"` );
 			}
 
-			const temp = this.fragments[ keyPath1 ];
-			this.fragments[ keyPath1 ] = this.fragments[ keyPath2 ];
-			this.fragments[ keyPath2 ] = temp;
+			const temp = this.fragments[ cacheKey1 ];
+			this.fragments[ cacheKey1 ] = this.fragments[ cacheKey2 ];
+			this.fragments[ cacheKey2 ] = temp;
 		},
 		/**
 		 * Shift all fragments, starting from keyPath, a number of
@@ -297,35 +323,47 @@ const abstractWikiStore = {
 				throw new Error( `Unable to shift fragments: Invalid offset: "${ offset }"` );
 			}
 
-			const parts = keyPath.split( '.' );
-			const startIndex = Number( parts.pop() );
+			const lang = this.getPreviewLanguageZid;
+			const pathParts = keyPath.split( '.' );
+			const startIndex = Number( pathParts.pop() );
+			const sectionPathPrefix = pathParts.join( '.' );
 
 			if ( !Number.isInteger( startIndex ) ) {
 				throw new Error( `Unable to shift fragments: Invalid starting index: "${ startIndex }"` );
 			}
 
-			const shiftKeys = Object.keys( this.fragments )
-				.filter( ( key ) => {
-					// Filter in only the keys that need to be shifted
-					const index = Number( key.split( '.' ).slice( -1 )[ 0 ] );
-					return index >= startIndex;
-				} )
-				.sort( ( a, b ) => {
-					// Sort in descending order for possitive offset
-					// Sort in ascending order for negative offset
-					const aIndex = Number( a.split( '.' ).slice( -1 )[ 0 ] );
-					const bIndex = Number( b.split( '.' ).slice( -1 )[ 0 ] );
-					return offset > 0 ? bIndex - aIndex : aIndex - bIndex;
+			const langSuffix = `|${ lang }`;
+
+			function keyPathFromCacheKey( cacheKey ) {
+				return cacheKey.slice( 0, -langSuffix.length );
+			}
+			function indexFromKeyPath( path ) {
+				return Number( path.split( '.' ).slice( -1 )[ 0 ] );
+			}
+			function isInSectionAndAtOrAfterStart( cacheKey ) {
+				const path = keyPathFromCacheKey( cacheKey );
+				const index = indexFromKeyPath( path );
+				return path.startsWith( sectionPathPrefix ) && index >= startIndex;
+			}
+
+			const cacheKeysToShift = Object.keys( this.fragments )
+				.filter( ( cacheKey ) => cacheKey.endsWith( langSuffix ) && isInSectionAndAtOrAfterStart( cacheKey ) )
+				.sort( ( cacheKeyA, cacheKeyB ) => {
+					const indexA = indexFromKeyPath( keyPathFromCacheKey( cacheKeyA ) );
+					const indexB = indexFromKeyPath( keyPathFromCacheKey( cacheKeyB ) );
+					return offset > 0 ? indexB - indexA : indexA - indexB;
 				} );
 
-			// For each key to be shifted, assign its value on the new
-			// key (added offset) and delete the current one.
-			for ( const key of shiftKeys ) {
-				const thisIndex = Number( key.split( '.' ).slice( -1 )[ 0 ] );
-				const newIndex = thisIndex + offset;
-				const newKey = [ ...parts, newIndex ].join( '.' );
-				this.fragments[ newKey ] = this.fragments[ key ];
-				delete this.fragments[ key ];
+			for ( const oldCacheKey of cacheKeysToShift ) {
+				const oldKeyPath = keyPathFromCacheKey( oldCacheKey );
+				const oldKeyPathParts = oldKeyPath.split( '.' );
+				const oldIndex = Number( oldKeyPathParts.slice( -1 )[ 0 ] );
+				const newIndex = oldIndex + offset;
+				const newKeyPath = [ ...oldKeyPathParts.slice( 0, -1 ), newIndex ].join( '.' );
+				const newCacheKey = getFragmentCacheKey( newKeyPath, lang );
+
+				this.fragments[ newCacheKey ] = this.fragments[ oldCacheKey ];
+				delete this.fragments[ oldCacheKey ];
 			}
 		},
 		/**

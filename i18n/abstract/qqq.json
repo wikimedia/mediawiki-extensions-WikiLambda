@@ -12,6 +12,7 @@
 	"right-wikilambda-abstract-edit": "{{doc-right|wikilambda-abstract-edit}}",
 	"specialpages-group-abstractwiki": "{{doc-special-group|that=are related to Abstract Wikipedia}}",
 	"wikilambda-abstract-content-object": "Label shown at the top of the Abstract Content object editor.",
+	"wikilambda-abstract-fragment-actions-menu": "Accessible label for the menu button that provides actions for a fragment (move, insert, delete) in the Abstract Content editor.",
 	"wikilambda-abstract-edit-title": "Title for the page for editing the Abstract Article of a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page.",
 	"wikilambda-abstract-preview-in-language": "Label for the preview of the Abstract Article rendered into a user-specified language.\n\nParameters:\n* $1 - The name of the specified language for the auto-article in the user's language.",
 	"wikilambda-abstract-invalidcontent": "Error shown when an invalid Abstract Content definition edit is made.",
