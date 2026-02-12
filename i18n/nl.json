@@ -411,7 +411,7 @@
 	"wikilambda-performtest-error-nontester": "Voer een fouttest uit: '$1' is geen testcase.",
 	"wikilambda-performtest-error-unknown-zid": "Voer een fouttest uit: '$1' is geen bekend object",
 	"wikilambda-persistentzobject-contents": "Inhoud",
-	"wikilambda-persistentzobject-description": "Begin met het maken van uw object door hieronder een type te selecteren. U kunt een functie aanmaken door op deze link te klikken:",
+	"wikilambda-persistentzobject-description": "Begin met het maken van uw object door hieronder een type te selecteren. U kunt een functie aanmaken door op deze koppeling te klikken:",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "U heeft het invoerveld van deze functie gewijzigd. <strong>Alle bestaande implementaties en tests worden losgekoppeld van de huidige functie.</strong> Wilt u doorgaan?",
 	"wikilambda-publish-input-changed-impact-prompt": "U heeft het invoerveld van deze functie gewijzigd. <strong>Alle bestaande implementaties en tests worden losgekoppeld van de huidige functie.</strong> Wilt u doorgaan?",
 	"wikilambda-publish-lose-changes-prompt": "Als u vertrekt zonder eerst te publiceren, gaan uw bewerkingen verloren.",
