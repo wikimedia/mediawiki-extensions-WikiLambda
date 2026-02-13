@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
@@ -328,7 +329,7 @@ class PageRenderingHandler implements
 
 		if (
 			$this->config->get( 'WikiLambdaEnableAbstractMode' ) &&
-			ZObjectUtils::isValidAbstractWikiTitle( $id )
+			AbstractContentUtils::isValidAbstractWikiTitle( $id )
 		) {
 			$matches['title'] = "Special:ViewAbstract/$lang/$id";
 			return true;

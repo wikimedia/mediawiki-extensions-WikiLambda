@@ -14,7 +14,6 @@ use InvalidArgumentException;
 use MediaWiki\Content\AbstractContent;
 use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
@@ -187,8 +186,8 @@ EOD;
 		// Also consider null (Q0) qid as valid, as empty content objects must pass validation
 		if (
 			!isset( $this->object->qid ) || !is_string( $this->object->qid ) ||
-			( !ZObjectUtils::isValidWikidataItemReference( $this->object->qid ) &&
-			!ZObjectUtils::isNullWikidataItemReference( $this->object->qid ) )
+			( !AbstractContentUtils::isValidWikidataItemReference( $this->object->qid ) &&
+			!AbstractContentUtils::isNullWikidataItemReference( $this->object->qid ) )
 		) {
 			$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-badqid' );
 			return false;
@@ -209,7 +208,7 @@ EOD;
 		// For each section:
 		foreach ( get_object_vars( $this->object->sections ) as $key => $section ) {
 			// Section key must be a valid qid
-			if ( !ZObjectUtils::isValidWikidataItemReference( $key ) ) {
+			if ( !AbstractContentUtils::isValidWikidataItemReference( $key ) ) {
 				$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-section-badqid' );
 				return false;
 			}

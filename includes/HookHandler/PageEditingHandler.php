@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\Api\ApiMessage;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -187,7 +188,7 @@ class PageEditingHandler implements
 	 */
 	private function abstractContentSave( $linkTarget, $renderedRevision, $hookStatus ): bool {
 		$qid = $linkTarget->getDBkey();
-		if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
+		if ( !AbstractContentUtils::isValidWikidataItemReference( $qid ) ) {
 			// Title not valid; exit with error
 			$hookStatus->fatal( 'wikilambda-invalidabstracttitle', $qid );
 			return false;
@@ -273,7 +274,7 @@ class PageEditingHandler implements
 	private function getAbstractUserPermissionsErrors( $title, &$result ) {
 		$qid = $title->getDBkey();
 
-		if ( !ZObjectUtils::isValidWikidataItemReference( $qid ) ) {
+		if ( !AbstractContentUtils::isValidWikidataItemReference( $qid ) ) {
 			// Abstract Wiki content, but title is not a Wikidata Item Id; return error
 			$result = ApiMessage::create(
 				wfMessage( 'wikilambda-invalidabstracttitle', $qid ),
