@@ -28,6 +28,33 @@ const apiUtils = {
 	},
 
 	/**
+	 * Calls the wikilambdaload_zlanguages internal API
+	 * to map language codes (BCP47 / MediaWiki) to ZLanguage ZIDs.
+	 *
+	 * @param {Object} payload
+	 * @param {string[]} payload.codes Array of language codes
+	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+	 * @return {Promise}
+	 */
+	fetchLanguageZids: function ( payload ) {
+		const api = apiUtils.newApi();
+
+		return new Promise( ( resolve, reject ) => {
+			api.get( {
+				action: 'query',
+				list: 'wikilambdaload_zlanguages',
+				format: 'json',
+				formatversion: '2',
+				wikilambdaload_zlanguages_codes: payload.codes
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => resolve( data.query.wikilambdaload_zlanguages ) )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
+	},
+
+	/**
 	 * Calls the wikilambda_function_call internal API
 	 * https://www.mediawiki.org/wiki/Extension:WikiLambda/API#wikilambda_function_call
 	 *

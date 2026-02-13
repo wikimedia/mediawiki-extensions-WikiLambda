@@ -217,6 +217,7 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-app-monolingual-string {
 	.ext-wikilambda-app-monolingual-string__chip {
 		min-width: 32px;
+		flex-shrink: 0;
 
 		&--empty {
 			border: 1px dashed @border-color-base;

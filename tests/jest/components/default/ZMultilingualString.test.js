@@ -98,6 +98,29 @@ const emptyObjectValue = {
 	]
 };
 
+// Multilingual string with languages as ISO codes (Z60 with Z60K1) so getZMultilingualLangs returns ['en', 'es', 'fr']
+const objectValueWithLanguageCodes = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+	Z12K1: [
+		{ Z1K1: 'Z9', Z9K1: 'Z11' },
+		{
+			Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+			Z11K1: { Z1K1: 'Z60', Z60K1: { Z1K1: 'Z6', Z6K1: 'en' } },
+			Z11K2: { Z1K1: 'Z6', Z6K1: 'English' }
+		},
+		{
+			Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+			Z11K1: { Z1K1: 'Z60', Z60K1: { Z1K1: 'Z6', Z6K1: 'es' } },
+			Z11K2: { Z1K1: 'Z6', Z6K1: 'Spanish' }
+		},
+		{
+			Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+			Z11K1: { Z1K1: 'Z60', Z60K1: { Z1K1: 'Z6', Z6K1: 'fr' } },
+			Z11K2: { Z1K1: 'Z6', Z6K1: 'French' }
+		}
+	]
+};
+
 describe( 'ZMultilingualString', () => {
 	let store;
 
@@ -198,6 +221,8 @@ describe( 'ZMultilingualString', () => {
 				Z6K1: ''
 			}
 		} );
+		store.ensureLanguageCodes = jest.fn().mockResolvedValue( undefined );
+		store.fetchZids = jest.fn().mockResolvedValue( undefined );
 	} );
 
 	describe( 'in view mode', () => {
@@ -373,6 +398,25 @@ describe( 'ZMultilingualString', () => {
 	} );
 
 	describe( 'initialization', () => {
+		it( 'calls fetchZids on mount when item languages are ZIDs', () => {
+			// Default test data has getZMultilingualLangs = [ 'Z1002', 'Z1003', 'Z1004', '' ] (ZIDs)
+			renderZMultilingualString( { edit: false } );
+
+			expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1002', 'Z1003', 'Z1004' ] } );
+			expect( store.ensureLanguageCodes ).not.toHaveBeenCalled();
+		} );
+
+		it( 'calls ensureLanguageCodes on mount when item languages are language codes', () => {
+			// Use objectValue with Z60 (natural language) so getZMultilingualLangs returns ['en', 'es', 'fr']
+			renderZMultilingualString( {
+				objectValue: objectValueWithLanguageCodes,
+				edit: false
+			} );
+
+			expect( store.ensureLanguageCodes ).toHaveBeenCalledWith( { codes: [ 'en', 'es', 'fr' ] } );
+			expect( store.fetchZids ).not.toHaveBeenCalled();
+		} );
+
 		it( 'displays priority languages when available', async () => {
 			const wrapper = renderZMultilingualString( {
 				edit: false

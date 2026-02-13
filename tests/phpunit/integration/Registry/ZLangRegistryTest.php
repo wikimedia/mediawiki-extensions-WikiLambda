@@ -120,6 +120,30 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry->getLanguageZidFromCode( $notFoundCode );
 	}
 
+	public function testGetLanguageZidsFromCodes_registered() {
+		$map = $this->registry->getLanguageZidsFromCodes( [ 'en' ] );
+		$this->assertSame( [ 'en' => self::ZLANG['en'] ], $map );
+	}
+
+	public function testGetLanguageZidsFromCodes_unregisteredButInDb() {
+		// Ensure language exists in the DB cache layer but isn't in the in-memory registry
+		$this->registry->register( self::ZLANG['zh'], 'zh' );
+		$this->insertZids( [ 'Z60', self::ZLANG['zh'] ] );
+		$this->registry->unregister( self::ZLANG['zh'] );
+
+		$map = $this->registry->getLanguageZidsFromCodes( [ 'zh' ] );
+		$this->assertSame( [ 'zh' => self::ZLANG['zh'] ], $map );
+		$this->assertTrue( $this->registry->isZidCached( self::ZLANG['zh'] ) );
+	}
+
+	public function testGetLanguageZidsFromCodes_mixed() {
+		$map = $this->registry->getLanguageZidsFromCodes( [ 'en', 'xx-nonexistent' ] );
+		$this->assertArrayHasKey( 'en', $map );
+		$this->assertSame( self::ZLANG['en'], $map['en'] );
+		$this->assertArrayHasKey( 'xx-nonexistent', $map );
+		$this->assertNull( $map['xx-nonexistent'] );
+	}
+
 	public function testGetLanguageCodeFromContent_found() {
 		$zid = self::ZLANG['fr'];
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';

@@ -337,7 +337,7 @@ module.exports = exports = defineComponent( {
 			initializeInputFields();
 			// Fetch language zid for content page
 			const langCode = mw.config.get( 'wgContentLanguage' );
-			store.fetchLanguageCode( langCode );
+			store.ensureLanguageCodes( { codes: [ langCode ] } );
 		} );
 
 		return {

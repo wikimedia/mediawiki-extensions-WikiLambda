@@ -1128,6 +1128,7 @@
 				"TitleFactory"
 			]
 		},
+		"wikilambdaload_zlanguages": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZLanguages",
 		"wikilambdafn_search": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZFunctionReference",
 			"services": [

@@ -241,6 +241,9 @@ describe( 'abstractWiki Pinia store', () => {
 				const extractedQids = { ids: [ mockQid, ledeQid ] };
 				expect( store.fetchItems ).toHaveBeenCalledWith( extractedQids );
 
+				// Preview language set from fallback chain
+				expect( store.previewLanguageZid ).toBe( mockLang );
+
 				// Set page as initialized
 				expect( store.setInitialized ).toHaveBeenCalledWith( true );
 			} );
@@ -266,7 +269,7 @@ describe( 'abstractWiki Pinia store', () => {
 		} );
 
 		describe( 'setPreviewLanguageZid', () => {
-			it( 'sets the preview language Zid', () => {
+			it( 'sets the preview language ZID', () => {
 				store.setPreviewLanguageZid( 'Z1004' );
 				expect( store.previewLanguageZid ).toBe( 'Z1004' );
 			} );

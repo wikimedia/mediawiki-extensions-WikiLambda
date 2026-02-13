@@ -133,7 +133,9 @@ module.exports = exports = defineComponent( {
 		const values = computed( () => getZMultilingualValues( props.objectValue ) );
 
 		/**
-		 * Returns the array of all terminal language values
+		 * Returns the array of all terminal language values.
+		 * Each entry can be either a language code (e.g. 'en', 'es')
+		 * or a ZLanguage Zid (e.g. 'Z1002').
 		 *
 		 * @return {Array}
 		 */
@@ -391,27 +393,6 @@ module.exports = exports = defineComponent( {
 			visibleLangZids.value = [ ...new Set( [ ...visibleLangZids.value, langZid ] ) ];
 		}
 
-		// Data fetching
-		/**
-		 * Fetches ZIDs for languages that were converted from ISO codes to ZIDs.
-		 * This ensures that language objects are available in the store for proper display.
-		 */
-		function fetchMissingLanguageZids() {
-			const zids = [];
-
-			// Check all items for converted languages
-			allViewItems.value.forEach( ( { langZid } ) => {
-				if ( langZid && !store.getStoredObject( langZid ) ) {
-					zids.push( langZid );
-				}
-			} );
-
-			// Fetch any missing ZIDs
-			if ( zids.length > 0 ) {
-				store.fetchZids( { zids } );
-			}
-		}
-
 		// Store synchronization
 		/**
 		 * Watches for changes in the store to detect additions/deletions.
@@ -441,13 +422,37 @@ module.exports = exports = defineComponent( {
 			];
 		} );
 
+		/**
+		 * Pre-fetch language data (codes and ZLanguage objects) for all
+		 * languages referenced in this multilingual string. `langs.value`
+		 * may contain either language codes or ZLanguage ZIDs.
+		 */
+		function prefetchLanguageData() {
+			const allLangs = ( langs.value || [] ).filter( Boolean );
+			if ( !allLangs.length ) {
+				return;
+			}
+
+			const zidPattern = /^Z[1-9]\d*$/;
+			const { zids, languageCodes } = allLangs.reduce( ( acc, lang ) => {
+				( zidPattern.test( lang ) ? acc.zids : acc.languageCodes ).push( lang );
+				return acc;
+			}, { zids: [], languageCodes: [] } );
+
+			if ( languageCodes.length > 0 ) {
+				store.ensureLanguageCodes( { codes: languageCodes } );
+			}
+			if ( zids.length > 0 ) {
+				store.fetchZids( { zids } );
+			}
+		}
+
 		// Lifecycle
 		onMounted( () => {
 			// Initialize the multilingual string list with priority languages
 			initializeMultilingualStringList();
-
-			// Fetch ZIDs for any ISO codes that were converted from literal Z60 objects
-			fetchMissingLanguageZids();
+			// Lazily prefetch language data for dialog usage
+			prefetchLanguageData();
 		} );
 
 		return {

@@ -91,7 +91,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 const { CdxButton, CdxDialog, CdxSearchInput } = require( '../../../codex.js' );
 const Constants = require( '../../Constants.js' );
 const CustomDialogHeader = require( '../base/CustomDialogHeader.vue' );
@@ -447,27 +447,6 @@ module.exports = exports = defineComponent( {
 			// Default → add language
 			addLanguage( item.langZid );
 		}
-
-		// Data fetching
-		/**
-		 * Checks if there are no visible local items and fetches common language ZIDs if needed.
-		 * This helper method centralizes the logic for determining when to fetch common languages.
-		 */
-		function fetchCommonLanguagesIfNeeded() {
-			if ( getAvailableLanguages.value.length === 0 ) {
-				store.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
-			}
-		}
-
-		// Watch
-		watch( () => props.items, () => {
-			fetchCommonLanguagesIfNeeded();
-		} );
-
-		// Lifecycle
-		onMounted( () => {
-			fetchCommonLanguagesIfNeeded();
-		} );
 
 		// Return all properties and methods for the template
 		return {

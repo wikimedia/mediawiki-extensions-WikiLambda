@@ -1,5 +1,5 @@
 <!--
-	WikiLambda Vue component for the Abstract Content preview.
+	WikiLambda Vue component for the Abstract Content preview (single language block).
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
@@ -114,10 +114,10 @@ module.exports = exports = defineComponent( {
 			abstractTitle,
 			excludedLanguageZids,
 			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE,
-			onPreviewLanguageSelect,
 			previewLanguageZid,
 			sections,
-			bodyRef
+			bodyRef,
+			onPreviewLanguageSelect
 		};
 	}
 } );

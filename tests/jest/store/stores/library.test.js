@@ -274,17 +274,6 @@ describe( 'library Pinia store', () => {
 				expect( store.getLanguageZidOfCode( 'es' ) ).toBe( 'Z1003' );
 			} );
 
-			it( 'falls back to server-side mapping when language not in store', () => {
-				store.languages = {
-					en: 'Z1002'
-					// 'es' not in store
-				};
-
-				expect( store.getLanguageZidOfCode( 'es' ) ).toBe( 'Z1003' );
-				expect( store.getLanguageZidOfCode( 'fr' ) ).toBe( 'Z1004' );
-				expect( store.getLanguageZidOfCode( 'ru' ) ).toBe( 'Z1005' );
-			} );
-
 			it( 'returns undefined when language not found in store or server mapping', () => {
 				store.languages = {};
 
@@ -1189,84 +1178,74 @@ describe( 'library Pinia store', () => {
 			} );
 		} );
 
-		describe( 'fetchLanguageCode', () => {
+		describe( 'ensureLanguageCodes', () => {
 			beforeEach( () => {
-				store.setLanguageCode = jest.fn();
-				getMock = jest.fn( () => new Promise( ( resolve ) => {
-					const data = { query: { wikilambdasearch_labels: [ {
-						page_title: 'Z1003',
-						page_type: 'Z60',
-						match_label: 'es',
-						match_is_primary: '0',
-						match_lang: 'Z1360',
-						match_rate: 1,
-						label: 'Spanish',
-						type_label: 'Natural language'
-					} ] } };
-					resolve( data );
-				} ) );
-			} );
-
-			it( 'requests language code to labels API', async () => {
-				const langCode = 'es';
-				await store.fetchLanguageCode( langCode );
-
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'query',
-					list: 'wikilambdasearch_labels',
-					format: 'json',
-					formatversion: '2',
-					wikilambdasearch_limit: 1,
-					wikilambdasearch_continue: undefined,
-					wikilambdasearch_exact: true,
-					wikilambdasearch_search: 'es',
-					wikilambdasearch_type: 'Z60',
-					wikilambdasearch_return_type: undefined,
-					wikilambdasearch_language: 'en'
+				store.languages = {};
+				store.languageCodeRequests = {};
+				store.setLanguageCode = jest.fn().mockImplementation( ( { code, zid } ) => {
+					store.languages[ code ] = zid;
+				} );
+				store.fetchZids = jest.fn().mockResolvedValue();
+				getMock = jest.fn( ( params ) => {
+					if ( params.action === 'query' && params.list === 'wikilambdaload_zlanguages' ) {
+						const codes = Array.isArray( params.wikilambdaload_zlanguages_codes ) ?
+							params.wikilambdaload_zlanguages_codes : [];
+						return Promise.resolve( {
+							query: {
+								wikilambdaload_zlanguages: codes.map( ( code ) => ( {
+									code,
+									zid: code === 'es' ? 'Z1003' : ( code === 'fr' ? 'Z1004' : null )
+								} ) )
+							}
+						} );
+					}
+					return Promise.resolve( mockApiResponseFor( [ 'Z1', 'Z2', 'Z6' ] ) );
 				} );
 			} );
 
-			it( 'sets language code and zid if query returns result', async () => {
-				const langCode = 'es';
-				await store.fetchLanguageCode( langCode );
+			it( 'calls language_zids API and fetchZids with resolved zids', async () => {
+				await store.ensureLanguageCodes( { codes: [ 'es' ] } );
 
-				expect( store.setLanguageCode ).toHaveBeenCalledWith( {
-					code: langCode,
-					zid: 'Z1003'
-				} );
+				expect( getMock ).toHaveBeenCalledWith(
+					expect.objectContaining( {
+						action: 'query',
+						list: 'wikilambdaload_zlanguages',
+						format: 'json',
+						formatversion: '2',
+						wikilambdaload_zlanguages_codes: [ 'es' ]
+					} )
+				);
+				expect( store.setLanguageCode ).toHaveBeenCalledWith( { code: 'es', zid: 'Z1003' } );
+				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1003' ] } );
 			} );
 
-			it( 'sets nothing if query returns no result', async () => {
-				getMock = jest.fn( () => new Promise( ( resolve ) => {
-					const data = { query: { wikilambdasearch_labels: [] } };
-					resolve( data );
-				} ) );
+			it( 'skips API call when all codes already in state', async () => {
+				store.languages = { es: 'Z1003' };
 
-				const langCode = 'es';
-				await store.fetchLanguageCode( langCode );
+				await store.ensureLanguageCodes( { codes: [ 'es' ] } );
 
-				expect( store.setLanguageCode ).not.toHaveBeenCalled();
+				expect( getMock ).not.toHaveBeenCalled();
+				expect( store.fetchZids ).not.toHaveBeenCalled();
 			} );
 
-			it( 'does not set the code and zid if query does not return an exact match', async () => {
-				getMock = jest.fn( () => new Promise( ( resolve ) => {
-					const data = { query: { wikilambdasearch_labels: [ {
-						page_title: 'Z1423',
-						page_type: 'Z60',
-						match_label: 'es-formal',
-						match_is_primary: '1',
-						match_lang: 'Z1360',
-						match_rate: 0.3,
-						label: 'Formal Spanish',
-						type_label: 'Natural language'
-					} ] } };
-					resolve( data );
-				} ) );
+			it( 'dedupes codes and skips empty values before fetching', async () => {
+				await store.ensureLanguageCodes( { codes: [ 'es', 'es', 'es', '', 'fr' ] } );
 
-				const langCode = 'es';
-				await store.fetchLanguageCode( langCode );
+				// One API call with unique unknown codes [ 'es', 'fr' ]; '' filtered out
+				expect( getMock ).toHaveBeenCalledTimes( 1 );
+				expect( getMock ).toHaveBeenCalledWith(
+					expect.objectContaining( { wikilambdaload_zlanguages_codes: [ 'es', 'fr' ] } )
+				);
+			} );
 
-				expect( store.setLanguageCode ).not.toHaveBeenCalled();
+			it( 'reuses in-flight requests for codes already being fetched', async () => {
+				const inFlight = Promise.resolve();
+				store.languageCodeRequests = { es: inFlight };
+
+				await store.ensureLanguageCodes( { codes: [ 'es', 'fr' ] } );
+
+				// Should only issue a single API call for the batch
+				expect( getMock ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );

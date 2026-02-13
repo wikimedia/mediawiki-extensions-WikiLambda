@@ -56,7 +56,7 @@ module.exports = exports = defineComponent( {
 		'wl-abstract-title': AbstractTitle
 	},
 	emits: [ 'mounted' ],
-	setup( _, { emit } ) {
+	setup( _props, { emit } ) {
 		const store = useMainStore();
 
 		/**
@@ -87,9 +87,3 @@ module.exports = exports = defineComponent( {
 	}
 } );
 </script>
-
-<style lang="less">
-.ext-wikilambda-app-abstract-view {
-	/* something */
-}
-</style>

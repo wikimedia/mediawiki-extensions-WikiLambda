@@ -115,6 +115,7 @@ describe( 'ZMultilingualStringDialog', () => {
 			return isoToZidMap[ isoCode ];
 		} );
 		store.fetchZids = jest.fn();
+		store.ensureLanguageCodes = jest.fn().mockResolvedValue( undefined );
 		store.lookupZObjectLabels = jest.fn().mockResolvedValue( {
 			labels: [
 				{
@@ -384,28 +385,6 @@ describe( 'ZMultilingualStringDialog', () => {
 	} );
 
 	describe( 'common languages functionality', () => {
-		it( 'fetches common languages if needed on mount', () => {
-			renderZMultilingualStringDialog( { items: mockEmptyItems } );
-
-			expect( store.fetchZids ).toHaveBeenCalledWith( {
-				zids: Constants.SUGGESTIONS.LANGUAGES
-			} );
-		} );
-
-		it( 'fetches common languages when items change to empty', async () => {
-			const wrapper = renderZMultilingualStringDialog();
-
-			// Clear the previous call
-			store.fetchZids.mockClear();
-
-			// Change to empty items
-			await wrapper.setProps( { items: mockEmptyItems } );
-
-			expect( store.fetchZids ).toHaveBeenCalledWith( {
-				zids: Constants.SUGGESTIONS.LANGUAGES
-			} );
-		} );
-
 		it( 'displays suggested languages when no items are available', () => {
 			const wrapper = renderZMultilingualStringDialog( { items: mockEmptyItems } );
 

@@ -10,7 +10,12 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
-const { searchLabels, searchFunctions, fetchZObjects } = require( '../../utils/apiUtils.js' );
+const {
+	searchLabels,
+	searchFunctions,
+	fetchZObjects,
+	fetchLanguageZids
+} = require( '../../utils/apiUtils.js' );
 const LabelData = require( '../classes/LabelData.js' );
 const {
 	getZArgumentReferenceTerminalValue,
@@ -54,7 +59,12 @@ module.exports = {
 		/**
 		 * Map of the available language zids in the store indexed by language code
 		 */
-		languages: {}
+		languages: {},
+		/**
+		 * Collection of in-flight language-code-to-ZID requests
+		 * code: promise
+		 */
+		languageCodeRequests: {}
 	},
 
 	getters: {
@@ -96,17 +106,7 @@ module.exports = {
 			 * @param {string} code
 			 * @return {string|undefined}
 			 */
-			const findLanguageZid = ( code ) => {
-				// First try to get from store
-				const existingZid = state.languages[ code ];
-				if ( existingZid ) {
-					return existingZid;
-				}
-
-				// Fall back to server-side language mapping
-				const langMap = mw.config.get( 'wgWikiLambdaLangs', {} );
-				return langMap && langMap[ code ];
-			};
+			const findLanguageZid = ( code ) => state.languages[ code ];
 			return findLanguageZid;
 		},
 
@@ -826,6 +826,21 @@ module.exports = {
 		},
 
 		/**
+		 * Set or clear the in-flight request promise for a language code.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.code Language code
+		 * @param {Promise|null} payload.request Promise for the in-flight request, or null to clear
+		 */
+		setLanguageCodeRequest: function ( payload ) {
+			if ( payload.request ) {
+				this.languageCodeRequests[ payload.code ] = payload.request;
+			} else {
+				delete this.languageCodeRequests[ payload.code ];
+			}
+		},
+
+		/**
 		 * Add zid info to the state
 		 *
 		 * @param {Object} payload
@@ -988,34 +1003,77 @@ module.exports = {
 		},
 
 		/**
-		 * Fetches a given language code using the labels API and
-		 * if found it stores locally the correspondance of language
-		 * code and language zid.
+		 * Orchestrates the call to the language-zids API to map language codes to ZLanguage ZIDs,
+		 * then fetches those ZObjects. Codes already in state or in-flight are not requested again.
 		 *
-		 * @param {string} langCode
+		 * * Codes are requested only once.
+		 * * Every code is stored along with its request while it's being fetched.
+		 * * Once it's fetched, the request is cleared.
+		 * * The returning promise resolves when all requested codes have been handled.
+		 *
+		 * @param {Object} payload
+		 * @param {string[]} payload.codes Array of language codes to ensure are fetched
 		 * @return {Promise}
 		 */
-		fetchLanguageCode: function ( langCode ) {
-			const payload = {
-				language: this.getUserLangCode,
-				limit: 1,
-				exact: true,
-				types: [ Constants.Z_NATURAL_LANGUAGE ],
-				input: langCode
-			};
+		ensureLanguageCodes: function ( payload ) {
+			let requestCodes = [];
+			const allPromises = [];
+			const { codes = [] } = payload;
 
-			return searchLabels( payload ).then( ( data ) => {
-				// Make sure the returned data matches the language code:
-				// match rate is 1.0, with the matched langCode as an alias.
-				if (
-					( data.labels.length > 0 ) &&
-					( data.labels[ 0 ].match_rate === 1 ) &&
-					( data.labels[ 0 ].match_label === langCode ) &&
-					( data.labels[ 0 ].match_is_primary === '0' )
-				) {
-					this.setLanguageCode( { code: langCode, zid: data.labels[ 0 ].page_title } );
+			codes.forEach( ( code ) => {
+				// Ignore if:
+				// * Language code is empty
+				// * Language code is already known (ZID stored)
+				// * Language code is already being fetched
+				if ( code && !this.languages[ code ] && !this.languageCodeRequests[ code ] ) {
+					requestCodes.push( code );
+				}
+				// Capture pending promise to await if:
+				// * Language code is waiting to be fetched
+				if ( code in this.languageCodeRequests ) {
+					allPromises.push( this.languageCodeRequests[ code ] );
 				}
 			} );
+
+			// Keep only unique values
+			requestCodes = [ ...new Set( requestCodes ) ];
+
+			if ( !requestCodes.length ) {
+				return Promise.all( allPromises );
+			}
+
+			// Fetch the language codes
+			const batchPromise = fetchLanguageZids( { codes: requestCodes } ).then( ( entries ) => {
+				const newZids = [];
+				entries.forEach( ( entry ) => {
+					if ( !entry || !entry.code || !entry.zid ) {
+						return;
+					}
+					this.setLanguageCode( { code: entry.code, zid: entry.zid } );
+					newZids.push( entry.zid );
+				} );
+				// Once it's back, unset active request for these codes
+				requestCodes.forEach( ( code ) => {
+					this.setLanguageCodeRequest( { code, request: null } );
+				} );
+				// Fetch the ZObjects for the new ZIDs
+				if ( newZids.length > 0 ) {
+					this.fetchZids( { zids: newZids } );
+				}
+			} ).catch( ( error ) => {
+				requestCodes.forEach( ( code ) => {
+					this.setLanguageCodeRequest( { code, request: null } );
+				} );
+				throw error;
+			} );
+
+			// Set active request for each code in this batch
+			requestCodes.forEach( ( code ) => {
+				this.setLanguageCodeRequest( { code, request: batchPromise } );
+			} );
+			allPromises.push( batchPromise );
+
+			return Promise.all( allPromises );
 		},
 
 		/**
@@ -1299,7 +1357,6 @@ module.exports = {
 					// Abstract objects
 					Constants.Z_ABSTRACT_RENDER_FUNCTION,
 					// Needed for Abstract Preview language selector
-					this.getUserLangZid,
 					Constants.Z_NATURAL_LANGUAGE,
 					// Needed for ZObject selector
 					Constants.Z_TYPE,

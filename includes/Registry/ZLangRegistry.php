@@ -95,6 +95,46 @@ class ZLangRegistry extends ZObjectRegistry {
 	}
 
 	/**
+	 * Given an array of language codes, return a map of code => ZLanguage ZID.
+	 * Codes not found in the database map to null.
+	 * Checks the in-memory registry first, then issues a single DB query for any
+	 * cache misses, and populates the registry with the results for future lookups.
+	 *
+	 * @param string[] $codes
+	 * @return array<string,?string> Map of code => ZID (or null if not found)
+	 */
+	public function getLanguageZidsFromCodes( array $codes ): array {
+		$result = [];
+		$missing = [];
+
+		foreach ( $codes as $code ) {
+			$zid = array_search( $code, $this->registry );
+			if ( $zid !== false ) {
+				$result[ $code ] = $zid;
+			} else {
+				$result[ $code ] = null;
+				$missing[] = $code;
+			}
+		}
+
+		if ( !$missing ) {
+			return $result;
+		}
+
+		// Fetch all cache misses in a single DB query
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$found = $zObjectStore->findZLanguagesFromCodes( $missing );
+
+		foreach ( $found as $code => $zid ) {
+			// Populate the in-memory registry so single-code lookups benefit too
+			$this->register( $zid, $code );
+			$result[ $code ] = $zid;
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Check if a given language code, is a known ZLanguage Zid
 	 *
 	 * @param string $code

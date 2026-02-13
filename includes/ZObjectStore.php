@@ -1212,6 +1212,29 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Gets from the secondary database the ZIDs for a set of BCP47 (or MediaWiki) language
+	 * codes in a single query. Only codes that are found appear in the returned map.
+	 *
+	 * @param string[] $codes The BCP47 (or MediaWiki) language codes for which to search
+	 * @return array<string,string> Map of code => ZID for all codes that were found.
+	 */
+	public function findZLanguagesFromCodes( array $codes ): array {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlangs_zid', 'wlzlangs_language' ] )
+			->from( 'wikilambda_zlanguages' )
+			->where( [ 'wlzlangs_language' => $codes ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$map = [];
+		foreach ( $res as $row ) {
+			$map[ (string)$row->wlzlangs_language ] = (string)$row->wlzlangs_zid;
+		}
+		return $map;
+	}
+
+	/**
 	 * Search labels in the secondary database, filtering by language Zids, type or label string.
 	 *
 	 * @param string $searchTerm Term to search in the label database

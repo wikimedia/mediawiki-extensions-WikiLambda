@@ -68,10 +68,10 @@ const abstractWikiStore = {
 			return mw.config.get( 'wgWikiLambdaAbstractPrimaryNamespace' );
 		},
 		/**
-		 * Returns the preview language Zid (defaults to user/page language).
+		 * Returns the language ZID to use for the preview block.
 		 *
 		 * @param {Object} state
-		 * @return {string}
+		 * @return {string|undefined}
 		 */
 		getPreviewLanguageZid: function ( state ) {
 			return state.previewLanguageZid || this.getUserLangZid;
@@ -185,9 +185,8 @@ const abstractWikiStore = {
 			}
 			this.fetchItems( { ids: qids } );
 
-			// Set as initialized
+			// Set page as initialized
 			this.setInitialized( true );
-
 			return Promise.resolve();
 		},
 		/**
