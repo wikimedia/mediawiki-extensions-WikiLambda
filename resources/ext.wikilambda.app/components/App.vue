@@ -13,8 +13,7 @@
 		<!-- Provide a nice error message when fetching zids or initializing the page fails  -->
 		<cdx-message v-else-if="hasError" type="warning">
 			{{ i18n( 'wikilambda-initialize-error' ).text() }}<br>
-			<!-- eslint-disable-next-line vue/no-v-html -->
-			<span v-html="i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"></span>
+			<span v-i18n-html:wikilambda-renderer-error-footer-project-chat></span>
 		</cdx-message>
 		<span v-else>
 			<cdx-progress-indicator>{{ i18n( 'wikilambda-loading' ).text() }}</cdx-progress-indicator>

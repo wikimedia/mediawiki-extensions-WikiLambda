@@ -209,6 +209,12 @@ vueTestUtils.config.global.provide = {
 	i18n: global.$i18n // This makes inject('i18n') work in Composition API tests
 };
 
+vueTestUtils.config.global.directives = {
+	'i18n-html': ( el, binding ) => {
+		el.innerHTML = global.mw.message( binding.arg, binding.value ).parse();
+	}
+};
+
 global.store = createTestingPinia();
 vueTestUtils.config.global.plugins = [ global.store ];
 

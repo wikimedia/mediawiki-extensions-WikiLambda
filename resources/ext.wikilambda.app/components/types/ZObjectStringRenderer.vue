@@ -39,13 +39,11 @@
 					@click="openExamplesDialog">
 					{{ i18n( 'wikilambda-string-renderer-examples-title' ).text() }}
 				</button>
-				<!-- eslint-disable vue/no-v-html -->
 				<p
 					v-if="showErrorFooter"
+					v-i18n-html:wikilambda-renderer-error-footer-project-chat
 					class="ext-wikilambda-app-object-string-renderer__error-footer"
-					v-html="i18n( 'wikilambda-renderer-error-footer-project-chat' ).parse()"
 				></p>
-				<!-- eslint-enable vue/no-v-html -->
 			</div>
 		</template>
 

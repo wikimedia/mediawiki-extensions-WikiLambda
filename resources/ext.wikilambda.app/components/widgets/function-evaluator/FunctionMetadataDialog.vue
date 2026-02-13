@@ -50,8 +50,7 @@
 		</div>
 		<div v-else class="ext-wikilambda-app-function-metadata-dialog__body">
 			<cdx-message v-if="hasMetadataErrors">
-				<!-- eslint-disable-next-line vue/no-v-html -->
-				<div v-html="i18n( 'wikilambda-functioncall-metadata-errors-debug-hint' ).parse()"></div>
+				<div v-i18n-html:wikilambda-functioncall-metadata-errors-debug-hint></div>
 			</cdx-message>
 			<cdx-field
 				v-if="hasNestedMetadata"
