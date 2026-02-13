@@ -304,18 +304,47 @@ class PageRenderingHandler implements
 	}
 
 	/**
+	 * Uses both Repo/Abstract flag configuration and $1 matching
+	 * to determine the route.
+	 * * E.g. /view/en/Z111 and Repo enabled takes to Special:ViewObject/en/Z111
+	 * * E.g. /view/en/Q222 and Abstract enabled takes to Special:ViewAbstract/en/Q222
+	 * * E.g. /view/en/Namespace:Q222 and Abstract enabled takes to Special:ViewAbstract/en/Namespace:Q222
+	 *
+	 * @param array &$matches
+	 * @param array $data
+	 * @return bool
+	 */
+	public function matchRepoAndAbstractRoutes( array &$matches, array $data ): bool {
+		$lang = $data[ '$2' ];
+		$id = $data[ '$1' ];
+
+		if (
+			$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
+			ZObjectUtils::isValidZObjectReference( $id )
+		) {
+			$matches['title'] = "Special:ViewObject/$lang/$id";
+			return true;
+		}
+
+		if (
+			$this->config->get( 'WikiLambdaEnableAbstractMode' ) &&
+			ZObjectUtils::isValidAbstractWikiTitle( $id )
+		) {
+			$matches['title'] = "Special:ViewAbstract/$lang/$id";
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function onWebRequestPathInfoRouter( $router ) {
-		// We only do this in repo mode
-		// TODO (T411704): Add this for AbstractContent pages too, once we have a view page for them
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
-			return;
-		}
-
-		$router->addStrict(
+		$router->add(
 			'/view/$2/$1',
-			[ 'title' => 'Special:ViewObject/$2/$1' ]
+			[ 'title' => false ],
+			[ 'callback' => [ $this, 'matchRepoAndAbstractRoutes' ] ],
 		);
 	}
 
