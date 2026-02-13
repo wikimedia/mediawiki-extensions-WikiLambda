@@ -295,6 +295,14 @@
 				"WikiLambdaZObjectStore"
 			]
 		},
+		"PagePostSaveHandler": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PagePostSaveHandler",
+			"services": [
+				"ConnectionProvider",
+				"MainConfig",
+				"WikiLambdaZObjectStore"
+			]
+		},
 		"PageRenderingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler",
 			"services": [
@@ -321,7 +329,7 @@
 		"getUserPermissionsErrors": "PageEditingHandler",
 		"MultiContentSave": "PageEditingHandler",
 		"NamespaceIsMovable": "PageEditingHandler",
-		"RecentChange_save": "PageEditingHandler",
+		"RecentChange_save": "PagePostSaveHandler",
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
