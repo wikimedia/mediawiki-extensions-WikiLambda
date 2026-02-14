@@ -256,7 +256,7 @@ EOD;
 	 */
 	public function isValidForTitle( Title $title ) {
 		// title is the same as object->qid
-		if ( !$this->object->qid === $title->getBaseText() ) {
+		if ( $this->object->qid !== $title->getBaseText() ) {
 			$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-unmatching-qid' );
 			return false;
 		}
