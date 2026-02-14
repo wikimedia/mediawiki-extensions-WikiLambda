@@ -92,8 +92,19 @@ class PageRenderingHandler implements
 
 		// The rest of this function is about rewriting skin links on ZObject pages
 		$targetTitle = $skinTemplate->getRelevantTitle();
+		if ( !$targetTitle ) {
+			// Nothing to do, exit.
+			return;
+		}
 
-		if ( !$targetTitle || !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
+		// Determine the content model
+		$isAbstractContent = $targetTitle->exists() &&
+			$targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT );
+
+		$isZObjectContent = $targetTitle->exists() &&
+			$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT );
+
+		if ( !$isZObjectContent && !$isAbstractContent ) {
 			// Nothing to do, exit.
 			return;
 		}
@@ -104,30 +115,33 @@ class PageRenderingHandler implements
 		// Don't show a "Variants" selector even though we're futzing with lang, we have our own control
 		$links['variants'] = [];
 
-		// Work out our ZID
-		$zid = $targetTitle->getText();
+		// Determine the page title based on the content model.
+		// ZObject content uses, 'ZID', while Abstract uses 'Abstract_Wikipedia:QID'.
+		$prefixedTitle = $targetTitle->getPrefixedDBkey();
 
 		// Default language if not specified in the URL
 		$lang = 'en';
 
-		// (T374309) If the user is registered and has a language preference set, use that as the fallback
-		if ( $skinTemplate->getUser()->isRegistered() ) {
-			$lang = $this->userOptionsLookup->getOption( $skinTemplate->getUser(), 'language' );
-		}
+		$context = RequestContext::getMain();
+		$contextLang = $context->getLanguage()->getCode();
 
-		// Special handling if we're on our special view page
-		$title = $skinTemplate->getTitle();
-		if ( $title->isSpecial( 'ViewObject' ) ) {
-			preg_match( "/^([^\/]+)\/([^\/]+)\/(.*)$/", $title->getText(), $matches );
-			if ( $matches ) {
-				// We're on Special:ViewObject with the ZID and language set in the URL, so use them
-				$lang = $matches['2'];
-				$zid = $matches['3'];
+		$requestLang = $skinTemplate->getRequest()->getRawVal( 'uselang' );
+
+		// Explicit uselang always wins
+		if ( $requestLang ) {
+			$lang = $requestLang;
+		// Otherwise use the language code from the context
+		} elseif ( $contextLang ) {
+			$lang = $contextLang;
+		// Otherwise use the user's language preference if they're logged in
+		} elseif ( $skinTemplate->getUser()->isRegistered() ) {
+			$userLang = $this->userOptionsLookup->getOption( $skinTemplate->getUser(), 'language' );
+			if ( $userLang ) {
+				$lang = $userLang;
 			}
 		}
 
 		// Allow the user to over-ride the content language if explicitly requested
-		$lang = $skinTemplate->getRequest()->getRawVal( 'uselang' ) ?? $lang;
 
 		// Add "selected" class to read tab, if we're viewing the page
 		if (
@@ -139,8 +153,10 @@ class PageRenderingHandler implements
 		// (T360229) Build GET parameters using an array and `wfArrayToCgi`, rather than hacking inline
 		$generalParams = [ 'uselang' => $lang ];
 
+		// If title is more than one word, we need to underscore it for the URL (e.g. 'Abstract_Wikipdedia)
+
 		// Rewrite history link to have ?uselang in it
-		$links['views']['history']['href'] = '/wiki/' . $zid
+		$links['views']['history']['href'] = '/wiki/' . $prefixedTitle
 			. '?' . wfArrayToCgi( $generalParams + [ 'action' => 'history' ] );
 
 		// Rewrite edit link to have ?uselang in it, but only if it exists (e.g. not for logged-out users)
@@ -152,31 +168,33 @@ class PageRenderingHandler implements
 			if ( $oldid ) {
 				$editParams['oldid'] = $oldid;
 			}
-
-			$links['views']['edit']['href'] = '/wiki/' . $zid
+			$links['views']['edit']['href'] = '/wiki/' . $prefixedTitle
 				. '?' . wfArrayToCgi( $editParams );
 		}
 
-		// Rewrite the 'main' namespace link to the Special page in "associated-pages"
-		$contentCanonicalHref = '/view/' . $lang . '/' . $zid;
-		$links['associated-pages']['main']['href'] = $contentCanonicalHref;
+		// Rewrite the 'associated-pages' links if they exist
+		if ( isset( $links['associated-pages'] ) ) {
+			$isMain = $targetTitle->inNamespace( NS_MAIN );
 
-		// Re-write the 'view' link as well
-		$links['views']['view']['href'] = $contentCanonicalHref;
+			// Rewrite the 'view' link
+			$lowercaseUnderscoredTitle = mb_strtolower( $prefixedTitle );
+			$viewPageKey = $isMain ? 'main' : explode( ':', $lowercaseUnderscoredTitle, 2 )[0];
+			if ( isset( $links['associated-pages'][$viewPageKey] ) ) {
+				$links['associated-pages'][$viewPageKey]['href'] = '/view/' . $lang . '/' . $prefixedTitle;
 
-		// Rewrite the 'talk' namespace link to have ?uselang in it
+			}
 
-		$talkParams = $generalParams;
+			// Rewrite the 'talk' link
+			$talkPageKey = $isMain ? 'talk' : $viewPageKey . '_talk';
+			if ( isset( $links['associated-pages'][$talkPageKey] ) ) {
+				$talkTitle = $targetTitle->getTalkPage();
 
-		// Do some special magic if the href already has a query string, usually as it's a red link
-		if ( strpos( $links['associated-pages']['talk']['href'] ?? '', '?' ) ) {
-			// We slice out the zeroth input, as it's the path
-			$talkHrefArray = array_slice( wfCgiToArray( $links['associated-pages']['talk']['href'] ?? '' ), 1 );
-			$talkParams = $generalParams + $talkHrefArray;
+				if ( $talkTitle ) {
+					$links['associated-pages'][$talkPageKey]['href'] = wfAppendQuery(
+						$talkTitle->getLocalURL(), $generalParams );
+				}
+			}
 		}
-		$talkRewrittenHref = '/wiki/Talk:' . $zid . '?' . wfArrayToCgi( $talkParams );
-
-		$links['associated-pages']['talk']['href'] = $talkRewrittenHref;
 	}
 
 	/**
