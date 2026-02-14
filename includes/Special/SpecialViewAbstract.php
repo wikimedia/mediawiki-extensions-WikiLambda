@@ -86,15 +86,15 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		$request = $this->getRequest();
 		$output = $this->getOutput();
 
-		// Force Special:ViewAbstract page to behave as view, even when action=edit
-		if ( $request->getVal( 'action' ) === 'edit' ) {
-			$request->setVal( 'action', 'view' );
-		}
-
 		// If abstract not enabled, go back to Main
 		if ( !$this->getConfig()->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			$this->redirectToMain( $output );
 			return;
+		}
+
+		// Force Special:ViewAbstract page to behave as view, even when action=edit
+		if ( $request->getVal( 'action' ) === 'edit' ) {
+			$request->setVal( 'action', 'view' );
 		}
 
 		// Make sure the correct content model is set, so that e.g. VisualEditor
@@ -117,8 +117,6 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 			$targetPageName = $subPageSplit[2];
 		}
 
-		// Allow the user to over-ride the content language if explicitly requested
-		$targetLanguage = $request->getRawVal( 'uselang' ) ?? $targetLanguage;
 		$targetTitle = Title::newFromText( $targetPageName );
 
 		// If the given page doesn't exist, exit
@@ -126,6 +124,9 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 			$this->redirectToMain( $output );
 			return;
 		}
+
+		// Allow the user to over-ride the content language if explicitly requested
+		$targetLanguage = $request->getRawVal( 'uselang' ) ?? $targetLanguage;
 
 		// (T343006) If supplied language is invalid; probably a user-error, so just exit.
 		// * isValidCode checks for code wellformedness -- $this->languageNameUtils->isValidCode( $targetLanguage
@@ -156,6 +157,18 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// (T343594) Set the revision ID to the requested one or the latest, so the Permanent Link works
 		$latestRevId = $output->getTitle()->getLatestRevID();
 		$targetRevisionId = $this->getRequest()->getInt( 'oldid' ) ?: $latestRevId;
+
+		// FIXME inject revision store
+		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$targetRevision = $revisionStore->getRevisionById( $targetRevisionId );
+		$targetContent = $targetRevision ? $targetRevision->getMainContentRaw() : null;
+
+		// If content does not exist for the requested revision ID, send to Main
+		if ( !$targetContent ) {
+			$this->redirectToMain( $output );
+			return;
+		}
+
 		$output->setRevisionId( $targetRevisionId );
 
 		// (T364318) Add the revision navigation bar if seeing an oldid
@@ -168,20 +181,6 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		$output->setCopyright( true );
 
 		$this->setHeaders();
-
-		// $output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
-
-		// FIXME inject revision store
-		// Request that we render the content in the given target language.
-		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
-		$targetRevision = $revisionStore->getRevisionById( $targetRevisionId );
-		$targetContent = $targetRevision->getMainContentRaw();
-
-		// If content does not exist for the requested title and revision ID, send to Main
-		if ( !$targetContent ) {
-			$this->redirectToMain( $output );
-			return;
-		}
 
 		// Runs AbstractWikiContentHandler::fillParserOutput
 		$parserOptions = ParserOptions::newFromUserAndLang( $this->getUser(), $targetLanguageObject );
