@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -77,7 +78,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 		$fragmentCacheKey = $this->objectCache->makeKey(
 			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
-			ZObjectUtils::makeCacheKeyFromZObject( $functionCall )
+			AbstractContentUtils::makeCacheKeyFromZObject( $functionCall )
 		);
 
 		$htmlFragment = $this->objectCache->getWithSetCallback(

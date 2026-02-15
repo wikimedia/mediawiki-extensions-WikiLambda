@@ -42,4 +42,30 @@ class AbstractContentUtils {
 	public static function isNullWikidataItemReference( string $input ): bool {
 		return ( $input === 'Q0' );
 	}
+
+	/**
+	 * Walk a given input ZObject, and make a cache key constructed of its keys and values.
+	 * This is intended to build a key in Abstract mode (or Client), as it won't append
+	 * revision Ids to the references.
+	 *
+	 * E.g. { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hey" } => 'Z1K1|Z7,Z7K1|Z801,Z801K1|Hey'
+	 *
+	 * @param \stdClass|array $query
+	 * @return string
+	 */
+	public static function makeCacheKeyFromZObject( $query ): string {
+		$accumulator = '';
+
+		foreach ( $query as $key => $value ) {
+			$accumulator .= $key . '|';
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$accumulator .= self::makeCacheKeyFromZObject( $value );
+			} elseif ( is_scalar( $value ) ) {
+				$accumulator .= $value;
+			}
+			$accumulator .= ',';
+		}
+
+		return $accumulator;
+	}
 }

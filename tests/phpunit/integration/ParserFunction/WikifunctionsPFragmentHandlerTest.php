@@ -25,7 +25,6 @@ use Wikibase\Client\Usage\UsageAccumulatorFactory;
 use Wikibase\DataModel\Entity\EntityIdParser;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\Lib\Store\SiteLinkLookup;
-use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\WikitextPFragment;
@@ -113,11 +112,6 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		// Build mock dependencies for Fragment Handler constructor:
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
-
-		$mockObjectCache = $this->createMock( BagOStuff::class );
-		if ( $cachedFunction !== null ) {
-			$mockObjectCache->method( 'get' )->with( 'mock-cache-key' )->willReturn( 'mock-cache-key' );
-		}
 
 		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
 		$mockClientStore->method( 'fetchFromZObjectCache' )->with( 'Z10000' )->willReturn( $cachedFunction );
