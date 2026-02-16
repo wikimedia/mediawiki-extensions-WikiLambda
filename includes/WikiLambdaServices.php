@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Config\ConfigException;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
@@ -34,7 +35,7 @@ class WikiLambdaServices {
 	 *
 	 * @return WikifunctionsClientStore
 	 */
-	public static function getWikifunctionsClientStore() {
+	public static function getWikifunctionsClientStore(): WikifunctionsClientStore {
 		return MediaWikiServices::getInstance()->getService( 'WikifunctionsClientStore' );
 	}
 
@@ -50,6 +51,13 @@ class WikiLambdaServices {
 	 */
 	public static function getZObjectStash(): BagOStuff {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectStash' );
+	}
+
+	/**
+	 * @return AbstractWikiRequest
+	 */
+	public static function getAbstractWikiRequest(): AbstractWikiRequest {
+		return MediaWikiServices::getInstance()->getService( 'AbstractWikiRequest' );
 	}
 
 	/**

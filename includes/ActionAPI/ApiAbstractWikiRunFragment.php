@@ -13,12 +13,15 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequestException;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Http\HttpRequestFactory;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use Wikimedia\ObjectCache\BagOStuff;
@@ -28,17 +31,22 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 	public const ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX = 'WikiLambdaAbstractFragment';
 
-	private HttpRequestFactory $httpRequestFactory;
+	private JobQueueGroup $jobQueueGroup;
+	private AbstractWikiRequest $abstractWikiRequest;
 	private BagOStuff $objectCache;
 	private LoggerInterface $logger;
 
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
-		HttpRequestFactory $httpRequestFactory
+		JobQueueGroup $jobQueueGroup,
+		AbstractWikiRequest $abstractWikiRequest
 	) {
 		parent::__construct( $mainModule, $moduleName, 'abstractwiki_run_fragment_' );
-		$this->httpRequestFactory = $httpRequestFactory;
+
+		$this->jobQueueGroup = $jobQueueGroup;
+		$this->abstractWikiRequest = $abstractWikiRequest;
+
 		$this->objectCache = WikiLambdaServices::getZObjectStash();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
@@ -56,7 +64,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			);
 		}
 
-		// Get input parameters
 		$params = $this->extractRequestParams();
 
 		$qid = $params[ 'qid' ];
@@ -73,35 +80,13 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			);
 		}
 
-		// Build function call for the input fragment and arguments
-		$functionCall = $this->buildFragmentFunctionCall( $fragment, $qid, $language, $date );
+		try {
+			$htmlFragment = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date );
+		} catch ( AbstractWikiRequestException $e ) {
+			$this->dieWithError( [ $e->getErrorMessageKey() ], null, null, $e->getHttpStatusCode() );
+		}
 
-		$fragmentCacheKey = $this->objectCache->makeKey(
-			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
-			AbstractContentUtils::makeCacheKeyFromZObject( $functionCall )
-		);
-
-		$htmlFragment = $this->objectCache->getWithSetCallback(
-			$fragmentCacheKey,
-			$this->objectCache::TTL_MONTH,
-			// If cache miss, run callback
-			function () use ( $functionCall ) {
-				// Run fragment function call, should return a Z89/Html fragment object
-				$htmlFragment = $this->remoteCall( $functionCall );
-
-				// Sanitize the Z89K1/Html fragment value
-				$sanitizedHtml = WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
-					$this->logger,
-					$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
-				);
-
-				// Success! The returned sanitized html fragment will
-				// be stored in the cache.
-				return $sanitizedHtml;
-			}
-		);
-
-		// Everything went well: build output object
+		// Everything went well: build response
 		$result = [
 			'success' => true,
 			'data' => $htmlFragment
@@ -112,7 +97,94 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	}
 
 	/**
-	 * Build function call to virtual function Z825/Run Abstract Fragment
+	 * Gets the latest available HTML fragment rendered from the given
+	 * Abstract Content fragment and its arguments.
+	 *
+	 * Implements Stale-While-Revalidate caching strategy:
+	 * * Returns cached HTML fragment for today,
+	 * * If not available, returns cached stale HTML fragment, asynchronously
+	 *   revalidates and refreshes the cache (fresh and stale) with the new value.
+	 * * If cache doesn't even have a stale fragment, syncrhonously renders
+	 *   and returns the sanitized fragment.
+	 *
+	 * @param array $fragment
+	 * @param string $qid
+	 * @param string $language
+	 * @param string $date
+	 * @return string
+	 * @throws AbstractWikiRequestException
+	 */
+	private function getLatestFragmentAndRevalidate(
+		array $fragment,
+		string $qid,
+		string $language,
+		string $date
+	): string {
+		// 1. Check in the cache for a fresh fragment
+		$cacheKeyFresh = $this->objectCache->makeKey(
+			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
+			$qid,
+			$language,
+			$date,
+			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment )
+		);
+
+		$freshValue = $this->objectCache->get( $cacheKeyFresh );
+
+		// Fresh fragment is cached: return value
+		if ( $freshValue !== false ) {
+			return $freshValue;
+		}
+
+		// Build function call for the input fragment and arguments.
+		// At this point we know we are running the call for today's value.
+		$functionCall = $this->buildFragmentFunctionCall( $fragment, $qid, $language, $date );
+
+		// 2. Check in the cache for a stale fragment (cache key without date)
+		$cacheKeyStale = $this->objectCache->makeKey(
+			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
+			$qid,
+			$language,
+			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment )
+		);
+
+		$staleValue = $this->objectCache->get( $cacheKeyStale );
+
+		// Stale fragment is cached: trigger async refresh job and return latest value
+		if ( $staleValue !== false ) {
+			$revalidateFragmentJob = new CacheAbstractContentFragmentJob( [
+				'qid' => $qid,
+				'language' => $language,
+				'date' => $date,
+				'functionCall' => $functionCall,
+				'cacheKeyFresh' => $cacheKeyFresh,
+				'cacheKeyStale' => $cacheKeyStale
+			] );
+			$this->jobQueueGroup->lazyPush( $revalidateFragmentJob );
+			return $staleValue;
+		}
+
+		// 3. Nothing is cached: We regenerate the fragment synchronously
+
+		// Run fragment function call:
+		// * should return a Z89/Html fragment object
+		// * can throw AbstractWikiRequestException, which are handled by self::execute()
+		$htmlFragment = $this->abstractWikiRequest->renderFragment( $functionCall );
+
+		// Sanitize the Z89K1/Html fragment value
+		$sanitizedHtml = WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
+			$this->logger,
+			$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
+		);
+
+		// Cache the response with both the fresh and the stale keys
+		$this->abstractWikiRequest->cacheFreshAndStale( $sanitizedHtml, $cacheKeyFresh, $cacheKeyStale );
+
+		return $sanitizedHtml;
+	}
+
+	/**
+	 * Builds function call to virtual function Z825/Run Abstract Fragment
 	 *
 	 * @param array $fragment
 	 * @param string $qid
@@ -120,7 +192,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 * @param string $date
 	 * @return array
 	 */
-	private function buildFragmentFunctionCall( $fragment, $qid, $language, $date ): array {
+	private function buildFragmentFunctionCall( array $fragment, string $qid, string $language, string $date ): array {
 		// We get the function definition from schemata because:
 		// * it will be available in the Abstract repo
 		// * we don't need the user-contributed labels
@@ -164,93 +236,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	}
 
 	/**
-	 * Perform remote call to Wikifunctions' wikilambda_function_call Action API
-	 *
-	 * @param array $functionCall
-	 * @return array sanitized HTML fragment (Z89) response object
-	 */
-	private function remoteCall( $functionCall ) {
-		// Base API URL from config
-		$targetUrl = $this->getConfig()->get( 'WikiLambdaClientTargetAPI' );
-		if ( !$targetUrl ) {
-			// Missing configuration, abstractwiki-not-implemented error
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-not-enabled' ],
-				null, null, HttpStatus::NOT_IMPLEMENTED
-			);
-		}
-		$apiUrl = $targetUrl . '/w/api.php';
-
-		// Stringify the function call
-		$functionCallEncoded = json_encode( $functionCall, JSON_THROW_ON_ERROR );
-
-		// Build POST params
-		$params = [
-			'format' => 'json',
-			'action' => 'wikilambda_function_call',
-			'wikilambda_function_call_zobject' => $functionCallEncoded,
-		];
-
-		// Create and execute request
-		$request = $this->httpRequestFactory->create(
-			$apiUrl,
-			[
-				'method' => 'POST',
-				'postData' => $params
-			],
-			__METHOD__
-		);
-
-		$status = $request->execute();
-
-		if ( !$status->isOK() ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-bad-response' ],
-				null, null, HttpStatus::BAD_REQUEST
-			);
-		}
-
-		// Decode response
-		$responseData = json_decode( $request->getContent(), true );
-
-		if ( !is_array( $responseData ) ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-bad-response' ],
-				null, null, HttpStatus::BAD_REQUEST
-			);
-		}
-
-		// Give phan some assistance on what we expect the response to look like
-		'@phan-var array{wikilambda_function_call?: array{data?: string}} $responseData';
-
-		$responseEnvelopeStr = $responseData[ 'wikilambda_function_call' ][ 'data' ] ?? '';
-		$responseEnvelope = json_decode( $responseEnvelopeStr, true );
-
-		if ( !is_array( $responseEnvelope ) ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-bad-response' ],
-				null, null, HttpStatus::BAD_REQUEST
-			);
-		}
-
-		// Give phan some assistance on what we expect the envelope to look like
-		'@phan-var array{Z22K1:array<string,string|array>,Z22K2:array<string,string|array>} $responseEnvelope';
-
-		$htmlFragment = $responseEnvelope[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ];
-
-		// We make sure that the result is a Z89/HTML fragment
-		if ( !is_array( $htmlFragment ) || !array_key_exists( ZTypeRegistry::Z_HTML_FRAGMENT_VALUE, $htmlFragment ) ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-bad-response' ],
-				null, null, HttpStatus::BAD_REQUEST
-				);
-		}
-
-		return $htmlFragment;
-	}
-
-	/**
-	 * Get the function definition for Z825/Run Abstract Fragment from
+	 * Gets the function definition for Z825/Run Abstract Fragment from
 	 * the function schemata data definitions directory.
 	 *
 	 * @return array

@@ -1079,7 +1079,8 @@
 		"abstractwiki_run_fragment": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiAbstractWikiRunFragment",
 			"services": [
-				"HttpRequestFactory"
+				"JobQueueGroup",
+				"AbstractWikiRequest"
 			]
 		}
 	},
@@ -1238,6 +1239,7 @@
 	},
 	"JobClasses": {
 		"cacheTesterResults": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheTesterResultsJob",
+		"cacheAbstractContentFragment": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheAbstractContentFragmentJob",
 		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\Jobs\\UpdateImplementationsJob",
 		"wikifunctionsClientFanOutQueue": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientFanOutQueueJob",
 		"wikifunctionsClientUsageUpdate": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientUsageUpdateJob",

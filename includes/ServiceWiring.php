@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -42,6 +43,15 @@ return [
 	'WikifunctionsClientStore' => static function ( MediaWikiServices $services ): WikifunctionsClientStore {
 		return new WikifunctionsClientStore(
 			$services->getDBLoadBalancerFactory()
+		);
+	},
+
+	// For abstract mode
+
+	'AbstractWikiRequest' => static function ( MediaWikiServices $services ): AbstractWikiRequest {
+		return new AbstractWikiRequest(
+			$services->getMainConfig(),
+			$services->getHttpRequestFactory()
 		);
 	},
 ];
