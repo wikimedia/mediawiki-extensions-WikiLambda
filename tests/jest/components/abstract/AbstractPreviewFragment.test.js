@@ -144,31 +144,35 @@ describe( 'AbstractPreviewFragment', () => {
 			store.getHighlightedFragment = keyPath;
 
 			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
 
-			expect( wrapper.classes() ).toContain( 'ext-wikilambda-app-abstract-preview-fragment__highlight' );
+			expect( fragment.classes() ).toContain( 'ext-wikilambda-app-abstract-preview-fragment__highlight' );
 		} );
 
 		it( 'adds highlight on pointer enter', async () => {
 			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
 
-			await wrapper.trigger( 'pointerenter' );
+			await fragment.trigger( 'pointerenter' );
 
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( keyPath );
 		} );
 
 		it( 'removes highlight on pointer leave', async () => {
 			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
 
-			await wrapper.trigger( 'pointerleave' );
+			await fragment.trigger( 'pointerleave' );
 
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( undefined );
 		} );
 
 		it( 'unsets highlight on focus and blur', async () => {
 			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
 
-			await wrapper.trigger( 'focus' );
-			await wrapper.trigger( 'blur' );
+			await fragment.trigger( 'focus' );
+			await fragment.trigger( 'blur' );
 
 			expect( store.setHighlightedFragment ).toHaveBeenLastCalledWith( undefined );
 		} );

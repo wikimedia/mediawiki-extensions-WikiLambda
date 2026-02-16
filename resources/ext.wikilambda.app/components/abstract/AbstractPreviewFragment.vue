@@ -37,6 +37,7 @@
 			<!-- eslint-enable vue/no-v-html -->
 		</template>
 	</div>
+	<span>&nbsp;</span>
 </template>
 
 <script>
