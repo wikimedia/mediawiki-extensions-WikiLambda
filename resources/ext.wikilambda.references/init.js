@@ -58,8 +58,6 @@ function upgradeTriggerToButton( trigger ) {
 		return;
 	}
 
-	const textContent = trigger.textContent || trigger.innerText || '';
-
 	let supElement = trigger;
 	if ( trigger.tagName.toLowerCase() !== 'sup' ) {
 		supElement = document.createElement( 'sup' );
@@ -70,7 +68,12 @@ function upgradeTriggerToButton( trigger ) {
 	const button = createButtonElement();
 	const noteSpan = document.createElement( 'span' );
 	noteSpan.className = 'ext-wikilambda-reference__note';
-	noteSpan.innerHTML = textContent;
+
+	// Preserve any existing DOM nodes (incl. <b>, <a>, etc) without re-parsing HTML strings.
+	// This avoids losing markup and avoids introducing new HTML injection surfaces.
+	while ( trigger.firstChild ) {
+		noteSpan.appendChild( trigger.firstChild );
+	}
 
 	supElement.textContent = '';
 	supElement.appendChild( button );
