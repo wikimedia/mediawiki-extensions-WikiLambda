@@ -737,6 +737,43 @@ const typeUtils = {
 			return typeUtils.isTruthyOrEqual( zobject[ head ], tail, equals );
 		}
 		return false;
+	},
+
+	/**
+	 * Retuns whether a given object type is fit to occupy a key
+	 * that expects a given type.
+	 * This method prioritizes high precision to minimize false
+	 * positives, so it acts more restrictive in cases where the
+	 * itemType is not bound (object/Z1).
+	 *
+	 * @param {Mixed} itemType - type of the value to evaluate compatibility for
+	 * @param {Mixed} expectedType - expected type of object for the slot
+	 * @return {boolean}
+	 */
+	isTypeCompatible: function ( itemType, expectedType ) {
+		// If expected type is Object/Z1, return compatible
+		if ( expectedType === Constants.Z_OBJECT ) {
+			return true;
+		}
+
+		// If types are references, return compatible only if they are the same
+		if ( typeof expectedType === 'string' && typeof itemType === 'string' ) {
+			return expectedType === itemType;
+		}
+
+		if (
+			( typeof expectedType === 'object' && typeof itemType === 'object' ) &&
+			( expectedType.Z1K1 === Constants.Z_FUNCTION_CALL ) &&
+			( itemType.Z1K1 === Constants.Z_FUNCTION_CALL ) &&
+			( itemType.Z7K1 === expectedType.Z7K1 )
+		) {
+			return Object.keys( expectedType )
+				.filter( ( key ) => key !== Constants.Z_OBJECT_TYPE && key !== Constants.Z_FUNCTION_CALL_FUNCTION )
+				.every( ( key ) => key in itemType &&
+					typeUtils.isTypeCompatible( itemType[ key ], expectedType[ key ] ) );
+		}
+
+		return false;
 	}
 };
 

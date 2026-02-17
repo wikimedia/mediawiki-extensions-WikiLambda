@@ -21,7 +21,8 @@ const {
 	isKeyTypedListType,
 	isKeyTypedListItem,
 	initializePayloadForType,
-	isTruthyOrEqual
+	isTruthyOrEqual,
+	isTypeCompatible
 } = require( '../../../resources/ext.wikilambda.app/utils/typeUtils.js' );
 
 describe( 'typeUtils', () => {
@@ -626,6 +627,140 @@ describe( 'typeUtils', () => {
 				const equals = 'fr';
 				expect( isTruthyOrEqual( object, keys, equals ) ).toBe( false );
 			} );
+		} );
+	} );
+
+	describe( 'isTypeCompatible', () => {
+		it( 'bound types fits equal bound slot', () => {
+			const itemType = 'Z6';
+			const expectedType = 'Z6';
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'bound type fits an unbound slot', () => {
+			const itemType = 'Z6';
+			const expectedType = 'Z1';
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'unbound type fits an unbound slot', () => {
+			const itemType = 'Z1';
+			const expectedType = 'Z1';
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'unbound type does not fit a bound slot', () => {
+			const itemType = 'Z1';
+			const expectedType = 'Z6';
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( false );
+		} );
+
+		it( 'function call fits unbound slot', () => {
+			const itemType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+			const expectedType = 'Z1';
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'function call fits equal function cal defined slot', () => {
+			const itemType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+			const expectedType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'generic type with bound arguments fits slot for generic type with unbound arguments', () => {
+			const itemType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+			const expectedType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z1' };
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'generic type with unbound arguments fits slot for generic type with unbound arguments', () => {
+			const itemType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z1' };
+			const expectedType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z1' };
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'generic type with unbound arguments does not fit slot for generic type with bound arguments', () => {
+			const itemType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z1' };
+			const expectedType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( false );
+		} );
+
+		it( 'different generic types will not fit', () => {
+			const itemType = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z1' };
+			const expectedType = { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' };
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( false );
+		} );
+
+		it( 'bound nested generic type fits unbound nested generic type slot', () => {
+			const itemType = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z882',
+				Z882K1: 'Z6',
+				Z882K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: 'Z6'
+				}
+			};
+			const expectedType = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z882',
+				Z882K1: 'Z6',
+				Z882K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: 'Z1'
+				}
+			};
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'unbound nested generic type fits unbound nested generic type slot', () => {
+			const itemType = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z882',
+				Z882K1: 'Z1',
+				Z882K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: 'Z1'
+				}
+			};
+			const expectedType = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z882',
+				Z882K1: 'Z1',
+				Z882K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: 'Z1'
+				}
+			};
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( true );
+		} );
+
+		it( 'unbound nested generic type does not fit bound nested generic type slot', () => {
+			const itemType = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z882',
+				Z882K1: 'Z6', // bound
+				Z882K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: 'Z1' // unbound
+				}
+			};
+			const expectedType = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z882',
+				Z882K1: 'Z1', // unbound: should fit
+				Z882K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z881',
+					Z881K1: 'Z6' // bound: will not fit
+				}
+			};
+			expect( isTypeCompatible( itemType, expectedType ) ).toBe( false );
 		} );
 	} );
 } );

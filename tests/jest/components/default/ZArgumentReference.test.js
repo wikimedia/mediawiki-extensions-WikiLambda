@@ -25,6 +25,7 @@ const emptyValue = {
 	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
 	Z18K1: { Z1K1: 'Z6', Z6K1: '' }
 };
+const emptyTerminalValue = { Z1K1: 'Z6', Z6K1: '' };
 
 // Terminal value
 const terminalKeyPath = 'main.Z2K2.Z14K2.Z18K1';
@@ -44,7 +45,9 @@ describe( 'ZArgumentReference', () => {
 		const defaultProps = {
 			keyPath,
 			objectValue,
-			edit: false
+			edit: false,
+			expectedType: 'Z6',
+			parentExpectedType: 'Z1'
 		};
 		return shallowMount( ZArgumentReference, { props: { ...defaultProps, ...props }, ...options } );
 	}
@@ -108,17 +111,18 @@ describe( 'ZArgumentReference', () => {
 			} );
 
 			const wrapper = renderZArgumentReference( { edit: true } );
+			const selector = wrapper.findComponent( { name: 'cdx-select' } );
 
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems.length ).toBe( 3 );
+			expect( selector.vm.menuItems.length ).toBe( 3 );
 			// First item Z10001K1 with label "first"
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z10001K1' );
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 0 ].label ).toBe( 'first' );
+			expect( selector.vm.menuItems[ 0 ].value ).toBe( 'Z10001K1' );
+			expect( selector.vm.menuItems[ 0 ].label ).toBe( 'first' );
 			// Second item Z10001K2 with label "second"
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z10001K2' );
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 1 ].label ).toBe( 'second' );
-			// Second item Z10001K3 with no label
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z10001K3' );
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 2 ].label ).toBe( 'Z10001K3' );
+			expect( selector.vm.menuItems[ 1 ].value ).toBe( 'Z10001K2' );
+			expect( selector.vm.menuItems[ 1 ].label ).toBe( 'second' );
+			// Third item Z10001K3 with no label
+			expect( selector.vm.menuItems[ 2 ].value ).toBe( 'Z10001K3' );
+			expect( selector.vm.menuItems[ 2 ].label ).toBe( 'Z10001K3' );
 		} );
 
 		it( 'renders the selector with empty value set', () => {
@@ -166,6 +170,93 @@ describe( 'ZArgumentReference', () => {
 				keyPath: [ Constants.Z_STRING_VALUE ],
 				value: 'Z10001K2'
 			} ] ] );
+		} );
+
+		describe( 'page argument references in abstract content', () => {
+			const collapsedKeyPath = 'abstractwiki.sections.Q8776414.fragments.2.Z444K1';
+			const expandedKeyPath = 'abstractwiki.sections.Q8776414.fragments.2.Z444K1.Z18K1';
+
+			beforeEach( () => {
+				store.isAbstractContent = jest.fn().mockReturnValue( true );
+				store.getCurrentTargetFunctionZid = 'Z825';
+				store.getInputsOfFunctionZid = createGettersWithFunctionsMock( [
+					{ Z17K2: 'Z825K1', Z17K1: 'Z6091' },
+					{ Z17K2: 'Z825K2', Z17K1: 'Z60' },
+					{ Z17K2: 'Z825K3', Z17K1: 'Z20420' }
+				] );
+			} );
+
+			it( 'disables language and date for a wikidata item key when collapsed', () => {
+				const wrapper = renderZArgumentReference( {
+					edit: true,
+					keyPath: collapsedKeyPath,
+					objectValue: emptyValue,
+					expectedType: 'Z6001',
+					parentExpectedType: 'Z1'
+				} );
+
+				const selector = wrapper.findComponent( { name: 'cdx-select' } );
+
+				// Arg Z825K1 of type Z6091 can be selected for a key Z6001: YES!
+				expect( selector.vm.menuItems[ 0 ].value ).toBe( 'Z825K1' );
+				expect( selector.vm.menuItems[ 0 ].disabled ).toBe( false );
+
+				// Arg Z825K2 of type Z60 can be selected for a key Z6001: NOPE!
+				expect( selector.vm.menuItems[ 1 ].value ).toBe( 'Z825K2' );
+				expect( selector.vm.menuItems[ 1 ].disabled ).toBe( true );
+
+				// Arg Z825K3 of type Z20420 can be selected for a key Z6001: NOPE!
+				expect( selector.vm.menuItems[ 2 ].value ).toBe( 'Z825K3' );
+				expect( selector.vm.menuItems[ 2 ].disabled ).toBe( true );
+			} );
+
+			it( 'disables language and date for a wikidata item reference key when collapsed', () => {
+				const wrapper = renderZArgumentReference( {
+					edit: true,
+					keyPath: collapsedKeyPath,
+					objectValue: emptyValue,
+					expectedType: 'Z6091',
+					parentExpectedType: 'Z1'
+				} );
+
+				const selector = wrapper.findComponent( { name: 'cdx-select' } );
+
+				// Arg Z825K1 of type Z6091 can be selected for a key Z6001: YES!
+				expect( selector.vm.menuItems[ 0 ].value ).toBe( 'Z825K1' );
+				expect( selector.vm.menuItems[ 0 ].disabled ).toBe( false );
+
+				// Arg Z825K2 of type Z60 can be selected for a key Z6001: NOPE!
+				expect( selector.vm.menuItems[ 1 ].value ).toBe( 'Z825K2' );
+				expect( selector.vm.menuItems[ 1 ].disabled ).toBe( true );
+
+				// Arg Z825K3 of type Z20420 can be selected for a key Z6001: NOPE!
+				expect( selector.vm.menuItems[ 2 ].value ).toBe( 'Z825K3' );
+				expect( selector.vm.menuItems[ 2 ].disabled ).toBe( true );
+			} );
+
+			it( 'disables language and date for a wikidata item key when expanded', () => {
+				const wrapper = renderZArgumentReference( {
+					edit: true,
+					keyPath: expandedKeyPath,
+					objectValue: emptyTerminalValue,
+					expectedType: 'Z6',
+					parentExpectedType: 'Z6001'
+				} );
+
+				const selector = wrapper.findComponent( { name: 'cdx-select' } );
+
+				// Arg Z825K1 of type Z6091 can be selected for a key Z6001: YES!
+				expect( selector.vm.menuItems[ 0 ].value ).toBe( 'Z825K1' );
+				expect( selector.vm.menuItems[ 0 ].disabled ).toBe( false );
+
+				// Arg Z825K2 of type Z60 can be selected for a key Z6001: NOPE!
+				expect( selector.vm.menuItems[ 1 ].value ).toBe( 'Z825K2' );
+				expect( selector.vm.menuItems[ 1 ].disabled ).toBe( true );
+
+				// Arg Z825K3 of type Z20420 can be selected for a key Z6001: NOPE!
+				expect( selector.vm.menuItems[ 2 ].value ).toBe( 'Z825K3' );
+				expect( selector.vm.menuItems[ 2 ].disabled ).toBe( true );
+			} );
 		} );
 	} );
 } );

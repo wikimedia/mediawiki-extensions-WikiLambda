@@ -674,6 +674,29 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
+			// If we are in Abstract Content and we selected the arg ref Z825K1 for a
+			// key that expects Wikidata item, we set it to Z6821(Z18(Z825K1)) instead.
+			if ( store.isAbstractContent() && payload.value === Constants.Z_ABSTRACT_RENDER_FUNCTION_QID ) {
+				// Find the right keyPath to modify depending on the expanded status
+				const argRefCollapsed = ( type.value === Constants.Z_ARGUMENT_REFERENCE &&
+					expectedType.value === Constants.Z_WIKIDATA_ITEM );
+
+				const argRefExpanded = ( key.value === Constants.Z_ARGUMENT_REFERENCE_KEY &&
+					parentExpectedType.value === Constants.Z_WIKIDATA_ITEM );
+
+				const keyPath = argRefCollapsed ? props.keyPath.split( '.' ) :
+					argRefExpanded ? props.keyPath.split( '.' ).slice( 0, -1 ) : false;
+
+				// If set, bypass the normal setter and exit. Else continue to normal behavior.
+				if ( keyPath ) {
+					store.setValueByKeyPath( {
+						keyPath,
+						value: store.createObjectByType( { type: Constants.Z_WIKIDATA_ITEM } )
+					} );
+					return;
+				}
+			}
+
 			// FULLY DELEGATE TO PARENT:
 			// If we are setting a Z1K1 as typed list, this means we need to
 			// render the typed list component: we delegate change to the parent;

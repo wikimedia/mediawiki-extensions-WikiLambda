@@ -1174,6 +1174,72 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 		} );
 
+		describe( 'argument references in abstract content', () => {
+			const expectedKeyPath = 'abstractwiki.sections.Q8776414.fragments.2.Z444K1';
+			const argRefWrapper = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z6821',
+				Z6821K1: { Z1K1: 'Z18', Z18K1: 'Z825K1' }
+			};
+
+			beforeEach( () => {
+				store.isAbstractContent = jest.fn().mockReturnValue( true );
+				store.setValueByKeyPath = jest.fn();
+				store.setCreateObjectByType = jest.fn().mockReturnValue( argRefWrapper );
+				store.getExpectedTypeOfKey = jest.fn().mockImplementation( ( key ) => {
+					const types = { Z444K1: 'Z6001', Z18K1: 'Z6' };
+					return types[ key ] || 'Z1';
+				} );
+			} );
+
+			it( 'transforms Z825K1 argument reference when selected for a wikidata item while collapsed', () => {
+				keyPath = expectedKeyPath;
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+					Z18K1: { Z1K1: 'Z6', Z6K1: '' }
+				};
+
+				const wrapper = renderZObjectKeyValue( {
+					edit: true
+				} );
+
+				const argRefComponent = wrapper.getComponent( { name: 'wl-z-argument-reference' } );
+				expect( argRefComponent.exists() ).toBe( true );
+
+				argRefComponent.vm.$emit( 'set-value', {
+					keyPath: [ 'Z18K1', 'Z6K1' ],
+					value: 'Z825K1'
+				} );
+
+				expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: expectedKeyPath.split( '.' ),
+					value: argRefWrapper
+				} );
+			} );
+
+			it( 'transforms Z825K1 argument reference when selected for a wikidata item while expanded', () => {
+				keyPath = `${ expectedKeyPath }.Z18K1`;
+				objectValue = { Z1K1: 'Z6', Z6K1: '' };
+
+				const wrapper = renderZObjectKeyValue( {
+					edit: true
+				} );
+
+				const argRefComponent = wrapper.getComponent( { name: 'wl-z-argument-reference' } );
+				expect( argRefComponent.exists() ).toBe( true );
+
+				argRefComponent.vm.$emit( 'set-value', {
+					keyPath: [ 'Z6K1' ],
+					value: 'Z825K1'
+				} );
+
+				expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: expectedKeyPath.split( '.' ),
+					value: argRefWrapper
+				} );
+			} );
+		} );
+
 		describe( 'page redirections', () => {
 			it( 'navigates into function editor when content type is set to function', () => {
 				keyPath = 'main.Z2K2';

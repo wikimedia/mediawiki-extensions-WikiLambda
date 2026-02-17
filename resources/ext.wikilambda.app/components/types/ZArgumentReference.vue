@@ -47,6 +47,7 @@ const Constants = require( '../../Constants.js' );
 const useError = require( '../../composables/useError.js' );
 const useZObject = require( '../../composables/useZObject.js' );
 const useMainStore = require( '../../store/index.js' );
+const { isTypeCompatible } = require( '../../utils/typeUtils.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Base components:
@@ -73,6 +74,14 @@ module.exports = exports = defineComponent( {
 		},
 		edit: {
 			type: Boolean,
+			required: true
+		},
+		expectedType: {
+			type: [ String, Object ],
+			required: true
+		},
+		parentExpectedType: {
+			type: [ String, Object ],
 			required: true
 		}
 	},
@@ -110,6 +119,35 @@ module.exports = exports = defineComponent( {
 		const argumentLabelData = computed( () => store.getLabelData( argumentKey.value ) );
 
 		/**
+		 * Whether to disable the argument item in the selector, depending
+		 * on whether the argument type is compatible with the expectedType
+		 * for the key.
+		 *
+		 * NOTE: We only show disabled arguments inside Abstract Content fragments,
+		 * where page arguments are known and controlled. Also, we consider wikidata
+		 * reference fully compatible to use in both and wikidata item and item
+		 * reference keys.
+		 *
+		 * @param {Mixed} actual - canonical form for the type of the argument
+		 * @return {boolean}
+		 */
+		function checkDisabledByType( actual ) {
+			// Don't disable arguments in Wikifunctions, only in AW Content
+			if ( store.isAbstractContent() ) {
+				// If component is expanded, the expected type is the parent's one, else this
+				const expected = key.value === Constants.Z_ARGUMENT_REFERENCE_KEY ?
+					props.parentExpectedType :
+					props.expectedType;
+				// Any slot that expects Wikidata Item can also use the Wikidata Item Reference arg
+				const unifiedWikidataTypes = expected === Constants.Z_WIKIDATA_ITEM ?
+					Constants.Z_WIKIDATA_REFERENCE_ITEM :
+					expected;
+				return !isTypeCompatible( actual, unifiedWikidataTypes );
+			}
+			return false;
+		}
+
+		/**
 		 * Returns the available argument references options
 		 * formatted for the CdxSelect component.
 		 * The options will be the union of all the argument references
@@ -122,7 +160,8 @@ module.exports = exports = defineComponent( {
 			.map( ( arg ) => ( {
 				value: arg[ Constants.Z_ARGUMENT_KEY ],
 				label: store.getLabelData( arg[ Constants.Z_ARGUMENT_KEY ] ).label,
-				icon: icons.cdxIconFunctionArgument
+				icon: icons.cdxIconFunctionArgument,
+				disabled: checkDisabledByType( arg[ Constants.Z_ARGUMENT_TYPE ] )
 			} ) ) );
 
 		// Select
