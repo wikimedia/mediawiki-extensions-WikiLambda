@@ -343,6 +343,17 @@ const typeUtils = {
 					}
 				};
 
+			case Constants.Z_ARGUMENT_REFERENCE:
+				// Empty argument reference declaration:
+				// {
+				//  Z1K1: 'Z18',
+				//  Z18K1: { Z1K1: 'Z6', Z6K1: '' },
+				// }
+				return {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT_REFERENCE,
+					[ Constants.Z_ARGUMENT_REFERENCE_KEY ]: ''
+				};
+
 			case Constants.Z_IMPLEMENTATION:
 				// Empty implementation
 				// {

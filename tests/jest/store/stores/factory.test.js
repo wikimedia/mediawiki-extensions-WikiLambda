@@ -431,6 +431,30 @@ describe( 'factory Pinia store', () => {
 				} );
 			} );
 
+			describe( 'createZArgumentReference', () => {
+				it( 'creates a blank argument reference object', () => {
+					const payload = { type: Constants.Z_ARGUMENT_REFERENCE };
+					const expected = {
+						Z1K1: 'Z18',
+						Z18K1: ''
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates an argument reference with initialized argument reference key', () => {
+					const payload = { type: Constants.Z_ARGUMENT_REFERENCE, value: 'Z825K2' };
+					const expected = {
+						Z1K1: 'Z18',
+						Z18K1: 'Z825K2'
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+			} );
+
 			describe( 'createZFunctionCall', () => {
 				it( 'creates a blank function call object', () => {
 					const payload = { type: Constants.Z_FUNCTION_CALL };
@@ -1000,6 +1024,56 @@ describe( 'factory Pinia store', () => {
 
 					const result = store.createObjectByType( payload );
 					expect( result ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'preset argument references when abstract content', () => {
+				beforeEach( () => {
+					store.isAbstractContent = jest.fn().mockReturnValue( true );
+				} );
+
+				it( 'creates an argument reference to Z825K1 when creating a wikidata item reference in abstract mode', () => {
+					const payload = { type: 'Z6091' };
+					const expected = {
+						Z1K1: 'Z18',
+						Z18K1: 'Z825K1'
+					};
+
+					expect( store.createObjectByType( payload ) ).toEqual( expected );
+				} );
+
+				it( 'creates a wikidata fetch function with argument reference to Z825K1 when creating a wikidata item in abstract mode', () => {
+					const payload = { type: 'Z6001' };
+					const expected = {
+						Z1K1: 'Z7',
+						Z7K1: 'Z6821',
+						Z6821K1: {
+							Z1K1: 'Z18',
+							Z18K1: 'Z825K1'
+						}
+					};
+
+					expect( store.createObjectByType( payload ) ).toEqual( expected );
+				} );
+
+				it( 'creates an argument reference to Z825K2 when creating a language in abstract mode', () => {
+					const payload = { type: 'Z60' };
+					const expected = {
+						Z1K1: 'Z18',
+						Z18K1: 'Z825K2'
+					};
+
+					expect( store.createObjectByType( payload ) ).toEqual( expected );
+				} );
+
+				it( 'creates an argument reference to Z825K3 when creating a date in abstract mode', () => {
+					const payload = { type: 'Z20420' };
+					const expected = {
+						Z1K1: 'Z18',
+						Z18K1: 'Z825K3'
+					};
+
+					expect( store.createObjectByType( payload ) ).toEqual( expected );
 				} );
 			} );
 		} );

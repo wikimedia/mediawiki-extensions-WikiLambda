@@ -51,6 +51,34 @@ module.exports = {
 				this.isCustomEnum( payload.type );
 				const shouldReturnReference = isRecursiveType || ( !payload.literal && isLinkedOrCustomEnum );
 
+				// When creating data in an Abstract Content Fragment, set
+				// language and date automatically to their corresponding Z18(Z825K*)
+				if ( this.isAbstractContent() ) {
+					if ( payload.type === Constants.Z_NATURAL_LANGUAGE ) {
+						return this.createZArgumentReference( {
+							value: Constants.Z_ABSTRACT_RENDER_FUNCTION_LANGUAGE
+						} );
+					}
+					if ( payload.type === Constants.Z_GREGORIAN_CALENDAR_DATE ) {
+						return this.createZArgumentReference( {
+							value: Constants.Z_ABSTRACT_RENDER_FUNCTION_DATE
+						} );
+					}
+					if ( payload.type === Constants.Z_WIKIDATA_REFERENCE_ITEM ) {
+						return this.createZArgumentReference( {
+							value: Constants.Z_ABSTRACT_RENDER_FUNCTION_QID
+						} );
+					}
+					if ( payload.type === Constants.Z_WIKIDATA_ITEM ) {
+						return this.createWikidataEntity( {
+							type: Constants.Z_WIKIDATA_ITEM,
+							value: this.createZArgumentReference( {
+								value: Constants.Z_ABSTRACT_RENDER_FUNCTION_QID
+							} )
+						} );
+					}
+				}
+
 				if ( shouldReturnReference ) {
 					return this.createZReference( payload );
 				}
@@ -113,6 +141,8 @@ module.exports = {
 						return this.createZMonolingualStringSet( payload );
 					case Constants.Z_ARGUMENT:
 						return this.createZArgument( payload );
+					case Constants.Z_ARGUMENT_REFERENCE:
+						return this.createZArgumentReference( payload );
 					case Constants.Z_FUNCTION_CALL:
 						return this.createZFunctionCall( payload );
 					case Constants.Z_FUNCTION:
@@ -522,7 +552,31 @@ module.exports = {
 			};
 			return generateZArgument;
 		},
-
+		/**
+		 * Return a blank and initialized zArgumentReference.
+		 * The value will result in a json representation equal to:
+		 * {
+		 *  Z1K1: 'Z18',
+		 *  Z18K1: { Z1K1: 'Z6', Z6K1: 'value' }
+		 * }
+		 *
+		 * @return {Function}
+		 */
+		createZArgumentReference: function () {
+			/**
+			 * @param {Object} payload
+			 * @param {string} payload.value
+			 * @return {Object}
+			 */
+			const generateZArgumentReference = ( payload ) => {
+				// Get scaffolding
+				const value = getScaffolding( Constants.Z_ARGUMENT_REFERENCE );
+				// Initialize argument reference key
+				value[ Constants.Z_ARGUMENT_REFERENCE_KEY ] = payload.value || '';
+				return value;
+			};
+			return generateZArgumentReference;
+		},
 		/**
 		 * Return a blank and initialized zFunctionCall.
 		 * The value will result in a json representation equal to:
