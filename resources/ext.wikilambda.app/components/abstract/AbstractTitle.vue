@@ -58,6 +58,7 @@ const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
 const { fetchPageInfo } = require( '../../utils/apiUtils.js' );
 const { buildAbstractWikiTitle } = require( '../../utils/urlUtils.js' );
+const usePageTitle = require( '../../composables/usePageTitle.js' );
 
 // Base components
 const WidgetBase = require( '../base/WidgetBase.vue' );
@@ -78,6 +79,7 @@ module.exports = exports = defineComponent( {
 	},
 	setup() {
 		const i18n = inject( 'i18n' );
+		const { setCreateAbstractTitle } = usePageTitle();
 
 		// Use main store
 		const store = useMainStore();
@@ -164,6 +166,7 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 			store.setAbstractWikiId( itemId.value );
+			setCreateAbstractTitle( itemId.value );
 		}
 
 		// Watch itemId changes, and fetch the data from AW and WD

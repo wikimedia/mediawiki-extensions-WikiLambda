@@ -23,5 +23,6 @@
 	"wikilambda-abstract-special-create-intro": "Intro text for the Special page to create a new Abstract Article.\n\nParameters:\n* $1 - link to the community rules page, hard-coded for now to Special:MyLanguage/Abstract:List_of_policies_and_guidelines.",
 	"wikilambda-abstract-special-create-not-enabled": "Intro text for the Special page to create a new Abstract Article when the feature is not enabled.",
 	"wikilambda-abstract-special-create-not-enabled-title": "Title for the Special page to create a new Abstract Article when the feature is not enabled.",
-	"wikilambda-abstract-special-create-qid": "Title for the Special page to create a new Abstract Article for a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page."
+	"wikilambda-abstract-special-create-qid": "Title for the Special page to create a new Abstract Article for a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page.",
+	"wikilambda-abstract-special-view": "Title for the Special page to view an Abstract Article"
 }

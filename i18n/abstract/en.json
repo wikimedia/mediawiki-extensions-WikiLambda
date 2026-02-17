@@ -23,5 +23,6 @@
 	"wikilambda-abstract-special-create-intro": "Some intro about creation of Abstract Articles. By creating this page, you agree to the terms of use, to follow [[$1|community policies]], and to irrevocably release your contribution under Some-License-Here.",
 	"wikilambda-abstract-special-create-not-enabled": "The creation of Abstract Articles is not currently enabled. Please check back later.",
 	"wikilambda-abstract-special-create-not-enabled-title": "Abstract Article creation not enabled",
-	"wikilambda-abstract-special-create-qid": "Create a New Abstract Article for $1"
+	"wikilambda-abstract-special-create-qid": "Create a New Abstract Article for $1",
+	"wikilambda-abstract-special-view": "View an Abstract Article"
 }

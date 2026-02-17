@@ -56,7 +56,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-view-abstract' );
+		return $this->msg( 'wikilambda-abstract-special-view' );
 	}
 
 	/**
@@ -177,10 +177,13 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 			$article->setOldSubtitle( $targetRevisionId );
 		}
 
+		$this->setHeaders();
+
 		// (T345453) Have the standard copyright stuff show up.
 		$output->setCopyright( true );
 
-		$this->setHeaders();
+		// Set page title to the object being viewed
+		$output->setPageTitle( $targetTitle->getPrefixedText() );
 
 		// Runs AbstractWikiContentHandler::fillParserOutput
 		$parserOptions = ParserOptions::newFromUserAndLang( $this->getUser(), $targetLanguageObject );

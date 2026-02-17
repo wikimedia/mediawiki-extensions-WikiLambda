@@ -126,6 +126,17 @@ module.exports = function usePageTitle() {
 		}
 	}
 
+	/**
+	 * Set the page title for the Special:CreateAbstract page when the item is selected
+	 *
+	 * @param {string} qid
+	 */
+	function setCreateAbstractTitle( qid ) {
+		// eslint-disable-next-line no-jquery/no-global-selector
+		const $firstHeading = $( '#firstHeading' );
+		$firstHeading.text( i18n( 'wikilambda-abstract-special-create-qid' ).params( [ qid ] ).text() );
+	}
+
 	return {
 		pageTitleObject,
 		getFallbackLanguageZids,
@@ -137,6 +148,7 @@ module.exports = function usePageTitle() {
 		updatePageTitle,
 		updatePageTitleElements,
 		updatePageTitleObject,
-		setPageTitleObject
+		setPageTitleObject,
+		setCreateAbstractTitle
 	};
 };
