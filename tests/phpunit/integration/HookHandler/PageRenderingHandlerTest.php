@@ -24,6 +24,7 @@ use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Request\WebRequest;
+use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Skin\SkinTemplate;
 use MediaWiki\Specials\SpecialRecentChanges;
@@ -39,6 +40,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	private PageRenderingHandler $pageRenderingHandler;
 	private PageRenderingHandler $pageRenderingHandlerRepoModeOff;
+	private PageRenderingHandler $pageRenderingHandlerAbstractMode;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -76,6 +78,20 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$this->pageRenderingHandlerRepoModeOff = new PageRenderingHandler(
 			$mockHashConfigNotRepoMode,
+			$mockUserOptionsLookup,
+			$mockLanguageNameUtils,
+			$mockLanguageFactory,
+			$this->createNoOpMock( ZObjectStore::class )
+		);
+
+		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
+		$mockHashConfigAbstractMode->method( 'get' )->willReturnMap( [
+			[ 'WikiLambdaEnableRepoMode', false ],
+			[ 'WikiLambdaEnableAbstractMode', true ],
+		] );
+
+		$this->pageRenderingHandlerAbstractMode = new PageRenderingHandler(
+			$mockHashConfigAbstractMode,
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
@@ -134,6 +150,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$context->setTitle( $title );
 		$context->setLanguage( 'qqx' );
 
+		// Test repo mode: should load repo-specific modules (search is registered via SkinPageReadyConfig)
 		$outputPage = new OutputPage( $context );
 		$this->pageRenderingHandler->onBeforePageDisplay( $outputPage, $mockSkin );
 
@@ -173,6 +190,27 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			[], $outputPage->getModuleStyles(),
 			'We should not register ext.wikilambda.references.styles in non-repo mode'
 		);
+	}
+
+	public function testOnSkinPageReadyConfig() {
+		$mockContext = $this->createNoOpMock( ResourceLoaderContext::class );
+
+		// Repo mode: searchModule should be ext.wikilambda.search (client selected by init from config)
+		$config = [];
+		$this->pageRenderingHandler->onSkinPageReadyConfig( $mockContext, $config );
+		$this->assertArrayHasKey( 'searchModule', $config );
+		$this->assertSame( 'ext.wikilambda.search', $config['searchModule'] );
+
+		// Abstract mode: searchModule should be ext.wikilambda.search (client selected by init from config)
+		$config = [];
+		$this->pageRenderingHandlerAbstractMode->onSkinPageReadyConfig( $mockContext, $config );
+		$this->assertArrayHasKey( 'searchModule', $config );
+		$this->assertSame( 'ext.wikilambda.search', $config['searchModule'] );
+
+		// Neither mode: hook returns early, searchModule not set
+		$config = [];
+		$this->pageRenderingHandlerRepoModeOff->onSkinPageReadyConfig( $mockContext, $config );
+		$this->assertArrayNotHasKey( 'searchModule', $config );
 	}
 
 	public static function provideTestOnSkinTemplateNavigation() {

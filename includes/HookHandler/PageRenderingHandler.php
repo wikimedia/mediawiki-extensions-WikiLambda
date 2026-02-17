@@ -28,6 +28,7 @@ use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
@@ -41,7 +42,8 @@ class PageRenderingHandler implements
 	\MediaWiki\Hook\GetMagicVariableIDsHook,
 	\MediaWiki\Parser\Hook\ParserFirstCallInitHook,
 	\MediaWiki\Parser\Hook\ParserGetVariableValueSwitchHook,
-	\MediaWiki\Specials\Hook\SpecialStatsAddExtraHook
+	\MediaWiki\Specials\Hook\SpecialStatsAddExtraHook,
+	\MediaWiki\Skin\Hook\SkinPageReadyConfigHook
 {
 	private Config $config;
 	private UserOptionsLookup $userOptionsLookup;
@@ -357,7 +359,8 @@ class PageRenderingHandler implements
 	 * @return void
 	 */
 	public function onBeforePageDisplay( $out, $skin ): void {
-		// We only do this in repo mode
+		// We only do the rest in repo mode
+		// Note: Search client is registered via SkinPageReadyConfig hook, not here
 		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			return;
 		}
@@ -369,6 +372,7 @@ class PageRenderingHandler implements
 
 		// Add language selector module to all pages
 		$out->addModules( 'ext.wikilambda.languageselector' );
+
 		// Add references module to all pages to enable references on all pages
 		$out->addModuleStyles( 'ext.wikilambda.references.styles' );
 		$out->addModules( 'ext.wikilambda.references' );
@@ -623,5 +627,25 @@ class PageRenderingHandler implements
 		$output .= ']]';
 
 		return $output;
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SkinPageReadyConfig
+	 *
+	 * @param ResourceLoaderContext $context
+	 * @param array &$config
+	 * @return void
+	 */
+	public function onSkinPageReadyConfig( ResourceLoaderContext $context, array &$config ): void {
+		// Register our custom search module for Vector 2022 typeahead search.
+		// We only register search if WikiLambda is in repo or abstract mode.
+		// This replaces the deprecated mw.config.get( 'wgVectorSearchClient' ) approach (T395641).
+		// The client decides which underlying search implementation to use based on configuration.
+		if (
+			$this->config->get( 'WikiLambdaEnableAbstractMode' ) ||
+			$this->config->get( 'WikiLambdaEnableRepoMode' )
+		) {
+			$config['searchModule'] = 'ext.wikilambda.search';
+		}
 	}
 }

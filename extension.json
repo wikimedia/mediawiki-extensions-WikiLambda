@@ -338,7 +338,8 @@
 		"GetMagicVariableIDs": "PageRenderingHandler",
 		"ParserGetVariableValueSwitch": "PageRenderingHandler",
 		"SpecialStatsAddExtra": "PageRenderingHandler",
-		"ParserFirstCallInit": "PageRenderingHandler"
+		"ParserFirstCallInit": "PageRenderingHandler",
+		"SkinPageReadyConfig": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
@@ -455,14 +456,34 @@
 						"cdxIconLanguage",
 						"cdxIconSearch"
 					]
-				},
-				"ext.wikilambda.languageselector/vector-2022SearchIntegration.js"
+				}
+			],
+			"messages": [
+				"wikilambda-about-widget-search-language-placeholder"
+			]
+		},
+		"ext.wikilambda.search": {
+			"packageFiles": [
+				"ext.wikilambda.search/index.js",
+				"ext.wikilambda.search/utils.js",
+				"ext.wikilambda.search/wikidata.js",
+				"ext.wikilambda.search/zobject.js",
+				{
+					"name": "ext.wikilambda.search/config.json",
+					"config": [
+						"WikiLambdaEnableAbstractMode",
+						"WikiLambdaEnableRepoMode"
+					]
+				}
+			],
+			"dependencies": [
+				"skins.vector.search",
+				"mediawiki.api"
 			],
 			"messages": [
 				"parentheses",
 				"word-separator",
-				"quotation-marks",
-				"wikilambda-about-widget-search-language-placeholder"
+				"quotation-marks"
 			]
 		},
 		"ext.wikilambda.app": {

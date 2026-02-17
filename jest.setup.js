@@ -191,6 +191,7 @@ global.mw = {
 		} )
 	},
 	message: jest.fn( ( str, param ) => new Mocki18n( str, param ) ),
+	msg: jest.fn( ( str, param ) => new Mocki18n( str, param ) ),
 	Uri: jest.fn().mockReturnValue( {
 		path: jest.fn(),
 		query: jest.fn()

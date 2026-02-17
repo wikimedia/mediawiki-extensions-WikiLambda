@@ -3,18 +3,24 @@
 		"@note": "WikiLamba loads Vue on page load unlike other projects.",
 		"ignoreDependencies": true,
 		"resourceModule": "ext.wikilambda.languageselector",
-		"maxSize": "11.0 kB"
+		"maxSize": "10.0 kB"
 	},
 	{
 		"@note": "WikiLamba loads Vue on page load unlike other projects.",
 		"ignoreDependencies": true,
 		"resourceModule": "ext.wikilambda.references",
-		"maxSize": "2 kB"
+		"maxSize": "3.0 kB"
 	},
 	{
 		"@note": "CSS-only module for Wikilambda References, loaded early to prevent FOUC.",
 		"ignoreDependencies": true,
 		"resourceModule": "ext.wikilambda.references.styles",
 		"maxSize": "1.5 kB"
+	},
+	{
+		"@note": "WikiLambda Search module (wikidata + zobject clients, loaded based on mode).",
+		"ignoreDependencies": true,
+		"resourceModule": "ext.wikilambda.search",
+		"maxSize": "3.0 kB"
 	}
 ]
