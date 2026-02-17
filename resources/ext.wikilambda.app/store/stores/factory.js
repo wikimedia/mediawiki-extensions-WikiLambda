@@ -30,7 +30,6 @@ module.exports = {
 			 * @param {Object} payload
 			 * @param {string} payload.type the type of the new object to add
 			 * @param {Object} payload.value initialization values
-			 * @param {boolean} payload.append whether to append the new zobject to a list
 			 * @param {boolean} payload.literal force create a literal object: on root initialization and
 			 * mode selector explicit request
 			 * @param {Array} keyList a list of types that have been seen so far
@@ -271,7 +270,6 @@ module.exports = {
 			 * @param {Object} payload
 			 * @param {string} payload.value string value of the monolingual string
 			 * @param {string} payload.lang zid of the language for the monolingual string
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZMonolingualString = ( payload ) => {
@@ -305,7 +303,6 @@ module.exports = {
 			 * @param {Object} payload
 			 * @param {Array} payload.value Array list of strings for the list
 			 * @param {string} payload.lang zid of the language for the first monolingual string
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZMonolingualStringSet = ( payload ) => {
@@ -342,7 +339,6 @@ module.exports = {
 			 * @param {Object} payload
 			 * @param {string} payload.value string value of the first monolingual string
 			 * @param {string} payload.lang zid of the language for the first monolingual string
-			 * @param {number} payload.append
 			 * @return {Object}
 			 */
 			const generateZMultilingualString = ( payload ) => {
@@ -377,7 +373,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.value
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZString = ( payload ) => {
@@ -402,7 +397,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.value
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZReference = ( payload ) => {
@@ -464,7 +458,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.value
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZBoolean = ( payload ) => {
@@ -518,7 +511,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.value
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZArgument = ( payload ) => {
@@ -542,7 +534,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.value Zid of the function to call
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZFunctionCall = ( payload ) => {
@@ -678,7 +669,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.value
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZTypedList = ( payload ) => {
@@ -712,7 +702,6 @@ module.exports = {
 			 * @param {Object} payload
 			 * @param {Object} payload.values
 			 * @param {boolean} payload.isDeclaration This is used know if the values need to be initialized or not
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZTypedPair = ( payload ) => {
@@ -756,7 +745,6 @@ module.exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {string} payload.values
-			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			const generateZTypedMap = ( payload ) => {
