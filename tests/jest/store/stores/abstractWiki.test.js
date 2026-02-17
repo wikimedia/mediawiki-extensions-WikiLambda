@@ -161,6 +161,17 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.getHighlightedFragment ).toBe( keyPath );
 			} );
 		} );
+
+		describe( 'getSuggestedHtmlFunctions', () => {
+			it( 'returns empty list if nothing set', () => {
+				expect( store.getSuggestedHtmlFunctions ).toEqual( [] );
+			} );
+
+			it( 'returns the list of suggested function zids', () => {
+				store.suggestedHtmlFunctions = [ 'Z10001', 'Z10002' ];
+				expect( store.getSuggestedHtmlFunctions ).toEqual( [ 'Z10001', 'Z10002' ] );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -200,6 +211,9 @@ describe( 'abstractWiki Pinia store', () => {
 				store.fetchZids = jest.fn();
 				store.fetchItems = jest.fn();
 				store.setInitialized = jest.fn();
+				store.setSuggestedHtmlFunctions = jest.fn();
+				// Mock mw.msg with suggested functions
+				global.mw.msg = jest.fn().mockReturnValue( '[ "Z10001", "badzid", "Z10002"]' );
 			} );
 
 			it( 'initializes the Abstract Wiki content', async () => {
@@ -216,8 +230,11 @@ describe( 'abstractWiki Pinia store', () => {
 				};
 				expect( store.setJsonObject ).toHaveBeenCalledWith( transformedContent );
 
+				// Suggested functions are initialized
+				expect( store.setSuggestedHtmlFunctions ).toHaveBeenCalledWith( [ 'Z10001', 'Z10002' ] );
+
 				// Zids are extracted and fetched
-				const extractedZids = { zids: [ 'Z1', 'Z9', 'Z89', 'Z7', 'Z444', 'Z6' ] };
+				const extractedZids = { zids: [ 'Z1', 'Z9', 'Z89', 'Z7', 'Z444', 'Z6', 'Z10001', 'Z10002' ] };
 				expect( store.fetchZids ).toHaveBeenCalledWith( extractedZids );
 
 				// Qids are extracted and fetched
@@ -615,6 +632,13 @@ describe( 'abstractWiki Pinia store', () => {
 				store.setHighlightedFragment( undefined );
 
 				expect( store.highlight ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'setSuggestedHtmlFunctions', () => {
+			it( 'sets list of suggested function zids', () => {
+				store.setSuggestedHtmlFunctions( [ 'Z10001', 'Z10002' ] );
+				expect( store.suggestedHtmlFunctions ).toEqual( [ 'Z10001', 'Z10002' ] );
 			} );
 		} );
 	} );

@@ -18,6 +18,8 @@
 			v-if="edit"
 			:aria-label="i18n( 'wikilambda-abstract-fragment-actions-menu' ).text()"
 			class="ext-wikilambda-app-abstract-content-fragment-menu"
+			action="default"
+			weight="quiet"
 			:menu-items="menuItems"
 			:selected="null"
 			@update:selected="selectAction"
@@ -74,8 +76,8 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'action' ],
 	setup( props, { emit } ) {
-		const i18n = inject( 'i18n' );
 		const store = useMainStore();
+		const i18n = inject( 'i18n' );
 
 		// Constants
 		const icon = icons.cdxIconEllipsis;
@@ -93,15 +95,15 @@ module.exports = exports = defineComponent( {
 			const isLast = key.value === String( fragmentCount.value );
 			// move item (before or after)
 			const moveActionsGroup = {
-				label: 'Move fragments',
+				label: i18n( 'wikilambda-abstract-menu-group-move-fragments' ).text(),
 				hideLabel: true,
 				items: [ {
-					label: 'Move fragment before',
+					label: i18n( 'wikilambda-abstract-menu-option-move-before' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.MOVE_BEFORE,
 					icon: icons.cdxIconTableMoveRowBefore,
 					disabled: isFirst
 				}, {
-					label: 'Move fragment after',
+					label: i18n( 'wikilambda-abstract-menu-option-move-after' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.MOVE_AFTER,
 					icon: icons.cdxIconTableMoveRowAfter,
 					disabled: isLast
@@ -109,20 +111,21 @@ module.exports = exports = defineComponent( {
 			};
 			// add item (before or after)
 			const insertActionsGroup = {
-				label: 'Insert fragments',
+				label: i18n( 'wikilambda-abstract-menu-group-insert-fragments' ).text(),
 				hideLabel: true,
 				items: [ {
-					label: 'Insert fragment before',
+					label: i18n( 'wikilambda-abstract-menu-option-insert-before' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.ADD_BEFORE,
 					icon: icons.cdxIconTableAddRowBefore
 				}, {
-					label: 'Insert fragment after',
+					label: i18n( 'wikilambda-abstract-menu-option-insert-after' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.ADD_AFTER,
 					icon: icons.cdxIconTableAddRowAfter
 				} ]
 			};
 			// copy options
 			const clipboardActionGroup = {
+				// TODO i18n with general clipboard work
 				label: 'Clipboard',
 				hideLabel: true,
 				items: [ {
@@ -137,10 +140,10 @@ module.exports = exports = defineComponent( {
 			};
 			// delete item
 			const deleteActionGroup = {
-				label: 'Delete fragment',
+				label: i18n( 'wikilambda-abstract-menu-option-delete-fragment' ).text(),
 				hideLabel: true,
 				items: [ {
-					label: 'Delete fragment',
+					label: i18n( 'wikilambda-abstract-menu-option-delete-fragment' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.DELETE_ITEM,
 					icon: icons.cdxIconTrash,
 					action: 'destructive'

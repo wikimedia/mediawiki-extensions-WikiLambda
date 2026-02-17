@@ -13,6 +13,7 @@ const { buildAbstractWikiTitle } = require( '../../utils/urlUtils.js' );
 const { extractWikidataItemIds } = require( '../../utils/wikidataUtils.js' );
 const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const { getFragmentCacheKey } = require( '../../utils/abstractUtils.js' );
+const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 
 const DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT = 2000;
 
@@ -21,7 +22,8 @@ const abstractWikiStore = {
 		qid: undefined,
 		fragments: {},
 		highlight: undefined,
-		previewLanguageZid: undefined
+		previewLanguageZid: undefined,
+		suggestedHtmlFunctions: []
 	},
 	getters: {
 		/**
@@ -84,13 +86,22 @@ const abstractWikiStore = {
 			return ( keyPath ) => state.fragments[ getFragmentCacheKey( keyPath, this.getPreviewLanguageZid ) ];
 		},
 		/**
-		 * FIXME add jsdoc
+		 * Returns the keyPath of the highlighted fragment
 		 *
 		 * @param {Object} state
-		 * @return {boolean}
+		 * @return {string}
 		 */
 		getHighlightedFragment: function ( state ) {
 			return state.highlight;
+		},
+		/**
+		 * Returns the array with suggested html functions
+		 *
+		 * @param {Object} state
+		 * @return {Array}
+		 */
+		getSuggestedHtmlFunctions: function ( state ) {
+			return state.suggestedHtmlFunctions;
 		}
 	},
 	actions: {
@@ -143,9 +154,19 @@ const abstractWikiStore = {
 				zobject: content
 			} );
 
+			// Initialize suggested fragment functions (discard any bad entries)
+			let suggestedZids = [];
+			try {
+				const suggested = JSON.parse( mw.msg( 'abstractwiki-suggested-functions.json' ) );
+				suggestedZids = suggested.filter( ( item ) => isValidZidFormat( item ) );
+				this.setSuggestedHtmlFunctions( suggestedZids );
+			} catch ( e ) {
+				// do nothing
+			}
+
 			// Prefetch mentioned zids in content
 			const zids = extractZIDs( content );
-			this.fetchZids( { zids } );
+			this.fetchZids( { zids: [ ...zids, ...suggestedZids ] } );
 
 			// Prefetch mentioned qids in content
 			const qids = extractWikidataItemIds( content );
@@ -373,6 +394,14 @@ const abstractWikiStore = {
 		 */
 		setHighlightedFragment: function ( keyPath ) {
 			this.highlight = keyPath;
+		},
+		/**
+		 * Sets a list of zids as suggested functions that return HTML fragments
+		 *
+		 * @param {Array} zids
+		 */
+		setSuggestedHtmlFunctions: function ( zids ) {
+			this.suggestedHtmlFunctions = zids;
 		}
 	}
 };

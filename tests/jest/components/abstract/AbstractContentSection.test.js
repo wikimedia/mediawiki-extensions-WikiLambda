@@ -7,7 +7,9 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
+const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractContentSection = require( '../../../../resources/ext.wikilambda.app/components/abstract/AbstractContentSection.vue' );
 
 const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
@@ -27,6 +29,7 @@ const section = {
 
 describe( 'AbstractContentSection', () => {
 	let mockMenuActions;
+	let store;
 
 	function renderSection( props = {} ) {
 		return shallowMount( AbstractContentSection, {
@@ -41,7 +44,7 @@ describe( 'AbstractContentSection', () => {
 				},
 				stubs: {
 					'wl-abstract-content-fragment': true,
-					'cdx-button': true,
+					'cdx-menu-button': true,
 					'cdx-icon': true
 				}
 			}
@@ -57,6 +60,16 @@ describe( 'AbstractContentSection', () => {
 			moveBefore: jest.fn(),
 			deleteListItem: jest.fn()
 		};
+		store = useMainStore();
+		store.setFunctionCallArguments = jest.fn();
+		store.getStoredObject = jest.fn().mockReturnValue( {
+			Z2K2: { Z1K1: 'Z8', Z8K2: 'Z89' }
+		} );
+		store.getSuggestedHtmlFunctions = [ 'Z10001', 'Z10002' ];
+		store.getLabelData = createLabelDataMock( {
+			Z10001: 'section title',
+			Z10002: 'paragraph'
+		} );
 	} );
 
 	it( 'renders without errors', () => {
@@ -91,30 +104,65 @@ describe( 'AbstractContentSection', () => {
 		expect( fragment.props( 'edit' ) ).toBe( true );
 	} );
 
-	it( 'does not show add fragment button when edit=false', () => {
+	it( 'does not show add fragment menu button when edit=false', () => {
 		const wrapper = renderSection( { edit: false } );
 
-		const button = wrapper.findComponent( { name: 'cdx-button' } );
+		const button = wrapper.findComponent( { name: 'cdx-menu-button' } );
 		expect( button.exists() ).toBe( false );
 	} );
 
-	it( 'shows add fragment button when edit=true', () => {
+	it( 'shows add fragment menu button when edit=true', () => {
 		const wrapper = renderSection();
 
-		const button = wrapper.findComponent( { name: 'cdx-button' } );
+		const button = wrapper.findComponent( { name: 'cdx-menu-button' } );
 		expect( button.exists() ).toBe( true );
+	} );
+
+	it( 'adds special function fragments to the menu button', () => {
+		const wrapper = renderSection();
+
+		const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
+		const menuItems = menuButton.props( 'menuItems' );
+
+		// Expect two sections
+		expect( menuItems.length ).toBe( 2 );
+		// Expect second section to contain two items
+		expect( menuItems[ 1 ].items.length ).toBe( 2 );
+		expect( menuItems[ 1 ].items[ 0 ].value ).toBe( 'Z10001' );
+		expect( menuItems[ 1 ].items[ 0 ].label ).toBe( 'Add section title' );
+		expect( menuItems[ 1 ].items[ 1 ].value ).toBe( 'Z10002' );
+		expect( menuItems[ 1 ].items[ 1 ].label ).toBe( 'Add paragraph' );
 	} );
 
 	it( 'adds a fragment at the end when clicking add fragment', () => {
 		const wrapper = renderSection();
 
-		wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
+		const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
+		menuButton.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT );
 
 		expect( mockMenuActions.addListItem ).toHaveBeenCalledWith(
 			{ type: Constants.Z_FUNCTION_CALL },
 			section.fragmentsPath,
 			section.fragments.length
 		);
+	} );
+
+	it( 'adds a function fragment at the end when clicking add special fragment', () => {
+		const wrapper = renderSection();
+
+		const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
+		menuButton.vm.$emit( 'update:selected', 'Z10001' );
+
+		expect( mockMenuActions.addListItem ).toHaveBeenCalledWith(
+			{ type: Constants.Z_FUNCTION_CALL, value: 'Z10001' },
+			section.fragmentsPath,
+			section.fragments.length
+		);
+
+		expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( {
+			keyPath: 'abstractwiki.sections.Q8776414.fragments.2'.split( '.' ),
+			functionZid: 'Z10001'
+		} );
 	} );
 
 	it( 'moves a fragment up one position', () => {

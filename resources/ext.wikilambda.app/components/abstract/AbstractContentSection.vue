@@ -26,35 +26,40 @@
 				@action="performAction( $event, index )"
 			></wl-abstract-content-fragment>
 		</template>
-		<!-- Add fragment button in edit mode -->
-		<cdx-button
+		<!-- Add fragment menu button in edit mode -->
+		<cdx-menu-button
 			v-if="edit"
-			title="Add new fragment"
-			aria-label="Add new fragment"
-			@click="addFragment"
+			class="ext-wikilambda-app-abstract-content-section-fragment-menu"
+			action="default"
+			weight="normal"
+			:aria-label="i18n( 'wikilambda-abstract-menu-fragments-accessible-label' ).text()"
+			:menu-items="menuItems"
+			:selected="null"
+			@update:selected="addFragment"
 		>
 			<cdx-icon :icon="iconAdd"></cdx-icon>
-		</cdx-button>
+		</cdx-menu-button>
 	</div>
 </template>
 
 <script>
-const { defineComponent, inject } = require( 'vue' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useMainStore = require( '../../store/index.js' );
 const useMenuAction = require( '../../composables/useMenuAction.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Abstract components
 const AbstractContentFragment = require( './AbstractContentFragment.vue' );
 // Codex components
-const { CdxButton, CdxIcon } = require( '../../../codex.js' );
+const { CdxMenuButton, CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-content-section',
 	components: {
 		'wl-abstract-content-fragment': AbstractContentFragment,
-		'cdx-button': CdxButton,
+		'cdx-menu-button': CdxMenuButton,
 		'cdx-icon': CdxIcon
 	},
 	props: {
@@ -68,6 +73,8 @@ module.exports = exports = defineComponent( {
 		}
 	},
 	setup( props ) {
+		const store = useMainStore();
+		const i18n = inject( 'i18n' );
 		const menuActions = inject( 'useMenuAction', useMenuAction );
 		const {
 			addAfter,
@@ -80,15 +87,79 @@ module.exports = exports = defineComponent( {
 
 		const iconAdd = icons.cdxIconAdd;
 
+		const menuItems = computed( () => {
+			const basicActionGroup = {
+				label: i18n( 'wikilambda-abstract-menu-group-basic-fragments' ).text(),
+				hideLabel: true,
+				items: [ {
+					label: i18n( 'wikilambda-abstract-menu-option-add-empty-fragment' ).text(),
+					value: Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT
+				} ]
+			};
+			const specialActionGroup = {
+				label: i18n( 'wikilambda-abstract-menu-group-special-fragments' ).text(),
+				hideLabel: true,
+				items: store.getSuggestedHtmlFunctions.map( ( zid ) => ( {
+					label: i18n( 'wikilambda-abstract-menu-option-add-named-fragment',
+						store.getLabelData( zid ).label ).text(),
+					value: zid
+				} ) )
+			};
+			return store.getSuggestedHtmlFunctions.length > 0 ?
+				[ basicActionGroup, specialActionGroup ] :
+				[ basicActionGroup ];
+		} );
+
 		/**
 		 * Adds a new fragment at the end of the list
+		 *
+		 * @param {string} value
 		 */
-		function addFragment() {
+		function addFragment( value ) {
+			if ( value === Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT ) {
+				addListItem(
+					{ type: Constants.Z_FUNCTION_CALL },
+					props.section.fragmentsPath,
+					props.section.fragments.length
+				);
+				return;
+			}
+
+			// Any other value is a zid, we need to:
+			// * make sure it's a function zid
+			// * make sure function returns HTML
+			// * create function call to this function
+			// * insert it as a fragment
+			const obj = store.getStoredObject( value );
+			if ( !obj ) {
+				// Not found object, do nothing
+				return;
+			}
+
+			const inner = obj[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+			const type = inner[ Constants.Z_OBJECT_TYPE ];
+			if ( type !== Constants.Z_FUNCTION ) {
+				// Not a function, do nothing
+				return;
+			}
+
+			const output = inner[ Constants.Z_FUNCTION_RETURN_TYPE ];
+			if ( output !== Constants.Z_HTML_FRAGMENT ) {
+				// Return type is not HTML, do nothing
+				return;
+			}
+
+			// All good, insert function call to given function zid
+			const newItemPath = `${ props.section.fragmentsPath }.${ props.section.fragments.length }`;
 			addListItem(
-				{ type: Constants.Z_FUNCTION_CALL },
+				{ type: Constants.Z_FUNCTION_CALL, value },
 				props.section.fragmentsPath,
 				props.section.fragments.length
 			);
+			store.setFunctionCallArguments( {
+				keyPath: newItemPath.split( '.' ),
+				functionZid: value
+			} );
 		}
 
 		/**
@@ -129,8 +200,10 @@ module.exports = exports = defineComponent( {
 
 		return {
 			addFragment,
+			menuItems,
 			performAction,
-			iconAdd
+			iconAdd,
+			i18n
 		};
 	}
 } );
