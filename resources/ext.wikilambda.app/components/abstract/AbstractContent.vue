@@ -25,8 +25,7 @@
 				action="default"
 				weight="primary"
 				@click="console.log"
-				>Add section</cdx-button>
-			</cdx-button>-->
+				>{{ i18n( 'wikilambda-abstract-menu-option-add-section' ).text() }}</cdx-button>-->
 		</template>
 	</wl-widget-base>
 </template>

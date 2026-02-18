@@ -24,6 +24,7 @@
 	"wikilambda-abstract-menu-group-special-fragments": "Special fragment actions",
 	"wikilambda-abstract-menu-option-add-empty-fragment": "Add empty fragment",
 	"wikilambda-abstract-menu-option-add-named-fragment": "Add $1",
+	"wikilambda-abstract-menu-option-add-section": "Add section",
 	"wikilambda-abstract-menu-option-delete-fragment": "Delete fragment",
 	"wikilambda-abstract-menu-option-insert-after": "Insert fragment after",
 	"wikilambda-abstract-menu-option-insert-before": "Insert fragment before",
