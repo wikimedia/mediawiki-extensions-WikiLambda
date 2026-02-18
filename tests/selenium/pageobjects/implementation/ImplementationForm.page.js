@@ -212,32 +212,30 @@ class ImplementationForm extends Page {
 			/**
 			 * Set the condition mode to "Argument reference"
 			 */
-			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', this.compositionBlock );
+			const conditionBlock = await ContentBlock.getSectionOfContentBlock( 'condition', this.compositionBlock );
 			await ContentBlock.selectMode( 'condition', firstFunctionCallEntries.conditionType, conditionBlock );
 
 			/**
 			 * Set the condition value to "first Boolean"
 			 */
-			const conditionValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
-			const conditionValueInput = await conditionValueInputBlock.$( '[role="combobox"]' );
+			const conditionValueInput = await conditionBlock.$( '[role="combobox"]' );
 			await InputDropdown.setSelectOption(
-				conditionValueInputBlock,
+				conditionBlock,
 				conditionValueInput,
 				firstFunctionCallEntries.conditionValue );
 
 			/**
 			 * Set the then mode to "Argument reference"
 			 */
-			const thenBlock = ContentBlock.getSectionOfContentBlock( 'then', this.compositionBlock );
+			const thenBlock = await ContentBlock.getSectionOfContentBlock( 'then', this.compositionBlock );
 			await ContentBlock.selectMode( 'then', firstFunctionCallEntries.thenType, thenBlock );
 
 			/**
 			 * Set the then value to "second Boolean"
 			 */
-			const thenValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'key id', thenBlock );
-			const thenValueInput = await thenValueInputBlock.$( '[role="combobox"]' );
+			const thenValueInput = await thenBlock.$( '[role="combobox"]' );
 			await InputDropdown.setSelectOption(
-				thenValueInputBlock,
+				thenBlock,
 				thenValueInput,
 				firstFunctionCallEntries.thenValue );
 
@@ -267,16 +265,15 @@ class ImplementationForm extends Page {
 			/**
 			 * Set the condition mode to "Argument reference"
 			 */
-			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', secondFunctionCallBlock );
+			const conditionBlock = await ContentBlock.getSectionOfContentBlock( 'condition', secondFunctionCallBlock );
 			await ContentBlock.selectMode( 'condition', secondFunctionCallEntries.conditionType, conditionBlock );
 
 			/**
 			 * Set the condition value to "second Boolean"
 			 */
-			const conditionValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
-			const conditionValueInput = await conditionValueInputBlock.$( '[role="combobox"]' );
+			const conditionValueInput = await conditionBlock.$( '[role="combobox"]' );
 			await InputDropdown.setSelectOption(
-				conditionValueInputBlock,
+				conditionBlock,
 				conditionValueInput,
 				secondFunctionCallEntries.conditionValue );
 
@@ -292,14 +289,12 @@ class ImplementationForm extends Page {
 				secondFunctionCallEntries.thenType );
 
 			/**
-			 * Set the then value to "false"
+			 * Set the then value to "false" radio button
 			 */
-			const thenValueBlock = await ContentBlock.getSectionOfContentBlock( 'identity', thenBlock );
-			const thenValueInput = await thenValueBlock.$( '[role="combobox"]' );
-			await InputDropdown.setSelectOption(
-				thenValueBlock,
-				thenValueInput,
-				secondFunctionCallEntries.thenValue );
+			const thenRadioBlock = await ContentBlock.getSectionOfContentBlock( 'then', secondFunctionCallBlock );
+			const thenValueRadio = await thenRadioBlock.$(
+				`.//label[.//span[normalize-space()="${ secondFunctionCallEntries.thenValue }"]]` );
+			await thenValueRadio.click();
 
 			/**
 			 * Set the else type to "Boolean"
@@ -313,14 +308,12 @@ class ImplementationForm extends Page {
 				secondFunctionCallEntries.elseType );
 
 			/**
-			 * Set the else value to "true"
+			 * Set the else value to "true" radio button
 			 */
-			const elseValueBlock = await ContentBlock.getSectionOfContentBlock( 'identity', elseBlock );
-			const elseValueInput = await elseValueBlock.$( '[role="combobox"]' );
-			await InputDropdown.setSelectOption(
-				elseValueBlock,
-				elseValueInput,
-				secondFunctionCallEntries.elseValue );
+			const elseRadioBlock = await ContentBlock.getSectionOfContentBlock( 'else', secondFunctionCallBlock.$( './div[2]' ) );
+			const elseValueRadio = await elseRadioBlock.$(
+				`.//label[.//span[normalize-space()="${ secondFunctionCallEntries.elseValue }"]]` );
+			await elseValueRadio.click();
 		}
 
 		// #endregion

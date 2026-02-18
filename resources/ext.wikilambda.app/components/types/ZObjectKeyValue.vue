@@ -373,14 +373,12 @@ module.exports = exports = defineComponent( {
 				};
 			}
 
-			// If type is a Wikidata statement, we render the value using the Wikidata statement component
-			// but only if we are in read mode
-			if ( type.value === Constants.Z_WIKIDATA_STATEMENT && !props.edit ) {
+			// If type is a Wikidata statement, skip built-in and render default component on edit
+			if ( type.value === Constants.Z_WIKIDATA_STATEMENT && props.edit ) {
 				return {
-					hasBuiltin: true,
-					component: 'wl-wikidata-statement',
-					allowExpansion: true,
-					expandToSelf: false
+					hasBuiltin: false,
+					component: null,
+					allowExpansion: true
 				};
 			}
 
@@ -611,11 +609,11 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
-			// If payload.value is reference or string, set expanded to false;
-			// else, set expanded to true by default.
-			expanded.value = (
-				( payload.value !== Constants.Z_REFERENCE ) &&
-				( payload.value !== Constants.Z_STRING )
+			// If type has a built-in component which is fully editable while collapsed, initialize as expanded=false
+			// Else, initialize as expanded=true.
+			expanded.value = !Constants.BUILTIN_TYPE_CONFIG[ payload.value ] || (
+				Constants.BUILTIN_TYPE_CONFIG[ payload.value ].allowExpansion &&
+				!Constants.BUILTIN_TYPE_CONFIG[ payload.value ].collapseOnInit
 			);
 
 			// Force literal object if it's root object or request comes from mode selector

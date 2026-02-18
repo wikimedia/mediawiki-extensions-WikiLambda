@@ -88,7 +88,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ASSERT: Check that the type of the first argument is now argument reference
 		const firstArgumentTypeSelector = within( firstArgument ).getAllByRole( 'combobox' )[ 0 ];
-		expect( firstArgumentTypeSelector.value ).toBe( 'Argument reference' );
+		expect( firstArgumentTypeSelector ).toHaveTextContent( 'Select argument' );
 
 		// ACT: Select the first argument
 		const firstArgumentInput = within( firstArgument ).getByTestId( 'z-argument-reference' );
@@ -109,7 +109,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ASSERT: Check that the type of the second argument is now argument reference
 		const secondArgumentTypeSelector = within( secondArgument ).getAllByRole( 'combobox' )[ 0 ];
-		expect( secondArgumentTypeSelector.value ).toBe( 'Argument reference' );
+		expect( secondArgumentTypeSelector ).toHaveTextContent( 'Select argument' );
 
 		// ACT: Select the second argument
 		const secondArgumentInput = within( secondArgument ).getByTestId( 'z-argument-reference' );

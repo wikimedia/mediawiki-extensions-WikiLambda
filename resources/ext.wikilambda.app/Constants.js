@@ -261,7 +261,8 @@ Constants.BUILTIN_TYPE_CONFIG = {
 	[ Constants.Z_ARGUMENT_REFERENCE ]: {
 		hasBuiltin: true,
 		component: 'wl-z-argument-reference',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_FUNCTION_CALL ]: {
 		hasBuiltin: true,
@@ -302,17 +303,20 @@ Constants.BUILTIN_TYPE_CONFIG = {
 	[ Constants.Z_STRING ]: {
 		hasBuiltin: true,
 		component: 'wl-z-string',
-		allowExpansion: false
+		allowExpansion: false,
+		collapseOnInit: true
 	},
 	[ Constants.Z_REFERENCE ]: {
 		hasBuiltin: true,
 		component: 'wl-z-reference',
-		allowExpansion: false
+		allowExpansion: false,
+		collapseOnInit: true
 	},
 	[ Constants.Z_BOOLEAN ]: {
 		hasBuiltin: true,
 		component: 'wl-z-boolean',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_CODE ]: {
 		hasBuiltin: true,
@@ -328,52 +332,68 @@ Constants.BUILTIN_TYPE_CONFIG = {
 	[ Constants.Z_WIKIDATA_ITEM ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-item',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-item',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_LEXEME ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-lexeme',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-lexeme',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_LEXEME_FORM ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-lexeme-form',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-lexeme-form',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_LEXEME_SENSE ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-lexeme-sense',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-lexeme-sense',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_PROPERTY ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-property',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_REFERENCE_PROPERTY ]: {
 		hasBuiltin: true,
 		component: 'wl-wikidata-property',
-		allowExpansion: true
+		allowExpansion: true,
+		collapseOnInit: true
+	},
+	[ Constants.Z_WIKIDATA_STATEMENT ]: {
+		hasBuiltin: true,
+		component: 'wl-wikidata-statement',
+		allowExpansion: true,
+		collapseOnInit: false
 	}
 };
 
