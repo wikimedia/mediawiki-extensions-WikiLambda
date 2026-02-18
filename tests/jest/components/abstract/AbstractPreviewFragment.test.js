@@ -197,14 +197,6 @@ describe( 'AbstractPreviewFragment', () => {
 	} );
 
 	describe( 'highlight fragments', () => {
-		it( 'adds highlight class when fragment is highlighted in store', async () => {
-			store.getHighlightedFragment = keyPath;
-
-			wrapper = renderFragment();
-			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
-
-			expect( fragment.classes() ).toContain( 'ext-wikilambda-app-abstract-preview-fragment__highlight' );
-		} );
 
 		it( 'adds highlight on pointer enter', async () => {
 			wrapper = renderFragment();

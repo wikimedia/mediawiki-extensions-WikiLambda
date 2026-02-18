@@ -7,7 +7,6 @@
 <template>
 	<div
 		class="ext-wikilambda-app-abstract-preview-fragment"
-		:class="{ 'ext-wikilambda-app-abstract-preview-fragment__highlight': isHighlighted }"
 		@pointerenter="setHighlight"
 		@pointerleave="unsetHighlight"
 		@focus="setHighlight"
@@ -20,13 +19,18 @@
 			{{ i18n( 'wikilambda-loading' ).text() }}
 		</cdx-progress-indicator>
 		<template v-else>
-			<cdx-message
+			<div
 				v-if="fragmentPreview.hasError"
-				class="ext-wikilambda-app-abstract-preview-fragment-error"
-				:type="fragmentError.type"
+				ref="errorRef"
+				class="ext-wikilambda-app-abstract-preview-fragment-error-wrapper"
 			>
-				{{ fragmentError.text }}
-			</cdx-message>
+				<cdx-message
+					class="ext-wikilambda-app-abstract-preview-fragment-error"
+					:type="fragmentError.type"
+				>
+					{{ fragmentError.text }}
+				</cdx-message>
+			</div>
 			<!-- eslint-disable vue/no-v-html -->
 			<div
 				v-else
@@ -41,7 +45,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onUnmounted, watch } = require( 'vue' );
+const { computed, defineComponent, inject, onUnmounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
@@ -69,6 +73,7 @@ module.exports = exports = defineComponent( {
 	setup( props ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
+		const fragmentHighlightRegistry = inject( 'fragmentHighlightRegistry', null );
 
 		// Date for today in a standard format that can be
 		// parsed by the default date reading function:
@@ -76,6 +81,8 @@ module.exports = exports = defineComponent( {
 		const dateForToday = computed( () => new Date().toISOString().slice( 0, 10 ) );
 
 		const { contentRef, initReferences } = useInitReferences();
+		const errorRef = ref( null );
+
 		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
 		const fragmentDirty = computed( () => fragmentPreview.value && fragmentPreview.value.isDirty );
 		const fragmentError = computed( () => {
@@ -90,9 +97,6 @@ module.exports = exports = defineComponent( {
 			}
 			return { text, type };
 		} );
-
-		// Highlight state for fragment and preview
-		const isHighlighted = computed( () => store.getHighlightedFragment === props.keyPath );
 
 		/**
 		 * Renders the preview of the given fragment for the
@@ -139,23 +143,61 @@ module.exports = exports = defineComponent( {
 			}
 		}, { immediate: true } );
 
-		// Watch when fragment HTML is ready – init references (store mutates in place, so watch the property)
-		watch( () => fragmentPreview.value && fragmentPreview.value.html, ( html ) => {
-			if ( html ) {
-				initReferences();
+		/**
+		 * Update highlight overlay registration after DOM is in sync with preview state.
+		 */
+		function registerNodesForHighlight() {
+			if ( !fragmentHighlightRegistry ) {
+				return;
 			}
-		}, { immediate: true } );
+			const preview = fragmentPreview.value;
+			if ( !preview ) {
+				fragmentHighlightRegistry.unregisterFragmentNodes( props.keyPath );
+				return;
+			}
+			if ( preview.hasError && errorRef.value ) {
+				fragmentHighlightRegistry.registerFragmentNodes( props.keyPath, [ errorRef.value ] );
+				return;
+			}
+			if ( preview.html && contentRef.value ) {
+				fragmentHighlightRegistry.registerFragmentNodes(
+					props.keyPath,
+					Array.from( contentRef.value.childNodes || [] )
+				);
+				return;
+			}
+			fragmentHighlightRegistry.unregisterFragmentNodes( props.keyPath );
+		}
+
+		// Watch fragment preview to initialize references and register nodes for highlight
+		watch(
+			() => fragmentPreview.value && {
+				hasError: fragmentPreview.value.hasError,
+				html: fragmentPreview.value.html
+			},
+			( state ) => {
+				if ( state && state.html && !state.hasError ) {
+					initReferences();
+				}
+				// Register nodes for highlight after references are initialized
+				registerNodesForHighlight();
+			},
+			{ immediate: true, flush: 'post' }
+		);
 
 		// On unmount, remove highlight state
 		onUnmounted( () => {
 			unsetHighlight();
+			if ( fragmentHighlightRegistry ) {
+				fragmentHighlightRegistry.unregisterFragmentNodes( props.keyPath );
+			}
 		} );
 
 		return {
 			fragmentError,
 			fragmentPreview,
 			contentRef,
-			isHighlighted,
+			errorRef,
 			setHighlight,
 			unsetHighlight,
 			i18n
@@ -169,11 +211,6 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-abstract-preview-fragment {
 	display: unset;
-	transition: background-color @transition-duration-base @transition-timing-function-system;
-
-	&.ext-wikilambda-app-abstract-preview-fragment__highlight {
-		background-color: @background-color-progressive-subtle--hover;
-	}
 
 	.ext-wikilambda-app-abstract-preview-fragment-loading {
 		margin: 0 @spacing-25;

@@ -206,10 +206,15 @@ module.exports = exports = defineComponent( {
 	display: flex;
 	align-items: flex-start;
 	width: 100%;
-	transition: background-color @transition-duration-base @transition-timing-function-system;
+	transition-property: background-color, box-shadow;
+	transition-duration: @transition-duration-medium;
+	transition-timing-function: @transition-timing-function-system;
 
 	&.ext-wikilambda-app-abstract-content-fragment__highlight {
-		background-color: @background-color-progressive-subtle--hover;
+		// TODO (T417770): Use the correct background color for the highlight layer from the design system
+		// These values come from the overlay that Visual Editor uses and is hardcoded in their codebase
+		background-color: rgba( 109, 169, 247, 0.15 ); // #6da9f7
+		box-shadow: inset 0 0 0 1px rgba( 76, 118, 172, 0.15 ); // #4c76ac
 	}
 
 	.ext-wikilambda-app-abstract-content-fragment-menu__icon {

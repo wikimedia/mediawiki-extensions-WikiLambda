@@ -19,34 +19,42 @@
 			></wl-z-object-selector>
 		</template>
 		<template #main>
-			<h1>{{ abstractTitle.label }}</h1>
 			<div
-				v-for="section in sections"
-				:key="`${section.index}-${section.qid}`"
-				class="ext-wikilambda-app-abstract-preview__section"
+				ref="bodyRef"
+				class="ext-wikilambda-app-abstract-preview__body"
 			>
-				<h2 v-if="!section.isLede">
-					{{ section.labelData.label }}
-				</h2>
-				<wl-abstract-preview-fragment
-					v-for="( fragment, index ) in section.fragments.slice( 1 )"
-					:key="`${section.index}-${section.qid}-${index}`"
-					:key-path="`${ section.fragmentsPath }.${ index + 1 }`"
-					:fragment="fragment"
-				></wl-abstract-preview-fragment>
+				<h1>{{ abstractTitle.label }}</h1>
+				<div
+					v-for="section in sections"
+					:key="`${section.index}-${section.qid}`"
+					class="ext-wikilambda-app-abstract-preview__section"
+				>
+					<h2 v-if="!section.isLede">
+						{{ section.labelData.label }}
+					</h2>
+					<wl-abstract-preview-fragment
+						v-for="( fragment, index ) in section.fragments.slice( 1 )"
+						:key="`${section.index}-${section.qid}-${index}`"
+						:key-path="`${ section.fragmentsPath }.${ index + 1 }`"
+						:fragment="fragment"
+					></wl-abstract-preview-fragment>
+				</div>
+				<wl-abstract-preview-highlight-layer></wl-abstract-preview-highlight-layer>
 			</div>
 		</template>
 	</wl-widget-base>
 </template>
 
 <script>
-const { computed, defineComponent, inject } = require( 'vue' );
+const { computed, defineComponent, inject, provide, ref } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useFragmentHighlightRegistry = require( '../../composables/useFragmentHighlightRegistry.js' );
 const useMainStore = require( '../../store/index.js' );
 
 // Abstract components
 const AbstractPreviewFragment = require( './AbstractPreviewFragment.vue' );
+const AbstractPreviewHighlightLayer = require( './AbstractPreviewHighlightLayer.vue' );
 // Base components
 const WidgetBase = require( '../base/WidgetBase.vue' );
 const ZObjectSelector = require( '../base/ZObjectSelector.vue' );
@@ -56,11 +64,18 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-widget-base': WidgetBase,
 		'wl-abstract-preview-fragment': AbstractPreviewFragment,
+		'wl-abstract-preview-highlight-layer': AbstractPreviewHighlightLayer,
 		'wl-z-object-selector': ZObjectSelector
 	},
 	setup() {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
+
+		const bodyRef = ref( null );
+		const fragmentHighlightRegistry = useFragmentHighlightRegistry();
+
+		provide( 'fragmentHighlightRegistry', fragmentHighlightRegistry );
+		provide( 'previewBodyRef', bodyRef );
 
 		/**
 		 * @return {Array}
@@ -101,7 +116,8 @@ module.exports = exports = defineComponent( {
 			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE,
 			onPreviewLanguageSelect,
 			previewLanguageZid,
-			sections
+			sections,
+			bodyRef
 		};
 	}
 } );
@@ -111,6 +127,8 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-abstract-preview {
-	/* something */
+	.ext-wikilambda-app-abstract-preview__body {
+		position: relative;
+	}
 }
 </style>

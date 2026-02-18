@@ -41,7 +41,7 @@
 </template>
 
 <script>
-const { defineComponent, inject, ref, watch } = require( 'vue' );
+const { defineComponent, inject, nextTick, ref, watch } = require( 'vue' );
 const CodeEditor = require( './CodeEditor.vue' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -95,7 +95,7 @@ module.exports = exports = defineComponent( {
 				sanitisedHtml.value = sanitised;
 				isSanitising.value = false;
 				// Initialize references after HTML is rendered
-				initReferences();
+				nextTick( initReferences );
 			} ).catch( () => {
 				sanitisedHtml.value = '';
 				isSanitising.value = false;

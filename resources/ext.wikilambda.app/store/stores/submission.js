@@ -659,7 +659,7 @@ module.exports = {
 		 * Checks if the publish success flag is set for a given ZID
 		 *
 		 * @param {string} zid - The ZObject ID to check
-		 * @return {void}
+		 * @return {undefined}
 		 */
 		checkPublishSuccess: function ( zid ) {
 			if ( !zid ) {

@@ -54,8 +54,12 @@ body {
 	}
 
 	// Hide ::before when JS has processed it (button shows counter instead)
-	&[ data-wikilambda-reference-init ]::before {
-		display: none;
+	&[ data-wikilambda-reference-init ] {
+		font-size: inherit;
+
+		&::before {
+			display: none;
+		}
 	}
 }
 

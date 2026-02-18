@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const { nextTick, ref } = require( 'vue' );
+const { ref } = require( 'vue' );
 
 /**
  * Composable to initialize references in a container element with v-html content.
@@ -20,14 +20,12 @@ module.exports = function useInitReferences() {
 	const contentRef = ref( null );
 
 	function initReferences() {
-		nextTick( () => {
-			if ( !contentRef.value || typeof mw === 'undefined' || !mw.hook ) {
-				return;
-			}
-			// Trigger custom hook that ReferenceManager in ext.wikilambda.references listens to
-			// This allows references to be initialized in dynamically loaded content
-			mw.hook( 'wikilambda.references.content' ).fire( contentRef.value );
-		} );
+		if ( !contentRef.value || typeof mw === 'undefined' || !mw.hook ) {
+			return;
+		}
+		// Trigger custom hook that ReferenceManager in ext.wikilambda.references listens to
+		// This allows references to be initialized in dynamically loaded content
+		mw.hook( 'wikilambda.references.content' ).fire( contentRef.value );
 	}
 
 	return { contentRef, initReferences };
