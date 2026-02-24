@@ -6,6 +6,7 @@
 			"Kareyac",
 			"No Sleep till Krupki",
 			"Plaga med",
+			"Ucukor",
 			"Zmickli"
 		]
 	},
@@ -150,7 +151,7 @@
 	"wikilambda-add-local-key-to-function-call": "Дадаць аргумент",
 	"wikilambda-argument-reference-selector-placeholder": "Выберыце аргумент",
 	"wikilambda-argument-typeselector-label": "Выберыце Тып для гэтага аргумента",
-	"wikilambda-cancel": "Адмена",
+	"wikilambda-cancel": "Скасаваць",
 	"wikilambda-code-editor-label": "Рэдактар кода",
 	"wikilambda-confirm": "Пацвердзіць",
 	"wikilambda-context-menu": "Кантэкстнае Меню",
@@ -488,7 +489,7 @@
 	"wikilambda-tester-run-tester": "Выканаць Тэст",
 	"wikilambda-tester-run-testers": "Выканаць усе тэсты",
 	"wikilambda-tester-selector": "Выберыце тэст",
-	"wikilambda-tester-status-cancel": "Адмена",
+	"wikilambda-tester-status-cancel": "Скасаваць",
 	"wikilambda-tester-status-failed": "Не прайшлі",
 	"wikilambda-tester-status-passed": "Прайшлі",
 	"wikilambda-tester-status-ready": "Гатова",
