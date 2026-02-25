@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"No Sleep till Krupki"
+			"No Sleep till Krupki",
+			"Ucukor"
 		]
 	},
 	"wikilambda-fragment-disabled": "Выклікі Вікіфункцыяў зараз адключаны. Вы можаце замяніць гэты выклік.",
@@ -54,5 +55,5 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Функцыя не можа адлюстраваць вынік. Паўтарыце спробу пазней.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Адменена",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Скінуць",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Адмена"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Скасаваць"
 }
