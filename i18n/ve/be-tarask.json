@@ -7,5 +7,6 @@
 	},
 	"wikilambda-recentchanges-filter-rc-pref": "Паказваць рэдагаваньні Вікіфункцыяў у сьпісе апошніх зьменаў",
 	"wikilambda-recentchanges-filter-wl-pref": "Паказваць рэдагаваньні Вікіфункцыяў у вашым сьпісе назіраньня",
-	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Ладаваньне"
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Ладаваньне",
+	"wikilambda-visualeditor-wikifunctionscall-error-language": "Мова не абраная."
 }
