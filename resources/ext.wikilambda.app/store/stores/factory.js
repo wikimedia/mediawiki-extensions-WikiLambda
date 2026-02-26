@@ -53,7 +53,7 @@ module.exports = {
 
 				// When creating data in an Abstract Content Fragment, set
 				// language and date automatically to their corresponding Z18(Z825K*)
-				if ( this.isAbstractContent() ) {
+				if ( this.isAbstractContent() && !payload.literal ) {
 					if ( payload.type === Constants.Z_NATURAL_LANGUAGE ) {
 						return this.createZArgumentReference( {
 							value: Constants.Z_ABSTRACT_RENDER_FUNCTION_LANGUAGE
