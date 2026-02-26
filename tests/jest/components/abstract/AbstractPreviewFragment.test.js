@@ -79,7 +79,7 @@ describe( 'AbstractPreviewFragment', () => {
 			fragment: fragmentCall,
 			qid: 'Q42',
 			language: 'Z1002',
-			date: '26-7-2023'
+			date: '2023-07-26'
 		} );
 	} );
 

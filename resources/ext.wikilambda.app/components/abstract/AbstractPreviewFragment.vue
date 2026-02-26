@@ -69,14 +69,10 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
-		// Date for today in dd-mm-yyyy format
-		const dateForToday = computed( () => {
-			const today = new Date();
-			const d = today.getDate();
-			const m = today.getMonth() + 1;
-			const yyyy = today.getFullYear();
-			return `${ d }-${ m }-${ yyyy }`;
-		} );
+		// Date for today in a standard format that can be
+		// parsed by the default date reading function:
+		// See: https://www.wikifunctions.org/view/en/Z23997
+		const dateForToday = computed( () => new Date().toISOString().slice( 0, 10 ) );
 
 		const { contentRef, initReferences } = useInitReferences();
 		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
