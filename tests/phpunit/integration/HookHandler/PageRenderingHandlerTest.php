@@ -419,7 +419,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$createdStatus = $this->editPage(
 			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Example RecentChanges entry', NS_MAIN
 		);
-		$this->assertTrue( $createdStatus->isOK() );
+		$this->assertStatusGood( $createdStatus );
 
 		// Set up a RequestContext to simulate being on the RecentChanges page
 		$context = RequestContext::getMain();
@@ -460,7 +460,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$createdStatus = $this->editPage(
 			ZTestType::TEST_ZID, ZTestType::TEST_HTML_ESCAPE, 'Test html escape', NS_MAIN
 		);
-		$this->assertTrue( $createdStatus->isOK() );
+		$this->assertStatusGood( $createdStatus );
 		$context = RequestContext::getMain();
 		$context->setTitle( Title::newFromText( __METHOD__ ) );
 		$context->setRequest( new FauxRequest );

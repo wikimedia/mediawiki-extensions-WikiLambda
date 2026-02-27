@@ -312,7 +312,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$status = $handler->validateSave( $content, $validateParams );
-		$this->assertTrue( $status->isOK() );
+		$this->assertStatusGood( $status );
 	}
 
 	public function testValidateSave_invalid() {
@@ -328,7 +328,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$status = $handler->validateSave( $content, $validateParams );
-		$this->assertTrue( $status->hasMessage( 'wikilambda-invalidzobject' ) );
+		$this->assertStatusError( 'wikilambda-invalidzobject', $status );
 	}
 
 	public function testGenerateHTMLOnEdit() {

@@ -129,7 +129,7 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 			NS_PROJECT
 		);
 
-		$this->assertTrue( $invalidZIDStatus->isOK() );
+		$this->assertStatusGood( $invalidZIDStatus );
 
 		$invalidTitle = Title::newFromText( $invalidTitleText, NS_PROJECT );
 		$this->assertTrue( $invalidTitle->exists() );
@@ -145,8 +145,7 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 			NS_MAIN
 		);
 
-		$this->assertFalse( $invalidZIDStatus->isOK() );
-		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobjecttitle' ) );
+		$this->assertStatusError( 'wikilambda-invalidzobjecttitle', $invalidZIDStatus );
 
 		$invalidTitle = Title::newFromText( $invalidTitleText, NS_MAIN );
 		$this->assertFalse( $invalidTitle->exists() );
@@ -162,8 +161,7 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 			NS_MAIN
 		);
 
-		$this->assertFalse( $invalidZIDStatus->isOK() );
-		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobject' ) );
+		$this->assertStatusError( 'wikilambda-invalidzobject', $invalidZIDStatus );
 	}
 
 	public function testOnMultiContentSave_mocked_nonRepo() {
@@ -238,8 +236,8 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$mockRenderedRevisionNoLabels, User::newFromName( 'Test user' ), '', 0, $status
 		);
 		$this->assertTrue( $response, 'Handler allows the edit for an unlabelled ZObject' );
-		$this->assertTrue(
-			$status->isOK(), 'Handler has not adjusted the status in an edit for an unlabelled ZObject'
+		$this->assertStatusGood(
+			$status, 'Handler has not adjusted the status in an edit for an unlabelled ZObject'
 		);
 	}
 
@@ -267,8 +265,8 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$mockRenderedRevision, User::newFromName( 'Test user' ), '', 0, $status
 		);
 		$this->assertFalse( $response, 'Handler prevents the edit for a non-ZObject in the ZObject namespace' );
-		$this->assertFalse(
-			$status->isOK(), 'Handler has set the status correctly when a non-ZObject edit is attempted'
+		$this->assertStatusNotOK(
+			$status, 'Handler has set the status correctly when a non-ZObject edit is attempted'
 		);
 		$statusMessageValue = $status->getMessages( 'error' )[0];
 		$this->assertSame(
@@ -304,8 +302,8 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$mockRenderedRevision, User::newFromName( 'Test user' ), '', 0, $status
 		);
 		$this->assertFalse( $response, 'Handler prevents the edit for a broken ZObject in the ZObject namespace' );
-		$this->assertFalse(
-			$status->isOK(), 'Handler has set the status correctly when a broken ZObject edit is attempted'
+		$this->assertStatusNotOK(
+			$status, 'Handler has set the status correctly when a broken ZObject edit is attempted'
 		);
 		$statusMessageValue = $status->getMessages( 'error' )[0];
 		$this->assertSame(
@@ -342,7 +340,7 @@ class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$mockRenderedRevision, User::newFromName( 'Test user' ), '', 0, $status
 		);
 		$this->assertFalse( $response, 'Handler prevents the edit for a ZObject when a label conflict occurs' );
-		$this->assertFalse( $status->isOK(), 'Handler has set the status correctly when a label conflict occurs' );
+		$this->assertStatusNotOK( $status, 'Handler has set the status correctly when a label conflict occurs' );
 		$statusMessageValue = $status->getMessages( 'error' )[0];
 		$this->assertSame(
 			'wikilambda-labelclash', $statusMessageValue->getKey(),

@@ -162,7 +162,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringStartsWith( '{', $toStringValue );
 
 		$parseStatus = FormatJson::parse( $toStringValue );
-		$this->assertTrue( $parseStatus->isGood() );
+		$this->assertStatusGood( $parseStatus );
 
 		$reserialisedObject = $parseStatus->getValue();
 		$this->assertTrue( ZObjectUtils::isValidZObject( $reserialisedObject ) );

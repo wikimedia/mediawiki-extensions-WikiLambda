@@ -51,7 +51,7 @@ EOT;
 			$instanceTitleText, $instanceContent, 'Test ZString instance', NS_MAIN
 		);
 
-		$this->assertTrue( $instanceStatus->isOK() );
+		$this->assertStatusGood( $instanceStatus );
 		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue( $instanceTitle->exists() );
 		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
@@ -83,7 +83,7 @@ EOT;
 			$baseTypeTitleText, ZTestType::TEST_ENCODING, 'Create ZTestType', NS_MAIN
 		);
 
-		$this->assertTrue( $baseTypeStatus->isOK() );
+		$this->assertStatusGood( $baseTypeStatus );
 		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_MAIN );
 		$this->assertTrue( $baseTypeTitle->exists() );
 
@@ -117,7 +117,7 @@ EOT;
 			$instanceTitleText, $instanceContent, 'Test ZTestType instance', NS_MAIN
 		);
 
-		$this->assertTrue( $instanceStatus->isOK() );
+		$this->assertStatusGood( $instanceStatus );
 		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue( $instanceTitle->exists() );
 		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
@@ -180,8 +180,8 @@ EOT;
 			$baseTypeTitleText, $baseTypeContent, 'Create ZInteger', NS_MAIN
 		);
 
-		$this->assertTrue(
-			$baseTypeStatus->isOK(),
+		$this->assertStatusGood(
+			$baseTypeStatus,
 			'ZInteger creation was successful'
 		);
 
@@ -220,8 +220,8 @@ EOT;
 			$instanceTitleText, $instanceContent, 'Test ZInteger instance', NS_MAIN
 		);
 
-		$this->assertTrue(
-			$instanceStatus->isOK(),
+		$this->assertStatusGood(
+			$instanceStatus,
 			'ZInteger instance creation was successful'
 		);
 
@@ -288,8 +288,8 @@ EOT;
 			$baseTypeTitleText, $baseTypeContent, 'Create ZSelfRefType', NS_MAIN
 		);
 
-		$this->assertTrue(
-			$baseTypeStatus->isOK(),
+		$this->assertStatusGood(
+			$baseTypeStatus,
 			'ZSelfRefType creation was successful'
 		);
 
@@ -324,8 +324,8 @@ EOT;
 		);
 
 		// FIXME this is true because it's structurally valid, but hasn't checked actual validity
-		$this->assertTrue(
-			$instanceStatus->isOK(),
+		$this->assertStatusGood(
+			$instanceStatus,
 			'ZSelfRefType instance creation was successful'
 		);
 
@@ -391,8 +391,8 @@ EOT;
 			$maintainerAuthority
 		);
 
-		$this->assertTrue(
-			$status->isOK(),
+		$this->assertStatusGood(
+			$status,
 			'ZLanguage with self-reference has been created'
 		);
 
@@ -496,8 +496,8 @@ EOT;
 			$baseTypeTitleText, $baseTypeContent, 'Create ZListUsingType', NS_MAIN
 		);
 
-		$this->assertTrue(
-			$baseTypeStatus->isOK(),
+		$this->assertStatusGood(
+			$baseTypeStatus,
 			'ZListUsingType creation'
 		);
 
@@ -532,8 +532,8 @@ EOT;
 			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance', NS_MAIN
 		);
 
-		$this->assertTrue(
-			$instanceStatus->isOK(),
+		$this->assertStatusGood(
+			$instanceStatus,
 			'ZListUsingType instance creation'
 		);
 
@@ -581,8 +581,8 @@ EOT;
 			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance 2', NS_MAIN
 		);
 
-		$this->assertTrue(
-			$instanceStatus->isOK(),
+		$this->assertStatusGood(
+			$instanceStatus,
 			'ZListUsingType instance 2 creation'
 		);
 	}

@@ -62,8 +62,8 @@ EOT;
 		$baseTypeStatus = $this->editPage(
 			$baseTypeTitleText, $baseTypeContent, 'Create ZOptions', NS_MAIN
 		);
-		$this->assertTrue(
-			$baseTypeStatus->isOK(),
+		$this->assertStatusGood(
+			$baseTypeStatus,
 			'ZOptions creation was successful'
 		);
 
@@ -91,8 +91,8 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZOptions instance', NS_MAIN
 		);
-		$this->assertTrue(
-			$instanceStatus->isOK(),
+		$this->assertStatusGood(
+			$instanceStatus,
 			'ZOptions instance creation was successful'
 		);
 

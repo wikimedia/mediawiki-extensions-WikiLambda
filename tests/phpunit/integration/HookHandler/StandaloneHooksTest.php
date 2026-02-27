@@ -141,8 +141,7 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		$nullEditStatus = $this->editPage(
 			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'No-op edit', NS_MAIN
 		);
-		$this->assertTrue( $nullEditStatus->isOK() );
-		$this->assertTrue( $nullEditStatus->hasMessage( 'edit-no-change' ) );
+		$this->assertStatusWarning( 'edit-no-change', $nullEditStatus );
 	}
 
 	public function testOnMultiContentSave_unlabelled() {
@@ -201,7 +200,7 @@ EOT;
 			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_MAIN
 		);
 
-		$this->assertTrue( $status->isOK() );
+		$this->assertStatusGood( $status );
 	}
 
 	public function testOnMultiContentSave_clashingLabels_caught() {
@@ -222,8 +221,7 @@ EOT;
 		$dupeEditStatus = $this->editPage(
 			$secondTitleText, ZTestType::TEST_ENCODING, 'Duplicate creation (blocked)', NS_MAIN
 		);
-		$this->assertFalse( $dupeEditStatus->isOK() );
-		$this->assertTrue( $dupeEditStatus->hasMessage( 'wikilambda-labelclash' ) );
+		$this->assertStatusError( 'wikilambda-labelclash', $dupeEditStatus );
 
 		$only_our_errors = static function ( $item ) {
 			return $item[0] === 'wikilambda-labelclash';
@@ -356,7 +354,7 @@ EOT;
 				'Test ZNaturalLanguage creation and label insertion',
 				NS_MAIN
 			);
-			$this->assertTrue( $status->isOK(), "Edit to create $languageZid went through" );
+			$this->assertStatusGood( $status, "Edit to create $languageZid went through" );
 
 			DeferredUpdates::doUpdates();
 
@@ -432,7 +430,7 @@ EOT;
 				'Test ZFunction creation and return type insertion',
 				NS_MAIN
 			);
-			$this->assertTrue( $status->isOK(), "Edit to create $functionZid went through" );
+			$this->assertStatusGood( $status, "Edit to create $functionZid went through" );
 
 			DeferredUpdates::doUpdates();
 
@@ -532,7 +530,7 @@ EOT;
 				'Test ZFunction creation and related object insertion',
 				NS_MAIN
 			);
-			$this->assertTrue( $status->isOK(), "Edit to create $functionZid went through" );
+			$this->assertStatusGood( $status, "Edit to create $functionZid went through" );
 
 			DeferredUpdates::doUpdates();
 
