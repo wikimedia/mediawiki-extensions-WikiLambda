@@ -1,4 +1,4 @@
-/*
+/**
  * WikiLambda integration test for connecting a function test
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt

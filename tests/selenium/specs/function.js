@@ -1,4 +1,4 @@
-/*
+/**
  * WikiLambda browser test suite for functions
  *
  * @file contains the tests for the following
