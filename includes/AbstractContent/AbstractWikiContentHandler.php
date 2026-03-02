@@ -133,6 +133,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * @inheritDoc
 	 */
 	public function validateSave( Content $content, ValidationParams $validationParams ) {
+		/** @var AbstractWikiContent $content */
 		'@phan-var AbstractWikiContent $content';
 
 		$title = Title::newFromPageIdentity( $validationParams->getPageIdentity() );

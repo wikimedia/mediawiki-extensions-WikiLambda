@@ -579,7 +579,7 @@ class ZObjectStore {
 	 *
 	 * @param string $zid
 	 * @param string $ztype
-	 * @param array $labels Array of labels, where the key is the language code and the value
+	 * @param array<string,string> $labels Array of labels, where the key is the language code and the value
 	 * is the string representation of the label in that language
 	 * @return array Conflicts found in the wikilambda_zobject_labels database
 	 */
@@ -1516,7 +1516,7 @@ class ZObjectStore {
 	 * those implementations that aren't labeled. Once we eliminate the
 	 * maintenance script, we should remove this method, too.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function fetchAllImplementations() {
 		$dbr = $this->dbProvider->getReplicaDatabase();
