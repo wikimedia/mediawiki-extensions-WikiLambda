@@ -40,9 +40,11 @@ class ZType extends ZObject {
 		$this->data[ ZTypeRegistry::Z_TYPE_RENDERER ] = $renderer ?? false;
 		$this->data[ ZTypeRegistry::Z_TYPE_PARSER ] = $parser ?? false;
 		$this->data[ ZTypeRegistry::Z_TYPE_DESERIALISERS ] = $deserialisers ??
-			new ZTypedList( ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_DESERIALISER ) ) );
+			new ZTypedList( ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_DESERIALISER ) )
+		);
 		$this->data[ ZTypeRegistry::Z_TYPE_SERIALISERS ] = $serialisers ??
-			new ZTypedList( ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_SERIALISER ) ) );
+			new ZTypedList( ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_SERIALISER ) )
+		);
 	}
 
 	/**

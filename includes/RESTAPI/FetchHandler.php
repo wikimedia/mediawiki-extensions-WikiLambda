@@ -122,10 +122,10 @@ class FetchHandler extends WikiLambdaRESTHandler {
 						$span->end();
 					}
 
-					$responseList[ $ZID ] = $fetchedContent;
+					$responseList[ $ZID ] = $fetchedContent ?? '';
 
 					if ( $getDependencies ) {
-						$dependencies = $this->getTypeDependencies( json_decode( $fetchedContent ) ?? [] );
+						$dependencies = $this->getTypeDependencies( json_decode( $fetchedContent ?? '' ) ?? [] );
 						foreach ( $dependencies as $_key => $dep ) {
 							if ( in_array( $dep, $ZIDs ) ) {
 								continue;

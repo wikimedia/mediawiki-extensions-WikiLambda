@@ -561,7 +561,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 			if ( !$title || !( $title instanceof Title ) || !$title->exists() ) {
 				$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
-					'message' => wfMessage( $nonObjectMessge, $object )->text()
+					'message' => wfMessage( $nonObjectMessge, (string)$object )->text()
 				] );
 			} else {
 				$revision = $title->getLatestRevID();
@@ -571,7 +571,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$fetchedObject = $this->zObjectStore->fetchZObjectByTitle( $title )->getInnerZObject();
 				if ( $fetchedObject->getZType() !== $type ) {
 					$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
-						'message' => wfMessage( $nonObjectMessge, $object )->text()
+						'message' => wfMessage( $nonObjectMessge, (string)$object )->text()
 					] );
 				}
 			}

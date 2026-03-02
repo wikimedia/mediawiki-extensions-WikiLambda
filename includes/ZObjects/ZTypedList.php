@@ -61,7 +61,8 @@ class ZTypedList extends ZObject {
 	/**
 	 * Build the function call that defines the type of this ZTypedList
 	 *
-	 * @param string $listType The ZID of the type of ZObjects this list contains
+	 * @param string|ZFunctionCall|ZReference $listType The ZID of the type of ZObjects this list contains as a string
+	 *   or ZReference, or a ZFunctionCall returning a ZType
 	 * @return ZFunctionCall
 	 */
 	public static function buildType( $listType ): ZFunctionCall {
@@ -138,9 +139,11 @@ class ZTypedList extends ZObject {
 	 * @return array
 	 */
 	private function getSerializedCanonical() {
-		$type = $this->type->getValueByKey(
+		$typeObject = $this->type->getValueByKey(
 			ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE
-		)->getSerialized();
+		);
+		// Note: In some occurences, this is a stdClass not a ZObject
+		$type = ( $typeObject instanceof ZObject ) ? $typeObject->getSerialized() : $typeObject;
 
 		$items = array_map( static function ( $value ) {
 			return $value->getSerialized();

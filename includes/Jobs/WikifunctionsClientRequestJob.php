@@ -78,15 +78,20 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		$this->logger->debug(
 			__CLASS__ . ' initiated for {targetZObject}',
 			[
+				// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 				'targetZObject' => $request['target']
 			]
 		);
 
 		$clientCacheKey = $this->params['clientCacheKey'];
 
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		$targetFunction = $request['target'];
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		$arguments = $request['arguments'];
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		$parseLang = $request['parseLang'];
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		$renderLang = $request['renderLang'];
 
 		try {
@@ -107,7 +112,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			$this->logger->debug(
 				__CLASS__ . ' success for {targetZObject}',
 				[
-					'targetZObject' => $request['target']
+					'targetZObject' => $targetFunction
 				]
 			);
 			return true;
@@ -156,7 +161,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			__CLASS__ . ' failure for {targetZObject}, error: {errorMessageKey}',
 			[
 				'errorMessageKey' => $errorMessageKey,
-				'targetZObject' => $request['target']
+				'targetZObject' => $targetFunction
 			]
 		);
 

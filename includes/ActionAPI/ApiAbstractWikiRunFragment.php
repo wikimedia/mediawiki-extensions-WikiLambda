@@ -314,7 +314,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			);
 		}
 
-		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable We control this via a static file
 		return $functionDefinition[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
 	}
 

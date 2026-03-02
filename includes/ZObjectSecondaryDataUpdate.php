@@ -47,7 +47,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		ZObjectContent $zObject,
 		ZObjectStore $zObjectStore,
 		WANObjectCache $zObjectCache,
-		$orchestrator = null
+		?OrchestratorRequest $orchestrator = null
 	) {
 		$this->title = $title;
 		$this->zObject = $zObject;

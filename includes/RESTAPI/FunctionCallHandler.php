@@ -197,7 +197,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		}
 
 		// Finally, return the values as JSON (if not already early-returned as an error)
-		return $this->getResponseFactory()->createJson( $response );
+		return $this->getResponseFactory()->createJson( $response ?? '' );
 	}
 
 	/**
@@ -919,6 +919,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			if ( $apiMessage->getApiCode() === 'wikilambda-zerror' ) {
 				// Throw ZErrorException with Z_ERROR_API_FAILURE with propagated error:
 				$zerror = ZObjectFactory::create( $apiMessage->getApiData()[ 'zerror' ] );
+				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZError $zerror';
 				$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
 					->setAttributes( [
 						'error.message' => $zerror

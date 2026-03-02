@@ -321,7 +321,7 @@ class LoadPreDefinedObject extends Maintenance {
 		} catch ( ZErrorException $e ) {
 			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:" );
 			$this->error( $e->getMessage() );
-			$this->error( $e->getZErrorMessage() );
+			$this->error( $e->getZErrorMessage()->__toString() );
 			$this->error( "\n" );
 			return -1;
 		} catch ( Exception $e ) {
