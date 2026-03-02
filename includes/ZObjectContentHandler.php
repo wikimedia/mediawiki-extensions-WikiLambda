@@ -240,15 +240,20 @@ class ZObjectContentHandler extends ContentHandler {
 			$orchestrator = new OrchestratorRequest( $client );
 		}
 
-		return array_merge(
-			parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput ),
-			[ new ZObjectSecondaryDataUpdate(
+		$ourUpdate = [];
+		if ( ( $content instanceof ZObjectContent ) ) {
+			$ourUpdate[] = new ZObjectSecondaryDataUpdate(
 				$title,
 				$content,
 				$this->zObjectStore,
 				$this->zObjectCache,
 				$orchestrator
-			) ]
+			);
+		}
+
+		return array_merge(
+			parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput ),
+			$ourUpdate
 		);
 	}
 
