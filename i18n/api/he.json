@@ -4,6 +4,10 @@
 			"Amire80"
 		]
 	},
+	"apihelp-abstractwiki_run_fragment-summary": "תיצוג קטע תוכן של ויקיפדיה מופשטת  עבור מזהה פריט ויקינתונים, מזהה Z של שפה ותאריך",
+	"apihelp-abstractwiki_run_fragment-param-qid": "מזהה פריט הוויקינתונים ששימש לתיצוג הקטע. זה חייב להיות מזהה Q תקין.",
+	"apihelp-abstractwiki_run_fragment-param-language": "מזהה עצם ה־Z של השפה שמשמשת לתיצוג הקטע. זה חייב להיות מזהה Z תקין.",
+	"apihelp-abstractwiki_run_fragment-param-date": "מחרוזת התאריך שמשמשת לתיצוג הקטע.",
 	"apihelp-wikilambda_fetch-summary": "אחזור מודל JSON של עצמי Z.",
 	"apihelp-wikilambda_fetch-param-zids": "מזהי Z של עצמי Z לאחזור.",
 	"apihelp-wikilambda_fetch-param-revisions": "הגרסאות של מזהי ה־Z הרלוונטיים לאחזור. אם זה לא מוגדר, זה יאחזר את הגרסאות האחרונות.",
