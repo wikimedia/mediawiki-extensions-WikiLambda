@@ -22,8 +22,8 @@ use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\Language;
 use MediaWiki\Language\MessageLocalizer;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
+use StatusValue;
 
 /**
  * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is
@@ -62,10 +62,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	private $zobject = null;
 
-	/**
-	 * @var Status|null
-	 */
-	private $status = null;
+	private ?StatusValue $status = null;
 
 	/**
 	 * @var ZError
@@ -170,7 +167,7 @@ class ZObjectContent extends AbstractContent {
 	 * and sets the resulting validation status on $this->status
 	 */
 	private function validateContent() {
-		$this->status = new Status();
+		$this->status = new StatusValue();
 		try {
 			$this->zobject = ZObjectFactory::createPersistentContent( $this->getObject() );
 		} catch ( ZErrorException $e ) {
@@ -185,16 +182,13 @@ class ZObjectContent extends AbstractContent {
 	 * @inheritDoc
 	 */
 	public function isValid() {
-		if ( !( $this->status instanceof Status ) ) {
+		if ( !$this->status ) {
 			$this->validateContent();
 		}
 		return $this->status->isOK();
 	}
 
-	/**
-	 * @return Status|null
-	 */
-	public function getStatus() {
+	public function getStatus(): ?StatusValue {
 		return $this->status;
 	}
 

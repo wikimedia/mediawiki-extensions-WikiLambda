@@ -18,7 +18,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
-use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 
 /**
@@ -126,7 +125,6 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 		$testObject = new ZObjectContent( $zObject );
-		$status = $testObject->getStatus();
 		$this->assertNull( $testObject->getStatus() );
 	}
 
@@ -138,7 +136,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$testObject = new ZObjectContent( $zObject );
 		$testObject->isValid();
 		$status = $testObject->getStatus();
-		$this->assertInstanceOf( Status::class, $status );
+		$this->assertStatusGood( $status );
 	}
 
 	public function testContentGetters() {

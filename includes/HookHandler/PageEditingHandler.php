@@ -22,9 +22,9 @@ use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
-use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
+use StatusValue;
 use Wikimedia\Message\MessageSpecifier;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IReadableDatabase;
@@ -124,7 +124,7 @@ class PageEditingHandler implements
 	 *
 	 * @param LinkTarget $linkTarget
 	 * @param RenderedRevision $renderedRevision
-	 * @param Status $hookStatus
+	 * @param StatusValue $hookStatus
 	 * @return bool
 	 */
 	private function repoContentSave( $linkTarget, $renderedRevision, $hookStatus ): bool {
@@ -183,7 +183,7 @@ class PageEditingHandler implements
 	 *
 	 * @param LinkTarget $linkTarget
 	 * @param RenderedRevision $renderedRevision
-	 * @param Status $hookStatus
+	 * @param StatusValue $hookStatus
 	 * @return bool
 	 */
 	private function abstractContentSave( $linkTarget, $renderedRevision, $hookStatus ): bool {
