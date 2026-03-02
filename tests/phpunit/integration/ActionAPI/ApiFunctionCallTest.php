@@ -72,16 +72,10 @@ class ApiFunctionCallTest extends WikiLambdaApiTestCase {
 		$expected = json_decode( $expectedString, true ) ?? $expectedString;
 		$resultEnvelope = json_decode( $orchestrationResult[ 'data' ], true );
 
-		if ( !$resultEnvelope ) {
-			var_dump( $orchestrationResult );
-		}
-
 		$actualString = $resultEnvelope[ 'Z22K1' ];
 
 		$actual = $actualString;
-		$callBack ??= function ( $expected, $actual ) {
-			$this->assertEquals( $expected, $actual );
-		};
+		$callBack ??= $this->assertEquals( ... );
 		$callBack( $expected, $actual );
 	}
 

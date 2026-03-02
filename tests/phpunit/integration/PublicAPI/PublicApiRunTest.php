@@ -50,9 +50,7 @@ class PublicApiRunTest extends WikiLambdaApiTestCase {
 		$resultEnvelope = json_decode( $orchestrationResult[ 'data' ], true );
 		$actualString = $resultEnvelope[ 'Z22K1' ];
 		$actual = $actualString;
-		$callBack ??= function ( $expected, $actual ) {
-			$this->assertEquals( $expected, $actual );
-		};
+		$callBack ??= $this->assertEquals( ... );
 		$callBack( $expected, $actual );
 		// TODO (T314609): Also test error cases.
 	}
