@@ -16,7 +16,7 @@
 	"apihelp-abstractwiki_run_fragment-example-composition": "Run a fragment with a composition that uses qid and language arguments",
 	"apierror-abstractwiki_run_fragment-not-enabled": "Unable to render Abstract Wikipedia content fragments: this feature is not enabled.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Could not render the Abstract Wikipedia fragment: the fragment is not a valid JSON.",
-	"apierror-abstractwiki_run_fragment-bad-response": "Cound not render the Abstract Wikipedia fragment: Wikifunctions returned a failed response.",
+	"apierror-abstractwiki_run_fragment-bad-response": "Could not render the Abstract Wikipedia fragment: Wikifunctions returned a failed response.",
 	"apihelp-wikilambda_fetch-summary": "Fetch the JSON model of ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "The ZObject ZIDs to fetch.",
 	"apihelp-wikilambda_fetch-param-revisions": "The revisions of the relevant ZIDs to fetch. If unset, this will fetch the latest revisions.",
