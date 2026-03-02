@@ -22,10 +22,9 @@ use MediaWikiIntegrationTestCase;
 
 abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCase {
 
-	/** @var string */
-	private $mainDataPath;
-	/** @var string */
-	private $testDataPath;
+	private string $mainDataPath;
+
+	private static string $testDataPath;
 
 	protected const ZLANG = [
 		'en' => 'Z1002',
@@ -61,8 +60,8 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 *
 	 * @param string $path
 	 */
-	protected function setTestDataPath( $path ) {
-		$this->testDataPath = $path;
+	protected static function setTestDataPath( $path ) {
+		self::$testDataPath = $path;
 	}
 
 	/**
@@ -74,11 +73,11 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 * @param string $zid
 	 * @return string
 	 */
-	private function getDefinition( $zid ): string {
-		$mainFile = "$this->mainDataPath/$zid.json";
-		$testFile = isset( $this->testDataPath ) ? "$this->testDataPath/$zid.json" : null;
+	private static function getDefinition( $zid ): string {
+		$mainFile = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions' . "/$zid.json";
+		$testFile = isset( self::$testDataPath ) ? self::$testDataPath . "/$zid.json" : null;
 
-		if ( isset( $this->testDataPath ) && file_exists( $testFile ) ) {
+		if ( isset( self::$testDataPath ) && file_exists( $testFile ) ) {
 			$data = file_get_contents( $testFile );
 		} elseif ( file_exists( $mainFile ) ) {
 			$data = file_get_contents( $mainFile );
@@ -107,8 +106,8 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 * @param string $zid
 	 * @return ZPersistentObject
 	 */
-	protected function getZPersistentObject( $zid ): ZPersistentObject {
-		$data = $this->getDefinition( $zid );
+	protected static function getZPersistentObject( $zid ): ZPersistentObject {
+		$data = self::getDefinition( $zid );
 		return ZObjectFactory::create( json_decode( $data ) );
 	}
 

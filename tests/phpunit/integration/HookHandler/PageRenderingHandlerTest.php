@@ -646,7 +646,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expectedLabelDescription, $result->getRawText() );
 	}
 
-	public function provideLabelParserFunctions() {
+	public static function provideLabelParserFunctions() {
 		// Invalid / malformed calls
 		yield 'Malformed request results in nothing' => [
 			// {{#wikifunctionlabel:}}

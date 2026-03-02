@@ -532,7 +532,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideTestGetTargetFunction() {
+	public static function provideTestGetTargetFunction() {
 		yield 'Request for non-valid zid raises exception' => [
 			'BADFUNCTIONZID',
 			false,
@@ -596,7 +596,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideTestGetLanguageZid() {
+	public static function provideTestGetLanguageZid() {
 		yield 'Not valid language code raises exception' => [
 			'badlang',
 			false,
@@ -644,17 +644,17 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideTestBuildArgumentsForCall() {
+	public static function provideTestBuildArgumentsForCall() {
 		// Configure test data directory, as data providers are run statically
-		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/embedded_calls' );
+		self::setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/embedded_calls' );
 
 		$encodeArgs = static function ( array $args ): string {
 			$encodedArgs = array_map( 'base64_encode', $args );
 			return implode( '|', $encodedArgs );
 		};
 
-		$getZFunctionObject = function ( string $zid ): ZFunction {
-			return $this->getZPersistentObject( $zid )->getInnerZObject();
+		$getZFunctionObject = static function ( string $zid ): ZFunction {
+			return self::getZPersistentObject( $zid )->getInnerZObject();
 		};
 
 		yield 'Raises an error when the count of inputs does not match the target function args' => [
@@ -884,12 +884,12 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideTestIsArgumentValidReference() {
+	public static function provideTestIsArgumentValidReference() {
 		// Configure test data directory, as data providers are run statically
-		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/embedded_calls' );
+		self::setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/embedded_calls' );
 
 		$typeZid = 'Z20010';
-		$typeObject = $this->getZPersistentObject( $typeZid )->getInnerZObject();
+		$typeObject = self::getZPersistentObject( $typeZid )->getInnerZObject();
 		$targetFunctionZid = 'Z20040';
 
 		yield 'Returns false if provided arg is not a zid' => [
@@ -957,7 +957,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideTestBuildRenderedOutput() {
+	public static function provideTestBuildRenderedOutput() {
 		$functionZid = 'Z20040';
 		$functionCallStr = '{ "Z1K1": "Z7", "Z7K1": "Z20040", "Z20040K1": "fake call" }';
 		$functionCall = ZObjectFactory::create( json_decode( $functionCallStr ) );
