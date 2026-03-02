@@ -58,7 +58,7 @@ class MigrateZ16K1StringsToZ61s extends Maintenance {
 		// Construct the ZObjectStore, because ServiceWiring hasn't run
 		$services = $this->getServiceContainer();
 		$this->zObjectStore = new ZObjectStore(
-			$services->getDBLoadBalancerFactory(),
+			$services->getConnectionProvider(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),

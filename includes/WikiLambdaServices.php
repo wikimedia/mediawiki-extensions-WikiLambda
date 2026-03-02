@@ -68,7 +68,7 @@ class WikiLambdaServices {
 	 */
 	public static function buildZObjectStore( MediaWikiServices $services ): ZObjectStore {
 		return new ZObjectStore(
-			$services->getDBLoadBalancerFactory(),
+			$services->getConnectionProvider(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),

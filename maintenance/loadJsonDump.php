@@ -71,7 +71,7 @@ class LoadJsonDump extends Maintenance {
 		$services = $this->getServiceContainer();
 		$titleFactory = $services->getTitleFactory();
 		$zObjectStore = new ZObjectStore(
-			$services->getDBLoadBalancerFactory(),
+			$services->getConnectionProvider(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),

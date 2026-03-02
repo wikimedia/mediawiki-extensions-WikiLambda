@@ -248,7 +248,7 @@ EOT;
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		// Check the alias have been inserted in the secondary table
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -377,7 +377,7 @@ EOT;
 			$zobjectUpdates[0]->doUpdate();
 		}
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Expect 11 labels – a label in English for all six, and an autonum in the five non-English languages
 		$labels = $dbr->newSelectQueryBuilder()
@@ -466,7 +466,7 @@ EOT;
 			$secondaryUpdate->doUpdate();
 		}
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Expect a total of 5 distinct functions
 		$rows = $dbr->newSelectQueryBuilder()
@@ -566,7 +566,7 @@ EOT;
 			$secondaryUpdate->doUpdate();
 		}
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Expect a total of 27 rows
 		$rows = $dbr->newSelectQueryBuilder()
@@ -644,7 +644,7 @@ EOT;
 	public function testOnMultiContentSave_relatedObjects_forType() {
 		$this->insertZids( [ 'Z4', 'Z1002' ] );
 		$sysopUser = $this->getTestSysop()->getUser();
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Insert new type
 		$filePath = dirname( __DIR__, 2 ) . '/test_data/object-relations-type.json';
@@ -739,7 +739,7 @@ EOT;
 	public function testOnMultiContentSave_relatedObjects_forEnumType() {
 		$this->insertZids( [ 'Z4', 'Z1002' ] );
 		$sysopUser = $this->getTestSysop()->getUser();
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Insert new Enum type
 		$filePath = dirname( __DIR__, 2 ) . '/test_data/object-relations-instanceofenum.json';
@@ -885,7 +885,7 @@ EOT;
 	public function testOnMultiContentSave_relatedObjects_forFunctionCall() {
 		$this->insertZids( [ 'Z7', 'Z6884', 'Z6095' ] );
 		$sysopUser = $this->getTestSysop()->getUser();
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Insert new Enum type
 		$filePath = dirname( __DIR__, 2 ) . '/test_data/object-relations-function-call.json';

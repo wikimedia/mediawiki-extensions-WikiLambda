@@ -702,7 +702,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_language', 'wlzl_label' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -742,7 +742,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzlc_language' ] )
 			 ->from( 'wikilambda_zobject_label_conflicts' )
@@ -765,7 +765,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->deleteZObjectLabelsByZid( 'Z222' );
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_language', 'wlzl_label' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -783,7 +783,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->deleteZObjectLabelConflictsByZid( 'Z333' );
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzlc_language' ] )
 			 ->from( 'wikilambda_zobject_label_conflicts' )
@@ -1037,7 +1037,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	public function testInsertZFunctionReference() {
 		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzf_ref_zid' ] )
 			 ->from( 'wikilambda_zobject_function_join' )
@@ -1080,7 +1080,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->deleteZFunctionReference( 'Z10030' );
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzf_ref_zid' ] )
 			 ->from( 'wikilambda_zobject_function_join' )
@@ -1390,7 +1390,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	public function testInsertRelatedZObjects() {
 		$this->injectZ401RelatedZObjects();
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_related_zobject' ] )
 			->from( 'wikilambda_zobject_join' )
@@ -1450,7 +1450,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->injectZ401RelatedZObjects();
 
 		$this->zobjectStore->deleteRelatedZObjects( 'Z401', 'Z8', 'Z8K1' );
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_related_zobject' ] )
 			->from( 'wikilambda_zobject_join' )
@@ -1621,7 +1621,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	private function getZTesterResultsFromDB( string $functionZid ): IResultWrapper {
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getReplicaDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getReplicaDatabase();
 		return $dbr->newSelectQueryBuilder()
 			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
 			->from( 'wikilambda_ztester_results' )
@@ -1635,7 +1635,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	public function testInsertZTesterResult() {
 		$this->injectZTesterResults();
 
-		$dbr = $this->getServiceContainer()->getDBLoadBalancerFactory()->getReplicaDatabase();
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getReplicaDatabase();
 		$res = $this->getZTesterResultsFromDB( 'Z410' );
 
 		$this->assertSame( 3, $res->numRows() );

@@ -42,7 +42,7 @@ return [
 
 	'WikifunctionsClientStore' => static function ( MediaWikiServices $services ): WikifunctionsClientStore {
 		return new WikifunctionsClientStore(
-			$services->getDBLoadBalancerFactory()
+			$services->getConnectionProvider()
 		);
 	},
 

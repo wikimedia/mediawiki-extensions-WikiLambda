@@ -79,7 +79,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		}
 
 		$services = MediaWikiServices::getInstance();
-		$dbw = $services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
+		$dbw = $services->getConnectionProvider()->getPrimaryDatabase();
 		$commentStore = $services->getCommentStore();
 
 		// Build the RecentChange attributes common to all entries regardless of page on which it's used

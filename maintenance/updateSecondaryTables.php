@@ -101,7 +101,7 @@ class UpdateSecondaryTables extends Maintenance {
 	 */
 	public function execute() {
 		$services = $this->getServiceContainer();
-		$this->dbProvider = $services->getDBLoadBalancerFactory();
+		$this->dbProvider = $services->getConnectionProvider();
 		// Build ZObjectStore and ZObject BagOStuff, because ServiceWiring hasn't run
 		$zObjectStore = WikiLambdaServices::buildZObjectStore( $services );
 		$zObjectCache = WikiLambdaServices::buildZObjectStash( $services );
