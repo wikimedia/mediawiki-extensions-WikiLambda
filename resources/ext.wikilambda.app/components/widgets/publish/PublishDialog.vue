@@ -120,7 +120,12 @@ module.exports = exports = defineComponent( {
 		successCallback: {
 			type: Function,
 			required: false,
-			default: undefined
+			default: () => {}
+		},
+		errorCallback: {
+			type: Function,
+			required: false,
+			default: () => {}
 		}
 	},
 	emits: [ 'before-exit', 'close-dialog' ],
@@ -211,21 +216,9 @@ module.exports = exports = defineComponent( {
 					store.setDirty( false );
 					closeDialog();
 					// Finally, run additional success actions passed by parent
-					if ( props.successCallback ) {
-						props.successCallback( response );
-					}
+					props.successCallback( response );
 				} ).catch( ( /* ApiError */ error ) => {
-
-					// TODO error handling for abstract content
-					store.clearErrors( Constants.STORED_OBJECTS.MAIN );
-					const errorMessage = error.code === 'badtoken' ?
-						i18n( 'wikilambda-loggedout-error-message' ).text() :
-						error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
-					store.setError( {
-						errorId: Constants.STORED_OBJECTS.MAIN,
-						errorType: Constants.ERROR_TYPES.ERROR,
-						errorMessage
-					} );
+					props.errorCallback( error );
 				} ).finally( () => {
 					isPublishing.value = false;
 					// TODO event submission for abstract content

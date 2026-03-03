@@ -178,7 +178,7 @@ EOD;
 	public function isValid() {
 		// Content exists and is the right type
 		if ( !isset( $this->object ) ) {
-			$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki' );
+			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-invalid-json' );
 			return false;
 		}
 
@@ -189,19 +189,21 @@ EOD;
 			( !AbstractContentUtils::isValidWikidataItemReference( $this->object->qid ) &&
 			!AbstractContentUtils::isNullWikidataItemReference( $this->object->qid ) )
 		) {
-			$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-badqid' );
+			$badQid = $this->object->qid ?? null;
+			$badQid = is_string( $badQid ) ? $badQid : var_export( $badQid, true );
+			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-qid', $badQid );
 			return false;
 		}
 
 		// Sections exists and is an object
 		if ( !isset( $this->object->sections ) || !is_object( $this->object->sections ) ) {
-			$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-nosections' );
+			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-missing-sections' );
 			return false;
 		}
 
 		// Sections must contain a lede section
 		if ( !property_exists( $this->object->sections, self::ABSTRACTCONTENT_SECTION_LEDE ) ) {
-			$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-nolede' );
+			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-missing-lede-section' );
 			return false;
 		}
 
@@ -209,31 +211,33 @@ EOD;
 		foreach ( get_object_vars( $this->object->sections ) as $key => $section ) {
 			// Section key must be a valid qid
 			if ( !AbstractContentUtils::isValidWikidataItemReference( $key ) ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-section-badqid' );
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-qid', $key );
 				return false;
 			}
 
 			// Section must be an object
 			if ( !is_object( $section ) ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-section-badsection' );
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-content', $key );
 				return false;
 			}
 
 			// Section index must have a positive integer
 			if ( !isset( $section->index ) || !is_int( $section->index ) || $section->index < 0 ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-section-badindex' );
+				$badIndex = $this->object->index ?? (string)null;
+				$badIndex = is_string( $badIndex ) ? $badIndex : var_export( $badIndex, true );
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-index', $key, $badIndex );
 				return false;
 			}
 
 			// Section fragments must exist and contain an array
 			if ( !isset( $section->fragments ) || !is_array( $section->fragments ) ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-section-nofragments' );
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-missing-section-fragments', $key );
 				return false;
 			}
 
 			// Section fragments must be a benjamin array of HTML/Z89 objects
 			if ( count( $section->fragments ) === 0 || $section->fragments[0] !== ZTypeRegistry::Z_HTML_FRAGMENT ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-section-badfragments' );
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-fragments-type', $key );
 				return false;
 			}
 		}
@@ -256,8 +260,10 @@ EOD;
 	 */
 	public function isValidForTitle( Title $title ) {
 		// title is the same as object->qid
-		if ( $this->object->qid !== $title->getBaseText() ) {
-			$this->status = StatusValue::newFatal( 'wikilambda-invalid-abstractwiki-unmatching-qid' );
+		$innerQid = $this->object->qid;
+		$titleQid = $title->getBaseText();
+		if ( $innerQid !== $titleQid ) {
+			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-unmatching-qid', $innerQid, $titleQid );
 			return false;
 		}
 

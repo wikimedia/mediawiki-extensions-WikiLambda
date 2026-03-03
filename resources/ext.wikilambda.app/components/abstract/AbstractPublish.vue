@@ -20,6 +20,7 @@
 			:show-dialog="showPublishDialog"
 			:submit-action="submitAction"
 			:success-callback="successCallback"
+			:error-callback="errorCallback"
 			@close-dialog="closePublishDialog"
 			@before-exit="removeListeners"
 		></wl-publish-dialog>
@@ -36,6 +37,7 @@
 const { defineComponent, inject, ref } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 
+const Constants = require( '../../Constants.js' );
 const useLeaveEditorDialog = require( '../../composables/useLeaveEditorDialog.js' );
 const useMainStore = require( '../../store/index.js' );
 
@@ -87,6 +89,25 @@ module.exports = exports = defineComponent( {
 			return store.submitAbstractWikiContent( { summary } );
 		}
 
+		/**
+		 * @param {ApiError} error
+		 */
+		function errorCallback( error ) {
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+
+			// Set default save error message if internal error or no message,
+			// else, show message returned by the action=edit api
+			const errorMessage = error.isInternalApiError || !error.message ?
+				i18n( 'wikilambda-unknown-save-error-message' ).text() :
+				error.message;
+
+			store.setError( {
+				errorId: Constants.STORED_OBJECTS.MAIN,
+				errorType: Constants.ERROR_TYPES.ERROR,
+				errorMessage
+			} );
+		}
+
 		function successCallback( response ) {
 			const pageUrl = new mw.Title( response.title ).getUrl();
 			const linkUrl = new URL( pageUrl, window.location.origin );
@@ -94,6 +115,7 @@ module.exports = exports = defineComponent( {
 		}
 
 		return {
+			errorCallback,
 			closeLeaveDialog,
 			closePublishDialog,
 			isDirty,

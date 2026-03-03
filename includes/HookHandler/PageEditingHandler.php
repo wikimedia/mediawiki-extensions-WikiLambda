@@ -190,7 +190,7 @@ class PageEditingHandler implements
 		$qid = $linkTarget->getDBkey();
 		if ( !AbstractContentUtils::isValidWikidataItemReference( $qid ) ) {
 			// Title not valid; exit with error
-			$hookStatus->fatal( 'wikilambda-invalidabstracttitle', $qid );
+			$hookStatus->fatal( 'wikilambda-abstract-error-invalid-title', $qid );
 			return false;
 		}
 
@@ -198,11 +198,13 @@ class PageEditingHandler implements
 
 		if ( !( $content instanceof AbstractWikiContent ) ) {
 			// Not the right type of content; exit with error
-			$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
+			$hookStatus->fatal( 'wikilambda-abstract-error-invalid-content' );
 			return false;
 		}
 
-		// All checks passed for Abstract Content; success
+		// Initial checks passed for Abstract Content;
+		// Final checks on AbstractWikiContent validity will be done later, when
+		// PageUpdater::makeNewRevision calls ContentHandler::validateSave
 		return true;
 	}
 
@@ -276,10 +278,7 @@ class PageEditingHandler implements
 
 		if ( !AbstractContentUtils::isValidWikidataItemReference( $qid ) ) {
 			// Abstract Wiki content, but title is not a Wikidata Item Id; return error
-			$result = ApiMessage::create(
-				wfMessage( 'wikilambda-invalidabstracttitle', $qid ),
-				'wikilambda-invalidabstracttitle'
-			);
+			$result = ApiMessage::create( wfMessage( 'wikilambda-abstract-error-invalid-title', $qid ) );
 			return false;
 		}
 

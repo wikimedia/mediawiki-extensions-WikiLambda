@@ -76,85 +76,115 @@ class AbstractWikiContentTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @dataProvider provideAbstractContentIsValid
 	 */
-	public function testAbstractContentIsValid( $jsonContent, $expected ) {
+	public function testAbstractContentIsValid( $jsonContent, $expectedValid, $expectedErrorMessage = null ) {
 		$testObject = new AbstractWikiContent( $jsonContent );
 
-		$this->assertSame( $expected, $testObject->isValid() );
+		$this->assertSame( $expectedValid, $testObject->isValid() );
+
+		// Assert error message
+		if ( !$expectedValid ) {
+			$this->assertFalse( $testObject->getStatus()->isOK() );
+			$this->assertTrue( $testObject->getStatus()->hasMessage( $expectedErrorMessage ) );
+		}
 	}
 
 	public static function provideAbstractContentIsValid() {
 		yield 'abstract content has no qid' => [
 			'{ "tis": "bad content" }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-qid'
 		];
 
 		yield 'qid is not a string' => [
 			'{ "qid": { "something": "else" } }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-qid'
 		];
 
 		yield 'qid is not a valid qid' => [
 			'{ "qid": "Douglas Adams" }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-qid'
 		];
 
 		yield 'content object has no sections' => [
 			'{ "qid": "Q42" }',
-			false
+			false,
+			'wikilambda-abstract-error-missing-sections'
 		];
 
 		yield 'sections is empty' => [
 			'{ "qid": "Q42", "sections": {} }',
-			false
+			false,
+			'wikilambda-abstract-error-missing-lede-section'
 		];
 
 		yield 'sections has no lede' => [
 			'{ "qid": "Q42", "sections": { "Q1111": { "index": 0, "fragments": [ "Z89" ] } } }',
-			false
+			false,
+			'wikilambda-abstract-error-missing-lede-section'
 		];
 
 		yield 'sections has non-qid keys' => [
 			'{ "qid": "Q42", "sections": {'
 				. ' "Q8776414": { "index": 0, "fragments": [ "Z89" ] },'
 				. ' "somekey": { "index": 1, "fragments": [ "Z89" ] } } }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-section-qid'
 		];
 
-		yield 'sections has lede' => [
-			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89" ] } } }',
-			true
-		];
-
-		yield 'other section keys are valid qids' => [
-			'{ "qid": "Q42", "sections": {'
-				. ' "Q8776414": { "index": 0, "fragments": [ "Z89" ] },'
-				. ' "Q1111111": { "index": 1, "fragments": [ "Z89" ] } } }',
-			true
-		];
-
-		yield 'sections has no index' => [
+		yield 'section has no index' => [
 			'{ "qid": "Q42", "sections": { "Q8776414": { "fragments": [ "Z89" ] } } }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-section-index'
 		];
 
-		yield 'sections index not well-formed' => [
+		yield 'section index not well-formed' => [
 			'{ "qid": "Q42", "sections": { "Q8776414": { "index": "one", "fragments": [ "Z89" ] } } }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-section-index'
+		];
+
+		yield 'section content is not well-formed' => [
+			'{ "qid": "Q42", "sections": { "Q8776414": "bad section" } }',
+			false,
+			'wikilambda-abstract-error-bad-section-content'
+		];
+
+		yield 'section has no fragments' => [
+			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0 } } }',
+			false,
+			'wikilambda-abstract-error-missing-section-fragments'
 		];
 
 		yield 'fragments is not a list' => [
 			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": {} } } }',
-			false
+			false,
+			'wikilambda-abstract-error-missing-section-fragments'
 		];
 
 		yield 'fragments is not a benjamin array' => [
 			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": [] } } }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-fragments-type'
 		];
 
 		yield 'fragments is not a list of the correct type' => [
 			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z6" ] } } }',
-			false
+			false,
+			'wikilambda-abstract-error-bad-fragments-type'
+		];
+
+		yield 'object has valid lede section' => [
+			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89" ] } } }',
+			true
+		];
+
+		yield 'object has valid lede and other valid sections' => [
+			'{ "qid": "Q42", "sections": {'
+				. ' "Q8776414": { "index": 0, "fragments": [ "Z89" ] },'
+				. ' "Q1111111": { "index": 1, "fragments": [ "Z89" ] } } }',
+			true
 		];
 	}
 }

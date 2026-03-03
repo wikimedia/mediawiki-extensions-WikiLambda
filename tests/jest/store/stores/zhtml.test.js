@@ -7,6 +7,7 @@
 'use strict';
 
 const { createPinia, setActivePinia } = require( 'pinia' );
+const { waitFor } = require( '@testing-library/vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 
 describe( 'zhtml store', () => {
@@ -98,7 +99,7 @@ describe( 'zhtml store', () => {
 
 			// Both requests should result in the same API call being made
 			// (after hashing, they'll have the same hash and coalesce at the sanitization level)
-			expect( mockPostWithEditToken ).toHaveBeenCalledTimes( 1 );
+			await waitFor( () => expect( mockPostWithEditToken ).toHaveBeenCalledTimes( 1 ) );
 
 			// Resolve the API call
 			resolvePromise( {

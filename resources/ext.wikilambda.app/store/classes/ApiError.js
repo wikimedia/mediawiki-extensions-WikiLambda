@@ -79,6 +79,16 @@ class ApiError extends Error {
 	}
 
 	/**
+	 * Returns whether the error message is an internal PHP error by checking
+	 * that the error code starts with the MW prefix 'internal_api_error'
+	 *
+	 * @return {boolean}
+	 */
+	get isInternalApiError() {
+		return this.code ? this.code.startsWith( 'internal_api_error' ) : false;
+	}
+
+	/**
 	 * Returns the error message if this was an intentionally raised error in the API (with
 	 * dieWithError or dieWithZError) and there's an available error message in the payload.
 	 * Else, it returns the string for the i18n message passed as the fallbackCode argument.

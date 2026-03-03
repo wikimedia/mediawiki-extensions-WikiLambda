@@ -23,12 +23,14 @@ describe( 'Publish Dialog', () => {
 	let store;
 	let mockSubmitAction;
 	let mockSuccessCallback;
+	let mockErrorCallback;
 
 	function renderPublishDialog( props = {}, options = {} ) {
 		const defaultProps = {
 			showDialog: true,
 			submitAction: mockSubmitAction,
-			successCallback: mockSuccessCallback
+			successCallback: mockSuccessCallback,
+			errorCallback: mockErrorCallback
 		};
 		const defaultOptions = {
 			global: {
@@ -47,6 +49,7 @@ describe( 'Publish Dialog', () => {
 	beforeEach( () => {
 		mockSubmitAction = jest.fn().mockResolvedValue( { success: true } );
 		mockSuccessCallback = jest.fn();
+		mockErrorCallback = jest.fn();
 
 		store = useMainStore();
 		store.getErrors = createGettersWithFunctionsMock( [] );
@@ -158,7 +161,7 @@ describe( 'Publish Dialog', () => {
 		await waitFor( () => expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy() );
 	} );
 
-	it( 'shows error when submission is not successful', async () => {
+	it( 'calls error callback with failed submission response', async () => {
 		const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
 		const mockFailedSubmission = jest.fn().mockRejectedValue( error );
 
@@ -168,31 +171,18 @@ describe( 'Publish Dialog', () => {
 		} );
 
 		wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
-		await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
-			errorId: 'main',
-			errorType: Constants.ERROR_TYPES.ERROR,
-			errorMessage: 'mock submission error'
-		} ) );
+		await waitFor( () => expect( mockErrorCallback ).toHaveBeenCalledWith( error ) );
 	} );
 
-	it( 'shows loggedout error message when submission fails with badtoken error', async () => {
-		const error = new ApiError( 'badtoken', { error: { message: 'Invalid token' } } );
-		const mockFailedSubmission = jest.fn().mockRejectedValue( error );
+	it( 'shows errors stored in main namespace', async () => {
+		store.getErrors = createGettersWithFunctionsMock( [ new ErrorData( null, [], 'Some error ', 'error' ) ] );
 
-		const wrapper = mount( PublishDialog, {
-			props: {
-				showDialog: true,
-				submitAction: mockFailedSubmission
-			},
-			global: { stubs: dialogGlobalStubs }
-		} );
+		const wrapper = renderPublishDialog();
 
-		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
-		await waitFor( () => expect( store.setError ).toHaveBeenCalledWith( {
-			errorId: 'main',
-			errorType: Constants.ERROR_TYPES.ERROR,
-			errorMessage: 'You are not logged in. Please log in to publish.'
-		} ) );
+		const message = wrapper.findComponent( { name: 'cdx-message' } );
+
+		expect( message.text() ).toContain( 'Some error' );
+		expect( message.props( 'type' ) ).toBe( 'error' );
 	} );
 
 	it( 'shows a keyboard warning when trying to submit with the Enter key', async () => {

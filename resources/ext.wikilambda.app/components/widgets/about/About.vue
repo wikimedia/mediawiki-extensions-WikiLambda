@@ -76,6 +76,7 @@
 				:show-dialog="showPublishDialog"
 				:submit-action="submitAction"
 				:success-callback="successCallback"
+				:error-callback="errorCallback"
 				@close-dialog="cancelPublish"
 			></wl-publish-dialog>
 		</template>
@@ -602,6 +603,23 @@ module.exports = exports = defineComponent( {
 				urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid: pageTitle } );
 		}
 
+		/**
+		 * Actions to run after a publish action has failed.
+		 *
+		 * @param {ApiError} error
+		 */
+		function errorCallback( error ) {
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+			const errorMessage = error.code === 'badtoken' ?
+				i18n( 'wikilambda-loggedout-error-message' ).text() :
+				error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+			store.setError( {
+				errorId: Constants.STORED_OBJECTS.MAIN,
+				errorType: Constants.ERROR_TYPES.ERROR,
+				errorMessage
+			} );
+		}
+
 		// Watch
 		watch( fallbackLanguageZids, () => {
 			initializeDisplayLanguages();
@@ -615,6 +633,7 @@ module.exports = exports = defineComponent( {
 		return {
 			accordionDescriptionClass,
 			addLanguage,
+			errorCallback,
 			canEditObject,
 			cancelPublish,
 			displayData,
