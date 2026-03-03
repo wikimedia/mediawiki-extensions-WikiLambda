@@ -56,18 +56,29 @@ describe( 'ClipboardDialog', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-clipboard' ).exists() ).toBe( true );
 	} );
 
-	it( 'renders empty message and disabled clear button when empty', () => {
+	it( 'does not render search field and button when empty', () => {
+		const wrapper = renderClipboardDialog();
+		expect( wrapper.find( '.ext-wikilambda-app-clipboard' ).exists() ).toBe( true );
+		expect( wrapper.find( '.ext-wikilambda-app-clipboard__actions' ).exists() ).toBe( false );
+		expect( wrapper.find( '.ext-wikilambda-app-clipboard__items' ).text() ).toContain( 'There are no items' );
+	} );
+
+	it( 'renders search field and button when not empty', () => {
+		store.getClipboardItems = [ {
+			itemId: 'call#1',
+			originKey: 'Z20K2',
+			originSlotType: 'Z7',
+			objectType: 'Z6',
+			resolvingType: 'Z6',
+			value: { Z1K1: 'Z6', Z6K1: 'foo' }
+		} ];
+
 		const wrapper = renderClipboardDialog();
 		expect( wrapper.find( '.ext-wikilambda-app-clipboard' ).exists() ).toBe( true );
 
 		const actions = wrapper.find( '.ext-wikilambda-app-clipboard__actions' );
 		expect( actions.findComponent( { name: 'cdx-search-input' } ).exists() ).toBe( true );
-
-		const clearButton = actions.findComponent( { name: 'cdx-button' } );
-		expect( clearButton.exists() ).toBe( true );
-		expect( clearButton.attributes( 'disabled' ) ).toBeTruthy();
-
-		expect( wrapper.find( '.ext-wikilambda-app-clipboard__items' ).text() ).toContain( 'There are no items' );
+		expect( actions.findComponent( { name: 'cdx-button' } ).exists() ).toBe( true );
 	} );
 
 	it( 'renders all the items stored in the clipboard store', () => {
@@ -414,6 +425,7 @@ describe( 'ClipboardDialog', () => {
 			// Paste and close dialog happen
 			expect( wrapper.emitted( 'paste' ) ).toEqual( [ [ {
 				isCompatible: true,
+				isExpanded: false,
 				itemId: 'item#1',
 				originKey: '1',
 				value: '',

@@ -17,7 +17,7 @@
 			<wl-custom-dialog-header @close-dialog="closeClipboard">
 				{{ i18n( 'wikilambda-clipboard-dialog-title' ).text() }}
 			</wl-custom-dialog-header>
-			<div class="ext-wikilambda-app-clipboard__actions">
+			<div v-if="clipboardItems.length > 0" class="ext-wikilambda-app-clipboard__actions">
 				<cdx-search-input
 					v-model="filterSubstr"
 					:placeholder="i18n( 'wikilambda-clipboard-dialog-filter-placeholder' ).text()"
@@ -27,7 +27,6 @@
 					class="ext-wikilambda-app-clipboard__action-clear"
 					action="destructive"
 					weight="normal"
-					:disabled="clipboardItems.length === 0"
 					@click="clearClipboard"
 				>
 					{{ i18n( 'wikilambda-clipboard-dialog-clear-button' ).text() }}
@@ -48,6 +47,7 @@
 				:class="{ 'ext-wikilambda-app-clipboard__item--disabled': !item.isCompatible }"
 				@click="selectClipboardItem( item )"
 			>
+				<!-- Item header; item Id and resolving type -->
 				<div class="ext-wikilambda-app-clipboard__item-head">
 					<em>{{ item.itemId }}</em>
 					<span>type:
@@ -58,12 +58,27 @@
 						></wl-z-object-to-string>
 					</span>
 				</div>
-				<div class="ext-wikilambda-app-clipboard__item-body">
+				<!-- Item body; value of copied element; expandable -->
+				<div
+					:ref="( element ) => setIsExpandable( element, item.itemId )"
+					class="ext-wikilambda-app-clipboard__item-body"
+					:class="{ 'ext-wikilambda-app-clipboard__item-body--expanded': item.isExpanded }"
+				>
 					<wl-z-object-to-string
 						:key-path="item.originKey"
 						:object-value="item.value"
 						:edit="false"
 					></wl-z-object-to-string>
+					<button
+						v-if="isExpandableMap[ item.itemId ] || item.isExpanded"
+						type="button"
+						class="ext-wikilambda-app-clipboard__item-button"
+						@click.stop="toggleExpanded( item.itemId )"
+					>
+						{{ item.isExpanded ?
+							i18n( 'wikilambda-clipboard-dialog-item-see-less' ).text() :
+							i18n( 'wikilambda-clipboard-dialog-item-see-more' ).text() }}
+					</button>
 				</div>
 			</div>
 		</div>
@@ -109,6 +124,8 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 
 		const filterSubstr = ref( '' );
+		const isExpandedMap = ref( {} );
+		const isExpandableMap = ref( {} );
 
 		// Clipboard items:
 		//
@@ -118,15 +135,20 @@ module.exports = exports = defineComponent( {
 		//   This allows copy-pasting blocks that use mixed type results (e.g. function
 		//   calls to If/Z802) when they come from an already type bound key.
 		//
+		// * Adds isExpanded flag to show/hide full content.
+		//
 		// * Filters clipboard items by excluding those whose type or key label
 		//   don't match the input search substring.
 		const clipboardItems = computed( () => store.getClipboardItems
 			.map( ( item ) => Object.assign(
-				{ isCompatible: (
-					isTypeCompatible( item.originSlotType, props.expectedType ) ||
-					isTypeCompatible( item.objectType, props.expectedType ) ||
-					isTypeCompatible( item.resolvingType, props.expectedType )
-				) },
+				{
+					isExpanded: !!isExpandedMap.value[ item.itemId ],
+					isCompatible: (
+						isTypeCompatible( item.originSlotType, props.expectedType ) ||
+						isTypeCompatible( item.objectType, props.expectedType ) ||
+						isTypeCompatible( item.resolvingType, props.expectedType )
+					)
+				},
 				item
 			) )
 			.filter( ( item ) => matchesFilter( item ) ) );
@@ -189,9 +211,30 @@ module.exports = exports = defineComponent( {
 				// Ignore if not compatible
 				return;
 			}
-
 			emit( 'paste', value );
 			emit( 'close-dialog' );
+		}
+
+		/**
+		 * Sets the isExpandable value for a given
+		 * element depending on its rendered size.
+		 *
+		 * @param {HTMLElement} el
+		 * @param {string} id
+		 */
+		function setIsExpandable( el, id ) {
+			if ( el ) {
+				isExpandableMap.value[ id ] = el.scrollHeight > el.clientHeight;
+			}
+		}
+
+		/**
+		 * Toggles the expanded view of a clipboard item
+		 *
+		 * @param {string} itemId
+		 */
+		function toggleExpanded( itemId ) {
+			isExpandedMap.value[ itemId ] = !isExpandedMap.value[ itemId ];
 		}
 
 		return {
@@ -199,7 +242,10 @@ module.exports = exports = defineComponent( {
 			clearClipboard,
 			closeClipboard,
 			filterSubstr,
+			isExpandableMap,
 			selectClipboardItem,
+			setIsExpandable,
+			toggleExpanded,
 			i18n
 		};
 	}
@@ -237,20 +283,25 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-clipboard__item {
 		padding: @spacing-75 @spacing-150;
 		border-top: @border-width-base @border-style-base @border-color-subtle;
+		--clipboard-gradient-bg: @background-color-base;
 
 		&:hover {
 			cursor: pointer;
 			background-color: @background-color-interactive;
+			--clipboard-gradient-bg: @background-color-interactive;
 		}
 	}
 
 	.ext-wikilambda-app-clipboard__item--disabled {
 		background-color: @background-color-neutral;
 		color: @color-subtle;
+		opacity: @opacity-medium;
+		--clipboard-gradient-bg: @background-color-neutral;
 
 		&:hover {
 			cursor: initial;
 			background-color: @background-color-neutral;
+			--clipboard-gradient-bg: @background-color-neutral;
 		}
 	}
 
@@ -258,6 +309,47 @@ module.exports = exports = defineComponent( {
 		display: flex;
 		justify-content: space-between;
 		margin-bottom: @spacing-50;
+	}
+
+	.ext-wikilambda-app-clipboard__item-body {
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		display: -webkit-box;
+		line-height: var( --line-height-current );
+		position: relative;
+
+		&--expanded {
+			-webkit-line-clamp: unset;
+			line-clamp: unset;
+			display: block;
+			padding-bottom: @spacing-150;
+		}
+	}
+
+	.ext-wikilambda-app-clipboard__item-button {
+		.cdx-mixin-link();
+		background: var( --clipboard-gradient-bg );
+		border: 0;
+		padding: 0;
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		line-height: var( --line-height-current );
+		font-size: inherit;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -80px;
+			width: 80px;
+			height: 100%;
+			background: linear-gradient( to right, transparent, var( --clipboard-gradient-bg ) );
+		}
 	}
 }
 
