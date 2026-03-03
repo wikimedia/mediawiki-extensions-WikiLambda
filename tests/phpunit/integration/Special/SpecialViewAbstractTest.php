@@ -181,7 +181,7 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 
 		// Check that the notice text appears in the page HTML
 		$this->assertStringContainsString(
-			'You were redirected from Special:CreateAbstract page as Qid is already created',
+			'You were redirected as there is already an Abstract Article',
 			$html
 		);
 	}

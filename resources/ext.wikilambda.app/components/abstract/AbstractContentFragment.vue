@@ -13,7 +13,6 @@
 		@focus="setHighlight"
 		@blur="unsetHighlight"
 	>
-		<!-- FIXME: i18n the aria-label for the fragment actions menu -->
 		<cdx-menu-button
 			v-if="edit"
 			:aria-label="i18n( 'wikilambda-abstract-fragment-actions-menu' ).text()"

@@ -19,7 +19,7 @@
 				:edit="edit"
 				:section="section"
 			></wl-abstract-content-section>
-			<!-- FIXME: Stretch goal: add new sections -->
+			<!-- TODO (T411712): Add new sections -->
 			<!-- <cdx-button
 				v-if="edit"
 				action="default"

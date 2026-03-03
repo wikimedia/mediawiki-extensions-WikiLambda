@@ -7,9 +7,7 @@
 <template>
 	<wl-widget-base class="ext-wikilambda-app-abstract-preview">
 		<template #header>
-			<!-- FIXME not sure if we want title -->
-			<!-- FIXME if we do, do we want the language? -->
-			{{ i18n( 'wikilambda-abstract-preview-in-language', [ languageLabelData.label ] ).text() }}
+			{{ i18n( 'wikilambda-abstract-preview-in-language' ).text() }}
 		</template>
 		<template #header-action>
 			<wl-z-object-selector
@@ -81,11 +79,6 @@ module.exports = exports = defineComponent( {
 		const previewLanguageZid = computed( () => store.getPreviewLanguageZid );
 
 		/**
-		 * @return {LabelData}
-		 */
-		const languageLabelData = computed( () => store.getLabelData( store.getPreviewLanguageZid ) );
-
-		/**
 		 * Exclude the currently selected preview language from the selector.
 		 *
 		 * @return {Array<string>}
@@ -105,7 +98,6 @@ module.exports = exports = defineComponent( {
 			i18n,
 			abstractTitle,
 			excludedLanguageZids,
-			languageLabelData,
 			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE,
 			onPreviewLanguageSelect,
 			previewLanguageZid,

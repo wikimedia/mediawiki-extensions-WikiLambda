@@ -150,7 +150,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// FIXME better text
 		if ( $request->getInt( 'created' ) ) {
 			$output->addSubtitle(
-				Html::noticeBox( 'You were redirected from Special:CreateAbstract page as Qid is already created' )
+				Html::noticeBox( $this->msg( 'wikilambda-abstract-special-create-existing-redirected' )->parse() )
 			);
 		}
 
