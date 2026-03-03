@@ -82,7 +82,7 @@ module.exports = {
 			};
 
 			// Update Pinia store
-			this.clipboardItems.push( clipboardItem );
+			this.clipboardItems.unshift( clipboardItem );
 
 			// Update mw.storage
 			mw.storage.set( STORAGE_KEY, JSON.stringify( this.clipboardItems ) );

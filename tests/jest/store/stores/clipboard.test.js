@@ -183,14 +183,17 @@ describe( 'clipboard Pinia store', () => {
 				expect( store.clipboardItems.length ).toBe( 2 );
 
 				// Check values that stay the same:
-				expect( store.clipboardItems[ 1 ].originKey ).toBe( payload.originKey );
-				expect( store.clipboardItems[ 1 ].originSlotType ).toBe( payload.originSlotType );
-				expect( store.clipboardItems[ 1 ].value ).toEqual( payload.value );
+				expect( store.clipboardItems[ 0 ].originKey ).toBe( payload.originKey );
+				expect( store.clipboardItems[ 0 ].originSlotType ).toBe( payload.originSlotType );
+				expect( store.clipboardItems[ 0 ].value ).toEqual( payload.value );
 
 				// Check new values added by this action:
-				expect( store.clipboardItems[ 1 ].itemId ).toBe( 'then#2' );
-				expect( store.clipboardItems[ 1 ].objectType ).toBe( 'Z7' );
-				expect( store.clipboardItems[ 1 ].resolvingType ).toBe( 'Z6' );
+				expect( store.clipboardItems[ 0 ].itemId ).toBe( 'then#2' );
+				expect( store.clipboardItems[ 0 ].objectType ).toBe( 'Z7' );
+				expect( store.clipboardItems[ 0 ].resolvingType ).toBe( 'Z6' );
+
+				// Check old item is now in second place
+				expect( store.clipboardItems[ 1 ].itemId ).toBe( 'then#1' );
 
 				// Check that local storage is updated
 				expect( mw.storage.set ).toHaveBeenCalledWith( 'ext-wikilambda-app-clipboard', expect.any( String ) );

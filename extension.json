@@ -728,6 +728,8 @@
 				"wikilambda-cancel",
 				"wikilambda-clipboard-dialog-clear-button",
 				"wikilambda-clipboard-dialog-filter-placeholder",
+				"wikilambda-clipboard-dialog-item-see-less",
+				"wikilambda-clipboard-dialog-item-see-more",
 				"wikilambda-clipboard-dialog-no-items",
 				"wikilambda-clipboard-dialog-title",
 				"wikilambda-clipboard-menu-group",
