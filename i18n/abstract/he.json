@@ -1,0 +1,39 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"action-wikilambda-abstract-create": "ליצור דפי תוכן מופשט",
+	"action-wikilambda-abstract-edit": "לערוך דפי תוכן מופשט קיימים",
+	"content-model-abstractwiki": "תוכן מופשט",
+	"right-wikilambda-abstract-create": "יצירת דפי תוכן מופשט",
+	"right-wikilambda-abstract-edit": "עריכת דפי תוכן מופשט קיימים",
+	"specialpages-group-abstractwiki": "דפי ויקיפדיה מופשטת",
+	"wikilambda-abstract-content-object": "עצם תוכן מופשט",
+	"wikilambda-abstract-edit-title": "עריכת ערך מופרט על $1",
+	"wikilambda-abstract-fragment-actions-menu": "תפריט פעולות מקטע",
+	"wikilambda-abstract-invalidcontent": "התוכן המסופק אינו עצם תוכן מופשט תקין.",
+	"wikilambda-abstract-invalidcontenttitle": "הכותרת המסופקת \"$1\" אינה תקינה עבור עצם תוכן מופשט.",
+	"wikilambda-abstract-menu-fragments-accessible-label": "תפריט לבחירה והוספת של מקטע חדש",
+	"wikilambda-abstract-menu-group-basic-fragments": "פעולות מקטע בסיסיות",
+	"wikilambda-abstract-menu-group-insert-fragments": "הוספת מקטעים",
+	"wikilambda-abstract-menu-group-move-fragments": "העברת מקטעים",
+	"wikilambda-abstract-menu-group-special-fragments": "פעולות מקטע מיוחדות",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "הוספת מקטע ריק",
+	"wikilambda-abstract-menu-option-add-named-fragment": "הוספת הפונקציה $1",
+	"wikilambda-abstract-menu-option-delete-fragment": "מחיקת מקטע",
+	"wikilambda-abstract-menu-option-insert-after": "הוספת מקטע אחרי",
+	"wikilambda-abstract-menu-option-insert-before": "הוספת מקטע לפני",
+	"wikilambda-abstract-menu-option-move-after": "העברת מקטע אחרי",
+	"wikilambda-abstract-menu-option-move-before": "העברת מקטע לפני",
+	"wikilambda-abstract-preview-in-language": "תצוגה מקדימה אוטומטית של ערך ב{{GRAMMAR:תחילית|$1}}",
+	"wikilambda-abstract-special-create": "יצירת ערך מופשט חדש",
+	"wikilambda-abstract-special-create-createbutton-label": "יצירה",
+	"wikilambda-abstract-special-create-existing": "לפריט הוויקינתונים החדש כבר משויך ערך מופשט:",
+	"wikilambda-abstract-special-create-intro": "פתיח על יצירת ערכים מופשטים. יצירת הדף הזה מהווה את הסכמתך לתנאי השימוש, לקיום [[$1|מדיניות הקהילה]] ולשחרור בלתי־חוזר של התרומה שלך תחת רישיון כלשהו.",
+	"wikilambda-abstract-special-create-not-enabled": "יצירת ערכים מופשטים אינה מופעלת עכשיו. נא לבדוק מאוחר יותר.",
+	"wikilambda-abstract-special-create-not-enabled-title": "יצירת ערכים מופשטים אינה מופעלת",
+	"wikilambda-abstract-special-create-qid": "יצירת ערך מופשט חדש עבור $1",
+	"wikilambda-abstract-special-view": "צפייה בערך מופשט"
+}
