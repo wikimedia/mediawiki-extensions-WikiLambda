@@ -8,7 +8,7 @@
 	"apihelp-abstractwiki_run_fragment-param-qid": "מזהה פריט הוויקינתונים ששימש לתיצוג הקטע. זה חייב להיות מזהה Q תקין.",
 	"apihelp-abstractwiki_run_fragment-param-language": "מזהה עצם ה־Z של השפה שמשמשת לתיצוג הקטע. זה חייב להיות מזהה Z תקין.",
 	"apihelp-abstractwiki_run_fragment-param-date": "מחרוזת התאריך שמשמשת לתיצוג הקטע.",
-	"apihelp-abstractwiki_run_fragment-param-fragment": "JSON של הרכבת מקטע. זה עמור להיות עצם Z תקין והוא אמור לפלוט עצם מסוג Z89/מקטע HTML",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "JSON של הרכבת מקטע. זה אמור להיות עצם Z תקין והוא אמור לפלוט עצם מסוג Z89/מקטע HTML",
 	"apihelp-abstractwiki_run_fragment-example-literal-html": "הרצת מקטע עם עם עצם HTML מפורש",
 	"apihelp-abstractwiki_run_fragment-example-composition": "הרצת מקטע עם הרכבה שמשתמשת במזהה Q וארגומנטים של שפה",
 	"apierror-abstractwiki_run_fragment-not-enabled": "לא ניתן לתצג תוכן של מקטעי ויקיפדיה מופשטת: התכונה הזאת אינה מופעלת.",

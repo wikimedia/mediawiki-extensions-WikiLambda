@@ -1,0 +1,39 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"action-wikilambda-abstract-create": "crear novas páxinas de contido abstracto",
+	"action-wikilambda-abstract-edit": "editar páxinas de contido abstracto existentes",
+	"content-model-abstractwiki": "Contido abstracto",
+	"right-wikilambda-abstract-create": "Crear novas páxinas de contido abstracto",
+	"right-wikilambda-abstract-edit": "Editar páxinas de contido abstracto existentes",
+	"specialpages-group-abstractwiki": "Páxinas da Wikipedia abstracta",
+	"wikilambda-abstract-content-object": "Obxecto de contido abstracto",
+	"wikilambda-abstract-edit-title": "Editar o artigo abstracto de «$1»",
+	"wikilambda-abstract-fragment-actions-menu": "Menú de accións de fragmentos",
+	"wikilambda-abstract-invalidcontent": "O contido proporcionado non é un obxecto de contido abstracto válido.",
+	"wikilambda-abstract-invalidcontenttitle": "O título proporcionado, «$1», non é válido para un obxecto de contido abstracto.",
+	"wikilambda-abstract-menu-fragments-accessible-label": "Menú para seleccionar e engadir un fragmento novo",
+	"wikilambda-abstract-menu-group-basic-fragments": "Accións básicas de fragmentos",
+	"wikilambda-abstract-menu-group-insert-fragments": "Inserir fragmentos",
+	"wikilambda-abstract-menu-group-move-fragments": "Mover fragmentos",
+	"wikilambda-abstract-menu-group-special-fragments": "Accións especiais de fragmentos",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "Engadir un fragmento baleiro",
+	"wikilambda-abstract-menu-option-add-named-fragment": "Engadir «$1»",
+	"wikilambda-abstract-menu-option-delete-fragment": "Eliminar o fragmento",
+	"wikilambda-abstract-menu-option-insert-after": "Inserir o fragmento despois de",
+	"wikilambda-abstract-menu-option-insert-before": "Inserir o fragmento antes de",
+	"wikilambda-abstract-menu-option-move-after": "Mover o fragmento despois",
+	"wikilambda-abstract-menu-option-move-before": "Mover o fragmento antes",
+	"wikilambda-abstract-preview-in-language": "Vista previa automática do artigo en $1",
+	"wikilambda-abstract-special-create": "Crear un artigo abstracto novo",
+	"wikilambda-abstract-special-create-createbutton-label": "Crear",
+	"wikilambda-abstract-special-create-existing": "O elemento de Wikidata seleccionado xa ten un artigo abstracto asociado:",
+	"wikilambda-abstract-special-create-intro": "Unha introdución sobre a creación de artigos abstractos. Ao creares esta páxina, aceptas os termos de uso, aceptas seguir as [[$1|políticas da comunidade]] e aceptas liberar irrevogablemente a túa contribución baixo «nome-dunha-licenza».",
+	"wikilambda-abstract-special-create-not-enabled": "Nestes intres, non está activada a creación de artigos abstractos. Compróbao de novo máis tarde.",
+	"wikilambda-abstract-special-create-not-enabled-title": "A creación de artigos abstractos non está activada",
+	"wikilambda-abstract-special-create-qid": "Crear un artigo abstracto novo para «$1»",
+	"wikilambda-abstract-special-view": "Ver un artigo abstracto"
+}

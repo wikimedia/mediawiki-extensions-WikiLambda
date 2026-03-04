@@ -8,7 +8,7 @@
 	"apihelp-abstractwiki_run_fragment-param-qid": "O ID do elemento de Wikidata empregado para renderizar o fragmento. Debe ser un Qid válido.",
 	"apihelp-abstractwiki_run_fragment-param-language": "O ID do ZObject de lingua empregado para renderizar o fragmento. Debe ser un Zid válido.",
 	"apihelp-abstractwiki_run_fragment-param-date": "A cadea de data empregada para renderizar o fragmento.",
-	"apihelp-abstractwiki_run_fragment-param-fragment": "Un JSON de composición de fragmentos. Debe ser un ZObject válido e debe xerar un obxecto de tipo HTML Fragment/Z89.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "Un JSON de composición de fragmentos. Debe ser un ZObject válido e debe xerar un obxecto de tipo Z89/HTML Fragment.",
 	"apihelp-abstractwiki_run_fragment-example-literal-html": "Executar un fragmento cun obxecto HTML literal",
 	"apihelp-abstractwiki_run_fragment-example-composition": "Executar un fragmento cunha composición que usa argumentos Qid e de lingua",
 	"apierror-abstractwiki_run_fragment-not-enabled": "Non se poden renderizar os fragmentos de contido resumido da Wikipedia: esta funcionalidade non está activada.",
