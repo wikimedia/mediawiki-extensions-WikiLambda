@@ -127,6 +127,14 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-abstract-preview {
+	position: sticky;
+	top: @spacing-50;
+
+	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+		position: static;
+		top: 0;
+	}
+
 	.ext-wikilambda-app-abstract-preview__body {
 		position: relative;
 	}
