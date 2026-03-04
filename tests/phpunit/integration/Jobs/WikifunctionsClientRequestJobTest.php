@@ -173,7 +173,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 			// Capture failure to raise the exception:
 			$this->fail( 'Expected WikifunctionCallException was not thrown.' );
 		} catch ( WikifunctionCallException $e ) {
-			$this->assertSame( $e->getErrorMessageKey(), $errorMessageKey );
+			$this->assertSame( $e->getMessageKey(), $errorMessageKey );
 		}
 	}
 

@@ -1,6 +1,14 @@
 <?php
 /**
- * WikiLambda extension specialised Exception wrapper for a remote call issue
+ * WikiLambda extension specialised Exception wrapper for a remote call issue.
+ *
+ * This exception is designed to be used in Client settings, for example:
+ * * On a Client wiki that runs embedded fragments, or
+ * * On Abstract Wiki, who uses ZObjects from Wikifunctions
+ *
+ * While this Exception might contain Z5/Error objects returned by Wikifunctions,
+ * it must not use ZObjectFactory::create methods, as ZObjectFactory is currently
+ * tightly coupled with the assumption that referred objects are stored locally.
  *
  * @file
  * @ingroup Extensions
@@ -10,27 +18,49 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use Exception;
+use MediaWiki\Message\Message;
+use stdClass;
 
-class WikifunctionCallException extends ZErrorException {
+class WikifunctionCallException extends Exception {
 
-	private string $errorMessageKey;
+	// Http status code (if applicable)
 	private int $httpStatusCode;
 
-	/**
-	 * @param ZError $error
-	 * @param string $errorMessageKey
-	 * @param int $httpStatusCode
-	 */
-	public function __construct( ZError $error, string $errorMessageKey, int $httpStatusCode = HttpStatus::OK ) {
-		parent::__construct( $error );
+	// Error message code and parameters
+	private string $msg;
+	private array $params;
 
-		$this->errorMessageKey = $errorMessageKey;
+	// ZError data (if applicable)
+	private ?stdClass $errorData;
+
+	/**
+	 * @param string $msg
+	 * @param int $httpStatusCode
+	 * @param ?stdClass $errorData
+	 * @param array $params
+	 */
+	public function __construct(
+		string $msg,
+		int $httpStatusCode = HttpStatus::BAD_REQUEST,
+		?stdClass $errorData = null,
+		array $params = []
+	) {
+		$this->msg = $msg;
+		$this->params = $params;
+
 		$this->httpStatusCode = $httpStatusCode;
+		$this->errorData = $errorData;
+
+		parent::__construct( $this->getMessageObject()->text() );
 	}
 
-	public function getErrorMessageKey(): string {
-		return $this->errorMessageKey;
+	public function getMessageObject(): Message {
+		return wfMessage( $this->msg, $this->params );
+	}
+
+	public function getMessageKey(): string {
+		return $this->msg;
 	}
 
 	public function getHttpStatusCode(): int {
