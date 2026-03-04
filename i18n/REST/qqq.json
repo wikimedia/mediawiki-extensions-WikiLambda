@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "{{Experimental}} Title of the Attribution API REST module",
+	"wikifunctions-rest-module-v0-desc": "{{Experimental}} Description of the Attribution API REST module",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "{{Experimental}} Description of the fetch ZIDs endpoint",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "{{Experimental}} Description of the fetch ZIDs and revisions endpoint",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "{{Experimental}} Description of the call ZID and arguments endpoint",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "{{Experimental}} Description of the call ZID and arguments and parse and render the result endpoint"
+}

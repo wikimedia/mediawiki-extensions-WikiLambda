@@ -1,0 +1,52 @@
+{
+	"mwapi": "1.1.0",
+	"moduleId": "wikifunctions/v0",
+	"info": {
+		"version": "0.1.0",
+		"title": "WikiFunctions API",
+		"x-i18n-title": "wikifunctions-rest-module-v0-title",
+		"x-i18n-description": "wikifunctions-rest-module-v0-desc"
+	},
+	"paths": {
+		"/fetch/{zids}": {
+			"get": {
+				"x-i18n-description": "wikifunctions-rest-module-v0-fetch-zids-desc",
+				"handler": {
+					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FetchHandler",
+					"services": []
+				}
+			}
+		},
+		"/fetch/{zids}/{revisions}": {
+			"get": {
+				"x-i18n-description": "wikifunctions-rest-module-v0-fetch-zids-revisions-desc",
+				"handler": {
+					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FetchHandler",
+					"services": []
+				}
+			}
+		},
+		"/call/{zid}/{arguments}": {
+			"get": {
+				"x-i18n-description": "wikifunctions-rest-module-v0-call-zid-arguments-desc",
+				"handler": {
+					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler",
+					"services": [
+						"WikiLambdaZObjectStore"
+					]
+				}
+			}
+		},
+		"/call/{zid}/{arguments}/{parselang}/{renderlang}": {
+			"get": {
+				"x-i18n-description": "wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc",
+				"handler": {
+					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler",
+					"services": [
+						"WikiLambdaZObjectStore"
+					]
+				}
+			}
+		}
+	}
+}
