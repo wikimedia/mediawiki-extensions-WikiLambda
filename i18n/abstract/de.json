@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"wikilambda-abstract-error-bad-section-content": "Der Abschnitt mit dem Schlüssel „$1“ enthält ungültigen Inhalt.",
+	"wikilambda-abstract-error-bad-section-index": "Der Abschnitt mit dem Schlüssel „$1“ hat eine ungültige Indexnummer („$2“).",
+	"wikilambda-abstract-error-bad-section-qid": "Der Abschnittsschlüssel „$1“ ist keine gültige Wikidata-Objekt-Qid.",
+	"wikilambda-abstract-error-missing-section-fragments": "Der Abschnitt mit dem Schlüssel „$1“ enthält keine Fragmente.",
+	"wikilambda-abstract-error-unmatching-qid": "Der Wert der Eigenschaft „qid“ („$1“) stimmt nicht mit dem Seitentitel „$2“ überein.",
+	"wikilambda-abstract-fragment-actions-menu": "Fragmentaktionsmenü",
+	"wikilambda-abstract-menu-fragments-accessible-label": "Menü zum Auswählen und Hinzufügen eines neuen Fragments",
+	"wikilambda-abstract-menu-group-basic-fragments": "Grundlegende Fragmentaktionen",
+	"wikilambda-abstract-menu-group-insert-fragments": "Fragmente einfügen",
+	"wikilambda-abstract-menu-group-move-fragments": "Fragmente verschieben",
+	"wikilambda-abstract-menu-group-special-fragments": "Spezielle Fragmentaktionen",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "Leeres Fragment hinzufügen",
+	"wikilambda-abstract-menu-option-add-named-fragment": "Hinzufügen von $1",
+	"wikilambda-abstract-menu-option-add-section": "Abschnitt hinzufügen",
+	"wikilambda-abstract-menu-option-delete-fragment": "Fragment löschen",
+	"wikilambda-abstract-menu-option-insert-after": "Fragment einfügen nach",
+	"wikilambda-abstract-menu-option-insert-before": "Fragment einfügen vor",
+	"wikilambda-abstract-menu-option-move-after": "Fragment verschieben nach",
+	"wikilambda-abstract-menu-option-move-before": "Fragment verschieben vor",
+	"wikilambda-abstract-preview-in-language": "Erstellter Text",
+	"wikilambda-abstract-special-create-createbutton-label": "Erstellen"
+}

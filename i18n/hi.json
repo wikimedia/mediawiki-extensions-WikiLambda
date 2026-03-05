@@ -158,7 +158,7 @@
 	"wikilambda-cannot-change-function-when-connected-error-z14": "यह कार्यान्वयन इस समय एक फ़ंक्शन से जुड़ा हुआ है। इसे नए फ़ंक्शन को सौंपने से पहले कृपया इसे मूल फ़ंक्शन से अलग करें।",
 	"wikilambda-cannot-change-function-when-connected-error-z20": "यह फ़ंक्शन इस समय एक फ़ंक्शन से जुड़ा हुआ है। इसे नए फ़ंक्शन को सौंपने से पहले कृपया इसे मूल फ़ंक्शन से अलग करें।",
 	"wikilambda-clipboard-dialog-clear-button": "क्लिपबोर्ड खाली करें",
-	"wikilambda-clipboard-dialog-filter-placeholder": "प्रकार या कुँजी के अनुसार छानें",
+	"wikilambda-clipboard-dialog-filter-placeholder": "प्रकार या कुँजी के अनुसार खोजें",
 	"wikilambda-clipboard-dialog-no-items": "क्लिपबोर्ड में कुछ भी नहीं है",
 	"wikilambda-clipboard-dialog-title": "क्लिपबोर्ड",
 	"wikilambda-clipboard-menu-group": "क्लिपबोर्ड विकल्प",

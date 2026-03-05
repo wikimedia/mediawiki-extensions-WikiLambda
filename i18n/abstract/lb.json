@@ -1,0 +1,39 @@
+{
+	"@metadata": {
+		"authors": [
+			"Volvox"
+		]
+	},
+	"action-wikilambda-abstract-create": "en neien Abstrakten Artikel unzeleeën",
+	"action-wikilambda-abstract-edit": "besteeënd Abstrakt Artikelen z'änneren",
+	"content-model-abstractwiki": "Abstrakten Artikel",
+	"right-wikilambda-abstract-create": "En neien Abstrakten Artikel uleeën",
+	"right-wikilambda-abstract-edit": "Besteeënd Abstrakt Artikelen änneren",
+	"specialpages-group-abstractwiki": "Abstrakt-Wikipedia-Säiten",
+	"wikilambda-abstract-content-object": "Abstrakten Artikel",
+	"wikilambda-abstract-edit-title": "Abstrakten Artikel fir $1 änneren",
+	"wikilambda-abstract-error-bad-section-content": "Am Abschnitt mam Schlëssel „$1“ kënnt ongültegen Inhalt vir.",
+	"wikilambda-abstract-error-invalid-content": "Den Inhalt, deen Dir uginn hutt, ass kee gültegen Abstrakten Artikel.",
+	"wikilambda-abstract-error-invalid-json": "Den Abstrakten Aetikel ass kee gültegen JSON.",
+	"wikilambda-abstract-error-invalid-title": "Den Titel „$1“, deen Dir uginn hutt, ass kee gültegen Titel fir en Abstrakten Artikel.",
+	"wikilambda-abstract-fragment-actions-menu": "Menü fir Fragmentaktiounen",
+	"wikilambda-abstract-menu-fragments-accessible-label": "Menü fir nei Fragmenter auszewielen an derbäizesetzen",
+	"wikilambda-abstract-menu-group-insert-fragments": "Fragmenter asetzen",
+	"wikilambda-abstract-menu-group-move-fragments": "Fragmenter beweegen",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "Eidelt Fragment derbäisetzen",
+	"wikilambda-abstract-menu-option-add-named-fragment": "$1 derbäisetzen",
+	"wikilambda-abstract-menu-option-delete-fragment": "Fragment läschen",
+	"wikilambda-abstract-menu-option-insert-after": "Fragment hannendrun asetzen",
+	"wikilambda-abstract-menu-option-insert-before": "Fragment virdrun asetzen",
+	"wikilambda-abstract-menu-option-move-after": "Fragment hannendru réckelen",
+	"wikilambda-abstract-menu-option-move-before": "Fragment virdru réckelen",
+	"wikilambda-abstract-preview-in-language": "Generéierten Text",
+	"wikilambda-abstract-special-create": "Neien Abstrakten Artikel uleeën",
+	"wikilambda-abstract-special-create-createbutton-label": "Uleeën",
+	"wikilambda-abstract-special-create-existing": "Et gëtt schonn en Abstrakten Artikel fir dëst Wikidata-Element:",
+	"wikilambda-abstract-special-create-existing-redirected": "Dir gouft virugeleet, well et schonn en Abstrakten Artikel gëtt.",
+	"wikilambda-abstract-special-create-not-enabled": "D'Uleeë vun Abstrakten Artikelen ass aktuell net aktivéiert. Kommt wgl. méi spéit nach eng Kéier laanscht kucken.",
+	"wikilambda-abstract-special-create-not-enabled-title": "Uleeë vun Abstrakten Artikelen net aktivéiert",
+	"wikilambda-abstract-special-create-qid": "En neien Abstrakten Artikel fir $1 uleeën",
+	"wikilambda-abstract-special-view": "En Abstrakten Artikel kucken"
+}

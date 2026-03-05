@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Genoveva Galarza",
 			"James D. Forrester"
 		]
@@ -14,7 +15,7 @@
 	"specialpages-group-abstractwiki": "{{doc-special-group|that=are related to Abstract Wikipedia}}",
 	"wikilambda-abstract-content-object": "Label shown at the top of the Abstract Article editor.",
 	"wikilambda-abstract-edit-title": "Title for the page for editing the Abstract Article of a given Wikidata Item Id.\n\nParameters:\n* $1 - Wikidata Item Id and title of the Abstract Wikipedia content page.",
-	"wikilambda-abstract-error-bad-fragments-type": "Error shown when validating an Abstract Article page and the section's fragment list is of the wrong type.\n\nParameters:\n* $1 - The section key.",
+	"wikilambda-abstract-error-bad-fragments-type": "{{Doc-important|The word '''typed''' doesn't mean \"written using a keyboard\". It means \"having a [[:w:en:Data type|data type]]\".}}\n\nError shown when validating an Abstract Article page and the section's fragment list is of the wrong type.\n\nParameters:\n* $1 - The section key.",
 	"wikilambda-abstract-error-bad-qid": "Error shown when validating an Abstract Article page and the internal Qid does not match a valid Wikidata Item Id syntax.\n\nParameters:\n* $1 - The given qid.",
 	"wikilambda-abstract-error-bad-section-content": "Error shown when validating an Abstract Article page and the section content is not well-formed.\n\nParameters:\n* $1 - The section key.",
 	"wikilambda-abstract-error-bad-section-index": "Error shown when validating an Abstract Article page and the section index is not a positive integer.\n\nParameters:\n* $1 - The section key.\n* $2 - The section index.",

@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Monicapozo03"
+		]
+	},
+	"action-wikilambda-abstract-create": "crear nuevos artículos abstractos",
+	"action-wikilambda-abstract-edit": "editar los articulos abstractos existentes",
+	"content-model-abstractwiki": "Articulo abstracto",
+	"right-wikilambda-abstract-create": "Crear nuevos artículos abstractos",
+	"right-wikilambda-abstract-edit": "Editar artículos de resúmenes existentes",
+	"wikilambda-abstract-content-object": "Artículo abstracto",
+	"wikilambda-abstract-error-invalid-content": "El contenido proporcionado no es válido para un articulo abstracto",
+	"wikilambda-abstract-error-invalid-title": "El titulo proporcionado $1 no es válido para el articulo abstracto",
+	"wikilambda-abstract-preview-in-language": "Texto generado",
+	"wikilambda-abstract-special-create-existing": "Ya existe un artículo abstracto para ese elemento de Wikidata:",
+	"wikilambda-abstract-special-create-existing-redirected": "Has sido redirigido ya que hay un articulo abstracto"
+}
