@@ -17,7 +17,8 @@
 			"ZI Jony",
 			"আজিজ",
 			"আফতাবুজ্জামান",
-			"খাত্তাব হাসান"
+			"খাত্তাব হাসান",
+			"Saurmandal"
 		]
 	},
 	"wikilambda-desc": "কেন্দ্রীয় উইকিতে লিখিত, পরিচালিত এবং মূল্যায়িত করার জন্য ফাংশন প্রদান করা।",
@@ -440,7 +441,7 @@
 	"wikilambda-special-functionsbytests-form-result": "সমস্ত সংযুক্ত বাস্তবায়নের জন্য পরীক্ষার ফলাফল:",
 	"wikilambda-special-functionsbytests-form-result-fail": "কয়েকটি ব্যর্থ",
 	"wikilambda-special-functionsbytests-form-result-pass": "সব উত্তীর্ণ",
-	"wikilambda-special-functionsbytests-form-status": "সংযোগের অবস্থা পরীক্ষা করুন:",
+	"wikilambda-special-functionsbytests-form-status": "পরীক্ষার সংযোগের অবস্থা:",
 	"wikilambda-special-functionsbytests-form-status-connected": "সংযুক্ত",
 	"wikilambda-special-functionsbytests-form-status-pending": "সংযোগের জন্য অপেক্ষমাণ",
 	"wikilambda-special-functionsbytests-row-connected": "$1টি সংযুক্ত",
