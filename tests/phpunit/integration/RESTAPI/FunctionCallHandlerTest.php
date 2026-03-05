@@ -778,7 +778,7 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideTestBuildParsedArgument() {
+	public static function provideTestBuildParsedArgument() {
 		$targetFunctionZid = 'Z20040';
 		$targetArgKey = 'Z20040K1';
 		$parseLangZid = 'Z1004';
