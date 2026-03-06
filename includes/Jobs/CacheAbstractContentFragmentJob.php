@@ -11,9 +11,9 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequestException;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\GenericParameterJob;
@@ -82,7 +82,7 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 		// 1. Run fragment function call, should return a Z89/Html fragment object
 		try {
 			$htmlFragment = $this->abstractWikiRequest->renderFragment( $functionCall );
-		} catch ( AbstractWikiRequestException $e ) {
+		} catch ( WikifunctionCallException $e ) {
 			$this->logger->error(
 				__CLASS__ . ' unable to refresh fragment. '
 				. 'AbstractWikiRequest::renderFragment threw an Exception: {error}',

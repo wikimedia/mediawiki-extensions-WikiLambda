@@ -1302,6 +1302,7 @@ module.exports = {
 					this.getUserLangZid,
 					Constants.Z_NATURAL_LANGUAGE,
 					// Needed for ZObject selector
+					Constants.Z_TYPE,
 					... Constants.SUGGESTIONS.LANGUAGES,
 					... Constants.SUGGESTIONS.TYPES
 				];

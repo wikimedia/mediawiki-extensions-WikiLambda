@@ -86,7 +86,8 @@ describe( 'AbstractPreviewFragment', () => {
 	it( 'renders fragment output html when preview is available', async () => {
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
 			html: '<p>A very bold fragment</p>',
-			error: false,
+			hasError: false,
+			error: null,
 			isLoading: false,
 			isDirty: false
 		} );
@@ -100,10 +101,13 @@ describe( 'AbstractPreviewFragment', () => {
 		expect( wrapper.html() ).toContain( '<p>A very bold fragment</p>' );
 	} );
 
-	it( 'renders error message when preview has error', async () => {
+	it( 'renders error message when preview has text error', async () => {
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
-			html: 'some error happened',
-			error: true,
+			html: '',
+			hasError: true,
+			error: {
+				text: 'some error happened'
+			},
 			isLoading: false,
 			isDirty: false
 		} );
@@ -117,10 +121,35 @@ describe( 'AbstractPreviewFragment', () => {
 		expect( wrapper.text() ).toContain( 'some error happened' );
 	} );
 
+	it( 'renders error message when preview has i18n+zerror error', async () => {
+		store.getLabelData = jest.fn().mockImplementation( ( zid ) => ( {
+			label: zid === 'Z555' ? 'Some zerror happened' : zid
+		} ) );
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			html: '',
+			hasError: true,
+			error: {
+				code: 'apierror-abstractwiki_run_fragment-returned-zerror',
+				zid: 'Z555'
+			},
+			isLoading: false,
+			isDirty: false
+		} );
+
+		wrapper = renderFragment();
+
+		await waitFor( () => {
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+		} );
+
+		expect( wrapper.text() ).toContain( 'Wikifunctions returned a failed response: Some zerror happened' );
+	} );
+
 	it( 'rerenders preview when fragment preview becomes dirty', async () => {
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
 			html: '<em>Old fragment in italics</em>',
-			error: false,
+			hasError: false,
+			error: null,
 			isDirty: false,
 			isLoading: false
 		} );
@@ -129,7 +158,8 @@ describe( 'AbstractPreviewFragment', () => {
 
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
 			html: '<em>Old fragment in italics</em>',
-			error: false,
+			hasError: false,
+			error: null,
 			isDirty: true,
 			isLoading: false
 		} );

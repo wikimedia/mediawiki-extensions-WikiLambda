@@ -66,4 +66,50 @@ class WikifunctionCallException extends Exception {
 	public function getHttpStatusCode(): int {
 		return $this->httpStatusCode;
 	}
+
+	/**
+	 * If this exception contains a ZError, return 'wikilambda-zerror',
+	 * else, return the message key.
+	 *
+	 * @return bool
+	 */
+	public function hasZError(): bool {
+		return is_object( $this->errorData ) && property_exists( $this->errorData, 'zerror' );
+	}
+
+	/**
+	 * If this exception contains a ZError, return 'wikilambda-zerror',
+	 * else, return the message key.
+	 *
+	 * @return string
+	 */
+	public function getErrorCode(): string {
+		return $this->hasZError() ? 'wikilambda-zerror' : $this->msg;
+	}
+
+	/**
+	 * @return stdClass|null
+	 */
+	public function getZError() {
+		return $this->hasZError() ? $this->errorData->zerror : null;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getZErrorType() {
+		return $this->hasZError() ? $this->errorData->zerror->Z5K1 : null;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getErrorData() {
+		return [
+			'msg' => $this->msg,
+			'params' => $this->params,
+			'zerror' => $this->getZError(),
+			'zerrorType' => $this->getZErrorType()
+		];
+	}
 }

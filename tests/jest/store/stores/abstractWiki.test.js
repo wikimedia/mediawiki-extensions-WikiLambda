@@ -367,13 +367,17 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
 					isDirty: false,
 					isLoading: false,
-					error: false,
+					hasError: false,
+					error: null,
 					html: 'rendered fragment'
 				} );
 			} );
 
-			it( 'runs render fragment and stores failed response', async () => {
+			it( 'runs render fragment and stores failed unknown response', async () => {
 				getMock = jest.fn().mockRejectedValue( new Error( 'API error' ) );
+
+				const mockErrMsg = 'some unknown error message';
+				mw.message = jest.fn().mockReturnValue( { text: jest.fn().mockReturnValue( mockErrMsg ) } );
 
 				await store.renderFragmentPreview( payload );
 
@@ -387,14 +391,70 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
-				const expectedFragment = { keyPath, language: mockLang, error: 'Unable to render fragment' };
+				const expectedFragment = {
+					keyPath,
+					language: mockLang,
+					error: { text: mockErrMsg }
+				};
 				expect( setRenderedFragmentSpy ).toHaveBeenCalledWith( expectedFragment );
 
 				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
 					isDirty: false,
 					isLoading: false,
-					error: true,
-					html: 'Unable to render fragment'
+					hasError: true,
+					error: { text: mockErrMsg },
+					html: ''
+				} );
+			} );
+
+			it( 'runs render fragment and stores failed zerror response', async () => {
+				store.fetchZids = jest.fn();
+
+				const error = {
+					code: 'wikilambda-zerror',
+					msg: 'apierror-abstractwiki_run_fragment-returned-zerror',
+					zerror: { Z1K1: 'Z5', Z5K1: 'Z555' },
+					zerrorType: 'Z555'
+				};
+				getMock = jest.fn().mockImplementation( () => ( {
+					then: () => ( {
+						catch: ( handler ) => setTimeout( () => handler( 'code', { error } ), 0 )
+					} )
+				} ) );
+
+				await store.renderFragmentPreview( payload );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_run_fragment',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_run_fragment_qid: mockQid,
+					abstractwiki_run_fragment_language: mockLang,
+					abstractwiki_run_fragment_date: mockDate,
+					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
+				}, { signal: undefined } );
+
+				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z555' ] } );
+
+				const expectedFragment = {
+					keyPath,
+					language: mockLang,
+					error: {
+						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
+						zid: 'Z555'
+					}
+				};
+				expect( setRenderedFragmentSpy ).toHaveBeenCalledWith( expectedFragment );
+
+				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
+					isDirty: false,
+					isLoading: false,
+					hasError: true,
+					error: {
+						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
+						zid: 'Z555'
+					},
+					html: ''
 				} );
 			} );
 		} );
@@ -420,25 +480,53 @@ describe( 'abstractWiki Pinia store', () => {
 				} );
 
 				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
+					hasError: false,
 					isDirty: false,
 					isLoading: false,
-					error: false,
+					error: null,
 					html: 'some rendered fragment'
 				} );
 			} );
 
-			it( 'sets failed rendered fragment', () => {
+			it( 'sets failed rendered fragment with error text', () => {
 				store.setRenderedFragment( {
 					keyPath,
 					language: mockLang,
-					error: 'some error happened'
+					error: {
+						text: 'Some error message'
+					}
 				} );
 
 				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
+					hasError: true,
 					isDirty: false,
 					isLoading: false,
-					error: true,
-					html: 'some error happened'
+					error: {
+						text: 'Some error message'
+					},
+					html: ''
+				} );
+			} );
+
+			it( 'sets failed rendered fragment with zerror', () => {
+				store.setRenderedFragment( {
+					keyPath,
+					language: mockLang,
+					error: {
+						code: 'error-code',
+						zid: 'Z555'
+					}
+				} );
+
+				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
+					hasError: true,
+					isDirty: false,
+					isLoading: false,
+					error: {
+						code: 'error-code',
+						zid: 'Z555'
+					},
+					html: ''
 				} );
 			} );
 
@@ -452,9 +540,10 @@ describe( 'abstractWiki Pinia store', () => {
 				} );
 
 				expect( store.fragments[ fragmentCacheKey( newKeyPath ) ] ).toEqual( {
+					hasError: false,
 					isDirty: false,
 					isLoading: false,
-					error: false,
+					error: null,
 					html: 'some new fragment'
 				} );
 			} );

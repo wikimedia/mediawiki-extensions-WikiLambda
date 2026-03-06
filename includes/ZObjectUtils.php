@@ -1132,4 +1132,31 @@ class ZObjectUtils {
 	public static function decodeStringParamFromNetwork( string $input ): string {
 		return base64_decode( str_replace( [ '-', '_' ], [ '+', '/' ], $input ) );
 	}
+
+	/**
+	 * Given the content of a Z22/Response Envelope object, decoded as an array,
+	 * returns the value of the 'errors' key if it exists and null if it doesn't.
+	 *
+	 * @param stdClass $metadata
+	 * @return stdClass|null
+	 */
+	public static function getErrorsFromMetadata( $metadata ) {
+		if ( !property_exists( $metadata, 'K1' ) ) {
+			return null;
+		}
+
+		$typedList = $metadata->K1;
+		if ( !is_array( $typedList ) || count( $typedList ) <= 1 ) {
+			return null;
+		}
+
+		$mapItems = array_slice( $typedList, 1 );
+		foreach ( $mapItems as $item ) {
+			if ( $item->K1 === 'errors' ) {
+				return $item->K2;
+			}
+		}
+
+		return null;
+	}
 }

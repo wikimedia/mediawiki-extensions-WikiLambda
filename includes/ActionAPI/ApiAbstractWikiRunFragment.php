@@ -14,11 +14,11 @@ use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequestException;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
@@ -82,8 +82,14 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 		try {
 			$htmlFragment = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date );
-		} catch ( AbstractWikiRequestException $e ) {
-			$this->dieWithError( [ $e->getErrorMessageKey() ], null, null, $e->getHttpStatusCode() );
+		} catch ( WikifunctionCallException $e ) {
+			// Return the best possible text for the UI to decide and show
+			$this->dieWithError(
+				/* message */ $e->getMessageObject(),
+				/* code */ $e->getErrorCode(),
+				/* data */ $e->getErrorData(),
+				/* status */ $e->getHttpStatusCode()
+			);
 		}
 
 		// Everything went well: build response
@@ -112,7 +118,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 * @param string $language
 	 * @param string $date
 	 * @return string
-	 * @throws AbstractWikiRequestException
+	 * @throws WikifunctionCallException
 	 */
 	private function getLatestFragmentAndRevalidate(
 		array $fragment,
@@ -168,7 +174,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 		// Run fragment function call:
 		// * should return a Z89/Html fragment object
-		// * can throw AbstractWikiRequestException, which are handled by self::execute()
+		// * can throw WikifunctionCallException, which is unhandled here but handled by the parent, self::execute()
 		$htmlFragment = $this->abstractWikiRequest->renderFragment( $functionCall );
 
 		// Sanitize the Z89K1/Html fragment value

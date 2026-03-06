@@ -715,6 +715,8 @@
 				}
 			],
 			"messages": [
+				"apierror-abstractwiki_run_fragment-returned-zerror",
+				"apierror-abstractwiki_run_fragment-unknown-error",
 				"abstractwiki-suggested-functions.json",
 				"comma-separator",
 				"colon-separator",

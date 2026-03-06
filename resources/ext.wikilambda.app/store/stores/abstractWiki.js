@@ -250,9 +250,22 @@ const abstractWikiStore = {
 				.then( ( fragment ) => {
 					this.setRenderedFragment( { keyPath, language, fragment } );
 				} )
-				.catch( () => {
-					// FIXME i18n, detailed error info, etc
-					const error = 'Unable to render fragment';
+				.catch( ( data ) => {
+					const error = {};
+					const errorData = data.response && data.response.error ?
+						data.response.error :
+						{ code: 'internal_api_error_' };
+
+					if ( errorData.code === 'wikilambda-zerror' ) {
+						this.fetchZids( { zids: [ errorData.zerrorType ] } );
+						error.code = errorData.msg;
+						error.zid = errorData.zerrorType;
+					} else {
+						error.text = errorData.code.startsWith( 'internal_api_error_' ) ?
+							mw.message( 'apierror-abstractwiki_run_fragment-unknown-error' ).text() :
+							errorData.info;
+					}
+
 					this.setRenderedFragment( { keyPath, language, error } );
 				} );
 		},
@@ -262,25 +275,23 @@ const abstractWikiStore = {
 		 * @param {Object} payload
 		 * @param {string} payload.keyPath
 		 * @param {string} payload.language
-		 * @param {Object} payload.fragment
-		 * @param {string} payload.error
+		 * @param {string|undefined} payload.fragment
+		 * @param {Object|undefined} payload.error
+		 * @param {string|null} payload.error.text
+		 * @param {string|null} payload.error.code
+		 * @param {string|null} payload.error.zid
 		 */
 		setRenderedFragment: function ( payload ) {
-			const { keyPath, language, fragment, error } = payload;
+			const { keyPath, language, fragment = '', error } = payload;
 			const cacheKey = getFragmentCacheKey( keyPath, language );
 			if ( !( cacheKey in this.fragments ) ) {
 				this.fragments[ cacheKey ] = { isLoading: true };
 			}
 
-			if ( error ) {
-				this.fragments[ cacheKey ].error = true;
-				this.fragments[ cacheKey ].isDirty = false;
-				this.fragments[ cacheKey ].html = error;
-			} else {
-				this.fragments[ cacheKey ].error = false;
-				this.fragments[ cacheKey ].isDirty = false;
-				this.fragments[ cacheKey ].html = fragment;
-			}
+			this.fragments[ cacheKey ].isDirty = false;
+			this.fragments[ cacheKey ].hasError = !!error;
+			this.fragments[ cacheKey ].error = error || null;
+			this.fragments[ cacheKey ].html = !error ? fragment : '';
 
 			this.fragments[ cacheKey ].isLoading = false;
 		},

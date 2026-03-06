@@ -21,11 +21,11 @@
 		</cdx-progress-indicator>
 		<template v-else>
 			<cdx-message
-				v-if="fragmentPreview.error"
+				v-if="fragmentPreview.hasError"
 				class="ext-wikilambda-app-abstract-preview-fragment-error"
 				type="error"
 			>
-				{{ fragmentPreview.html }}
+				{{ fragmentError }}
 			</cdx-message>
 			<!-- eslint-disable vue/no-v-html -->
 			<div
@@ -77,6 +77,18 @@ module.exports = exports = defineComponent( {
 		const { contentRef, initReferences } = useInitReferences();
 		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
 		const fragmentDirty = computed( () => fragmentPreview.value && fragmentPreview.value.isDirty );
+		const fragmentError = computed( () => {
+			if ( !fragmentPreview.value.hasError ) {
+				return '';
+			}
+			if ( fragmentPreview.value.error.code ) {
+				return i18n(
+					fragmentPreview.value.error.code,
+					store.getLabelData( fragmentPreview.value.error.zid ).label
+				).text();
+			}
+			return fragmentPreview.value.error.text;
+		} );
 
 		// Highlight state for fragment and preview
 		const isHighlighted = computed( () => store.getHighlightedFragment === props.keyPath );
@@ -141,6 +153,7 @@ module.exports = exports = defineComponent( {
 		} );
 
 		return {
+			fragmentError,
 			fragmentPreview,
 			contentRef,
 			isHighlighted,

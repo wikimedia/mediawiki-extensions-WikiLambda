@@ -1778,4 +1778,38 @@ EOT;
 			json_decode( $expected )
 		];
 	}
+
+	/**
+	 * @dataProvider provideGetErrorsFromMetadata
+	 */
+	public function testGetErrorsFromMetadata( $metadata, $expected ) {
+		$actual = ZObjectUtils::getErrorsFromMetadata( $metadata );
+		$this->assertEquals( $expected, $actual );
+	}
+
+	public static function provideGetErrorsFromMetadata() {
+		$error = '{ "Z1K1": "Z5", "Z5K1": "Z555" }';
+		$metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '"K1":"errors","K2":' . $error . '},'
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '"K1":"some-key","K2":"some-value"}'
+			. ']}';
+		yield 'metadata with error key' => [ json_decode( $metadata ), json_decode( $error ) ];
+
+		$metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '"K1":"some-key","K2":"some-value"}'
+			. ']}';
+		yield 'metadata with no error key' => [ json_decode( $metadata ), null ];
+
+		$metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"}]}';
+		yield 'metadata with empty list' => [ json_decode( $metadata ), null ];
+
+		$metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"}}';
+		yield 'empty metadata' => [ json_decode( $metadata ), null ];
+	}
 }
