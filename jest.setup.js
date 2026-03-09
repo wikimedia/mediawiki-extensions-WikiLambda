@@ -65,7 +65,16 @@ const baseEnglishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, '
 const englishVeMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/ve/en.json' ) ) );
 const englishAbstractMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/abstract/en.json' ) ) );
 const englishApiMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/api/en.json' ) ) );
-const englishMessages = Object.assign( {}, baseEnglishMessages, englishVeMessages, englishAbstractMessages, englishApiMessages, upstreami18n );
+const englishApiAbstractMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/api/abstract/en.json' ) ) );
+const englishMessages = Object.assign(
+	{},
+	baseEnglishMessages,
+	englishVeMessages,
+	englishAbstractMessages,
+	englishApiMessages,
+	englishApiAbstractMessages,
+	upstreami18n
+);
 
 class Mocki18n {
 	constructor( string, param ) {

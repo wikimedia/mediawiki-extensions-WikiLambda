@@ -345,6 +345,7 @@
 			"i18n",
 			"i18n/abstract",
 			"i18n/api",
+			"i18n/api/abstract",
 			"i18n/ve"
 		]
 	},

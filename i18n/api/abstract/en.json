@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cory Massaro",
+			"Genoveva Galarza",
+			"Grace Choi",
+			"James D. Forrester"
+		]
+	},
+	"apihelp-abstractwiki_run_fragment-summary": "Render an Abstract Wikipedia content fragment for the given Wikidata Item Id, language Zid and date",
+	"apihelp-abstractwiki_run_fragment-param-qid": "The Wikidata Item Id used to render the fragment. It should be a valid Qid.",
+	"apihelp-abstractwiki_run_fragment-param-language": "The Language ZObject Id used to render the fragment. It should be a valid Zid.",
+	"apihelp-abstractwiki_run_fragment-param-date": "The date string used to render the fragment.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "A fragment composition JSON. It should be a valid ZObject and should output an object of type Z89/HTML Fragment",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "Run a fragment with a literal HTML object",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Run a fragment with a composition that uses qid and language arguments",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "The fragment is not a valid function call.",
+	"apierror-abstractwiki_run_fragment-bad-response": "The fragment returned the wrong type.",
+	"apierror-abstractwiki_run_fragment-forbidden": "You do not have the necessary permissions to render this fragment.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Unable to render Abstract Wikipedia content fragments: this feature is not enabled.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions returned a failed response: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "The rendering service is temporarily unavailable. Please, try again later.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "Unable to render this fragment due to an unknown error."
+}
