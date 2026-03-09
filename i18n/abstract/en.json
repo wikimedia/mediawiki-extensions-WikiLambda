@@ -45,7 +45,7 @@
 	"wikilambda-abstract-special-create-createbutton-label": "Create",
 	"wikilambda-abstract-special-create-existing": "There is already an Abstract Article for that Wikidata Item:",
 	"wikilambda-abstract-special-create-existing-redirected": "You were redirected as there is already an Abstract Article.",
-	"wikilambda-abstract-special-create-intro": "Some intro about creation of Abstract Articles. By creating this page, you agree to the terms of use, to follow [[$1|community policies]], and to irrevocably release your contribution under Some-License-Here.",
+	"wikilambda-abstract-special-create-intro": "Make sure that you follow [[$1|community policies]], including copyright rules.",
 	"wikilambda-abstract-special-create-not-enabled": "The creation of Abstract Articles is not currently enabled. Please check back later.",
 	"wikilambda-abstract-special-create-not-enabled-title": "Abstract Article creation not enabled",
 	"wikilambda-abstract-special-create-qid": "Create a New Abstract Article for $1",
