@@ -10,7 +10,7 @@ const Constants = require( '../../Constants.js' );
 const { saveAbstractWikiContent, runAbstractWikiFragment } = require( '../../utils/apiUtils.js' );
 const { extractZIDs } = require( '../../utils/schemata.js' );
 const { buildAbstractWikiTitle } = require( '../../utils/urlUtils.js' );
-const { extractWikidataItemIds } = require( '../../utils/wikidataUtils.js' );
+const { extractWikidataItemIds, isWikidataQid } = require( '../../utils/wikidataUtils.js' );
 const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const { getFragmentCacheKey } = require( '../../utils/abstractUtils.js' );
 const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
@@ -168,8 +168,16 @@ const abstractWikiStore = {
 			const zids = extractZIDs( content );
 			this.fetchZids( { zids: [ ...zids, ...suggestedZids ] } );
 
-			// Prefetch mentioned qids in content
+			// Prefetch mentioned qids in content and, if creating a new Abstract Article,
+			// also the main page qid (title) when the stored qid is the placeholder
 			const qids = extractWikidataItemIds( content );
+
+			if (
+				isWikidataQid( this.getWikilambdaConfig.title ) &&
+				content[ Constants.ABSTRACT_WIKI_QID ] === Constants.ABSTRACT_WIKI_NEW_QID_PLACEHOLDER
+			) {
+				qids.push( this.getWikilambdaConfig.title );
+			}
 			this.fetchItems( { ids: qids } );
 
 			// Set as initialized

@@ -237,12 +237,31 @@ describe( 'abstractWiki Pinia store', () => {
 				const extractedZids = { zids: [ 'Z1', 'Z9', 'Z89', 'Z7', 'Z444', 'Z6', 'Z10001', 'Z10002' ] };
 				expect( store.fetchZids ).toHaveBeenCalledWith( extractedZids );
 
-				// Qids are extracted and fetched
+				// Qids are extracted from content
 				const extractedQids = { ids: [ mockQid, ledeQid ] };
 				expect( store.fetchItems ).toHaveBeenCalledWith( extractedQids );
 
 				// Set page as initialized
 				expect( store.setInitialized ).toHaveBeenCalledWith( true );
+			} );
+
+			it( 'also prefetches the page title qid when creating a new Abstract Article', async () => {
+				// Override WikiLambdaConfig for "new page" case (qid placeholder)
+				Object.defineProperty( store, 'getWikilambdaConfig', {
+					value: {
+						title: mockQid,
+						content: JSON.stringify( {
+							...mockEmptyAbstractContent,
+							qid: Constants.ABSTRACT_WIKI_NEW_QID_PLACEHOLDER
+						} )
+					}
+				} );
+
+				await store.initializeAbstractWikiContent();
+
+				// Qids from content plus the title qid are fetched
+				const extractedQidsNew = { ids: [ ledeQid, mockQid ] };
+				expect( store.fetchItems ).toHaveBeenCalledWith( extractedQidsNew );
 			} );
 		} );
 
