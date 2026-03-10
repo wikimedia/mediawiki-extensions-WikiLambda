@@ -18,6 +18,7 @@
 		</cdx-button>
 		<wl-publish-dialog
 			:show-dialog="showPublishDialog"
+			:custom-legal-text="i18n( 'wikimedia-copyrightwarning-ccbysa40only' ).parse()"
 			:submit-action="submitAction"
 			:success-callback="successCallback"
 			:error-callback="errorCallback"

@@ -112,6 +112,11 @@ module.exports = exports = defineComponent( {
 			required: true,
 			default: false
 		},
+		customLegalText: {
+			type: String,
+			required: false,
+			default: ''
+		},
 		submitAction: {
 			type: Function,
 			required: false,
@@ -282,17 +287,26 @@ module.exports = exports = defineComponent( {
 
 		// Legal text
 		/**
-		 * Returns the legal text to display in the Publish Dialog, depending
+		 * Returns the default legal text to display in the Publish Dialog, depending
 		 * on the type of object that is being submitted:
 		 * * Special message for implementations (Apache 2.0 licence for code).
 		 * * General message for all other kinds of ZObjects (CC0).
 		 *
 		 * @return { string }
 		 */
-		const legalText = computed( () => (
+		const defaultLegalText = computed( () => (
 			store.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ?
 				i18n( 'wikifunctions-editing-copyrightwarning-implementation' ).parse() :
 				i18n( 'wikifunctions-editing-copyrightwarning-function' ).parse()
+		) );
+		/**
+		 * Returns the legal text to display in the Publish Dialog,
+		 * either the custom legal text provided by the parent component or the default legal text.
+		 *
+		 * @return { string }
+		 */
+		const legalText = computed( () => (
+			props.customLegalText || defaultLegalText.value
 		) );
 
 		// Return all properties and methods for the template
