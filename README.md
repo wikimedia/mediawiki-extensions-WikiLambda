@@ -297,7 +297,7 @@ is set by default to the standard local name for the function orchestrator. You 
 ```
  "WikiLambdaOrchestratorLocation": {
    "description": "Host and port of the function orchestrator.",
-   "value": "https://mediawiki-function-orchestrator-1:6254/1/v1/evaluate"
+   "value": "https://mediawiki-function-orchestrator-1:6254/1/v2/evaluate"
  }
 ```
 
@@ -308,7 +308,7 @@ For example, if your orchestrator is called `core-function-orchestrator-1` and i
 set the configuration variable to:
 
 ```
-$wgWikiLambdaOrchestratorLocation = "http://core-function-orchestrator-1:6254/1/v1/evaluate";
+$wgWikiLambdaOrchestratorLocation = "http://core-function-orchestrator-1:6254/1/v2/evaluate";
 ```
 
 NOTE: Container names are automatically assigned by docker and often uses the name of the directory
