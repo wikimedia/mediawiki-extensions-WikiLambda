@@ -4,6 +4,12 @@
 			"Volvox"
 		]
 	},
+	"apierror-abstractwiki_run_fragment-bad-fragment": "D'Fragment ass kee gültege Funktiounsopruff.",
+	"apierror-abstractwiki_run_fragment-bad-response": "D'Fragment huet de falschen Typ zeréckginn.",
+	"apierror-abstractwiki_run_fragment-forbidden": "Dir hutt net déi néideg Rechter fir dëst Fragment ze renderen.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions huet eng feelgeschloen Äntwert zeréckginn: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "De Rendering-Service ass temporär net disponibel. Probéiert wgl. méi spéit nach eng Kéier.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "Dëst Fragment konnt wéinst engem onbekannte Feeler net gerendert ginn.",
 	"apihelp-query+wikilambdasearch_functions-param-search": "De Sichbegrëff",
 	"apihelp-query+wikilambdasearch_labels-param-search": "De Sichbegrëff",
 	"apihelp-query+wikilambdasearch_labels-param-language": "De MediaWiki-Sproochcode, an deem gesicht soll ginn",
