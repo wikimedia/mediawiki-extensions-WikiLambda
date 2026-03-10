@@ -208,10 +208,10 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		// If not OK, process error responses:
 		// If errorKey is 'wikilambda-zerror', extract ZError and ZError code
 		$zerrorCode = null;
-		$zerrorData = null;
+		$zerror = null;
 		if ( $response && property_exists( $response, 'errorKey' ) && $response->errorKey === 'wikilambda-zerror' ) {
 			$zerrorCode = $response->errorData->zerror->{ ZTypeRegistry::Z_ERROR_TYPE } ?: null;
-			$zerrorData = $response->errorData ?: null;
+			$zerror = $response->errorData->zerror ?: null;
 		} else {
 			$this->logger->warning(
 				__METHOD__ . ' encountered an error response {httpStatusCode} with a broken ZError: {response}',
@@ -253,7 +253,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-unknown-zid',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					case ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED:
@@ -265,7 +265,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-invalid-zobject',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_TYPE_MISMATCH:
@@ -279,7 +279,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								throw new WikifunctionCallException(
 									'wikilambda-functioncall-error-nonfunction',
 									$httpStatusCode,
-									$zerrorData
+									$zerror
 								);
 
 							case 'input':
@@ -291,7 +291,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								throw new WikifunctionCallException(
 									'wikilambda-functioncall-error-bad-input-type',
 									$httpStatusCode,
-									$zerrorData
+									$zerror
 								);
 
 							default:
@@ -310,7 +310,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-bad-langs',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					case ZErrorTypeRegistry::Z_ERROR_ARGUMENT_COUNT_MISMATCH:
@@ -322,7 +322,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-bad-inputs',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					case ZErrorTypeRegistry::Z_ERROR_NOT_IMPLEMENTED_YET:
@@ -337,7 +337,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								throw new WikifunctionCallException(
 									'wikilambda-functioncall-error-nonstringinput',
 									$httpStatusCode,
-									$zerrorData
+									$zerror
 								);
 
 							case 'output':
@@ -350,7 +350,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								throw new WikifunctionCallException(
 									'wikilambda-functioncall-error-nonstringoutput',
 									$httpStatusCode,
-									$zerrorData
+									$zerror
 								);
 
 							default:
@@ -368,7 +368,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-unclear',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					case ZErrorTypeRegistry::Z_ERROR_EVALUATION:
@@ -380,7 +380,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-evaluation',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					case ZErrorTypeRegistry::Z_ERROR_INVALID_EVALUATION_RESULT:
@@ -392,7 +392,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-bad-output',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					default:
@@ -400,7 +400,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						$this->logger->error(
 							__METHOD__ . ' encountered a {httpStatusCode} HTTP error with an unknown zerror',
 							[
-								'zerror' => $zerrorData,
+								'zerror' => $zerror,
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
 								'response' => $request->getContent()
@@ -424,14 +424,14 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						throw new WikifunctionCallException(
 							'wikilambda-functioncall-error-disabled',
 							$httpStatusCode,
-							$zerrorData
+							$zerror
 						);
 
 					default:
 						$this->logger->error(
 							__METHOD__ . ' encountered a {httpStatusCode} HTTP error with an unknown zerror',
 							[
-								'zerror' => $zerrorData,
+								'zerror' => $zerror,
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
 								'response' => $request->getContent()
@@ -446,7 +446,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				$this->logger->warning(
 					__METHOD__ . ' encountered an unknown HTTP error code',
 					[
-						'zerror' => $zerrorData,
+						'zerror' => $zerror,
 						'zerrorCode' => $zerrorCode,
 						'httpStatusCode' => $httpStatusCode,
 						'response' => $request->getContent()
@@ -463,7 +463,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		throw new WikifunctionCallException(
 			'wikilambda-functioncall-error',
 			$httpStatusCode,
-			$zerrorData
+			$zerror
 		);
 	}
 

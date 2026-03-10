@@ -475,6 +475,7 @@ const apiUtils = {
 	 * @param {string} payload.language
 	 * @param {string} payload.date
 	 * @param {Object} payload.fragment
+	 * @param {boolean} payload.isAsync
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -491,11 +492,12 @@ const apiUtils = {
 				abstractwiki_run_fragment_qid: payload.qid,
 				abstractwiki_run_fragment_language: payload.language,
 				abstractwiki_run_fragment_date: payload.date,
-				abstractwiki_run_fragment_fragment: canonicalJson
+				abstractwiki_run_fragment_fragment: canonicalJson,
+				abstractwiki_run_fragment_async: payload.isAsync
 			}, {
 				signal: payload.signal
 			} )
-				.then( ( data ) => resolve( data.abstractwiki_run_fragment.data ) )
+				.then( ( data ) => resolve( data.abstractwiki_run_fragment ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );
 	}

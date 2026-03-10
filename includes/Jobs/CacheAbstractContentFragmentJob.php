@@ -11,9 +11,6 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\GenericParameterJob;
@@ -79,39 +76,23 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 			]
 		);
 
-		// 1. Run fragment function call, should return a Z89/Html fragment object
-		try {
-			$htmlFragment = $this->abstractWikiRequest->renderFragment( $functionCall );
-		} catch ( WikifunctionCallException $e ) {
-			$this->logger->error(
-				__CLASS__ . ' unable to refresh fragment. '
-				. 'AbstractWikiRequest::renderFragment threw an Exception: {error}',
-				[
-					'error' => $e->getMessage(),
-					'exception' => $e
-				]
-			);
-			return false;
-		}
-
-		// 2. Sanitize the Z89K1/Html fragment value
-		$sanitizedHtml = WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
-			$this->logger,
-			$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
+		$cachedValue = $this->abstractWikiRequest->generateSafeFragment(
+			$functionCall,
+			$cacheKeyFresh,
+			$cacheKeyStale
 		);
 
-		// 3. Cache the response with both the fresh and the stale keys
-		$this->abstractWikiRequest->cacheFreshAndStale( $sanitizedHtml, $cacheKeyFresh, $cacheKeyStale );
-
 		$this->logger->debug(
-			__CLASS__ . ' refreshed cached fragment for qid:{qid} language:{language} and date:{date} ',
+			__CLASS__ . ' refreshed {status} cached fragment for qid:{qid} language:{language} and date:{date} ',
 			[
+				'status' => $cachedValue[ 'success' ] ? 'successful' : 'failed',
 				'qid' => $this->params['qid'],
 				'language' => $this->params['language'],
 				'date' => $this->params['date']
 			]
 		);
 
+		// Return true even if cachedValue was failed; no job retries
 		return true;
 	}
 
@@ -122,5 +103,28 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 		// We've carefully chosen the parameters so this Job is shared across multiple uses, so don't run it
 		// in parallel and have MediaWiki de-duplicate requests.
 		return true;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getDeduplicationInfo() {
+		$info = parent::getDeduplicationInfo();
+		// When deduplicating, only keep fragment-defining parameters
+		$info[ 'params' ] = [
+			'qid' => $this->params['qid'],
+			'language' => $this->params['language'],
+			'date' => $this->params['date'],
+			'functionCall' => $this->params['functionCall'],
+		];
+
+		return $info;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function allowRetries() {
+		return false;
 	}
 }

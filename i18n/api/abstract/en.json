@@ -8,6 +8,7 @@
 		]
 	},
 	"apihelp-abstractwiki_run_fragment-summary": "Render an Abstract Wikipedia content fragment for the given Wikidata Item Id, language Zid and date",
+	"apihelp-abstractwiki_run_fragment-param-async": "Whether to run this call asynchronously or synchronously. If called asynchronously, it will return pending=true if the value is not ready. When called synchronously, it will wait for the fragment to be rendered by Wikifunctions and return the resulting value.",
 	"apihelp-abstractwiki_run_fragment-param-qid": "The Wikidata Item Id used to render the fragment. It should be a valid Qid.",
 	"apihelp-abstractwiki_run_fragment-param-language": "The Language ZObject Id used to render the fragment. It should be a valid Zid.",
 	"apihelp-abstractwiki_run_fragment-param-date": "The date string used to render the fragment.",

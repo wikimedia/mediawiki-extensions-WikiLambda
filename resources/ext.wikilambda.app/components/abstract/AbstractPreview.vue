@@ -74,7 +74,7 @@ module.exports = exports = defineComponent( {
 
 		// Preview language
 		/**
-		 * @return {LabelData}
+		 * @return {string}
 		 */
 		const previewLanguageZid = computed( () => store.getPreviewLanguageZid );
 

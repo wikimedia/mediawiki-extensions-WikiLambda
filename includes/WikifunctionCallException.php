@@ -31,50 +31,65 @@ class WikifunctionCallException extends Exception {
 	private string $msg;
 	private array $params;
 
-	// ZError data (if applicable)
-	private ?stdClass $errorData;
+	// ZError (if applicable)
+	private ?stdClass $zerror;
 
 	/**
 	 * @param string $msg
 	 * @param int $httpStatusCode
-	 * @param ?stdClass $errorData
+	 * @param ?stdClass $zerror
 	 * @param array $params
 	 */
 	public function __construct(
 		string $msg,
 		int $httpStatusCode = HttpStatus::BAD_REQUEST,
-		?stdClass $errorData = null,
+		?stdClass $zerror = null,
 		array $params = []
 	) {
 		$this->msg = $msg;
 		$this->params = $params;
 
 		$this->httpStatusCode = $httpStatusCode;
-		$this->errorData = $errorData;
+		$this->zerror = $zerror;
 
 		parent::__construct( $this->getMessageObject()->text() );
 	}
 
+	/**
+	 * @return Message
+	 */
 	public function getMessageObject(): Message {
 		return wfMessage( $this->msg, $this->params );
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getMessageKey(): string {
 		return $this->msg;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getHttpStatusCode(): int {
 		return $this->httpStatusCode;
 	}
 
 	/**
-	 * If this exception contains a ZError, return 'wikilambda-zerror',
-	 * else, return the message key.
+	 * @return stdClass|null
+	 */
+	public function getZError() {
+		return $this->zerror;
+	}
+
+	/**
+	 * Whether this exception wraps a ZError.
 	 *
 	 * @return bool
 	 */
 	public function hasZError(): bool {
-		return is_object( $this->errorData ) && property_exists( $this->errorData, 'zerror' );
+		return is_object( $this->zerror );
 	}
 
 	/**
@@ -88,28 +103,46 @@ class WikifunctionCallException extends Exception {
 	}
 
 	/**
-	 * @return stdClass|null
-	 */
-	public function getZError() {
-		return $this->hasZError() ? $this->errorData->zerror : null;
-	}
-
-	/**
 	 * @return string|null
 	 */
 	public function getZErrorType() {
-		return $this->hasZError() ? $this->errorData->zerror->Z5K1 : null;
+		return $this->hasZError() ? $this->zerror->Z5K1 : null;
 	}
 
 	/**
+	 * Serializes the exception as an associative array.
+	 *
 	 * @return array
 	 */
-	public function getErrorData() {
+	public function toArray(): array {
 		return [
 			'msg' => $this->msg,
+			'httpStatusCode' => $this->httpStatusCode,
+			'zerror' => $this->zerror,
 			'params' => $this->params,
-			'zerror' => $this->getZError(),
-			'zerrorType' => $this->getZErrorType()
 		];
+	}
+
+	/**
+	 * Static method to build a WikifunctionCallException
+	 * instance from a given associative array.
+	 *
+	 * @param array $data
+	 * @return WikifunctionCallException
+	 */
+	public static function fromArray( $data ): WikifunctionCallException {
+		$zerror = null;
+
+		if ( $data[ 'zerror' ] !== null ) {
+			// Convert zerror to stdClass
+			$zerror = json_decode( json_encode( $data[ 'zerror' ] ) );
+		}
+
+		return new self(
+			$data[ 'msg' ],
+			$data[ 'httpStatusCode' ] ?? HttpStatus::BAD_REQUEST,
+			$zerror,
+			$data[ 'params' ] ?? []
+		);
 	}
 }

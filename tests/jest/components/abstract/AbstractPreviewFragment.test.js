@@ -71,7 +71,7 @@ describe( 'AbstractPreviewFragment', () => {
 		expect( loader.exists() ).toBe( true );
 	} );
 
-	it( 'generates the fragment preview on mount', () => {
+	it( 'generates the fragment preview on mount (async)', () => {
 		wrapper = renderFragment();
 
 		expect( store.renderFragmentPreview ).toHaveBeenCalledWith( {
@@ -79,7 +79,8 @@ describe( 'AbstractPreviewFragment', () => {
 			fragment: fragmentCall,
 			qid: 'Q42',
 			language: 'Z1002',
-			date: '2023-07-26'
+			date: '2023-07-26',
+			isAsync: true
 		} );
 	} );
 
@@ -119,6 +120,25 @@ describe( 'AbstractPreviewFragment', () => {
 		} );
 
 		expect( wrapper.text() ).toContain( 'some error happened' );
+	} );
+
+	it( 'renders warning message when preview has warning', async () => {
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			html: '',
+			hasError: true,
+			error: {
+				type: 'warning',
+				text: 'some warning'
+			},
+			isLoading: false,
+			isDirty: false
+		} );
+
+		wrapper = renderFragment();
+
+		const message = wrapper.findComponent( { name: 'cdx-message' } );
+		await waitFor( () => expect( message.exists() ).toBe( true ) );
+		expect( message.props( 'type' ) ).toBe( 'warning' );
 	} );
 
 	it( 'renders error message when preview has i18n+zerror error', async () => {
@@ -164,8 +184,15 @@ describe( 'AbstractPreviewFragment', () => {
 			isLoading: false
 		} );
 
-		await waitFor( () => {
-			expect( store.renderFragmentPreview ).toHaveBeenCalledTimes( 2 );
+		await waitFor( () => expect( store.renderFragmentPreview ).toHaveBeenCalledTimes( 1 ) );
+
+		expect( store.renderFragmentPreview ).toHaveBeenCalledWith( {
+			keyPath,
+			fragment: fragmentCall,
+			qid: 'Q42',
+			language: 'Z1002',
+			date: '2023-07-26',
+			isAsync: false
 		} );
 	} );
 

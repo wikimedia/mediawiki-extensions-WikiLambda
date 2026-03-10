@@ -23,9 +23,9 @@
 			<cdx-message
 				v-if="fragmentPreview.hasError"
 				class="ext-wikilambda-app-abstract-preview-fragment-error"
-				type="error"
+				:type="fragmentError.type"
 			>
-				{{ fragmentError }}
+				{{ fragmentError.text }}
 			</cdx-message>
 			<!-- eslint-disable vue/no-v-html -->
 			<div
@@ -41,8 +41,9 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onMounted, onUnmounted, watch } = require( 'vue' );
+const { computed, defineComponent, inject, onUnmounted, watch } = require( 'vue' );
 
+const Constants = require( '../../Constants.js' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useMainStore = require( '../../store/index.js' );
 
@@ -78,16 +79,16 @@ module.exports = exports = defineComponent( {
 		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
 		const fragmentDirty = computed( () => fragmentPreview.value && fragmentPreview.value.isDirty );
 		const fragmentError = computed( () => {
-			if ( !fragmentPreview.value.hasError ) {
-				return '';
+			let text = '';
+			let type = Constants.ERROR_TYPES.ERROR;
+			if ( fragmentPreview.value.hasError ) {
+				const error = fragmentPreview.value.error;
+				type = error.type ? error.type : Constants.ERROR_TYPES.ERROR;
+				text = error.code ?
+					i18n( error.code, store.getLabelData( error.zid ).label ).text() :
+					error.text;
 			}
-			if ( fragmentPreview.value.error.code ) {
-				return i18n(
-					fragmentPreview.value.error.code,
-					store.getLabelData( fragmentPreview.value.error.zid ).label
-				).text();
-			}
-			return fragmentPreview.value.error.text;
+			return { text, type };
 		} );
 
 		// Highlight state for fragment and preview
@@ -96,14 +97,17 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Renders the preview of the given fragment for the
 		 * current preview language: qid, language and today's date
+		 *
+		 * @param {boolean} isBulk
 		 */
-		function renderPreview() {
+		function renderPreview( isBulk = false ) {
 			store.renderFragmentPreview( {
 				keyPath: props.keyPath,
 				fragment: props.fragment,
 				qid: store.getAbstractWikiId,
 				date: dateForToday.value,
-				language: store.getPreviewLanguageZid
+				language: store.getPreviewLanguageZid,
+				isAsync: isBulk
 			} );
 		}
 
@@ -121,17 +125,17 @@ module.exports = exports = defineComponent( {
 			store.setHighlightedFragment( undefined );
 		}
 
-		// Watch when fragment preview is set to dirty and rerender
-		watch( fragmentDirty, ( isDirty ) => {
-			if ( isDirty ) {
+		// Watch when fragment preview is set to dirty and rerender synchonously
+		watch( fragmentDirty, ( isDirty, oldDirty ) => {
+			if ( oldDirty === false && isDirty === true ) {
 				renderPreview();
 			}
 		} );
 
-		// Watch when fragment preview is unset and rerender
+		// Watch when fragment preview is fully unset, rerender asynchronously
 		watch( fragmentPreview, ( preview ) => {
 			if ( !preview ) {
-				renderPreview();
+				renderPreview( true );
 			}
 		}, { immediate: true } );
 
@@ -141,11 +145,6 @@ module.exports = exports = defineComponent( {
 				initReferences();
 			}
 		}, { immediate: true } );
-
-		// On mount, render preview
-		onMounted( () => {
-			renderPreview();
-		} );
 
 		// On unmount, remove highlight state
 		onUnmounted( () => {

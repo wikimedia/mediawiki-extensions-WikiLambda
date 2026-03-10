@@ -42,6 +42,10 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$language = 'Z1002';
 		$date = '26-7-2023';
 		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$cachedValue = json_encode( [
+			'success' => true,
+			'value' => '<b>fresh content</b>'
+		] );
 
 		// Mock fresh cache hit: fresh value is available
 		$cache = $this->createMock( BagOStuff::class );
@@ -58,7 +62,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$cache->expects( $this->once() )
 			->method( 'get' )
 			->with( 'fresh-cache-key' )
-			->willReturn( '<b>fresh content</b>' );
+			->willReturn( $cachedValue );
 
 		$this->setService( 'WikiLambdaZObjectStash', $cache );
 
@@ -69,8 +73,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 
 		// Mock AbstractWikiRequest to assert that it never gets called
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
-		$awRequest->expects( $this->never() )->method( 'renderFragment' );
-		$awRequest->expects( $this->never() )->method( 'cacheFreshAndStale' );
+		$awRequest->expects( $this->never() )->method( 'generateSafeFragment' );
 		$this->setService( 'AbstractWikiRequest', $awRequest );
 
 		// Make request to abstractwiki_run_fragment
@@ -83,8 +86,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		] )[0][ 'abstractwiki_run_fragment' ];
 
 		$this->assertArrayHasKey( 'success', $result );
-		$this->assertArrayHasKey( 'data', $result );
-		$this->assertSame( '<b>fresh content</b>', $result[ 'data' ] );
+		$this->assertArrayHasKey( 'value', $result );
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '<b>fresh content</b>', $result[ 'value' ] );
 	}
 
 	/**
@@ -95,13 +99,17 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 * * it returns the stale content and exits,
 	 * * it does not run a synchronous call to wikilambda_function_call.
 	 */
-	public function testStaleWhileRevalidate() {
+	public function testStaleWhileRevalidateSync() {
 		// Parameters for abstractwiki_run_fragment
 		$qid = 'Q42';
 		$language = 'Z1002';
 		$date = '26-7-2023';
 		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
 		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
+		$cachedValue = json_encode( [
+			'success' => true,
+			'value' => '<b>stale content</b>'
+		] );
 
 		// Mock fresh cache hit: fresh value is available
 		$cache = $this->createMock( BagOStuff::class );
@@ -116,9 +124,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 
 		// Mock cache access: miss for 'fresh-cache-key' but hit for 'stale-cache-key'
 		$cache->method( 'get' )
-			->willReturnCallback( static function ( $key ) {
+			->willReturnCallback( static function ( $key ) use ( $cachedValue ) {
 				return ( $key === 'stale-cache-key' )
-					? '<b>stale content</b>'
+					? $cachedValue
 					: false;
 			} );
 
@@ -142,8 +150,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 
 		// Mock AbstractWikiRequest to assert that it never gets called
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
-		$awRequest->expects( $this->never() )->method( 'renderFragment' );
-		$awRequest->expects( $this->never() )->method( 'cacheFreshAndStale' );
+		$awRequest->expects( $this->never() )->method( 'generateSafeFragment' );
 		$this->setService( 'AbstractWikiRequest', $awRequest );
 
 		// Make request to abstractwiki_run_fragment
@@ -156,8 +163,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		] )[0][ 'abstractwiki_run_fragment' ];
 
 		$this->assertArrayHasKey( 'success', $result );
-		$this->assertArrayHasKey( 'data', $result );
-		$this->assertSame( '<b>stale content</b>', $result[ 'data' ] );
+		$this->assertArrayHasKey( 'value', $result );
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '<b>stale content</b>', $result[ 'value' ] );
 	}
 
 	/**
@@ -175,6 +183,10 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$language = 'Z1002';
 		$date = '26-7-2023';
 		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$cachedFragment = [
+			'success' => true,
+			'value' => '<b>literal fragment</b>'
+		];
 
 		// Mock fresh cache hit: fresh and stale values are miss
 		$cache = $this->createMock( BagOStuff::class );
@@ -192,18 +204,13 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$queue->expects( $this->never() )->method( 'lazyPush' );
 		$this->setService( 'JobQueueGroup', $queue );
 
-		// Mock request to AbstractWikiRequest
+		// Mock request to AbstractWikiRequest::generateSafeFragment
 		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
 		$awRequest->expects( $this->once() )
-			->method( 'renderFragment' )
-			->with( json_decode( $functionCall, true ) )
-			->willReturn( json_decode( $fragment, true ) );
-
-		$sanitized = '<b>literal fragment</b>';
-		$awRequest->expects( $this->once() )
-			->method( 'cacheFreshAndStale' )
-			->with( $sanitized, 'fresh-cache-key', 'stale-cache-key' );
+			->method( 'generateSafeFragment' )
+			->with( json_decode( $functionCall, true ), 'fresh-cache-key', 'stale-cache-key' )
+			->willReturn( $cachedFragment );
 
 		$this->setService( 'AbstractWikiRequest', $awRequest );
 
@@ -217,8 +224,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		] )[0][ 'abstractwiki_run_fragment' ];
 
 		$this->assertArrayHasKey( 'success', $result );
-		$this->assertArrayHasKey( 'data', $result );
-		$this->assertSame( '<b>literal fragment</b>', $result[ 'data' ] );
+		$this->assertArrayHasKey( 'value', $result );
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '<b>literal fragment</b>', $result[ 'value' ] );
 	}
 
 	/**
@@ -262,8 +270,60 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		] )[0][ 'abstractwiki_run_fragment' ];
 
 		$this->assertArrayHasKey( 'success', $result );
-		$this->assertArrayHasKey( 'data', $result );
-		$this->assertSame( '<b>literal fragment</b>', $result[ 'data' ] );
+		$this->assertArrayHasKey( 'value', $result );
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '<b>literal fragment</b>', $result[ 'value' ] );
+	}
+
+	/**
+	 * Checks that when there is no value in the cache for the Abstract
+	 * Content fragment rendered with today's date and there is no cached
+	 * stale value, when called with async=true it returns pending fragment:
+	 */
+	public function testReturnPendingWhenAsync() {
+		// Parameters for abstractwiki_run_fragment
+		$qid = 'Q42';
+		$language = 'Z1002';
+		$date = '26-7-2023';
+		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
+
+		// Mock fresh cache hit: fresh and stale values are miss
+		$cache = $this->createMock( BagOStuff::class );
+		$cache->method( 'makeKey' )->willReturnOnConsecutiveCalls( 'fresh-cache-key', 'stale-cache-key', '' );
+		$cache->method( 'get' )->willReturn( false );
+		$this->setService( 'WikiLambdaZObjectStash', $cache );
+
+		// Mock jobQueueGroup to assert that revalidate job is pushed to the queue
+		$queue = $this->createMock( JobQueueGroup::class );
+		$queue->expects( $this->once() )
+			->method( 'lazyPush' )
+			->with( $this->callback( function ( $job ) use ( $functionCall ) {
+				// Assert that called job is the right type
+				$this->assertInstanceOf( CacheAbstractContentFragmentJob::class, $job );
+				// Assert that job was called with correct function call and cache keys
+				$this->assertEquals( json_decode( $functionCall, true ), $job->getParams()[ 'functionCall' ] );
+				$this->assertSame( 'fresh-cache-key', $job->getParams()[ 'cacheKeyFresh' ] );
+				$this->assertSame( 'stale-cache-key', $job->getParams()[ 'cacheKeyStale' ] );
+				return true;
+			} ) );
+
+		$this->setService( 'JobQueueGroup', $queue );
+
+		// Make request to abstractwiki_run_fragment
+		$result = $this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => $qid,
+			'abstractwiki_run_fragment_language' => $language,
+			'abstractwiki_run_fragment_date' => $date,
+			'abstractwiki_run_fragment_fragment' => $fragment,
+			'abstractwiki_run_fragment_async' => true,
+		] )[0][ 'abstractwiki_run_fragment' ];
+
+		$this->assertArrayHasKey( 'success', $result );
+		$this->assertArrayHasKey( 'pending', $result );
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertTrue( $result[ 'pending' ] );
 	}
 
 	/**

@@ -41,6 +41,7 @@
 	"wikilambda-abstract-menu-option-insert-before": "Label for the menu option to insert a fragment above the selected one.",
 	"wikilambda-abstract-menu-option-move-after": "Label for the menu option to move the selected fragment one position below",
 	"wikilambda-abstract-menu-option-move-before": "Label for the menu option to move the selected fragment one position above.",
+	"wikilambda-abstract-preview-fragment-max-retries": "Error message when an Abstract Wikipedia fragment tried to render too many times, requesting the user to try again later.",
 	"wikilambda-abstract-preview-in-language": "Label for the preview of the Abstract Article rendered into a user-specified language.",
 	"wikilambda-abstract-special-create": "Title for the Special page to create a new Abstract Article",
 	"wikilambda-abstract-special-create-createbutton-label": "Label for the button to create a new Abstract Article on the Special:CreateAbstract page.",

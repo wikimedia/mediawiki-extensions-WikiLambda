@@ -11,6 +11,7 @@
 		]
 	},
 	"apihelp-abstractwiki_run_fragment-summary": "{{doc-apihelp-summary|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_run_fragment-param-async": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
 	"apihelp-abstractwiki_run_fragment-param-qid": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
 	"apihelp-abstractwiki_run_fragment-param-language": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",
 	"apihelp-abstractwiki_run_fragment-param-date": "{{doc-apihelp-param|abstractwiki_run_fragment}}\n\n{{doc-wikilambda}}",

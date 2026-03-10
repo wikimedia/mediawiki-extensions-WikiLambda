@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -70,6 +69,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		$date = $params[ 'date' ];
 		$language = $params[ 'language' ];
 		$fragmentStr = $params[ 'fragment' ];
+		$async = filter_var( $params[ 'async' ], FILTER_VALIDATE_BOOLEAN );
 
 		// Check fragment validity
 		$fragment = json_decode( $fragmentStr, true );
@@ -80,24 +80,27 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			);
 		}
 
-		try {
-			$htmlFragment = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date );
-		} catch ( WikifunctionCallException $e ) {
-			// Return the best possible text for the UI to decide and show
+		$result = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date, $async );
+
+		// Build WikifunctionCallException from the serialized cached error
+		// for convenience when building and throwing ApiUsageException:
+		if ( $result[ 'success' ] === false ) {
+			$e = WikifunctionCallException::fromArray( $result[ 'value' ] );
+			$errorData = [
+				'msg' => $e->getMessageKey(),
+				'zerror' => $e->getZError(),
+				'zerrorType' => $e->getZErrorType()
+			];
+
 			$this->dieWithError(
 				/* message */ $e->getMessageObject(),
 				/* code */ $e->getErrorCode(),
-				/* data */ $e->getErrorData(),
+				/* data */ $errorData,
 				/* status */ $e->getHttpStatusCode()
 			);
 		}
 
-		// Everything went well: build response
-		$result = [
-			'success' => true,
-			'data' => $htmlFragment
-		];
-
+		// Set successful responses (pending or finalized):
 		$pageResult = $this->getResult();
 		$pageResult->addValue( [], $this->getModuleName(), $result );
 	}
@@ -108,24 +111,65 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *
 	 * Implements Stale-While-Revalidate caching strategy:
 	 * * Returns cached HTML fragment for today,
-	 * * If not available, returns cached stale HTML fragment, asynchronously
-	 *   revalidates and refreshes the cache (fresh and stale) with the new value.
-	 * * If cache doesn't even have a stale fragment, syncrhonously renders
-	 *   and returns the sanitized fragment.
+	 * * If fresh fragment is not available in the cache, it queues
+	 *   a job to regenerate the fragment with today's date and returns
+	 *   whatever is available.
+	 *
+	 * Implements synchronous or asynchronous behavior depending on the
+	 * async flag:
+	 * * If called with async=true, the request is expected to respond
+	 *   immediately with whatever it has available in the cache. In the
+	 *   case that there is no stale content, it returns a pending response
+	 *   while the job to regenerate the value is queued.
+	 * * If called with async=false, the request is expected to respond
+	 *   with the rendered value. In the case in which there is no fresh
+	 *   nor stale values cached, it will perform a synchronous call to
+	 *   wikifunctions_function_call and wait for its response.
+	 *
+	 * A successful response will contain a 'success' flag set to true,
+	 * and the sanitized rendered fragment as 'value':
+	 * [
+	 *   'success' => true,
+	 *   'value' => '<em>sanitized fragment</em>'
+	 * ]
+	 *
+	 * A pending response will contain a 'success' flag set to true,
+	 * and a 'pending' flag, also set to true:
+	 * [
+	 *   'success' => true,
+	 *   'pending' => true
+	 * ]
+	 *
+	 * A failed response will contain a 'success' flag set to false,
+	 * the error information under the 'value' key:
+	 * [
+	 *   'success' => false,
+	 *   'value' => [
+	 *     'httpStatus' => 400,
+	 *     'code' => 'wikilambda-zerror',
+	 *     'data' => [
+	 *        'msg' => 'some-error-message',
+	 *        'params' => [],
+	 *        'zerror' => [ ... ],
+	 *        'zerrorType' => 'Z500'
+	 *     ]
+	 *   ]
+	 * ]
 	 *
 	 * @param array $fragment
 	 * @param string $qid
 	 * @param string $language
 	 * @param string $date
-	 * @return string
-	 * @throws WikifunctionCallException
+	 * @param bool $async
+	 * @return array
 	 */
 	private function getLatestFragmentAndRevalidate(
 		array $fragment,
 		string $qid,
 		string $language,
-		string $date
-	): string {
+		string $date,
+		bool $async
+	): array {
 		// 1. Check in the cache for a fresh fragment
 		$cacheKeyFresh = $this->objectCache->makeKey(
 			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
@@ -135,10 +179,10 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment )
 		);
 
-		$freshValue = $this->objectCache->get( $cacheKeyFresh );
+		$freshValue = json_decode( $this->objectCache->get( $cacheKeyFresh ) ?: '', true );
 
-		// Fresh fragment is cached: return value
-		if ( $freshValue !== false ) {
+		// Fresh fragment is cached: return value and do nothing more
+		if ( is_array( $freshValue ) ) {
 			return $freshValue;
 		}
 
@@ -154,39 +198,42 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment )
 		);
 
-		$staleValue = $this->objectCache->get( $cacheKeyStale );
+		$staleValue = json_decode( $this->objectCache->get( $cacheKeyStale ) ?: '', true );
 
-		// Stale fragment is cached: trigger async refresh job and return latest value
-		if ( $staleValue !== false ) {
-			$revalidateFragmentJob = new CacheAbstractContentFragmentJob( [
-				'qid' => $qid,
-				'language' => $language,
-				'date' => $date,
-				'functionCall' => $functionCall,
-				'cacheKeyFresh' => $cacheKeyFresh,
-				'cacheKeyStale' => $cacheKeyStale
-			] );
-			$this->jobQueueGroup->lazyPush( $revalidateFragmentJob );
-			return $staleValue;
+		// 3.a. If we are running a sync call and there's no cached value (fresh or stale),
+		// regenerate the value synchronously and return it.
+		if ( !( $async ) && !is_array( $staleValue ) ) {
+			$cachedValue = $this->abstractWikiRequest->generateSafeFragment(
+				$functionCall,
+				$cacheKeyFresh,
+				$cacheKeyStale
+			);
+
+			return $cachedValue;
 		}
 
-		// 3. Nothing is cached: We regenerate the fragment synchronously
+		// 3.b. If we are running an async call:
+		// * push a job for the fragment to be refreshed and recashed
+		// * if there is cached stale value, we return it
+		// * if there is no cached value, we return a pending state
+		$revalidateFragmentJob = new CacheAbstractContentFragmentJob( [
+			'qid' => $qid,
+			'language' => $language,
+			'date' => $date,
+			'functionCall' => $functionCall,
+			'cacheKeyFresh' => $cacheKeyFresh,
+			'cacheKeyStale' => $cacheKeyStale
+		] );
+		$this->jobQueueGroup->lazyPush( $revalidateFragmentJob );
 
-		// Run fragment function call:
-		// * should return a Z89/Html fragment object
-		// * can throw WikifunctionCallException, which is unhandled here but handled by the parent, self::execute()
-		$htmlFragment = $this->abstractWikiRequest->renderFragment( $functionCall );
+		if ( !is_array( $staleValue ) ) {
+			return [
+				'success' => true,
+				'pending' => true
+			];
+		}
 
-		// Sanitize the Z89K1/Html fragment value
-		$sanitizedHtml = WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
-			$this->logger,
-			$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
-		);
-
-		// Cache the response with both the fresh and the stale keys
-		$this->abstractWikiRequest->cacheFreshAndStale( $sanitizedHtml, $cacheKeyFresh, $cacheKeyStale );
-
-		return $sanitizedHtml;
+		return $staleValue;
 	}
 
 	/**
@@ -301,6 +348,11 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			'fragment' => [
 				ParamValidator::PARAM_TYPE => 'text',
 				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'async' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => false
 			]
 		];
 	}

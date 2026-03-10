@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -37,13 +38,82 @@ class AbstractWikiRequest {
 	}
 
 	/**
+	 * Re-generates a safe Abstract Wikipedia fragment by requesting it remotely
+	 * from Wikifunctions (repo), sanitising it, and storing it locally in the
+	 * cache under both the fresh and the stale keys.
+	 *
+	 * Returns an associative array containing the cached value, either a
+	 * successfully rendered and sanitised fragment, or a failed one.
+	 *
+	 * @param array $functionCall
+	 * @param string $cacheKeyFresh
+	 * @param string $cacheKeyStale
+	 * @return array
+	 */
+	public function generateSafeFragment(
+		array $functionCall,
+		string $cacheKeyFresh,
+		string $cacheKeyStale
+	): array {
+		$cachedValue = [];
+		// Set initial TTL, for successful renders or 400/bad requests:
+		// * fresh value for at least 48 hours to ensure availability through timezones
+		// * stale value for a month
+		$staleValueTTL = $this->objectCache::TTL_MONTH;
+		$freshValueTTL = $this->objectCache::TTL_WEEK;
+
+		try {
+			// 1. Run fragment function call, should return a Z89/Html fragment object
+			$htmlFragment = $this->fetchRenderedFragment( $functionCall );
+
+			// 2. If successful, sanitize the Z89K1/Html fragment value
+			$sanitizedHtml = WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
+				$this->logger,
+				$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
+			);
+
+			// 3. Cache sucessful sanitized fragment preview
+			$cachedValue[ 'success' ] = true;
+			$cachedValue[ 'value' ] = $sanitizedHtml;
+
+		} catch ( WikifunctionCallException $e ) {
+			// For temporary server errors: reduce fresh TTL to a minute
+			if (
+				$e->getHttpStatusCode() === HttpStatus::INTERNAL_SERVER_ERROR ||
+				$e->getHttpStatusCode() === HttpStatus::SERVICE_UNAVAILABLE
+			) {
+				$freshValueTTL = $this->objectCache::TTL_MINUTE;
+			}
+
+			// Cache serialized error
+			$cachedValue[ 'success' ] = false;
+			$cachedValue[ 'value' ] = $e->toArray();
+
+			$this->logger->error(
+				__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment threw an Exception: {error}',
+				[
+					'error' => $e->getMessage(),
+					'exception' => $e
+				]
+			);
+		}
+
+		// 4. Cache the response with both the fresh and the stale keys
+		$cachedValueStr = json_encode( $cachedValue );
+		$this->objectCache->set( $cacheKeyFresh, $cachedValueStr, $freshValueTTL );
+		$this->objectCache->set( $cacheKeyStale, $cachedValueStr, $staleValueTTL );
+
+		return $cachedValue;
+	}
+
+	/**
 	 * Performs remote call to Wikifunctions' wikilambda_function_call Action API
 	 *
 	 * @param array $functionCall
 	 * @return array HTML fragment (Z89) response object
 	 * @throws WikifunctionCallException
 	 */
-	public function renderFragment( array $functionCall ): array {
+	public function fetchRenderedFragment( array $functionCall ): array {
 		// Base API URL from config
 		$targetUrl = $this->config->get( 'WikiLambdaClientTargetAPI' );
 		if ( !$targetUrl ) {
@@ -178,12 +248,11 @@ class AbstractWikiRequest {
 		if ( $htmlFragment === ZTypeRegistry::Z_VOID ) {
 			$metadata = $responseEnvelope->{ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA };
 			$zerror = ZObjectUtils::getErrorsFromMetadata( $metadata );
-			$zerrorData = (object)[ 'zerror' => $zerror ];
 
 			throw new WikifunctionCallException(
 				'apierror-abstractwiki_run_fragment-returned-zerror',
 				HttpStatus::BAD_REQUEST,
-				$zerrorData
+				$zerror
 			);
 		}
 
@@ -197,19 +266,5 @@ class AbstractWikiRequest {
 		}
 
 		return (array)$htmlFragment;
-	}
-
-	/**
-	 * Caches the latest sanitized HTML fragment with both latest and stale cache keys.
-	 *
-	 * @param string $sanitizedHtml
-	 * @param string $cacheKeyFresh
-	 * @param string $cacheKeyStale
-	 */
-	public function cacheFreshAndStale( $sanitizedHtml, $cacheKeyFresh, $cacheKeyStale ): void {
-		// Store fresh value for at least 48 hours to ensure availability through timezones:
-		$this->objectCache->set( $cacheKeyFresh, $sanitizedHtml, $this->objectCache::TTL_WEEK );
-		// Store stale value for a month:
-		$this->objectCache->set( $cacheKeyStale, $sanitizedHtml, $this->objectCache::TTL_MONTH );
 	}
 }

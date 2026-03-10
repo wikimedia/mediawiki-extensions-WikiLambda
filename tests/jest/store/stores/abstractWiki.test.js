@@ -308,67 +308,200 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
-		describe( 'renderFragmentPreview', () => {
-			let getMock;
-			let setRenderedFragmentSpy;
+		describe( 'enqueueFragmentPreview', () => {
+			beforeEach( () => {
+				store.fragmentQueue = [];
+				store.processFragmentQueue = jest.fn();
+			} );
 
+			it( 'adds a new job to the queue', () => {
+				const mockJob = jest.fn().mockReturnValue( 'the right job!' );
+
+				store.enqueueFragmentPreview( mockJob );
+
+				expect( store.fragmentQueue.length ).toBe( 1 );
+				expect( store.fragmentQueue[ 0 ]() ).toBe( 'the right job!' );
+				expect( store.processFragmentQueue ).toHaveBeenCalled();
+			} );
+		} );
+
+		describe( 'processFragmentQueue', () => {
+			beforeEach( () => {
+				jest.useFakeTimers();
+
+				store.queueRunning = false;
+				store.fragmentQueue = [];
+			} );
+
+			afterEach( () => {
+				jest.useRealTimers();
+			} );
+
+			it( 'does nothing if queue is already running', () => {
+				store.queueRunning = true;
+
+				const job = jest.fn();
+				store.fragmentQueue.push( job );
+
+				store.processFragmentQueue();
+
+				expect( job ).not.toHaveBeenCalled();
+			} );
+
+			it( 'runs the first job immediately', () => {
+				const job = jest.fn();
+				store.fragmentQueue.push( job );
+
+				store.processFragmentQueue();
+
+				expect( job ).toHaveBeenCalledTimes( 1 );
+				expect( store.queueRunning ).toBe( true );
+			} );
+
+			it( 'processes multiple jobs sequentially', () => {
+				const job1 = jest.fn();
+				const job2 = jest.fn();
+				store.fragmentQueue.push( job1, job2 );
+
+				store.processFragmentQueue();
+
+				expect( job1 ).toHaveBeenCalledTimes( 1 );
+				expect( job2 ).not.toHaveBeenCalled();
+
+				jest.advanceTimersByTime( 300 );
+
+				expect( job2 ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			it( 'stops when queue becomes empty', () => {
+				const job = jest.fn();
+				store.fragmentQueue.push( job );
+
+				store.processFragmentQueue();
+
+				expect( store.queueRunning ).toBe( true );
+
+				jest.advanceTimersByTime( 300 );
+
+				expect( store.queueRunning ).toBe( false );
+			} );
+		} );
+
+		describe( 'renderFragmentPreview', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+			const previewCacheKey = `${ keyPath }|Z1002`;
 			const payload = {
 				keyPath,
 				qid: mockQid,
 				language: mockLang,
 				date: mockDate,
+				isAsync: false,
 				fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
 			};
 
 			beforeEach( () => {
 				store.fragments = {};
-				store.fragments[ fragmentCacheKey( keyPath ) ] = {
+				store.fragments[ previewCacheKey ] = {
 					isDirty: true,
 					isLoading: false,
 					error: false,
 					html: 'old fragment'
 				};
 
-				setRenderedFragmentSpy = jest.spyOn( store, 'setRenderedFragment' );
+				store.requestFragmentPreview = jest.fn();
+				store.enqueueFragmentPreview = jest.fn();
+			} );
+
+			it( 'does not render again if fragment is not dirty', async () => {
+				store.fragments[ previewCacheKey ].isDirty = false;
+
+				await store.renderFragmentPreview( payload );
+
+				expect( store.enqueueFragmentPreview ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does not render again if fragment is loading', async () => {
+				store.fragments[ previewCacheKey ].isLoading = true;
+
+				await store.renderFragmentPreview( payload );
+
+				expect( store.enqueueFragmentPreview ).not.toHaveBeenCalled();
+			} );
+
+			it( 'sets loading state when ongoing render call', () => {
+				store.renderFragmentPreview( payload );
+
+				expect( store.enqueueFragmentPreview ).toHaveBeenCalled();
+				expect( store.fragments[ previewCacheKey ].isLoading ).toBe( true );
+			} );
+
+			it( 'adds new request job to the queue', () => {
+				store.renderFragmentPreview( payload );
+
+				expect( store.enqueueFragmentPreview ).toHaveBeenCalledTimes( 1 );
+
+				const job = store.enqueueFragmentPreview.mock.calls[ 0 ][ 0 ];
+				job();
+
+				expect( store.requestFragmentPreview ).toHaveBeenCalledWith( payload, job );
+			} );
+		} );
+
+		describe( 'requestFragmentPreview', () => {
+			let getMock;
+			let retryJob;
+
+			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+			const previewCacheKey = `${ keyPath }|Z1002`;
+			const payload = {
+				keyPath,
+				qid: mockQid,
+				language: mockLang,
+				date: mockDate,
+				isAsync: true,
+				fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
+			};
+
+			beforeEach( () => {
+				store.fragments = {};
+				store.fragments[ previewCacheKey ] = {
+					isDirty: true,
+					isLoading: false,
+					retryCount: 0,
+					error: false,
+					html: 'old fragment'
+				};
+
+				retryJob = jest.fn();
+				store.setRenderedFragment = jest.fn();
+				store.enqueueFragmentPreview = jest.fn();
+
+				jest.useFakeTimers();
 
 				// Mock Api GET abstractwiki_run_fragment
 				getMock = jest.fn().mockResolvedValue( {
-					abstractwiki_run_fragment: { data: 'rendered fragment' }
+					abstractwiki_run_fragment: { success: true, value: 'rendered fragment' }
 				} );
 				mw.Api = jest.fn( () => ( {
 					get: getMock
 				} ) );
 			} );
 
-			it( 'does not render again if fragment is not dirty', async () => {
-				store.fragments[ fragmentCacheKey( keyPath ) ].isDirty = false;
-
-				await store.renderFragmentPreview( payload );
-
-				expect( getMock ).not.toHaveBeenCalled();
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( false );
+			afterEach( () => {
+				jest.useRealTimers();
 			} );
 
-			it( 'does not render again if fragment is loading', async () => {
-				store.fragments[ fragmentCacheKey( keyPath ) ].isLoading = true;
+			it( 'runs sync call', async () => {
+				const syncPayload = {
+					keyPath,
+					qid: mockQid,
+					language: mockLang,
+					date: mockDate,
+					isAsync: false,
+					fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
+				};
 
-				await store.renderFragmentPreview( payload );
-
-				expect( getMock ).not.toHaveBeenCalled();
-			} );
-
-			it( 'sets loading state when ongoing render call', () => {
-				getMock = jest.fn();
-
-				store.renderFragmentPreview( payload );
-
-				expect( getMock ).toHaveBeenCalled();
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isLoading ).toBe( true );
-			} );
-
-			it( 'runs render fragment and stores successful response', async () => {
-				await store.renderFragmentPreview( payload );
+				await store.requestFragmentPreview( syncPayload, retryJob );
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'abstractwiki_run_fragment',
@@ -377,19 +510,98 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
 					abstractwiki_run_fragment_date: mockDate,
+					abstractwiki_run_fragment_async: false,
+					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
+				}, { signal: undefined } );
+			} );
+
+			it( 'runs render fragment and stores successful response', async () => {
+				await store.requestFragmentPreview( payload, retryJob );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_run_fragment',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_run_fragment_qid: mockQid,
+					abstractwiki_run_fragment_language: mockLang,
+					abstractwiki_run_fragment_date: mockDate,
+					abstractwiki_run_fragment_async: true,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
 				const expectedFragment = { keyPath, language: mockLang, fragment: 'rendered fragment' };
-				expect( setRenderedFragmentSpy ).toHaveBeenCalledWith( expectedFragment );
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( expectedFragment );
+			} );
 
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
-					isDirty: false,
-					isLoading: false,
-					hasError: false,
-					error: null,
-					html: 'rendered fragment'
+			it( 'runs render fragment and retries if fragment pending', async () => {
+				getMock = jest.fn().mockResolvedValue( {
+					abstractwiki_run_fragment: { success: true, pending: true }
 				} );
+
+				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 0 );
+
+				await store.requestFragmentPreview( payload, retryJob );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_run_fragment',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_run_fragment_qid: mockQid,
+					abstractwiki_run_fragment_language: mockLang,
+					abstractwiki_run_fragment_date: mockDate,
+					abstractwiki_run_fragment_async: true,
+					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
+				}, { signal: undefined } );
+
+				// Assert that the retryCount has increased
+				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 1 );
+
+				// Assert that a job has been enqueued
+				jest.advanceTimersByTime( 300 );
+				expect( store.enqueueFragmentPreview ).toHaveBeenCalledTimes( 1 );
+
+				// Assert that the job enqueued is the one passed as input
+				expect( retryJob ).not.toHaveBeenCalled();
+				store.enqueueFragmentPreview.mock.calls[ 0 ][ 0 ]();
+				expect( retryJob ).toHaveBeenCalled();
+			} );
+
+			it( 'runs render fragment and stops if fragment pending but reached max retries', async () => {
+				// MAX_FRAGMENT_RETRIES = 30
+				store.fragments[ previewCacheKey ].retryCount = 29;
+
+				getMock = jest.fn().mockResolvedValue( {
+					abstractwiki_run_fragment: { success: true, pending: true }
+				} );
+
+				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 29 );
+
+				await store.requestFragmentPreview( payload, retryJob );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_run_fragment',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_run_fragment_qid: mockQid,
+					abstractwiki_run_fragment_language: mockLang,
+					abstractwiki_run_fragment_date: mockDate,
+					abstractwiki_run_fragment_async: true,
+					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
+				}, { signal: undefined } );
+
+				// Assert that the retryCount has increased
+				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 30 );
+
+				// Assert that final preview has been set
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
+					keyPath,
+					language: mockLang,
+					error: { type: 'warning', text: 'Reached max retries. Try again later.' }
+				} );
+
+				// Assert that a job has not been enqueued
+				jest.advanceTimersByTime( 300 );
+				expect( store.enqueueFragmentPreview ).not.toHaveBeenCalled();
 			} );
 
 			it( 'runs render fragment and stores failed unknown response', async () => {
@@ -398,7 +610,7 @@ describe( 'abstractWiki Pinia store', () => {
 				const mockErrMsg = 'some unknown error message';
 				mw.message = jest.fn().mockReturnValue( { text: jest.fn().mockReturnValue( mockErrMsg ) } );
 
-				await store.renderFragmentPreview( payload );
+				await store.requestFragmentPreview( payload, retryJob );
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'abstractwiki_run_fragment',
@@ -407,22 +619,14 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
 					abstractwiki_run_fragment_date: mockDate,
+					abstractwiki_run_fragment_async: true,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
-				const expectedFragment = {
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
 					keyPath,
 					language: mockLang,
 					error: { text: mockErrMsg }
-				};
-				expect( setRenderedFragmentSpy ).toHaveBeenCalledWith( expectedFragment );
-
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
-					isDirty: false,
-					isLoading: false,
-					hasError: true,
-					error: { text: mockErrMsg },
-					html: ''
 				} );
 			} );
 
@@ -435,13 +639,16 @@ describe( 'abstractWiki Pinia store', () => {
 					zerror: { Z1K1: 'Z5', Z5K1: 'Z555' },
 					zerrorType: 'Z555'
 				};
+
+				// NOTE: use real timers for this job, we need it for the get mock
+				jest.useRealTimers();
 				getMock = jest.fn().mockImplementation( () => ( {
 					then: () => ( {
 						catch: ( handler ) => setTimeout( () => handler( 'code', { error } ), 0 )
 					} )
 				} ) );
 
-				await store.renderFragmentPreview( payload );
+				await store.requestFragmentPreview( payload, retryJob );
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'abstractwiki_run_fragment',
@@ -450,42 +657,33 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
 					abstractwiki_run_fragment_date: mockDate,
+					abstractwiki_run_fragment_async: true,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
 				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z555' ] } );
 
-				const expectedFragment = {
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
 					keyPath,
 					language: mockLang,
 					error: {
 						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
 						zid: 'Z555'
 					}
-				};
-				expect( setRenderedFragmentSpy ).toHaveBeenCalledWith( expectedFragment );
-
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
-					isDirty: false,
-					isLoading: false,
-					hasError: true,
-					error: {
-						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
-						zid: 'Z555'
-					},
-					html: ''
 				} );
 			} );
 		} );
 
 		describe( 'setRenderedFragment', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+			const previewCacheKey = `${ keyPath }|Z1002`;
 
 			beforeEach( () => {
 				store.fragments = {};
-				store.fragments[ fragmentCacheKey( keyPath ) ] = {
+				store.fragments[ previewCacheKey ] = {
 					isDirty: true,
 					isLoading: true,
+					retryCount: 0,
 					error: false,
 					html: 'old fragment'
 				};
@@ -498,10 +696,11 @@ describe( 'abstractWiki Pinia store', () => {
 					fragment: 'some rendered fragment'
 				} );
 
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
+				expect( store.fragments[ previewCacheKey ] ).toEqual( {
 					hasError: false,
 					isDirty: false,
 					isLoading: false,
+					retryCount: 0,
 					error: null,
 					html: 'some rendered fragment'
 				} );
@@ -516,10 +715,11 @@ describe( 'abstractWiki Pinia store', () => {
 					}
 				} );
 
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
+				expect( store.fragments[ previewCacheKey ] ).toEqual( {
 					hasError: true,
 					isDirty: false,
 					isLoading: false,
+					retryCount: 0,
 					error: {
 						text: 'Some error message'
 					},
@@ -537,10 +737,11 @@ describe( 'abstractWiki Pinia store', () => {
 					}
 				} );
 
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ] ).toEqual( {
+				expect( store.fragments[ previewCacheKey ] ).toEqual( {
 					hasError: true,
 					isDirty: false,
 					isLoading: false,
+					retryCount: 0,
 					error: {
 						code: 'error-code',
 						zid: 'Z555'
@@ -562,6 +763,7 @@ describe( 'abstractWiki Pinia store', () => {
 					hasError: false,
 					isDirty: false,
 					isLoading: false,
+					retryCount: 0,
 					error: null,
 					html: 'some new fragment'
 				} );

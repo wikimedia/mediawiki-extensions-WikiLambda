@@ -16,6 +16,9 @@ const { getFragmentCacheKey } = require( '../../utils/abstractUtils.js' );
 const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 
 const DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT = 2000;
+const FRAGMENT_QUEUE_TIMEOUT = 300;
+const ENQUEUE_FRAGMENT_JOB_TIMEOUT = 300;
+const MAX_FRAGMENT_RETRIES = 30;
 
 const abstractWikiStore = {
 	state: {
@@ -23,7 +26,9 @@ const abstractWikiStore = {
 		fragments: {},
 		highlight: undefined,
 		previewLanguageZid: undefined,
-		suggestedHtmlFunctions: []
+		suggestedHtmlFunctions: [],
+		fragmentQueue: [],
+		queueRunning: false
 	},
 	getters: {
 		/**
@@ -225,6 +230,40 @@ const abstractWikiStore = {
 			} );
 		},
 		/**
+		 * Adds a new job to the fragment preview request queue,
+		 * and resumes the action to process the jobs in the queue.
+		 *
+		 * @param {Function} job
+		 */
+		enqueueFragmentPreview: function ( job ) {
+			this.fragmentQueue.push( job );
+			this.processFragmentQueue();
+		},
+		/**
+		 * Initializes the processing of the fragment rendering
+		 * jobs pending in the queue. It runs one job every FRAGMENT_QUEUE_TIMEOUT
+		 * miliseconds. Once there are no more jobs in the queue, it sets queueRunning
+		 * flag to false.
+		 */
+		processFragmentQueue() {
+			if ( this.queueRunning ) {
+				return;
+			}
+			this.queueRunning = true;
+
+			const processNextJob = () => {
+				if ( this.fragmentQueue.length === 0 ) {
+					this.queueRunning = false;
+					return;
+				}
+				const nextJob = this.fragmentQueue.shift();
+				nextJob();
+				setTimeout( processNextJob, FRAGMENT_QUEUE_TIMEOUT );
+			};
+
+			processNextJob();
+		},
+		/**
 		 * Call the API to render the Abstract Wiki fragment and
 		 * store the response in the state
 		 *
@@ -233,8 +272,8 @@ const abstractWikiStore = {
 		 * @param {string} payload.qid
 		 * @param {string} payload.language
 		 * @param {string} payload.date
+		 * @param {boolean} payload.isAsync
 		 * @param {Object} payload.fragment
-		 * @return {Promise}
 		 */
 		renderFragmentPreview: function ( payload ) {
 			const { keyPath, language } = payload;
@@ -242,40 +281,91 @@ const abstractWikiStore = {
 
 			// Not initialized yet, set blank object
 			if ( !( cacheKey in this.fragments ) ) {
-				this.fragments[ cacheKey ] = { isDirty: true };
+				this.fragments[ cacheKey ] = {
+					isDirty: true,
+					retryCount: 0
+				};
 			}
 
 			const fragmentStatus = this.fragments[ cacheKey ];
 
-			// If fragment is already generated or request ongoing, resolve
+			// If fragment is already generated or request ongoing, exit
 			if ( !fragmentStatus.isDirty || fragmentStatus.isLoading ) {
-				return Promise.resolve();
+				return;
 			}
 
 			// Else, initiate rendering call
 			this.fragments[ cacheKey ].isLoading = true;
-			return runAbstractWikiFragment( payload )
-				.then( ( fragment ) => {
-					this.setRenderedFragment( { keyPath, language, fragment } );
-				} )
-				.catch( ( data ) => {
-					const error = {};
-					const errorData = data.response && data.response.error ?
-						data.response.error :
-						{ code: 'internal_api_error_' };
 
-					if ( errorData.code === 'wikilambda-zerror' ) {
-						this.fetchZids( { zids: [ errorData.zerrorType ] } );
-						error.code = errorData.msg;
-						error.zid = errorData.zerrorType;
-					} else {
-						error.text = errorData.code.startsWith( 'internal_api_error_' ) ?
-							mw.message( 'apierror-abstractwiki_run_fragment-unknown-error' ).text() :
-							errorData.info;
+			// Build request job and enqueue it
+			const job = () => this.requestFragmentPreview( payload, job );
+			this.enqueueFragmentPreview( job );
+		},
+
+		/**
+		 * @param {Object} payload
+		 * @param {string} payload.keyPath
+		 * @param {string} payload.qid
+		 * @param {string} payload.language
+		 * @param {string} payload.date
+		 * @param {boolean} payload.isAsync
+		 * @param {Object} payload.fragment
+		 * @param {Function} job
+		 * @return {Promise}
+		 */
+		requestFragmentPreview: function ( payload, job ) {
+			const { keyPath, language } = payload;
+			const cacheKey = getFragmentCacheKey( keyPath, language );
+
+			return runAbstractWikiFragment( {
+				qid: payload.qid,
+				language: payload.language,
+				date: payload.date,
+				fragment: payload.fragment,
+				isAsync: payload.isAsync
+			} ).then( ( data ) => {
+				// Received pending fragment: queue retry if possible
+				if ( data.pending ) {
+					// Increment retry count
+					const fragmentStatus = this.fragments[ cacheKey ];
+					fragmentStatus.retryCount++;
+
+					// If reached max retries, set error fragment and exit
+					if ( fragmentStatus.retryCount >= MAX_FRAGMENT_RETRIES ) {
+						const maxRetriesError = {
+							type: 'warning',
+							text: mw.message( 'wikilambda-abstract-preview-fragment-max-retries' ).text()
+						};
+						this.setRenderedFragment( { keyPath, language, error: maxRetriesError } );
+						return;
 					}
 
-					this.setRenderedFragment( { keyPath, language, error } );
-				} );
+					// Else, queue retry
+					setTimeout( () => {
+						this.enqueueFragmentPreview( job );
+					}, ENQUEUE_FRAGMENT_JOB_TIMEOUT );
+
+				} else {
+					// Received done fragment!
+					this.setRenderedFragment( { keyPath, language, fragment: data.value } );
+				}
+			} ).catch( ( data ) => {
+				const error = {};
+				const errorData = data.response && data.response.error ?
+					data.response.error :
+					{ code: 'internal_api_error_' };
+
+				if ( errorData.code === 'wikilambda-zerror' ) {
+					this.fetchZids( { zids: [ errorData.zerrorType ] } );
+					error.code = errorData.msg;
+					error.zid = errorData.zerrorType;
+				} else {
+					error.text = errorData.code.startsWith( 'internal_api_error_' ) ?
+						mw.message( 'apierror-abstractwiki_run_fragment-unknown-error' ).text() :
+						errorData.info;
+				}
+				this.setRenderedFragment( { keyPath, language, error } );
+			} );
 		},
 		/**
 		 * Save fragment rendered output and dirty/loading status in the state
@@ -288,6 +378,7 @@ const abstractWikiStore = {
 		 * @param {string|null} payload.error.text
 		 * @param {string|null} payload.error.code
 		 * @param {string|null} payload.error.zid
+		 * @param {string|null} payload.error.type
 		 */
 		setRenderedFragment: function ( payload ) {
 			const { keyPath, language, fragment = '', error } = payload;
@@ -301,6 +392,8 @@ const abstractWikiStore = {
 			this.fragments[ cacheKey ].error = error || null;
 			this.fragments[ cacheKey ].html = !error ? fragment : '';
 
+			// Reset loading states:
+			this.fragments[ cacheKey ].retryCount = 0;
 			this.fragments[ cacheKey ].isLoading = false;
 		},
 		/**
