@@ -35,7 +35,7 @@ class RepoHooks implements
 	{
 
 	public static function registerExtension() {
-		// We define the content model regardless of if 'repo mode' is enabled
+		// We define the content models regardless of if 'repo mode' or 'abstract mode' are enabled
 		require_once __DIR__ . '/../defines.php';
 
 		// Can't use MediaWikiServices or config objects yet, so use globals
@@ -96,7 +96,7 @@ class RepoHooks implements
 				// Register the namespace at all (plus its talk)
 				global $wgExtraNamespaces;
 				$wgExtraNamespaces[ $namespaceID ] = $namespaceEnglishName;
-				$wgExtraNamespaces[ $namespaceID + 1 ] = $namespaceEnglishName . ' talk';
+				$wgExtraNamespaces[ $namespaceID + 1 ] = $namespaceEnglishName . '_talk';
 
 				// Register the namespace as including content
 				global $wgContentNamespaces;
