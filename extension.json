@@ -1025,6 +1025,7 @@
 				"wikilambda-abstract-menu-option-move-after",
 				"wikilambda-abstract-menu-option-move-before",
 				"wikilambda-abstract-preview-fragment-max-retries",
+				"wikilambda-abstract-preview-fragment-retry",
 				"wikilambda-abstract-preview-in-language",
 				"wikilambda-abstract-special-create",
 				"wikilambda-abstract-special-create-createbutton-label",

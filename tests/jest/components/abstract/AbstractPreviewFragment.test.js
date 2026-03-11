@@ -141,6 +141,30 @@ describe( 'AbstractPreviewFragment', () => {
 		expect( message.props( 'type' ) ).toBe( 'warning' );
 	} );
 
+	it( 'renders retry button when error has retry=true', async () => {
+		store.setDirtyFragment = jest.fn();
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			html: '',
+			hasError: true,
+			error: {
+				retry: true,
+				type: 'error',
+				text: 'Some error'
+			},
+			isLoading: false,
+			isDirty: false
+		} );
+
+		wrapper = renderFragment();
+
+		const message = wrapper.findComponent( { name: 'cdx-message' } );
+		await waitFor( () => expect( message.exists() ).toBe( true ) );
+		expect( message.find( 'button' ).text() ).toBe( 'Retry' );
+
+		message.find( 'button' ).trigger( 'click' );
+		expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath, true );
+	} );
+
 	it( 'renders error message when preview has i18n+zerror error', async () => {
 		store.getLabelData = jest.fn().mockImplementation( ( zid ) => ( {
 			label: zid === 'Z555' ? 'Some zerror happened' : zid

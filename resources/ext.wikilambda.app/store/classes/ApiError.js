@@ -16,13 +16,15 @@ const { getNestedProperty } = require( '../../utils/miscUtils.js' );
  * @class
  * @property {string} code
  * @property {Object} response
+ * @property {number} httpStatus
  */
 class ApiError extends Error {
 
-	constructor( code, response ) {
+	constructor( code, response, httpStatus = 400 ) {
 		super();
 		this.code = code;
 		this.response = response;
+		this.httpStatus = httpStatus;
 	}
 
 	/**
@@ -170,18 +172,19 @@ class ApiError extends Error {
 		}
 
 		// Detect other failures:
-		let response;
+		let response, httpStatus;
 		if ( code === 'http' ) {
 			// jQuery AJAX failure:
 			// arg2.xhr contains an object of class jQuery.jqXHR
 			response = arg2.xhr.responseJSON;
+			httpStatus = arg2.xhr.status;
 		} else {
 			// API failure:
 			// arg2 and arg3 contain a response object
 			// arg4 contains an object of class jQuery.jqXHR
 			response = arg2;
 		}
-		return new ApiError( code, response );
+		return new ApiError( code, response, httpStatus );
 	}
 
 	/**

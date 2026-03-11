@@ -596,7 +596,11 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
 					keyPath,
 					language: mockLang,
-					error: { type: 'warning', text: 'Reached max retries. Try again later.' }
+					error: {
+						type: 'warning',
+						retry: true,
+						text: 'Reached max retries. Try again later.'
+					}
 				} );
 
 				// Assert that a job has not been enqueued
@@ -626,7 +630,10 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
 					keyPath,
 					language: mockLang,
-					error: { text: mockErrMsg }
+					error: {
+						retry: false,
+						text: mockErrMsg
+					}
 				} );
 			} );
 
@@ -668,6 +675,7 @@ describe( 'abstractWiki Pinia store', () => {
 					language: mockLang,
 					error: {
 						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
+						retry: false,
 						zid: 'Z555'
 					}
 				} );
@@ -799,6 +807,16 @@ describe( 'abstractWiki Pinia store', () => {
 
 				// Sets dirty after debounce timer goes off
 				jest.advanceTimersByTime( debounceTime );
+				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( true );
+			} );
+
+			it( 'sets fragment as dirty immediately if requested', () => {
+				store.setDirtyFragment( childKeyPath, true );
+
+				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( false );
+
+				// Sets dirty after 0ms timer goes off
+				jest.advanceTimersByTime( 1 );
 				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( true );
 			} );
 

@@ -29,6 +29,14 @@
 					:type="fragmentError.type"
 				>
 					{{ fragmentError.text }}
+					<button
+						v-if="fragmentError.retry"
+						class="ext-wikilambda-app-button-reset
+							ext-wikilambda-app-abstract-preview-fragment-retry"
+						@click="retryPreview"
+					>
+						{{ i18n( 'wikilambda-abstract-preview-fragment-retry' ).text() }}
+					</button>
 				</cdx-message>
 			</div>
 			<!-- eslint-disable vue/no-v-html -->
@@ -86,16 +94,16 @@ module.exports = exports = defineComponent( {
 		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
 		const fragmentDirty = computed( () => fragmentPreview.value && fragmentPreview.value.isDirty );
 		const fragmentError = computed( () => {
-			let text = '';
-			let type = Constants.ERROR_TYPES.ERROR;
-			if ( fragmentPreview.value.hasError ) {
-				const error = fragmentPreview.value.error;
-				type = error.type ? error.type : Constants.ERROR_TYPES.ERROR;
-				text = error.code ?
-					i18n( error.code, store.getLabelData( error.zid ).label ).text() :
-					error.text;
+			if ( !fragmentPreview.value.hasError ) {
+				return null;
 			}
-			return { text, type };
+			const error = fragmentPreview.value.error;
+			return Object.assign( {}, error, {
+				type: error.type || Constants.ERROR_TYPES.ERROR,
+				text: error.code ?
+					i18n( error.code, store.getLabelData( error.zid ).label ).text() :
+					error.text
+			} );
 		} );
 
 		/**
@@ -113,6 +121,14 @@ module.exports = exports = defineComponent( {
 				language: store.getPreviewLanguageZid,
 				isAsync: isBulk
 			} );
+		}
+
+		/**
+		 * Sets a fragment as dirty so that it triggers
+		 * a fresh render attempt.
+		 */
+		function retryPreview() {
+			store.setDirtyFragment( props.keyPath, true );
 		}
 
 		/**
@@ -198,6 +214,7 @@ module.exports = exports = defineComponent( {
 			fragmentPreview,
 			contentRef,
 			errorRef,
+			retryPreview,
 			setHighlight,
 			unsetHighlight,
 			i18n
@@ -218,6 +235,10 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-abstract-preview-fragment-error {
 		margin: @spacing-25 0;
+	}
+
+	.ext-wikilambda-app-abstract-preview-fragment-retry {
+		.cdx-mixin-link();
 	}
 
 	.ext-wikilambda-app-abstract-preview-fragment-html {

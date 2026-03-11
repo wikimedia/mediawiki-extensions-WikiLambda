@@ -334,6 +334,7 @@ const abstractWikiStore = {
 					if ( fragmentStatus.retryCount >= MAX_FRAGMENT_RETRIES ) {
 						const maxRetriesError = {
 							type: 'warning',
+							retry: true,
 							text: mw.message( 'wikilambda-abstract-preview-fragment-max-retries' ).text()
 						};
 						this.setRenderedFragment( { keyPath, language, error: maxRetriesError } );
@@ -354,6 +355,9 @@ const abstractWikiStore = {
 				const errorData = data.response && data.response.error ?
 					data.response.error :
 					{ code: 'internal_api_error_' };
+
+				// Show retry CTA when 503/Service unavailable.
+				error.retry = data.httpStatus === 500 || data.httpStatus === 503;
 
 				if ( errorData.code === 'wikilambda-zerror' ) {
 					this.fetchZids( { zids: [ errorData.zerrorType ] } );
@@ -400,8 +404,9 @@ const abstractWikiStore = {
 		 * Set fragment data as dirty after DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT ms
 		 *
 		 * @param {string} keyPath
+		 * @param {boolean} immediate
 		 */
-		setDirtyFragment: function ( keyPath ) {
+		setDirtyFragment: function ( keyPath, immediate = false ) {
 			const fragmentPath = keyPath.split( '.' ).slice( 0, 5 ).join( '.' );
 			const cacheKey = getFragmentCacheKey( fragmentPath, this.getPreviewLanguageZid );
 
@@ -419,7 +424,7 @@ const abstractWikiStore = {
 			fragment.debounce = setTimeout( () => {
 				fragment.isDirty = true;
 				fragment.debounce = undefined;
-			}, DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT );
+			}, immediate ? 0 : DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT );
 		},
 		/**
 		 * Swap the fragment preview data for two given fragment key paths
