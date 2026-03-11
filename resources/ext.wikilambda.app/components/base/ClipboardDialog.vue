@@ -89,7 +89,7 @@
 const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const useMainStore = require( '../../store/index.js' );
-const { isTypeCompatible } = require( '../../utils/typeUtils.js' );
+const { isTypeCompatible, typeToString } = require( '../../utils/typeUtils.js' );
 
 // Type components
 const ZObjectToString = require( '../types/ZObjectToString.vue' );
@@ -167,17 +167,17 @@ module.exports = exports = defineComponent( {
 		function matchesFilter( item ) {
 			const substr = filterSubstr.value.toLowerCase();
 
-			const objectType = store.getLabelData( item.objectType ).label;
+			const objectType = store.getLabelData( typeToString( item.objectType, true ) ).label;
 			if ( objectType.toLowerCase().includes( substr ) ) {
 				return true;
 			}
 
-			const slotType = store.getLabelData( item.originSlotType ).label;
+			const slotType = store.getLabelData( typeToString( item.originSlotType, true ) ).label;
 			if ( slotType.toLowerCase().includes( substr ) ) {
 				return true;
 			}
 
-			const resolvingType = store.getLabelData( item.resolvingType ).label;
+			const resolvingType = store.getLabelData( typeToString( item.resolvingType, true ) ).label;
 			if ( resolvingType.toLowerCase().includes( substr ) ) {
 				return true;
 			}
