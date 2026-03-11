@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @codeCoverageIgnore
@@ -47,9 +47,9 @@ class WikiLambdaServices {
 	}
 
 	/**
-	 * @return BagOStuff
+	 * @return WANObjectCache
 	 */
-	public static function getZObjectStash(): BagOStuff {
+	public static function getZObjectStash(): WANObjectCache {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectStash' );
 	}
 
@@ -65,6 +65,7 @@ class WikiLambdaServices {
 	 * Reused by service wiring and installer bootstrapping.
 	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
+	 * @return ZObjectStore
 	 */
 	public static function buildZObjectStore( MediaWikiServices $services ): ZObjectStore {
 		return new ZObjectStore(
@@ -78,19 +79,20 @@ class WikiLambdaServices {
 	}
 
 	/**
-	 * Constructs a new instance of the ZObject BagOStuff
+	 * Constructs a new instance of the ZObject Cache.
 	 * Reused by service wiring and installer bootstrapping.
 	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
 	 * @throws ConfigException
+	 * @return WANObjectCache
 	 */
-	public static function buildZObjectStash( MediaWikiServices $services ): BagOStuff {
+	public static function buildZObjectStash( MediaWikiServices $services ): WANObjectCache {
 		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$requestedCache = $extensionConfig->get( 'WikiLambdaObjectCache' );
 
 		if ( !$requestedCache ) {
 			// Just short-cut to the existing Stash in this case
-			return $services->getMainObjectStash();
+			return $services->getMainWANObjectCache();
 		}
 
 		$mainConfig = $services->getMainConfig();
@@ -100,7 +102,7 @@ class WikiLambdaServices {
 				"\$wgObjectCaches must have \"$requestedCache\" set (via WikiLambdaObjectCache)"
 			);
 		}
-
-		return $services->getObjectCacheFactory()->newFromParams( $cacheParameters );
+		$bag = $services->getObjectCacheFactory()->newFromParams( $cacheParameters );
+		return new WANObjectCache( [ 'cache' => $bag ] );
 	}
 }

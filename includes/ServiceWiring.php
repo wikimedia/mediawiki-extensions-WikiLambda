@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @codeCoverageIgnore
@@ -32,9 +32,9 @@ return [
 		);
 	},
 
-	// For both repo and client wikis
+	// For repo, abstract and client wikis
 
-	'WikiLambdaZObjectStash' => static function ( MediaWikiServices $services ): BagOStuff {
+	'WikiLambdaZObjectStash' => static function ( MediaWikiServices $services ): WANObjectCache {
 		return WikiLambdaServices::buildZObjectStash( $services );
 	},
 

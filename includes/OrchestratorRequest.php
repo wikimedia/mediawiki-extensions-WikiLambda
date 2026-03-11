@@ -19,7 +19,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\Telemetry\TracerInterface;
 
 /**
@@ -29,7 +29,7 @@ class OrchestratorRequest {
 
 	protected Client $guzzleClient;
 	protected string $userAgentString;
-	protected BagOStuff $objectCache;
+	protected WANObjectCache $objectCache;
 	protected TracerInterface $tracer;
 
 	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
@@ -93,7 +93,7 @@ class OrchestratorRequest {
 		$response = $this->objectCache->getWithSetCallback(
 			$requestKey,
 			$this->objectCache::TTL_MONTH,
-			function ( &$exptime ) use ( $query, $requestHeaders ) {
+			function ( $oldValue, &$ttl, array &$setOpts ) use ( $query, $requestHeaders ) {
 				$guzzleResponse = $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 				$httpStatus = $guzzleResponse['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
 
@@ -101,11 +101,11 @@ class OrchestratorRequest {
 					( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
 					( $httpStatus === HttpStatus::TOO_MANY_REQUESTS )
 				) {
-					$exptime = $this->objectCache::TTL_MINUTE;
+					$ttl = $this->objectCache::TTL_MINUTE;
 				} elseif ( $httpStatus === HttpStatus::OK ) {
-					$exptime = $this->objectCache::TTL_MONTH;
+					$ttl = $this->objectCache::TTL_MONTH;
 				} else {
-					$exptime = $this->objectCache::TTL_WEEK;
+					$ttl = $this->objectCache::TTL_WEEK;
 				}
 
 				return $guzzleResponse;

@@ -33,7 +33,7 @@ use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\Rdbms\FakeResultWrapper;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IExpression;
@@ -52,7 +52,7 @@ class ZObjectStore {
 	private UserGroupManager $userGroupManager;
 	private LoggerInterface $logger;
 
-	private BagOStuff $zObjectCache;
+	private WANObjectCache $zObjectCache;
 
 	// NOTE: This constant hard-codes user-provided content as starting from 'Z10000'. Now that the
 	// wiki has launched, change it will have unpredicatable effects.

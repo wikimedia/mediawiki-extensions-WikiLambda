@@ -19,13 +19,13 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 class AbstractWikiRequest {
 
 	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
-	private BagOStuff $objectCache;
+	private WANObjectCache $objectCache;
 	private LoggerInterface $logger;
 
 	public function __construct( Config $config, HttpRequestFactory $httpRequestFactory ) {
