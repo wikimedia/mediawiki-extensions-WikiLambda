@@ -41,6 +41,7 @@ const { storeToRefs } = require( 'pinia' );
 const Constants = require( '../../Constants.js' );
 const useLeaveEditorDialog = require( '../../composables/useLeaveEditorDialog.js' );
 const useMainStore = require( '../../store/index.js' );
+const ApiError = require( '../../store/classes/ApiError.js' );
 
 // Dialog components
 const LeaveEditorDialog = require( '../widgets/publish/LeaveEditorDialog.vue' );

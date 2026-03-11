@@ -100,6 +100,7 @@ const icons = require( '../../../../lib/icons.json' );
 const Constants = require( '../../../Constants.js' );
 const usePageTitle = require( '../../../composables/usePageTitle.js' );
 const useMainStore = require( '../../../store/index.js' );
+const ApiError = require( '../../../store/classes/ApiError.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 
 // Base components

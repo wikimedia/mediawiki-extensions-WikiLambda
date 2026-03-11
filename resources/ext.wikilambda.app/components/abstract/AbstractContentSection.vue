@@ -129,7 +129,9 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Returns the menu items for the Add fragment [+] menu button.
 		 *
+		 * @return {Array}
 		 */
 		const menuItems = computed( () => {
 			const basicActionGroup = {

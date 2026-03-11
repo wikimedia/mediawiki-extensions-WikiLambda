@@ -51,6 +51,7 @@ const useEventLog = require( '../../../composables/useEventLog.js' );
 const useLeaveEditorDialog = require( '../../../composables/useLeaveEditorDialog.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
+const ApiError = require( '../../../store/classes/ApiError.js' );
 
 // Base components
 const WidgetBase = require( '../../base/WidgetBase.vue' );
