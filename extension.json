@@ -576,6 +576,7 @@
 				"ext.wikilambda.app/composables/useFragmentHighlightRects.js",
 				"ext.wikilambda.app/composables/useInitReferences.js",
 				"ext.wikilambda.app/composables/useMenuAction.js",
+				"ext.wikilambda.app/composables/useDarkMode.js",
 				"ext.wikilambda.app/composables/usePageTitle.js",
 				"ext.wikilambda.app/composables/useScroll.js",
 				"ext.wikilambda.app/composables/useShareUrl.js",

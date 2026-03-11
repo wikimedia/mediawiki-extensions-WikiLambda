@@ -91,6 +91,67 @@ describe( 'CodeEditor', () => {
 		expect( window.ace.edit ).toHaveBeenCalledWith( expect.anything(), { value: 'pepsi cola' } );
 	} );
 
+	it( 'uses github_dark theme when MW dark mode is active', () => {
+		document.documentElement.classList.add( 'skin-theme-clientpref-night' );
+
+		renderCodeEditor( {
+			mode: 'python',
+			value: 'pepsi cola'
+		} );
+
+		expect( mockSetTheme ).toHaveBeenCalledWith( 'ace/theme/github_dark' );
+
+		document.documentElement.classList.remove( 'skin-theme-clientpref-night' );
+	} );
+
+	it( 'uses theme prop over MW dark mode when theme is explicitly passed', () => {
+		document.documentElement.classList.add( 'skin-theme-clientpref-night' );
+
+		renderCodeEditor( {
+			mode: 'python',
+			theme: 'chrome',
+			value: 'pepsi cola'
+		} );
+
+		expect( mockSetTheme ).toHaveBeenCalledWith( 'ace/theme/chrome' );
+
+		document.documentElement.classList.remove( 'skin-theme-clientpref-night' );
+	} );
+
+	it( 'applies disabled options when disabled', () => {
+		renderCodeEditor( {
+			mode: 'python',
+			value: 'code',
+			disabled: true
+		} );
+
+		expect( mockSetReadOnly ).toHaveBeenCalledWith( true );
+		expect( mockSetOption ).toHaveBeenCalledWith( 'highlightActiveLine', false );
+		expect( mockSetOption ).toHaveBeenCalledWith( 'highlightGutterLine', false );
+		expect( mockSetOption ).toHaveBeenCalledWith( 'highlightSelectedWord', false );
+	} );
+
+	it( 'applies disabled options when readOnly', () => {
+		renderCodeEditor( {
+			mode: 'python',
+			value: 'code',
+			readOnly: true
+		} );
+
+		expect( mockSetReadOnly ).toHaveBeenCalledWith( true );
+		expect( mockSetOption ).toHaveBeenCalledWith( 'highlightActiveLine', false );
+		expect( mockSetOption ).toHaveBeenCalledWith( 'highlightGutterLine', false );
+		expect( mockSetOption ).toHaveBeenCalledWith( 'highlightSelectedWord', false );
+	} );
+
+	it( 'applies disabled class when disabled', () => {
+		const wrapper = renderCodeEditor( {
+			disabled: true
+		} );
+
+		expect( wrapper.find( '.ext-wikilambda-app-code-editor--disabled' ).exists() ).toBe( true );
+	} );
+
 	it( 'should set basePath with protocol if basePath starts with //', () => {
 		mw.config.get.mockReturnValue( '//example.com/path' );
 
@@ -116,6 +177,7 @@ describe( 'CodeEditor', () => {
 		wrapper.setProps( { readOnly: false } );
 
 		await waitFor( () => expect( mockSetReadOnly ).toHaveBeenCalledWith( false ) );
+		expect( mockSetOption ).toHaveBeenLastCalledWith( 'highlightSelectedWord', true );
 	} );
 
 	it( 'sets mode upon change', async () => {

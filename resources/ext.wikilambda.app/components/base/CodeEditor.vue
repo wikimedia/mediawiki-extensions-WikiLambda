@@ -19,6 +19,7 @@
 <script>
 const { defineComponent, ref, watch, onMounted } = require( 'vue' );
 require( '../../../lib/ace/src/ace.js' );
+const useDarkMode = require( '../../composables/useDarkMode.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-code-editor',
@@ -33,7 +34,7 @@ module.exports = exports = defineComponent( {
 		},
 		theme: {
 			type: String,
-			default: 'chrome'
+			default: null
 		},
 		readOnly: {
 			type: Boolean,
@@ -58,6 +59,37 @@ module.exports = exports = defineComponent( {
 			fontSize: 12,
 			useSoftTabs: false
 		};
+
+		// Theme: Chrome (light) / GitHub Dark (dark) - clean, modern, good readability
+		const LIGHT_THEME = 'chrome';
+		const DARK_THEME = 'github_dark';
+
+		const { isDarkMode } = useDarkMode();
+
+		/**
+		 * Returns the effective ACE theme based on MW dark mode and props.
+		 *
+		 * @return {string}
+		 */
+		function getEffectiveTheme() {
+			return props.theme || ( isDarkMode.value ? DARK_THEME : LIGHT_THEME );
+		}
+
+		/**
+		 * Applies disabled-state options to the editor when disabled/readOnly.
+		 * Reduces interactive feedback (highlights, cursor) to make the readonly state more visible.
+		 *
+		 * @param {boolean} isDisabled
+		 */
+		function applyDisabledOptions( isDisabled ) {
+			if ( !editor.value ) {
+				return;
+			}
+			editor.value.setReadOnly( isDisabled );
+			editor.value.setOption( 'highlightActiveLine', !isDisabled );
+			editor.value.setOption( 'highlightGutterLine', !isDisabled );
+			editor.value.setOption( 'highlightSelectedWord', !isDisabled );
+		}
 
 		// HTML annotations
 		/**
@@ -229,6 +261,15 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Applies the effective theme to the editor. Call when MW dark mode or props.theme changes.
+		 */
+		function applyTheme() {
+			if ( editor.value ) {
+				editor.value.setTheme( 'ace/theme/' + getEffectiveTheme() );
+			}
+		}
+
+		/**
 		 * Initializes the internal Ace Code Editor
 		 */
 		function initialize() {
@@ -244,11 +285,11 @@ module.exports = exports = defineComponent( {
 			// TODO (T406154): Figure a way to not have this path hardcoded, perhaps wgWikiLambdaAcePath?
 			window.ace.config.set( 'basePath', basePath + '/WikiLambda/resources/lib/ace/src' );
 
-			// Set readonly attribute when readonly or disabled
-			editor.value.setReadOnly( props.readOnly || props.disabled );
+			// Set readonly and disabled-state options when readonly or disabled
+			applyDisabledOptions( props.readOnly || props.disabled );
 
-			// Set theme
-			editor.value.setTheme( 'ace/theme/' + props.theme );
+			// Set theme based on MW dark mode (chrome / clouds_midnight)
+			applyTheme();
 
 			// Set Language
 			session.setMode( 'ace/mode/' + props.mode );
@@ -281,19 +322,18 @@ module.exports = exports = defineComponent( {
 			editor.value.setOption( 'mode', 'ace/mode/' + newMode );
 		} );
 
-		watch( () => props.theme, ( newTheme ) => {
-			editor.value.setTheme( 'ace/theme/' + newTheme );
-		} );
+		watch( () => props.theme, applyTheme );
 
 		watch( () => props.readOnly, ( newValue ) => {
-			editor.value.setReadOnly( newValue );
+			applyDisabledOptions( newValue || props.disabled );
 		} );
 
 		watch( () => props.disabled, ( newValue ) => {
-			editor.value.setReadOnly( newValue );
+			applyDisabledOptions( newValue || props.readOnly );
 		} );
 
-		// Lifecycle
+		watch( () => isDarkMode.value, applyTheme );
+
 		onMounted( () => {
 			initialize();
 		} );
@@ -320,8 +360,27 @@ module.exports = exports = defineComponent( {
 
 	&--disabled {
 		.ext-wikilambda-app-code-editor__ace.ace_editor {
+			.ace_cursor {
+				opacity: 0;
+			}
+		}
+	}
+
+	// Light mode only: use skin's disabled background when disabled
+	// In dark mode, ACE theme provides its own background
+	html:not( .skin-theme-clientpref-night ) &--disabled {
+		.ext-wikilambda-app-code-editor__ace.ace_editor {
 			background-color: @background-color-disabled-subtle;
 		}
 	}
+
+	@media ( prefers-color-scheme: dark ) {
+		html.skin-theme-clientpref-os .ext-wikilambda-app-code-editor--disabled {
+			.ext-wikilambda-app-code-editor__ace.ace_editor {
+				background-color: unset;
+			}
+		}
+	}
 }
+
 </style>
