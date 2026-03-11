@@ -9,14 +9,17 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
+use MediaWiki\Extension\WikiLambda\ActionAPI\ApiAbstractWikiRunFragment;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Http\MWHttpRequest;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Tests\Api\ApiTestCase;
 use StatusValue;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\HashBagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @coversNothing
@@ -42,29 +45,16 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$language = 'Z1002';
 		$date = '26-7-2023';
 		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
-		$cachedValue = json_encode( [
+		$freshValue = json_encode( [
 			'success' => true,
 			'value' => '<b>fresh content</b>'
 		] );
 
-		// Mock fresh cache hit: fresh value is available
-		$cache = $this->createMock( BagOStuff::class );
-
-		// Mock cache key creation: when called with $date, return 'fresh-cache-key'
-		$cache->method( 'makeKey' )
-			->willReturnCallback( static function ( ...$args ) use ( $date ) {
-				return ( count( $args ) === 5 ) && ( $args[3] === $date )
-					? 'fresh-cache-key'
-					: 'stale-cache-key';
-			} );
-
-		// Mock cache access: value is available for 'fresh-cache-key'
-		$cache->expects( $this->once() )
-			->method( 'get' )
-			->with( 'fresh-cache-key' )
-			->willReturn( $cachedValue );
-
+		// Test cache: fresh value is available
+		$bag = new HashBagOStuff();
+		$cache = new WANObjectCache( [ 'cache' => $bag ] );
 		$this->setService( 'WikiLambdaZObjectStash', $cache );
+		$this->setTestCashedValues( $cache, $qid, $language, $date, $fragment, $freshValue, false );
 
 		// Mock jobQueueGroup to assert that it never gets called
 		$queue = $this->createMock( JobQueueGroup::class );
@@ -106,43 +96,28 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$date = '26-7-2023';
 		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
 		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
-		$cachedValue = json_encode( [
+		$staleValue = json_encode( [
 			'success' => true,
 			'value' => '<b>stale content</b>'
 		] );
 
-		// Mock fresh cache hit: fresh value is available
-		$cache = $this->createMock( BagOStuff::class );
-
-		// Mock cache key creation: when called with $date, return 'fresh-cache-key'
-		$cache->method( 'makeKey' )
-			->willReturnCallback( static function ( ...$args ) use ( $date ) {
-				return ( count( $args ) === 5 ) && ( $args[3] === $date )
-					? 'fresh-cache-key'
-					: 'stale-cache-key';
-			} );
-
-		// Mock cache access: miss for 'fresh-cache-key' but hit for 'stale-cache-key'
-		$cache->method( 'get' )
-			->willReturnCallback( static function ( $key ) use ( $cachedValue ) {
-				return ( $key === 'stale-cache-key' )
-					? $cachedValue
-					: false;
-			} );
-
+		// Test cache: fresh value isn't available but stale value is
+		$bag = new HashBagOStuff();
+		$cache = new WANObjectCache( [ 'cache' => $bag ] );
 		$this->setService( 'WikiLambdaZObjectStash', $cache );
+		$this->setTestCashedValues( $cache, $qid, $language, $date, $fragment, false, $staleValue );
 
 		// Mock jobQueueGroup to assert that revalidate job is pushed to the queue
 		$queue = $this->createMock( JobQueueGroup::class );
 		$queue->expects( $this->once() )
 			->method( 'lazyPush' )
-			->with( $this->callback( function ( $job ) use ( $functionCall ) {
+			->with( $this->callback( function ( $job ) use ( $functionCall, $date ) {
 				// Assert that called job is the right type
 				$this->assertInstanceOf( CacheAbstractContentFragmentJob::class, $job );
 				// Assert that job was called with correct function call and cache keys
 				$this->assertEquals( json_decode( $functionCall, true ), $job->getParams()[ 'functionCall' ] );
-				$this->assertSame( 'fresh-cache-key', $job->getParams()[ 'cacheKeyFresh' ] );
-				$this->assertSame( 'stale-cache-key', $job->getParams()[ 'cacheKeyStale' ] );
+				$this->assertStringContainsString( $date, $job->getParams()[ 'cacheKeyFresh' ] );
+				$this->assertStringNotContainsString( $date, $job->getParams()[ 'cacheKeyStale' ] );
 				return true;
 			} ) );
 
@@ -188,15 +163,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'value' => '<b>literal fragment</b>'
 		];
 
-		// Mock fresh cache hit: fresh and stale values are miss
-		$cache = $this->createMock( BagOStuff::class );
-		$cache->method( 'makeKey' )
-			->willReturnCallback( static function ( ...$args ) use ( $date ) {
-				return ( count( $args ) === 5 ) && ( $args[3] === $date )
-					? 'fresh-cache-key'
-					: 'stale-cache-key';
-			} );
-		$cache->method( 'get' )->willReturn( false );
+		// Test cache: no fresh nor stale values
+		$bag = new HashBagOStuff();
+		$cache = new WANObjectCache( [ 'cache' => $bag ] );
 		$this->setService( 'WikiLambdaZObjectStash', $cache );
 
 		// Mock jobQueueGroup to assert that it never gets called
@@ -209,7 +178,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
 		$awRequest->expects( $this->once() )
 			->method( 'generateSafeFragment' )
-			->with( json_decode( $functionCall, true ), 'fresh-cache-key', 'stale-cache-key' )
 			->willReturn( $cachedFragment );
 
 		$this->setService( 'AbstractWikiRequest', $awRequest );
@@ -244,10 +212,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$date = '26-7-2023';
 		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
 
-		// Mock fresh cache hit: fresh and stale values are miss
-		$cache = $this->createMock( BagOStuff::class );
-		$cache->method( 'makeKey' )->willReturn( 'some-pointless-key' );
-		$cache->method( 'get' )->willReturn( false );
+		// Test cache: no fresh nor stale values
+		$bag = new HashBagOStuff();
+		$cache = new WANObjectCache( [ 'cache' => $bag ] );
 		$this->setService( 'WikiLambdaZObjectStash', $cache );
 
 		// Mock jobQueueGroup to assert that it never gets called
@@ -288,23 +255,22 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
 		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
 
-		// Mock fresh cache hit: fresh and stale values are miss
-		$cache = $this->createMock( BagOStuff::class );
-		$cache->method( 'makeKey' )->willReturnOnConsecutiveCalls( 'fresh-cache-key', 'stale-cache-key', '' );
-		$cache->method( 'get' )->willReturn( false );
+		// Test fresh cache hit: fresh and stale values are miss
+		$bag = new HashBagOStuff();
+		$cache = new WANObjectCache( [ 'cache' => $bag ] );
 		$this->setService( 'WikiLambdaZObjectStash', $cache );
 
 		// Mock jobQueueGroup to assert that revalidate job is pushed to the queue
 		$queue = $this->createMock( JobQueueGroup::class );
 		$queue->expects( $this->once() )
 			->method( 'lazyPush' )
-			->with( $this->callback( function ( $job ) use ( $functionCall ) {
+			->with( $this->callback( function ( $job ) use ( $functionCall, $date ) {
 				// Assert that called job is the right type
 				$this->assertInstanceOf( CacheAbstractContentFragmentJob::class, $job );
 				// Assert that job was called with correct function call and cache keys
 				$this->assertEquals( json_decode( $functionCall, true ), $job->getParams()[ 'functionCall' ] );
-				$this->assertSame( 'fresh-cache-key', $job->getParams()[ 'cacheKeyFresh' ] );
-				$this->assertSame( 'stale-cache-key', $job->getParams()[ 'cacheKeyStale' ] );
+				$this->assertStringContainsString( $date, $job->getParams()[ 'cacheKeyFresh' ] );
+				$this->assertStringNotContainsString( $date, $job->getParams()[ 'cacheKeyStale' ] );
 				return true;
 			} ) );
 
@@ -396,5 +362,36 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			. '"Z825K1":{"Z1K1":"Z6091","Z6091K1":"' . $qid . '"},'
 			. '"Z825K2":"' . $language . '",'
 			. '"Z825K3":{"Z1K1":"Z7","Z7K1":"Z20808","Z20808K1":"' . $date . '","Z20808K2":"' . $language . '"}}';
+	}
+
+	private function setTestCashedValues(
+		WANObjectCache $cache,
+		string $qid,
+		string $language,
+		string $date,
+		string $fragment,
+		mixed $freshValue,
+		mixed $staleValue
+	): void {
+		if ( $freshValue ) {
+			$freshKey = $cache->makeKey(
+				ApiAbstractWikiRunFragment::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
+				$qid,
+				$language,
+				$date,
+				AbstractContentUtils::makeCacheKeyForAbstractFragment( json_decode( $fragment, true ) )
+			);
+			$cache->set( $freshKey, $freshValue );
+		}
+
+		if ( $staleValue ) {
+			$staleKey = $cache->makeKey(
+				ApiAbstractWikiRunFragment::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
+				$qid,
+				$language,
+				AbstractContentUtils::makeCacheKeyForAbstractFragment( json_decode( $fragment, true ) )
+			);
+			$cache->set( $staleKey, $staleValue );
+		}
 	}
 }

@@ -36,20 +36,20 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 class ZObjectContentHandler extends ContentHandler {
 	use ZObjectEditingPageTrait;
 
 	private Config $config;
 	private ZObjectStore $zObjectStore;
-	private BagOStuff $zObjectCache;
+	private WANObjectCache $zObjectCache;
 
 	/**
 	 * @param string $modelId
 	 * @param Config $config
 	 * @param ZObjectStore $zObjectStore
-	 * @param BagOStuff $zObjectCache
+	 * @param WANObjectCache $zObjectCache
 	 */
 	public function __construct( $modelId, $config, $zObjectStore, $zObjectCache ) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {

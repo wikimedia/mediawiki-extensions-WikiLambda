@@ -13,13 +13,13 @@ namespace MediaWiki\Extension\WikiLambda;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\Rdbms\IConnectionProvider;
 
 class WikifunctionsClientStore {
 
 	private IConnectionProvider $dbProvider;
-	private BagOStuff $objectCache;
+	private WANObjectCache $objectCache;
 
 	private LoggerInterface $logger;
 

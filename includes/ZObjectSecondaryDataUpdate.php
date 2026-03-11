@@ -23,14 +23,14 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 	private Title $title;
 	private ZObjectContent $zObject;
 	private ZObjectStore $zObjectStore;
-	private BagOStuff $zObjectCache;
+	private WANObjectCache $zObjectCache;
 	private ?OrchestratorRequest $orchestrator;
 	private LoggerInterface $logger;
 
@@ -40,14 +40,14 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	 * @param Title $title
 	 * @param Content $zObject
 	 * @param ZObjectStore $zObjectStore
-	 * @param BagOStuff $zObjectCache
+	 * @param WANObjectCache $zObjectCache
 	 * @param OrchestratorRequest|null $orchestrator
 	 */
 	public function __construct(
 		Title $title,
 		Content $zObject,
 		ZObjectStore $zObjectStore,
-		BagOStuff $zObjectCache,
+		WANObjectCache $zObjectCache,
 		$orchestrator = null
 	) {
 		$this->title = $title;

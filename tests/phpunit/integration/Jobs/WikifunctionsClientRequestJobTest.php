@@ -18,7 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MockHttpTrait;
 use MWHttpRequest;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob
@@ -30,7 +30,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 
 	use MockHttpTrait;
 
-	private BagOStuff $cache;
+	private WANObjectCache $cache;
 
 	protected function setUp(): void {
 		parent::setUp();

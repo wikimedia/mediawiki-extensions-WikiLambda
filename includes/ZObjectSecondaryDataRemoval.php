@@ -15,24 +15,24 @@ use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 class ZObjectSecondaryDataRemoval extends DataUpdate {
 
 	private Title $title;
 	private ZObjectStore $zObjectStore;
-	private BagOStuff $zObjectCache;
+	private WANObjectCache $zObjectCache;
 	private LoggerInterface $logger;
 
 	/**
 	 * @param Title $title
 	 * @param ZObjectStore $zObjectStore
-	 * @param BagOStuff $zObjectCache
+	 * @param WANObjectCache $zObjectCache
 	 */
 	public function __construct(
 		Title $title,
 		ZObjectStore $zObjectStore,
-		BagOStuff $zObjectCache
+		WANObjectCache $zObjectCache
 	) {
 		$this->title = $title;
 		$this->zObjectStore = $zObjectStore;

@@ -24,7 +24,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MWHttpRequest;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * Asynchronous job run on the client wiki to request a function call from the repo, turning
@@ -34,7 +34,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
-	private BagOStuff $objectCache;
+	private WANObjectCache $objectCache;
 	private LoggerInterface $logger;
 
 	/**

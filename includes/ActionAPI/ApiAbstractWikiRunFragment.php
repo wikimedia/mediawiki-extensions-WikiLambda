@@ -23,7 +23,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiAbstractWikiRunFragment extends ApiBase {
@@ -32,7 +32,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 	private JobQueueGroup $jobQueueGroup;
 	private AbstractWikiRequest $abstractWikiRequest;
-	private BagOStuff $objectCache;
+	private WANObjectCache $objectCache;
 	private LoggerInterface $logger;
 
 	public function __construct(
