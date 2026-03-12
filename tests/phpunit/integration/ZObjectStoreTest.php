@@ -2147,6 +2147,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Insert types
 		$this->zobjectStore->insertZObjectLabels( 'Z10001', 'Z4', [ 'Z1002' => 'Type 1' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z10002', 'Z4', [ 'Z1002' => 'Type 2' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z1', 'Z4', [ 'Z1002' => 'Object' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z4', 'Z4', [ 'Z1002' => 'Type', 'Z1003' => 'Tipo' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z60', 'Z4', [ 'Z1002' => 'Language', 'Z1841' => 'Llingua' ] );
 		$this->zobjectStore->insertZObjectLabels( 'Z8', 'Z4', [ 'Z1002' => 'Function', 'Z1004' => 'Fonction' ] );
@@ -2156,7 +2157,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertZObjectLabels( 'Z801', 'Z8', [ 'Z1002' => 'Function 1' ] );
 
 		$userLang = 'ext';
-		$res = $this->zobjectStore->fetchAllInstancedTypesWithLabels( $userLang );
+		$res = $this->zobjectStore->fetchAllInstancedTypesWithLabels( $userLang, true );
+		$this->assertSame( 4, $res->numRows() );
+
+		$res = $this->zobjectStore->fetchAllInstancedTypesWithLabels( $userLang, false );
 		$this->assertSame( 3, $res->numRows() );
 
 		// Ordered by label

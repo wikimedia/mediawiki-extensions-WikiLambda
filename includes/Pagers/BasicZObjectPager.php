@@ -46,6 +46,7 @@ class BasicZObjectPager extends AbstractZObjectPager {
 	 * Gets the base conditions from the parent class and adds the
 	 * additional conditions for this pager, depending on the filters:
 	 * - WHERE wlzl_type = type
+	 * - WHERE wlzl_return_type = return_type
 	 * - WHERE wlzl_language != missing_language
 	 *
 	 * @return array
@@ -59,7 +60,12 @@ class BasicZObjectPager extends AbstractZObjectPager {
 			$queryInfo[ 'conds' ][ 'wlzl_type' ] = $this->filters[ 'type' ];
 		}
 
-		// Special:ListMissingLabels
+		// Special:ListObjectsByType only
+		if ( array_key_exists( 'return_type', $this->filters ) && $this->filters[ 'return_type' ] !== 'Z1' ) {
+			$queryInfo[ 'conds' ][ 'wlzl_return_type' ] = $this->filters[ 'return_type' ];
+		}
+
+		// Special:ListMissingLabels only
 		if ( array_key_exists( 'missing_language', $this->filters ) ) {
 			$queryInfo[ 'conds' ][] = $this->getDatabase()
 				->expr( 'wlzl_language', '!=', $this->filters[ 'missing_language' ] );

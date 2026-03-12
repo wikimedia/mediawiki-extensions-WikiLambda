@@ -529,6 +529,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-latest": "Latest first",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Name",
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Oldest first",
+	"wikilambda-special-objectsbytype-form-returntype": "Return Type",
 	"wikilambda-special-objectsbytype-form-type": "Type",
 	"wikilambda-special-objectsbytype-link": "List of all Types with instances",
 	"wikilambda-special-objectsbytype-listheader": "All Objects of type '$1' ($2)",

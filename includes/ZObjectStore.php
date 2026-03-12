@@ -882,9 +882,10 @@ class ZObjectStore {
 	 * label in the user language or the closest available fallback.
 	 *
 	 * @param string $userLang - User language BCP47 code
+	 * @param bool $includeZ1 - Whether to include Z1/ZObject in the results
 	 * @return IResultWrapper
 	 */
-	public function fetchAllInstancedTypesWithLabels( $userLang ) {
+	public function fetchAllInstancedTypesWithLabels( string $userLang, bool $includeZ1 = false ) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
 		// TODO (T362246): Dependency-inject
@@ -896,6 +897,11 @@ class ZObjectStore {
 
 		// Fetch only those types that have instances
 		$zids = $this->fetchAllInstancedTypes();
+
+		// If Z1 should be included, add it to the list of ZIDs
+		if ( $includeZ1 ) {
+			$zids[] = 'Z1';
+		}
 
 		// If there are no Types with instances (e.g. in CI), just return a fake empty result.
 		if ( $zids === [] ) {

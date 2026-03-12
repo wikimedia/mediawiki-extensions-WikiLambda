@@ -24,9 +24,16 @@ class HTMLZTypeSelectField extends HTMLSelectField {
 		// Get user language to select best labels for each item
 		$languageCode = $this->mParent->getLanguage()->getCode();
 
-		// Get all valid WikiLambda types with instances: zids and labels
+		// Get all valid WikiLambda types with instances: zids and labels.
+		// 'allowsZ1' is opt-in (set to true on return-type pickers, where Z1
+		// is a valid choice meaning "any return"); for plain type pickers it
+		// is omitted, so default to false rather than letting an undefined
+		// key warning escape under strict error handling.
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$types = $zObjectStore->fetchAllInstancedTypesWithLabels( $languageCode ) ?? [];
+		$types = $zObjectStore->fetchAllInstancedTypesWithLabels(
+			$languageCode,
+			(bool)( $this->mParams['allowsZ1'] ?? false )
+		) ?? [];
 
 		// Create the options array with all existing ZTypes
 		foreach ( $types as $row ) {

@@ -78,7 +78,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * Get and validate SpecialPage parameters from subpage and url
 	 *
 	 * @param string $subpage
-	 * @return array - type ZID, orderby, bool excludePreDefined
+	 * @return array - type ZID, returnType ZID, orderby, bool excludePreDefined
 	 */
 	private function getParameters( $subpage ) {
 		// Get type from subpage; overwrite with value from Request.
@@ -94,8 +94,18 @@ class SpecialListObjectsByType extends SpecialPage {
 				ZTypeRegistry::Z_FUNCTION;
 		}
 
+		// Get return type from Request.
+		// * user input can be empty string or valid/invalid string
+		// Default: Z1/ZObject, i.e. any ZObject
+		$requestReturnType = $this->getRequest()->getText( 'return_type' );
+		if ( $requestReturnType && ZObjectUtils::isValidZObjectReference( $requestReturnType ) ) {
+			$returnType = $requestReturnType;
+		} else {
+			$returnType = ZTypeRegistry::Z_OBJECT;
+		}
+
 		// Get orderby from Request.
-		// * can be empty string or valid/invalid string (name, latest, oldest)
+		// * user input can be empty string or valid/invalid string (name, latest, oldest)
 		// Default: 'name'
 		$requestOrderby = $this->getRequest()->getText( 'orderby' );
 		$orderby = in_array( $requestOrderby, BasicZObjectPager::ORDER_BY_OPTIONS ) ?
@@ -104,7 +114,7 @@ class SpecialListObjectsByType extends SpecialPage {
 
 		$excludePreDefined = $this->getRequest()->getBool( 'excludePreDefined' );
 
-		return [ $type, $orderby, $excludePreDefined ];
+		return [ $type, $returnType, $orderby, $excludePreDefined ];
 	}
 
 	/**
@@ -116,7 +126,7 @@ class SpecialListObjectsByType extends SpecialPage {
 		}
 
 		// Get and validate page parameters
-		[ $type, $orderby, $excludePreDefined ] = $this->getParameters( $subpage );
+		[ $type, $returnType, $orderby, $excludePreDefined ] = $this->getParameters( $subpage );
 
 		// Set headers
 		$this->setHeaders();
@@ -136,7 +146,10 @@ class SpecialListObjectsByType extends SpecialPage {
 		);
 
 		// Build BasicZObjectPager for the given filters
-		$filters = [ 'type' => $type ];
+		$filters = [
+			'type' => $type,
+			'return_type' => $returnType
+		];
 		$pager = new BasicZObjectPager(
 			$this->getContext(),
 			$this->zObjectStore,
@@ -147,7 +160,7 @@ class SpecialListObjectsByType extends SpecialPage {
 		);
 
 		// Add the header form
-		$output->addHTML( $this->getHeaderForm( $type, $orderby ) );
+		$output->addHTML( $this->getHeaderForm( $type, $returnType, $orderby ) );
 
 		// Add the top pagination controls
 		$output->addHTML( $pager->getNavigationBar() );
@@ -178,10 +191,11 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * with a selector field for ZTypes and another for ZLanguages.
 	 *
 	 * @param string $typeZid
+	 * @param string $returnType
 	 * @param string $orderby
 	 * @return string
 	 */
-	public function getHeaderForm( string $typeZid, string $orderby ) {
+	public function getHeaderForm( string $typeZid, string $returnType, string $orderby ) {
 		$formHeader = $this->getHeaderTitle( $typeZid );
 		$formDescriptor = [
 			'type' => [
@@ -189,6 +203,14 @@ class SpecialListObjectsByType extends SpecialPage {
 				'class' => HTMLZTypeSelectField::class,
 				'name' => 'type',
 				'default' => $typeZid
+			],
+			'return_type' => [
+				'label' => $this->msg( 'wikilambda-special-objectsbytype-form-returntype' )->text(),
+				'class' => HTMLZTypeSelectField::class,
+				'name' => 'return_type',
+				'allowsZ1' => true,
+				'default' => $returnType,
+				'hide-if' => [ '!==', 'type', ZTypeRegistry::Z_FUNCTION ],
 			],
 			'orderby' => [
 				'label' => $this->msg( 'wikilambda-special-objectsbytype-form-orderby' )->text(),
