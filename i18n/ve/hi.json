@@ -70,5 +70,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "फ़ंक्शन परिणाम नहीं दिखा पा रहा है। कृपया बाद में पुनः प्रयास करें।",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "रद्द",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "रीसेट करें",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "रद्द करें"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "रद्द करें",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "आज के दिनांक का उपयोग करके परिणाम को अद्यतन रखें",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "इस पृष्ठ के डिफ़ॉल्ट विकिडेटा आयटम का उपयोग करें",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "इस पृष्ठ की डिफ़ॉल्ट भाषा का उपयोग करें"
 }
