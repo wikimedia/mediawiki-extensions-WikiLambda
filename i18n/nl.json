@@ -163,6 +163,8 @@
 	"wikilambda-cancel": "Annuleren",
 	"wikilambda-cannot-change-function-when-connected-error-z14": "Deze implementatie is momenteel gekoppeld aan een functie. Ontkoppel deze van de oorspronkelijke functie voordat u deze aan een nieuwe toewijst.",
 	"wikilambda-cannot-change-function-when-connected-error-z20": "Deze test is momenteel gekoppeld aan een functie. Ontkoppel de test van de oorspronkelijke functie voordat u deze aan een nieuwe functie toewijst.",
+	"wikilambda-clipboard-dialog-item-see-less": "Minder weergeven",
+	"wikilambda-clipboard-dialog-item-see-more": "Meer weergeven",
 	"wikilambda-code-editor-label": "Code-editor",
 	"wikilambda-confirm": "Bevestigen",
 	"wikilambda-context-menu": "Contextmenu",

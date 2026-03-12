@@ -21,6 +21,7 @@
 	"wikilambda-abstract-menu-option-insert-before": "Fragment einfügen vor",
 	"wikilambda-abstract-menu-option-move-after": "Fragment verschieben nach",
 	"wikilambda-abstract-menu-option-move-before": "Fragment verschieben vor",
+	"wikilambda-abstract-preview-fragment-max-retries": "Maximale Anzahl an Wiederholungsversuchen erreicht. Bitte versuche es später erneut.",
 	"wikilambda-abstract-preview-in-language": "Erstellter Text",
 	"wikilambda-abstract-special-create-createbutton-label": "Erstellen"
 }
