@@ -15,6 +15,7 @@ use MediaWiki\Html\Html;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Skin\Skin;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class ZObjectEditAction extends Action {
 	use ZObjectEditingPageTrait;
@@ -192,10 +193,8 @@ class ZObjectEditAction extends Action {
 		// (T328679) If the page doesn't exist yet, route the user to the ZObject creation system
 		// rather than running the code below that assumes the ZObject exists.
 		if ( !$this->getTitle()->exists() ) {
-			$this->generateZObjectPayload( $output, $this->getContext(), [
-				'createNewPage' => true,
-				'zId' => $zId,
-			] );
+			$specialTitle = SpecialPage::getTitleFor( 'CreateObject' );
+			$this->getOutput()->redirect( $specialTitle->getFullURL() );
 			return;
 		}
 
