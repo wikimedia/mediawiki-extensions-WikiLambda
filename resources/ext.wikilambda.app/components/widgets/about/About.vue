@@ -595,7 +595,7 @@ module.exports = exports = defineComponent( {
 			const pageTitle = response.page;
 
 			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
-			store.setPublishSuccess( pageTitle );
+			store.setPublishSuccessKey( pageTitle );
 
 			// FIXME: we are already in the view page, so we don't really need to navigate
 			// See if we can do it with just a store refresh and closing the dialog.

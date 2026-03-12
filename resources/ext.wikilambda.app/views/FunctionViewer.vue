@@ -34,23 +34,11 @@
 				</wl-function-viewer-details>
 			</div>
 		</div>
-		<div
-			v-if="displaySuccessMessage"
-			class="ext-wikilambda-app-toast-message"
-		>
-			<cdx-message
-				:auto-dismiss="true"
-				:fade-in="true"
-				type="success"
-			>
-				{{ i18n( 'wikilambda-publish-successful' ).text() }}
-			</cdx-message>
-		</div>
 	</div>
 </template>
 
 <script>
-const { computed, defineComponent, inject, onMounted } = require( 'vue' );
+const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref, watch } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../Constants.js' );
@@ -64,7 +52,7 @@ const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluat
 // Function view components
 const FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
 // Codex components
-const { CdxMessage } = require( '../../codex.js' );
+const { CdxMessage, useToast } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-view',
@@ -80,6 +68,8 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 		const { getCurrentZObjectId } = storeToRefs( store );
 		const { submitInteraction } = useEventLog();
+		const toast = useToast();
+		const successToastId = ref( null );
 		const {
 			sharedFunctionCall,
 			shareUrlError,
@@ -97,6 +87,50 @@ module.exports = exports = defineComponent( {
 		 */
 		const displaySuccessMessage = computed( () => store.getShowPublishSuccess );
 
+		/**
+		 * Dismisses the success toast
+		 */
+		function dismissSuccessToast() {
+			if ( successToastId.value ) {
+				toast.dismiss( successToastId.value );
+				successToastId.value = null;
+			}
+		}
+
+		/**
+		 * Handles the dismissal of the success toast
+		 */
+		function onDismissSuccessToast() {
+			successToastId.value = null;
+			store.clearShowPublishSuccess();
+		}
+
+		/**
+		 * Handles pageshow - when restored from bfcache (back button), clean up to avoid showing stale toast
+		 *
+		 * @param {PageTransitionEvent} event
+		 */
+		function onPageShow( event ) {
+			if ( event.persisted ) {
+				dismissSuccessToast();
+			}
+		}
+
+		/**
+		 * Shows the success toast when the publish success flag is set (only on fresh load after actual publish)
+		 *
+		 * @param {boolean} show - Whether to show the success toast
+		 */
+		watch( displaySuccessMessage, ( show ) => {
+			if ( show ) {
+				successToastId.value = toast.success( i18n( 'wikilambda-publish-successful' ).text(), {
+					autoDismiss: true,
+					onUserDismissed: onDismissSuccessToast,
+					onAutoDismissed: onDismissSuccessToast
+				} );
+			}
+		}, { immediate: true } );
+
 		// Actions
 		/**
 		 * Dispatch event after a click of the edit icon in the About widget.
@@ -112,7 +146,10 @@ module.exports = exports = defineComponent( {
 
 		// Lifecycle
 		onMounted( () => {
-			// Check if we should show publish success message
+			// Handle pageshow - when restored from bfcache (back button), clean up to avoid showing stale toast
+			window.addEventListener( 'pageshow', onPageShow );
+
+			// Check if we should show publish success message (session storage key set by Publish.vue before redirect)
 			store.checkPublishSuccess( getCurrentZObjectId.value );
 
 			// Load function call from URL if present (validate against current function)
@@ -126,12 +163,14 @@ module.exports = exports = defineComponent( {
 			emit( 'mounted' );
 		} );
 
+		onBeforeUnmount( () => {
+			window.removeEventListener( 'pageshow', onPageShow );
+		} );
+
 		return {
-			displaySuccessMessage,
 			dispatchAboutEvent,
 			functionType,
 			getCurrentZObjectId,
-			i18n,
 			shareUrlError,
 			sharedFunctionCall
 		};

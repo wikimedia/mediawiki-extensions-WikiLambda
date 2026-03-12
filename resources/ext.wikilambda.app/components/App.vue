@@ -6,6 +6,7 @@
 -->
 <template>
 	<div id="ext-wikilambda-app" class="ext-wikilambda-app">
+		<cdx-toast-container></cdx-toast-container>
 		<template v-if="isInitialized && isAppSetup">
 			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
 			<component :is="`wl-${ getCurrentView }`"></component>
@@ -37,7 +38,7 @@ const FunctionViewerView = require( '../views/FunctionViewer.vue' );
 const DefaultView = require( '../views/Default.vue' );
 
 // Codex components:
-const { CdxMessage, CdxProgressIndicator } = require( '../../codex.js' );
+const { CdxMessage, CdxProgressIndicator, CdxToastContainer } = require( '../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'app',
@@ -48,7 +49,8 @@ module.exports = exports = defineComponent( {
 		'wl-function-viewer-view': FunctionViewerView,
 		'wl-default-view': DefaultView,
 		'cdx-message': CdxMessage,
-		'cdx-progress-indicator': CdxProgressIndicator
+		'cdx-progress-indicator': CdxProgressIndicator,
+		'cdx-toast-container': CdxToastContainer
 	},
 	setup() {
 		const i18n = inject( 'i18n' );

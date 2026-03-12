@@ -648,11 +648,30 @@ module.exports = {
 		 *
 		 * @param {string} zid - The ZObject ID that was published
 		 */
-		setPublishSuccess: function ( zid ) {
-			if ( !zid ) {
-				return;
-			}
+		setPublishSuccessKey: function ( zid ) {
 			mw.storage.session.set( `wikilambda-publish-success-${ zid }`, 'true' );
+		},
+
+		/**
+		 * Checks if the publish success key is set for a given ZID
+		 *
+		 * @param {string} zid - The ZObject ID to check
+		 * @return {boolean}
+		 */
+		checkPublishSuccessKey: function ( zid ) {
+			const key = `wikilambda-publish-success-${ zid }`;
+			return mw.storage.session.get( key ) === 'true';
+		},
+
+		/**
+		 * Removes the publish success key for a given ZID
+		 *
+		 * @param {string} zid - The ZObject ID to remove the key for
+		 * @return {undefined}
+		 */
+		removePublishSuccessKey: function ( zid ) {
+			const key = `wikilambda-publish-success-${ zid }`;
+			mw.storage.session.remove( key );
 		},
 
 		/**
@@ -662,16 +681,30 @@ module.exports = {
 		 * @return {undefined}
 		 */
 		checkPublishSuccess: function ( zid ) {
-			if ( !zid ) {
-				return;
-			}
-			const key = `wikilambda-publish-success-${ zid }`;
-			const exists = mw.storage.session.get( key ) === 'true';
+			const exists = this.checkPublishSuccessKey( zid );
 			if ( exists ) {
-				mw.storage.session.remove( key );
-				this.showPublishSuccess = true;
+				this.removePublishSuccessKey( zid );
+				this.setShowPublishSuccess();
 				return;
 			}
+			this.clearShowPublishSuccess();
+		},
+
+		/**
+		 * Sets the publish success flag
+		 *
+		 * @return {undefined}
+		 */
+		setShowPublishSuccess: function () {
+			this.showPublishSuccess = true;
+		},
+
+		/**
+		 * Clears the publish success message (e.g. when toast is dismissed)
+		 *
+		 * @return {undefined}
+		 */
+		clearShowPublishSuccess: function () {
 			this.showPublishSuccess = false;
 		}
 	}

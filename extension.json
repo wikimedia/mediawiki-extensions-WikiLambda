@@ -527,6 +527,8 @@
 				"CdxRadio",
 				"CdxMessage",
 				"CdxTable",
+				"CdxToastContainer",
+				"useToast",
 				"CdxTextInput",
 				"CdxTextArea",
 				"CdxToggleSwitch",

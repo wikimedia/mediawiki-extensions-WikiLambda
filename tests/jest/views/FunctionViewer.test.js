@@ -7,12 +7,24 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
-const { waitFor } = require( '@testing-library/dom' );
+const { waitFor } = require( '@testing-library/vue' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
-const FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
 const { buildUrl } = require( '../helpers/urlHelpers.js' );
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 const { mockWindowLocation, restoreWindowLocation } = require( '../fixtures/location.js' );
+
+const mockToast = {
+	success: jest.fn(),
+	error: jest.fn(),
+	info: jest.fn(),
+	warning: jest.fn(),
+	dismiss: jest.fn()
+};
+
+const codex = require( '../helpers/loadCodexComponents.js' );
+jest.spyOn( codex, 'useToast' ).mockReturnValue( mockToast );
+
+const FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
 
 describe( 'FunctionViewer', () => {
 	const functionZid = 'Z12345';
@@ -26,14 +38,14 @@ describe( 'FunctionViewer', () => {
 	}
 
 	beforeEach( () => {
+		jest.clearAllMocks();
 		store = useMainStore();
 		store.getCurrentZObjectId = functionZid;
 		store.getUserLangZid = 'Z1002';
 		store.isCreateNewPage = false;
-
 		mockWindowLocation( buildUrl( `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ functionZid }` ) );
 		// Clear sessionStorage before each test
-		mw.storage.session.remove( `wikilambda-publish-success-${ functionZid }` );
+		delete mockSessionStorage[ `wikilambda-publish-success-${ functionZid }` ];
 	} );
 
 	afterEach( () => {
@@ -46,31 +58,83 @@ describe( 'FunctionViewer', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-function-viewer-view' ).exists() ).toBe( true );
 	} );
 
-	it( 'does not display success message by default', () => {
-		const wrapper = renderFunctionViewer();
+	it( 'does not show success toast by default', () => {
+		renderFunctionViewer();
 
-		// Test user behavior: success message should not be visible
-		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBeFalsy();
+		expect( mockToast.success ).not.toHaveBeenCalled();
 	} );
 
-	it( 'displays success message if publish success flag is set in store', async () => {
-		// Set the publish success flag in sessionStorage (simulating a publish action)
-		mw.storage.session.set( `wikilambda-publish-success-${ functionZid }`, 'true' );
-		// We need to mock the checkPublishSuccess method from the store
-		store.checkPublishSuccess = jest.fn().mockImplementation( () => {
-			store.getShowPublishSuccess = true;
-			mw.storage.session.remove( `wikilambda-publish-success-${ functionZid }` );
-		} );
+	it( 'calls checkPublishSuccess on mount with current zid', () => {
+		renderFunctionViewer();
+
+		expect( store.checkPublishSuccess ).toHaveBeenCalledWith( functionZid );
+	} );
+
+	it( 'dispatches edit event when About widget emits edit-metadata', async () => {
 		const wrapper = renderFunctionViewer();
 
-		expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBe( false );
+		const aboutWidget = wrapper.findComponent( { name: 'wl-about-widget' } );
+		aboutWidget.vm.$emit( 'edit-metadata' );
 
-		// Wait for the success message to appear
 		await waitFor( () => {
-			expect( wrapper.find( '.ext-wikilambda-app-toast-message' ).exists() ).toBe( true );
+			expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith(
+				expect.any( String ),
+				expect.any( String ),
+				'edit',
+				expect.objectContaining( {
+					zobjecttype: Constants.Z_FUNCTION,
+					zobjectid: functionZid,
+					zlang: 'Z1002'
+				} )
+			);
 		} );
+	} );
 
-		// Verify the store state was updated
-		expect( store.getShowPublishSuccess ).toBe( true );
+	it( 'displays success toast when publish success flag is set in store', async () => {
+		store.showPublishSuccess = true;
+		renderFunctionViewer();
+
+		await waitFor( () => {
+			expect( mockToast.success ).toHaveBeenCalledWith(
+				expect.any( String ),
+				expect.objectContaining( {
+					autoDismiss: true,
+					onUserDismissed: expect.any( Function ),
+					onAutoDismissed: expect.any( Function )
+				} )
+			);
+		} );
+	} );
+
+	it( 'calls clearShowPublishSuccess when toast is dismissed', () => {
+		store.showPublishSuccess = true;
+		store.checkPublishSuccess = jest.fn();
+		renderFunctionViewer();
+
+		const onDismissSuccessToast = mockToast.success.mock.calls[ 0 ][ 1 ].onUserDismissed;
+		onDismissSuccessToast();
+
+		expect( store.clearShowPublishSuccess ).toHaveBeenCalled();
+	} );
+
+	it( 'dismisses success toast when pageshow fires with persisted (bfcache restore)', () => {
+		store.showPublishSuccess = true;
+		store.checkPublishSuccess = jest.fn();
+		mockToast.success.mockReturnValue( 'toast-123' );
+		renderFunctionViewer();
+
+		window.dispatchEvent( new PageTransitionEvent( 'pageshow', { persisted: true } ) );
+
+		expect( mockToast.dismiss ).toHaveBeenCalledWith( 'toast-123' );
+	} );
+
+	it( 'removes pageshow listener on unmount', () => {
+		const removeSpy = jest.spyOn( window, 'removeEventListener' );
+		const wrapper = renderFunctionViewer();
+
+		wrapper.unmount();
+
+		expect( removeSpy ).toHaveBeenCalledWith( 'pageshow', expect.any( Function ) );
+		removeSpy.mockRestore();
 	} );
 } );

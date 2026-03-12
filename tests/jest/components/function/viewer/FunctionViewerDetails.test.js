@@ -8,6 +8,18 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
+
+const mockToast = {
+	success: jest.fn(),
+	error: jest.fn(),
+	info: jest.fn(),
+	warning: jest.fn(),
+	dismiss: jest.fn()
+};
+
+const codex = require( '../../../helpers/loadCodexComponents.js' );
+jest.spyOn( codex, 'useToast' ).mockReturnValue( mockToast );
+
 const createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
 const createLabelDataMock = require( '../../../helpers/getterHelpers.js' ).createLabelDataMock;
 const ApiError = require( '../../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
@@ -50,6 +62,7 @@ describe( 'FunctionViewerDetails', () => {
 	}
 
 	beforeEach( () => {
+		jest.clearAllMocks();
 		actionsThrowError = false;
 
 		const createMockAction = () => jest.fn( () => actionsThrowError ?
@@ -218,7 +231,7 @@ describe( 'FunctionViewerDetails', () => {
 				expect( store.connectImplementations ).toHaveBeenCalledWith( {
 					zids: [ 'Z333', 'Z555' ]
 				} );
-				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
+				expect( mockToast.error ).not.toHaveBeenCalled();
 			} );
 		} );
 
@@ -241,7 +254,7 @@ describe( 'FunctionViewerDetails', () => {
 				expect( store.disconnectImplementations ).toHaveBeenCalledWith( {
 					zids: [ 'Z444' ]
 				} );
-				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
+				expect( mockToast.error ).not.toHaveBeenCalled();
 			} );
 		} );
 
@@ -264,7 +277,7 @@ describe( 'FunctionViewerDetails', () => {
 				expect( store.connectTests ).toHaveBeenCalledWith( {
 					zids: [ 'Z111' ]
 				} );
-				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
+				expect( mockToast.error ).not.toHaveBeenCalled();
 			} );
 		} );
 
@@ -287,7 +300,7 @@ describe( 'FunctionViewerDetails', () => {
 				expect( store.disconnectTests ).toHaveBeenCalledWith( {
 					zids: [ 'Z222' ]
 				} );
-				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( false );
+				expect( mockToast.error ).not.toHaveBeenCalled();
 			} );
 		} );
 
@@ -309,8 +322,7 @@ describe( 'FunctionViewerDetails', () => {
 			testTable.vm.$emit( 'disconnect' );
 
 			await waitFor( () => {
-				expect( wrapper.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
-				expect( wrapper.findComponent( { name: 'cdx-message' } ).props( 'type' ) ).toEqual( 'error' );
+				expect( mockToast.error ).toHaveBeenCalledWith( expect.any( String ) );
 			} );
 		} );
 	} );

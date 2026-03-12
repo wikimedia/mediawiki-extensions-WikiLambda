@@ -227,7 +227,7 @@ module.exports = exports = defineComponent( {
 			const pageTitle = response.page;
 
 			store.clearErrors( Constants.STORED_OBJECTS.MAIN, true );
-			store.setPublishSuccess( pageTitle );
+			store.setPublishSuccessKey( pageTitle );
 
 			// Navigate to page
 			window.location.href = !pageTitle ?

@@ -33,9 +33,11 @@ function loadCodexComponents() {
 }
 
 const codexComponents = loadCodexComponents();
+const codexPackage = require( '@wikimedia/codex' );
 const codex = codexComponents.reduce( ( acc, component ) => {
-	acc[ component ] = require( '@wikimedia/codex' )[ component ];
+	acc[ component ] = codexPackage[ component ];
 	return acc;
 }, {} );
+codex.useToast = codexPackage.useToast;
 
 module.exports = codex;

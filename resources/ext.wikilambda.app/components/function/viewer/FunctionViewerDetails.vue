@@ -37,20 +37,6 @@
 				@disconnect="disconnectCheckedTests"
 			></wl-function-viewer-details-table>
 		</section>
-		<div
-			v-if="!!currentToast"
-			class="ext-wikilambda-app-toast-message"
-		>
-			<cdx-message
-				:allow-user-dismiss="true"
-				:dismiss-button-label="i18n( 'wikilambda-toast-close' ).text()"
-				:fade-in="true"
-				type="error"
-				@user-dismissed="closeToast"
-			>
-				{{ currentToast }}
-			</cdx-message>
-		</div>
 	</main>
 </template>
 
@@ -65,21 +51,19 @@ const urlUtils = require( '../../../utils/urlUtils.js' );
 // Function view components
 const FunctionViewerDetailsTable = require( './FunctionViewerDetailsTable.vue' );
 // Codex components
-const { CdxMessage } = require( '../../../../codex.js' );
+const { useToast } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-viewer-details',
 	components: {
-		'wl-function-viewer-details-table': FunctionViewerDetailsTable,
-		'cdx-message': CdxMessage
+		'wl-function-viewer-details-table': FunctionViewerDetailsTable
 	},
 	setup() {
 		const i18n = inject( 'i18n' );
 		const { isValidZidFormat } = useType();
 		const store = useMainStore();
-
-		// State
-		const currentToast = ref( null );
+		const toast = useToast();
+		const errorToastId = ref( null );
 
 		// Table helpers
 		/**
@@ -305,9 +289,21 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Dismisses the error toast if one is showing
+		 */
+		function closeToast() {
+			if ( errorToastId.value ) {
+				toast.dismiss( errorToastId.value );
+				errorToastId.value = null;
+			}
+		}
+
+		/**
 		 * Get the set of checked implementations and connect them to the current function
 		 */
 		function connectCheckedImplementations() {
+			closeToast();
+
 			const zids = Object.keys( implementationsState.value ).filter(
 				( zid ) => implementationsState.value[ zid ].checked && !implementationsState.value[ zid ].available
 			);
@@ -315,10 +311,9 @@ module.exports = exports = defineComponent( {
 			implementationsLoading.value = true;
 
 			store.connectImplementations( { zids } ).then( () => {
-				closeToast();
 				setImplementationsState();
 			} ).catch( ( error ) => {
-				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+				errorToastId.value = toast.error( error.messageOrFallback( 'wikilambda-unknown-save-error-message' ) );
 			} ).finally( () => {
 				implementationsLoading.value = false;
 			} );
@@ -328,16 +323,17 @@ module.exports = exports = defineComponent( {
 		 * Get the set of checked implementations and disconnect them from the current function
 		 */
 		function disconnectCheckedImplementations() {
+			closeToast();
+
 			const zids = Object.keys( implementationsState.value ).filter(
 				( zid ) => implementationsState.value[ zid ].checked && implementationsState.value[ zid ].available
 			);
 
 			implementationsLoading.value = true;
 			store.disconnectImplementations( { zids } ).then( () => {
-				closeToast();
 				setImplementationsState();
 			} ).catch( ( error ) => {
-				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+				errorToastId.value = toast.error( error.messageOrFallback( 'wikilambda-unknown-save-error-message' ) );
 			} ).finally( () => {
 				implementationsLoading.value = false;
 			} );
@@ -542,15 +538,16 @@ module.exports = exports = defineComponent( {
 		 * Get the set of checked tests and connect them to the current function
 		 */
 		function connectCheckedTests() {
+			closeToast();
+
 			const zids = Object.keys( testsState.value )
 				.filter( ( zid ) => testsState.value[ zid ].checked && !testsState.value[ zid ].available );
 
 			testsLoading.value = true;
 			store.connectTests( { zids } ).then( () => {
-				closeToast();
 				setTestsState();
 			} ).catch( ( error ) => {
-				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+				errorToastId.value = toast.error( error.messageOrFallback( 'wikilambda-unknown-save-error-message' ) );
 			} ).finally( () => {
 				testsLoading.value = false;
 			} );
@@ -560,15 +557,16 @@ module.exports = exports = defineComponent( {
 		 * Get the set of checked tests and disconnect them from the current function
 		 */
 		function disconnectCheckedTests() {
+			closeToast();
+
 			const zids = Object.keys( testsState.value )
 				.filter( ( zid ) => testsState.value[ zid ].checked && testsState.value[ zid ].available );
 
 			testsLoading.value = true;
 			store.disconnectTests( { zids } ).then( () => {
-				closeToast();
 				setTestsState();
 			} ).catch( ( error ) => {
-				currentToast.value = error.messageOrFallback( 'wikilambda-unknown-save-error-message' );
+				errorToastId.value = toast.error( error.messageOrFallback( 'wikilambda-unknown-save-error-message' ) );
 			} ).finally( () => {
 				testsLoading.value = false;
 			} );
@@ -584,14 +582,6 @@ module.exports = exports = defineComponent( {
 				setTestsState( zids );
 				testsFetched.value = true;
 			} );
-		}
-
-		// Toast
-		/**
-		 * Closes the warning toast message
-		 */
-		function closeToast() {
-			currentToast.value = null;
 		}
 
 		// Test execution
@@ -637,10 +627,8 @@ module.exports = exports = defineComponent( {
 			areAvailableTestersSelected,
 			areProposedImplementationsSelected,
 			areProposedTestersSelected,
-			closeToast,
 			connectCheckedImplementations,
 			connectCheckedTests,
-			currentToast,
 			disconnectCheckedImplementations,
 			disconnectCheckedTests,
 			implementationsColumns,
