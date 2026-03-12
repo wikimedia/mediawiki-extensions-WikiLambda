@@ -89,7 +89,7 @@ describe( 'ModeSelector', () => {
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu' } );
-			const toggleButton = wrapper.findComponent( { name: 'cdx-toggle-button' } );
+			const toggleButton = wrapper.findComponent( { name: 'cdx-button' } );
 
 			expect( menu.exists() ).toBe( true );
 			expect( toggleButton.exists() ).toBe( true );
@@ -105,7 +105,7 @@ describe( 'ModeSelector', () => {
 			expect( menu.exists() ).toBe( true );
 			expect( menu.isVisible() ).toBe( false );
 
-			const button = wrapper.findComponent( { name: 'cdx-toggle-button' } );
+			const button = wrapper.findComponent( { name: 'cdx-button' } );
 			button.trigger( 'click' );
 
 			// Wait for the next tick to ensure the menu is updated
