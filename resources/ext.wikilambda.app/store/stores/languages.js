@@ -1,6 +1,10 @@
 /*!
  * WikiLambda Vue editor: Pinia store for language-related state, actions, mutations and getters
  *
+ * Single source of truth for language preferences, code↔zid mapping, fallback,
+ * and ensuring/fetching. Library stays the generic cache for ZObjects and other
+ * auxiliary data.
+ *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
@@ -8,11 +12,50 @@
 
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../classes/LabelData.js' );
+const apiUtils = require( '../../utils/apiUtils.js' );
 
 module.exports = {
-	state: {},
+	state: {
+		/**
+		 * Map of the available language zids in the store indexed by language code
+		 */
+		languages: {},
+		/**
+		 * Collection of in-flight language-code-to-ZID requests
+		 * code: promise
+		 */
+		languageCodeRequests: {}
+	},
 
 	getters: {
+		/**
+		 * Returns the language zid given a language ISO code if the
+		 * object has been fetched and is stored in the state.
+		 * Falls back to server-side language mapping (wgWikiLambdaLangs) when available.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLanguageZidOfCode: function ( state ) {
+			/**
+			 * @param {string} code
+			 * @return {string|undefined}
+			 */
+			const findLanguageZid = ( code ) => {
+				// Check state first
+				if ( state.languages[ code ] ) {
+					return state.languages[ code ];
+				}
+				// Fallback to server-side mapping when available
+				const wgLangs = mw.config.get( 'wgWikiLambdaLangs' );
+				if ( wgLangs && wgLangs[ code ] ) {
+					return wgLangs[ code ];
+				}
+				return undefined;
+			};
+			return findLanguageZid;
+		},
+
 		/**
 		 * Get user preferred language code, from config variable zlang
 		 *
@@ -88,5 +131,103 @@ module.exports = {
 		}
 	},
 
-	actions: {}
+	actions: {
+		/**
+		 * Set or clear the in-flight request promise for a language code.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.code Language code
+		 * @param {Promise|null} payload.request Promise for the in-flight request, or null to clear
+		 */
+		setLanguageCodeRequest: function ( payload ) {
+			if ( payload.request ) {
+				this.languageCodeRequests[ payload.code ] = payload.request;
+			} else {
+				delete this.languageCodeRequests[ payload.code ];
+			}
+		},
+
+		/**
+		 * @param {Object} payload
+		 * @param {string} payload.code
+		 * @param {string} payload.zid
+		 */
+		setLanguageCode: function ( payload ) {
+			this.languages[ payload.code ] = payload.zid;
+		},
+
+		/**
+		 * Orchestrates the call to the language-zids API to map language codes to ZLanguage ZIDs,
+		 * then fetches those ZObjects. Codes already in state or in-flight are not requested again.
+		 *
+		 * * Codes are requested only once.
+		 * * Every code is stored along with its request while it's being fetched.
+		 * * Once it's fetched, the request is cleared.
+		 * * The returning promise resolves when all requested codes have been handled.
+		 *
+		 * @param {Object} payload
+		 * @param {string[]} payload.codes Array of language codes to ensure are fetched
+		 * @return {Promise}
+		 */
+		ensureLanguageCodes: function ( payload ) {
+			let requestCodes = [];
+			const allPromises = [];
+			const { codes = [] } = payload;
+
+			codes.forEach( ( code ) => {
+				// Ignore if:
+				// * Language code is empty
+				// * Language code is already known (ZID stored)
+				// * Language code is already being fetched
+				if ( code && !this.languages[ code ] && !this.languageCodeRequests[ code ] ) {
+					requestCodes.push( code );
+				}
+				// Capture pending promise to await if:
+				// * Language code is waiting to be fetched
+				if ( code in this.languageCodeRequests ) {
+					allPromises.push( this.languageCodeRequests[ code ] );
+				}
+			} );
+
+			// Keep only unique values
+			requestCodes = [ ...new Set( requestCodes ) ];
+
+			if ( !requestCodes.length ) {
+				return Promise.all( allPromises );
+			}
+
+			// Fetch the language codes
+			const batchPromise = apiUtils.fetchLanguageZids( { codes: requestCodes } ).then( ( entries ) => {
+				const newZids = [];
+				entries.forEach( ( entry ) => {
+					if ( !entry || !entry.code || !entry.zid ) {
+						return;
+					}
+					this.setLanguageCode( { code: entry.code, zid: entry.zid } );
+					newZids.push( entry.zid );
+				} );
+				// Once it's back, unset active request for these codes
+				requestCodes.forEach( ( code ) => {
+					this.setLanguageCodeRequest( { code, request: null } );
+				} );
+				// Fetch the ZObjects for the new ZIDs
+				if ( newZids.length > 0 ) {
+					this.fetchZids( { zids: newZids } );
+				}
+			} ).catch( ( error ) => {
+				requestCodes.forEach( ( code ) => {
+					this.setLanguageCodeRequest( { code, request: null } );
+				} );
+				throw error;
+			} );
+
+			// Set active request for each code in this batch
+			requestCodes.forEach( ( code ) => {
+				this.setLanguageCodeRequest( { code, request: batchPromise } );
+			} );
+			allPromises.push( batchPromise );
+
+			return Promise.all( allPromises );
+		}
+	}
 };
