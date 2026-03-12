@@ -9,14 +9,12 @@
 const { setActivePinia, createPinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
-const abstractUtils = require( '../../../../resources/ext.wikilambda.app/utils/abstractUtils.js' );
 
 const mockLang = 'Z1002';
 const mockDate = '26-7-2023';
 const mockQid = 'Q96807071';
 const ledeQid = 'Q8776414';
 
-const fragmentCacheKey = ( keyPath, lang = mockLang ) => abstractUtils.getFragmentCacheKey( keyPath, lang );
 const mockEmptyAbstractContent = {
 	qid: mockQid,
 	sections: {
@@ -70,6 +68,7 @@ describe( 'abstractWiki Pinia store', () => {
 		store.highlight = undefined;
 		store.previewLanguageZid = mockLang;
 
+		Object.defineProperty( store, 'getUserLangZid', { value: 'Z1003' } );
 		Object.defineProperty( store, 'getItemLabelData', {
 			value: jest.fn().mockReturnValue( { label: 'Abstract Wikipedia' } )
 		} );
@@ -137,15 +136,20 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.getFragmentPreview( keyPath ) ).toBeUndefined();
 			} );
 
-			it( 'returns the stored fragment preview for current preview language', () => {
+			it( 'returns the stored fragment preview for a given language', () => {
 				const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
 				const fragmentPreview = {
+					hasError: false,
 					isDirty: false,
 					isLoading: false,
-					error: false,
+					error: null,
 					html: '<b>Preview</b>'
 				};
-				store.fragments[ fragmentCacheKey( keyPath ) ] = fragmentPreview;
+				store.fragments = {
+					[ keyPath ]: {
+						[ mockLang ]: fragmentPreview
+					}
+				};
 				expect( store.getFragmentPreview( keyPath ) ).toEqual( fragmentPreview );
 			} );
 		} );
@@ -392,7 +396,6 @@ describe( 'abstractWiki Pinia store', () => {
 
 		describe( 'renderFragmentPreview', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
-			const previewCacheKey = `${ keyPath }|Z1002`;
 			const payload = {
 				keyPath,
 				qid: mockQid,
@@ -403,12 +406,16 @@ describe( 'abstractWiki Pinia store', () => {
 			};
 
 			beforeEach( () => {
-				store.fragments = {};
-				store.fragments[ previewCacheKey ] = {
-					isDirty: true,
-					isLoading: false,
-					error: false,
-					html: 'old fragment'
+				store.fragments = {
+					[ keyPath ]: {
+						[ mockLang ]: {
+							hasError: false,
+							isDirty: true,
+							isLoading: false,
+							error: null,
+							html: 'old fragment'
+						}
+					}
 				};
 
 				store.requestFragmentPreview = jest.fn();
@@ -416,7 +423,7 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'does not render again if fragment is not dirty', async () => {
-				store.fragments[ previewCacheKey ].isDirty = false;
+				store.fragments[ keyPath ][ mockLang ].isDirty = false;
 
 				await store.renderFragmentPreview( payload );
 
@@ -424,7 +431,7 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'does not render again if fragment is loading', async () => {
-				store.fragments[ previewCacheKey ].isLoading = true;
+				store.fragments[ keyPath ][ mockLang ].isLoading = true;
 
 				await store.renderFragmentPreview( payload );
 
@@ -435,7 +442,7 @@ describe( 'abstractWiki Pinia store', () => {
 				store.renderFragmentPreview( payload );
 
 				expect( store.enqueueFragmentPreview ).toHaveBeenCalled();
-				expect( store.fragments[ previewCacheKey ].isLoading ).toBe( true );
+				expect( store.fragments[ keyPath ][ mockLang ].isLoading ).toBe( true );
 			} );
 
 			it( 'adds new request job to the queue', () => {
@@ -455,7 +462,6 @@ describe( 'abstractWiki Pinia store', () => {
 			let retryJob;
 
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
-			const previewCacheKey = `${ keyPath }|Z1002`;
 			const payload = {
 				keyPath,
 				qid: mockQid,
@@ -466,13 +472,17 @@ describe( 'abstractWiki Pinia store', () => {
 			};
 
 			beforeEach( () => {
-				store.fragments = {};
-				store.fragments[ previewCacheKey ] = {
-					isDirty: true,
-					isLoading: false,
-					retryCount: 0,
-					error: false,
-					html: 'old fragment'
+				store.fragments = {
+					[ keyPath ]: {
+						[ mockLang ]: {
+							hasError: false,
+							isDirty: true,
+							isLoading: false,
+							retryCount: 0,
+							error: null,
+							html: 'old fragment'
+						}
+					}
 				};
 
 				retryJob = jest.fn();
@@ -541,7 +551,7 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment: { success: true, pending: true }
 				} );
 
-				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 0 );
+				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 0 );
 
 				await store.requestFragmentPreview( payload, retryJob );
 
@@ -557,7 +567,7 @@ describe( 'abstractWiki Pinia store', () => {
 				}, { signal: undefined } );
 
 				// Assert that the retryCount has increased
-				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 1 );
+				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 1 );
 
 				// Assert that a job has been enqueued
 				jest.advanceTimersByTime( 300 );
@@ -571,13 +581,13 @@ describe( 'abstractWiki Pinia store', () => {
 
 			it( 'runs render fragment and stops if fragment pending but reached max retries', async () => {
 				// MAX_FRAGMENT_RETRIES = 30
-				store.fragments[ previewCacheKey ].retryCount = 29;
+				store.fragments[ keyPath ][ mockLang ].retryCount = 29;
 
 				getMock = jest.fn().mockResolvedValue( {
 					abstractwiki_run_fragment: { success: true, pending: true }
 				} );
 
-				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 29 );
+				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 29 );
 
 				await store.requestFragmentPreview( payload, retryJob );
 
@@ -593,7 +603,7 @@ describe( 'abstractWiki Pinia store', () => {
 				}, { signal: undefined } );
 
 				// Assert that the retryCount has increased
-				expect( store.fragments[ previewCacheKey ].retryCount ).toBe( 30 );
+				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 30 );
 
 				// Assert that final preview has been set
 				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
@@ -687,16 +697,14 @@ describe( 'abstractWiki Pinia store', () => {
 
 		describe( 'setRenderedFragment', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
-			const previewCacheKey = `${ keyPath }|Z1002`;
 
 			beforeEach( () => {
-				store.fragments = {};
-				store.fragments[ previewCacheKey ] = {
-					isDirty: true,
-					isLoading: true,
-					retryCount: 0,
-					error: false,
-					html: 'old fragment'
+				store.fragments = {
+					[ keyPath ]: {
+						[ mockLang ]: {
+							html: 'old fragment'
+						}
+					}
 				};
 			} );
 
@@ -707,7 +715,7 @@ describe( 'abstractWiki Pinia store', () => {
 					fragment: 'some rendered fragment'
 				} );
 
-				expect( store.fragments[ previewCacheKey ] ).toEqual( {
+				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
 					hasError: false,
 					isDirty: false,
 					isLoading: false,
@@ -726,7 +734,7 @@ describe( 'abstractWiki Pinia store', () => {
 					}
 				} );
 
-				expect( store.fragments[ previewCacheKey ] ).toEqual( {
+				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
 					hasError: true,
 					isDirty: false,
 					isLoading: false,
@@ -748,7 +756,7 @@ describe( 'abstractWiki Pinia store', () => {
 					}
 				} );
 
-				expect( store.fragments[ previewCacheKey ] ).toEqual( {
+				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
 					hasError: true,
 					isDirty: false,
 					isLoading: false,
@@ -770,7 +778,7 @@ describe( 'abstractWiki Pinia store', () => {
 					fragment: 'some new fragment'
 				} );
 
-				expect( store.fragments[ fragmentCacheKey( newKeyPath ) ] ).toEqual( {
+				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
 					hasError: false,
 					isDirty: false,
 					isLoading: false,
@@ -779,22 +787,53 @@ describe( 'abstractWiki Pinia store', () => {
 					html: 'some new fragment'
 				} );
 			} );
+
+			it( 'sets new language for an existing fragment', () => {
+				const newLanguage = 'Z1111';
+
+				store.setRenderedFragment( {
+					keyPath,
+					language: newLanguage,
+					fragment: 'some new fragment in new language'
+				} );
+
+				expect( store.fragments[ keyPath ][ newLanguage ] ).toEqual( {
+					hasError: false,
+					isDirty: false,
+					isLoading: false,
+					retryCount: 0,
+					error: null,
+					html: 'some new fragment in new language'
+				} );
+			} );
 		} );
 
 		describe( 'setDirtyFragment', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
 			const childKeyPath = `${ keyPath }.Z444K1.3`;
 			const debounceTime = 2000;
+			const otherLang = 'Z1111';
 
 			beforeEach( () => {
 				jest.useFakeTimers();
 
-				store.fragments = {};
-				store.fragments[ fragmentCacheKey( keyPath ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'old fragment'
+				store.fragments = {
+					[ keyPath ]: {
+						[ mockLang ]: {
+							hasError: false,
+							isDirty: false,
+							isLoading: false,
+							error: null,
+							html: 'old fragment'
+						},
+						[ otherLang ]: {
+							hasError: true,
+							isDirty: false,
+							isLoading: false,
+							error: null,
+							html: 'old fragment in other lang'
+						}
+					}
 				};
 			} );
 
@@ -806,21 +845,25 @@ describe( 'abstractWiki Pinia store', () => {
 				store.setDirtyFragment( childKeyPath );
 
 				// Doesn't set dirty immediately but waits for debounce
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( false );
+				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( false );
+				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( false );
 
 				// Sets dirty after debounce timer goes off
 				jest.advanceTimersByTime( debounceTime );
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( true );
+				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( true );
+				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( true );
 			} );
 
 			it( 'sets fragment as dirty immediately if requested', () => {
 				store.setDirtyFragment( childKeyPath, true );
 
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( false );
+				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( false );
+				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( false );
 
 				// Sets dirty after 0ms timer goes off
 				jest.advanceTimersByTime( 1 );
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( true );
+				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( true );
+				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( true );
 			} );
 
 			it( 'does nothing if fragment is not initialized', () => {
@@ -829,15 +872,20 @@ describe( 'abstractWiki Pinia store', () => {
 				store.setDirtyFragment( childKeyPath );
 				jest.runAllTimers();
 
-				expect( store.fragments ).toEqual( {} );
+				expect( store.fragments[ keyPath ] ).toBeUndefined();
 			} );
 
 			it( 'debounces multiple calls', () => {
-				store.fragments[ fragmentCacheKey( keyPath ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'old fragment'
+				store.fragments = {
+					[ keyPath ]: {
+						[ mockLang ]: {
+							hasError: false,
+							isDirty: false,
+							isLoading: false,
+							error: null,
+							html: 'old fragment'
+						}
+					}
 				};
 				store.setDirtyFragment( childKeyPath );
 				store.setDirtyFragment( childKeyPath );
@@ -845,32 +893,29 @@ describe( 'abstractWiki Pinia store', () => {
 
 				jest.advanceTimersByTime( debounceTime );
 
-				expect( store.fragments[ fragmentCacheKey( keyPath ) ].isDirty ).toBe( true );
+				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( true );
 			} );
 		} );
 
 		describe( 'swapFragmentPreviews', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments';
+			const en = 'Z1002';
+			const es = 'Z1003';
 
 			beforeEach( () => {
-				store.fragments = {};
-				store.fragments[ fragmentCacheKey( `${ keyPath }.1` ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'fragment 1'
-				};
-				store.fragments[ fragmentCacheKey( `${ keyPath }.2` ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'fragment 2'
-				};
-				store.fragments[ fragmentCacheKey( `${ keyPath }.3` ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'fragment 3'
+				store.fragments = {
+					[ `${ keyPath }.1` ]: {
+						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 1' },
+						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 1' }
+					},
+					[ `${ keyPath }.2` ]: {
+						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 2' },
+						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 2' }
+					},
+					[ `${ keyPath }.3` ]: {
+						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 3' },
+						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 3' }
+					}
 				};
 			} );
 
@@ -889,33 +934,33 @@ describe( 'abstractWiki Pinia store', () => {
 			it( 'swaps two given fragment previews', () => {
 				store.swapFragmentPreviews( `${ keyPath }.1`, `${ keyPath }.2` );
 
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.1` ) ].html ).toBe( 'fragment 2' );
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.2` ) ].html ).toBe( 'fragment 1' );
+				expect( store.fragments[ `${ keyPath }.1` ][ en ].html ).toBe( 'EN fragment 2' );
+				expect( store.fragments[ `${ keyPath }.1` ][ es ].html ).toBe( 'ES fragment 2' );
+
+				expect( store.fragments[ `${ keyPath }.2` ][ en ].html ).toBe( 'EN fragment 1' );
+				expect( store.fragments[ `${ keyPath }.2` ][ es ].html ).toBe( 'ES fragment 1' );
 			} );
 		} );
 
 		describe( 'shiftFragmentPreviews', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments';
+			const en = 'Z1002';
+			const es = 'Z1003';
 
 			beforeEach( () => {
-				store.fragments = {};
-				store.fragments[ fragmentCacheKey( `${ keyPath }.1` ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'fragment 1'
-				};
-				store.fragments[ fragmentCacheKey( `${ keyPath }.2` ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'fragment 2'
-				};
-				store.fragments[ fragmentCacheKey( `${ keyPath }.3` ) ] = {
-					isDirty: false,
-					isLoading: false,
-					error: false,
-					html: 'fragment 3'
+				store.fragments = {
+					[ `${ keyPath }.1` ]: {
+						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 1' },
+						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 1' }
+					},
+					[ `${ keyPath }.2` ]: {
+						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 2' },
+						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 2' }
+					},
+					[ `${ keyPath }.3` ]: {
+						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 3' },
+						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 3' }
+					}
 				};
 			} );
 
@@ -934,17 +979,31 @@ describe( 'abstractWiki Pinia store', () => {
 			it( 'shifts two items one position forward', () => {
 				store.shiftFragmentPreviews( `${ keyPath }.2`, 1 );
 
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.2` ) ] ).toBeUndefined();
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.3` ) ].html ).toBe( 'fragment 2' );
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.4` ) ].html ).toBe( 'fragment 3' );
+				// Left slot 2 empty
+				expect( store.fragments[ `${ keyPath }.2` ] ).toBeUndefined();
+
+				// Shiftead forward fragment 2 to 3
+				expect( store.fragments[ `${ keyPath }.3` ][ en ].html ).toBe( 'EN fragment 2' );
+				expect( store.fragments[ `${ keyPath }.3` ][ es ].html ).toBe( 'ES fragment 2' );
+
+				// Shifted forward framgnet 3 to 4
+				expect( store.fragments[ `${ keyPath }.4` ][ en ].html ).toBe( 'EN fragment 3' );
+				expect( store.fragments[ `${ keyPath }.4` ][ es ].html ).toBe( 'ES fragment 3' );
 			} );
 
 			it( 'shifts two items one position back', () => {
 				store.shiftFragmentPreviews( `${ keyPath }.2`, -1 );
 
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.1` ) ].html ).toBe( 'fragment 2' );
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.2` ) ].html ).toBe( 'fragment 3' );
-				expect( store.fragments[ fragmentCacheKey( `${ keyPath }.3` ) ] ).toBeUndefined();
+				// Shifted back fragment 2 to 1
+				expect( store.fragments[ `${ keyPath }.1` ][ en ].html ).toBe( 'EN fragment 2' );
+				expect( store.fragments[ `${ keyPath }.1` ][ es ].html ).toBe( 'ES fragment 2' );
+
+				// Shifted back fragment 3 to 2
+				expect( store.fragments[ `${ keyPath }.2` ][ en ].html ).toBe( 'EN fragment 3' );
+				expect( store.fragments[ `${ keyPath }.2` ][ es ].html ).toBe( 'ES fragment 3' );
+
+				// Left slot 3 empty
+				expect( store.fragments[ `${ keyPath }.3` ] ).toBeUndefined();
 			} );
 		} );
 
