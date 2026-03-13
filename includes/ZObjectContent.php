@@ -395,8 +395,10 @@ class ZObjectContent extends AbstractContent {
 
 	/**
 	 * @inheritDoc
+	 * @deprecated since 1.33 Use ::getObject() instead.
 	 */
 	public function getNativeData() {
+		wfDeprecated( __METHOD__, '1.33' );
 		return $this->getObject();
 	}
 
