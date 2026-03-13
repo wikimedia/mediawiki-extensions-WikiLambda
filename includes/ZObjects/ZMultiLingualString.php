@@ -184,11 +184,11 @@ class ZMultiLingualString extends ZObject {
 			return;
 		}
 		if ( array_key_exists( $language, $this->getZValue() ) ) {
-			// When detecting a duplicate language, we log a warning so that
+			// When detecting a duplicate language, we log a note so that
 			// we can correct the content issue, but we should not be throwing
 			// an exception, as this will break unrelated objects, too.
 			$logger = LoggerFactory::getInstance( 'WikiLambda' );
-			$logger->warning(
+			$logger->info(
 				'Duplicate language in a MultiLingual String is not allowed: {language}',
 				[ 'language' => $language ]
 			);
