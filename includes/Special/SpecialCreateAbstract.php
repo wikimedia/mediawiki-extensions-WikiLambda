@@ -63,9 +63,8 @@ class SpecialCreateAbstract extends SpecialPage {
 	 * Output an error message telling the user that the Abstract Mode is not enabled
 	 *
 	 * @throws ErrorPageError
-	 * @return never
 	 */
-	private function displayNotAvailableError() {
+	private function displayNotAvailableError(): never {
 		$titleMessage = $this->msg( 'wikilambda-abstract-special-create-not-enabled-title' );
 		$errorMessage = $this->msg( 'wikilambda-abstract-special-create-not-enabled' );
 		throw new ErrorPageError( $titleMessage, $errorMessage );

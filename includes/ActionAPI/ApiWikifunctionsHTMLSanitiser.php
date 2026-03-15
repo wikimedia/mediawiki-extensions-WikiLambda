@@ -44,7 +44,7 @@ class ApiWikifunctionsHTMLSanitiser extends WikiLambdaApiBase {
 						$userHTMLToClean
 					);
 				},
-				'error' => function ( \MediaWiki\Status\Status $status ) {
+				'error' => function ( \MediaWiki\Status\Status $status ): never {
 					$this->dieWithError(
 						[ "apierror-wikifunctions_sanitise_html_fragment-concurrency-limit" ],
 						null, null, HttpStatus::TOO_MANY_REQUESTS

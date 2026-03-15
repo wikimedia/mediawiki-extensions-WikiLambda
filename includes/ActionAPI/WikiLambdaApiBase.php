@@ -121,10 +121,9 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	/**
 	 * @param ZError $zerror The ZError object to return to the user
 	 * @param int $code HTTP error code, defaulting to 400/Bad Request
-	 * @return never
 	 * @throws ApiUsageException
 	 */
-	public static function dieWithZError( $zerror, $code = HttpStatus::BAD_REQUEST ) {
+	public static function dieWithZError( $zerror, $code = HttpStatus::BAD_REQUEST ): never {
 		try {
 			$errorData = $zerror->getErrorData();
 		} catch ( ZErrorException ) {
@@ -306,7 +305,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				// at once. Throw an exception so that the caller API can handle it as needed.
 				// E.g. FunctionCall might want to die with error, while PerformTest will
 				// return normally with all those tests that could be run before.
-				'error' => function ( Status $status ) use ( $queryArguments, $userName, $method ) {
+				'error' => function ( Status $status ) use ( $queryArguments, $userName, $method ): never {
 					$this->getLogger()->info(
 						'{ethod} rejected {caller} request due to too many requests from source "{user}"',
 						[

@@ -25,10 +25,7 @@ abstract class WikiLambdaRESTHandler extends SimpleHandler {
 
 	protected LoggerInterface $logger;
 
-	/**
-	 * @return never
-	 */
-	protected function dieRESTfullyWithZError( ZError $zerror, int $code = 500, array $errorData = [] ) {
+	protected function dieRESTfullyWithZError( ZError $zerror, int $code = 500, array $errorData = [] ): never {
 		try {
 			$errorData['errorData'] = $zerror->getErrorData();
 		} catch ( ZErrorException $e ) {
@@ -48,10 +45,7 @@ abstract class WikiLambdaRESTHandler extends SimpleHandler {
 		$this->dieRESTfully( 'wikilambda-zerror', [ $zerror->getZErrorType() ], $code, $errorData );
 	}
 
-	/**
-	 * @return never
-	 */
-	protected function dieRESTfully( string $messageKey, array $spec, int $code, array $errorData = [] ) {
+	protected function dieRESTfully( string $messageKey, array $spec, int $code, array $errorData = [] ): never {
 		throw new LocalizedHttpException(
 			new MessageValue( $messageKey, $spec ), $code, $errorData
 		);

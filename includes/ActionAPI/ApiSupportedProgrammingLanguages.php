@@ -56,7 +56,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 				'doWork' => function () {
 					return $this->orchestrator->getSupportedProgrammingLanguages();
 				},
-				'error' => function ( Status $status ) {
+				'error' => function ( Status $status ): never {
 					$this->dieWithError(
 						[ "apierror-wikilambda_supported_programming_languages-concurrency-limit" ],
 						null, null, HttpStatus::TOO_MANY_REQUESTS

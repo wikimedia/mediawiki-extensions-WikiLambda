@@ -76,9 +76,8 @@ class SpecialCreateObject extends SpecialPage {
 	 * Output an error message telling the user that the Repo Mode is not enabled
 	 *
 	 * @throws ErrorPageError
-	 * @return never
 	 */
-	private function displayNotAvailableError() {
+	private function displayNotAvailableError(): never {
 		$titleMessage = $this->msg( 'wikilambda-special-create-zobject-not-enabled-title' );
 		$errorMessage = $this->msg( 'wikilambda-special-create-zobject-not-enabled' );
 		throw new ErrorPageError( $titleMessage, $errorMessage );
