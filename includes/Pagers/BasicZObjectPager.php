@@ -71,6 +71,6 @@ class BasicZObjectPager extends AbstractZObjectPager {
 	 * @return string
 	 */
 	public function getEmptyBody() {
-		return $this->msg( 'wikilambda-special-objectsbytype-empty' );
+		return $this->msg( 'wikilambda-special-objectsbytype-empty' )->parse();
 	}
 }

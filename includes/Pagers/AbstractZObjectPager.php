@@ -133,26 +133,26 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	 * @return string
 	 */
 	public function getEmptyBody() {
-		return $this->msg( 'wikilambda-special-list-empty' );
+		return $this->msg( 'wikilambda-special-list-empty' )->parse();
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getBottomLinks() {
-		$wikitext = "\n== " . $this->msg( 'wikilambda-special-list-all-pages' ) . " ==\n";
+		$wikitext = "\n== " . $this->msg( 'wikilambda-special-list-all-pages' )->text() . " ==\n";
 
 		$wikitext .= "\n* [[Special:ListObjectsByType|" .
-			$this->msg( 'wikilambda-special-objectsbytype-link' ) . "]]\n";
+			$this->msg( 'wikilambda-special-objectsbytype-link' )->text() . "]]\n";
 
 		$wikitext .= "\n* [[Special:ListDuplicateObjectNames|" .
-			$this->msg( 'wikilambda-special-listduplicateobjectlabels-link' ) . "]]\n";
+			$this->msg( 'wikilambda-special-listduplicateobjectlabels-link' )->text() . "]]\n";
 
 		$wikitext .= "\n* [[Special:ListMissingLabels|" .
-			$this->msg( 'wikilambda-special-missinglabels' ) . "]]\n";
+			$this->msg( 'wikilambda-special-missinglabels' )->text() . "]]\n";
 
 		$wikitext .= "\n* [[Special:ListFunctionsByTests|" .
-			$this->msg( 'wikilambda-special-functionsbytests' ) . "]]\n";
+			$this->msg( 'wikilambda-special-functionsbytests' )->text() . "]]\n";
 
 		return $wikitext;
 	}
