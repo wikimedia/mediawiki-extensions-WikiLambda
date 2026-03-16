@@ -119,82 +119,65 @@ class PageRenderingHandler implements
 		// ZObject content uses, 'ZID', while Abstract uses 'Abstract_Wikipedia:QID'.
 		$prefixedTitle = $targetTitle->getPrefixedDBkey();
 
-		// Default language if not specified in the URL
-		$lang = 'en';
+		// Get current langugae from the Skin, which already returns the language set
+		// by the Request Context, which prioritizes language settings like this:
+		// * if there's presence of uselang, that takes priority
+		// * if no language is specified by the url, falls to the user logged in language
+		// * if nothing specified, falls back to the site content language
+		$lang = $skinTemplate->getLanguage()->getCode();
 
-		$context = RequestContext::getMain();
-		$contextLang = $context->getLanguage()->getCode();
+		// (T360229) Build GET parameters using an array and append them with
+		// `wfArrayToCgi` rather than hacking inline
+		$langParams = [ 'uselang' => $lang ];
 
-		$requestLang = $skinTemplate->getRequest()->getRawVal( 'uselang' );
+		// Append uselang to the 'history' link:
+		$links['views']['history']['href'] = $this->appendOrReplaceQueryParams(
+			$links['views']['history']['href'],
+			$langParams
+		);
 
-		// Explicit uselang always wins
-		if ( $requestLang ) {
-			$lang = $requestLang;
-		// Otherwise use the language code from the context
-		} elseif ( $contextLang ) {
-			$lang = $contextLang;
-		// Otherwise use the user's language preference if they're logged in
-		} elseif ( $skinTemplate->getUser()->isRegistered() ) {
-			$userLang = $this->userOptionsLookup->getOption( $skinTemplate->getUser(), 'language' );
-			if ( $userLang ) {
-				$lang = $userLang;
-			}
-		}
-
-		// Allow the user to over-ride the content language if explicitly requested
-
-		// Add "selected" class to read tab, if we're viewing the page
-		if (
-			$skinTemplate->getContext()->getActionName() === 'view'
-		) {
-			$links['views']['view']['class'] = 'selected';
-		}
-
-		// (T360229) Build GET parameters using an array and `wfArrayToCgi`, rather than hacking inline
-		$generalParams = [ 'uselang' => $lang ];
-
-		// If title is more than one word, we need to underscore it for the URL (e.g. 'Abstract_Wikipdedia)
-
-		// Rewrite history link to have ?uselang in it
-		$links['views']['history']['href'] = '/wiki/' . $prefixedTitle
-			. '?' . wfArrayToCgi( $generalParams + [ 'action' => 'history' ] );
-
-		// Rewrite edit link to have ?uselang in it, but only if it exists (e.g. not for logged-out users)
+		// Append uselang to the 'edit' link (if it exists):
 		if ( array_key_exists( 'edit', $links['views'] ) ) {
-			$editParams = $generalParams + [ 'action' => 'edit' ];
-
-			// If editing old revision, we want the edit button to route us to the oldid
-			$oldid = $skinTemplate->getRequest()->getRawVal( 'oldid' );
-			if ( $oldid ) {
-				$editParams['oldid'] = $oldid;
-			}
-			$links['views']['edit']['href'] = '/wiki/' . $prefixedTitle
-				. '?' . wfArrayToCgi( $editParams );
+			$links['views']['edit']['href'] = $this->appendOrReplaceQueryParams(
+				$links['views']['edit']['href'],
+				$langParams
+			);
 		}
 
-		// Rewrite the 'associated-pages' links if they exist
-		if ( isset( $links['associated-pages'] ) ) {
-			$isMain = $targetTitle->inNamespace( NS_MAIN );
+		$isMain = $targetTitle->inNamespace( NS_MAIN );
+		$pageKey = mb_strtolower( $prefixedTitle );
 
-			// Rewrite the 'view' link
-			$lowercaseUnderscoredTitle = mb_strtolower( $prefixedTitle );
-			$viewPageKey = $isMain ? 'main' : explode( ':', $lowercaseUnderscoredTitle, 2 )[0];
-			if ( isset( $links['associated-pages'][$viewPageKey] ) ) {
-				$links['associated-pages'][$viewPageKey]['href'] = '/view/' . $lang . '/' . $prefixedTitle;
-
-			}
-
-			// Rewrite the 'talk' link
-			$talkPageKey = $isMain ? 'talk' : $viewPageKey . '_talk';
-			if ( isset( $links['associated-pages'][$talkPageKey] ) ) {
-				$talkTitle = $targetTitle->getTalkPage();
-
-				if ( $talkTitle ) {
-					$links['associated-pages'][$talkPageKey]['href'] = wfAppendQuery(
-						$talkTitle->getLocalURL(), $generalParams );
-				}
-			}
+		// Rewrite the 'view' link to the canonical syntax: /view/<lang>/<title>:
+		// * View link in the right navigation bar
+		// * View link in the associated pages navigaton bar (if any)
+		$viewPageKey = $isMain ? 'main' : explode( ':', $pageKey, 2 )[0];
+		$canonicalViewLink = '/view/' . $lang . '/' . $prefixedTitle;
+		$links['views']['view']['href'] = $canonicalViewLink;
+		if ( isset( $links['associated-pages' ] ) && isset( $links['associated-pages'][$viewPageKey] ) ) {
+			$links['associated-pages'][$viewPageKey]['href'] = $canonicalViewLink;
 		}
+
+		// Append uselang to the 'talk' link
+		$talkPageKey = $isMain ? 'talk' : $viewPageKey . '_talk';
+		if ( isset( $links[ 'associated-pages'] ) && isset( $links['associated-pages'][$talkPageKey] ) ) {
+			$links['associated-pages'][$talkPageKey]['href'] = $this->appendOrReplaceQueryParams(
+				$links['associated-pages'][$talkPageKey]['href'],
+				$langParams
+			);
+		}
+	}
+
+	private function appendOrReplaceQueryParams( string $url, array $queryParams ): string {
+		if ( str_contains( $url, '?' ) ) {
+			[ $url, $queryString ] = explode( '?', $url, 2 );
+			$query = wfCgiToArray( $queryString );
+		} else {
+			$query = [];
+		}
+		foreach ( $queryParams as $paramName => $paramValue ) {
+			$query[ $paramName ] = $paramValue;
+		}
+		return wfAppendQuery( $url, $query );
 	}
 
 	/**

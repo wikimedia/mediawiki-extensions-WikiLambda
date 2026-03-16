@@ -25,7 +25,6 @@ use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Request\FauxRequest;
-use MediaWiki\Request\WebRequest;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Skin\SkinTemplate;
@@ -267,7 +266,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 				/* expectedView */ '/view/en/Z1',
 				/* expectedEdit */ '/wiki/Z1?uselang=en&action=edit',
 				/* expectedHistory */ '/wiki/Z1?uselang=en&action=history',
-				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en&fish=chips',
 			],
 			'Z1 view page, logged in user, English explicit view, oldid set' => [
 				/* titleText */ 'Z1',
@@ -286,7 +285,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 				/* titleText */ 'Z1',
 				/* isZObject */ true,
 				/* isAbstract */ false,
-				/* lang */ 'en',
+				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [ 'uselang' => 'fr' ],
 				/* editPage */ '/wiki/Z1?action=edit',
@@ -394,12 +393,22 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 	 * @dataProvider provideTestOnSkinTemplateNavigation
 	 */
 	public function testOnSkinTemplateNavigation(
-		$titleText, $isZObject, $isAbstract, $languageCode, $userName, $params, $editPage,
-		$expectedView, $expectedEdit, $expectedHistory, $expectedTalk
+		string $titleText,
+		bool $isZObject,
+		bool $isAbstract,
+		?string $skinLanguageCode,
+		string $userName,
+		array $params,
+		?string $editPage,
+		string $expectedView,
+		?string $expectedEdit,
+		string $expectedHistory,
+		string $expectedTalk
 	) {
 		$user = $this->getServiceContainer()->getUserFactory()->newFromNameOrIp( $userName );
-
 		$title = Title::makeTitle( NS_TALK, $titleText );
+		// Fallback: content language is English
+		$contentLanguage = 'en';
 
 		if ( $isZObject ) {
 			$this->insertZids( [ $titleText ] );
@@ -424,40 +433,19 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			);
 		}
 
-		$context = new RequestContext();
-		if ( $languageCode !== null ) {
-			$context->setLanguage( $this->makeLanguage( $languageCode ) );
+		if ( isset( $params['uselang'] ) ) {
+			$lang = $params['uselang'];
+		} elseif ( $skinLanguageCode ) {
+			$lang = $skinLanguageCode;
+		} else {
+			$lang = $contentLanguage;
 		}
-		$context->setConfig( new HashConfig( [] ) );
-		$context->setTitle( $title );
-		$context->setActionName( 'view' );
-		$context->setUser( $user );
-
-		$request = new WebRequest();
-		$request->setIP( '127.0.0.1' );
-		$context->setRequest( $request );
 
 		// We mock SkinTemplate because it's a mess; we don't mock the others because they're worse,
 		// but in different ways.
 		$mockSkinTemplate = $this->createMock( SkinTemplate::class );
-		$mockSkinTemplate->method( 'getContext' )->willReturn( $context );
-		$mockSkinTemplate->method( 'getRequest' )->willReturn( $request );
-		$mockSkinTemplate->method( 'getTitle' )->willReturn( $title );
 		$mockSkinTemplate->method( 'getRelevantTitle' )->willReturn( $title );
-
-		$mockSkinTemplate->method( 'getUser' )->willReturn( $user );
-
-		foreach ( $params as $key => $value ) {
-			$request->setVal( $key, $value );
-		}
-
-		if ( isset( $params['uselang'] ) ) {
-			$lang = $params['uselang'];
-		} elseif ( $languageCode ) {
-			$lang = $languageCode;
-		} else {
-			$lang = 'en';
-		}
+		$mockSkinTemplate->method( 'getLanguage' )->willReturn( $this->makeLanguage( $lang ) );
 
 		// Determine the paths
 		$mainHref = '/wiki/' . $titleText . '?uselang=' . $lang;
