@@ -71,12 +71,15 @@ class PageRenderingHandler implements
 	 * @inheritDoc
 	 */
 	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
-		// We only do this in repo mode
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		// We only do this in repo or abstract mode
+		if (
+			!$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
+			!$this->config->get( 'WikiLambdaEnableAbstractMode' )
+		) {
 			return;
 		}
 
-		// For any page in repo mode: Add a language control, for users to navigate to another language.
+		// For any page in repo or abstract mode: Add a language control, for users to navigate to another language.
 		// TODO (T362235): This only works for browsers with Javascript. The button is invisible
 		// until the ext.wikilambda.languageselector module creates the Vue component to replace
 		// it; instead, render this Codex component properly server-side somehow.
@@ -90,7 +93,7 @@ class PageRenderingHandler implements
 		] ];
 		$links['user-interface-preferences'] = $ourButton + $links['user-interface-preferences'];
 
-		// The rest of this function is about rewriting skin links on ZObject pages
+		// The rest of this function is about rewriting skin links on ZObject or Abstract pages
 		$targetTitle = $skinTemplate->getRelevantTitle();
 		if ( !$targetTitle ) {
 			// Nothing to do, exit.
