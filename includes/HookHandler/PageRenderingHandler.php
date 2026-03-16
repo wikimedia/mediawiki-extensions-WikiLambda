@@ -192,6 +192,18 @@ class PageRenderingHandler implements
 		}
 	}
 
+	/**
+	 * Given a url with or without query parameters, append or replace them with
+	 * the given set of parameters and their new values and return the new url.
+	 *
+	 * E.g. given an url like title?action=edit&uselang=fr and the parameters
+	 * [ uselang => es, foo => bar ], it appends foo and overwrites uselang,
+	 * returning the url title?action=edit&uselang=es&foo=bar
+	 *
+	 * @param string $url
+	 * @param array $queryParams
+	 * @return string
+	 */
 	private function appendOrReplaceQueryParams( string $url, array $queryParams ): string {
 		if ( str_contains( $url, '?' ) ) {
 			[ $url, $queryString ] = explode( '?', $url, 2 );
