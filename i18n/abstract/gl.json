@@ -39,6 +39,7 @@
 	"wikilambda-abstract-menu-option-move-after": "Mover o fragmento despois",
 	"wikilambda-abstract-menu-option-move-before": "Mover o fragmento antes",
 	"wikilambda-abstract-preview-fragment-max-retries": "Alcanzouse o número máximo de intentos. Inténtao de novo máis tarde.",
+	"wikilambda-abstract-preview-fragment-retry": "Reintentar",
 	"wikilambda-abstract-preview-in-language": "Texto xerado",
 	"wikilambda-abstract-special-create": "Crear un artigo abstracto novo",
 	"wikilambda-abstract-special-create-createbutton-label": "Crear",

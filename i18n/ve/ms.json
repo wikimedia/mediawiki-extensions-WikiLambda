@@ -16,5 +16,8 @@
 	"wikilambda-recentchanges-explanation-delete-implementation": "Pelaksanaan $1 telah dihapuskan",
 	"wikilambda-recentchanges-explanation-delete-tester": "Kes ujian $1 telah dihapuskan",
 	"wikilambda-recentchanges-explanation-disconnect-implementation": "{{PLURAL:$1|Pelaksanaan|$1 pelaksanaan:}} $2 telah dinyahsambungkan",
-	"wikilambda-recentchanges-filter-rc-pref": "Tunjukkan suntingan Wikifungsi dalam perubahan terkini"
+	"wikilambda-recentchanges-filter-description": "Suntingan yang berasal dari Wikifungsi",
+	"wikilambda-recentchanges-filter-label": "Suntingan Wikifungsi",
+	"wikilambda-recentchanges-filter-rc-pref": "Tunjukkan suntingan Wikifungsi dalam perubahan terkini",
+	"wikilambda-recentchanges-filter-wl-pref": "Tunjukkan suntingan Wikifungsi dalam senarai pantau anda"
 }
