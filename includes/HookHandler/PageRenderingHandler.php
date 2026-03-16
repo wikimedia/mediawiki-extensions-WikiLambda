@@ -100,6 +100,35 @@ class PageRenderingHandler implements
 			return;
 		}
 
+		// Get current langugae from the Skin, which already returns the language set
+		// by the Request Context, which prioritizes language settings like this:
+		// * if there's presence of uselang, that takes priority
+		// * if no language is specified by the url, falls to the user logged in language
+		// * if nothing specified, falls back to the site content language
+		$lang = $skinTemplate->getLanguage()->getCode();
+
+		// If the page is a Talk page of a ZObject or Abstract content
+		// rewrite the view page with the canonical url
+		if ( $targetTitle->isTalkPage() ) {
+			$subjectPage = $targetTitle->getSubjectPage();
+
+			if (
+				$subjectPage->hasContentModel( CONTENT_MODEL_ZOBJECT ) ||
+				$subjectPage->hasContentModel( CONTENT_MODEL_ABSTRACT )
+			) {
+				$subjectId = $subjectPage->getNamespaceKey( '' );
+
+				if ( isset( $links['associated-pages' ] ) && isset( $links['associated-pages'][$subjectId] ) ) {
+					$subjectPrefixedTitle = $subjectPage->getPrefixedDBkey();
+					$subjectCanonicalViewLink = '/view/' . $lang . '/' . $subjectPrefixedTitle;
+					$links['associated-pages'][$subjectId]['href'] = $subjectCanonicalViewLink;
+				}
+			}
+
+			// Nothing else to do, exit.
+			return;
+		}
+
 		// Determine the content model
 		$isAbstractContent = $targetTitle->exists() &&
 			$targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT );
@@ -121,13 +150,6 @@ class PageRenderingHandler implements
 		// Determine the page title based on the content model.
 		// ZObject content uses, 'ZID', while Abstract uses 'Abstract_Wikipedia:QID'.
 		$prefixedTitle = $targetTitle->getPrefixedDBkey();
-
-		// Get current langugae from the Skin, which already returns the language set
-		// by the Request Context, which prioritizes language settings like this:
-		// * if there's presence of uselang, that takes priority
-		// * if no language is specified by the url, falls to the user logged in language
-		// * if nothing specified, falls back to the site content language
-		$lang = $skinTemplate->getLanguage()->getCode();
 
 		// (T360229) Build GET parameters using an array and append them with
 		// `wfArrayToCgi` rather than hacking inline
