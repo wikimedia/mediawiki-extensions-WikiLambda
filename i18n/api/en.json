@@ -78,6 +78,7 @@
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Attempt to update the ZObject Z010 with an incorrect data",
 	"apihelp-query+wikilambdaload_zlanguages-summary": "Map language codes to their corresponding ZLanguage ZIDs.",
 	"apihelp-query+wikilambdaload_zlanguages-param-codes": "The language codes to map to ZLanguage ZIDs.",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "Whether to include preferred language labels for each resolved ZLanguage ZID.",
 	"apihelp-query+wikilambdaload_zlanguages-example-single": "Map a single language code (en) to its ZLanguage ZID.",
 	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "Map multiple language codes (en, es, fr) to their ZLanguage ZIDs in one request.",
 	"apihelp-wikilambda_edit-summary": "Create or edit a ZObject.",

@@ -1035,6 +1035,45 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
+	public function testFetchZObjectLabels() {
+		$this->zobjectStore->insertZObjectLabels(
+			'Z464',
+			'Z6',
+			[
+				self::ZLANG['en'] => 'txt-en',
+				self::ZLANG['es'] => 'txt-es'
+			]
+		);
+		$this->zobjectStore->insertZObjectLabels(
+			'Z465',
+			'Z6',
+			[
+				self::ZLANG['en'] => 'other-en'
+			]
+		);
+
+		$this->registerLangs( [ 'en', 'es', 'de' ] );
+
+		$this->assertSame(
+			[
+				'Z464' => 'txt-es',
+				'Z465' => 'other-en',
+				'Z999' => null
+			],
+			$this->zobjectStore->fetchZObjectLabels( [ 'Z464', 'Z465', 'Z999' ], 'es' ),
+			'Batch label fetch should honor fallback order and preserve nulls for missing labels'
+		);
+
+		$this->assertSame(
+			[
+				'Z464' => null,
+				'Z465' => null
+			],
+			$this->zobjectStore->fetchZObjectLabels( [ 'Z464', 'Z465' ], 'de', false ),
+			'Batch label fetch should return null without fallback for languages without labels'
+		);
+	}
+
 	public function testInsertZFunctionReference() {
 		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 

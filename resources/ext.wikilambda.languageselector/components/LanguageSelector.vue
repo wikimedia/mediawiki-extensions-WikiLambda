@@ -58,7 +58,8 @@ module.exports = exports = defineComponent( {
 			lookupDelayMs: 300,
 			lookupResults: [],
 			maxItems: 10,
-			selectedLanguage: null
+			selectedLanguage: null,
+			selectedLanguageLabelOverride: null
 		};
 	},
 	computed: {
@@ -77,7 +78,9 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		selectedLanguageLabel: function () {
-			return mw.config.get( 'wgUserLanguageName' );
+			return mw.config.get( 'wgUserLanguageName' ) ||
+				this.selectedLanguageLabelOverride ||
+				this.selectedLanguageCode;
 		},
 
 		/**
@@ -111,6 +114,105 @@ module.exports = exports = defineComponent( {
 	},
 	methods: {
 		/**
+		 * Wrap mw.Api().get() thenable into a real Promise.
+		 *
+		 * @param {Object} params
+		 * @return {Promise<Object>}
+		 */
+		MWApi: function ( params ) {
+			const api = new mw.Api();
+			return new Promise( ( resolve, reject ) => {
+				api.get( params ).then( resolve, reject );
+			} );
+		},
+
+		/**
+		 * Fetch language information from the MediaWiki API.
+		 *
+		 * @param {Object} payload
+		 * @param {string} [payload.uselang] Language code used to localize returned names
+		 * @param {string} [payload.licode] If set, fetch only this language code
+		 * @return {Promise<Object|undefined>} Resolves with languageinfo map (code -> info)
+		 */
+		fetchLanguageInfo: function ( { uselang, licode } = {} ) {
+			const params = {
+				action: 'query',
+				format: 'json',
+				formatversion: '2',
+				meta: 'languageinfo',
+				liprop: 'code|name|autonym',
+				uselang,
+				licode
+			};
+
+			return this.MWApi( params ).then( ( data ) => {
+				const query = data && data.query;
+				return query && query.languageinfo;
+			} );
+		},
+
+		/**
+		 * Fetch ZIDs for the given language codes via Wikifunctions API.
+		 *
+		 * @param {string[]} codes
+		 * @return {Promise<Object[]>}
+		 */
+		fetchLanguageZids: function ( codes ) {
+			return this.MWApi( {
+				action: 'query',
+				list: 'wikilambdaload_zlanguages',
+				format: 'json',
+				formatversion: '2',
+				// eslint-disable-next-line camelcase
+				wikilambdaload_zlanguages_codes: codes,
+				// eslint-disable-next-line camelcase
+				wikilambdaload_zlanguages_withlabels: 1
+			} ).then( ( data ) => {
+				const query = data && data.query;
+				return query && query.wikilambdaload_zlanguages || [];
+			} );
+		},
+
+		/**
+		 * Resolve a display label for a language code via Wikifunctions APIs.
+		 *
+		 * @param {string} languageCode
+		 * @return {Promise<string>}
+		 */
+		fetchWfLabelForLanguageCode: function ( languageCode ) {
+			return this.fetchLanguageZids( [ languageCode ] ).then( ( entries ) => {
+				const languageEntry = entries.find( ( entry ) => entry.code === languageCode );
+				return languageEntry && languageEntry.label ? languageEntry.label : languageCode;
+			} );
+		},
+
+		/**
+		 * Fetches the display label for the currently selected language code.
+		 * This is needed because MediaWiki may not expose `wgUserLanguageName`
+		 * for language codes that aren't supported by core.
+		 */
+		fetchSelectedLanguageLabel: function () {
+			const languageCode = this.selectedLanguageCode;
+
+			// If MediaWiki already provides the label, prefer that.
+			if ( mw.config.get( 'wgUserLanguageName' ) ) {
+				this.selectedLanguageLabelOverride = null;
+				return;
+			}
+
+			if ( !languageCode ) {
+				this.selectedLanguageLabelOverride = null;
+				return;
+			}
+
+			this.fetchWfLabelForLanguageCode( languageCode ).then( ( label ) => {
+				this.selectedLanguageLabelOverride = label;
+			}, () => {
+				this.selectedLanguageLabelOverride = languageCode;
+			} );
+		},
+
+		/**
 		 * Triggers the language lookup and redirects to the
 		 * new language page for the given language code
 		 *
@@ -139,25 +241,18 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input - The search input to filter languages
 		 */
 		fetchLookupResults: function ( input ) {
-			const api = new mw.Api();
-			api.get( {
-				action: 'query',
-				format: 'json',
-				uselang: this.selectedLanguageCode,
-				meta: 'languageinfo',
-				formatversion: '2',
-				liprop: 'code|name|autonym'
-			} ).then( ( data ) => {
-				if ( ( 'query' in data ) && ( 'languageinfo' in data.query ) ) {
-					// Filter items that match the input substring
-					const matchedLangs = Object.keys( data.query.languageinfo )
-						.map( ( key ) => data.query.languageinfo[ key ] )
-						.filter( ( result ) => result.name.toLowerCase().includes( input.toLowerCase() ) ||
-								result.autonym.toLowerCase().includes( input.toLowerCase() ) ||
-								result.code.toLowerCase().includes( input.toLowerCase() ) );
-					// Limit lookup reults to maxItems
-					this.setLookupResults( matchedLangs.slice( 0, this.maxItems ) );
+			this.fetchLanguageInfo( { uselang: this.selectedLanguageCode } ).then( ( languageinfo ) => {
+				if ( !languageinfo ) {
+					return;
 				}
+				// Filter items that match the input substring
+				const matchedLangs = Object.keys( languageinfo )
+					.map( ( key ) => languageinfo[ key ] )
+					.filter( ( result ) => result.name.toLowerCase().includes( input.toLowerCase() ) ||
+						result.autonym.toLowerCase().includes( input.toLowerCase() ) ||
+						result.code.toLowerCase().includes( input.toLowerCase() ) );
+				// Limit lookup reults to maxItems
+				this.setLookupResults( matchedLangs.slice( 0, this.maxItems ) );
 			} );
 		},
 
@@ -282,6 +377,7 @@ module.exports = exports = defineComponent( {
 	},
 	mounted: function () {
 		window.addEventListener( 'click', this.handleClick );
+		this.fetchSelectedLanguageLabel();
 	},
 	beforeUnmount: function () {
 		window.removeEventListener( 'click', this.handleClick );

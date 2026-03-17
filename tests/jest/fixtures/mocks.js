@@ -1414,6 +1414,28 @@ const mockLanguages = {
 				code: "eu",
 				autonym: "euskara",
 				name: "Basque"
+			},
+			"en-us": {
+				code: "en-us",
+				autonym: "English (United States)",
+				name: "American English"
+			}
+		}
+	}
+};
+
+const mockWfLanguageZids = [
+	{ code: 'en-us', zid: 'Z1689' }
+];
+
+const mockWfLanguageObjects = {
+	Z1689: {
+		success: true,
+		data: {
+			Z2K3: {
+				Z12K1: [
+					{ Z11K2: 'American English' }
+				]
 			}
 		}
 	}
@@ -1604,6 +1626,8 @@ module.exports = {
 	mockApiResponseFor,
 	mockStoredObjects,
 	mockLanguages,
+	mockWfLanguageZids,
+	mockWfLanguageObjects,
 	mockEnumValues,
 	mockLookupValues,
 	mockLookupLanguages,

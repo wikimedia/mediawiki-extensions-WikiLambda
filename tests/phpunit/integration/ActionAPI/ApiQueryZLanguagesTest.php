@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZLanguages
@@ -96,5 +97,36 @@ class ApiQueryZLanguagesTest extends WikiLambdaApiTestCase {
 		$this->assertNull( $items[1]['zid'] );
 		$this->assertSame( 'fr', $items[2]['code'] );
 		$this->assertSame( self::FR_ZID, $items[2]['zid'] );
+	}
+
+	public function testWithLabelsIncludesLabelForKnownCode(): void {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zlanguages',
+			'wikilambdaload_zlanguages_codes' => 'en',
+			'wikilambdaload_zlanguages_withlabels' => 1,
+		] );
+
+		$items = $result[0]['query']['wikilambdaload_zlanguages'];
+		$this->assertCount( 1, $items );
+		$this->assertSame( 'en', $items[0]['code'] );
+		$this->assertSame( self::EN_ZID, $items[0]['zid'] );
+		$expectedLabel = WikiLambdaServices::getZObjectStore()->fetchZObjectLabel( self::EN_ZID, 'en' );
+		$this->assertSame( $expectedLabel, $items[0]['label'] );
+	}
+
+	public function testWithLabelsReturnsNullLabelForUnknownCode(): void {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zlanguages',
+			'wikilambdaload_zlanguages_codes' => 'xx-nonexistent',
+			'wikilambdaload_zlanguages_withlabels' => 1,
+		] );
+
+		$items = $result[0]['query']['wikilambdaload_zlanguages'];
+		$this->assertCount( 1, $items );
+		$this->assertSame( 'xx-nonexistent', $items[0]['code'] );
+		$this->assertNull( $items[0]['zid'] );
+		$this->assertNull( $items[0]['label'] );
 	}
 }

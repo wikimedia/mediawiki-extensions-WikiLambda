@@ -81,6 +81,7 @@
 	"apihelp-wikilambda_edit-example-edit-incorrect": "{{doc-apihelp-example|wikilambda_edit}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zlanguages-summary": "{{doc-apihelp-summary|query+wikilambdaload_zlanguages}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zlanguages-param-codes": "{{doc-apihelp-param|query+wikilambdaload_zlanguages|codes}}\n\n{{doc-wikilambda}}",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "{{doc-apihelp-param|query+wikilambdaload_zlanguages|withlabels}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zlanguages-example-single": "{{doc-apihelp-example|query+wikilambdaload_zlanguages}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "{{doc-apihelp-example|query+wikilambdaload_zlanguages}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_edit-summary": "{{doc-apihelp-summary|wikilambda_edit}}\n\n{{doc-wikilambda}}",

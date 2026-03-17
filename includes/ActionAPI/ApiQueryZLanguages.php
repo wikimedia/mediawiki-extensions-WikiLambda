@@ -14,13 +14,16 @@ use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryZLanguages extends WikiLambdaApiQueryGeneratorBase {
 
 	private ZLangRegistry $langRegistry;
+	private ZObjectStore $zObjectStore;
 
 	/**
 	 * @codeCoverageIgnore
@@ -29,6 +32,7 @@ class ApiQueryZLanguages extends WikiLambdaApiQueryGeneratorBase {
 		parent::__construct( $query, $moduleName, 'wikilambdaload_zlanguages_' );
 
 		$this->langRegistry = ZLangRegistry::singleton();
+		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 	}
 
@@ -55,19 +59,51 @@ class ApiQueryZLanguages extends WikiLambdaApiQueryGeneratorBase {
 		}
 
 		$zidMap = $this->langRegistry->getLanguageZidsFromCodes( $codes );
+		$withLabels = $params['withlabels'] ?? false;
+		$labelsByZid = $withLabels ? $this->getLabelsForZids( $zidMap ) : [];
 
 		$items = array_map(
-			static function ( string $code ) use ( $zidMap ) {
-				return [
+			static function ( string $code ) use ( $zidMap, $withLabels, $labelsByZid ) {
+				$zid = $zidMap[ $code ] ?? null;
+				$item = [
 					'code' => $code,
-					'zid' => $zidMap[ $code ] ?? null,
+					'zid' => $zid,
 				];
+				// If requested, add label to the item
+				if ( $withLabels ) {
+					$item['label'] = is_string( $zid ) ? ( $labelsByZid[ $zid ] ?? null ) : null;
+				}
+				return $item;
 			},
 			$codes
 		);
 
 		$result = $this->getResult();
 		$result->addValue( [ 'query' ], $this->getModuleName(), $items );
+	}
+
+	/**
+	 * Returns labels for all valid ZIDs from the provided code=>zid map.
+	 *
+	 * @param array<string,?string> $zidMap
+	 * @return array<string,?string>
+	 */
+	private function getLabelsForZids( array $zidMap ): array {
+		$zids = [];
+		foreach ( $zidMap as $zid ) {
+			if ( is_string( $zid ) && $zid !== '' ) {
+				$zids[$zid] = true;
+			}
+		}
+
+		if ( !$zids ) {
+			return [];
+		}
+
+		return $this->zObjectStore->fetchZObjectLabels(
+			array_keys( $zids ),
+			$this->getLanguage()->getCode()
+		);
 	}
 
 	/**
@@ -80,6 +116,10 @@ class ApiQueryZLanguages extends WikiLambdaApiQueryGeneratorBase {
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_ISMULTI => true,
 				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'withlabels' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_DEFAULT => false,
 			],
 		];
 	}

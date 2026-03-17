@@ -1345,6 +1345,77 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Fetch labels in the secondary database for a batch of objects by ZID,
+	 * in a given language.
+	 *
+	 * @param string[] $zids
+	 * @param string $languageCode Code of the language in which to fetch labels
+	 * @param bool $fallback Whether to only match in the given language, or use
+	 *   the language fallback chain (default behaviour).
+	 * @return array<string,?string> Map of ZID => best matching label or null
+	 */
+	public function fetchZObjectLabels( array $zids, $languageCode, $fallback = true ): array {
+		// Initialize result array with null values for each ZID
+		$result = array_fill_keys( $zids, null );
+
+		// Get language registry
+		$zLangRegistry = ZLangRegistry::singleton();
+
+		// Provided language code is not known, so fall back to English.
+		$languageCode = $zLangRegistry->isLanguageKnownGivenCode( $languageCode ) ? $languageCode : 'en';
+		$languageZid = $zLangRegistry->getLanguageZidFromCode( $languageCode );
+
+		// Set language filter
+		$languages = [ $languageZid ];
+		if ( $fallback ) {
+			// TODO (T362246): Dependency-inject
+			$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+			$languages = $zLangRegistry->getListOfFallbackLanguageZids( $languageFallback, $languageCode );
+		}
+
+		$dbr = $this->dbProvider->getReplicaDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid', 'wlzl_language', 'wlzl_label' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->where( [
+				'wlzl_zobject_zid' => $zids,
+				'wlzl_language' => $languages,
+				// We only want primary labels, not aliases
+				'wlzl_label_primary' => '1',
+			] )
+			->orderBy( 'wlzl_id', SelectQueryBuilder::SORT_ASC )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		// First pass: bucket DB rows as [ zobjectZid => [ languageZid => label ] ].
+		// This lets us apply fallback preference order in a second pass.
+		$labelsByZid = [];
+		foreach ( $res as $row ) {
+			$zid = $row->wlzl_zobject_zid;
+			if ( !array_key_exists( $zid, $labelsByZid ) ) {
+				$labelsByZid[$zid] = [];
+			}
+			$labelsByZid[$zid][ $row->wlzl_language ] = $row->wlzl_label;
+		}
+
+		// Second pass: for each requested ZID, pick the first label available in
+		// the caller's language-preference order (requested lang -> fallbacks).
+		foreach ( $zids as $zid ) {
+			if ( !array_key_exists( $zid, $labelsByZid ) ) {
+				continue;
+			}
+			foreach ( $languages as $languageZidInOrder ) {
+				if ( array_key_exists( $languageZidInOrder, $labelsByZid[$zid] ) ) {
+					$result[$zid] = $labelsByZid[$zid][ $languageZidInOrder ];
+					break;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Fetch the label in the secondary database for a given object by Zid, in a given language.
 	 * Returns null if no labels are found in the given language or any other language in that
 	 * language's fallback chain, including English (Z1002). If the language code given is not
