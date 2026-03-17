@@ -7,6 +7,7 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
+const eventLogUtils = require( '../../utils/eventLogUtils.js' );
 const { extractZIDs } = require( '../../utils/schemata.js' );
 const { tryJsonParse } = require( '../../utils/miscUtils.js' );
 const { getScaffolding } = require( '../../utils/typeUtils.js' );
@@ -86,6 +87,14 @@ module.exports = {
 
 			// Update mw.storage
 			mw.storage.set( STORAGE_KEY, JSON.stringify( this.clipboardItems ) );
+
+			// Submit copy interaction
+			const interactionData = {
+				zobjectid: this.isAbstractContent() ? this.getAbstractWikiId : this.getCurrentZObjectId,
+				zobjecttype: this.isAbstractContent() ? 'abstractwiki' : this.getCurrentZObjectType,
+				zlang: this.getUserLangZid || null
+			};
+			eventLogUtils.submitInteraction( 'copy', interactionData );
 		},
 		/**
 		 * Clears the store and the data stored in the browser localStorage

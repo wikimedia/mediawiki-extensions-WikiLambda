@@ -89,6 +89,7 @@
 const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const useMainStore = require( '../../store/index.js' );
+const useEventLog = require( '../../composables/useEventLog.js' );
 const { isTypeCompatible, typeToString } = require( '../../utils/typeUtils.js' );
 
 // Type components
@@ -122,6 +123,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const store = useMainStore();
 		const i18n = inject( 'i18n' );
+		const { submitInteraction } = useEventLog();
 
 		const filterSubstr = ref( '' );
 		const isExpandedMap = ref( {} );
@@ -213,6 +215,14 @@ module.exports = exports = defineComponent( {
 			}
 			emit( 'paste', value );
 			emit( 'close-dialog' );
+
+			// Submit paste interaction
+			const interactionData = {
+				zobjectid: store.isAbstractContent() ? store.getAbstractWikiId : store.getCurrentZObjectId,
+				zobjecttype: store.isAbstractContent() ? 'abstractwiki' : store.getCurrentZObjectType,
+				zlang: store.getUserLangZid || null
+			};
+			submitInteraction( 'paste', interactionData );
 		}
 
 		/**

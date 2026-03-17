@@ -102,6 +102,9 @@ describe( 'clipboard Pinia store', () => {
 		} );
 
 		describe( 'copyToClipboard', () => {
+			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
+			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
+
 			beforeEach( () => {
 				const mockLabels = {
 					Z802K2: 'then'
@@ -117,6 +120,15 @@ describe( 'clipboard Pinia store', () => {
 					value: jest.fn().mockImplementation( ( zid ) => ( {
 						label: mockLabels[ zid ] || zid
 					} ) )
+				} );
+				Object.defineProperty( store, 'isAbstractContent', {
+					value: jest.fn().mockReturnValue( false )
+				} );
+				Object.defineProperty( store, 'getCurrentZObjectType', {
+					value: 'Z14'
+				} );
+				Object.defineProperty( store, 'getAbstractWikiId', {
+					value: 'Q123'
 				} );
 
 				// Mock mw.storage.set
@@ -151,9 +163,22 @@ describe( 'clipboard Pinia store', () => {
 
 				// Check that local storage is updated
 				expect( mw.storage.set ).toHaveBeenCalledWith( 'ext-wikilambda-app-clipboard', expect.any( String ) );
+
+				// Check that event is submitted
+				const interactionData = {
+					zobjectid: 'Z0',
+					zobjecttype: 'Z14',
+					zlang: 'Z1002'
+				};
+				expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'copy', interactionData );
 			} );
 
 			it( 'copies another value to the clipboard', () => {
+				// Set as abstract content to test different event data
+				Object.defineProperty( store, 'isAbstractContent', {
+					value: jest.fn().mockReturnValue( true )
+				} );
+
 				store.clipboardItems = [ {
 					itemId: 'then#1',
 					originKey: 'Z802K2',
@@ -197,6 +222,14 @@ describe( 'clipboard Pinia store', () => {
 
 				// Check that local storage is updated
 				expect( mw.storage.set ).toHaveBeenCalledWith( 'ext-wikilambda-app-clipboard', expect.any( String ) );
+
+				// Check that event is submitted
+				const interactionData = {
+					zobjectid: 'Q123',
+					zobjecttype: 'abstractwiki',
+					zlang: 'Z1002'
+				};
+				expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'copy', interactionData );
 			} );
 		} );
 
