@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use MediaWiki\Content\Content;
 use MediaWiki\Deferred\DataUpdate;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -38,14 +37,14 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 	/**
 	 * @param Title $title
-	 * @param Content $zObject
+	 * @param ZObjectContent $zObject
 	 * @param ZObjectStore $zObjectStore
 	 * @param WANObjectCache $zObjectCache
 	 * @param OrchestratorRequest|null $orchestrator
 	 */
 	public function __construct(
 		Title $title,
-		Content $zObject,
+		ZObjectContent $zObject,
 		ZObjectStore $zObjectStore,
 		WANObjectCache $zObjectCache,
 		$orchestrator = null

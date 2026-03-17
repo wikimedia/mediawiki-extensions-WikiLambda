@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
 use MediaWiki\Logger\LoggerFactory;
@@ -37,9 +36,9 @@ class OrchestratorRequest {
 	/**
 	 * The specialised request interface to control all network access to the function-orchestrator.
 	 *
-	 * @param ClientInterface $client GuzzleHttp Client used for requests
+	 * @param Client $client GuzzleHttp Client used for requests
 	 */
-	public function __construct( ClientInterface $client ) {
+	public function __construct( Client $client ) {
 		$this->guzzleClient = $client;
 
 		$this->userAgentString = 'wikifunctions-request/' . MW_VERSION;
