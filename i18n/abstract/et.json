@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Rivoz"
+		]
+	},
+	"wikilambda-abstract-menu-group-insert-fragments": "Lisa fragmente",
+	"wikilambda-abstract-menu-group-move-fragments": "Liiguta fragmente",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "Lisa tühi fragment",
+	"wikilambda-abstract-menu-option-add-named-fragment": "Lisa $1",
+	"wikilambda-abstract-menu-option-add-section": "Lisa sektsioon",
+	"wikilambda-abstract-menu-option-delete-fragment": "Kustuta fragment",
+	"wikilambda-abstract-preview-fragment-retry": "Proovi uuesti",
+	"wikilambda-abstract-special-create-createbutton-label": "Loo"
+}
