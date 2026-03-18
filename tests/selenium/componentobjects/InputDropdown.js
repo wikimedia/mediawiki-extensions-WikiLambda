@@ -15,6 +15,24 @@ import { Element as WebdriverIOElementType } from 'webdriverio';
 
 class InputDropdown {
 	/**
+	 * Codex `cdx-lookup` inputs can be stateful; before typing a new query we
+	 * clear the current text selection (Select All + Backspace).
+	 *
+	 * @async
+	 * @param {Promise<WebdriverIOElementType>} inputSelector - Codex lookup input element
+	 * @return {void}
+	 */
+	async clearLookupInput( inputSelector ) {
+		const resolvedInputSelector = await inputSelector;
+		await resolvedInputSelector.click();
+
+		// Select all (try both Cmd and Ctrl variants) then delete.
+		await browser.keys( [ 'Meta', 'a' ] );
+		await browser.keys( [ 'Control', 'a' ] );
+		await browser.keys( 'Backspace' );
+	}
+
+	/**
 	 * Set the input field to input text and select the input text from the dropdown
 	 *
 	 * @async
