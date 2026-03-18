@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"YaronSh"
 		]
 	},
 	"action-wikilambda-abstract-create": "ליצור ערכים מופשטים חדשים",
@@ -23,7 +24,7 @@
 	"wikilambda-abstract-error-missing-lede-section": "לעצם הערך מופשט חייב להיות פרק פתיחה (Q8776414).",
 	"wikilambda-abstract-error-missing-section-fragments": "בפרק עם המפתח \"$1\" אין מקטעים.",
 	"wikilambda-abstract-error-missing-sections": "לערך המופשט חייב להיות לפחות פרק אחד.",
-	"wikilambda-abstract-error-unmatching-qid": "ערך המפאיין \"qid\" (שהוא \"$1\") אינו תואם לכותרת הדף \"$2\"",
+	"wikilambda-abstract-error-unmatching-qid": "ערך המאפיין ‏„qid” (שהוא „$1”) אינו תואם לכותרת הדף „$2”",
 	"wikilambda-abstract-fragment-actions-menu": "תפריט פעולות מקטע",
 	"wikilambda-abstract-menu-fragments-accessible-label": "תפריט לבחירה והוספה של מקטע חדש",
 	"wikilambda-abstract-menu-group-basic-fragments": "פעולות מקטע בסיסיות",
