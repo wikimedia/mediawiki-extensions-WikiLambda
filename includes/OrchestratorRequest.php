@@ -156,7 +156,7 @@ class OrchestratorRequest {
 	 */
 	private function handleGuzzleRequestForEvaluate( $query, $requestHeaders ): array {
 		// TODO (T338242): Use postAsync here.
-		$response = $this->guzzleClient->post( '/1/v2/evaluate/', [
+		$response = $this->guzzleClient->post( '/1/v1/evaluate/', [
 			'json' => $query,
 			'headers' => $requestHeaders,
 			// http 400/500 errors from Orchestrator will be suppressed so that they will not throw exceptions
