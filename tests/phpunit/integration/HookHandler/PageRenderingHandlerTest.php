@@ -19,7 +19,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\MainConfigNames;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOptions;
@@ -39,6 +38,7 @@ use MediaWiki\User\User;
  */
 class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 
+	private const TEST_ABSTRACT_NS = 2300;
 	private PageRenderingHandler $pageRenderingHandler;
 	private PageRenderingHandler $pageRenderingHandlerRepoModeOff;
 	private PageRenderingHandler $pageRenderingHandlerAbstractMode;
@@ -218,173 +218,168 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		return [
 			'Z1 wiki page, logged in user, English implicit view' => [
 				/* titleText */ 'Z1',
-				/* isZObject */ true,
-				/* isAbstract */ false,
 				/* languageCode */ null,
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [],
-				/* editPage */ '/wiki/Z1?action=edit',
 				/* expectedView */ '/view/en/Z1',
-				/* expectedEdit */ '/wiki/Z1?uselang=en&action=edit',
-				/* expectedHistory */ '/wiki/Z1?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Z1&action=edit&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Z1&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Z1',
 				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
 			],
 			'Z1 view page, logged in user, English implicit view' => [
 				/* titleText */ 'Z1',
-				/* isZObject */ true,
-				/* isAbstract */ false,
 				/* languageCode */ null,
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [],
-				/* editPage */ '/wiki/Z1?action=edit',
 				/* expectedView */ '/view/en/Z1',
-				/* expectedEdit */ '/wiki/Z1?uselang=en&action=edit',
-				/* expectedHistory */ '/wiki/Z1?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Z1&action=edit&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Z1&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Z1',
 				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
 			],
 			'Z1 view page, logged in user, English explicit view' => [
 				/* titleText */ 'Z1',
-				/* isZObject */ true,
-				/* isAbstract */ false,
 				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [],
-				/* editPage */ '/wiki/Z1?action=edit',
 				/* expectedView */ '/view/en/Z1',
-				/* expectedEdit */ '/wiki/Z1?uselang=en&action=edit',
-				/* expectedHistory */ '/wiki/Z1?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Z1&action=edit&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Z1&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Z1',
 				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
 			],
-			'Z1 view page, logged in user, English explicit view, extra params passed on to talk' => [
+			'Z1 view page, logged in user, English explicit view, extra params are not passed on' => [
 				/* titleText */ 'Z1',
-				/* isZObject */ true,
-				/* isAbstract */ false,
 				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [ 'fish' => 'chips' ],
-				/* editPage */ '/wiki/Z1?action=edit',
 				/* expectedView */ '/view/en/Z1',
-				/* expectedEdit */ '/wiki/Z1?uselang=en&action=edit',
-				/* expectedHistory */ '/wiki/Z1?uselang=en&action=history',
-				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en&fish=chips',
+				/* expectedEdit */ '/w/index.php?title=Z1&action=edit&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Z1&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Z1',
+				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
 			],
 			'Z1 view page, logged in user, English explicit view, oldid set' => [
 				/* titleText */ 'Z1',
-				/* isZObject */ true,
-				/* isAbstract */ false,
 				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [ 'oldid' => '1234' ],
-				/* editPage */ '/wiki/Z1?action=edit',
 				/* expectedView */ '/view/en/Z1',
-				/* expectedEdit */ '/wiki/Z1?uselang=en&action=edit&oldid=1234',
-				/* expectedHistory */ '/wiki/Z1?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Z1&action=edit&oldid=1234&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Z1&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Z1',
 				/* expectedTalk */ '/wiki/Talk:Z1?uselang=en',
 			],
 			'Z1 view page, logged in user, French explicit view' => [
 				/* titleText */ 'Z1',
-				/* isZObject */ true,
-				/* isAbstract */ false,
 				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [ 'uselang' => 'fr' ],
-				/* editPage */ '/wiki/Z1?action=edit',
 				/* expectedView */ '/view/fr/Z1',
-				/* expectedEdit */ '/wiki/Z1?uselang=fr&action=edit',
-				/* expectedHistory */ '/wiki/Z1?uselang=fr&action=history',
+				/* expectedEdit */ '/w/index.php?title=Z1&action=edit&uselang=fr',
+				/* expectedHistory */ '/w/index.php?title=Z1&action=history&uselang=fr',
+				/* expectedMain */ '/view/fr/Z1',
 				/* expectedTalk */ '/wiki/Talk:Z1?uselang=fr',
 			],
-			'Not a ZObject page; we shouldn\'t be modifying anything' => [
-				/* titleText */ 'Z1',
-				/* isZObject */ false,
-				/* isAbstract */ false,
+			'Wikitext (not a talk page); we shouldn\'t be modifying anything' => [
+				/* titleText */ 'User:WikiLambdaTestUser',
 				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
-				// Note: This tests that passing in a uselang has no effect when we don't do our magic
 				/* params */ [ 'uselang' => 'de' ],
-				/* editPage */ '/wiki/Talk:Z1?action=edit',
-				/* expectedView */ '/wiki/Talk:Z1?uselang=de',
-				/* expectedEdit */ '/wiki/Talk:Z1?action=edit',
-				/* expectedHistory */ '/wiki/Talk:Z1?action=history',
-				/* expectedTalk */ '/wiki/Talk:Z1',
+				/* expectedView */ '/wiki/User:WikiLambdaTestUser',
+				/* expectedEdit */ '/w/index.php?title=User:WikiLambdaTestUser&action=edit',
+				/* expectedHistory */ '/w/index.php?title=User:WikiLambdaTestUser&action=history',
+				/* expectedMain */ '/wiki/User:WikiLambdaTestUser',
+				/* expectedTalk */ '/wiki/User_talk:WikiLambdaTestUser',
 			],
 			'Logged out user, no edit link, German explicit view' => [
 				/* titleText */ 'Z1',
-				/* isZObject */ true,
-				/* isAbstract */ false,
 				/* languageCode */ 'en',
 				/* user */ '127.0.0.1',
 				/* params */ [ 'uselang' => 'de' ],
-				/* editPage */ null,
 				/* expectedView */ '/view/de/Z1',
 				/* expectedEdit */ null,
-				/* expectedHistory */ '/wiki/Z1?uselang=de&action=history',
+				/* expectedHistory */ '/w/index.php?title=Z1&action=history&uselang=de',
+				/* expectedMain */ '/view/de/Z1',
 				/* expectedTalk */ '/wiki/Talk:Z1?uselang=de',
 			],
 			'Abstract_Wikipedia:Q1234 wiki page, logged in user, English implicit view' => [
 				/* titleText */ 'Abstract_Wikipedia:Q1234',
-				/* isZObject */ false,
-				/* isAbstract */ true,
 				/* languageCode */ null,
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [],
-				/* editPage */ '/wiki/Abstract_Wikipedia:Q1234?action=edit',
 				/* expectedView */ '/view/en/Abstract_Wikipedia:Q1234',
-				/* expectedEdit */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=edit',
-				/* expectedHistory */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=edit&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Abstract_Wikipedia:Q1234',
 				/* expectedTalk */ '/wiki/Abstract_Wikipedia_talk:Q1234?uselang=en'
 			],
 			'Abstract_Wikipedia:Q1234 view page, logged in user, English implicit view' => [
 				/* titleText */ 'Abstract_Wikipedia:Q1234',
-				/* isZObject */ false,
-				/* isAbstract */ true,
 				/* languageCode */ null,
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [],
-				/* editPage */ '/wiki/Abstract_Wikipedia:Q1234?action=edit',
 				/* expectedView */ '/view/en/Abstract_Wikipedia:Q1234',
-				/* expectedEdit */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=edit',
-				/* expectedHistory */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=edit&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Abstract_Wikipedia:Q1234',
 				/* expectedTalk */ '/wiki/Abstract_Wikipedia_talk:Q1234?uselang=en'
 			],
 			'Abstract_Wikipedia:Q1234 view page, logged in user, English explicit view' => [
 				/* titleText */ 'Abstract_Wikipedia:Q1234',
-				/* isZObject */ false,
-				/* isAbstract */ true,
 				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [],
-				/* editPage */ '/wiki/Abstract_Wikipedia:Q1234?action=edit',
 				/* expectedView */ '/view/en/Abstract_Wikipedia:Q1234',
-				/* expectedEdit */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=edit',
-				/* expectedHistory */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=edit&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Abstract_Wikipedia:Q1234',
 				/* expectedTalk */ '/wiki/Abstract_Wikipedia_talk:Q1234?uselang=en'
 			],
 			'Abstract_Wikipedia:Q1234 view page, logged in user, English explicit view, oldid set' => [
 				/* titleText */ 'Abstract_Wikipedia:Q1234',
-				/* isZObject */ false,
-				/* isAbstract */ true,
 				/* languageCode */ 'en',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [ 'oldid' => '1234' ],
-				/* editPage */ '/wiki/Abstract_Wikipedia:Q1234?action=edit',
 				/* expectedView */ '/view/en/Abstract_Wikipedia:Q1234',
-				/* expectedEdit */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=edit&oldid=1234',
-				/* expectedHistory */ '/wiki/Abstract_Wikipedia:Q1234?uselang=en&action=history',
+				/* expectedEdit */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=edit&oldid=1234&uselang=en',
+				/* expectedHistory */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=history&uselang=en',
+				/* expectedMain */ '/view/en/Abstract_Wikipedia:Q1234',
 				/* expectedTalk */ '/wiki/Abstract_Wikipedia_talk:Q1234?uselang=en'
 			],
 			'Abstract_Wikipedia:Q1234 view page, logged in user, French explicit view' => [
 				/* titleText */ 'Abstract_Wikipedia:Q1234',
-				/* isZObject */ false,
-				/* isAbstract */ true,
 				/* languageCode */ 'fr',
 				/* user */ 'WikiLambdaTestUser',
 				/* params */ [ 'uselang' => 'fr' ],
-				/* editPage */ '/wiki/Abstract_Wikipedia:Q1234?action=edit',
 				/* expectedView */ '/view/fr/Abstract_Wikipedia:Q1234',
-				/* expectedEdit */ '/wiki/Abstract_Wikipedia:Q1234?uselang=fr&action=edit',
-				/* expectedHistory */ '/wiki/Abstract_Wikipedia:Q1234?uselang=fr&action=history',
+				/* expectedEdit */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=edit&uselang=fr',
+				/* expectedHistory */ '/w/index.php?title=Abstract_Wikipedia:Q1234&action=history&uselang=fr',
+				/* expectedMain */ '/view/fr/Abstract_Wikipedia:Q1234',
 				/* expectedTalk */ '/wiki/Abstract_Wikipedia_talk:Q1234?uselang=fr',
+			],
+			'Talk:Z1, logged in user, French explicit view' => [
+				/* titleText */ 'Talk:Z1',
+				/* languageCode */ 'fr',
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [ 'uselang' => 'fr' ],
+				/* expectedView */ '/wiki/Talk:Z1',
+				/* expectedEdit */ '/w/index.php?title=Talk:Z1&action=edit',
+				/* expectedHistory */ '/w/index.php?title=Talk:Z1&action=history',
+				/* expectedMain */ '/view/fr/Z1',
+				/* expectedTalk */ '/wiki/Talk:Z1',
+			],
+			'Abstract_Wikipedia_talk:Q1234, logged in user, French explicit view' => [
+				/* titleText */ 'Abstract_Wikipedia_talk:Q1234',
+				/* languageCode */ 'fr',
+				/* user */ 'WikiLambdaTestUser',
+				/* params */ [ 'uselang' => 'fr' ],
+				/* expectedView */ '/wiki/Abstract_Wikipedia_talk:Q1234',
+				/* expectedEdit */ '/w/index.php?title=Abstract_Wikipedia_talk:Q1234&action=edit',
+				/* expectedHistory */ '/w/index.php?title=Abstract_Wikipedia_talk:Q1234&action=history',
+				/* expectedMain */ '/view/fr/Abstract_Wikipedia:Q1234',
+				/* expectedTalk */ '/wiki/Abstract_Wikipedia_talk:Q1234',
 			]
 		];
 	}
@@ -394,43 +389,35 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testOnSkinTemplateNavigation(
 		string $titleText,
-		bool $isZObject,
-		bool $isAbstract,
 		?string $skinLanguageCode,
 		string $userName,
 		array $params,
-		?string $editPage,
-		string $expectedView,
+		?string $expectedView,
 		?string $expectedEdit,
-		string $expectedHistory,
-		string $expectedTalk
+		?string $expectedHistory,
+		?string $expectedMain,
+		?string $expectedTalk
 	) {
-		$user = $this->getServiceContainer()->getUserFactory()->newFromNameOrIp( $userName );
-		$title = Title::makeTitle( NS_TALK, $titleText );
 		// Fallback: content language is English
 		$contentLanguage = 'en';
 
+		$user = $this->getServiceContainer()->getUserFactory()->newFromNameOrIp( $userName );
+		$title = Title::newFromText( $titleText );
+
+		$isZObject = $title->hasContentModel( CONTENT_MODEL_ZOBJECT );
 		if ( $isZObject ) {
+			// Use insertZids to insert the title, as we are only using Z1 in
+			// these test cases: this guarantees that $title->exists() is true:
 			$this->insertZids( [ $titleText ] );
-			$title = Title::makeTitle( NS_MAIN, $titleText );
 		}
 
+		$isAbstract = $title->hasContentModel( CONTENT_MODEL_ABSTRACT );
 		if ( $isAbstract ) {
-			$title = Title::newFromText( $titleText );
-			$testUser = $this->getTestUser();
-			$user = $testUser->getUser();
-
-			$services = MediaWikiServices::getInstance();
-			$wikiPageFactory = $services->getWikiPageFactory();
-
-			// Create a page object for the test title
-			// Give it Abstract content so our hook recognizes it
-			$page = $wikiPageFactory->newFromTitle( $title );
-			$page->doUserEditContent(
-				new AbstractWikiContent( '{"qid": "Q1234"}' ),
-				$user,
-				'create abstract content'
-			);
+			// Insert a sufficiently valid abstract wiki content
+			// object so that the call $title->exists() is true:
+			$content = new AbstractWikiContent(
+				'{ "qid": "Q1234", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89" ] } } }' );
+			$this->editPage( $title, $content, 'mock abstract', self::TEST_ABSTRACT_NS );
 		}
 
 		if ( isset( $params['uselang'] ) ) {
@@ -447,49 +434,47 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockSkinTemplate->method( 'getRelevantTitle' )->willReturn( $title );
 		$mockSkinTemplate->method( 'getLanguage' )->willReturn( $this->makeLanguage( $lang ) );
 
-		// Determine the paths
-		$mainHref = '/wiki/' . $titleText . '?uselang=' . $lang;
-		$viewHref = '/view/' . $lang . '/' . $titleText;
-		$editHref = $mainHref . '&action=edit';
+		// Determine the paths for the initial links object
+		// Links for actions: view, edit and history
+		// Default MW behavior: and index.php for action= urls
+		$viewHref = '/wiki/' . $titleText;
+		$baseHref = '/w/index.php?title=' . $titleText;
+		$historyHref = $baseHref . '&action=history';
+		// From current page parameters, only oldid param is inherited in the edit link
+		$editHref = $baseHref . '&action=edit';
 		if ( isset( $params['oldid'] ) ) {
 			$editHref .= '&oldid=' . $params['oldid'];
 		}
-		$historyHref = $mainHref . '&action=history';
 
-		$talkParams = array_filter( $params, static function ( $key ) {
-			// Don't include uselang or oldid in the talk page link
-			return ( $key !== 'uselang' && $key !== 'oldid' );
-		}, ARRAY_FILTER_USE_KEY );
-
-		// This is a fake set of links similar to what we'd get if we instantiated a real SkinTemplate
-		if ( $isZObject || $isAbstract ) {
-			$talkParams = [ 'uselang' => $lang ] + $talkParams;
-		}
-
-		if ( $isAbstract ) {
-			$talkTitle = str_replace( ':', '_talk:', $titleText );
-			$talkHref = '/wiki/' . $talkTitle . ( count( $talkParams ) ? '?' . wfArrayToCgi( $talkParams ) : '' );
-		} else {
-			$talkHref = '/wiki/Talk:' . $titleText . ( count( $talkParams ) ? '?' . wfArrayToCgi( $talkParams ) : '' );
-		}
+		// Determine the associated-links for the initial links object
+		// Links for navigation: main page and talk page
+		$isTalkPage = $title->isTalkPage();
+		$subjectIsAbstract = $isTalkPage ? $title->getSubjectPage()->hasContentModel( CONTENT_MODEL_ABSTRACT ) : false;
+		$mainKey = $isAbstract || ( $isTalkPage && $subjectIsAbstract ) ? 'abstract_wikipedia' : 'main';
+		$mainTitle = $isTalkPage ? $title->getSubjectPage()->getPrefixedDBkey() : $titleText;
+		$mainHref = '/wiki/' . $mainTitle;
+		// Default MW behavior: /wiki/title for existing talk pages and index.php for new ones
+		$talkKey = $isAbstract || ( $isTalkPage && $subjectIsAbstract ) ? 'abstract_wikipedia_talk' : 'talk';
+		$talkTitle = $isTalkPage ? $titleText : $title->getTalkPage()->getPrefixedDBkey();
+		$talkHref = '/wiki/' . $talkTitle;
 
 		$links = [
 			'user-interface-preferences' => [],
 			'views' => [
-				'view' => [ 'href' => ( $isZObject || $isAbstract ) ? $viewHref : '/wiki/' . 'Talk:' . $titleText .
-					( count( $params ) ? '?' . wfArrayToCgi( $params ) : '' ) ],
-				'history' => [ 'href' => ( $isZObject || $isAbstract ) ? $historyHref :
-					'/wiki/' . 'Talk:' . $titleText . '?action=history' ]
+				'view' => [ 'href' => $viewHref ],
+				'history' => [ 'href' => $historyHref ]
 			],
 			'associated-pages' => [
-				'talk' => [ 'href' => $talkHref ]
-			],
+				$mainKey => [ 'href' => $mainHref ],
+				$talkKey => [ 'href' => $talkHref ]
+			]
 		];
-		$linksOriginal = $links;
 
-		if ( $editPage !== null ) {
-			$links['views']['edit'] = [ 'href' => ( $isZObject || $isAbstract ) ? $editHref : $editPage ];
+		if ( $expectedEdit ) {
+			$links['views']['edit'] = [ 'href' => $editHref ];
 		}
+
+		$linksOriginal = $links;
 
 		// Trigger the behaviour we're testing
 		$this->pageRenderingHandler->onSkinTemplateNavigation__Universal( $mockSkinTemplate, $links );
@@ -501,14 +486,16 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			'Make sure our language button is registered on all pages'
 		);
 
-		$this->assertEquals(
-			$expectedView, $links['views']['view']['href'],
-			'Check that we\'ve re-written the link to the view page correctly'
-		);
-
-		if ( $expectedEdit !== null ) {
+		if ( $expectedView ) {
 			$this->assertEquals(
-				$expectedEdit, $links['views']['edit']['href'],
+				$expectedView, $links['views']['view']['href'],
+				'Check that we\'ve re-written the link to the view page correctly'
+			);
+		}
+
+		if ( $expectedEdit ) {
+			$this->assertEquals(
+				urldecode( $expectedEdit ), urldecode( $links['views']['edit']['href'] ),
 				'Check that we\'ve re-written the link to the edit page correctly'
 			);
 		} else {
@@ -522,15 +509,26 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			);
 		}
 
-		$this->assertEquals(
-			$expectedHistory, $links['views']['history']['href'],
-			'Check that we\'ve re-written the link to the history page correctly'
-		);
+		if ( $expectedHistory ) {
+			$this->assertEquals(
+				urldecode( $expectedHistory ), urldecode( $links['views']['history']['href'] ),
+				'Check that we\'ve re-written the link to the history page correctly'
+			);
+		}
 
-		$this->assertEquals(
-			$expectedTalk, $links['associated-pages']['talk']['href'],
-			'Check that we\'ve re-written the link to the talk page correctly'
-		);
+		if ( $expectedMain ) {
+			$this->assertEquals(
+				urldecode( $expectedMain ), urldecode( $links['associated-pages'][$mainKey]['href'] ),
+				'Check that we\'ve re-written the link to the main page correctly'
+			);
+		}
+
+		if ( $expectedTalk ) {
+			$this->assertEquals(
+				urldecode( $expectedTalk ), urldecode( $links['associated-pages'][$talkKey]['href'] ),
+				'Check that we\'ve re-written the link to the talk page correctly'
+			);
+		}
 
 		// Re-set our fake 'links' to the original value, and test that we don't modify them in non-repo mode
 		$links = $linksOriginal;
