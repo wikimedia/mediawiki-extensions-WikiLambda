@@ -40,13 +40,11 @@ body {
 }
 
 // Prevents FOUC: show numbered marker immediately, hide text content
-.ext-wikilambda-reference {
-	/* Visual Editor overrides these properties otherwise */
-	/* stylelint-disable declaration-no-important */
-	font-size: 0 !important;
-	line-height: 1 !important;
-	vertical-align: super !important;
-	/* stylelint-enable declaration-no-important */
+.ext-wikilambda-reference,
+.ext-wikilambda-reference.ve-ce-focusableNode-invisible {
+	font-size: 0;
+	line-height: 1;
+	vertical-align: super;
 	counter-increment: ext-wikilambda-reference-counter;
 
 	// Show numbered marker immediately on load (e.g., [1], [2], [3])
