@@ -905,17 +905,14 @@ class ZObjectUtils {
 	 * @return string The ZID of the given ZObject, or Z0
 	 */
 	public static function getZid( $zobject ): string {
-		if ( $zobject instanceof ZObject ) {
-			if ( $zobject instanceof ZReference || $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
-				return $zobject->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE )->__toString();
-			}
-			if ( $zobject instanceof ZPersistentObject || $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-				return $zobject
-					->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )
-					->getValueByKey( ZTypeRegistry::Z_STRING_VALUE )->__toString();
-			}
+		// Return value if reference:
+		if ( $zobject instanceof ZReference ) {
+			return $zobject->getZValue();
 		}
-
+		// Return identity if persistent object:
+		if ( $zobject instanceof ZPersistentObject ) {
+			return $zobject->getZid();
+		}
 		// Use placeholder ZID for non-persisted objects.
 		return ZTypeRegistry::Z_NULL_REFERENCE;
 	}
