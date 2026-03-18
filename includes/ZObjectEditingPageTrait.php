@@ -14,6 +14,8 @@ use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Html\Html;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Page\Article;
+use MediaWiki\Title\Title;
 
 trait ZObjectEditingPageTrait {
 	/**
@@ -44,6 +46,20 @@ trait ZObjectEditingPageTrait {
 				[ 'id' => 'ext-wikilambda-app' ],
 				UIUtils::createCodexProgressIndicator( $loadingMessage )
 			) );
+		}
+
+		if ( array_key_exists( 'zId', $jsEditingConfigVarOverride ) ) {
+			$title = Title::newFromText( $jsEditingConfigVarOverride[ 'zId' ], NS_MAIN );
+
+			// Get oldid, if any, from the url parameter 'oldid'
+			$targetRevisionId = $context->getRequest()->getInt( 'oldid' ) ?: null;
+
+			// (T364318) Add the revision navigation bar if seeing an oldid
+			if ( $targetRevisionId !== null ) {
+				$output->setRevisionId( $targetRevisionId );
+				$article = Article::newFromTitle( $title, $context );
+				$article->setOldSubtitle( $targetRevisionId );
+			}
 		}
 
 		$userLangCode = $userLang->getCode();
