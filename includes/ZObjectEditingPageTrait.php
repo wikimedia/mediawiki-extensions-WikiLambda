@@ -21,12 +21,14 @@ trait ZObjectEditingPageTrait {
 	/**
 	 * Generate the edition or creation header and render it in the output.
 	 *
-	 * @param OutputPage $output
 	 * @param IContextSource $context
+	 * @param OutputPage $output
 	 * @param array $jsEditingConfigVarOverride variables to pass to the mw.config in JavaScript.
 	 */
 	public function generateZObjectPayload(
-		OutputPage $output, IContextSource $context, array $jsEditingConfigVarOverride
+		IContextSource $context,
+		OutputPage $output,
+		array $jsEditingConfigVarOverride
 	) {
 		$userLang = $context->getLanguage();
 

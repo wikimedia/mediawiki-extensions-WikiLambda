@@ -144,7 +144,7 @@ class SpecialViewObject extends UnlistedSpecialPage {
 		$outputPage->setRevisionId( $targetRevision );
 
 		// (T345453) Have the standard copyright stuff show up.
-		$this->getContext()->getOutput()->setCopyright( true );
+		$outputPage->setCopyright( true );
 
 		$this->setHeaders();
 
@@ -206,7 +206,7 @@ class SpecialViewObject extends UnlistedSpecialPage {
 		$outputPage->setArticleFlag( true );
 		$this->addHelpLink( 'Help:Wikifunctions/Viewing Objects' );
 
-		$this->generateZObjectPayload( $outputPage, $this->getContext(), [
+		$this->generateZObjectPayload( $this->getContext(), $outputPage, [
 			'createNewPage' => false,
 			'zId' => $targetPageName,
 			'viewmode' => true,

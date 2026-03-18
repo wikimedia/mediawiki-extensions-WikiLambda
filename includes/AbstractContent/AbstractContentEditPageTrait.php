@@ -42,10 +42,8 @@ trait AbstractContentEditPageTrait {
 		$createNewPage = true;
 		$jsonContent = false;
 
-		// Get oldid, if any, either in subpage or as the url parameter 'qid'
-		$request = $context->getRequest();
-		$latestRevId = $title->getLatestRevID();
-		$targetRevisionId = $request->getInt( 'oldid' ) ?: null;
+		// Get oldid, if any, from the url parameter 'oldid'
+		$targetRevisionId = $context->getRequest()->getInt( 'oldid' ) ?: null;
 
 		if ( $title->exists() ) {
 			// Content exists: retrieve given or latest revision

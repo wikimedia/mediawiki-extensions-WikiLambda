@@ -113,7 +113,7 @@ class SpecialCreateObject extends SpecialPage {
 
 		$this->addHelpLink( 'Extension:WikiLambda/Creating Objects' );
 
-		$this->generateZObjectPayload( $output, $this->getContext(), [
+		$this->generateZObjectPayload( $this->getContext(), $output, [
 			'createNewPage' => true,
 		] );
 	}

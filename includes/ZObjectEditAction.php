@@ -224,7 +224,7 @@ class ZObjectEditAction extends Action {
 			) );
 		}
 
-		$this->generateZObjectPayload( $output, $this->getContext(), [
+		$this->generateZObjectPayload( $this->getContext(), $output, [
 			'createNewPage' => false,
 			'zId' => $zId,
 		] );
