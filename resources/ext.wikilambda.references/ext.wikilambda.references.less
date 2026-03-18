@@ -41,9 +41,12 @@ body {
 
 // Prevents FOUC: show numbered marker immediately, hide text content
 .ext-wikilambda-reference {
-	font-size: 0;
-	line-height: 1;
-	vertical-align: super;
+	/* Visual Editor overrides these properties otherwise */
+	/* stylelint-disable declaration-no-important */
+	font-size: 0 !important;
+	line-height: 1 !important;
+	vertical-align: super !important;
+	/* stylelint-enable declaration-no-important */
 	counter-increment: ext-wikilambda-reference-counter;
 
 	// Show numbered marker immediately on load (e.g., [1], [2], [3])
@@ -54,7 +57,7 @@ body {
 	}
 
 	// Hide ::before when JS has processed it (button shows counter instead)
-	&[ data-wikilambda-reference-init ] {
+	&.ext-wikilambda-reference--initialized {
 		font-size: inherit;
 
 		&::before {

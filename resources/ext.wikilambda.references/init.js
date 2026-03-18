@@ -45,7 +45,7 @@ function createButtonElement() {
 /**
  * Upgrade trigger element to button structure.
  * Transforms: <sup class="ext-wikilambda-reference">Reference text...</sup>
- * Into: <sup class="ext-wikilambda-reference" data-wikilambda-reference-init="1">
+ * Into: <sup class="ext-wikilambda-reference ext-wikilambda-reference--initialized">
  *   <button class="ext-wikilambda-reference__button"></button>
  *   <span class="ext-wikilambda-reference__note">Reference text...</span>
  * </sup>
@@ -78,7 +78,7 @@ function upgradeTriggerToButton( trigger ) {
 	supElement.textContent = '';
 	supElement.appendChild( button );
 	supElement.appendChild( noteSpan );
-	supElement.setAttribute( 'data-wikilambda-reference-init', '1' );
+	supElement.classList.add( 'ext-wikilambda-reference--initialized' );
 
 	attachButtonEventHandlers( button );
 }
@@ -114,7 +114,7 @@ function initInContainer( containerEl ) {
 		return;
 	}
 
-	const triggers = containerEl.querySelectorAll( '.ext-wikilambda-reference:not([data-wikilambda-reference-init])' );
+	const triggers = containerEl.querySelectorAll( '.ext-wikilambda-reference:not(.ext-wikilambda-reference--initialized)' );
 	Array.prototype.forEach.call( triggers, ( trigger ) => {
 		upgradeTriggerToButton( trigger );
 	} );

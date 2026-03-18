@@ -31,7 +31,7 @@ For convenience of users, you can also use other elements (like `<span>`) - they
 1. **On Page Load**: The module scans the page for elements with class `ext-wikilambda-reference`
 2. **Transformation**: Each reference is transformed into:
    ```html
-   <sup class="ext-wikilambda-reference" data-wikilambda-reference-init="1">
+   <sup class="ext-wikilambda-reference ext-wikilambda-reference--initialized">
      <button class="ext-wikilambda-reference__button"
              aria-label="Open reference"
              aria-expanded="false">[1]</button>

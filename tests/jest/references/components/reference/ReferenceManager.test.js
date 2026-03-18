@@ -26,13 +26,12 @@ describe( 'ReferenceManager', () => {
 
 	beforeEach( () => {
 		// Create test DOM structure matching new format (after JS processing):
-		// <sup class="ext-wikilambda-reference" data-wikilambda-reference-init="1">
+		// <sup class="ext-wikilambda-reference ext-wikilambda-reference--initialized">
 		//   <button class="ext-wikilambda-reference__button">[*]</button>
 		//   <span class="ext-wikilambda-reference__note">Reference content</span>
 		// </sup>
 		const sup = document.createElement( 'sup' );
-		sup.className = 'ext-wikilambda-reference';
-		sup.setAttribute( 'data-wikilambda-reference-init', '1' );
+		sup.className = 'ext-wikilambda-reference ext-wikilambda-reference--initialized';
 		triggerButton = document.createElement( 'button' );
 		triggerButton.className = 'ext-wikilambda-reference__button';
 		triggerButton.textContent = '[*]';
