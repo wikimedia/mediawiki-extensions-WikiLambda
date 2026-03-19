@@ -90,7 +90,8 @@ class RepoHooks implements
 		foreach ( $abstractNamespaceConfig as $namespaceID => $nsdata ) {
 
 			// We only need to do the below steps if we're in dev-mode, and not occupying the main namespace
-			if ( $namespaceID !== NS_MAIN ) {
+			// (T420617) HACK: Ignore all NSes lower than 10, not just NS_MAIN, whilst we fix prod config.
+			if ( $namespaceID > 10 ) {
 				$namespaceEnglishName = $nsdata[0];
 
 				// Register the namespace at all (plus its talk)
