@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"wikifunctions-rest-module-v0-title": "Wikifunctions-API",
+	"wikifunctions-rest-module-v0-desc": "APIs zur Interaktion mit Wikifunctions",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "ZObjects abrufen",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Historische Versionen von ZObjects abrufen",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Funktion aufrufen",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Eine Funktion mit benutzerdefinierten Parse- und Rendering-Sprachen aufrufen"
+}

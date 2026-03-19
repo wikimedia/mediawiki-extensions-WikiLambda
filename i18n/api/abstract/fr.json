@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Urhixidur"
+		]
+	},
+	"apihelp-abstractwiki_run_fragment-param-date": "La chaîne de date utilisée pour afficher le fragment."
+}

@@ -1,7 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-		]
+		"authors": []
 	},
 	"wikifunctions-rest-module-v0-title": "{{Experimental}} Title of the Attribution API REST module",
 	"wikifunctions-rest-module-v0-desc": "{{Experimental}} Description of the Attribution API REST module",

@@ -1,10 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Beta16"
+			"Beta16",
+			"FL2226"
 		]
 	},
 	"wikilambda-abstract-error-bad-section-content": "La sezione con chiave '$1' ha contenuti non validi.",
 	"wikilambda-abstract-preview-fragment-max-retries": "Raggiunto il numero massimo di tentativi. Riprova più tardi.",
-	"wikilambda-abstract-preview-fragment-retry": "Riprova"
+	"wikilambda-abstract-preview-fragment-retry": "Riprova",
+	"wikilambda-abstract-special-create-intro": "Assicurati di rispettare le [[ $1 |politiche della community]], comprese le norme sul copyright."
 }
