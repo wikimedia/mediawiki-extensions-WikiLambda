@@ -161,7 +161,7 @@ class SpecialCreateAbstract extends SpecialPage {
 
 		$output->addWikiMsg(
 			'wikilambda-abstract-special-create-intro',
-			'Special:MyLanguage/Abstract:List_of_policies_and_guidelines'
+			'Special:MyLanguage/Abstract Wikipedia:List_of_policies_and_guidelines'
 		);
 
 		// TODO (T411722): Add and link help page for creating Abstract articles
