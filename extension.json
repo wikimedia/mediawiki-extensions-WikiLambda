@@ -95,6 +95,7 @@
 		},
 		"WikiLambdaAbstractNamespaces": {
 			"description": "Map of namespaces to Wikidata concept types to use for Abstract Wiki content.",
+			"merge_strategy": "provide_default",
 			"value": {
 				"2300": [
 					"Abstract_Wikipedia",
