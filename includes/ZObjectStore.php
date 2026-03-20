@@ -102,16 +102,17 @@ class ZObjectStore {
 		];
 
 		// First try, get zid of highest page_id, skipping predefined
-		$latest = $dbr->newSelectQueryBuilder()
-			->select( [ 'page_title' ] )
+		$latestZid = $dbr->newSelectQueryBuilder()
+			->select( 'page_title' )
 			->from( 'page' )
 			->where( $conditions )
 			->orderBy( 'page_id', SelectQueryBuilder::SORT_DESC )
-			->limit( 1 )
 			->caller( __METHOD__ )
-			->fetchResultSet();
+			->fetchField();
 
-		$latestZid = $latest->numRows() > 0 ? $latest->fetchRow()[ 0 ] : self::PREDEFINED_TOP_LIMIT;
+		if ( $latestZid === false ) {
+			$latestZid = self::PREDEFINED_TOP_LIMIT;
+		}
 		$targetZid = 'Z' . ( max( intval( substr( $latestZid, 1 ) ) + 1, 10000 ) );
 
 		// Check if target zid already exists, just in case of general zid disarray
@@ -132,16 +133,17 @@ class ZObjectStore {
 		// If Zid after latest is not available, find Zid after highest one
 		// NOTE: this operation is much more expensive, so we should only
 		// perform it in the exceptional case that latestZid fails.
-		$highest = $dbr->newSelectQueryBuilder()
-			->select( [ 'page_title' ] )
+		$highestZid = $dbr->newSelectQueryBuilder()
+			->select( 'page_title' )
 			->from( 'page' )
 			->where( $conditions )
 			->orderBy( 'CAST(SUBSTR(page_title, 2) AS INTEGER)', SelectQueryBuilder::SORT_DESC )
-			->limit( 1 )
 			->caller( __METHOD__ )
-			->fetchResultSet();
+			->fetchField();
 
-		$highestZid = $highest->numRows() > 0 ? $highest->fetchRow()[ 0 ] : self::PREDEFINED_TOP_LIMIT;
+		if ( $highestZid === false ) {
+			$highestZid = self::PREDEFINED_TOP_LIMIT;
+		}
 
 		$this->logger->warning(
 			__METHOD__ . ' at first got "' . $targetZid . '" — exists; slower query gets: "Z' . $highestZid . '".',
@@ -753,7 +755,7 @@ class ZObjectStore {
 	public function fetchZidsOfType( $ztype ): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		return $dbr->newSelectQueryBuilder()
-			->select( [ 'wlzl_zobject_zid' ] )
+			->select( 'wlzl_zobject_zid' )
 			->distinct()
 			->from( 'wikilambda_zobject_labels' )
 			->where( [
@@ -785,23 +787,15 @@ class ZObjectStore {
 	 */
 	public function fetchAllZids(): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
-		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'page_title' ] )
+		$zids = $dbr->newSelectQueryBuilder()
+			->select( 'page_title' )
 			->from( 'page' )
 			->where( [
 				'page_namespace' => NS_MAIN
 			] )
 			->caller( __METHOD__ )
-			->fetchResultSet();
-
-		$zids = [];
-		foreach ( $res as $row ) {
-			$zid = $row->page_title;
-			if ( ZObjectUtils::isValidZObjectReference( $zid ) ) {
-				$zids[] = $zid;
-			}
-		}
-		return $zids;
+			->fetchFieldValues();
+		return array_filter( $zids, ZObjectUtils::isValidZObjectReference( ... ) );
 	}
 
 	/**
@@ -847,18 +841,12 @@ class ZObjectStore {
 	 */
 	public function findCodesFromZLanguage( string $zid ): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
-		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'wlzlangs_language' ] )
+		return $dbr->newSelectQueryBuilder()
+			->select( 'wlzlangs_language' )
 			->from( 'wikilambda_zlanguages' )
 			->where( [ 'wlzlangs_zid' => $zid ], )
 			->caller( __METHOD__ )
-			->fetchResultSet();
-
-		$codes = [];
-		foreach ( $res as $row ) {
-			$codes[] = (string)$row->wlzlangs_language;
-		}
-		return $codes;
+			->fetchFieldValues();
 	}
 
 	/**
@@ -1389,11 +1377,7 @@ class ZObjectStore {
 		$conditions[ 'wlzl_label_primary' ] = '1';
 
 		$res = $dbr->newSelectQueryBuilder()
-			->select( [
-				'wlzl_zobject_zid',
-				'wlzl_language',
-				'wlzl_label'
-			] )
+			->select( [ 'wlzl_language', 'wlzl_label' ] )
 			->from( 'wikilambda_zobject_labels' )
 			->where( $conditions )
 			->orderBy( 'wlzl_id', SelectQueryBuilder::SORT_ASC )
@@ -1539,8 +1523,8 @@ class ZObjectStore {
 	 */
 	public function fetchAllImplementations(): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
-		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'wlzf_ref_zid' ] )
+		return $dbr->newSelectQueryBuilder()
+			->select( 'wlzf_ref_zid' )
 			->distinct()
 			->from( 'wikilambda_zobject_function_join' )
 			->where( [
@@ -1548,13 +1532,7 @@ class ZObjectStore {
 			] )
 			->orderBy( 'wlzf_ref_zid', SelectQueryBuilder::SORT_ASC )
 			->caller( __METHOD__ )
-			->fetchResultSet();
-
-		$zids = [];
-		foreach ( $res as $row ) {
-			$zids[] = $row->wlzf_ref_zid;
-		}
-		return $zids;
+			->fetchFieldValues();
 	}
 
 	/**
@@ -1665,18 +1643,12 @@ class ZObjectStore {
 			'wlzo_related_zobject' => $relatedZid,
 			'wlzo_key' => $key
 		];
-		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'wlzo_main_zid' ] )
+		return $dbr->newSelectQueryBuilder()
+			->select( 'wlzo_main_zid' )
 			->from( 'wikilambda_zobject_join' )
 			->where( $conditions )
 			->caller( __METHOD__ )
-			->fetchResultSet();
-
-		$mainZids = [];
-		foreach ( $res as $row ) {
-			$mainZids[] = $row->wlzo_main_zid;
-		}
-		return $mainZids;
+			->fetchFieldValues();
 	}
 
 	/**
