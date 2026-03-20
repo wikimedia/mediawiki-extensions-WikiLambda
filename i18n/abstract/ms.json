@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hakimi97"
+		]
+	},
+	"action-wikilambda-abstract-create": "cipta Rencana Abstrak baharu",
+	"action-wikilambda-abstract-edit": "sunting Rencana Abstrak sedia ada",
+	"content-model-abstractwiki": "Rencana Abstrak",
+	"right-wikilambda-abstract-create": "Cipta Rencana Abstrak baharu",
+	"right-wikilambda-abstract-edit": "Sunting Rencana Abstrak sedia ada",
+	"specialpages-group-abstractwiki": "Laman Wikipedia Abstrak"
+}

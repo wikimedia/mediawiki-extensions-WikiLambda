@@ -34,7 +34,7 @@
 	"wikilambda-abstract-menu-group-move-fragments": "Text for the Abstract Article fragment menu group with actions to move fragments to different positions.",
 	"wikilambda-abstract-menu-group-special-fragments": "Text for the Abstract Article fragment menu group with actions to add fragments given by configured functions that return HTML.",
 	"wikilambda-abstract-menu-option-add-empty-fragment": "Label for the menu option to add a new empty fragment",
-	"wikilambda-abstract-menu-option-add-named-fragment": "Label for the menu option to add a new fragment given by a function name\n\nParameters:\n* $1 - Name of the function to add.",
+	"wikilambda-abstract-menu-option-add-named-fragment": "Label for the menu option to add a new fragment given by a function name. Appears several times in one menu with several function names. See screenshot.\n\nParameters:\n* $1 - Name of the function to add.\n[[File:Abstract Wikipedia - Create a New Abstract Article for Q18383 (Providence) screenshot.png|thumb|300px]]",
 	"wikilambda-abstract-menu-option-add-section": "Label for the button to add a new section in the Abstract Content editor.",
 	"wikilambda-abstract-menu-option-delete-fragment": "Label for the menu option to delete the selected fragment.",
 	"wikilambda-abstract-menu-option-insert-after": "Label for the menu option to insert a fragment below the selected one.",

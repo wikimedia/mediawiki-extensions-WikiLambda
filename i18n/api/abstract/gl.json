@@ -5,6 +5,7 @@
 		]
 	},
 	"apihelp-abstractwiki_run_fragment-summary": "Renderizar un fragmento de contido resumido da Wikipedia para o ID do elemento de Wikidata, o código Zid da lingua e a data indicados",
+	"apihelp-abstractwiki_run_fragment-param-async": "Indica se se debe executar esta chamada de forma asíncrona ou síncrona. Se se chama de forma asíncrona, devolverá «pending=true» se o valor non está listo. Cando se chama de forma síncrona, agardará a que Wikifuncións renderice o fragmento e devolverá o valor resultante.",
 	"apihelp-abstractwiki_run_fragment-param-qid": "O ID do elemento de Wikidata empregado para renderizar o fragmento. Debe ser un Qid válido.",
 	"apihelp-abstractwiki_run_fragment-param-language": "O ID do ZObject de lingua empregado para renderizar o fragmento. Debe ser un Zid válido.",
 	"apihelp-abstractwiki_run_fragment-param-date": "A cadea de data empregada para renderizar o fragmento.",

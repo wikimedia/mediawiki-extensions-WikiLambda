@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "API de Wikifuncións",
+	"wikifunctions-rest-module-v0-desc": "API para interactuar con Wikifuncións",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "Consultar ZObjects",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Consultar versións históricas de ZObjects",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Chamar unha función",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Chamar unha función con linguaxes de análise e renderización personalizadas"
+}

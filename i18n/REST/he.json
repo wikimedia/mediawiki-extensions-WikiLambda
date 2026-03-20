@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "ממשק API של ויקיפונקציות",
+	"wikifunctions-rest-module-v0-desc": "ממשק API לעבודה עם ויקיפונקציות",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "שליפת עצמי Z",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "שליפת גרסאות היסטוריות של עצמי Z",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "קריאה לפונקציה",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "קריאה לפונקציה, עם שפות מותאמות לפענוח ותיצוג"
+}

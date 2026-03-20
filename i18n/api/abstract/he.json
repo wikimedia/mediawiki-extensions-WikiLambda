@@ -5,13 +5,18 @@
 		]
 	},
 	"apihelp-abstractwiki_run_fragment-summary": "תיצוג קטע תוכן של ויקיפדיה מופשטת  עבור מזהה פריט ויקינתונים, מזהה Z של שפה ותאריך",
+	"apihelp-abstractwiki_run_fragment-param-async": "האם להריץ את הקריאה הזאת באופן אסינכרוני או סינכרוני. אם היא נקראת באופן אסינכרוני, היא תחזיר pending=true אם הערך אינו מוכן. כאשר היא נקראת באופן סינכרוני, היא תחכה עד שהקטע יתוצג על־ידי ויקיפונקציות ויחזיר את הערך שמתקבל.",
 	"apihelp-abstractwiki_run_fragment-param-qid": "מזהה פריט הוויקינתונים ששימש לתיצוג הקטע. זה חייב להיות מזהה Q תקין.",
 	"apihelp-abstractwiki_run_fragment-param-language": "מזהה עצם ה־Z של השפה שמשמשת לתיצוג הקטע. זה חייב להיות מזהה Z תקין.",
 	"apihelp-abstractwiki_run_fragment-param-date": "מחרוזת התאריך שמשמשת לתיצוג הקטע.",
 	"apihelp-abstractwiki_run_fragment-param-fragment": "JSON של הרכבת מקטע. זה אמור להיות עצם Z תקין והוא אמור לפלוט עצם מסוג Z89/מקטע HTML",
 	"apihelp-abstractwiki_run_fragment-example-literal-html": "הרצת מקטע עם עם עצם HTML מפורש",
 	"apihelp-abstractwiki_run_fragment-example-composition": "הרצת מקטע עם הרכבה שמשתמשת במזהה Q וארגומנטים של שפה",
-	"apierror-abstractwiki_run_fragment-bad-fragment": "לא ניתן לתצג מקטע של ויקיפדיה מופשטת: המקטע אינו JSON תקין",
-	"apierror-abstractwiki_run_fragment-bad-response": "לא ניתן לתצג מקטע של ויקיפדיה מופשטת: אתר ויקיפונקציות החזיר תשובה כושלת.",
-	"apierror-abstractwiki_run_fragment-not-enabled": "לא ניתן לתצג תוכן של מקטעי ויקיפדיה מופשטת: התכונה הזאת אינה מופעלת."
+	"apierror-abstractwiki_run_fragment-bad-fragment": "המקטע אינו קריאה תקינה לפונקציה.",
+	"apierror-abstractwiki_run_fragment-bad-response": "המקטע החזיר סוג שגוי.",
+	"apierror-abstractwiki_run_fragment-forbidden": "אין לך הרשאות שנחוצות לתיצוג המקטע הזה.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "לא ניתן לתצג תוכן של מקטעי ויקיפדיה מופשטת: התכונה הזאת אינה מופעלת.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "ויקיפונקציות החזירו תגובה כושלת: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "שירות התיצוג אינו זמין באופן זמני. נא לנסות שוב מאוחר יותר.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "לא ניתן לתצג את המקטע הזה בגלל שגיאה לא ידועה."
 }

@@ -70,6 +70,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Avbröts",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Återställ",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Avbryt",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Visa renderad",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Använd dagens datum och håll resultatet uppdaterat",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Använd den här sidans standardobjekt på Wikidata",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Använd den här sidans standardspråk"
