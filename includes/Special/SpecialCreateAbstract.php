@@ -164,7 +164,6 @@ class SpecialCreateAbstract extends SpecialPage {
 			'Special:MyLanguage/Abstract Wikipedia:List_of_policies_and_guidelines'
 		);
 
-		// TODO (T411722): Add and link help page for creating Abstract articles
-		$this->addHelpLink( 'Extension:WikiLambda/Creating Objects' );
+		$this->addHelpLink( 'Help:How_to_create_an_article' );
 	}
 }

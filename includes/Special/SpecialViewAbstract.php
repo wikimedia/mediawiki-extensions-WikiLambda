@@ -207,7 +207,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// (T343594) The Special:WhatLinksHere weren't shown on view/en/ZXXXX pages,
 		// but they were on wiki/ZXXXX pages. Setting the flag here (lower in code) fixes it.
 		$output->setArticleFlag( true );
-		$this->addHelpLink( 'Help:Wikifunctions/Viewing Objects' );
+		$this->addHelpLink( 'Abstract_Wikipedia:About' );
 	}
 
 	/**
