@@ -2,6 +2,10 @@
 
 $cfg = require __DIR__ . '/../vendor/mediawiki/mediawiki-phan-config/src/config.php';
 
+$cfg['autoload_internal_extension_signatures'] = [
+	'memcached' => '../../.phan/internal_stubs/memcached.phan_php',
+];
+
 $cfg['directory_list'] = array_merge(
 	$cfg['directory_list'],
 	[

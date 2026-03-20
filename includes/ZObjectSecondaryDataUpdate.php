@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Deferred\DataUpdate;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
@@ -22,14 +23,13 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 	private Title $title;
 	private ZObjectContent $zObject;
 	private ZObjectStore $zObjectStore;
-	private WANObjectCache $zObjectCache;
+	private MemcachedWrapper $zObjectCache;
 	private ?OrchestratorRequest $orchestrator;
 	private LoggerInterface $logger;
 
@@ -39,14 +39,14 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	 * @param Title $title
 	 * @param ZObjectContent $zObject
 	 * @param ZObjectStore $zObjectStore
-	 * @param WANObjectCache $zObjectCache
+	 * @param MemcachedWrapper $zObjectCache
 	 * @param OrchestratorRequest|null $orchestrator
 	 */
 	public function __construct(
 		Title $title,
 		ZObjectContent $zObject,
 		ZObjectStore $zObjectStore,
-		WANObjectCache $zObjectCache,
+		MemcachedWrapper $zObjectCache,
 		?OrchestratorRequest $orchestrator = null
 	) {
 		$this->title = $title;
@@ -104,12 +104,18 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		// Store the ZObject in the object cache, for faster retrieval here and (in future) in the orchestrator
 		$cacheKey = $this->zObjectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
-		$this->zObjectCache->set(
+		$this->logger->debug(
+			__METHOD__ . ' writing new ZObject value to cache "' . $zid . '": type "' . $ztype . '".',
+			[ 'instance' => $zid, 'type' => $ztype ]
+		);
+		$cacheResult = $this->zObjectCache->set(
 			$cacheKey,
 			$this->zObject->getText(),
 			$this->zObjectCache::TTL_MONTH
 		);
-
+		if ( !$cacheResult ) {
+			$this->logger->warning( __METHOD__ . ' failed to cache new ZObject "' . $zid . '".', [ 'zid' => $zid ] );
+		}
 		if ( $this->orchestrator ) {
 			$queryZ2 = $this->zObject->getObject();
 			$this->orchestrator->persistToCache( $queryZ2 );

@@ -10,13 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @codeCoverageIgnore
@@ -46,11 +44,8 @@ class WikiLambdaServices {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectAuthorization' );
 	}
 
-	/**
-	 * @return WANObjectCache
-	 */
-	public static function getZObjectStash(): WANObjectCache {
-		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectStash' );
+	public static function getMemcachedWrapper(): MemcachedWrapper {
+		return MediaWikiServices::getInstance()->getService( 'WikiLambdaMemcachedWrapper' );
 	}
 
 	/**
@@ -65,7 +60,6 @@ class WikiLambdaServices {
 	 * Reused by service wiring and installer bootstrapping.
 	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
-	 * @return ZObjectStore
 	 */
 	public static function buildZObjectStore( MediaWikiServices $services ): ZObjectStore {
 		return new ZObjectStore(
@@ -79,30 +73,12 @@ class WikiLambdaServices {
 	}
 
 	/**
-	 * Constructs a new instance of the ZObject Cache.
-	 * Reused by service wiring and installer bootstrapping.
+	 * Constructs a new instance of the MemcachedWrapper for WikiLambda's content caching.
 	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
-	 * @throws ConfigException
-	 * @return WANObjectCache
 	 */
-	public static function buildZObjectStash( MediaWikiServices $services ): WANObjectCache {
+	public static function buildMemcachedWrapper( MediaWikiServices $services ): MemcachedWrapper {
 		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$requestedCache = $extensionConfig->get( 'WikiLambdaObjectCache' );
-
-		if ( !$requestedCache ) {
-			// Just short-cut to the existing Stash in this case
-			return $services->getMainWANObjectCache();
-		}
-
-		$mainConfig = $services->getMainConfig();
-		$cacheParameters = $mainConfig->get( MainConfigNames::ObjectCaches )[$requestedCache] ?? null;
-		if ( !$cacheParameters ) {
-			throw new ConfigException(
-				"\$wgObjectCaches must have \"$requestedCache\" set (via WikiLambdaObjectCache)"
-			);
-		}
-		$bag = $services->getObjectCacheFactory()->newFromParams( $cacheParameters );
-		return new WANObjectCache( [ 'cache' => $bag ] );
+		return new MemcachedWrapper( $extensionConfig );
 	}
 }

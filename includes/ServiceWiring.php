@@ -12,9 +12,9 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @codeCoverageIgnore
@@ -32,10 +32,10 @@ return [
 		);
 	},
 
-	// For repo, abstract and client wikis
+	// For both repo and client wikis
 
-	'WikiLambdaZObjectStash' => static function ( MediaWikiServices $services ): WANObjectCache {
-		return WikiLambdaServices::buildZObjectStash( $services );
+	'WikiLambdaMemcachedWrapper' => static function ( MediaWikiServices $services ): MemcachedWrapper {
+		return WikiLambdaServices::buildMemcachedWrapper( $services );
 	},
 
 	// For client wikis

@@ -429,7 +429,7 @@ class RepoHooks implements
 
 		static::ensureZObjectStoreIsPresent( $services );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zObjectCache = WikiLambdaServices::getZObjectStash();
+		$zObjectCache = WikiLambdaServices::getMemcachedWrapper();
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT, $config, $zObjectStore, $zObjectCache );
 
 		$targets = $zObjectStore->fetchZidsOfType( $zType );
@@ -508,13 +508,13 @@ class RepoHooks implements
 		}
 
 		try {
-			$services->get( 'WikiLambdaZObjectStash' );
+			$services->get( 'WikiLambdaMemcachedWrapper' );
 		} catch ( NoSuchServiceException ) {
-			$zObjectCache = WikiLambdaServices::buildZObjectStash( $services );
+			$memcachedWrapper = WikiLambdaServices::buildMemcachedWrapper( $services );
 			$services->defineService(
-				'WikiLambdaZObjectStash',
-				static function () use ( $zObjectCache ) {
-					return $zObjectCache;
+				'WikiLambdaMemcachedWrapper',
+				static function () use ( $memcachedWrapper ) {
+					return $memcachedWrapper;
 				}
 			);
 		}

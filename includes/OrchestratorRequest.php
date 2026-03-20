@@ -13,12 +13,12 @@ namespace MediaWiki\Extension\WikiLambda;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
-use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\Telemetry\TracerInterface;
 
 /**
@@ -28,7 +28,7 @@ class OrchestratorRequest {
 
 	protected Client $guzzleClient;
 	protected string $userAgentString;
-	protected WANObjectCache $objectCache;
+	protected MemcachedWrapper $objectCache;
 	protected TracerInterface $tracer;
 
 	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
@@ -49,7 +49,7 @@ class OrchestratorRequest {
 		}
 
 		$this->tracer = MediaWikiServices::getInstance()->getTracer();
-		$this->objectCache = WikiLambdaServices::getZObjectStash();
+		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 	}
 
 	/**
@@ -68,6 +68,7 @@ class OrchestratorRequest {
 	 * @throws TooManyRedirectsException If the request exceeds the allowed number of redirects
 	 */
 	public function orchestrate( $query, $bypassCache = false ): array {
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
 		// (T365053) Propagate request tracing headers
 		$requestHeaders = $this->tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $this->userAgentString;
@@ -81,35 +82,49 @@ class OrchestratorRequest {
 			ZObjectUtils::makeCacheKeyFromZObject( $query )
 		);
 
-		// (T338243) Set TTL conditionally, so that:
-		// * success (http 200)           TTL_MONTH
-		// * bad request (http 400-422)   TTL_WEEK
-		// * too many requests (http 429) TTL_MINUTE
-		// * server error (http >= 500)   TTL_MINUTE
-		// So if the request fails due to 400, we can still cache for
-		// a week, but if it failes due to system outages or timeouts,
-		// we would benefit from reducing the TTL to something very short.
-		$response = $this->objectCache->getWithSetCallback(
-			$requestKey,
-			$this->objectCache::TTL_MONTH,
-			function ( $oldValue, &$ttl, array &$setOpts ) use ( $query, $requestHeaders ) {
-				$guzzleResponse = $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
-				$httpStatus = $guzzleResponse['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
+		$response = $this->objectCache->get( $requestKey );
+		if ( $response !== false ) {
+			$logger->debug( __METHOD__ . ' cache hit for {key}', [ 'key' => $requestKey ] );
+		} else {
+			$logger->info( __METHOD__ . ' cache miss for {key}', [ 'key' => $requestKey ] );
+			$response = $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
+			$httpStatus = $response['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
 
-				if (
-					( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
-					( $httpStatus === HttpStatus::TOO_MANY_REQUESTS )
-				) {
-					$ttl = $this->objectCache::TTL_MINUTE;
-				} elseif ( $httpStatus === HttpStatus::OK ) {
-					$ttl = $this->objectCache::TTL_MONTH;
-				} else {
-					$ttl = $this->objectCache::TTL_WEEK;
-				}
+			$exptime = $this->objectCache::TTL_MINUTE;
+			// (T338243) Set TTL conditionally, so that:
+			// * success (http 200)           TTL_MONTH
+			// * bad request (http 400-422)   TTL_WEEK
+			// * too many requests (http 429) TTL_MINUTE
+			// * server error (http >= 500)   TTL_MINUTE
+			// So if the request fails due to 400, we can still cache for
+			// a week, but if it failes due to system outages or timeouts,
+			// we would benefit from reducing the TTL to something very short.
+			if (
+				( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
+				( $httpStatus === HttpStatus::TOO_MANY_REQUESTS )
+			) {
+				$logger->warning(
+					__METHOD__ . ' evaluated response for {key} returned HTTP {status}',
+					[ 'key' => $requestKey, 'status' => $httpStatus ]
+				);
+				// No need to re-set $exptime here, already set to TTL_MINUTE above for these cases.
+			} else {
+				$logger->info(
+					__METHOD__ . ' evaluated response for {key} returned HTTP {status}',
+					[ 'key' => $requestKey, 'status' => $httpStatus ]
+				);
 
-				return $guzzleResponse;
+				// $exptime is TTL_MINUTE by default, but we want to cache for a month if 2xx or a week if 4xx.
+				match ( $httpStatus ) {
+					HttpStatus::OK => $exptime = $this->objectCache::TTL_MONTH,
+					HttpStatus::BAD_REQUEST => $exptime = $this->objectCache::TTL_WEEK,
+				};
 			}
-		);
+			$logger->debug(
+				__METHOD__ . ' cache store for {key}, TTL {ttl}', [ 'key' => $requestKey, 'ttl' => $exptime ]
+			);
+			$this->objectCache->set( $requestKey, $response, $exptime );
+		}
 
 		// (T398410) Check that the response is an array
 		if ( is_array( $response ) ) {
@@ -117,7 +132,6 @@ class OrchestratorRequest {
 		}
 
 		// … if not, delete from cache and return an empty response.
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
 		$logger->error(
 			'Cached orchestrator response was somehow not an array',
 			[

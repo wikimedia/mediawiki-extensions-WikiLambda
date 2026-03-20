@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use Exception;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -24,7 +25,6 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MWHttpRequest;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * Asynchronous job run on the client wiki to request a function call from the repo, turning
@@ -34,7 +34,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
-	private WANObjectCache $objectCache;
+	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
 	/**
@@ -47,7 +47,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		parent::__construct( 'wikifunctionsClientRequest', $params );
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
-		$this->objectCache = WikiLambdaServices::getZObjectStash();
+		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->httpRequestFactory = MediaWikiServices::getInstance()->getHttpRequestFactory();
 
