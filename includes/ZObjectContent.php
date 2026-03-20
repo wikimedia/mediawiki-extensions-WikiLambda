@@ -21,6 +21,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\Language;
 use MediaWiki\Language\MessageLocalizer;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use StatusValue;
@@ -441,7 +442,7 @@ class ZObjectContent extends AbstractContent {
 
 		return (
 			!$this->isRedirect()
-			&& ( $config->get( 'ArticleCountMethod' ) === 'any' )
+			&& ( $config->get( MainConfigNames::ArticleCountMethod ) === 'any' )
 		);
 	}
 }
