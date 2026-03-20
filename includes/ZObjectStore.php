@@ -160,7 +160,7 @@ class ZObjectStore {
 	 * @param int $id Revision ID of this revision
 	 * @return RevisionRecord|null
 	 */
-	public function getRevisionById( int $id ) {
+	public function getRevisionById( int $id ): ?RevisionRecord {
 		$revisionRecord = $this->revisionStore->getRevisionById( $id );
 		return $revisionRecord;
 	}
@@ -242,7 +242,7 @@ class ZObjectStore {
 	 * @param string[] $zids
 	 * @return ZPersistentObject[]
 	 */
-	public function fetchBatchZObjects( $zids ) {
+	public function fetchBatchZObjects( $zids ): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$query = WikiPage::getQueryInfo();
 
@@ -545,7 +545,7 @@ class ZObjectStore {
 	 *
 	 * @param string $zid
 	 */
-	public function deleteZObjectLabelsByZid( string $zid ) {
+	public function deleteZObjectLabelsByZid( string $zid ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
 		$dbw->newDeleteQueryBuilder()
@@ -560,7 +560,7 @@ class ZObjectStore {
 	 *
 	 * @param string $zid
 	 */
-	public function deleteZObjectLabelConflictsByZid( string $zid ) {
+	public function deleteZObjectLabelConflictsByZid( string $zid ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
 		$dbw->newDeleteQueryBuilder()
@@ -634,9 +634,8 @@ class ZObjectStore {
 	 * @param array $labels Array of labels, where the key is the language code and the value
 	 * is the string representation of the label in that language
 	 * @param string|null $returnType
-	 * @return void|bool
 	 */
-	public function insertZObjectLabels( $zid, $ztype, $labels, $returnType = null ) {
+	public function insertZObjectLabels( $zid, $ztype, $labels, $returnType = null ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
 		$updates = [];
@@ -668,9 +667,8 @@ class ZObjectStore {
 	 *
 	 * @param string $zid
 	 * @param string $languageCode
-	 * @return void|bool
 	 */
-	public function insertZLanguageToLanguagesCache( string $zid, string $languageCode ) {
+	public function insertZLanguageToLanguagesCache( string $zid, string $languageCode ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
 		$dbw->newInsertQueryBuilder()
@@ -685,9 +683,8 @@ class ZObjectStore {
 	 * @param string $zid
 	 * @param array $conflicts Array of labels, where the key is the language code and the value
 	 * is the other ZID for which this label is repeated
-	 * @return void|bool
 	 */
-	public function insertZObjectLabelConflicts( $zid, $conflicts ) {
+	public function insertZObjectLabelConflicts( $zid, $conflicts ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
 		$updates = [];
@@ -718,9 +715,8 @@ class ZObjectStore {
 	 * @param array $aliases Set of labels, where the key is the language code
 	 * and the value is an array of strings
 	 * @param string|null $returnType
-	 * @return void|bool
 	 */
-	public function insertZObjectAliases( $zid, $ztype, $aliases, $returnType = null ) {
+	public function insertZObjectAliases( $zid, $ztype, $aliases, $returnType = null ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
 		$updates = [];
@@ -754,7 +750,7 @@ class ZObjectStore {
 	 * @param string $ztype
 	 * @return string[]
 	 */
-	public function fetchZidsOfType( $ztype ) {
+	public function fetchZidsOfType( $ztype ): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		return $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_zobject_zid' ] )
@@ -787,7 +783,7 @@ class ZObjectStore {
 	 *
 	 * @return string[] All persisted Zids
 	 */
-	public function fetchAllZids() {
+	public function fetchAllZids(): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'page_title' ] )
@@ -815,7 +811,7 @@ class ZObjectStore {
 	 *
 	 * @return array<string,string>
 	 */
-	public function fetchAllZLanguageObjects() {
+	public function fetchAllZLanguageObjects(): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzlangs_zid', 'wlzlangs_language' ] )
@@ -838,7 +834,7 @@ class ZObjectStore {
 	 *
 	 * @return array<string>
 	 */
-	public function fetchAllZLanguageCodes() {
+	public function fetchAllZLanguageCodes(): array {
 		return array_keys( $this->fetchAllZLanguageObjects() );
 	}
 
@@ -849,7 +845,7 @@ class ZObjectStore {
 	 * @param string $zid The ZID of the matching ZLanguage object for which to search.
 	 * @return string[] Any BCP47 (or MediaWiki) language code(s) if found; unordered.
 	 */
-	public function findCodesFromZLanguage( string $zid ) {
+	public function findCodesFromZLanguage( string $zid ): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzlangs_language' ] )
@@ -931,7 +927,7 @@ class ZObjectStore {
 	 *
 	 * @return string[]
 	 */
-	public function fetchAllInstancedTypes() {
+	public function fetchAllInstancedTypes(): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
 		return $dbr->newSelectQueryBuilder()
@@ -1163,7 +1159,7 @@ class ZObjectStore {
 	 *
 	 * @return string
 	 */
-	public function getTestStatusQuery() {
+	public function getTestStatusQuery(): string {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
 		$connQueryBuilder = $dbr->newSelectQueryBuilder()
@@ -1434,7 +1430,7 @@ class ZObjectStore {
 	 * @param string $zid
 	 * @return string|null
 	 */
-	public function fetchZFunctionReturnType( $zid ) {
+	public function fetchZFunctionReturnType( $zid ): ?string {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_return_type' ] )
@@ -1481,7 +1477,7 @@ class ZObjectStore {
 	public function findReferencedZObjectsByZFunctionIdAsList(
 		$zid,
 		$type
-	) {
+	): array {
 		$res = $this->findReferencedZObjectsByZFunctionId( $zid, $type );
 		$zids = [];
 		foreach ( $res as $row ) {
@@ -1541,7 +1537,7 @@ class ZObjectStore {
 	 *
 	 * @return string[]
 	 */
-	public function fetchAllImplementations() {
+	public function fetchAllImplementations(): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzf_ref_zid' ] )
@@ -1609,7 +1605,7 @@ class ZObjectStore {
 	 * @param string $key ZID of the key that indicates the relationship
 	 * @return string[]
 	 */
-	public function findRelatedZObjectsByKeyAsList( $mainZid, $key ) {
+	public function findRelatedZObjectsByKeyAsList( $mainZid, $key ): array {
 		$res = $this->findRelatedZObjectsByKey( $mainZid, $key );
 		$related = [];
 
@@ -1662,7 +1658,7 @@ class ZObjectStore {
 	 * @param string $key ZID of the key that indicates the relationship (e.g. Z8K4 or Z8K3)
 	 * @return string[] List of main ZIDs (e.g. function ZIDs) that reference the related ZObject via the key
 	 */
-	public function findFunctionsReferencingZObjectByKey( $relatedZid, $key ) {
+	public function findFunctionsReferencingZObjectByKey( $relatedZid, $key ): array {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
 		$conditions = [
@@ -1697,9 +1693,9 @@ class ZObjectStore {
 	 * ** in RENDERABLE_OUTPUT_TYPES (Z6/String, Z89/HTML Fragment), or
 	 * ** have a renderer function.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
-	public function findFunctionsByRenderableIO() {
+	public function findFunctionsByRenderableIO(): array {
 		return $this->functionsByRenderableIOQuery()
 			->caller( __METHOD__ )
 			->fetchFieldValues();
@@ -1875,9 +1871,9 @@ class ZObjectStore {
 	 *
 	 * @param array $inputTypes array of (type => minimum number of uses)
 	 * @param string|null $outputType
-	 * @return array
+	 * @return string[]
 	 */
-	public function findFunctionsByIOTypes( $inputTypes, $outputType = null ) {
+	public function findFunctionsByIOTypes( $inputTypes, $outputType = null ): array {
 		$queryBuilder = $this->functionsByIOTypesQuery( $inputTypes, $outputType );
 		return $queryBuilder === null ? [] :
 			$queryBuilder
@@ -1979,7 +1975,7 @@ class ZObjectStore {
 	 *   related_zid and related_type
 	 * @return void
 	 */
-	public function insertRelatedZObjects( $relatedZObjects ) {
+	public function insertRelatedZObjects( $relatedZObjects ): void {
 		$rows = [];
 		foreach ( $relatedZObjects as $zobject ) {
 			$rows[] = [
@@ -2015,7 +2011,7 @@ class ZObjectStore {
 		?string $key = null,
 		?string $relatedZObject = null,
 		?string $relatedType = null
-	) {
+	): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 		$conditions = [];
 		if ( $mainZid !== null ) {
@@ -2298,7 +2294,7 @@ class ZObjectStore {
 	 * @param string $zid The ZID of the implementation or tester being removed
 	 * @return void
 	 */
-	public function removeReferenceFromFunction( string $functionZid, string $key, string $type, string $zid ) {
+	public function removeReferenceFromFunction( string $functionZid, string $key, string $type, string $zid ): void {
 		$deletionSummaries = [
 			ZTypeRegistry::Z_IMPLEMENTATION => 'wikilambda-deleted-implementations-summary',
 			ZTypeRegistry::Z_TESTER => 'wikilambda-deleted-testers-summary',
