@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
@@ -18,7 +19,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MockHttpTrait;
 use MWHttpRequest;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob
@@ -30,11 +30,11 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 
 	use MockHttpTrait;
 
-	private WANObjectCache $cache;
+	private MemcachedWrapper $cache;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->cache = WikiLambdaServices::getZObjectStash();
+		$this->cache = WikiLambdaServices::getMemcachedWrapper();
 		$this->setUpAsClientMode();
 	}
 

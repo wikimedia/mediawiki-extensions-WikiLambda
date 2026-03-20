@@ -48,7 +48,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 			$modelId ?? CONTENT_MODEL_ZOBJECT,
 			$this->getServiceContainer()->getMainConfig(),
 			WikilambdaServices::getZObjectStore(),
-			WikilambdaServices::getZObjectStash()
+			WikilambdaServices::getMemcachedWrapper()
 		);
 	}
 

@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Exception;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWContentSerializationException;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -33,7 +34,6 @@ use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\Rdbms\FakeResultWrapper;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IExpression;
@@ -52,7 +52,7 @@ class ZObjectStore {
 	private UserGroupManager $userGroupManager;
 	private LoggerInterface $logger;
 
-	private WANObjectCache $zObjectCache;
+	private MemcachedWrapper $zObjectCache;
 
 	// NOTE: This constant hard-codes user-provided content as starting from 'Z10000'. Now that the
 	// wiki has launched, change it will have unpredicatable effects.
@@ -83,7 +83,7 @@ class ZObjectStore {
 		$this->userGroupManager = $userGroupManager;
 		$this->logger = $logger;
 
-		$this->zObjectCache = WikiLambdaServices::getZObjectStash();
+		$this->zObjectCache = WikiLambdaServices::getMemcachedWrapper();
 	}
 
 	/**

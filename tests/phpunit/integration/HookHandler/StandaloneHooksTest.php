@@ -35,6 +35,7 @@ use Wikimedia\Rdbms\SelectQueryBuilder;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
+ * @covers \MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper
  * @group Database
  * @group Standalone
  */
@@ -52,7 +53,7 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 			$modelId ?? CONTENT_MODEL_ZOBJECT,
 			$this->getServiceContainer()->getMainConfig(),
 			WikilambdaServices::getZObjectStore(),
-			WikilambdaServices::getZObjectStash()
+			WikilambdaServices::getMemcachedWrapper()
 		);
 	}
 
@@ -990,7 +991,7 @@ EOT;
 		$insertedObject = $store->fetchZObjectByTitle( $testObjectTitle );
 		$this->assertNotFalse( $insertedObject, 'Object was inserted into the DB' );
 
-		$cache = WikiLambdaServices::getZObjectStash();
+		$cache = WikiLambdaServices::getMemcachedWrapper();
 		$cacheKey = $cache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, ZTestType::TEST_ZID );
 		$cachedObject = $cache->get( $cacheKey );
 		$this->assertNotFalse( $cachedObject, 'Object was inserted into the cache' );

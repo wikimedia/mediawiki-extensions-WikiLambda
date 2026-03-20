@@ -102,11 +102,11 @@ class UpdateSecondaryTables extends Maintenance {
 	public function execute() {
 		$services = $this->getServiceContainer();
 		$this->dbProvider = $services->getConnectionProvider();
-		// Build ZObjectStore and ZObjectStash, because ServiceWiring hasn't run
+		// Build ZObjectStore and ZObject caches, because ServiceWiring hasn't run
 		$zObjectStore = WikiLambdaServices::buildZObjectStore( $services );
-		$zObjectCache = WikiLambdaServices::buildZObjectStash( $services );
+		$zObjectCaches = WikiLambdaServices::buildMemcachedWrapper( $services );
 		$config = $services->getMainConfig();
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT, $config, $zObjectStore, $zObjectCache );
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT, $config, $zObjectStore, $zObjectCaches );
 
 		$all = $this->getOption( 'all' );
 		$zType = $this->getOption( 'zType' );
@@ -188,7 +188,7 @@ class UpdateSecondaryTables extends Maintenance {
 					$title,
 					$content,
 					$zObjectStore,
-					$zObjectCache,
+					$zObjectCaches,
 					$orchestrator
 				);
 				DeferredUpdates::addUpdate( $update );

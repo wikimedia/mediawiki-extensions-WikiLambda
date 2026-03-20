@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\OrchestratorRequest
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper
  * @group Database
  */
 class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {

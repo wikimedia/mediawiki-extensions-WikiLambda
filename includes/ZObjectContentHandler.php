@@ -22,6 +22,7 @@ use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Exception\MWContentSerializationException;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectContentDifferenceEngine;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -36,20 +37,19 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 class ZObjectContentHandler extends ContentHandler {
 	use ZObjectEditingPageTrait;
 
 	private Config $config;
 	private ZObjectStore $zObjectStore;
-	private WANObjectCache $zObjectCache;
+	private MemcachedWrapper $zObjectCache;
 
 	/**
 	 * @param string $modelId
 	 * @param Config $config
 	 * @param ZObjectStore $zObjectStore
-	 * @param WANObjectCache $zObjectCache
+	 * @param MemcachedWrapper $zObjectCache
 	 */
 	public function __construct( $modelId, $config, $zObjectStore, $zObjectCache ) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {

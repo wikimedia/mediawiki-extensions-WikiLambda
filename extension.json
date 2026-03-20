@@ -41,7 +41,7 @@
 			"services": [
 				"MainConfig",
 				"WikiLambdaZObjectStore",
-				"WikiLambdaZObjectStash"
+				"WikiLambdaMemcachedWrapper"
 			]
 		},
 		"abstractwiki": {
@@ -61,9 +61,13 @@
 			"description": "Host and port of the function orchestrator.",
 			"value": "https://mediawiki-function-orchestrator-1:6254/1/v2/evaluate"
 		},
-		"WikiLambdaObjectCache": {
-			"description": "If false, store function calls in the main MediaWiki cache; if set to another value, that will be used as the key of a cache in wgObjectCaches.",
-			"value": false
+		"WikiLambdaObjectCaches": {
+			"description": "An array of memcached services' configurations to use to store the results of Function calls and the values of ZObjects. If empty, items will instead be stored in the main MediaWiki cache.",
+			"value": []
+		},
+		"WikiLambdaObjectCacheBroadcast": {
+			"description": "A string of the mcrouter route to use for broadcasting cache updates.",
+			"value": null
 		},
 		"WikiLambdaEnableClientMode": {
 			"description": "If true, enable the 'client' mode of WikiLambda, providing the {{#function:…}} parser function to embed calls to Wikifunctions.",

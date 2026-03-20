@@ -10,16 +10,16 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\Rdbms\IConnectionProvider;
 
 class WikifunctionsClientStore {
 
 	private IConnectionProvider $dbProvider;
-	private WANObjectCache $objectCache;
+	private MemcachedWrapper $objectCache;
 
 	private LoggerInterface $logger;
 
@@ -32,7 +32,7 @@ class WikifunctionsClientStore {
 		$this->dbProvider = $dbProvider;
 
 		// This can't be injected, as the service container runs before the extension is loaded
-		$this->objectCache = WikiLambdaServices::getZObjectStash();
+		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 	}

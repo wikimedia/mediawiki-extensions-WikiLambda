@@ -11,28 +11,28 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Deferred\DataUpdate;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 class ZObjectSecondaryDataRemoval extends DataUpdate {
 
 	private Title $title;
 	private ZObjectStore $zObjectStore;
-	private WANObjectCache $zObjectCache;
+	private MemcachedWrapper $zObjectCache;
 	private LoggerInterface $logger;
 
 	/**
 	 * @param Title $title
 	 * @param ZObjectStore $zObjectStore
-	 * @param WANObjectCache $zObjectCache
+	 * @param MemcachedWrapper $zObjectCache
 	 */
 	public function __construct(
 		Title $title,
 		ZObjectStore $zObjectStore,
-		WANObjectCache $zObjectCache
+		MemcachedWrapper $zObjectCache
 	) {
 		$this->title = $title;
 		$this->zObjectStore = $zObjectStore;

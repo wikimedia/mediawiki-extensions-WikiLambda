@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -20,20 +21,19 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\WANObjectCache;
 
 class AbstractWikiRequest {
 
 	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
-	private WANObjectCache $objectCache;
+	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
 	public function __construct( Config $config, HttpRequestFactory $httpRequestFactory ) {
 		$this->config = $config;
 		$this->httpRequestFactory = $httpRequestFactory;
 
-		$this->objectCache = WikiLambdaServices::getZObjectStash();
+		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
 

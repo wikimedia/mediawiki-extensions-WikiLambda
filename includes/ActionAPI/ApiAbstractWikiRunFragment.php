@@ -14,6 +14,7 @@ use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
+use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -23,7 +24,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
-use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiAbstractWikiRunFragment extends ApiBase {
@@ -32,7 +32,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 	private JobQueueGroup $jobQueueGroup;
 	private AbstractWikiRequest $abstractWikiRequest;
-	private WANObjectCache $objectCache;
+	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
 	public function __construct(
@@ -46,7 +46,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		$this->jobQueueGroup = $jobQueueGroup;
 		$this->abstractWikiRequest = $abstractWikiRequest;
 
-		$this->objectCache = WikiLambdaServices::getZObjectStash();
+		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
 
