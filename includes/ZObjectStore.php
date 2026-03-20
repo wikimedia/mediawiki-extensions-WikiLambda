@@ -1194,16 +1194,8 @@ class ZObjectStore {
 	 * @param string $code The BCP47 (or MediaWiki) language code for which to search
 	 * @return ?string The ZID of the matching ZLanguage object, or null if not found.
 	 */
-	public function findZLanguageFromCode( string $code ) {
-		$dbr = $this->dbProvider->getReplicaDatabase();
-		$res = $dbr->newSelectQueryBuilder()
-			->select( [ 'wlzlangs_zid' ] )
-			->from( 'wikilambda_zlanguages' )
-			->where( [ 'wlzlangs_language' => $code ], )
-			->caller( __METHOD__ )
-			->fetchField();
-
-		return $res ? (string)$res : null;
+	public function findZLanguageFromCode( string $code ): ?string {
+		return $this->findZLanguagesFromCodes( [ $code ] )[$code] ?? null;
 	}
 
 	/**
