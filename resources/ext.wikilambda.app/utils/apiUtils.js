@@ -433,7 +433,8 @@ const apiUtils = {
 	 * @return {Promise}
 	 */
 	fetchPageInfo: function ( payload ) {
-		const api = apiUtils.newApi();
+		// Should never work with foreign API
+		const api = new mw.Api();
 
 		return new Promise( ( resolve, reject ) => {
 			api.get( {
