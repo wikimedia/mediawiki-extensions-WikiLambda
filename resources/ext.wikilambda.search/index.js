@@ -30,12 +30,12 @@ function getSkinSearchModuleName() {
  * @return {'abstract'|'repo'|undefined}
  */
 function getWikiLambdaSearchMode() {
-	if ( searchConfig.WikiLambdaEnableAbstractMode ) {
-		return 'abstract';
-	}
-
 	if ( searchConfig.WikiLambdaEnableRepoMode ) {
 		return 'repo';
+	}
+
+	if ( searchConfig.WikiLambdaEnableAbstractMode ) {
+		return 'abstract';
 	}
 
 	return undefined;
