@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"FL2226"
+		]
+	},
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Recupera le versioni storiche di ZObjects"
+}

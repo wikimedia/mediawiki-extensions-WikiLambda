@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Asked42"
+		]
+	},
+	"action-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
+	"action-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলি সম্পাদনা করুন",
+	"content-model-abstractwiki": "বিমূর্ত নিবন্ধ",
+	"right-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
+	"right-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলি সম্পাদনা করুন",
+	"specialpages-group-abstractwiki": "বিমূর্ত উইকিপিডিয়ার পৃষ্ঠাগুলি",
+	"wikilambda-abstract-content-object": "বিমূর্ত নিবন্ধ",
+	"wikilambda-abstract-edit-title": "$1 বিমূর্ত নিবন্ধটি সম্পাদনা করুন",
+	"wikilambda-abstract-error-bad-fragments-type": "'$1' নির্দেশক সহ অনুচ্ছেদে একটি ভুল ধরনের ফ্র্যাগমেন্ট তালিকা রয়েছে।",
+	"wikilambda-abstract-fragment-actions-menu": "ফ্র্যাগমেন্ট অ্যাক্শন মেনু",
+	"wikilambda-abstract-menu-fragments-accessible-label": "নতুন ফ্র্যাগমেন্ট নির্বাচন ও যোগ করার জন্য মেনু",
+	"wikilambda-abstract-menu-group-basic-fragments": "সাধারণ ফ্র্যাগমেন্ট কার্য",
+	"wikilambda-abstract-menu-group-insert-fragments": "ফ্র্যাগমেন্ট যুক্ত করুন",
+	"wikilambda-abstract-menu-group-move-fragments": "ফ্র্যাগমেন্ট স্থানান্তর করুন",
+	"wikilambda-abstract-menu-group-special-fragments": "বিশেষ ফ্র্যাগমেন্ট কার্য",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "খালি ফ্র্যাগমেন্ট যোগ করুন",
+	"wikilambda-abstract-menu-option-add-named-fragment": "$1 যোগ করুন",
+	"wikilambda-abstract-menu-option-add-section": "উপ-অনুচ্ছেদ যোগ করুন",
+	"wikilambda-abstract-menu-option-delete-fragment": "ফ্র্যাগমেন্ট অপসারণ করুন",
+	"wikilambda-abstract-menu-option-insert-after": "ফ্র্যাগমেন্টটি পরে যুক্ত করুন",
+	"wikilambda-abstract-menu-option-insert-before": "ফ্র্যাগমেন্টটি আগে যুক্ত করুন",
+	"wikilambda-abstract-menu-option-move-after": "ফ্র্যাগমেন্টটি পরে স্থানান্তর করুন",
+	"wikilambda-abstract-menu-option-move-before": "ফ্র্যাগমেন্টটি আগে স্থানান্তর করুন",
+	"wikilambda-abstract-preview-fragment-max-retries": "সর্বোচ্চ সংখ্যকবার চেষ্টা করা হয়েছে। পরে আবার চেষ্টা করুন।",
+	"wikilambda-abstract-preview-fragment-retry": "পুনঃচেষ্টা",
+	"wikilambda-abstract-preview-in-language": "তৈরি করা পাঠ্য",
+	"wikilambda-abstract-special-create": "একটি নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
+	"wikilambda-abstract-special-create-createbutton-label": "তৈরি করুন",
+	"wikilambda-abstract-special-create-existing": "এই উইকিউপাত্ত আইটেমের জন্য ইতিমধ্যেই একটি বিমূর্ত নিবন্ধ রয়েছে:",
+	"wikilambda-abstract-special-create-intro": "নিশ্চিত করুন যে আপনি কপিরাইট নিয়মাবলী এবং  [[$1|সম্প্রদায়ের নির্দেশিকা]] অনুসরণ করছেন।",
+	"wikilambda-abstract-special-create-not-enabled": "বিমূর্ত নিবন্ধ তৈরি করা বর্তমানে সক্রিয় করা হয়নি। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+	"wikilambda-abstract-special-create-not-enabled-title": "বিমূর্ত নিবন্ধ তৈরি সক্রিয় করা হয়নি",
+	"wikilambda-abstract-special-create-qid": "$1 এর জন্য একটি নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
+	"wikilambda-abstract-special-view": "একটি বিমূর্ত নিবন্ধ দেখুন"
+}

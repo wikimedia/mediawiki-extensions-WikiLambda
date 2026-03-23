@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mdktb"
+		]
+	},
+	"action-wikilambda-abstract-create": "إنشاء مقالات مجردة جديدة",
+	"action-wikilambda-abstract-edit": "تعديل المقالات المجردة الموجودة",
+	"content-model-abstractwiki": "مقالة مجردة",
+	"right-wikilambda-abstract-create": "إنشاء مقالات مجردة جديدة",
+	"right-wikilambda-abstract-edit": "تعديل المقالات المجردة الموجودة",
+	"specialpages-group-abstractwiki": "صفحات ويكيبيديا المجردة",
+	"wikilambda-abstract-content-object": "مقالة مجردة",
+	"wikilambda-abstract-edit-title": "تعديل المقالة المجردة لـ $1",
+	"wikilambda-abstract-error-bad-fragments-type": "القسم الذي مفتاحه '$1' لديه قائمة أجزاء اُختير نوعها بشكل سيئ.",
+	"wikilambda-abstract-error-bad-qid": "قيمة الخاصية لـ 'qid' ('$1') ليست Qid صالحًا في ويكي بيانات.",
+	"wikilambda-abstract-error-bad-section-content": "القسم الذي مفتاحه '$1' يحوي محتوى غير صالح.",
+	"wikilambda-abstract-error-bad-section-index": "القسم الذي مفتاحه '$1' لديه رقم فهرسي غير صالح ('$2').",
+	"wikilambda-abstract-error-bad-section-qid": "مفتاح القسم '$1' ليس Qid صالحًا لعنصر ويكي بيانات.",
+	"wikilambda-abstract-error-invalid-content": "المحتوى المقدّم ليس مقالاً مجردًا صالحًا.",
+	"wikilambda-abstract-error-invalid-json": "المقالة المجردة ليست بتنسيق JSON صالح.",
+	"wikilambda-abstract-error-invalid-title": "العنوان المقدّم '$1' ليس صالحًا لمقالة مجردة.",
+	"wikilambda-abstract-error-missing-lede-section": "يجب أن يحتوي كائن المقالة المجردة على قسم افتتاحي (Q8776414).",
+	"wikilambda-abstract-preview-fragment-max-retries": "وصلت الحد الأقصى للمحاولات. حاول مجددًا لاحقًا.",
+	"wikilambda-abstract-preview-fragment-retry": "أعد المحاولة",
+	"wikilambda-abstract-preview-in-language": "نص مولّد",
+	"wikilambda-abstract-special-create": "إنشاء مقالة مجردة جديدة",
+	"wikilambda-abstract-special-create-createbutton-label": "إنشاء",
+	"wikilambda-abstract-special-create-existing": "يوجد بالفعل مقالة مجردة لعنصر ويكي بيانات هذا:",
+	"wikilambda-abstract-special-create-qid": "إنشاء مقالة مجردة جديدة لـ $1",
+	"wikilambda-abstract-special-view": "استعراض مقالة مجردة"
+}

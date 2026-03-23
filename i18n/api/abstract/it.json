@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Beta16"
+			"Beta16",
+			"FL2226"
 		]
 	},
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Il frammento non è una chiamata di funzione valida.",
 	"apierror-abstractwiki_run_fragment-bad-response": "Il frammento ha restituito il tipo sbagliato.",
 	"apierror-abstractwiki_run_fragment-forbidden": "Non hai le autorizzazioni necessarie per eseguire il rendering di questo frammento.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions ha restituito una risposta di errore: $1",
 	"apierror-abstractwiki_run_fragment-unknown-error": "Non è possibile eseguire il rendering di questo frammento a causa di un errore sconosciuto."
 }

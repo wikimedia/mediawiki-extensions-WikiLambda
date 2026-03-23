@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"wikilambda-abstract-menu-option-add-named-fragment": "$1 추가",
+	"wikilambda-abstract-preview-fragment-retry": "다시 시도",
+	"wikilambda-abstract-special-create-createbutton-label": "만들기"
+}

@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga"
+		]
+	},
+	"apihelp-abstractwiki_run_fragment-summary": "Rendera ett innehållsfragment från Abstrakta Wikipedia för det givna Wikipedians objekts-ID, språk-Zid och datum",
+	"apihelp-abstractwiki_run_fragment-param-async": "Om detta anrop ska köras asynkront eller synkront. Om det anropas asynkront returnerar det pending=true om värdet inte är klart. När det anropas synkront väntar det på att fragmentet ska renderas av Wikifunctions och returnerar det resulterande värdet.",
+	"apihelp-abstractwiki_run_fragment-param-qid": "Wikidata-objekt-ID:t som används för att rendera fragmentet. Det ska vara ett giltigt Qid.",
+	"apihelp-abstractwiki_run_fragment-param-language": "Språk-ZObject-ID:t som används för att rendera fragmentet. Det ska vara ett giltigt Zid-nummer.",
+	"apihelp-abstractwiki_run_fragment-param-date": "Datumsträngen som används för att rendera fragmentet.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "En fragmentkompositions-JSON. Den ska vara ett giltigt ZObject och ska mata ut ett objekt av typen Z89/HTML Fragment",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "Kör ett fragment med ett bokstavligt HTML-objekt",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Kör ett fragment med en komposition som använder qid- och språkargument",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "Fragmentet är inte ett giltigt funktionsanrop.",
+	"apierror-abstractwiki_run_fragment-bad-response": "Fragmentet returnerade fel typ.",
+	"apierror-abstractwiki_run_fragment-forbidden": "Du har inte de behörigheter som krävs för att rendera det här fragmentet.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Kunde inte rendera Abstrakta Wikipedia-innehållsfragment: den här funktionen är inte aktiverad.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions returnerade ett misslyckat svar: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "Renderingstjänsten är tillfälligt otillgänglig. Försök igen senare.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "Det gick inte att rendera detta fragment på grund av ett okänt fel."
+}

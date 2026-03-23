@@ -5,8 +5,16 @@
 			"FL2226"
 		]
 	},
+	"action-wikilambda-abstract-create": "creare nuovi articoli riassuntivi",
+	"content-model-abstractwiki": "Articolo riassuntivo",
+	"right-wikilambda-abstract-create": "Crea nuovi articoli riassuntivi",
+	"wikilambda-abstract-content-object": "Articolo riassuntivo",
 	"wikilambda-abstract-error-bad-section-content": "La sezione con chiave '$1' ha contenuti non validi.",
+	"wikilambda-abstract-error-missing-sections": "L'articolo riassuntivo deve avere almeno una sezione.",
+	"wikilambda-abstract-menu-option-add-section": "Aggiungi sezione",
 	"wikilambda-abstract-preview-fragment-max-retries": "Raggiunto il numero massimo di tentativi. Riprova più tardi.",
 	"wikilambda-abstract-preview-fragment-retry": "Riprova",
-	"wikilambda-abstract-special-create-intro": "Assicurati di rispettare le [[ $1 |politiche della community]], comprese le norme sul copyright."
+	"wikilambda-abstract-preview-in-language": "Testo generato",
+	"wikilambda-abstract-special-create-existing-redirected": "Sei stato reindirizzato perché esiste già un articolo riassuntivo.",
+	"wikilambda-abstract-special-create-intro": "Assicurati di seguire le [[$1|politiche della comunità]], incluse le regole sul copyright."
 }
