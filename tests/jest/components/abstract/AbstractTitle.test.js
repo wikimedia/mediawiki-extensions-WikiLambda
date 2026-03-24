@@ -11,15 +11,7 @@ const { waitFor } = require( '@testing-library/vue' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractTitle = require( '../../../../resources/ext.wikilambda.app/components/abstract/AbstractTitle.vue' );
 
-const getMockPageInfo = ( pages ) => ( {
-	query: {
-		normalized: [ {
-			from: 'Abstract_Wikipedia:Q42',
-			to: 'Abstract Wikipedia:Q42'
-		} ],
-		pages
-	}
-} );
+const getMockPageInfo = ( pages ) => ( { query: { pages } } );
 
 const mockPageExists = getMockPageInfo( [ {
 	pageid: 22706,
