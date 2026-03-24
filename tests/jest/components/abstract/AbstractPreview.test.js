@@ -56,6 +56,7 @@ describe( 'AbstractPreview', () => {
 		store.getAbstractWikiId = 'Q42';
 		store.getUserLangZid = 'Z1002';
 		store.getLabelData = jest.fn().mockReturnValue( { label: 'English' } );
+		store.getLabelDataForLangCode = jest.fn().mockReturnValue( { langCode: 'en', langDir: 'ltr' } );
 		store.getItemLabelData = jest.fn().mockImplementation( ( id ) => ( id === 'Q42' ) ? { label: 'Douglas Adams' } : undefined );
 	} );
 
@@ -114,5 +115,20 @@ describe( 'AbstractPreview', () => {
 		expect( fragments[ 1 ].props( 'keyPath' ) ).toBe( `abstractwiki.sections.${ ledeQid }.fragments.2` );
 		// One fragment for second section
 		expect( fragments[ 2 ].props( 'keyPath' ) ).toBe( `abstractwiki.sections.${ biblioQid }.fragments.1` );
+	} );
+
+	it( 'sets lang and dir attributes in preview body from selected preview language', () => {
+		store.getPreviewLanguageZid = 'Z11926';
+		store.getLabelDataForLangCode = jest.fn().mockReturnValue( {
+			langCode: 'he',
+			langDir: 'rtl'
+		} );
+
+		const wrapper = renderPreview();
+		const body = wrapper.find( '.ext-wikilambda-app-abstract-preview__body' );
+
+		expect( body.attributes( 'lang' ) ).toBe( 'he' );
+		expect( body.attributes( 'dir' ) ).toBe( 'rtl' );
+		expect( store.getLabelDataForLangCode ).toHaveBeenCalledWith( 'Z11926' );
 	} );
 } );
