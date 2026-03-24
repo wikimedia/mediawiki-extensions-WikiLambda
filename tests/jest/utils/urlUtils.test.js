@@ -19,6 +19,19 @@ const {
 const { mockWindowLocation } = require( '../fixtures/location.js' );
 
 describe( 'urlUtils', () => {
+	const defaultConfigGetter = mw.config.get.getMockImplementation();
+	const withWikifunctionsBaseUrl = ( baseUrl ) => {
+		mw.config.get.mockImplementation( ( endpoint ) => (
+			endpoint === 'wgWikifunctionsBaseUrl' ?
+				baseUrl :
+				defaultConfigGetter( endpoint )
+		) );
+	};
+
+	afterEach( () => {
+		mw.config.get.mockImplementation( defaultConfigGetter );
+	} );
+
 	describe( 'getParameterByName', () => {
 		it( 'should return the value of the specified parameter from the URL', () => {
 			mockWindowLocation( 'http://example.com/?name=John&age=30' );
@@ -113,6 +126,25 @@ describe( 'urlUtils', () => {
 			} );
 			expect( url ).toBe( 'http://example.com/view/en/Z123' );
 		} );
+
+		it( 'should generate a full URL with configured wikifunctions base URL', () => {
+			withWikifunctionsBaseUrl( 'https://wikifunctions.org' );
+			const url = generateViewUrl( {
+				langCode: 'en',
+				zid: 'Z123',
+				params: { foo: 'bar' }
+			} );
+			expect( url ).toBe( 'https://wikifunctions.org/view/en/Z123?foo=bar' );
+		} );
+
+		it( 'should support protocol-relative configured wikifunctions base URL', () => {
+			withWikifunctionsBaseUrl( '//www.wikifunctions.org' );
+			const url = generateViewUrl( {
+				langCode: 'en',
+				zid: 'Z123'
+			} );
+			expect( url ).toBe( 'http://www.wikifunctions.org/view/en/Z123' );
+		} );
 	} );
 
 	describe( 'generateEditUrl', () => {
@@ -155,6 +187,26 @@ describe( 'urlUtils', () => {
 			} );
 
 			expect( url ).toBe( 'https://wikifunctions.org/wiki/Z123?uselang=en&action=edit#main-Z2K2-Z12K1' );
+		} );
+
+		it( 'should generate full edit URL with configured wikifunctions base URL', () => {
+			withWikifunctionsBaseUrl( 'https://wikifunctions.org' );
+			const url = generateEditUrl( {
+				langCode: 'en',
+				zid: 'Z123'
+			} );
+
+			expect( url ).toBe( 'https://wikifunctions.org/wiki/Z123?uselang=en&action=edit' );
+		} );
+
+		it( 'should support protocol-relative configured wikifunctions base URL for edit URL', () => {
+			withWikifunctionsBaseUrl( '//www.wikifunctions.org' );
+			const url = generateEditUrl( {
+				langCode: 'en',
+				zid: 'Z123'
+			} );
+
+			expect( url ).toBe( 'http://www.wikifunctions.org/wiki/Z123?uselang=en&action=edit' );
 		} );
 	} );
 

@@ -7,6 +7,26 @@
 
 const urlUtils = {
 	/**
+	 * Normalize a base URL into an absolute URL string.
+	 *
+	 * Accepts protocol-relative URLs (e.g. //wikifunctions.org) and
+	 * prefixes them with the current page protocol when available.
+	 *
+	 * @param {string|undefined} baseUrl
+	 * @return {string|undefined}
+	 */
+	normalizeBaseUrl: function ( baseUrl ) {
+		if ( !baseUrl || typeof baseUrl !== 'string' || !baseUrl.startsWith( '//' ) ) {
+			return baseUrl;
+		}
+		const protocol = typeof window !== 'undefined' && window.location && window.location.protocol ?
+			window.location.protocol :
+			'https:';
+		return `${ protocol }${ baseUrl }`;
+
+	},
+
+	/**
 	 * Generate a URL for viewing a ZObject.
 	 *
 	 * @param {Object} payload - The options for generating the URL.
@@ -20,14 +40,18 @@ const urlUtils = {
 		const path = `/view/${ langCode }/${ zid }`;
 		const query = new URLSearchParams( params ).toString();
 		const queryString = query ? `?${ query }` : '';
+		const url = `${ path }${ queryString }`;
 
-		if ( baseUrl ) {
+		const configuredBaseUrl = mw.config.get( 'wgWikifunctionsBaseUrl' );
+		const targetBaseUrl = urlUtils.normalizeBaseUrl( baseUrl || configuredBaseUrl );
+
+		if ( targetBaseUrl ) {
 			// Ensure no double slashes when joining
-			return new URL( `${ path }${ queryString }`, baseUrl ).toString();
+			return new URL( url, targetBaseUrl ).toString();
 		}
 
 		// Return relative path
-		return `${ path }${ queryString }`;
+		return url;
 	},
 
 	/**
@@ -50,8 +74,10 @@ const urlUtils = {
 		const hashString = hash ? `#${ hash }` : '';
 		const url = `${ path }${ queryString }${ hashString }`;
 
-		if ( baseUrl ) {
-			return new URL( url, baseUrl ).toString();
+		const configuredBaseUrl = mw.config.get( 'wgWikifunctionsBaseUrl' );
+		const targetBaseUrl = urlUtils.normalizeBaseUrl( baseUrl || configuredBaseUrl );
+		if ( targetBaseUrl ) {
+			return new URL( url, targetBaseUrl ).toString();
 		}
 		return url;
 	},
