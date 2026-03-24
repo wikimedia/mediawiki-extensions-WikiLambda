@@ -155,11 +155,11 @@ const abstractWikiStore = {
 				);
 			}
 
-			this.setAbstractWikiId( this.getWikilambdaConfig.title );
 			this.setJsonObject( {
 				namespace: Constants.STORED_OBJECTS.ABSTRACT,
 				zobject: content
 			} );
+			this.setAbstractWikiId( this.getWikilambdaConfig.title );
 
 			// Initialize suggested fragment functions (discard any bad entries)
 			let suggestedZids = [];

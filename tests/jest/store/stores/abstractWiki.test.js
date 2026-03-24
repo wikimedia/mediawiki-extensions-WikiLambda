@@ -224,15 +224,15 @@ describe( 'abstractWiki Pinia store', () => {
 				// Call initialize and await for resolution
 				await store.initializeAbstractWikiContent();
 
-				// Qid is set from title
-				expect( store.setAbstractWikiId ).toHaveBeenCalledWith( mockQid );
-
 				// Content is transformed to hybrid and stored
 				const transformedContent = {
 					namespace: 'abstractwiki',
 					zobject: mockAbstractContentHybrid
 				};
 				expect( store.setJsonObject ).toHaveBeenCalledWith( transformedContent );
+
+				// Qid is set from title
+				expect( store.setAbstractWikiId ).toHaveBeenCalledWith( mockQid );
 
 				// Suggested functions are initialized
 				expect( store.setSuggestedHtmlFunctions ).toHaveBeenCalledWith( [ 'Z10001', 'Z10002' ] );
@@ -269,6 +269,30 @@ describe( 'abstractWiki Pinia store', () => {
 				// Qids from content plus the title qid are fetched
 				const extractedQidsNew = { ids: [ ledeQid, mockQid ] };
 				expect( store.fetchItems ).toHaveBeenCalledWith( extractedQidsNew );
+			} );
+
+			it( 'sets the abstract wiki Id in the content when creating new content', async () => {
+				// Override WikiLambdaConfig for "new page" case (qid placeholder)
+				Object.defineProperty( store, 'getWikilambdaConfig', {
+					value: {
+						title: mockQid,
+						content: JSON.stringify( {
+							...mockEmptyAbstractContent,
+							qid: Constants.ABSTRACT_WIKI_NEW_QID_PLACEHOLDER
+						} )
+					}
+				} );
+
+				// Call initialize and await for resolution
+				await store.initializeAbstractWikiContent();
+
+				expect( store.setJsonObject ).toHaveBeenCalled();
+				expect( store.setAbstractWikiId ).toHaveBeenCalledWith( mockQid );
+
+				const setJsonObjectOrder = store.setJsonObject.mock.invocationCallOrder[ 0 ];
+				const setAbstractWikiIdOrder = store.setAbstractWikiId.mock.invocationCallOrder[ 0 ];
+
+				expect( setJsonObjectOrder ).toBeLessThan( setAbstractWikiIdOrder );
 			} );
 		} );
 
