@@ -430,7 +430,7 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {Array} payload.titles page Ids to fetch
 	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
-	 * @return {Promise}
+	 * @return {Promise<Array>}
 	 */
 	fetchPageInfo: function ( payload ) {
 		// Should never work with foreign API
@@ -446,16 +446,7 @@ const apiUtils = {
 			}, {
 				signal: payload.signal
 			} )
-				.then( ( data ) => {
-					const pages = data.query.pages.map( ( page ) => {
-						const normalized = page.title;
-						const denormalized = data.query.normalized.find( ( item ) => item.to === normalized );
-						return Object.assign( {
-							denormalized: denormalized.from
-						}, page );
-					} );
-					resolve( pages );
-				} )
+				.then( ( data ) => resolve( data.query.pages ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );
 	},

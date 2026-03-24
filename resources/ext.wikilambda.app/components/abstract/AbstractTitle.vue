@@ -143,10 +143,9 @@ module.exports = exports = defineComponent( {
 			const title = buildAbstractWikiTitle( store.getAbstractWikipediaNamespace, id );
 
 			fetchPageInfo( { titles: [ title ] } )
-				.then( ( response ) => {
-					for ( const pageid of Object.keys( response ) ) {
-						const page = response[ pageid ];
-						if ( !page.missing && ( ( page.denormalized === title ) || ( page.title === title ) ) ) {
+				.then( ( pages ) => {
+					for ( const page of pages ) {
+						if ( !page.missing ) {
 							itemPage.value = page;
 							return;
 						}
