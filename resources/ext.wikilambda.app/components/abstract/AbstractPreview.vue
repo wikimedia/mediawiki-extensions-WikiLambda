@@ -22,6 +22,8 @@
 			<div
 				ref="bodyRef"
 				class="ext-wikilambda-app-abstract-preview__body"
+				:lang="previewLanguageLabelData.langCode"
+				:dir="previewLanguageLabelData.langDir"
 			>
 				<h1>{{ abstractTitle.label }}</h1>
 				<div
@@ -94,6 +96,10 @@ module.exports = exports = defineComponent( {
 		const previewLanguageZid = computed( () => store.getPreviewLanguageZid );
 
 		/**
+		 * @return {LabelData}
+		 */
+		const previewLanguageLabelData = computed( () => store.getLabelDataForLangCode( previewLanguageZid.value ) );
+		/**
 		 * Exclude the currently selected preview language from the selector.
 		 *
 		 * @return {Array<string>}
@@ -115,6 +121,7 @@ module.exports = exports = defineComponent( {
 			excludedLanguageZids,
 			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE,
 			previewLanguageZid,
+			previewLanguageLabelData,
 			sections,
 			bodyRef,
 			onPreviewLanguageSelect
