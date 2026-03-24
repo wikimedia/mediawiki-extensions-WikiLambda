@@ -5,6 +5,7 @@
 		]
 	},
 	"apihelp-abstractwiki_run_fragment-summary": "Geef een abstract Wikipedia-inhoudsfragment weer voor het gegeven Wikidata-item-ID, taal-ZID en datum.",
+	"apihelp-abstractwiki_run_fragment-param-async": "Of deze aanroep asynchroon of synchroon moet worden uitgevoerd. Indien asynchroon aangeroepen, retourneert de functie pending=true als de waarde nog niet gereed is. Indien synchroon aangeroepen, wacht de functie totdat het fragment door Wikifunctions is weergegeven en retourneert vervolgens de resulterende waarde.",
 	"apihelp-abstractwiki_run_fragment-param-qid": "Het Wikidata-item-ID dat gebruikt is om het fragment weer te geven. Het moet een geldige Qid zijn.",
 	"apihelp-abstractwiki_run_fragment-param-language": "De Language ZObject Id die gebruikt wordt om het fragment weer te geven. Het moet een geldige Zid zijn.",
 	"apihelp-abstractwiki_run_fragment-param-date": "De datumstring die gebruikt wordt om het fragment weer te geven.",
@@ -13,5 +14,9 @@
 	"apihelp-abstractwiki_run_fragment-example-composition": "Voer een fragment uit met een compositie die gebruikmaakt van qid- en taalargumenten.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Het fragment is geen geldige functieaanroep.",
 	"apierror-abstractwiki_run_fragment-bad-response": "Het fragment gaf een onjuist gegevenstype terug.",
-	"apierror-abstractwiki_run_fragment-not-enabled": "Het is niet mogelijk om fragmenten van abstracte Wikipedia-inhoud weer te geven: deze functie is niet ingeschakeld."
+	"apierror-abstractwiki_run_fragment-forbidden": "U hebt niet de benodigde machtigingen om dit fragment weer te geven.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Het is niet mogelijk om fragmenten van abstracte Wikipedia-inhoud weer te geven: deze functie is niet ingeschakeld.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions gaf een foutmelding terug: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "De weergaveservice is tijdelijk niet beschikbaar. Probeer het later opnieuw.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "Dit fragment kan niet worden weergegeven vanwege een onbekende fout."
 }

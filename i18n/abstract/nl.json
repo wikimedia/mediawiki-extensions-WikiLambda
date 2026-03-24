@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"JhowieNitnek"
+		]
+	},
+	"action-wikilambda-abstract-create": "maak nieuwe Abstracte artikelen aan",
+	"action-wikilambda-abstract-edit": "bewerk bestaande Abstracte Artikelen",
+	"content-model-abstractwiki": "Abstract Artikel",
+	"right-wikilambda-abstract-create": "Nieuwe Abstracte Artikelen aanmaken",
+	"right-wikilambda-abstract-edit": "Bewerk bestaande Abstracte Artikelen",
+	"specialpages-group-abstractwiki": "Abstracte Wikipedia-pagina's",
+	"wikilambda-abstract-content-object": "Abstract Artikel",
+	"wikilambda-abstract-edit-title": "Bewerk Abstract Artikel voor $1",
+	"wikilambda-abstract-error-bad-fragments-type": "Het gedeelte met de sleutel ‘$1’ bevat een foutief getypte fragmentenlijst."
+}

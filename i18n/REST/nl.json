@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Siebrand"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "Wikifunctions-API",
+	"wikifunctions-rest-module-v0-desc": "API's voor interactie met Wikifunctions",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "ZObjects ophalen",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Historische versies van ZObjects ophalen",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Een functie aanroepen",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Een functie aanroepen met aangepaste verwerkings- en weergavetalen."
+}

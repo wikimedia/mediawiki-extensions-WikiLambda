@@ -42,5 +42,12 @@
 	"wikilambda-abstract-preview-fragment-retry": "Reprobar",
 	"wikilambda-abstract-preview-in-language": "Texto generate",
 	"wikilambda-abstract-special-create": "Crear un nove articulo abstracte",
-	"wikilambda-abstract-special-create-createbutton-label": "Crear"
+	"wikilambda-abstract-special-create-createbutton-label": "Crear",
+	"wikilambda-abstract-special-create-existing": "Existe ja un articulo abstracte pro iste elemento de Wikidata:",
+	"wikilambda-abstract-special-create-existing-redirected": "Tu ha essite redirigite perque existe ja un articulo abstracte.",
+	"wikilambda-abstract-special-create-intro": "Assecura te de sequer le [[$1|politicas del communitate]], incluse le regulas del derecto de autor.",
+	"wikilambda-abstract-special-create-not-enabled": "Le creation de articulos abstracte non es actualmente activate. Per favor reveni plus tarde.",
+	"wikilambda-abstract-special-create-not-enabled-title": "Creation de articulos abstracte non activate",
+	"wikilambda-abstract-special-create-qid": "Crear un nove articulo abstracte pro $1",
+	"wikilambda-abstract-special-view": "Vider un articulo abstracte"
 }
