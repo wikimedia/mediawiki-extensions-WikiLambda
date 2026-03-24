@@ -484,6 +484,8 @@
 	"wikilambda-special-create-type": "Create a new Type",
 	"wikilambda-special-createobject": "Create a new Object",
 	"wikilambda-special-createobject-intro": "Make sure that you follow [[$1|community policies]], and copyright and patent rules.",
+	"wikilambda-special-create-zobject-not-enabled": "The creation of Objects is not currently enabled. Please check back later.",
+	"wikilambda-special-create-zobject-not-enabled-title": "Object creation not enabled",
 	"wikilambda-special-edit-function-definition-description": "You are editing the function definition page. $1 can change the definition of the function. Everyone can edit the labels. Make sure to save your work by clicking the blue Publish button below.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Only users with special permissions",
 	"wikilambda-special-functionsbytests": "List of Functions filtered by their Tests",

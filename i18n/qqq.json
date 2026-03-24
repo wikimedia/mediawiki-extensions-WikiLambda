@@ -500,6 +500,8 @@
 	"wikilambda-special-create-type": "Title for the Special page to create a type",
 	"wikilambda-special-createobject": "Description for Special:CreateObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-createobject-intro": "Warning shown to editors on Special:CreateObject about needing to follow community rules.\n\nParameters:\n* $1 - link to the community rules page, hard-coded for now to Special:MyLanguage/Wikifunctions:List_of_policies_and_guidelines.\n{{doc-wikilambda}}",
+	"wikilambda-special-create-zobject-not-enabled": "Error message shown when the creation of Objects is not enabled (i.e., wikis other than Wikifunctions.org).",
+	"wikilambda-special-create-zobject-not-enabled-title": "Error title shown when the creation of Objects is not enabled.",
 	"wikilambda-special-edit-function-definition-description": "Description of edit function and edit function permission.\n\nParameters:\n* $1 - link to the user group that can make the change, labelled with {{msg-mw|wikilambda-special-edit-function-definition-special-permission-link-label}}.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Label for edit function user permission link",
 	"wikilambda-special-functionsbytests": "Title of the Special:ListFunctionsByTests page.\n\n{{doc-wikilambda}}",
