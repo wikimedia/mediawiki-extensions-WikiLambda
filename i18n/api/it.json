@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Beta16",
-			"Dv103"
+			"Dv103",
+			"FL2226"
 		]
 	},
 	"apihelp-wikilambda_fetch-param-language": "La lingua in cui restituire i risultati.",
