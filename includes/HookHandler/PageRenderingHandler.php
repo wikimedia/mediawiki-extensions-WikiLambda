@@ -474,6 +474,11 @@ class PageRenderingHandler implements
 	 * @return void
 	 */
 	public function onGetMagicVariableIDs( &$variableIDs ): void {
+		// We only do this in repo mode
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+
 		$variableIDs[] = 'magic_count_all';
 		$variableIDs[] = 'magic_count_functions';
 		$variableIDs[] = 'magic_count_implementations';
