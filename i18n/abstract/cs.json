@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mormegil"
+		]
+	},
+	"action-wikilambda-abstract-create": "vytvářet nové abstraktní články",
+	"action-wikilambda-abstract-edit": "editovat existující abstraktní články",
+	"content-model-abstractwiki": "Abstraktní článek",
+	"right-wikilambda-abstract-create": "Vytváření nových abstraktních článků",
+	"right-wikilambda-abstract-edit": "Editace existujících abstraktních článků",
+	"specialpages-group-abstractwiki": "Články Abstraktní Wikipedie",
+	"wikilambda-abstract-content-object": "Abstraktní článek",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "Přidat prázdný fragment",
+	"wikilambda-abstract-preview-in-language": "Generovaný text",
+	"wikilambda-abstract-special-create": "Vytvořit nový abstraktní článek",
+	"wikilambda-abstract-special-create-existing": "Pro tuto položku Wikidat už abstraktní článek existuje:",
+	"wikilambda-abstract-special-create-existing-redirected": "{{GENDER:|Byl jste přesměrován|Byla jste přesměrována|Byli jste přesměrováni}}, protože abstraktní článek už existuje.",
+	"wikilambda-abstract-special-create-intro": "Ujistěte se, že dodržujete [[$1|komunitní pravidla]] včetně pravidel týkajících se autorských práv.",
+	"wikilambda-abstract-special-create-qid": "Vytvořit nový abstraktní článek pro $1"
+}
