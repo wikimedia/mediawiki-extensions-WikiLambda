@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
+use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
@@ -178,8 +179,22 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// (T345453) Have the standard copyright stuff show up.
 		$output->setCopyright( true );
 
-		// Set page title to the object being viewed
-		$output->setPageTitle( $targetTitle->getPrefixedText() );
+		// Set page title to the object being viewed.
+		$qid = $targetTitle->getText();
+		$label = $targetTitle->getPrefixedText();
+		$langCode = $targetLanguageObject->getCode();
+
+		// Rich HTML for the H1 display
+		$output->setPageTitle(
+			PageTitleBuilder::createAbstractViewPageTitle(
+				$label,
+				$qid,
+				$langCode,
+				$targetLanguageObject->getDir(),
+			)
+		);
+		// Plain-text override for the browser <title> tag
+		$output->setHTMLTitle( $label . ' (' . $qid . ')' );
 
 		// Runs AbstractWikiContentHandler::fillParserOutput
 		$parserOptions = ParserOptions::newFromUserAndLang( $this->getUser(), $targetLanguageObject );

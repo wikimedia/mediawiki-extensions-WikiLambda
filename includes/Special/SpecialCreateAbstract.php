@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditPageTrait;
+use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
@@ -155,14 +156,25 @@ class SpecialCreateAbstract extends SpecialPage {
 		// Generate Abstract Content payload and pass data through JS config vars
 		$this->generateAbstractContentPayload( $context, $output, $title );
 
-		// Override page title if we are creating a new page for a pre-selected qid
+		// Override page title if we are creating a new page for a pre-selected qid.
 		if ( $title->getText() !== '' ) {
-			$titleMsg = $this->msg( 'wikilambda-abstract-special-create-qid' )->params( $title->getText() );
-			$output->setPageTitleMsg( $titleMsg );
+			$qid = $title->getText();
+			$langCode = $context->getLanguage()->getCode();
+			$titleMsg = $this->msg( 'wikilambda-abstract-special-create-qid' )->params( $qid )->text();
+			$output->setPageTitle(
+				PageTitleBuilder::createAbstractEditPageTitle(
+					$titleMsg,
+					$qid,
+					$langCode,
+					$context->getLanguage()->getDir(),
+				)
+			);
 		}
 
 		$output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 		$output->addModuleStyles( [ 'ext.wikilambda.special.styles' ] );
+		// Load edit page header styles so the heading matches edit mode
+		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );
 
 		$output->addWikiMsg(
 			'wikilambda-abstract-special-create-intro',

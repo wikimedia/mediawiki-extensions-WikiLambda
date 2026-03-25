@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use JsonException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
@@ -313,8 +314,6 @@ class ZObjectUtils {
 	public static function canonicalizeZRecord( stdClass $input ): stdClass {
 		$record = get_object_vars( $input );
 		$record = array_combine( array_map( 'trim', array_keys( $record ) ), $record );
-
-		$type = self::canonicalize( $record[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? null );
 
 		uksort( $record, [ self::class, 'orderZKeyIDs' ] );
 		$record = array_map( [ self::class, 'canonicalize' ], $record );
@@ -1155,5 +1154,40 @@ class ZObjectUtils {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Resolve the label for a ZObject via the ZObjectStore.
+	 *
+	 * Tries the fast labels table first; falls back to loading the full ZObject.
+	 *
+	 * @param ZObjectStore $store
+	 * @param Title $title The title of the target page
+	 * @param Language $language Used for fallback label resolution
+	 * @return ?string The label, or null if not found
+	 */
+	public static function resolveZObjectLabel( ZObjectStore $store, Title $title, Language $language ): ?string {
+		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
+		// the labels table already, which is very much faster:
+		$label = $store->fetchZObjectLabel( $title->getBaseText(), $language->getCode(), true );
+
+		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
+		if ( $label === null ) {
+			$targetZObject = $store->fetchZObjectByTitle( $title );
+			// Do nothing if somehow after all that it's not loadable
+			if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
+				return null;
+			}
+
+			// At this point, we know they're linking to a ZObject page, so show a label, falling back
+			// to English even if that's not in the language's fall-back chain.
+			return $targetZObject->getLabels()
+				->buildStringForLanguage( $language )
+				->fallbackWithEnglish()
+				->placeholderForTitle()
+				->getString() ?? '';
+		}
+
+		return $label;
 	}
 }

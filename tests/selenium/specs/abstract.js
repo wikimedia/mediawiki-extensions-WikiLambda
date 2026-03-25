@@ -30,6 +30,7 @@ describe( 'Abstract Article (Special:ViewAbstract)', () => {
 
 	const lang = 'en';
 	const prefixedTitle = 'Abstract Wikipedia:Q42';
+	const qid = 'Q42';
 	const leadSectionQid = 'Q8776414';
 	const successFragmentCall = {
 		Z1K1: 'Z7',
@@ -47,7 +48,7 @@ describe( 'Abstract Article (Special:ViewAbstract)', () => {
 	};
 
 	const successfulAbstractContent = {
-		qid: 'Q42',
+		qid,
 		sections: {
 			Q8776414: {
 				index: 0,
@@ -58,7 +59,7 @@ describe( 'Abstract Article (Special:ViewAbstract)', () => {
 	};
 
 	const errorAbstractContent = {
-		qid: 'Q42',
+		qid,
 		sections: {
 			Q8776414: {
 				index: 0,
@@ -86,8 +87,9 @@ describe( 'Abstract Article (Special:ViewAbstract)', () => {
 
 		await ViewAbstractPage.open( { lang, title: prefixedTitle } );
 
+		// First heading has the qid appended to the title
 		await expect( await ViewAbstractPage.firstHeading )
-			.toHaveText( prefixedTitle, { message: 'Unexpected page heading' } );
+			.toHaveText( prefixedTitle + ' ' + qid, { message: 'Unexpected page heading' } );
 
 		await expect( await ViewAbstractPage.abstractViewRoot )
 			.toBeExisting( { message: 'Abstract view root did not render' } );

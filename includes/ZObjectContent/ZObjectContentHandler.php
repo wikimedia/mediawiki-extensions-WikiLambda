@@ -24,6 +24,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
+use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -418,12 +419,12 @@ class ZObjectContentHandler extends ContentHandler {
 		$output = RequestContext::getMain()->getOutput();
 
 		// Set page header
-		$header = static::createZObjectViewHeader( $content, $title, $userLang );
-		$output->setPageTitle( $header );
+		$pageTitle = PageTitleBuilder::createZObjectViewPageTitle( $content, $title, $userLang );
+		$output->setPageTitle( $pageTitle );
 
 		// (T360169) Set page title meta tag
-		$metaTitle = static::createZObjectViewTitle( $content, $title, $userLang );
-		$output->setHTMLTitle( $metaTitle );
+		$htmlTitle = static::getZObjectViewPageHTMLTitle( $content, $title, $userLang );
+		$output->setHTMLTitle( $htmlTitle );
 
 		$output->addLink( [
 				'rel' => 'canonical',
@@ -463,146 +464,6 @@ class ZObjectContentHandler extends ContentHandler {
 	}
 
 	/**
-	 * Generate the special "title" shown on view pages
-	 *
-	 * <span lang="es" class="ext-wikilambda-viewpage-header">
-	 * 		<span data-title="English" class="ext-wikilambda-viewpage-header__bcp47-code">en</span>
-	 * 		<span class="ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name">
-	 * 			multiply
-	 * 		</span>
-	 * 		<span class="ext-wikilambda-viewpage-header__zid">Z12345</span>
-	 * 		<div class="ext-wikilambda-viewpage-header__type">
-	 * 			<span data-title="English" class="ext-wikilambda-viewpage-header__bcp47-code">en</span>
-	 * 			<span class="ext-wikilambda-viewpage-header__type-label">Function</span>
-	 * 		</div>
-	 * </span>
-	 *
-	 * @param ZObjectContent $content
-	 * @param Title $title
-	 * @param Language $userLang
-	 * @return string
-	 */
-	public static function createZObjectViewHeader(
-		ZObjectContent $content, Title $title, Language $userLang
-	): string {
-		// TODO (T362246): Dependency-inject
-		$services = MediaWikiServices::getInstance();
-
-		$zobject = $content->getZObject();
-
-		if ( !$zobject || !$zobject->isValid() ) {
-			// Something's bad, let's give up.
-			return '';
-		}
-
-		// Get best-available label (and its language code) for the target object's type, given the request language.
-		[
-			'title' => $targetTypeLabel,
-			'languageCode' => $targetTypeLabelLanguage
-		] = $content->getTypeStringAndLanguage( $userLang );
-
-		// OBJECT TYPE Language code, which is usually a BCP47 code (e.g. 'en') but sometimes tests inject it as a
-		// Language object(!)
-		$targetTypeDisplayCode = gettype( $targetTypeLabelLanguage ) === 'string'
-			? $targetTypeLabelLanguage : $targetTypeLabelLanguage->getCode();
-		// OBJECT TYPE language label (e.g. 'Function') of the language currently being rendered
-		$targetTypeDisplayLabelLanguageName = $services->getLanguageNameUtils()->getLanguageName(
-			$targetTypeDisplayCode
-		);
-
-		// Get best-available label (and its language code) for the target object's name, given the request language.
-
-		// OBJECT NAME label (e.g. 'My function' or 'Unknown') and language code (e.g. 'en')
-		[
-			'title' => $targetLabel,
-			'languageCode' => $targetLabelLanguageCode
-		] = $zobject->getLabels()->buildStringForLanguage( $userLang )
-			->fallbackWithEnglish()
-			->placeholderForTitle()
-			->getStringAndLanguageCode();
-
-		// OBJECT NAME language label (e.g. 'English') of the language currently being rendered
-		$targetDisplayLabelLanguageName = $services->getLanguageNameUtils()->getLanguageName(
-			$targetLabelLanguageCode
-		);
-
-		$bcp47CodeClassName = 'ext-wikilambda-viewpage-header__bcp47-code';
-
-		$targetDisplayLabelWidget = '';
-		// If the object type label (e.g. 'Function') is not in the user's language, show a BCP47 code widget
-		// for the language used instead
-		if ( $targetLabelLanguageCode !== $userLang->getCode() ) {
-			$targetDisplayLabelWidget = UIUtils::wrapBCP47CodeInFakeCodexChip(
-				$targetLabelLanguageCode, $targetDisplayLabelLanguageName, $bcp47CodeClassName
-			);
-		}
-
-		$targetDisplayTypeWidget = '';
-		// If the object label (e.g. 'Echo') is not in the user's language, show a BCP47 code widget
-		// for the language used instead
-		if ( $targetTypeDisplayCode !== $userLang->getCode() ) {
-			$targetDisplayTypeWidget = UIUtils::wrapBCP47CodeInFakeCodexChip(
-				$targetTypeDisplayCode, $targetTypeDisplayLabelLanguageName, $bcp47CodeClassName
-			);
-		}
-
-		$untitledStyle = $targetLabel === wfMessage( 'wikilambda-editor-default-name' )->text() ?
-			'ext-wikilambda-viewpage-header__title--untitled' : null;
-
-		$labelSpan = Html::element(
-			'span',
-			[
-				'class' => [
-					'ext-wikilambda-viewpage-header__title ext-wikilambda-viewpage-header__title--function-name',
-					$untitledStyle
-				]
-			],
-			$targetLabel
-		);
-
-		$zidSpan = Html::element(
-			'span',
-			[
-				'class' => 'ext-wikilambda-viewpage-header__zid',
-				'role' => 'button',
-				'tabindex' => '0',
-				'aria-live' => 'polite'
-			],
-			$title->getText()
-		);
-
-		$labelTitle =
-			// (T356731) When $targetDisplayLabelWidget is an empty string, colon-separator already
-			// adds/removes the needed/unneeded whitespace for languages. Always adding a
-			// space would unexpectedly add unneeded extra whitespace for languages including
-			// zh-hans, zh-hant, etc.
-			( $targetDisplayLabelWidget === '' ? '' : $targetDisplayLabelWidget . ' ' )
-				. $labelSpan . ' ' . $zidSpan;
-
-		$typeSubtitle = Html::rawElement(
-			'div', [ 'class' => 'ext-wikilambda-viewpage-header__type' ],
-			$targetDisplayTypeWidget . ' ' . Html::element(
-				'span',
-				[
-					'class' => 'ext-wikilambda-viewpage-header__type-label'
-				],
-				$targetTypeLabel
-			)
-		);
-
-		return Html::rawElement(
-			'span',
-			[
-				// Mark the header in the correct language, regardless of the rest of the page
-				// … but mark it back into their requested language if it's actually untitled
-				'lang' => ( $untitledStyle === null ? $userLang->getCode() : $targetTypeDisplayCode ),
-				'class' => 'ext-wikilambda-viewpage-header'
-			],
-			$labelTitle . $typeSubtitle
-		);
-	}
-
-	/**
 	 * Generate the HTML "title" tag for the view page
 	 *
 	 * @param ZObjectContent $content
@@ -610,7 +471,7 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param Language $userLang
 	 * @return string
 	 */
-	public static function createZObjectViewTitle(
+	public static function getZObjectViewPageHTMLTitle(
 		ZObjectContent $content, Title $title, Language $userLang
 	): string {
 		$zobject = $content->getZObject();
@@ -622,13 +483,13 @@ class ZObjectContentHandler extends ContentHandler {
 		$sitename = MediaWikiServices::getInstance()->getMainConfig()->get( MainConfigNames::Sitename );
 
 		// Get label, english fallback, or zid if no available option
-		$label = $zobject->getLabels()->buildStringForLanguage( $userLang )
+		$label = $zobject->getLabels()
+			->buildStringForLanguage( $userLang )
 			->fallbackWithEnglish()
 			->getString();
 
 		// Return Label/Zid - Sitename
-		return ( $label ?: $title->getBaseText() ) . ' - ' .
-			$sitename;
+		return ( $label ?: $title->getBaseText() ) . ' - ' . $sitename;
 	}
 
 	/**

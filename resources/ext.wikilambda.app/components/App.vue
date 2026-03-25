@@ -64,7 +64,12 @@ module.exports = exports = defineComponent( {
 		// Initialization
 		// Set up global clipboard manager for copyable elements
 		useClipboardManager( {
-			classNames: [ 'ext-wikilambda-viewpage-header__zid', 'ext-wikilambda-editpage-header__zid' ]
+			classNames: [
+				'ext-wikilambda-viewpage-header__zid',
+				'ext-wikilambda-editpage-header__zid',
+				'ext-wikilambda-viewpage-header__qid',
+				'ext-wikilambda-editpage-header__qid'
+			]
 		} );
 
 		// Lifecycle

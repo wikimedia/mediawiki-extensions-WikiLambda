@@ -11,11 +11,10 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Actions\Action;
-use MediaWiki\Extension\WikiLambda\UIUtils;
+use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\MainConfigNames;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Skin\Skin;
 use MediaWiki\SpecialPage\SpecialPage;
 
@@ -50,7 +49,7 @@ class ZObjectEditAction extends Action {
 	 * Get page title meta tag
 	 * @return string
 	 */
-	protected function getPageMetaTitle() {
+	protected function getZObjectEditPageHTMLTitle() {
 		// If the page doesn't exist (e.g. it's been deleted), return nothing.
 		$targetZObject = $this->getTargetZObject();
 		if ( !$targetZObject ) {
@@ -74,113 +73,13 @@ class ZObjectEditAction extends Action {
 	 * Get page header message
 	 * @return string
 	 */
-	protected function getPageTitleMsg() {
+	protected function getZObjectEditTitle() {
 		// If the page doesn't exist (e.g. it's been deleted), return nothing.
 		$targetZObject = $this->getTargetZObject();
 		if ( !$targetZObject ) {
 			return '';
 		}
-
-		// the language object of the user's preferred language
-		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
-		$label = $this->getLabelElement( $targetZObject );
-		$zObjectId = $targetZObject->getZid();
-		$id = Html::element(
-			'span',
-			[
-				'class' => 'ext-wikilambda-editpage-header__zid'
-			],
-			$zObjectId
-		);
-
-		/* BCP47 Codes can occur in two places:
-			(1) in front of the entire header - this happens if
-				(a) ONLY the TYPE is in a non-user language OR
-				(b) if both the TYPE and the NAME are in the SAME non-user language
-			(2) in front of the name - this happens if the NAME is in a non-user language
-		*/
-		[ $BCP47CodeObjectName, $BCP47CodeObjectType ] = $this->getBCP47CodeElements(
-			$targetZObject,
-			$zObjectLabelsWithLang
-		);
-
-		$prefix = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-editpage-header__title' ],
-			$this->msg( 'wikilambda-edit' )->text()
-		);
-
-		return Html::rawElement(
-			'span',
-			[ 'class' => 'ext-wikilambda-editpage-header' ],
-			" " . $prefix . " " . $BCP47CodeObjectType . " " . $zObjectLabelsWithLang[ 'title' ]
-			. $this->msg( 'colon-separator' )->text() . $BCP47CodeObjectName . $label . ' ' . $id );
-	}
-
-	/**
-	 * Get the HTML element for the label.
-	 *
-	 * @param ZObjectContent $targetZObject The target ZObject.
-	 * @return string The HTML string for the label element.
-	 */
-	protected function getLabelElement( ZObjectContent $targetZObject ) {
-		[ 'title' => $labelText ] = $targetZObject->getLabels()
-			->buildStringForLanguage( $this->getLanguage() )
-			->fallbackWithEnglish()
-			->placeholderForTitle()
-			->getStringAndLanguageCode();
-		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
-		'ext-wikilambda-editpage-header__title--untitled' : null;
-
-		return Html::element(
-			'span',
-			[
-				'class' => [
-					'ext-wikilambda-editpage-header__title',
-					'ext-wikilambda-editpage-header__title--function-name',
-					$untitledStyle
-				]
-			],
-			$labelText
-		);
-	}
-
-	/**
-	 * Get BCP47 code elements for name and type
-	 *
-	 * @param ZObjectContent $targetZObject The target ZObject.
-	 * @param array $zObjectLabelsWithLang
-	 * @return array
-	 */
-	protected function getBCP47CodeElements( ZObjectContent $targetZObject, array $zObjectLabelsWithLang ) {
-		// used to go from LANG_CODE -> LANG_NAME
-		// TODO (T362246): Dependency-inject
-		$services = MediaWikiServices::getInstance();
-
-		// the BCP47 code of the language currently being rendered for the zObject Type
-		$typeLangCode = $zObjectLabelsWithLang['languageCode'] ?: '';
-		$typeLangLabel = $services->getLanguageNameUtils()->getLanguageName( $typeLangCode );
-
-		// the BCP47 code of the language currently being rendered for the zObject Type
-		$userLangCode = $this->getLanguage()->getCode();
-		$nameLangCode = $targetZObject
-			->getLabels()
-			->buildStringForLanguage( $this->getLanguage() )
-			->fallbackWithEnglish()
-			->getLanguageProvided() ?? $userLangCode;
-		$nameLangLabel = $services->getLanguageNameUtils()->getLanguageName( $nameLangCode );
-
-		$BCP47CodeObjectName = UIUtils::wrapBCP47CodeInFakeCodexChip(
-			$nameLangCode,
-			$nameLangLabel,
-			UIUtils::getBCP47ClassName( 'name', $nameLangCode, $userLangCode ),
-		);
-		$BCP47CodeObjectType = UIUtils::wrapBCP47CodeInFakeCodexChip(
-			$typeLangCode,
-			$typeLangLabel,
-			UIUtils::getBCP47ClassName( 'type', $typeLangCode, $userLangCode ),
-		);
-
-		return [ $BCP47CodeObjectName, $BCP47CodeObjectType ];
+		return PageTitleBuilder::createZObjectEditPageTitle( $targetZObject, $this->getLanguage(), $this );
 	}
 
 	public function show() {
@@ -201,10 +100,12 @@ class ZObjectEditAction extends Action {
 		}
 
 		// (T290217) Set page header
-		$output->setPageTitle( $this->getPageTitleMsg() );
+		$pageTitle = $this->getZObjectEditTitle();
+		$output->setPageTitle( $pageTitle );
 
 		// (T360169) Set page title meta tag
-		$output->setHTMLTitle( $this->getPageMetaTitle() );
+		$htmlTitle = $this->getZObjectEditPageHTMLTitle();
+		$output->setHTMLTitle( $htmlTitle );
 
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 

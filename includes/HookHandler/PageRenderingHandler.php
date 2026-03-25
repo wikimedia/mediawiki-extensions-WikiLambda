@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
+use MediaWiki\Language\Language;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
@@ -29,12 +30,10 @@ use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
-use OutOfBoundsException;
 use Wikimedia\HtmlArmor\HtmlArmor;
 
 class PageRenderingHandler implements
@@ -330,7 +329,7 @@ class PageRenderingHandler implements
 		if ( $targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT ) ) {
 			$label = $this->fetchAbstractModeLabel( $entityId, $currentPageContentLanguageCode );
 		} elseif ( $targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
-			$label = $this->fetchRepoModeLabel( $entityId, $currentPageContentLanguageCode, $targetTitle, $context );
+			$label = $this->fetchRepoModeLabel( $targetTitle, $context->getLanguage() );
 		} else {
 			// If neither mode is enabled, we shouldn't be here, but just in case, don't do anything
 			return;
@@ -688,76 +687,27 @@ class PageRenderingHandler implements
 	 * @return ?string The label, or null if not found
 	 */
 	private function fetchAbstractModeLabel( string $entityId, string $currentPageContentLanguageCode ): ?string {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			return null;
-		}
-		try {
-			$wbEntityParser = \Wikibase\Client\WikibaseClient::getEntityIdParser();
-			$itemId = $wbEntityParser->parse( $entityId );
-		} catch ( \Wikibase\DataModel\Entity\EntityIdParsingException ) {
+		if ( !$this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			return null;
 		}
 
-		$wbEntityLookup = \Wikibase\Client\WikibaseClient::getStore()->getEntityLookup();
-		$wbEntity = $wbEntityLookup->getEntity( $itemId );
-
-		if ( !( $wbEntity instanceof \Wikibase\DataModel\Entity\Item ) ) {
-			return null;
-		}
-
-		// return label
-		try {
-			return $wbEntity->getLabels()->getByLanguage( $currentPageContentLanguageCode )?->getText();
-		} catch ( OutOfBoundsException ) {
-			// This means Wikibase doesn't have a label; return null
-			return null;
-		}
+		return AbstractContentUtils::resolveAbstractLabel( $entityId, $currentPageContentLanguageCode );
 	}
 
 	/**
 	 * Fetch the label for a ZObject in repo mode via the ZObjectStore.
 	 *
-	 * @param string $entityId The ZObject ID (e.g. Z42)
-	 * @param string $currentPageContentLanguageCode The language code to fetch the label in
-	 * @param Title $targetTitle The title of the target page
-	 * @param IContextSource $context The current request context
+	 * @param Title $title The title of the target page
+	 * @param Language $language The language to fetch the label in
 	 * @return ?string The label, or null if not found
 	 */
-	private function fetchRepoModeLabel(
-		string $entityId, string $currentPageContentLanguageCode, $targetTitle, $context
-	): ?string {
+	private function fetchRepoModeLabel( Title $title, Language $language ): ?string {
 		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			// (T423515) Don't do this on a non-repo, as it will explode the DB
 			return null;
 		}
 
-		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
-		// the labels table already, which is very much faster:
-		$label = $this->zObjectStore->fetchZObjectLabel(
-			$entityId,
-			$currentPageContentLanguageCode,
-			true
-		);
-
-		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
-		if ( $label === null ) {
-			$targetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
-			// Do nothing if somehow after all that it's not loadable
-			if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
-				return null;
-			}
-
-			// At this point, we know they're linking to a ZObject page, so show a label, falling back
-			// to English even if that's not in the language's fall-back chain.
-			// return label
-			return $targetZObject->getLabels()
-				->buildStringForLanguage( $context->getLanguage() )
-				->fallbackWithEnglish()
-				->placeholderForTitle()
-				->getString() ?? '';
-		}
-
-		return $label;
+		return ZObjectUtils::resolveZObjectLabel( $this->zObjectStore, $title, $language );
 	}
 
 	/**

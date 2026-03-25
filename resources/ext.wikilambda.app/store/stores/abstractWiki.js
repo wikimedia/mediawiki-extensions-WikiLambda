@@ -46,7 +46,13 @@ const abstractWikiStore = {
 			return state.qid;
 		},
 		/**
-		 * FIXME add jsdoc
+		 * Returns the Abstract Wiki sections with UI metadata.
+		 *
+		 * Each section includes:
+		 * - `qid`: section Wikidata QID
+		 * - `isLede`: whether it is the lede section
+		 * - `labelData`: local label payload for display
+		 * - `fragmentsPath`: dot-path to the section's fragments in the stored object
 		 *
 		 * @return {Array|undefined}
 		 */
@@ -151,7 +157,8 @@ const abstractWikiStore = {
 		 * @return {Promise}
 		 */
 		initializeAbstractWikiContent: function () {
-			const content = JSON.parse( this.getWikilambdaConfig.content );
+			const { content: wikilambdaContent, title } = this.getWikilambdaConfig;
+			const content = JSON.parse( wikilambdaContent );
 
 			// Transform ZObject fragments from canonical to hybrid
 			for ( const qid in content[ Constants.ABSTRACT_WIKI_SECTIONS ] ) {
@@ -165,7 +172,7 @@ const abstractWikiStore = {
 				namespace: Constants.STORED_OBJECTS.ABSTRACT,
 				zobject: content
 			} );
-			this.setAbstractWikiId( this.getWikilambdaConfig.title );
+			this.setAbstractWikiId( title );
 
 			// Initialize suggested fragment functions. Configured via CommunityConfiguration
 			// (see MediaWiki:AbstractWikiSuggestedWikifunctions.json; T394410) and exposed
@@ -184,10 +191,10 @@ const abstractWikiStore = {
 			const qids = extractWikidataItemIds( content );
 
 			if (
-				isWikidataQid( this.getWikilambdaConfig.title ) &&
+				isWikidataQid( title ) &&
 				content[ Constants.ABSTRACT_WIKI_QID ] === Constants.ABSTRACT_WIKI_NEW_QID_PLACEHOLDER
 			) {
-				qids.push( this.getWikilambdaConfig.title );
+				qids.push( title );
 			}
 			this.fetchItems( { ids: qids } );
 
@@ -196,7 +203,9 @@ const abstractWikiStore = {
 			return Promise.resolve();
 		},
 		/**
-		 * FIXME add jsdoc
+		 * Validates the current Abstract Wiki content before submit.
+		 *
+		 * Placeholder implementation currently always returns `true`.
 		 *
 		 * @return {boolean}
 		 */

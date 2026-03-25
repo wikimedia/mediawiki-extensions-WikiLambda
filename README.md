@@ -632,7 +632,12 @@ Note that for embedded Function calls, we default blank language parameter value
 
 ## Abstract mode
 
-To develop in abstract mode, you need to TKTKTKTK
+To develop in abstract mode you need the Wikibase extension (WikibaseClient) and
+CommunityConfiguration installed alongside WikiLambda. WikibaseClient is used to resolve
+Wikidata item labels server-side — for example, turning a QID like Q42 into "Douglas Adams"
+in page titles and link text. Without it the code falls back gracefully to displaying raw QIDs.
+CommunityConfiguration provides the Abstract-mode suggested Wikifunctions list in the editor.
+See the [recommended extensions](#setup) section above for installation instructions.
 
 ### Configuring your environment for abstract mode
 

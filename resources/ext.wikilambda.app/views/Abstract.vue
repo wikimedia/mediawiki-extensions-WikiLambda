@@ -75,7 +75,9 @@ module.exports = exports = defineComponent( {
 		 */
 		const qid = computed( () => store.getAbstractWikiId );
 
-		// Lifecycle
+		/**
+		 * Lifecycle hook to emit the mounted event.
+		 */
 		onMounted( () => {
 			emit( 'mounted' );
 		} );

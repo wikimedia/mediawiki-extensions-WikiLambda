@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Actions\Action;
+use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Title\Title;
 
 class AbstractContentEditAction extends Action {
@@ -37,7 +38,21 @@ class AbstractContentEditAction extends Action {
 		$output->addModules( [ 'ext.wikilambda.app' ] );
 
 		// Set page header (edit or create, depending on the returned config vars)
-		$output->setPageTitle( $this->getPageTitleMsg( $pageTitle ) );
+		$lang = $this->getContext()->getLanguage();
+		$qid = $pageTitle->getBaseText();
+		$label = $this->getPageTitleMsg( $pageTitle );
+
+		// Rich HTML for the H1 display
+		$output->setPageTitle(
+			PageTitleBuilder::createAbstractEditPageTitle(
+				$label,
+				$qid,
+				$lang->getCode(),
+				$lang->getDir(),
+			)
+		);
+		// Plain-text override for the browser <title> tag
+		$output->setHTMLTitle( $label . ' (' . $qid . ')' );
 	}
 
 	/**
