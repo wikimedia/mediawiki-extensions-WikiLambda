@@ -209,7 +209,7 @@ $ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDef
 --all --merge --builtin
 ```
 
-#### Loading a production data dump
+#### Loading a Wikifunctions production data dump
 
 Sometimes it might be necessary to replicate locally the current state of the Wikifunctions.org
 production database. This can be useful for data debugging purposes, analytics, etc. For this, you
@@ -255,10 +255,42 @@ To insert a given zid, use the argument `--zid`:
 ```
 docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache --zid Z6005
 ```
-NOTE: You must use this option **very carefully**, as it will only force insert the specified Zid without
+
+To load a Zid range, use `--from` and `--to` together:
+
+```
+docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache --from Z1 --to Z500
+```
+NOTE (`--zid` only): You must use this option **very carefully**, as it will only force insert the specified Zid without
 being concerned about its dependencies between this and other objects. While it's safe to push locally the
 whole production database, as we are replicating the full context in one go, pushing one Zid should
 only be done if we are sure that the context matches this object perfectly.
+
+#### Loading an Abstract Wikipedia production data dump
+
+For Abstract Wikipedia content, use the separate downloader and importer flow:
+
+- Download pages from production with
+  [abstract-wiki-content-download](https://gitlab.wikimedia.org/repos/abstract-wiki/abstract-wiki-content-download/).
+- Import pages with `loadAbstractDump.php`.
+
+After downloading pages into `extensions/WikiLambda/abstractcache`, load all pages with:
+
+```
+docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache
+```
+
+Load one page:
+
+```
+docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --title Q1
+```
+
+Load a title range:
+
+```
+docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --from Q1 --to Q500
+```
 
 ### Back-end services
 
