@@ -18,6 +18,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use stdClass;
 use Wikimedia\Telemetry\TracerInterface;
 
@@ -30,6 +31,7 @@ class OrchestratorRequest {
 	protected string $userAgentString;
 	protected MemcachedWrapper $objectCache;
 	protected TracerInterface $tracer;
+	protected LoggerInterface $logger;
 
 	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
 
@@ -50,6 +52,8 @@ class OrchestratorRequest {
 
 		$this->tracer = MediaWikiServices::getInstance()->getTracer();
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
+
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
 	/**
@@ -68,7 +72,6 @@ class OrchestratorRequest {
 	 * @throws TooManyRedirectsException If the request exceeds the allowed number of redirects
 	 */
 	public function orchestrate( $query, $bypassCache = false ): array {
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
 		// (T365053) Propagate request tracing headers
 		$requestHeaders = $this->tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $this->userAgentString;
@@ -84,9 +87,9 @@ class OrchestratorRequest {
 
 		$response = $this->objectCache->get( $requestKey );
 		if ( $response !== false ) {
-			$logger->debug( __METHOD__ . ' cache hit for {key}', [ 'key' => $requestKey ] );
+			$this->logger->debug( __METHOD__ . ' cache hit for {key}', [ 'key' => $requestKey ] );
 		} else {
-			$logger->info( __METHOD__ . ' cache miss for {key}', [ 'key' => $requestKey ] );
+			$this->logger->info( __METHOD__ . ' cache miss for {key}', [ 'key' => $requestKey ] );
 			$response = $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 			$httpStatus = $response['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
 
@@ -108,20 +111,20 @@ class OrchestratorRequest {
 			) {
 				// Recoverable system errors: set to TTL_MINUTE
 				$exptime = $this->objectCache::TTL_MINUTE;
-				$logger->warning(
+				$this->logger->warning(
 					__METHOD__ . ' evaluated response for {key} returned HTTP {status}',
 					[ 'key' => $requestKey, 'status' => $httpStatus ]
 				);
 			} else {
 				// Successful value: set to TTL_MONTH
 				$exptime = $httpStatus === HttpStatus::OK ? $this->objectCache::TTL_MONTH : $exptime;
-				$logger->info(
+				$this->logger->info(
 					__METHOD__ . ' evaluated response for {key} returned HTTP {status}',
 					[ 'key' => $requestKey, 'status' => $httpStatus ]
 				);
 			}
 
-			$logger->debug(
+			$this->logger->debug(
 				__METHOD__ . ' cache store for {key}, TTL {ttl}', [ 'key' => $requestKey, 'ttl' => $exptime ]
 			);
 			$this->objectCache->set( $requestKey, $response, $exptime );
@@ -133,7 +136,7 @@ class OrchestratorRequest {
 		}
 
 		// … if not, delete from cache and return an empty response.
-		$logger->error(
+		$this->logger->error(
 			'Cached orchestrator response was somehow not an array',
 			[
 				'requestKey' => $requestKey,
