@@ -90,7 +90,6 @@ class OrchestratorRequest {
 			$response = $this->handleGuzzleRequestForEvaluate( $query, $requestHeaders );
 			$httpStatus = $response['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
 
-			$exptime = $this->objectCache::TTL_MINUTE;
 			// (T338243) Set TTL conditionally, so that:
 			// * success (http 200)           TTL_MONTH
 			// * bad request (http 400-422)   TTL_WEEK
@@ -99,27 +98,29 @@ class OrchestratorRequest {
 			// So if the request fails due to 400, we can still cache for
 			// a week, but if it failes due to system outages or timeouts,
 			// we would benefit from reducing the TTL to something very short.
+
+			// Default: All possible bad request status, set to TTL_WEEK
+			$exptime = $this->objectCache::TTL_WEEK;
+
 			if (
 				( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
 				( $httpStatus === HttpStatus::TOO_MANY_REQUESTS )
 			) {
+				// Recoverable system errors: set to TTL_MINUTE
+				$exptime = $this->objectCache::TTL_MINUTE;
 				$logger->warning(
 					__METHOD__ . ' evaluated response for {key} returned HTTP {status}',
 					[ 'key' => $requestKey, 'status' => $httpStatus ]
 				);
-				// No need to re-set $exptime here, already set to TTL_MINUTE above for these cases.
 			} else {
+				// Successful value: set to TTL_MONTH
+				$exptime = $httpStatus === HttpStatus::OK ? $this->objectCache::TTL_MONTH : $exptime;
 				$logger->info(
 					__METHOD__ . ' evaluated response for {key} returned HTTP {status}',
 					[ 'key' => $requestKey, 'status' => $httpStatus ]
 				);
-
-				// $exptime is TTL_MINUTE by default, but we want to cache for a month if 2xx or a week if 4xx.
-				match ( $httpStatus ) {
-					HttpStatus::OK => $exptime = $this->objectCache::TTL_MONTH,
-					HttpStatus::BAD_REQUEST => $exptime = $this->objectCache::TTL_WEEK,
-				};
 			}
+
 			$logger->debug(
 				__METHOD__ . ' cache store for {key}, TTL {ttl}', [ 'key' => $requestKey, 'ttl' => $exptime ]
 			);
