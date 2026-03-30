@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "API de Wikifunctiones",
+	"wikifunctions-rest-module-v0-desc": "APIs pro interager con Wikifunctiones",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "Obtener ZObjects",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Obtener versiones historic de ZObjects",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Appellar un function"
+}

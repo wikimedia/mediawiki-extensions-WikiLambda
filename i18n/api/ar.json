@@ -3,6 +3,7 @@
 		"authors": [
 			"Asma",
 			"Bonnjalal00",
+			"Mdktb",
 			"Meno25"
 		]
 	},
@@ -28,7 +29,7 @@
 	"apihelp-wikilambda_function_call-example-native-js-code": "استدعاء كود JavaScript المكتوب بواسطة المستخدم",
 	"apihelp-wikilambda_function_call-example-native-python-code": "استدعاء كود Python 3 المكتوب بواسطة المستخدم",
 	"apihelp-wikilambda_function_call-example-user-defined-python": "استدعاء دالة بايثون باستخدام نوع محدد من قبل المستخدم.",
-	"apihelp-wikilambda_function_call-example-user-defined-javascript": "استدعاء وظيفة جافا سكريبت باستخدام نوع محدد من قبل المستخدم.",
+	"apihelp-wikilambda_function_call-example-user-defined-javascript": "استدعاء دالة جافا سكريبت باستخدام نوع حدّده المستخدم.",
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "استدعاء دالة التحقق المحددة من قبل المستخدم والمطبقة في بايثون.",
 	"apihelp-wikilambda_function_call-example-curry": "استدعاء دالة الكاري",
 	"apihelp-wikilambda_function_call-example-socket": "استدعاء دالة تستخدم إعادة الدخول للاتصال مرة أخرى بالمنسق",

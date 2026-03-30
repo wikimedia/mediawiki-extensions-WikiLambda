@@ -462,6 +462,8 @@
 	"wikilambda-special-create-type": "Einen neuen Typ erstellen",
 	"wikilambda-special-createobject": "Neues ZObjekt erstellen",
 	"wikilambda-special-createobject-intro": "Vergewissere dich, dass du die [[$1|Gemeinschaftsrichtlinien]] sowie die Urheberrechts- und Patentvorschriften befolgst.",
+	"wikilambda-special-create-zobject-not-enabled": "Das Erstellen von Objekten ist derzeit nicht möglich. Bitte versuche es später erneut.",
+	"wikilambda-special-create-zobject-not-enabled-title": "Objekterstellung nicht aktiviert",
 	"wikilambda-special-edit-function-definition-description": "Du bearbeitest die Funktionsdefinitionsseite. $1 kann die Definition der Funktion ändern. Alle können die Bezeichnungen bearbeiten. Stelle sicher, dass du deine Arbeit speicherst, indem du auf die blaue Schaltfläche Veröffentlichen klickst.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Nur Benutzer mit besonderen Rechten",
 	"wikilambda-special-functionsbytests": "Liste der Funktionen gefiltert nach ihren Tests",

@@ -1,12 +1,21 @@
 {
 	"@metadata": {
 		"authors": [
+			"Pikne",
 			"Rivoz"
 		]
 	},
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 keel|$1 keelt}}",
+	"wikilambda-about-widget-search-language-placeholder": "Otsi keelt",
+	"wikilambda-about-widget-view-languages-suggested": "Soovitatavad keeled",
+	"wikilambda-about-widget-view-languages-title": "Teave teistes keeltes",
+	"wikilambda-cancel": "Loobu",
 	"wikilambda-clipboard-dialog-clear-button": "Tühjenda lõikelaud",
-	"wikilambda-clipboard-dialog-item-see-more": "Vaata lisa",
+	"wikilambda-clipboard-dialog-item-see-more": "Vaata veel",
 	"wikilambda-clipboard-dialog-title": "Lõikelaud",
 	"wikilambda-clipboard-menu-group": "Lõikelaua valikud",
-	"wikilambda-clipboard-menu-option-paste": "Kleebi lõikelaualt"
+	"wikilambda-clipboard-menu-option-paste": "Kleebi lõikelaualt",
+	"wikilambda-editor-default-name": "Ilma pealkirjata",
+	"wikilambda-editor-multilingual-string-loadmore": "{{PLURAL:$1|$1 keel|$1 keelt}}",
+	"wikilambda-publishnew": "Avalda"
 }

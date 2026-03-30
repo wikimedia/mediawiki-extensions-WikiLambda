@@ -457,6 +457,8 @@
 	"wikilambda-special-create-type": "Crear un nove typo",
 	"wikilambda-special-createobject": "Crear un nove objecto",
 	"wikilambda-special-createobject-intro": "Assecura te de sequer le [[$1|politicas del communitate]] e le regulas del derecto de autor e de patentes.",
+	"wikilambda-special-create-zobject-not-enabled": "Le creation de objectos non es actualmente activate. Per favor reveni plus tarde.",
+	"wikilambda-special-create-zobject-not-enabled-title": "Creation de objectos non activate",
 	"wikilambda-special-edit-function-definition-description": "Tu modifica ora le pagina de definition del function. $1 pote modificar le definition del function. Tote le mundo pote modificar le etiquettas. Assecura te de salveguardar tu travalio cliccante sur le button blau \"Publicar\" hic infra.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Solmente usatores con permissiones special",
 	"wikilambda-special-functionsbytests": "Lista de functiones filtrate per lor tests",

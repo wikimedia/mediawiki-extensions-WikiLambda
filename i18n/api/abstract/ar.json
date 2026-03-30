@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mdktb"
+		]
+	},
+	"apierror-abstractwiki_run_fragment-returned-zerror": "أعادت ويكي دوال استجابة فشل: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "خدمة التصيير غير متاحة مؤقتًا. يرجى المحاولة لاحقًا."
+}

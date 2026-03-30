@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Asked42"
+			"Asked42",
+			"Saurmandal"
 		]
 	},
-	"action-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
-	"action-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলি সম্পাদনা করুন",
+	"action-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করার",
+	"action-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলি সম্পাদনা করার",
 	"content-model-abstractwiki": "বিমূর্ত নিবন্ধ",
 	"right-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
 	"right-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলি সম্পাদনা করুন",
