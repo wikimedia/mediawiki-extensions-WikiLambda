@@ -61,6 +61,12 @@ class LoadJsonDump extends Maintenance {
 			false,
 			true
 		);
+
+		$this->addOption(
+			'refresh',
+			'If present, inserts all files, even the ones that loaded during a previous run and were consequently'
+			. ' renamed as "<zid>.<revision>.done.json"',
+		);
 	}
 
 	/**
@@ -94,6 +100,9 @@ class LoadJsonDump extends Maintenance {
 		// Dump zids in a given range:
 		$pushZidsFrom = $this->getOption( 'from' );
 		$pushZidsTo = $this->getOption( 'to' );
+
+		// Whether or not to refresh already added files
+		$refresh = $this->hasOption( 'refresh' );
 
 		// Get data files
 		// Load Z0.json
@@ -132,11 +141,30 @@ class LoadJsonDump extends Maintenance {
 		// Go through all the zid-version index and push one by one
 		foreach ( $index as $zid => $revision ) {
 			$filename = "$zid.$revision.json";
+			$doneFilename = "$zid.$revision.done.json";
+
+			// If already processed, skip
+			if ( file_exists( "$path/$doneFilename" ) ) {
+				if ( $refresh ) {
+					// Reinsert using the already processed file
+					$this->output( "$filename was already inserted. Reinserting.\n" );
+					$filename = $doneFilename;
+				} else {
+					$this->output( "$filename was already inserted. Skipping.\n" );
+					continue;
+				}
+			}
+
 			$response = $this->makeEdit( $titleFactory, $zObjectStore, $zid, $path, $filename );
 
 			if ( $response->isOK ) {
 				$success++;
 				$this->output( $response->message );
+
+				// Rename file after successful insertion (if needed)
+				if ( $filename !== $doneFilename ) {
+					rename( "$path/$filename", "$path/$doneFilename" );
+				}
 			} else {
 				// Print error immediately, but also save it for summary
 				$this->error( $response->message );
