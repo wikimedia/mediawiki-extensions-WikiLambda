@@ -35,7 +35,6 @@ class PageEditingHandler implements
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook
 {
 	private Config $config;
-	private ZObjectStore $zObjectStore;
 	private IReadableDatabase $dbr;
 
 	private LoggerInterface $logger;
@@ -43,11 +42,10 @@ class PageEditingHandler implements
 	public function __construct(
 		Config $config,
 		IConnectionProvider $dbProvider,
-		ZObjectStore $zObjectStore
+		private readonly ZObjectStore $zObjectStore
 
 	) {
 		$this->config = $config;
-		$this->zObjectStore = $zObjectStore;
 		$this->dbr = $dbProvider->getReplicaDatabase();
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );

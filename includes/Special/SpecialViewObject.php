@@ -32,19 +32,17 @@ class SpecialViewObject extends UnlistedSpecialPage {
 	private ContentRenderer $contentRenderer;
 	private LanguageFactory $languageFactory;
 	private UrlUtils $urlUtils;
-	private ZObjectStore $zObjectStore;
 
 	public function __construct(
 		ContentRenderer $contentRenderer,
 		LanguageFactory $languageFactory,
 		UrlUtils $urlUtils,
-		ZObjectStore $zObjectStore
+		private readonly ZObjectStore $zObjectStore
 	) {
 		parent::__construct( 'ViewObject', 'read' );
 		$this->contentRenderer = $contentRenderer;
 		$this->languageFactory = $languageFactory;
 		$this->urlUtils = $urlUtils;
-		$this->zObjectStore = $zObjectStore;
 	}
 
 	/**

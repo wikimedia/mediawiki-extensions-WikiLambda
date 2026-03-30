@@ -27,7 +27,6 @@ use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 class ApiQueryFunctions extends WikiLambdaApiQueryGeneratorBase {
 
 	protected LanguageFallback $languageFallback;
-	protected ZObjectStore $zObjectStore;
 	protected ZLangRegistry $langRegistry;
 
 	/**
@@ -37,12 +36,11 @@ class ApiQueryFunctions extends WikiLambdaApiQueryGeneratorBase {
 		ApiQuery $query,
 		string $moduleName,
 		LanguageFallback $languageFallback,
-		ZObjectStore $zObjectStore
+		protected readonly ZObjectStore $zObjectStore
 	) {
 		parent::__construct( $query, $moduleName, 'wikilambdasearch_functions_' );
 
 		$this->languageFallback = $languageFallback;
-		$this->zObjectStore = $zObjectStore;
 		$this->langRegistry = ZLangRegistry::singleton();
 	}
 

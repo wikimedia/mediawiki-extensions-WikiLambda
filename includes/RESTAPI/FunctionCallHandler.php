@@ -51,11 +51,9 @@ use Wikimedia\Telemetry\SpanInterface;
  */
 class FunctionCallHandler extends WikiLambdaRESTHandler {
 
-	private ZObjectStore $zObjectStore;
 	private ZLangRegistry $langRegistry;
 
-	public function __construct( ZObjectStore $zObjectStore ) {
-		$this->zObjectStore = $zObjectStore;
+	public function __construct( private readonly ZObjectStore $zObjectStore ) {
 		$this->langRegistry = ZLangRegistry::singleton();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}

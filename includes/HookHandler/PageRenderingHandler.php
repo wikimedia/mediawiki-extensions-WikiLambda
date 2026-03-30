@@ -49,20 +49,18 @@ class PageRenderingHandler implements
 	private UserOptionsLookup $userOptionsLookup;
 	private LanguageNameUtils $languageNameUtils;
 	private LanguageFactory $languageFactory;
-	private ZObjectStore $zObjectStore;
 
 	public function __construct(
 		Config $config,
 		UserOptionsLookup $userOptionsLookup,
 		LanguageNameUtils $languageNameUtils,
 		LanguageFactory $languageFactory,
-		ZObjectStore $zObjectStore
+		private readonly ZObjectStore $zObjectStore
 	) {
 		$this->config = $config;
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->languageNameUtils = $languageNameUtils;
 		$this->languageFactory = $languageFactory;
-		$this->zObjectStore = $zObjectStore;
 	}
 
 	/**

@@ -23,7 +23,6 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	public const ORDER_BY_LATEST = 'latest';
 	public const ORDER_BY_OPTIONS = [ self::ORDER_BY_NAME, self::ORDER_BY_OLDEST, self::ORDER_BY_LATEST ];
 
-	private ZObjectStore $zObjectStore;
 	private array $languageZids;
 	private string $orderby;
 	private bool $excludePreDefined;
@@ -35,8 +34,13 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	 * @param string|null $orderby
 	 * @param bool|null $excludePreDefined
 	 */
-	public function __construct( $context, $zObjectStore, $languageZids, $orderby = null, $excludePreDefined = null ) {
-		$this->zObjectStore = $zObjectStore;
+	public function __construct(
+		$context,
+		private readonly ZObjectStore $zObjectStore,
+		$languageZids,
+		$orderby = null,
+		$excludePreDefined = null
+	) {
 		$this->languageZids = $languageZids;
 		$this->orderby = $orderby ?? self::ORDER_BY_NAME;
 		$this->excludePreDefined = $excludePreDefined ?? false;
