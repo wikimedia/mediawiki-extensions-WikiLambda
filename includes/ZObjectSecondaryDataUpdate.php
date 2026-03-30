@@ -28,7 +28,6 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 	private Title $title;
 	private ZObjectContent $zObject;
-	private MemcachedWrapper $zObjectCache;
 	private ?OrchestratorRequest $orchestrator;
 	private LoggerInterface $logger;
 
@@ -45,12 +44,11 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		Title $title,
 		ZObjectContent $zObject,
 		private readonly ZObjectStore $zObjectStore,
-		MemcachedWrapper $zObjectCache,
+		private readonly MemcachedWrapper $zObjectCache,
 		?OrchestratorRequest $orchestrator = null
 	) {
 		$this->title = $title;
 		$this->zObject = $zObject;
-		$this->zObjectCache = $zObjectCache;
 		$this->orchestrator = $orchestrator;
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}

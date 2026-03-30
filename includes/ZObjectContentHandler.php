@@ -42,7 +42,6 @@ class ZObjectContentHandler extends ContentHandler {
 	use ZObjectEditingPageTrait;
 
 	private Config $config;
-	private MemcachedWrapper $zObjectCache;
 
 	/**
 	 * @param string $modelId
@@ -51,16 +50,16 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param MemcachedWrapper $zObjectCache
 	 */
 	public function __construct(
-		$modelId, $config,
+		$modelId,
+		$config,
 		private readonly ZObjectStore $zObjectStore,
-		$zObjectCache
+		private readonly MemcachedWrapper $zObjectCache
 	) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
 		}
 
 		$this->config = $config;
-		$this->zObjectCache = $zObjectCache;
 
 		// Triggers use of message content-model-zobject
 		parent::__construct( CONTENT_MODEL_ZOBJECT, [ CONTENT_FORMAT_TEXT ] );
