@@ -21,18 +21,16 @@ use Exception;
 
 class ZObjectMapDiffer {
 
-	private ZObjectListDiffer $listDiffer;
-	private ValueComparer $valueComparer;
-
 	/**
 	 * Creates a ZObjectMapDiffer object
 	 *
 	 * @param ZObjectListDiffer $listDiffer
-	 * @param ValueComparer $comparer
+	 * @param ValueComparer $valueComparer
 	 */
-	public function __construct( ZObjectListDiffer $listDiffer, ValueComparer $comparer ) {
-		$this->listDiffer = $listDiffer;
-		$this->valueComparer = $comparer;
+	public function __construct(
+		private readonly ZObjectListDiffer $listDiffer,
+		private readonly ValueComparer $valueComparer
+	) {
 	}
 
 	/**

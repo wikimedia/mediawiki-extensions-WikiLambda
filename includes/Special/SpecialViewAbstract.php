@@ -26,22 +26,13 @@ use MediaWiki\User\User;
 use MediaWiki\Utils\UrlUtils;
 
 class SpecialViewAbstract extends UnlistedSpecialPage {
-	private ContentRenderer $contentRenderer;
-	private LanguageFactory $languageFactory;
-	private LanguageNameUtils $languageNameUtils;
-	private UrlUtils $urlUtils;
-
 	public function __construct(
-		ContentRenderer $contentRenderer,
-		LanguageFactory $languageFactory,
-		LanguageNameUtils $languageNameUtils,
-		UrlUtils $urlUtils,
+		private readonly ContentRenderer $contentRenderer,
+		private readonly LanguageFactory $languageFactory,
+		private readonly LanguageNameUtils $languageNameUtils,
+		private readonly UrlUtils $urlUtils,
 	) {
 		parent::__construct( 'ViewAbstract' );
-		$this->contentRenderer = $contentRenderer;
-		$this->languageFactory = $languageFactory;
-		$this->languageNameUtils = $languageNameUtils;
-		$this->urlUtils = $urlUtils;
 	}
 
 	/** @inheritDoc */

@@ -17,22 +17,13 @@ use MediaWiki\Title\Title;
 class ZObjectPage {
 
 	/**
-	 * @var WikiPage
-	 */
-	private $page = null;
-
-	/**
-	 * @var ZError
-	 */
-	private $errors = null;
-
-	/**
 	 * @param WikiPage|null $page
 	 * @param ZError|null $errors
 	 */
-	private function __construct( $page, $errors = null ) {
-		$this->page = $page;
-		$this->errors = $errors;
+	private function __construct(
+		private readonly ?WikiPage $page,
+		private readonly ?ZError $errors = null
+	) {
 	}
 
 	/**

@@ -26,13 +26,6 @@ use MediaWiki\Title\Title;
  */
 class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 
-	public function testCreation_invalidString() {
-		$this->hideDeprecated( '::create' );
-		$this->expectException( ZErrorException::class );
-		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT );
-		$testObject = new ZObjectContent( true );
-	}
-
 	public function testCreation_invalidJson() {
 		$this->hideDeprecated( '::create' );
 		$this->expectException( ZErrorException::class );

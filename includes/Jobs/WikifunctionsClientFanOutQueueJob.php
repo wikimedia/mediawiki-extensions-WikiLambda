@@ -29,12 +29,12 @@ class WikifunctionsClientFanOutQueueJob extends Job implements GenericParameterJ
 		// This job, triggered from RecentChanges activity on the repo wiki, takes the edit and fans it out to each
 		// relevant client wiki to process locally.
 
+		// Note: This will set $this->params.
 		parent::__construct( 'wikifunctionsClientFanOutQueue', $params );
 
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 		$this->jobQueueGroupFactory = MediaWikiServices::getInstance()->getJobQueueGroupFactory();
-
-		$this->params = $params;
 
 		$this->logger->debug(
 			__CLASS__ . ' created for {targetZObject} — {params}',

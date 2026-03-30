@@ -50,6 +50,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		$this->setUp();
 
+		// Non-injected items
 		// TODO (T330033): Consider injecting this service rather than just fetching from main
 		$services = MediaWikiServices::getInstance();
 		$this->jobQueueGroup = $services->getJobQueueGroup();

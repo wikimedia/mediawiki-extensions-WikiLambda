@@ -30,20 +30,19 @@ use Wikimedia\RemexHtml\TreeBuilder\TreeBuilder;
 
 class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
-	private string $source;
 	private array $allowedUrls = [];
-	private LoggerInterface $logger;
 
-	public function __construct( LoggerInterface $logger, Serializer $serializer, string $source ) {
+	public function __construct(
+		private readonly LoggerInterface $logger,
+		Serializer $serializer,
+		private readonly string $source
+	) {
 		$this->nextHandler = new Dispatcher( new TreeBuilder( $serializer, [
 			'ignoreErrors' => true,
 			'ignoreNulls' => true,
 		] ) );
 
 		parent::__construct( $this->nextHandler );
-
-		$this->logger = $logger;
-		$this->source = $source;
 
 		// The local server URL is always allowed, so we can link to the current wiki
 		$localServer = MediaWikiServices::getInstance()->getMainConfig()->get( 'Server' );

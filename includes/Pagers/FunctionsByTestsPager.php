@@ -22,21 +22,20 @@ use Wikimedia\Rdbms\Subquery;
  */
 class FunctionsByTestsPager extends AbstractZObjectPager {
 
-	private array $filters;
-
 	/**
 	 * @param IContextSource|null $context Context.
 	 * @param ZObjectStore $zObjectStore
 	 * @param array $languageZids
 	 * @param bool|null $excludePreDefined
-	 * @param array|null $filters [ min, max, connected, pending, pass, fail ]
+	 * @param array $filters [ min, max, connected, pending, pass, fail ]
 	 */
 	public function __construct(
-		$context, $zObjectStore, $languageZids, $excludePreDefined = null, $filters = []
+		$context, $zObjectStore, $languageZids, $excludePreDefined = null,
+		private readonly array $filters = []
 	) {
-		parent::__construct( $context, $zObjectStore, $languageZids, null, $excludePreDefined );
-
-		$this->filters = $filters;
+		parent::__construct(
+			$context, $zObjectStore, $languageZids, AbstractZObjectPager::ORDER_BY_NAME, $excludePreDefined
+		);
 	}
 
 	/**

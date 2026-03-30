@@ -24,7 +24,6 @@ use StatusValue;
  */
 class AbstractWikiContent extends AbstractContent {
 
-	private string $text;
 	private ?\stdClass $object;
 	private ?StatusValue $status = null;
 
@@ -34,21 +33,12 @@ class AbstractWikiContent extends AbstractContent {
 	 * Builds the Content object that can be saved in the Wiki
 	 *
 	 * @param string $text
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException If the input string isn't valid JSON
 	 */
-	public function __construct( $text ) {
+	public function __construct( private readonly string $text ) {
 		// Some unit tests somehow don't load our constant by this point, so defensively provide it as needed.
 		$ourModel = defined( 'CONTENT_MODEL_ABSTRACT' ) ? CONTENT_MODEL_ABSTRACT : 'abstractwiki';
 		parent::__construct( $ourModel );
-
-		// Check that the input is a valid string
-		if ( !is_string( $text ) ) {
-			throw new InvalidArgumentException(
-				'Cannot create AbstractWikiContent from a non-string: ' . gettype( $text )
-			);
-		}
-
-		$this->text = $text;
 
 		// Check that the input is a valid JSON
 		$parseStatus = FormatJson::parse( $text );

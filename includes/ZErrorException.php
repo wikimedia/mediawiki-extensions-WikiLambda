@@ -16,16 +16,13 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 
 class ZErrorException extends Exception {
 
-	private ZError $error;
-
 	/**
 	 * @param ZError $error
 	 */
-	public function __construct( $error ) {
+	public function __construct( private readonly ZError $error ) {
 		// We call the parent construction passing a message so that it can give some information
 		// if the exception is called and printed in php
 		parent::__construct( $error->getMessage() );
-		$this->error = $error;
 	}
 
 	/**

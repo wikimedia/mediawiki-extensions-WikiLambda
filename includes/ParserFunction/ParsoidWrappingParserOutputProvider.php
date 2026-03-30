@@ -22,10 +22,7 @@ use Wikimedia\Parsoid\Core\ContentMetadataCollector;
  * @todo This should really be provided by Wikibase, not us, but needs must.
  */
 class ParsoidWrappingParserOutputProvider implements ParserOutputProvider {
-	private ContentMetadataCollector $contentMetadataCollector;
-
-	public function __construct( ContentMetadataCollector $contentMetadataCollector ) {
-		$this->contentMetadataCollector = $contentMetadataCollector;
+	public function __construct( private readonly ContentMetadataCollector $contentMetadataCollector ) {
 	}
 
 	public function getParserOutput(): ParserOutput {

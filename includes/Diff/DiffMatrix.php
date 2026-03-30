@@ -16,14 +16,6 @@ use Diff\DiffOp\DiffOp;
 
 class DiffMatrix {
 
-	private ZObjectDiffer $zObjectDiffer;
-
-	/** @var array */
-	private $oldArray;
-
-	/** @var array */
-	private $newArray;
-
 	/** @var array Matrix with all the DiffOps found for every combination of old and new items. */
 	private $diffMatrix = [];
 
@@ -45,10 +37,11 @@ class DiffMatrix {
 	 * @param array $oldArray
 	 * @param array $newArray
 	 */
-	public function __construct( ZObjectDiffer $zObjectDiffer, array $oldArray, array $newArray ) {
-		$this->zObjectDiffer = $zObjectDiffer;
-		$this->oldArray = $oldArray;
-		$this->newArray = $newArray;
+	public function __construct(
+		private readonly ZObjectDiffer $zObjectDiffer,
+		private readonly array $oldArray,
+		private readonly array $newArray
+	) {
 		$this->calculateDiffMatrix();
 	}
 

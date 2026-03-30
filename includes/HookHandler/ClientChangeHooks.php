@@ -41,26 +41,14 @@ class ClientChangeHooks implements
 	\MediaWiki\SpecialPage\Hook\ChangesListSpecialPageStructuredFiltersHook,
 	\MediaWiki\Preferences\Hook\GetPreferencesHook
 {
-	private UserOptionsLookup $userOptionsLookup;
-	private IConnectionProvider $dbProvider;
-	private LinkRenderer $linkRenderer;
-
 	private LoggerInterface $logger;
 
-	private bool $showWikifunctionsChanges = false;
-
 	public function __construct(
-		UserOptionsLookup $userOptionsLookup,
-		IConnectionProvider $dbProvider,
+		private readonly UserOptionsLookup $userOptionsLookup,
+		private readonly IConnectionProvider $dbProvider,
 		private readonly Config $config,
-		LinkRenderer $linkRenderer
+		private readonly LinkRenderer $linkRenderer
 	) {
-		$this->userOptionsLookup = $userOptionsLookup;
-		$this->dbProvider = $dbProvider;
-		$this->linkRenderer = $linkRenderer;
-
-		$this->showWikifunctionsChanges = $this->config->get( 'WikiLambdaClientDefaultShowChanges' );
-
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 	}
@@ -394,7 +382,7 @@ class ClientChangeHooks implements
 	) {
 		// Drop server-side our changes if the user hasn't opted to see them (as set below,
 		// in onChangesListSpecialPageStructuredFilters).
-		if ( !$this->showWikifunctionsChanges ) {
+		if ( !$this->config->get( 'WikiLambdaClientDefaultShowChanges' ) ) {
 			$dbr = $this->dbProvider->getReplicaDatabase();
 			$conds[] = $dbr->expr( 'rc_source', '!=', WikifunctionsRecentChangesInsertJob::SRC_WIKIFUNCTIONS );
 		}
@@ -414,7 +402,7 @@ class ClientChangeHooks implements
 			'showHide' => 'wikilambda-rc-hide-wikifunctions',
 			'default' => !(
 				// True (i.e., show these) if the default is to show them …
-				$this->showWikifunctionsChanges &&
+				$this->config->get( 'WikiLambdaClientDefaultShowChanges' ) &&
 				// … and the user preference isn't different.
 				(bool)$this->userOptionsLookup->getOption(
 					$specialPage->getUser(),

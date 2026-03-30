@@ -30,6 +30,7 @@ class ZObjectDiffer {
 	private StrictComparer $comparer;
 
 	public function __construct() {
+		// Non-injected items
 		$this->comparer = new StrictComparer();
 		$this->listDiffer = new ZObjectListDiffer();
 		$this->mapDiffer = new ZObjectMapDiffer( $this->listDiffer, $this->comparer );

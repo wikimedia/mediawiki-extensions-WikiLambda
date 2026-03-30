@@ -24,16 +24,6 @@ use stdClass;
 
 class WikifunctionCallException extends Exception {
 
-	// Http status code (if applicable)
-	private int $httpStatusCode;
-
-	// Error message code and parameters
-	private string $msg;
-	private array $params;
-
-	// ZError (if applicable)
-	private ?stdClass $zerror;
-
 	/**
 	 * @param string $msg
 	 * @param int $httpStatusCode
@@ -41,17 +31,11 @@ class WikifunctionCallException extends Exception {
 	 * @param array $params
 	 */
 	public function __construct(
-		string $msg,
-		int $httpStatusCode = HttpStatus::BAD_REQUEST,
-		?stdClass $zerror = null,
-		array $params = []
+		private readonly string $msg,
+		private readonly int $httpStatusCode = HttpStatus::BAD_REQUEST,
+		private readonly ?stdClass $zerror = null,
+		private readonly array $params = []
 	) {
-		$this->msg = $msg;
-		$this->params = $params;
-
-		$this->httpStatusCode = $httpStatusCode;
-		$this->zerror = $zerror;
-
 		parent::__construct( $this->getMessageObject()->text() );
 	}
 

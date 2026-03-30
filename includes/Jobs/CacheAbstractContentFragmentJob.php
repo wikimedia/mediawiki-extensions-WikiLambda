@@ -39,6 +39,7 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 	public function __construct( array $params ) {
 		parent::__construct( 'cacheAbstractContentFragment', $params );
 
+		// Non-injected items
 		$this->config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 

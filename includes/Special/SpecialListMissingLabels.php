@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Extension\WikiLambda\Fields\HTMLZLanguageSelectField;
 use MediaWiki\Extension\WikiLambda\Fields\HTMLZTypeSelectField;
+use MediaWiki\Extension\WikiLambda\Pagers\AbstractZObjectPager;
 use MediaWiki\Extension\WikiLambda\Pagers\BasicZObjectPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -36,6 +37,7 @@ class SpecialListMissingLabels extends SpecialPage {
 	) {
 		parent::__construct( 'ListMissingLabels' );
 
+		// Non-injected items
 		$this->langRegistry = ZLangRegistry::singleton();
 	}
 
@@ -158,7 +160,7 @@ class SpecialListMissingLabels extends SpecialPage {
 			$this->getContext(),
 			$this->zObjectStore,
 			$languageZids,
-			null,
+			AbstractZObjectPager::ORDER_BY_NAME,
 			$excludePreDefined,
 			$filters
 		);

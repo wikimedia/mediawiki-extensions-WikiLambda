@@ -38,8 +38,9 @@ class PagePostSaveHandler implements
 		private readonly ZObjectStore $zObjectStore,
 		private readonly JobQueueGroup $jobQueueGroup
 	) {
-			$this->dbr = $dbProvider->getReplicaDatabase();
-			$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+		// Non-injected items
+		$this->dbr = $dbProvider->getReplicaDatabase();
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
 	/**

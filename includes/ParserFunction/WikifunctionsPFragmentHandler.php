@@ -52,6 +52,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		private readonly JobQueueGroup $jobQueueGroup,
 		private readonly HttpRequestFactory $httpRequestFactory
 	) {
+		// Non-injected items
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 

@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Title\Title;
+use TypeError;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent
@@ -22,7 +23,7 @@ class AbstractWikiContentTest extends WikiLambdaIntegrationTestCase {
 	private const TEST_ABSTRACT_NS = 2300;
 
 	public function testCreateInvalidString() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( TypeError::class );
 		$testObject = new AbstractWikiContent( true );
 	}
 

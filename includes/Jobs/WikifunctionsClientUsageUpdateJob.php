@@ -34,15 +34,18 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 	private int $targetPageNamespace;
 
 	public function __construct( array $params ) {
+		// Note: This will set $this->params, though we don't use it.
 		parent::__construct( 'wikifunctionsClientUsageUpdate', $params );
-		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
-		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
-
-		$this->config = MediaWikiServices::getInstance()->getMainConfig();
 
 		$this->targetFunction = $params['targetFunction'];
 		$this->targetPageText = $params['targetPageText'];
 		$this->targetPageNamespace = $params['targetPageNamespace'];
+
+		// Non-injected items
+		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
+		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
+
+		$this->config = MediaWikiServices::getInstance()->getMainConfig();
 
 		$this->logger->debug(
 			__CLASS__ . ' created for {targetFunction} on {targetPageNS}:{targetPage}',

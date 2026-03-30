@@ -40,6 +40,7 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 	 * @param Config $config
 	 */
 	public function __construct( private readonly Config $config ) {
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaCache' );
 
 		$configuredCaches = $this->config->get( 'WikiLambdaObjectCaches' );

@@ -30,6 +30,8 @@ class CacheTesterResultsJob extends Job implements GenericParameterJob {
 	 */
 	public function __construct( array $params ) {
 		parent::__construct( 'cacheTesterResults', $params );
+
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 
 		// TODO (T330030): Consider accessing the ZObjectStore as an injected service

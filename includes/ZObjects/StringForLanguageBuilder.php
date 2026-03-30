@@ -24,17 +24,13 @@ use MediaWiki\MediaWikiServices;
 class StringForLanguageBuilder {
 
 	private LanguageFallbackMode $languageFallback = LanguageFallbackMode::STRICT;
-	private Language $language;
 	private ?string $placeholderText = null;
-	private ZMultiLingualString $provider;
 
 	/**
-	 * @param Language $lang The language with build the string for
+	 * @param Language $language The language with build the string for
 	 * @param ZMultilingualString $provider Object that provides the localized strings.
 	 */
-	public function __construct( Language $lang, ZMultiLingualString $provider ) {
-		$this->language = $lang;
-		$this->provider = $provider;
+	public function __construct( private readonly Language $language, private readonly ZMultilingualString $provider ) {
 	}
 
 	/**

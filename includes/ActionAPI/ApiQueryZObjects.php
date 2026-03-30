@@ -33,8 +33,6 @@ use Wikimedia\Telemetry\SpanInterface;
 
 class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 
-	protected LanguageNameUtils $languageNameUtils;
-	protected TitleFactory $titleFactory;
 	protected ZTypeRegistry $typeRegistry;
 	protected LoggerInterface $logger;
 
@@ -45,13 +43,12 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 		ApiQuery $query,
 		string $moduleName,
 		protected readonly LanguageFallback $languageFallback,
-		LanguageNameUtils $languageNameUtils,
-		TitleFactory $titleFactory
+		protected readonly LanguageNameUtils $languageNameUtils,
+		protected readonly TitleFactory $titleFactory
 	) {
 		parent::__construct( $query, $moduleName, 'wikilambdaload_' );
 
-		$this->languageNameUtils = $languageNameUtils;
-		$this->titleFactory = $titleFactory;
+		// Non-injected items
 		$this->typeRegistry = ZTypeRegistry::singleton();
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 	}

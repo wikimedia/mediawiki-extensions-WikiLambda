@@ -44,16 +44,6 @@ class ZObjectContent extends AbstractContent {
 	private const LABEL_LENGTH_LIMIT = 500;
 
 	/**
-	 * Fundamental internal representation, as stored in MediaWiki.
-	 *
-	 * In practice, this currently is a JSON stringification of the object model. However, this
-	 * is an implementation detail, and in future might change; it should not be relied upon.
-	 *
-	 * @var string
-	 */
-	private $text;
-
-	/**
 	 * Object representation of the content, as specified in the Functional Model.
 	 *
 	 * @var \stdClass
@@ -81,20 +71,10 @@ class ZObjectContent extends AbstractContent {
 	 * @param string $text
 	 * @throws ZErrorException
 	 */
-	public function __construct( $text ) {
+	public function __construct( private readonly string $text ) {
 		// Some unit tests somehow don't load our constant by this point, so defensively provide it as needed.
 		$ourModel = defined( 'CONTENT_MODEL_ZOBJECT' ) ? CONTENT_MODEL_ZOBJECT : 'zobject';
 		parent::__construct( $ourModel );
-
-		// Check that the input is a valid string
-		if ( !is_string( $text ) ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT, [
-						'data' => $text
-					] )
-			);
-		}
 
 		// Check that the input is a valid JSON
 		$parseStatus = FormatJson::parse( $text );
@@ -109,9 +89,10 @@ class ZObjectContent extends AbstractContent {
 			);
 		}
 
-		// Save the string and object content
+		// Save the object content (the string, a JSON stringification of the object model, is saved
+		// by the constructor, but this is an implementation detail, and in future might change; it
+		// should not be relied upon).
 		// TODO (T284473): We might not need the text content once we have proper diffs
-		$this->text = $text;
 		$this->object = $parseStatus->getValue();
 	}
 

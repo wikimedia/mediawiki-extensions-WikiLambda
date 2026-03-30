@@ -29,20 +29,13 @@ use MediaWiki\Utils\UrlUtils;
 class SpecialViewObject extends UnlistedSpecialPage {
 	use ZObjectEditingPageTrait;
 
-	private ContentRenderer $contentRenderer;
-	private LanguageFactory $languageFactory;
-	private UrlUtils $urlUtils;
-
 	public function __construct(
-		ContentRenderer $contentRenderer,
-		LanguageFactory $languageFactory,
-		UrlUtils $urlUtils,
+		private readonly ContentRenderer $contentRenderer,
+		private readonly LanguageFactory $languageFactory,
+		private readonly UrlUtils $urlUtils,
 		private readonly ZObjectStore $zObjectStore
 	) {
 		parent::__construct( 'ViewObject' );
-		$this->contentRenderer = $contentRenderer;
-		$this->languageFactory = $languageFactory;
-		$this->urlUtils = $urlUtils;
 	}
 
 	/** @inheritDoc */

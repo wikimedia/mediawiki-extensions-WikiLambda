@@ -23,8 +23,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
  */
 class BasicZObjectPager extends AbstractZObjectPager {
 
-	private array $filters;
-
 	/**
 	 * @param IContextSource|null $context Context.
 	 * @param ZObjectStore $zObjectStore
@@ -34,11 +32,14 @@ class BasicZObjectPager extends AbstractZObjectPager {
 	 * @param array $filters
 	 */
 	public function __construct(
-		$context, $zObjectStore, $languageZids, $orderby = null, $excludePreDefined = null, $filters = []
+		$context, $zObjectStore, $languageZids, $orderby, $excludePreDefined,
+		private readonly array $filters = []
 	) {
-		parent::__construct( $context, $zObjectStore, $languageZids, $orderby, $excludePreDefined );
-
-		$this->filters = $filters;
+		parent::__construct(
+			$context, $zObjectStore, $languageZids,
+			$orderby ?? AbstractZObjectPager::ORDER_BY_NAME,
+			$excludePreDefined ?? false
+		);
 	}
 
 	/**

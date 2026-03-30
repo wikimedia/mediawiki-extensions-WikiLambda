@@ -30,6 +30,8 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 	 */
 	public function __construct( array $params ) {
 		parent::__construct( 'updateImplementations', $params );
+
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 

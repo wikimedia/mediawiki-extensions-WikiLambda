@@ -30,9 +30,6 @@ use Psr\Log\LoggerInterface;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
-	private Title $title;
-	private ZObjectContent $zObject;
-	private ?OrchestratorRequest $orchestrator;
 	private LoggerInterface $logger;
 
 	public const INSTANCEOFENUM_DB_KEY = 'instanceofenum';
@@ -45,15 +42,13 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	 * @param OrchestratorRequest|null $orchestrator
 	 */
 	public function __construct(
-		Title $title,
-		ZObjectContent $zObject,
+		private readonly Title $title,
+		private readonly ZObjectContent $zObject,
 		private readonly ZObjectStore $zObjectStore,
 		private readonly MemcachedWrapper $zObjectCache,
-		?OrchestratorRequest $orchestrator = null
+		private ?OrchestratorRequest $orchestrator = null
 	) {
-		$this->title = $title;
-		$this->zObject = $zObject;
-		$this->orchestrator = $orchestrator;
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 

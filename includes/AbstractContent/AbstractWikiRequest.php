@@ -31,6 +31,7 @@ class AbstractWikiRequest {
 		private readonly Config $config,
 		private readonly HttpRequestFactory $httpRequestFactory
 	) {
+		// Non-injected items
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}

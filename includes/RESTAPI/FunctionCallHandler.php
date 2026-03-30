@@ -54,6 +54,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 	private ZLangRegistry $langRegistry;
 
 	public function __construct( private readonly ZObjectStore $zObjectStore ) {
+		// Non-injected items
 		$this->langRegistry = ZLangRegistry::singleton();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}

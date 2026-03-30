@@ -48,13 +48,6 @@ use Wikimedia\Rdbms\Subquery;
 
 class ZObjectStore {
 
-	private IConnectionProvider $dbProvider;
-	private TitleFactory $titleFactory;
-	private WikiPageFactory $wikiPageFactory;
-	private RevisionStore $revisionStore;
-	private UserGroupManager $userGroupManager;
-	private LoggerInterface $logger;
-
 	private MemcachedWrapper $zObjectCache;
 
 	// NOTE: This constant hard-codes user-provided content as starting from 'Z10000'. Now that the
@@ -75,20 +68,14 @@ class ZObjectStore {
 	 * @param LoggerInterface $logger
 	 */
 	public function __construct(
-		IConnectionProvider $dbProvider,
-		TitleFactory $titleFactory,
-		WikiPageFactory $wikiPageFactory,
-		RevisionStore $revisionStore,
-		UserGroupManager $userGroupManager,
-		LoggerInterface $logger
+		private readonly IConnectionProvider $dbProvider,
+		private readonly TitleFactory $titleFactory,
+		private readonly WikiPageFactory $wikiPageFactory,
+		private readonly RevisionStore $revisionStore,
+		private readonly UserGroupManager $userGroupManager,
+		private readonly LoggerInterface $logger
 	) {
-		$this->dbProvider = $dbProvider;
-		$this->titleFactory = $titleFactory;
-		$this->wikiPageFactory = $wikiPageFactory;
-		$this->revisionStore = $revisionStore;
-		$this->userGroupManager = $userGroupManager;
-		$this->logger = $logger;
-
+		// Non-injected items
 		$this->zObjectCache = WikiLambdaServices::getMemcachedWrapper();
 	}
 

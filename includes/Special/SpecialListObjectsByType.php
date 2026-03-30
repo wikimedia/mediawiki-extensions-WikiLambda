@@ -35,6 +35,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	) {
 		parent::__construct( 'ListObjectsByType' );
 
+		// Non-injected items
 		$this->langRegistry = ZLangRegistry::singleton();
 	}
 

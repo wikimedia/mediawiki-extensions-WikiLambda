@@ -50,8 +50,10 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		// This job, triggered by the Parsoid callback for rendering a function,
 		// tries to make a network request for the content.
 
+		// Note: This will set $this->params.
 		parent::__construct( 'wikifunctionsClientRequest', $params );
 
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );

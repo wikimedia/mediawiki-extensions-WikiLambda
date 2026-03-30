@@ -20,7 +20,6 @@ use Psr\Log\LoggerInterface;
 
 class ZObjectSecondaryDataRemoval extends DataUpdate {
 
-	private Title $title;
 	private LoggerInterface $logger;
 
 	/**
@@ -29,11 +28,11 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 	 * @param MemcachedWrapper $zObjectCache
 	 */
 	public function __construct(
-		Title $title,
+		private readonly Title $title,
 		private readonly ZObjectStore $zObjectStore,
 		private readonly MemcachedWrapper $zObjectCache
 	) {
-		$this->title = $title;
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 

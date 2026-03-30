@@ -18,9 +18,7 @@ use Wikimedia\Rdbms\IConnectionProvider;
 
 class WikifunctionsClientStore {
 
-	private IConnectionProvider $dbProvider;
 	private MemcachedWrapper $objectCache;
-
 	private LoggerInterface $logger;
 
 	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
@@ -28,9 +26,8 @@ class WikifunctionsClientStore {
 	/**
 	 * @param IConnectionProvider $dbProvider
 	 */
-	public function __construct( IConnectionProvider $dbProvider ) {
-		$this->dbProvider = $dbProvider;
-
+	public function __construct( private readonly IConnectionProvider $dbProvider ) {
+		// Non-injected items
 		// This can't be injected, as the service container runs before the extension is loaded
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 

@@ -17,17 +17,11 @@ use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
 
 class SpecialListDuplicateObjectNames extends SpecialPage {
-	private LanguageNameUtils $languageNameUtils;
-	private LinkBatchFactory $linkBatchFactory;
-
 	public function __construct(
-		LanguageNameUtils $languageNameUtils,
-		LinkBatchFactory $linkBatchFactory
+		private readonly LanguageNameUtils $languageNameUtils,
+		private readonly LinkBatchFactory $linkBatchFactory
 	) {
 		parent::__construct( 'ListDuplicateObjectNames' );
-
-		$this->languageNameUtils = $languageNameUtils;
-		$this->linkBatchFactory = $linkBatchFactory;
 	}
 
 	/**

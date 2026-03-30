@@ -25,13 +25,10 @@ use Symfony\Component\Yaml\Yaml;
 
 class ZObjectAuthorization implements LoggerAwareInterface {
 
-	private LoggerInterface $logger;
-
 	/**
 	 * @param LoggerInterface $logger
 	 */
-	public function __construct( LoggerInterface $logger ) {
-		$this->logger = $logger;
+	public function __construct( private LoggerInterface $logger ) {
 	}
 
 	/**

@@ -23,19 +23,15 @@ use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
 class ApiQueryZFunctionReference extends WikiLambdaApiQueryGeneratorBase {
 
-	private ZObjectStore $zObjectStore;
-
 	/**
 	 * @codeCoverageIgnore
 	 */
 	public function __construct(
 		ApiQuery $query,
 		string $moduleName,
-		ZObjectStore $zObjectStore
+		private readonly ZObjectStore $zObjectStore
 	) {
 		parent::__construct( $query, $moduleName, 'wikilambdafn_' );
-
-		$this->zObjectStore = $zObjectStore;
 	}
 
 	/**

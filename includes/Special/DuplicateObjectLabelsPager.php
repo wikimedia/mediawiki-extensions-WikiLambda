@@ -20,9 +20,6 @@ use MediaWiki\Title\Title;
 
 class DuplicateObjectLabelsPager extends TablePager {
 
-	private LinkBatchFactory $linkBatchFactory;
-	private LanguageNameUtils $languageUtils;
-
 	/**
 	 * @param SpecialPage $form
 	 * @param LinkRenderer $linkRenderer
@@ -32,13 +29,10 @@ class DuplicateObjectLabelsPager extends TablePager {
 	public function __construct(
 		SpecialPage $form,
 		LinkRenderer $linkRenderer,
-		LinkBatchFactory $linkBatchFactory,
-		LanguageNameUtils $languageUtils
+		private readonly LinkBatchFactory $linkBatchFactory,
+		private readonly LanguageNameUtils $languageUtils
 	) {
 		parent::__construct( $form->getContext(), $linkRenderer );
-
-		$this->linkBatchFactory = $linkBatchFactory;
-		$this->languageUtils = $languageUtils;
 	}
 
 	/**

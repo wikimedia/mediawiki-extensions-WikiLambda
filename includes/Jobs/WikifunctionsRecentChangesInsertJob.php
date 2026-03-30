@@ -43,14 +43,15 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		// This job, triggered from RecentChanges activity, takes the edit and fans it out to each
 		// relevant client wiki to process locally.
 
+		// Note: This will set $this->params.
 		parent::__construct( 'wikifunctionsRecentChangesInsert', $params );
+
+		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 
 		// We use a CentralIdLookupFactory if configured to convert the repo wiki's user IDs to our local wiki's
 		// ones. If null, we assume this wiki is not connected to a central system.
 		$this->centralIdLookup = MediaWikiServices::getInstance()->getCentralIdLookupFactory()->getNonLocalLookup();
-
-		$this->params = $params;
 	}
 
 	public function run(): bool {

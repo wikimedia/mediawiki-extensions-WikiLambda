@@ -48,7 +48,6 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	protected OrchestratorRequest $orchestrator;
 	protected string $orchestratorHost;
 	protected LoggerInterface $logger;
-	protected bool $isPublicApi;
 
 	public const FUNCTIONCALL_POOL_COUNTER_TYPE = 'WikiLambdaFunctionCall';
 
@@ -56,11 +55,9 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		ApiMain $mainModule,
 		string $moduleName,
 		string $modulePrefix = '',
-		bool $isPublicApi = false
+		protected readonly bool $isPublicApi = false
 	) {
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
-
-		$this->isPublicApi = $isPublicApi;
 	}
 
 	protected function setUp() {

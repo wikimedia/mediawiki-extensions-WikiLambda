@@ -27,7 +27,6 @@ use Wikimedia\Telemetry\TracerInterface;
  */
 class OrchestratorRequest {
 
-	protected Client $guzzleClient;
 	protected string $userAgentString;
 	protected MemcachedWrapper $objectCache;
 	protected TracerInterface $tracer;
@@ -38,11 +37,10 @@ class OrchestratorRequest {
 	/**
 	 * The specialised request interface to control all network access to the function-orchestrator.
 	 *
-	 * @param Client $client GuzzleHttp Client used for requests
+	 * @param Client $guzzleClient GuzzleHttp Client used for requests
 	 */
-	public function __construct( Client $client ) {
-		$this->guzzleClient = $client;
-
+	public function __construct( protected readonly Client $guzzleClient ) {
+		// We generate a user agent string for better traceability of requests
 		$this->userAgentString = 'wikifunctions-request/' . MW_VERSION;
 		$gitInfo = new GitInfo( MW_INSTALL_PATH . '/extensions/WikiLambda' );
 		$gitHash = $gitInfo->getHeadSHA1();
@@ -50,6 +48,7 @@ class OrchestratorRequest {
 			$this->userAgentString .= '-WL' . substr( $gitHash, 0, 8 );
 		}
 
+		// Non-injected items
 		$this->tracer = MediaWikiServices::getInstance()->getTracer();
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 

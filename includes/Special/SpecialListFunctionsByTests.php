@@ -32,6 +32,7 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	) {
 		parent::__construct( 'ListFunctionsByTests' );
 
+		// Non-injected items
 		$this->langRegistry = ZLangRegistry::singleton();
 	}
 
