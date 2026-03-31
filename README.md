@@ -381,9 +381,21 @@ To do this for the evaluator:
 
 #### Memcached
 
-If you would like to enable memcached in your local deployment,
-you can use the `memcached` Docker image. In `docker-compose.override.yaml`,
-enable a separate `memcached` service:
+Memcached is used in the backend services to store Objects needed for evaluation. The use of
+Memcached from the backend is completely separated from its use from MediaWiki, so to replicate this
+behavior in your local environment you must set up a memcached container that is accessible to the
+backend services.
+
+The Objects are stored up to date by sending a post request to the orchestrator
+`1/v1/persist-to-cache` endpoint during the Deferred Updates. To enable this behavior, set in your
+LocalSettings.php the following flag:
+
+```
+$wgWikiLambdaPersistBackendCache = true;
+```
+
+To set up a memcached container in your local environment, you can use the `memcached` Docker image.
+In `docker-compose.override.yaml`, enable a separate `memcached` service:
 
 ```
 services:
