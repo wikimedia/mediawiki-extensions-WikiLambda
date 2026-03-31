@@ -399,7 +399,7 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( job1 ).toHaveBeenCalledTimes( 1 );
 				expect( job2 ).not.toHaveBeenCalled();
 
-				jest.advanceTimersByTime( 300 );
+				jest.advanceTimersByTime( 2500 );
 
 				expect( job2 ).toHaveBeenCalledTimes( 1 );
 			} );
@@ -412,7 +412,7 @@ describe( 'abstractWiki Pinia store', () => {
 
 				expect( store.queueRunning ).toBe( true );
 
-				jest.advanceTimersByTime( 300 );
+				jest.advanceTimersByTime( 2500 );
 
 				expect( store.queueRunning ).toBe( false );
 			} );

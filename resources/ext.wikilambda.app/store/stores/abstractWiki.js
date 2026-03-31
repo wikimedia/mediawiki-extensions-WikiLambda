@@ -14,10 +14,14 @@ const { extractWikidataItemIds, isWikidataQid } = require( '../../utils/wikidata
 const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 
+/* Time (ms) from last edit to re-render fragment call */
 const DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT = 2000;
-const FRAGMENT_QUEUE_TIMEOUT = 300;
-const ENQUEUE_FRAGMENT_JOB_TIMEOUT = 300;
-const MAX_FRAGMENT_RETRIES = 30;
+/* Time (ms) between processing jobs in the queue */
+const FRAGMENT_QUEUE_TIMEOUT = 2000;
+/* Pause time (ms) before enqueing a job for retry */
+const ENQUEUE_FRAGMENT_JOB_TIMEOUT = 100;
+/* Maximum times to try each fragment */
+const MAX_FRAGMENT_RETRIES = 3;
 
 const abstractWikiStore = {
 	state: {
