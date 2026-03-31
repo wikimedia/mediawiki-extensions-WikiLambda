@@ -535,7 +535,9 @@ module.exports = exports = defineComponent( {
 			const args = [];
 			for ( const arg of errorData.stringArgs ) {
 				const key = store.getLabelData( arg.key ).label;
-				const value = i18n( 'quotation-marks', escapeHtml( arg.value ) ).text();
+				// Keep plain text here; this summary is rendered via Vue text interpolation,
+				// so escaping now causes entity text (e.g. "&lt;") to appear to users.
+				const value = i18n( 'quotation-marks', arg.value ).text();
 				args.push( `${ key }${ colon }${ value }` );
 			}
 			const argblock = i18n( 'parentheses', args.join( comma ) ).text();

@@ -311,8 +311,8 @@ describe( 'dialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
-			const escapedErr = 'Z500 (Z500K1: "&lt;button onmouseover&#x3D;&quot;window.location &#x3D; &#39;&#x2F;&#x2F;www.example.com&#39;&quot;&gt;")';
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( escapedErr );
+			const expectedHeaderDescription = 'Z500 (Z500K1: "<button onmouseover="window.location = \'//www.example.com\'">")';
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( expectedHeaderDescription );
 		} );
 
 		it( 'renders the expected/actual values and shows test failure message when results differ', () => {
@@ -436,8 +436,9 @@ describe( 'dialog', () => {
 			sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 3 );
 
-			// SECURITY: Ensure malicious HTML in error message values is also escaped
-			expect( sections[ 0 ].html() ).toContain( '"some error in child function call: &lt;button onmouseover="window.location = \'//www.example.com\'"&gt;"' );
+			// The accordion description renders as plain text (not HTML), so the text value should show raw characters.
+			expect( sections[ 0 ].find( '.cdx-accordion__header__description' ).text() )
+				.toContain( '"some error in child function call: <button onmouseover="window.location = \'//www.example.com\'">"' );
 		} );
 	} );
 } );
