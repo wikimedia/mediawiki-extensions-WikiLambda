@@ -181,27 +181,69 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 	}
 
 	/**
-	 * Utility method to create a cache key by concatenating parts with a colon. This is used to ensure consistent
-	 * cache key formatting across the codebase.
+	 * Utility method to create a cache key by concatenating parts with a colon.
+	 * This is used to ensure consistent cache key formatting across the codebase.
 	 *
+	 * If the cache service is BagOStuff, fallback to its makeKey method to ensure
+	 * that the constraints for each implementation of BagOStuff are followed.
+	 *
+	 * If the cache service is Memcached, implement its own logic for correct ASCII
+	 * encoding and limited key size (250 characters max)
+	 *
+	 * @see MemcachedBagOStuff::makeKeyInternal
 	 * @param string $prefix A prefix to identify the type of cache entry (e.g. 'functioncall')
 	 * @param string ...$parts The parts to concatenate into a cache key
 	 * @throws InvalidArgumentException If no parts are provided
 	 * @return string The generated cache key
 	 */
 	public function makeKey( string $prefix, string ...$parts ): string {
-		if ( count( $parts ) < 1 ) {
-			throw new InvalidArgumentException( "Missing key group" );
+		// Get only our DC local service.
+		$localServiceName = array_key_first( $this->services );
+		[ $localService, $localPrefix ] = $this->services[ $localServiceName ];
+
+		// Fallback to their own makeKey logic when the service is BagOStuff
+		// E.g. SqlBagOStuff keys have a maximum length of 250 characters
+		if ( $localService instanceof BagOStuff ) {
+			return $localService->makeKey( $prefix, ...$parts );
 		}
 
-		$key = $prefix;
-		foreach ( $parts as $part ) {
-			// Escape delimiter (":") and escape ("%") characters
-			// @phan-suppress-next-line PhanCoalescingNeverNullInLoop
-			$key .= ':' . strtr( $part ?? '', [ '%' => '%25', ':' => '%3A' ] );
-		}
-
-		return $key;
+		return $this->makeMemcachedKey( $prefix, ...$parts );
 	}
 
+	/**
+	 * Utility method to create a cache key for a Memcached backed cache service.
+	 * Concatenates all string parts and, if the result exceeds 205 characters
+	 * (250 max, minus 45 for prefixes) hashes the parts and prepends the prefix.
+	 *
+	 * @param string $prefix A prefix to identify the type of cache entry (e.g. 'functioncall')
+	 * @param string ...$parts The parts to concatenate into a cache key
+	 * @return string The generated cache key
+	 */
+	protected function makeMemcachedKey( string $prefix, string ...$parts ): string {
+		// Keep 45 characters for prefixes (e.g. 'wikilambda:WikiLambdaClientFunctionCall')
+		$maxLength = 205;
+
+		// Add the prefix as the last step, just in case we need to hash the parts
+		$key = '';
+		foreach ( $parts as $part ) {
+			$part = strtr( $part ?? '', ' ', '_' );
+
+			// Make sure %, #, and non-ASCII chars are escaped
+			$part = preg_replace_callback(
+				'/[^\x21-\x22\x24\x26-\x39\x3b-\x7e]+/',
+				static fn ( $m ) => rawurlencode( $m[0] ),
+				$part
+			);
+
+			$key .= ':' . $part;
+		}
+
+		// If the joint and encoded parts is larger than maxLength, hash it
+		if ( strlen( $key ) > $maxLength ) {
+			$key = '#' . hash( 'sha256', $key );
+		}
+
+		// Add the prefix; the result should not be longer than 250 characters
+		return $prefix . ':' . $key;
+	}
 }
