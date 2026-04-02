@@ -1,7 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
-			"Rivoz"
+			"Rivoz",
+			"Pikne"
 		]
-	}
+	},
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 keel|$1 keelt}}",
+	"wikilambda-about-widget-search-language-placeholder": "Otsi keelt",
+	"wikilambda-about-widget-view-languages-suggested": "Soovitatavad keeled",
+	"wikilambda-about-widget-view-languages-title": "Teave teistes keeltes",
+	"wikilambda-cancel": "Loobu",
+	"wikilambda-editor-default-name": "Ilma pealkirjata",
+	"wikilambda-editor-multilingual-string-loadmore": "{{PLURAL:$1|$1 keel|$1 keelt}}",
+	"wikilambda-publishnew": "Avalda"
 }

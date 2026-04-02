@@ -412,7 +412,7 @@
 	"wikilambda-performtest-error-nontester": "خطأ إجراء اختبار: '$1' ليس حالة اختبار.",
 	"wikilambda-performtest-error-unknown-zid": "خطأ إجراء اختبار: '$1' ليس كائنًا معروفًا",
 	"wikilambda-persistentzobject-contents": "المحتويات",
-	"wikilambda-persistentzobject-description": "ابدأ إنشاء الكائن الخاص باختيار نوعًا له أدناه. يمكنك إنشاء دالة بالنقر على هذا الرابط:",
+	"wikilambda-persistentzobject-description": "ابدأ إنشاء الكائن باختيار نوعه أدناه. يمكنك إنشاء دالة بالنقر على هذا الرابط:",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "لقد غيرّت حقل الإدخال ونوع الإخراج لهذه الدالة. <strong>ستُفصل جميع التنفيذات والاختبارات الموجودة عن الدالة الحالية.</strong> هل تريد المضي قدماً؟",
 	"wikilambda-publish-input-changed-impact-prompt": "لقد غيرّت حقل الإدخال لهذه الدالة. <strong>ستُفصل جميع التنفيذات والاختبارات الموجودة عن الدالة الحالية.</strong> هل تريد المضي قدماً؟",
 	"wikilambda-publish-lose-changes-prompt": "إن غادرت دون النشر أولاً، سوف تفقد تعديلاتك.",
