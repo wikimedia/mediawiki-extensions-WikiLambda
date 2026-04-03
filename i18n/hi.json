@@ -393,7 +393,7 @@
 	"wikilambda-missing-function-input-type-error-message": "इनपुट का प्रकार खाली है। कृपया एक प्रकार चुनें।",
 	"wikilambda-missing-function-output-error-message": "आउटपुट का प्रकार खाली है। कृपया एक प्रकार चुनें।",
 	"wikilambda-mode-selector-delete-group-label": "प्रविष्टि को सूची से हटाएँ",
-	"wikilambda-mode-selector-local-key-group-label": "फ़ंक्शन कॉल की लोकल कुँजियाँ",
+	"wikilambda-mode-selector-local-key-group-label": "फ़ंक्शन कॉल की स्थानीय कुँजियाँ",
 	"wikilambda-mode-selector-move-group-label": "प्रविष्टियों को सूची में ऊपर या नीचे ले जाएँ",
 	"wikilambda-mode-selector-types-group-label": "शाब्दिक और समाधानकर्ता",
 	"wikilambda-monolingual-string-list-dialog-add-language": "भाषा जोड़ें",
