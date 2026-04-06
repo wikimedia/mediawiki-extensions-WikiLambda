@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"JeffreyKim"
+		]
+	},
+	"action-wikilambda-abstract-create": "建立新跨語言文章",
+	"action-wikilambda-abstract-edit": "編輯現有嘅跨語言文章",
+	"content-model-abstractwiki": "跨語言文章",
+	"right-wikilambda-abstract-create": "建立新跨語言文章",
+	"right-wikilambda-abstract-edit": "編輯現有嘅跨語言文章",
+	"specialpages-group-abstractwiki": "跨語言維基百科版",
+	"wikilambda-abstract-content-object": "跨語言文章",
+	"wikilambda-abstract-edit-title": "編輯$1嘅跨語言文章",
+	"wikilambda-abstract-error-bad-fragments-type": "鍵值為'$1'嘅章節有類型錯誤嘅片段列表",
+	"wikilambda-abstract-menu-option-add-named-fragment": "加$1",
+	"wikilambda-abstract-menu-option-add-section": "加部分",
+	"wikilambda-abstract-preview-fragment-retry": "重試",
+	"wikilambda-abstract-preview-in-language": "生成嘅文字",
+	"wikilambda-abstract-special-create": "建立新跨語言文章",
+	"wikilambda-abstract-special-create-createbutton-label": "開版",
+	"wikilambda-abstract-special-create-qid": "為$1建立新跨語言文章",
+	"wikilambda-abstract-special-view": "檢視跨語言文章"
+}
