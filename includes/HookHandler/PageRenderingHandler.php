@@ -28,6 +28,7 @@ use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
@@ -229,8 +230,10 @@ class PageRenderingHandler implements
 	public function onHtmlPageLinkRendererEnd(
 		$linkRenderer, $linkTarget, $isKnown, &$text, &$attribs, &$ret
 	) {
-		// We only do this in repo mode
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if (
+			!$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
+			!$this->config->get( 'WikiLambdaEnableAbstractMode' )
+		) {
 			return;
 		}
 
@@ -244,13 +247,25 @@ class PageRenderingHandler implements
 		// Convert the slimline LinkTarget into a full-fat Title so we can ask deeper questions
 		$targetTitle = Title::newFromLinkTarget( $linkTarget );
 
-		$zid = $targetTitle->getBaseText();
+		$entityId = $targetTitle->getBaseText();
 
-		// Do nothing if the target isn't one of ours
 		if (
-			!$targetTitle->inNamespace( NS_MAIN )
-			|| !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT )
-			|| !ZObjectUtils::isValidZObjectReference( $zid )
+			// Do nothing if the target isn't one of ours
+		!(
+			// Is this a ZObject?
+			(
+				$targetTitle->inNamespace( NS_MAIN ) &&
+				$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) &&
+				ZObjectUtils::isValidZObjectReference( $entityId )
+			)
+			// Is this an Abstract Article?
+			|| (
+				array_key_exists( $targetTitle->getNamespace(),
+					$this->config->get( 'WikiLambdaAbstractNamespaces' ) ) &&
+				$targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT ) &&
+				AbstractContentUtils::isValidAbstractWikiTitle( $entityId )
+			)
+		)
 		) {
 			return;
 		}
@@ -271,12 +286,17 @@ class PageRenderingHandler implements
 
 		$action = $query['action'] ?? 'view';
 		if ( $action !== 'view' ) {
-			$attribs['href'] = '/wiki/' . $zid . '?action=' . $action . '&uselang='
+			$attribs['href'] = '/wiki/' . $entityId . '?action=' . $action . '&uselang='
 				. $currentPageContentLanguageCode . '&';
 		} elseif ( !isset( $query[ 'diff'] ) && !isset( $query['oldid'] ) ) {
-			$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/' . $zid . '?';
+			if ( $targetTitle->getNamespace() !== NS_MAIN ) {
+				$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/'
+					. $targetTitle->getNsText() . ':' . $entityId . '?';
+			} else {
+				$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/' . $entityId . '?';
+			}
 		} else {
-			$attribs['href'] = '/wiki/' . $zid . '?uselang=' . $currentPageContentLanguageCode . '&';
+			$attribs['href'] = '/wiki/' . $entityId . '?uselang=' . $currentPageContentLanguageCode . '&';
 		}
 
 		unset( $query['action'] );
@@ -290,12 +310,12 @@ class PageRenderingHandler implements
 		// **After this point, the only changes we're making are to the label ($text)**
 
 		// (T342212) Wrap our ZID in an LTR-enforced <span> so it works OK in RTL environments
-		$bidiWrappedZid = '<span dir="ltr">' . $zid . '</span>';
+		$bidiWrappedEntityId = '<span dir="ltr">' . $entityId . '</span>';
 
 		// Special handling for unknown (red) links; we want to add the wrapped ZID but don't want to try to fetch
 		// the label, which will fail
-		if ( !$isKnown && $text === $zid ) {
-			$text = new HtmlArmor( $bidiWrappedZid );
+		if ( !$isKnown && $text === $entityId ) {
+			$text = new HtmlArmor( $bidiWrappedEntityId );
 			return;
 		}
 
@@ -305,29 +325,17 @@ class PageRenderingHandler implements
 			return;
 		}
 
-		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
-		// the labels table already, which is very much faster:
-		$label = $this->zObjectStore->fetchZObjectLabel(
-			$zid,
-			$currentPageContentLanguageCode,
-			true
-		);
-
-		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
+		if ( $targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT ) ) {
+			$label = $this->fetchAbstractModeLabel( $entityId, $currentPageContentLanguageCode );
+		} elseif ( $targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
+			$label = $this->fetchRepoModeLabel( $entityId, $currentPageContentLanguageCode, $targetTitle, $context );
+		} else {
+			// If neither mode is enabled, we shouldn't be here, but just in case, don't do anything
+			return;
+		}
+		// If we've got got a label back for any reason, just fall back to the ZID or QID.
 		if ( $label === null ) {
-			$targetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
-			// Do nothing if somehow after all that it's not loadable
-			if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
-				return;
-			}
-
-			// At this point, we know they're linking to a ZObject page, so show a label, falling back
-			// to English even if that's not in the language's fall-back chain.
-			$label = $targetZObject->getLabels()
-				->buildStringForLanguage( $context->getLanguage() )
-				->fallbackWithEnglish()
-				->placeholderForTitle()
-				->getString() ?? '';
+			return;
 		}
 
 		// Finally, set the label of the link to the *un*escaped user-supplied label, see
@@ -338,7 +346,7 @@ class PageRenderingHandler implements
 		$text = new HtmlArmor(
 			htmlspecialchars( $label )
 				. $context->msg( 'word-separator' )->escaped()
-				. $context->msg( 'parentheses', [ $bidiWrappedZid ] )
+				. $context->msg( 'parentheses', [ $bidiWrappedEntityId ] )
 		);
 	}
 
@@ -668,6 +676,75 @@ class PageRenderingHandler implements
 		$output .= ']]';
 
 		return $output;
+	}
+
+	/**
+	 * Fetch the label for a Wikidata entity in abstract mode via the Wikidata API.
+	 *
+	 * @param string $entityId The Wikidata QID (e.g. Q715040)
+	 * @param string $currentPageContentLanguageCode The language code to fetch the label in
+	 * @return ?string The label, or null if not found
+	 */
+	private function fetchAbstractModeLabel( string $entityId, string $currentPageContentLanguageCode ): ?string {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
+			return null;
+		}
+		try {
+			$wbEntityParser = \Wikibase\Client\WikibaseClient::getEntityIdParser();
+			$itemId = $wbEntityParser->parse( $entityId );
+		} catch ( \Wikibase\DataModel\Entity\EntityIdParsingException ) {
+			return null;
+		}
+
+		$wbEntityLookup = \Wikibase\Client\WikibaseClient::getStore()->getEntityLookup();
+		$wbEntity = $wbEntityLookup->getEntity( $itemId );
+
+		if ( !( $wbEntity instanceof \Wikibase\DataModel\Entity\Item ) ) {
+			return null;
+		}
+
+		// return label
+		return $wbEntity->getLabels()->getByLanguage( $currentPageContentLanguageCode )?->getText();
+	}
+
+	/**
+	 * Fetch the label for a ZObject in repo mode via the ZObjectStore.
+	 *
+	 * @param string $entityId The ZObject ID (e.g. Z42)
+	 * @param string $currentPageContentLanguageCode The language code to fetch the label in
+	 * @param Title $targetTitle The title of the target page
+	 * @param IContextSource $context The current request context
+	 * @return ?string The label, or null if not found
+	 */
+	private function fetchRepoModeLabel(
+		string $entityId, string $currentPageContentLanguageCode, $targetTitle, $context ): ?string {
+		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
+		// the labels table already, which is very much faster:
+		$label = $this->zObjectStore->fetchZObjectLabel(
+			$entityId,
+			$currentPageContentLanguageCode,
+			true
+		);
+
+		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
+		if ( $label === null ) {
+			$targetZObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
+			// Do nothing if somehow after all that it's not loadable
+			if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
+				return null;
+			}
+
+			// At this point, we know they're linking to a ZObject page, so show a label, falling back
+			// to English even if that's not in the language's fall-back chain.
+			// return label
+			return $targetZObject->getLabels()
+				->buildStringForLanguage( $context->getLanguage() )
+				->fallbackWithEnglish()
+				->placeholderForTitle()
+				->getString() ?? '';
+		}
+
+		return $label;
 	}
 
 	/**
