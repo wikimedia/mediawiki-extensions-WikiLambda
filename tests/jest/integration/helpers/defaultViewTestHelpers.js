@@ -14,7 +14,7 @@ const ApiMock = require( './apiMock.js' );
 const apiGetMock = require( './apiGetMock.js' );
 const mockMWConfigGet = require( './mwConfigMock.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
-const wikidataMock = require( './wikidataMock.js' );
+const { wikidataMock, resetWikidataMock } = require( './wikidataMock.js' );
 const { buildUrl } = require( '../../helpers/urlHelpers.js' );
 const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 
@@ -66,13 +66,10 @@ const runSetup = function () {
 		] )
 	} ) );
 
-	// Mock fetch for Wikidata APIs
-	// eslint-disable-next-line n/no-unsupported-features/node-builtins
-	global.fetch = jest.fn( ( u ) => {
-		if ( u.includes( 'wikidata.org' ) ) {
-			return wikidataMock( u );
-		}
-	} );
+	// Mock mw.ForeignApi for Wikidata API calls
+	mw.ForeignApi = jest.fn( () => ( {
+		get: jest.fn( ( params ) => wikidataMock( params ) )
+	} ) );
 
 	// Mock #firstHeading for tests that expect it
 	const heading = document.createElement( 'h1' );
@@ -90,9 +87,8 @@ const runTeardown = function () {
 	// Remove or comment out these lines:
 	jest.runOnlyPendingTimers();
 	jest.useRealTimers();
-	// Clean up the mocked fetch API
-	// eslint-disable-next-line n/no-unsupported-features/node-builtins
-	global.fetch.mockClear();
+	// Reset Wikidata mock label cache
+	resetWikidataMock();
 
 	// Clean up #firstHeading after each test
 	const heading = document.getElementById( 'firstHeading' );

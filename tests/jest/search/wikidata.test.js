@@ -10,13 +10,14 @@
 const wikidataSearch = require( '../../../resources/ext.wikilambda.search/wikidata.js' );
 
 describe( 'ext.wikilambda.search.wikidata', () => {
-	let fetchMock;
+	let wikidataApiGetMock;
 	let apiGetMock;
 
 	beforeEach( () => {
-		fetchMock = jest.fn();
-		// eslint-disable-next-line n/no-unsupported-features/node-builtins
-		global.fetch = fetchMock;
+		wikidataApiGetMock = jest.fn();
+		mw.ForeignApi = jest.fn( () => ( {
+			get: wikidataApiGetMock
+		} ) );
 
 		apiGetMock = jest.fn();
 		mw.Api = jest.fn( () => ( {
@@ -32,9 +33,7 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 					{ id: 'Q90', label: 'Paris', description: 'capital of France' }
 				]
 			};
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( apiResponse )
-			} );
+			wikidataApiGetMock.mockResolvedValue( apiResponse );
 			apiGetMock.mockResolvedValue( {
 				query: {
 					pages: [
@@ -72,9 +71,7 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 					{ id: 'Q42', label: 'Douglas Adams', description: 'British writer' }
 				]
 			};
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( apiResponse )
-			} );
+			wikidataApiGetMock.mockResolvedValue( apiResponse );
 			apiGetMock.mockResolvedValue( {
 				query: {
 					pages: []
@@ -92,9 +89,7 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'returns empty results when Wikidata returns no matches', async () => {
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( { search: [] } )
-			} );
+			wikidataApiGetMock.mockResolvedValue( { search: [] } );
 
 			const client = wikidataSearch.vectorSearchClient;
 			const result = client.fetchByTitle( 'Nope', 10, true );
@@ -106,10 +101,8 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'omits description when showDescription=false and no abstract content exists', async () => {
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( {
-					search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-				} )
+			wikidataApiGetMock.mockResolvedValue( {
+				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
 			} );
 			apiGetMock.mockResolvedValue( { query: { pages: [] } } );
 
@@ -122,10 +115,8 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'omits description when Wikidata description is empty but keeps supportingText for existing abstracts', async () => {
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( {
-					search: [ { id: 'Q90', label: 'Paris', description: '' } ]
-				} )
+			wikidataApiGetMock.mockResolvedValue( {
+				search: [ { id: 'Q90', label: 'Paris', description: '' } ]
 			} );
 			apiGetMock.mockResolvedValue( {
 				query: {
@@ -145,10 +136,8 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'handles existence-check response without query/pages (treats as no abstract content)', async () => {
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( {
-					search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-				} )
+			wikidataApiGetMock.mockResolvedValue( {
+				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
 			} );
 			apiGetMock.mockResolvedValue( {} );
 
@@ -161,10 +150,8 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'ignores page objects without a title when checking for existing abstracts', async () => {
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( {
-					search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-				} )
+			wikidataApiGetMock.mockResolvedValue( {
+				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
 			} );
 			apiGetMock.mockResolvedValue( { query: { pages: [ {} ] } } );
 
@@ -182,10 +169,8 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 				key === 'wgWikiLambdaAbstractPrimaryNamespace' ? '' : originalGetImpl( key )
 			) );
 
-			fetchMock.mockResolvedValue( {
-				json: jest.fn().mockReturnValue( {
-					search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-				} )
+			wikidataApiGetMock.mockResolvedValue( {
+				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
 			} );
 			apiGetMock.mockResolvedValue( { query: { pages: [ { title: 'Q90' } ] } } );
 

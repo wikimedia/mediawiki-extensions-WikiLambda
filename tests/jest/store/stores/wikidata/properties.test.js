@@ -100,7 +100,7 @@ describe( 'Wikidata Properties Pinia store', () => {
 	} );
 
 	describe( 'Actions', () => {
-		let fetchMock;
+		let getMock;
 
 		describe( 'setPropertyData', () => {
 			it( 'stores a promise directly if data is a promise', () => {
@@ -131,11 +131,8 @@ describe( 'Wikidata Properties Pinia store', () => {
 						resolve();
 					} )
 				};
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( {} )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( {} );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				// Mock the getters
 				Object.defineProperty( store, 'getUserLangCode', {
 					value: 'en'
@@ -150,7 +147,7 @@ describe( 'Wikidata Properties Pinia store', () => {
 
 				store.fetchProperties( { ids: properties } );
 
-				expect( fetchMock ).not.toHaveBeenCalled();
+				expect( mw.ForeignApi ).not.toHaveBeenCalled();
 			} );
 
 			it( 'calls wbgetentities API to fetch all unfetched properties', async () => {
@@ -162,19 +159,16 @@ describe( 'Wikidata Properties Pinia store', () => {
 				];
 
 				const expectedResponse = { entities: { P333333: 'this', P444444: 'that' } };
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( expectedResponse )
-				} );
+				getMock = jest.fn().mockResolvedValue( expectedResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setPropertyData = jest.fn();
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
-
-				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=P333333%7CP444444';
-				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				const promise = store.fetchProperties( { ids: properties } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
+				expect( getMock ).toHaveBeenCalledWith(
+					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'P333333|P444444' },
+					{ signal: undefined }
+				);
 
 				// Save promises while request is in flight
 				expect( store.setPropertyData ).toHaveBeenCalledWith( {
@@ -221,28 +215,24 @@ describe( 'Wikidata Properties Pinia store', () => {
 					'P444444'
 				];
 
-				fetchMock = jest.fn().mockRejectedValue( 'some error' );
+				getMock = jest.fn().mockRejectedValue( 'some error' );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setPropertyData = jest.fn();
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
-
-				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=P333333%7CP444444';
-				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				await store.fetchProperties( { ids: properties } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
+				expect( getMock ).toHaveBeenCalledWith(
+					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'P333333|P444444' },
+					{ signal: undefined }
+				);
 				expect( store.properties ).toEqual( { P111111: 'has data' } );
 			} );
 
 			it( 'removes property IDs and returns data when API returns error', async () => {
 				const properties = [ 'P333333', 'P444444' ];
 				const errorResponse = { error: 'Some error' };
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( errorResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( errorResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setPropertyData = jest.fn();
 				store.resetPropertyData = jest.fn();
 
@@ -259,11 +249,8 @@ describe( 'Wikidata Properties Pinia store', () => {
 						P444444: { title: 'Property:P444444', labels: {} }
 					}
 				};
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( apiResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( apiResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setPropertyData = jest.fn();
 				store.resetPropertyData = jest.fn();
 

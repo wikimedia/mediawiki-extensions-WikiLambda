@@ -152,7 +152,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 		} );
 
 		describe( 'fetchWikidataEntitiesBatched', () => {
-			let fetchMock;
+			let getMock;
 			let mockGetData;
 			let mockSetData;
 			let mockResetData;
@@ -161,11 +161,8 @@ describe( 'Wikidata Entities Pinia store', () => {
 				mockGetData = jest.fn().mockReturnValue( undefined ); // No cached data
 				mockSetData = jest.fn();
 				mockResetData = jest.fn();
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( {} )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( {} );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				// Mock the getters
 				Object.defineProperty( store, 'getUserLangCode', {
 					value: 'en'
@@ -190,7 +187,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 
 				store.fetchWikidataEntitiesBatched( payload );
 
-				expect( fetchMock ).not.toHaveBeenCalled();
+				expect( mw.ForeignApi ).not.toHaveBeenCalled();
 			} );
 
 			it( 'batches requests when more than items then the limit(2) are requested', async () => {
@@ -205,30 +202,29 @@ describe( 'Wikidata Entities Pinia store', () => {
 				const batch2Response = { entities: { Q555555: 'data 3', Q666666: 'data 4' } };
 				const batch3Response = { entities: { Q777777: 'data 5' } };
 
-				fetchMock = jest.fn()
-					.mockResolvedValueOnce( { json: jest.fn().mockReturnValue( batch1Response ) } )
-					.mockResolvedValueOnce( { json: jest.fn().mockReturnValue( batch2Response ) } )
-					.mockResolvedValueOnce( { json: jest.fn().mockReturnValue( batch3Response ) } );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn()
+					.mockResolvedValueOnce( batch1Response )
+					.mockResolvedValueOnce( batch2Response )
+					.mockResolvedValueOnce( batch3Response );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
 				await store.fetchWikidataEntitiesBatched( payload );
 
 				// Should make 3 requests (batches of 2, 2, and 1)
-				expect( fetchMock ).toHaveBeenCalledTimes( 3 );
+				expect( getMock ).toHaveBeenCalledTimes( 3 );
 
 				// Check that each batch was called with correct IDs
-				expect( fetchMock ).toHaveBeenNthCalledWith( 1,
-					`${ Constants.WIKIDATA_BASE_URL }/w/api.php?origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=Q333333%7CQ444444`,
-					undefined
+				expect( getMock ).toHaveBeenNthCalledWith( 1,
+					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'Q333333|Q444444' },
+					{ signal: undefined }
 				);
-				expect( fetchMock ).toHaveBeenNthCalledWith( 2,
-					`${ Constants.WIKIDATA_BASE_URL }/w/api.php?origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=Q555555%7CQ666666`,
-					undefined
+				expect( getMock ).toHaveBeenNthCalledWith( 2,
+					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'Q555555|Q666666' },
+					{ signal: undefined }
 				);
-				expect( fetchMock ).toHaveBeenNthCalledWith( 3,
-					`${ Constants.WIKIDATA_BASE_URL }/w/api.php?origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=Q777777`,
-					undefined
+				expect( getMock ).toHaveBeenNthCalledWith( 3,
+					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'Q777777' },
+					{ signal: undefined }
 				);
 
 				// Check that all items were stored
@@ -248,11 +244,8 @@ describe( 'Wikidata Entities Pinia store', () => {
 				};
 
 				const errorResponse = { error: 'Some error' };
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( errorResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( errorResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
 				await store.fetchWikidataEntitiesBatched( payload );
 
@@ -273,11 +266,8 @@ describe( 'Wikidata Entities Pinia store', () => {
 						Q444444: { title: 'Q444444', labels: {} }
 					}
 				};
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( apiResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( apiResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
 				await store.fetchWikidataEntitiesBatched( payload );
 
@@ -296,9 +286,8 @@ describe( 'Wikidata Entities Pinia store', () => {
 					resetData: mockResetData
 				};
 
-				fetchMock = jest.fn().mockRejectedValue( 'Network error' );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockRejectedValue( 'Network error' );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
 				await store.fetchWikidataEntitiesBatched( payload );
 
@@ -336,15 +325,12 @@ describe( 'Wikidata Entities Pinia store', () => {
 			search: 'some-response',
 			searchContinue: null
 		};
-		let fetchMock;
+		let getMock;
 
 		describe( 'lookupWikidataEntities', () => {
 			beforeEach( () => {
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockResolvedValue( responseValue )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( { search: 'some-response' } );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				// Mock the getters
 				Object.defineProperty( store, 'getUserLangCode', {
 					value: 'en'
@@ -359,10 +345,18 @@ describe( 'Wikidata Entities Pinia store', () => {
 				const response = await store.lookupWikidataEntities( request );
 				expect( response ).toEqual( responseValue );
 
-				const params = `origin=*&action=wbsearchentities&format=json&formatversion=2&language=en&uselang=en&search=${
-					request.search }&type=${ request.type }&limit=10&props=url`;
-				const getUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
-				expect( fetchMock ).toHaveBeenCalledWith( getUrl, undefined );
+				expect( mw.ForeignApi ).toHaveBeenCalledWith( `${ Constants.WIKIDATA_BASE_URL }/w/api.php`, { anonymous: true } );
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'wbsearchentities',
+					format: 'json',
+					formatversion: '2',
+					language: 'en',
+					uselang: 'en',
+					search: request.search,
+					type: request.type,
+					limit: '10',
+					props: 'url'
+				}, { signal: undefined } );
 			} );
 		} );
 

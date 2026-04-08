@@ -71,18 +71,26 @@
 	}
 
 	/**
-	 * Build URL search params for the Wikidata wbsearchentities API.
+	 * @return {mw.ForeignApi}
+	 */
+	function newWikidataApi() {
+		return new mw.ForeignApi( `${ WIKIDATA_BASE_URL }/w/api.php`, { anonymous: true } );
+	}
+
+	/**
+	 * Run wbsearchentities against Wikidata via mw.ForeignApi (proper origin / auth handling).
 	 *
 	 * @param {Object} options
 	 * @param {string} options.query Search query
 	 * @param {string} options.language Language code
 	 * @param {number} options.limit Result limit
 	 * @param {number|null} [options.offset] Continue offset
-	 * @return {URLSearchParams}
+	 * @param {AbortSignal} options.signal Abort signal
+	 * @return {Promise<{search: Array, searchContinue: number|null}>}
 	 */
-	function buildWikidataSearchParams( { query, language, limit, offset } ) {
-		const params = new URLSearchParams( {
-			origin: '*',
+	function requestWikidataEntitySearch( { query, language, limit, offset, signal } ) {
+		const api = newWikidataApi();
+		const params = {
 			action: 'wbsearchentities',
 			format: 'json',
 			formatversion: '2',
@@ -92,11 +100,14 @@
 			type: 'item',
 			limit: String( limit ),
 			props: 'url|description'
-		} );
+		};
 		if ( offset !== null && offset !== undefined ) {
-			params.append( 'continue', String( offset ) );
+			params.continue = String( offset );
 		}
-		return params;
+		return api.get( params, { signal } ).then( ( data ) => ( {
+			search: data.search || [],
+			searchContinue: data[ 'search-continue' ] ? Number( data[ 'search-continue' ] ) : null
+		} ) );
 	}
 
 	/**
@@ -219,22 +230,13 @@
 			language,
 			showDescription
 		};
-		const searchParams = buildWikidataSearchParams( {
+		const wikidataPromise = requestWikidataEntitySearch( {
 			query,
 			language,
 			limit,
-			offset
-		} ).toString();
-
-		const wikidataPromise = fetch(
-			`${ WIKIDATA_BASE_URL }/w/api.php?${ searchParams }`,
-			{ signal: abortController.signal }
-		)
-			.then( ( response ) => response.json() )
-			.then( ( data ) => ( {
-				search: data.search || [],
-				searchContinue: data[ 'search-continue' ] ? Number( data[ 'search-continue' ] ) : null
-			} ) );
+			offset,
+			signal: abortController.signal
+		} );
 
 		const searchResponsePromise = wikidataPromise.then( ( wikidataData ) => {
 			if ( !wikidataData.search || !wikidataData.search.length ) {

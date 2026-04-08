@@ -18,13 +18,22 @@ const apiUtils = {
 	/**
 	 * Creates a new mw.Api object
 	 *
-	 * @return {string}
+	 * @return {mw.Api|mw.ForeignApi}
 	 */
 	newApi: function () {
 		const foreignUrl = mw.config.get( 'wgWikifunctionsBaseUrl' );
 		return foreignUrl ?
 			new mw.ForeignApi( `${ foreignUrl }/w/api.php`, { anonymous: true } ) :
 			new mw.Api();
+	},
+
+	/**
+	 * Creates a new mw.ForeignApi object pointing at Wikidata.
+	 *
+	 * @return {mw.ForeignApi}
+	 */
+	newWikidataApi: function () {
+		return new mw.ForeignApi( `${ Constants.WIKIDATA_BASE_URL }/w/api.php`, { anonymous: true } );
 	},
 
 	/**
@@ -340,8 +349,8 @@ const apiUtils = {
 	 * @return {Promise}
 	 */
 	searchWikidataEntities: function ( payload ) {
-		const params = new URLSearchParams( {
-			origin: '*',
+		const api = apiUtils.newWikidataApi();
+		const params = {
 			action: 'wbsearchentities',
 			format: 'json',
 			formatversion: '2',
@@ -351,19 +360,16 @@ const apiUtils = {
 			type: payload.type,
 			limit: '10',
 			props: 'url'
-		} );
+		};
 		if ( payload.searchContinue ) {
-			params.append( 'continue', payload.searchContinue );
+			params.continue = payload.searchContinue;
 		}
-		return fetch(
-			`${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }`,
-			payload.signal ? { signal: payload.signal } : undefined
-		)
-			.then( ( response ) => response.json() )
-			.then( ( data ) => ( {
-				search: data.search ? data.search : [],
-				searchContinue: data[ 'search-continue' ] ? Number( data[ 'search-continue' ] ) : null
-			} ) );
+		return api.get( params, {
+			signal: payload.signal
+		} ).then( ( data ) => ( {
+			search: data.search ? data.search : [],
+			searchContinue: data[ 'search-continue' ] ? Number( data[ 'search-continue' ] ) : null
+		} ) );
 	},
 
 	/**
@@ -372,25 +378,22 @@ const apiUtils = {
 	 *
 	 * @param {Object} payload
 	 * @param {string} payload.language user language code
-	 * @param {Array} payload.ids entity Ids to fetch, separated by pipes and max 50 (API limit)
+	 * @param {string} payload.ids entity Ids to fetch, separated by pipes and max 50 (API limit)
 	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
 	fetchWikidataEntities: function ( payload ) {
-		const params = new URLSearchParams( {
-			origin: '*',
+		const api = apiUtils.newWikidataApi();
+		return api.get( {
 			action: 'wbgetentities',
 			format: 'json',
 			formatversion: '2',
-			languages: [ payload.language ],
+			languages: payload.language,
 			languagefallback: true,
 			ids: payload.ids
+		}, {
+			signal: payload.signal
 		} );
-		return fetch(
-			`${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params.toString() }`,
-			payload.signal ? { signal: payload.signal } : undefined
-		)
-			.then( ( response ) => response.json() );
 	},
 
 	/**

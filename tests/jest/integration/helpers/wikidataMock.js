@@ -153,48 +153,56 @@ function generateMockSearchResults( { type, query, language } ) {
 }
 
 /**
- * Main mock fetch function.
+ * Label cache: maps entity ID to label so that wbgetentities returns the same
+ * label as was previously returned by wbsearchentities for the same ID.
  *
- * @param {string} url - The URL to fetch.
- *
- * @return {Promise} - A promise that resolves to the mock response.
+ * @type {Object.<string, string>}
  */
-const wikidataMock = ( url ) => {
-	const urlObj = new URL( url );
-	const params = Object.fromEntries( urlObj.searchParams.entries() );
+const labelCache = {};
 
+/**
+ * Main mock function for mw.ForeignApi.get() calls to Wikidata.
+ *
+ * @param {Object} params - The API request params.
+ *
+ * @return {Promise} - A promise that resolves to the mock response data.
+ */
+const wikidataMock = ( params ) => {
 	const { ids, search, type, language = 'en', action } = params;
 
 	if ( action === 'wbgetentities' ) {
+		const entityIds = String( ids ).split( '|' );
 		const typeMap = { L: 'lexeme', Q: 'item', P: 'property' };
-		const inferredType = typeMap[ ids.charAt( 0 ) ] || 'item';
-		return Promise.resolve( {
-			json: () => Promise.resolve( {
-				entities: createWikidataEntitySingleItem( {
-					id: ids,
-					type: inferredType,
-					label: `Mock label for ${ ids }`
-				} ),
-				success: 1
-			} )
+		const entities = {};
+		entityIds.forEach( ( id ) => {
+			const inferredType = typeMap[ id.charAt( 0 ) ] || 'item';
+			const label = labelCache[ id ] || `Mock label for ${ id }`;
+			Object.assign( entities, createWikidataEntitySingleItem( { id, type: inferredType, label } ) );
 		} );
+		return Promise.resolve( { entities, success: 1 } );
 	}
 
 	if ( action === 'wbsearchentities' ) {
 		const results = generateMockSearchResults( { type, query: search, language } );
+		results.forEach( ( result ) => {
+			labelCache[ result.id ] = result.label;
+		} );
 		return Promise.resolve( {
-			json: () => Promise.resolve( {
-				searchinfo: { search },
-				search: results,
-				'search-continue': 10,
-				success: 1
-			} )
+			searchinfo: { search },
+			search: results,
+			'search-continue': 10,
+			success: 1
 		} );
 	}
 
-	return Promise.resolve( {
-		json: () => Promise.resolve( {} )
-	} );
+	return Promise.resolve( {} );
 };
 
-module.exports = wikidataMock;
+/**
+ * Resets the label cache. Call this between tests to prevent label bleed.
+ */
+const resetWikidataMock = () => {
+	Object.keys( labelCache ).forEach( ( key ) => delete labelCache[ key ] );
+};
+
+module.exports = { wikidataMock, resetWikidataMock };

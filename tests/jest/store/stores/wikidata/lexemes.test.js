@@ -334,7 +334,7 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 	} );
 
 	describe( 'Actions', () => {
-		let fetchMock;
+		let getMock;
 
 		describe( 'setLexemeData', () => {
 			it( 'stores a promise directly if data is a promise', () => {
@@ -365,11 +365,8 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 						resolve();
 					} )
 				};
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( {} )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( {} );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				// Mock the getters
 				Object.defineProperty( store, 'getUserLangCode', {
 					value: 'en'
@@ -384,7 +381,7 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 
 				store.fetchLexemes( { ids: lexemes } );
 
-				expect( fetchMock ).not.toHaveBeenCalled();
+				expect( mw.ForeignApi ).not.toHaveBeenCalled();
 			} );
 
 			it( 'calls wbgetentities API to fetch all unfetched lexemes', async () => {
@@ -396,19 +393,16 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				];
 
 				const expectedResponse = { entities: { L333333: 'this', L444444: 'that' } };
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( expectedResponse )
-				} );
+				getMock = jest.fn().mockResolvedValue( expectedResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setLexemeData = jest.fn();
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
-
-				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=L333333%7CL444444';
-				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				const promise = store.fetchLexemes( { ids: lexemes } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
+				expect( getMock ).toHaveBeenCalledWith(
+					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'L333333|L444444' },
+					{ signal: undefined }
+				);
 
 				// Save promises while request is in flight
 				expect( store.setLexemeData ).toHaveBeenCalledWith( {
@@ -455,28 +449,24 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 					'L444444'
 				];
 
-				fetchMock = jest.fn().mockRejectedValue( 'some error' );
+				getMock = jest.fn().mockRejectedValue( 'some error' );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setLexemeData = jest.fn();
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
-
-				const params = 'origin=*&action=wbgetentities&format=json&formatversion=2&languages=en&languagefallback=true&ids=L333333%7CL444444';
-				const expectedUrl = `${ Constants.WIKIDATA_BASE_URL }/w/api.php?${ params }`;
 
 				await store.fetchLexemes( { ids: lexemes } );
 
-				expect( fetchMock ).toHaveBeenCalledWith( expectedUrl, undefined );
+				expect( getMock ).toHaveBeenCalledWith(
+					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'L333333|L444444' },
+					{ signal: undefined }
+				);
 				expect( store.lexemes ).toEqual( { L111111: 'has data' } );
 			} );
 
 			it( 'removes lexeme IDs and returns data when API returns error', async () => {
 				const lexemes = [ 'L333333', 'L444444' ];
 				const errorResponse = { error: 'Some error' };
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( errorResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( errorResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setLexemeData = jest.fn();
 				store.resetLexemeData = jest.fn();
 
@@ -493,11 +483,8 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 						L444444: { title: 'Lexeme:L444444', forms: [], lemmas: {} }
 					}
 				};
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( apiResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( apiResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setLexemeData = jest.fn();
 				store.resetLexemeData = jest.fn();
 
@@ -517,11 +504,8 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 						L333333: undefined
 					}
 				};
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( apiResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( apiResponse );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				store.setLexemeData = jest.fn();
 
 				await store.fetchLexemes( { ids: lexemes } );
@@ -597,16 +581,8 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				store.senses = {};
 				store.lexemes.L333333 = lexemeData;
 				store.items.Q123 = itemDataWithLabelAndDescription;
-				const apiResponse = {
-					entities: {
-						L333333: lexemeData
-					}
-				};
-				fetchMock = jest.fn().mockResolvedValue( {
-					json: jest.fn().mockReturnValue( apiResponse )
-				} );
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins
-				global.fetch = fetchMock;
+				getMock = jest.fn().mockResolvedValue( {} );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				Object.defineProperty( store, 'getUserLangCode', {
 					value: 'en'
 				} );

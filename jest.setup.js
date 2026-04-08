@@ -40,6 +40,9 @@ global.toQueryParam = function ( param ) {
 function Api() {}
 Api.prototype.get = jest.fn().mockReturnValue( $.Deferred().resolve().promise() );
 
+function ForeignApi() {}
+ForeignApi.prototype.get = jest.fn().mockReturnValue( $.Deferred().resolve().promise() );
+
 class Title {
 	constructor( page ) {
 		this.page = page;
@@ -116,6 +119,7 @@ class Mocki18n {
 // Mock MW object
 global.mw = {
 	Api: Api,
+	ForeignApi: ForeignApi,
 	config: {
 		get: jest.fn( ( endpoint ) => {
 			switch ( endpoint ) {
