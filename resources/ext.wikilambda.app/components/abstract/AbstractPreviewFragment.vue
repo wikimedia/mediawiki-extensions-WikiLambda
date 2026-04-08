@@ -110,16 +110,20 @@ module.exports = exports = defineComponent( {
 		 * Renders the preview of the given fragment for the
 		 * current preview language: qid, language and today's date
 		 *
-		 * @param {boolean} isBulk
+		 * @param {boolean} isInitialMount Whether this is the watch-triggered initial
+		 *   mount render (true) or a user-triggered re-render such as a dirty-flag
+		 *   retry (false). The initial mount uses the backend's async path (pending
+		 *   + client polling); user-triggered re-renders use the sync path (a
+		 *   blocking call to the orchestrator).
 		 */
-		function renderPreview( isBulk = false ) {
+		function renderPreview( isInitialMount = false ) {
 			store.renderFragmentPreview( {
 				keyPath: props.keyPath,
 				fragment: props.fragment,
 				qid: store.getAbstractWikiId,
 				date: dateForToday.value,
 				language: store.getPreviewLanguageZid,
-				isAsync: isBulk
+				isAsync: isInitialMount
 			} );
 		}
 
