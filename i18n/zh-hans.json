@@ -29,7 +29,8 @@
 			"落花有意12138",
 			"Anterdc99",
 			"Pawsdt",
-			"Peterxy12"
+			"Peterxy12",
+			"Winston Sung"
 		]
 	},
 	"wikilambda-desc": "提供在中央wiki上编写、管理和运行的函数。",
@@ -472,8 +473,8 @@
 	"wikilambda-wikidata-entity-selector-placeholder": "选择维基数据实体",
 	"wikilambda-wikidata-item-selector-placeholder": "选择维基数据项目",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "选择维基数据词位形式",
-	"wikilambda-wikifunctionswiki-sidebar-createfunction": "创建一个函数",
-	"wikilambda-wikifunctionswiki-sidebar-createobject": "创建一个对象",
+	"wikilambda-wikifunctionswiki-sidebar-createfunction": "创建函数",
+	"wikilambda-wikifunctionswiki-sidebar-createobject": "创建对象",
 	"wikilambda-wikifunctionswiki-sidebar-functioncatalogue": "函数目录",
 	"wikilambda-wikifunctionswiki-sidebar-projectchat": "互助客栈",
 	"wikilambda-wikifunctionswiki-sidebar-projectstatus": "当前状态",

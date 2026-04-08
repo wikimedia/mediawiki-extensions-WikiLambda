@@ -7,6 +7,12 @@
 			"JeffreyKim"
 		]
 	},
+	"wikilambda-desc": "提供喺中央維基上撰寫、管理同執行函數嘅功能。",
+	"action-wikifunctions-run": "喺公開API執行函數",
+	"action-wikilambda-bypass-cache": "使用特殊內部權限切換$bypassCache標誌",
+	"action-wikilambda-connect-implementation": "將實現連接到對應函數，以便可以執行",
+	"action-wikilambda-connect-tester": "將測試案例連接到對應函數",
+	"action-wikilambda-create": "建立新物件",
 	"wikilambda-cancel": "取消",
 	"wikilambda-function-viewer-aliases-hide-language-button": "顯示少啲語言",
 	"wikilambda-functioncall-metadata-errors-none": "冇",
