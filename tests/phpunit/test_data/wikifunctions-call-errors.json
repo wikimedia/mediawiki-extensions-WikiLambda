@@ -245,6 +245,18 @@
 		}
 	},
 	{
+		"description": "Returns simple argument count mismatch for {{#function:Z801}}",
+		"request": {
+			"target": "Z801",
+			"arguments": {},
+			"renderLang": "en",
+			"parseLang": "en"
+		},
+		"status": 400,
+		"error": "wikilambda-functioncall-error-bad-inputs",
+		"body": {}
+	},
+	{
 		"description": "Returns not implemented for input type {{#function:Z14329|en}}",
 		"request": {
 			"target": "Z14329",

@@ -85,14 +85,10 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 		$clientCacheKey = $this->params['clientCacheKey'];
 
-		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
-		$targetFunction = $request['target'];
-		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
-		$arguments = $request['arguments'];
-		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
-		$parseLang = $request['parseLang'];
-		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
-		$renderLang = $request['renderLang'];
+		$targetFunction = $request['target'] ?? '';
+		$arguments = $request['arguments'] ?? [];
+		$parseLang = $request['parseLang'] ?? '';
+		$renderLang = $request['renderLang'] ?? '';
 
 		try {
 			$output = $this->remoteCall( $targetFunction, $arguments, $parseLang, $renderLang );
@@ -184,6 +180,19 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		string $parseLanguageCode,
 		string $renderLanguageCode
 	): array {
+		if ( count( $arguments ) === 0 ) {
+			// We structurally cannot support calls without arguments (the REST API errors about the arguments key being
+			// unset); instead of spending resources and worrying the developers, throw specifically
+
+			// Triggers use of messages:
+			// * wikilambda-functioncall-error-bad-inputs-category
+			// * wikilambda-functioncall-error-bad-inputs-category-desc
+			throw new WikifunctionCallException(
+				'wikilambda-functioncall-error-bad-inputs',
+				HttpStatus::BAD_REQUEST
+			);
+		}
+
 		$request = $this->buildRequest( $target, $arguments, $parseLanguageCode, $renderLanguageCode );
 
 		$responseStatus = $request->execute();
