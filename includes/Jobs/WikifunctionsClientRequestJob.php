@@ -37,11 +37,17 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
+	private string $targetFunction;
+	private array $functionArguments;
+	private string $parseLang;
+	private string $renderLang;
+	private string $clientCacheKey;
+
 	/**
 	 * @inheritDoc
 	 */
 	public function __construct( array $params ) {
-		// This job, triggered the Parsoid callback for rendering a function,
+		// This job, triggered by the Parsoid callback for rendering a function,
 		// tries to make a network request for the content.
 
 		parent::__construct( 'wikifunctionsClientRequest', $params );
@@ -51,13 +57,21 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		$this->config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->httpRequestFactory = MediaWikiServices::getInstance()->getHttpRequestFactory();
 
-		$this->params = $params;
+		// These are the user input from the wikitext, as relayed from Parsoid
+		$this->targetFunction = $params['request']['target'] ?? '';
+		$this->functionArguments = $params['request']['arguments'] ?? [];
+		$this->parseLang = $params['request']['parseLang'] ?? '';
+		$this->renderLang = $params['request']['renderLang'] ?? '';
+
+		// This comes from our fragment handler
+		$this->clientCacheKey = $params['clientCacheKey'];
 
 		$this->logger->debug(
-			__CLASS__ . ' created for {targetZObject} — {params}',
+			__CLASS__ . ' created for {target} with {params}; to store as key {key}',
 			[
-				'targetZObject' => $params['request']['target'],
-				'params' => var_export( $params['request']['arguments'], true ),
+				'target' => $this->targetFunction,
+				'params' => var_export( $this->functionArguments, true ),
+				'key' => $this->clientCacheKey
 			]
 		);
 	}
@@ -73,29 +87,16 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	 * @return bool
 	 */
 	public function run() {
-		$request = $this->params['request'];
-
-		$this->logger->debug(
-			__CLASS__ . ' initiated for {targetZObject}',
-			[
-				// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
-				'targetZObject' => $request['target']
-			]
-		);
-
-		$clientCacheKey = $this->params['clientCacheKey'];
-
-		$targetFunction = $request['target'] ?? '';
-		$arguments = $request['arguments'] ?? [];
-		$parseLang = $request['parseLang'] ?? '';
-		$renderLang = $request['renderLang'] ?? '';
+		$this->logger->debug( __CLASS__ . ' initiated for {target}', [ 'target' => $this->targetFunction ] );
 
 		try {
-			$output = $this->remoteCall( $targetFunction, $arguments, $parseLang, $renderLang );
+			$output = $this->remoteCall(
+				$this->targetFunction, $this->functionArguments, $this->parseLang, $this->renderLang
+			);
 			// We don't actually use the return value immediately, we rely on Parsoid to re-trigger the request
 			// and so use the cached value, so we just set() it.
 			$this->objectCache->set(
-				$clientCacheKey,
+				$this->clientCacheKey,
 				[
 					'success' => true,
 					'value' => $output['value'],
@@ -105,12 +106,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				$this->objectCache::TTL_MONTH
 			);
 
-			$this->logger->debug(
-				__CLASS__ . ' success for {targetZObject}',
-				[
-					'targetZObject' => $targetFunction
-				]
-			);
+			$this->logger->debug( __CLASS__ . ' success for {target}', [ 'target' => $this->targetFunction ] );
 			return true;
 		} catch ( WikifunctionCallException $callException ) {
 			// WikifunctionCallException: we know details of the error
@@ -145,7 +141,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			$this->objectCache::TTL_WEEK;
 
 		$this->objectCache->set(
-			$clientCacheKey,
+			$this->clientCacheKey,
 			[
 				'success' => false,
 				'errorMessageKey' => $errorMessageKey,
@@ -154,10 +150,10 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		);
 
 		$this->logger->debug(
-			__CLASS__ . ' failure for {targetZObject}, error: {errorMessageKey}',
+			__CLASS__ . ' failure for {target}, error: {errorMessageKey}',
 			[
-				'errorMessageKey' => $errorMessageKey,
-				'targetZObject' => $targetFunction
+				'target' => $this->targetFunction,
+				'errorMessageKey' => $errorMessageKey
 			]
 		);
 
