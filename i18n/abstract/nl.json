@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"JhowieNitnek"
+			"JhowieNitnek",
+			"Siebrand"
 		]
 	},
 	"action-wikilambda-abstract-create": "maak nieuwe Abstracte artikelen aan",
@@ -12,5 +13,42 @@
 	"specialpages-group-abstractwiki": "Abstracte Wikipedia-pagina's",
 	"wikilambda-abstract-content-object": "Abstract Artikel",
 	"wikilambda-abstract-edit-title": "Bewerk Abstract Artikel voor $1",
-	"wikilambda-abstract-error-bad-fragments-type": "Het gedeelte met de sleutel ‘$1’ bevat een foutief getypte fragmentenlijst."
+	"wikilambda-abstract-error-bad-fragments-type": "Het gedeelte met de sleutel ‘$1’ bevat een foutief getypte fragmentenlijst.",
+	"wikilambda-abstract-error-bad-qid": "De waarde van de eigenschap 'qid' ('$1') is geen geldige Wikidata Item Qid.",
+	"wikilambda-abstract-error-bad-section-content": "Het gedeelte met sleutel '$1' bevat ongeldige inhoud.",
+	"wikilambda-abstract-error-bad-section-index": "Het gedeelte met sleutel '$1' heeft een ongeldig indexnummer ('$2').",
+	"wikilambda-abstract-error-bad-section-qid": "De gedeeltesleutel '$1' is geen geldige Wikidata Item Qid.",
+	"wikilambda-abstract-error-invalid-content": "De aangeleverde inhoud is geen geldig Abstract Article.",
+	"wikilambda-abstract-error-invalid-json": "Het Abstract Article is geen geldig JSON-bestand.",
+	"wikilambda-abstract-error-invalid-title": "De opgegeven titel '$1' is niet geldig voor een Abstract Article.",
+	"wikilambda-abstract-error-missing-lede-section": "Het Abstract Article-object moet een inleidingsgedeelte hebben (Q8776414).",
+	"wikilambda-abstract-error-missing-section-fragments": "Het gedeelte met sleutel '$1' bevat geen fragmenten.",
+	"wikilambda-abstract-error-missing-sections": "Het Abstract Article moet minstens één gedeelte bevatten.",
+	"wikilambda-abstract-error-unmatching-qid": "De waarde van de eigenschap 'qid' ('$1') komt niet overeen met de paginatitel '$2'",
+	"wikilambda-abstract-fragment-actions-menu": "Handelingenmenu van het fragment",
+	"wikilambda-abstract-menu-fragments-accessible-label": "Menu voor het selecteren en toevoegen van een nieuw fragment",
+	"wikilambda-abstract-menu-group-basic-fragments": "Basisfragmenthandelingen",
+	"wikilambda-abstract-menu-group-insert-fragments": "Fragmenten invoegen",
+	"wikilambda-abstract-menu-group-move-fragments": "Fragmenten verplaatsen",
+	"wikilambda-abstract-menu-group-special-fragments": "Speciale fragmenthandelingen",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "Leeg fragment toevoegen",
+	"wikilambda-abstract-menu-option-add-named-fragment": "$1 toevoegen",
+	"wikilambda-abstract-menu-option-add-section": "Gedeelte toevoegen",
+	"wikilambda-abstract-menu-option-delete-fragment": "Fragment verwijderen",
+	"wikilambda-abstract-menu-option-insert-after": "Fragment invoegen na",
+	"wikilambda-abstract-menu-option-insert-before": "Fragment invoegen vóór",
+	"wikilambda-abstract-menu-option-move-after": "Fragment verplaatsen na",
+	"wikilambda-abstract-menu-option-move-before": "Fragment verplaatsen vóór",
+	"wikilambda-abstract-preview-fragment-max-retries": "Het maximale aantal pogingen is bereikt. Probeer het later opnieuw.",
+	"wikilambda-abstract-preview-fragment-retry": "Opnieuw proberen",
+	"wikilambda-abstract-preview-in-language": "Gegenereerde tekst",
+	"wikilambda-abstract-special-create": "Nieuw Abstract Article maken",
+	"wikilambda-abstract-special-create-createbutton-label": "Aanmaken",
+	"wikilambda-abstract-special-create-existing": "Er bestaat al een Abstract Article voor dat Wikidata Item:",
+	"wikilambda-abstract-special-create-existing-redirected": "U bent doorgestuurd omdat er al een Abstract Article bestaat.",
+	"wikilambda-abstract-special-create-intro": "Zorg ervoor dat u het [[$1|communitybeleid]] volgt, inclusief de auteursrechtenregels.",
+	"wikilambda-abstract-special-create-not-enabled": "Het maken van Abstract Articles is momenteel niet mogelijk. Kom later nog eens terug.",
+	"wikilambda-abstract-special-create-not-enabled-title": "Het aanmaken van een Abstract Article is niet mogelijk",
+	"wikilambda-abstract-special-create-qid": "Nieuw Abstract Article maken voor $1",
+	"wikilambda-abstract-special-view": "Een Abstract Article bekijken"
 }

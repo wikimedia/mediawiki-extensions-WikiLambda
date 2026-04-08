@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Repakr"
+		]
+	},
+	"wikilambda-fragment-pending": "⏳ Функція викликається…",
+	"wikilambda-recentchanges-edit-letter": "Ф",
+	"wikilambda-recentchanges-entry-function": "Функція",
+	"wikilambda-visualeditor-wikifunctionscall-back": "Назад",
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Завантаження",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-enum-selector-placeholder": "Виберіть варіант",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-function-link-footer": "[[f:$1|Функція]] з Вікіфункцій",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "Читати менше",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "Читати більше",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Результати",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "Введіть текст",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Пропоновані функції",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-title": "[[f:Special:CreateObject|Створити функцію]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-title": "[[f:Special:ListObjectsByType|Переглянути всі функції]]",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Будь ласка, введіть значення.",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Невудома помилка. [[f:Talk:$1|Повідомити про проблему]]",
+	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Недійсна лексема Вікіданих.",
+	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-property": "Недійсна властивість Вікіданих.",
+	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-item": "Недійсний елемент Вікіданих.",
+	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme-form": "Недійсна форма лексеми Вікіданих.",
+	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Завантаження даних Функції",
+	"wikilambda-visualeditor-wikifunctionscall-error": "Помилка вмісту",
+	"wikilambda-visualeditor-wikifunctionscall-title": "Функція",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Попередній перегляд",
+	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Введіть значення для попереднього перегляду результату.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Функція не може відобразити результат. Будь ласка, спробуйте пізніше.",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Скасовано",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Скинути",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Скасувати"
+}
