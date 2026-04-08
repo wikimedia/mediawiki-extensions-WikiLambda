@@ -18,8 +18,10 @@ const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 const DEBOUNCE_FRAGMENT_DIRTY_TIMEOUT = 2000;
 /* Time (ms) between processing jobs in the queue */
 const FRAGMENT_QUEUE_TIMEOUT = 2000;
-/* Pause time (ms) before enqueing a job for retry */
-const ENQUEUE_FRAGMENT_JOB_TIMEOUT = 100;
+/* Initial delay (ms) before the first retry; subsequent retries use exponential backoff */
+const INITIAL_RETRY_DELAY = 2000;
+/* Multiplier applied to the retry delay between successive retries */
+const RETRY_BACKOFF_FACTOR = 2;
 /* Maximum times to try each fragment */
 const MAX_FRAGMENT_RETRIES = 3;
 
@@ -349,10 +351,15 @@ const abstractWikiStore = {
 						return;
 					}
 
-					// Else, queue retry
+					// Else, queue retry with exponential backoff to avoid stampeding
+					// the server. retryCount has just been incremented, so the first
+					// retry (retryCount === 1) waits INITIAL_RETRY_DELAY, the second
+					// waits INITIAL_RETRY_DELAY * RETRY_BACKOFF_FACTOR, and so on.
+					const backoffDelay = INITIAL_RETRY_DELAY *
+						Math.pow( RETRY_BACKOFF_FACTOR, fragmentStatus.retryCount - 1 );
 					setTimeout( () => {
 						this.enqueueFragmentPreview( job );
-					}, ENQUEUE_FRAGMENT_JOB_TIMEOUT );
+					}, backoffDelay );
 
 				} else {
 					// Received done fragment!

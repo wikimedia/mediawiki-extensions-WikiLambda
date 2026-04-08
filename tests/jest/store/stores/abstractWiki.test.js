@@ -593,8 +593,9 @@ describe( 'abstractWiki Pinia store', () => {
 				// Assert that the retryCount has increased
 				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 1 );
 
-				// Assert that a job has been enqueued
-				jest.advanceTimersByTime( 300 );
+				// Assert that a job has been enqueued after the first-retry backoff
+				// delay (INITIAL_RETRY_DELAY = 2000ms for retryCount === 1).
+				jest.advanceTimersByTime( 2100 );
 				expect( store.enqueueFragmentPreview ).toHaveBeenCalledTimes( 1 );
 
 				// Assert that the job enqueued is the one passed as input
@@ -604,14 +605,15 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'runs render fragment and stops if fragment pending but reached max retries', async () => {
-				// MAX_FRAGMENT_RETRIES = 30
-				store.fragments[ keyPath ][ mockLang ].retryCount = 29;
+				// MAX_FRAGMENT_RETRIES = 3, so seed retryCount at MAX - 1 so that
+				// the next pending response trips the max-retries branch.
+				store.fragments[ keyPath ][ mockLang ].retryCount = 2;
 
 				getMock = jest.fn().mockResolvedValue( {
 					abstractwiki_run_fragment: { success: true, pending: true }
 				} );
 
-				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 29 );
+				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 2 );
 
 				await store.requestFragmentPreview( payload, retryJob );
 
@@ -626,8 +628,8 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
-				// Assert that the retryCount has increased
-				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 30 );
+				// Assert that the retryCount has increased to MAX_FRAGMENT_RETRIES
+				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 3 );
 
 				// Assert that final preview has been set
 				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
