@@ -30,7 +30,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 	public const ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX = 'WikiLambdaAbstractFragment';
 
-	private JobQueueGroup $jobQueueGroup;
 	private AbstractWikiRequest $abstractWikiRequest;
 	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
@@ -38,12 +37,11 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
-		JobQueueGroup $jobQueueGroup,
+		private readonly JobQueueGroup $jobQueueGroup,
 		AbstractWikiRequest $abstractWikiRequest
 	) {
 		parent::__construct( $mainModule, $moduleName, 'abstractwiki_run_fragment_' );
 
-		$this->jobQueueGroup = $jobQueueGroup;
 		$this->abstractWikiRequest = $abstractWikiRequest;
 
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
