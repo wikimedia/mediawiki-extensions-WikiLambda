@@ -373,7 +373,7 @@
 	"wikilambda-mode-selector-types-group-label": "शाब्दिक और समाधानकर्ता",
 	"wikilambda-mode-selector-move-group-label": "प्रविष्टियों को सूची में ऊपर या नीचे ले जाएँ",
 	"wikilambda-mode-selector-delete-group-label": "प्रविष्टि को सूची से हटाएँ",
-	"wikilambda-mode-selector-local-key-group-label": "फ़ंक्शन कॉल की लोकल कुँजियाँ",
+	"wikilambda-mode-selector-local-key-group-label": "फ़ंक्शन कॉल की स्थानीय कुँजियाँ",
 	"wikilambda-move-after-list-item": "बाद में लगाएँ",
 	"wikilambda-move-before-list-item": "पहले लगाएँ",
 	"wikilambda-multilingualstring-nofallback": "इस भाषा या फिर स्वीकृत फ़ॉलबैक्स में कोई लेबल परिभाषित नहीं",
