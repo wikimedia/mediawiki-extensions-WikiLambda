@@ -5,8 +5,8 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-app-object-to-string">
-		<div class="ext-wikilambda-app-object-to-string ext-wikilambda-app-object-to-string__parent">
+	<span class="ext-wikilambda-app-object-to-string">
+		<span class="ext-wikilambda-app-object-to-string ext-wikilambda-app-object-to-string__parent">
 			<span :class="classNames">
 				<cdx-icon
 					v-if="icon"
@@ -46,11 +46,12 @@
 					>{{ textValue }}</span><!--
 				--></template>
 			</span>
-		</div><!-- Children
+		</span><!-- Children
 		--><span
 			v-if="childKeys.length"
 			class="ext-wikilambda-app-object-to-string__children">
-				&nbsp;<span class="ext-wikilambda-app-object-to-string__divider">(</span
+				<span class="ext-wikilambda-app-object-to-string__space-separator"> </span
+				><span class="ext-wikilambda-app-object-to-string__divider">(</span
 				><span>
 				<template
 					v-for="( childKey, index ) in childKeys"
@@ -66,11 +67,11 @@
 					><span
 						v-if="hasComma( index )"
 						class="ext-wikilambda-app-object-to-string__divider"
-						>,&nbsp;</span>
+						>, </span>
 				</template>
 				</span><span class="ext-wikilambda-app-object-to-string__divider">)</span>
 		</span>
-	</div>
+	</span>
 </template>
 
 <script>
@@ -653,17 +654,16 @@ module.exports = exports = defineComponent( {
 	display: inline;
 
 	.ext-wikilambda-app-object-to-string__child {
-		white-space: normal;
-		word-break: break-word;
-	}
-
-	.ext-wikilambda-app-object-to-string__children {
-		white-space: nowrap;
+		overflow-wrap: anywhere;
 	}
 
 	.ext-wikilambda-app-object-to-string__divider {
 		color: @color-subtle;
 		white-space: nowrap;
+	}
+
+	.ext-wikilambda-app-object-to-string__space-separator {
+		white-space: pre;
 	}
 
 	.ext-wikilambda-app-object-to-string__blank {
