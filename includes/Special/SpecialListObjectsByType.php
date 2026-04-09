@@ -23,7 +23,6 @@ use MediaWiki\User\User;
 
 class SpecialListObjectsByType extends SpecialPage {
 
-	private LanguageFallback $languageFallback;
 	private ZLangRegistry $langRegistry;
 
 	/**
@@ -32,11 +31,10 @@ class SpecialListObjectsByType extends SpecialPage {
 	 */
 	public function __construct(
 		private readonly ZObjectStore $zObjectStore,
-		LanguageFallback $languageFallback
+		private readonly LanguageFallback $languageFallback
 	) {
 		parent::__construct( 'ListObjectsByType' );
 
-		$this->languageFallback = $languageFallback;
 		$this->langRegistry = ZLangRegistry::singleton();
 	}
 

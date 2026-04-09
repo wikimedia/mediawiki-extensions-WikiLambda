@@ -24,7 +24,6 @@ use MediaWiki\User\User;
 
 class SpecialListMissingLabels extends SpecialPage {
 
-	private LanguageFallback $languageFallback;
 	private ZLangRegistry $langRegistry;
 
 	/**
@@ -33,11 +32,10 @@ class SpecialListMissingLabels extends SpecialPage {
 	 */
 	public function __construct(
 		private readonly ZObjectStore $zObjectStore,
-		LanguageFallback $languageFallback
+		private readonly LanguageFallback $languageFallback
 	) {
 		parent::__construct( 'ListMissingLabels' );
 
-		$this->languageFallback = $languageFallback;
 		$this->langRegistry = ZLangRegistry::singleton();
 	}
 

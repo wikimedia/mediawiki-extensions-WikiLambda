@@ -20,7 +20,6 @@ use MediaWiki\User\User;
 
 class SpecialListFunctionsByTests extends SpecialPage {
 
-	private LanguageFallback $languageFallback;
 	private ZLangRegistry $langRegistry;
 
 	/**
@@ -29,11 +28,10 @@ class SpecialListFunctionsByTests extends SpecialPage {
 	 */
 	public function __construct(
 		private readonly ZObjectStore $zObjectStore,
-		LanguageFallback $languageFallback
+		private readonly LanguageFallback $languageFallback
 	) {
 		parent::__construct( 'ListFunctionsByTests' );
 
-		$this->languageFallback = $languageFallback;
 		$this->langRegistry = ZLangRegistry::singleton();
 	}
 
