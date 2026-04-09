@@ -34,18 +34,16 @@ class PageEditingHandler implements
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook
 {
-	private Config $config;
 	private IReadableDatabase $dbr;
 
 	private LoggerInterface $logger;
 
 	public function __construct(
-		Config $config,
+		private readonly Config $config,
 		IConnectionProvider $dbProvider,
 		private readonly ZObjectStore $zObjectStore
 
 	) {
-		$this->config = $config;
 		$this->dbr = $dbProvider->getReplicaDatabase();
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );

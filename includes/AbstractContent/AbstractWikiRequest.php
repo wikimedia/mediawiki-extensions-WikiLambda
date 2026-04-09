@@ -24,13 +24,14 @@ use Psr\Log\LoggerInterface;
 
 class AbstractWikiRequest {
 
-	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
 	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
-	public function __construct( Config $config, HttpRequestFactory $httpRequestFactory ) {
-		$this->config = $config;
+	public function __construct(
+		private readonly Config $config,
+		HttpRequestFactory $httpRequestFactory
+	) {
 		$this->httpRequestFactory = $httpRequestFactory;
 
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();

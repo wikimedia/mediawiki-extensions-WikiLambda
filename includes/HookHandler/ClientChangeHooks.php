@@ -43,7 +43,6 @@ class ClientChangeHooks implements
 {
 	private UserOptionsLookup $userOptionsLookup;
 	private IConnectionProvider $dbProvider;
-	private Config $config;
 	private LinkRenderer $linkRenderer;
 
 	private LoggerInterface $logger;
@@ -53,12 +52,11 @@ class ClientChangeHooks implements
 	public function __construct(
 		UserOptionsLookup $userOptionsLookup,
 		IConnectionProvider $dbProvider,
-		Config $config,
+		private readonly Config $config,
 		LinkRenderer $linkRenderer
 	) {
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->dbProvider = $dbProvider;
-		$this->config = $config;
 		$this->linkRenderer = $linkRenderer;
 
 		$this->showWikifunctionsChanges = $this->config->get( 'WikiLambdaClientDefaultShowChanges' );

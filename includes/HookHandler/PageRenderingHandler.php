@@ -46,19 +46,17 @@ class PageRenderingHandler implements
 	\MediaWiki\Specials\Hook\SpecialStatsAddExtraHook,
 	\MediaWiki\Skin\Hook\SkinPageReadyConfigHook
 {
-	private Config $config;
 	private UserOptionsLookup $userOptionsLookup;
 	private LanguageNameUtils $languageNameUtils;
 	private LanguageFactory $languageFactory;
 
 	public function __construct(
-		Config $config,
+		private readonly Config $config,
 		UserOptionsLookup $userOptionsLookup,
 		LanguageNameUtils $languageNameUtils,
 		LanguageFactory $languageFactory,
 		private readonly ZObjectStore $zObjectStore
 	) {
-		$this->config = $config;
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->languageNameUtils = $languageNameUtils;
 		$this->languageFactory = $languageFactory;

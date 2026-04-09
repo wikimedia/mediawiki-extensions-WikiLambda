@@ -37,7 +37,6 @@ use Wikimedia\Stats\Metrics\TimingMetric;
 
 class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
-	private Config $config;
 	private JobQueueGroup $jobQueueGroup;
 	private HttpRequestFactory $httpRequestFactory;
 
@@ -52,11 +51,10 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	private $statsFactoryTimer;
 
 	public function __construct(
-		Config $config,
+		private readonly Config $config,
 		JobQueueGroup $jobQueueGroup,
 		HttpRequestFactory $httpRequestFactory
 	) {
-		$this->config = $config;
 		$this->jobQueueGroup = $jobQueueGroup;
 		$this->httpRequestFactory = $httpRequestFactory;
 

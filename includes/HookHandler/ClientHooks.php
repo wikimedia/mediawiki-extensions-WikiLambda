@@ -30,15 +30,11 @@ class ClientHooks implements
 	\MediaWiki\ResourceLoader\Hook\ResourceLoaderRegisterModulesHook,
 	\MediaWiki\Output\Hook\MakeGlobalVariablesScriptHook
 {
-	private Config $config;
-
 	private LoggerInterface $logger;
 
 	public function __construct(
-		Config $config
+		private readonly Config $config
 	) {
-		$this->config = $config;
-
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 	}

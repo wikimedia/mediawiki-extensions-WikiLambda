@@ -41,8 +41,6 @@ use StatusValue;
 class ZObjectContentHandler extends ContentHandler {
 	use ZObjectEditingPageTrait;
 
-	private Config $config;
-
 	/**
 	 * @param string $modelId
 	 * @param Config $config
@@ -51,15 +49,13 @@ class ZObjectContentHandler extends ContentHandler {
 	 */
 	public function __construct(
 		$modelId,
-		$config,
+		private readonly Config $config,
 		private readonly ZObjectStore $zObjectStore,
 		private readonly MemcachedWrapper $zObjectCache
 	) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
 		}
-
-		$this->config = $config;
 
 		// Triggers use of message content-model-zobject
 		parent::__construct( CONTENT_MODEL_ZOBJECT, [ CONTENT_FORMAT_TEXT ] );
