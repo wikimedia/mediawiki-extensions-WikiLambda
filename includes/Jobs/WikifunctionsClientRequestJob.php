@@ -83,6 +83,14 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		return true;
 	}
 
+	/** @inheritDoc */
+	public function getDeduplicationInfo() {
+		return [
+			'type' => 'wikifunctionsClientRequest',
+			'clientCacheKey' => $this->clientCacheKey,
+		];
+	}
+
 	/**
 	 * @return bool
 	 */
