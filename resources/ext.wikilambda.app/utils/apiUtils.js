@@ -364,12 +364,16 @@ const apiUtils = {
 		if ( payload.searchContinue ) {
 			params.continue = payload.searchContinue;
 		}
-		return api.get( params, {
-			signal: payload.signal
-		} ).then( ( data ) => ( {
-			search: data.search ? data.search : [],
-			searchContinue: data[ 'search-continue' ] ? Number( data[ 'search-continue' ] ) : null
-		} ) );
+		return new Promise( ( resolve, reject ) => {
+			api.get( params, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => resolve( {
+					search: data.search ? data.search : [],
+					searchContinue: data[ 'search-continue' ] ? Number( data[ 'search-continue' ] ) : null
+				} ) )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
 	},
 
 	/**
@@ -384,15 +388,19 @@ const apiUtils = {
 	 */
 	fetchWikidataEntities: function ( payload ) {
 		const api = apiUtils.newWikidataApi();
-		return api.get( {
-			action: 'wbgetentities',
-			format: 'json',
-			formatversion: '2',
-			languages: payload.language,
-			languagefallback: true,
-			ids: payload.ids
-		}, {
-			signal: payload.signal
+		return new Promise( ( resolve, reject ) => {
+			api.get( {
+				action: 'wbgetentities',
+				format: 'json',
+				formatversion: '2',
+				languages: payload.language,
+				languagefallback: true,
+				ids: payload.ids
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => resolve( data ) )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );
 	},
 
