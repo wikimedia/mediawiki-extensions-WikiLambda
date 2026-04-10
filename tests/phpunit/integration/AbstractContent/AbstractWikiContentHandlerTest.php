@@ -11,6 +11,11 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use InvalidArgumentException;
 use MediaWiki\Content\Renderer\ContentParseParams;
+use MediaWiki\Content\ValidationParams;
+use MediaWiki\Content\WikitextContent;
+use MediaWiki\Exception\MWContentSerializationException;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Json\FormatJson;
@@ -18,6 +23,7 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Title\Title;
 
 /**
+ * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent
  * @group Database
  */
@@ -103,6 +109,112 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( AbstractWikiContent::class, $testObject );
 	}
 
+	public function testUnserializeContent_invalidJson() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$this->expectException( MWContentSerializationException::class );
+		$handler->unserializeContent( "{'invalid': JSON]" );
+	}
+
+	public function testSerializeContent_wrongContentType() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$wikitextContent = new WikitextContent( 'Hello world' );
+
+		$this->assertSame( '', $handler->serializeContent( $wikitextContent ) );
+	}
+
+	public function testValidateSave_valid() {
+		$handler = $this->buildAbstractWikiContentHandler();
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+
+		$content = new AbstractWikiContent(
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
+		);
+
+		$validationParams = new ValidationParams( $title->toPageIdentity(), 0 );
+		$status = $handler->validateSave( $content, $validationParams );
+
+		$this->assertTrue( $status->isGood() );
+	}
+
+	public function testValidateSave_wrongQid() {
+		$handler = $this->buildAbstractWikiContentHandler();
+		// Title says Q29 but content says Q42
+		$title = Title::newFromText( 'Q29', self::TEST_ABSTRACT_NS );
+
+		$content = new AbstractWikiContent(
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
+		);
+
+		$validationParams = new ValidationParams( $title->toPageIdentity(), 0 );
+		$status = $handler->validateSave( $content, $validationParams );
+
+		$this->assertFalse( $status->isGood() );
+	}
+
+	public function testSupportsDirectEditing() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$this->assertTrue( $handler->supportsDirectEditing() );
+	}
+
+	public function testGenerateHTMLOnEdit() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$this->assertFalse( $handler->generateHTMLOnEdit() );
+	}
+
+	public function testGetActionOverrides() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$overrides = $handler->getActionOverrides();
+
+		$this->assertSame( AbstractContentEditAction::class, $overrides[ 'edit' ] );
+		$this->assertSame( AbstractContentHistoryAction::class, $overrides[ 'history' ] );
+	}
+
+	public function testFillParserOutput_invalidContent() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		// Content with no sections is invalid
+		$content = new AbstractWikiContent( '{"qid":"Q42"}' );
+
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+
+		$params = $this->createMock( ContentParseParams::class );
+		$params->method( 'getGenerateHtml' )->willReturn( true );
+		$params->method( 'getPage' )->willReturn( $title->toPageReference() );
+
+		$output = new ParserOutput();
+
+		$this->runPrivateMethod( $handler, 'fillParserOutput', [ $content, $params, &$output ] );
+
+		// Should show error message, not the Vue app
+		$this->assertStringContainsString( 'ext-wikilambda-view-invalidcontent', $output->getRawText() );
+		$this->assertStringNotContainsString( 'ext-wikilambda-app', $output->getRawText() );
+	}
+
+	public function testFillParserOutput_noHtmlGeneration() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$jsonContent = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$content = $handler->makeContent( $jsonContent, null, CONTENT_MODEL_ABSTRACT );
+
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+
+		$params = $this->createMock( ContentParseParams::class );
+		$params->method( 'getGenerateHtml' )->willReturn( false );
+		$params->method( 'getPage' )->willReturn( $title->toPageReference() );
+
+		$output = new ParserOutput();
+
+		$this->runPrivateMethod( $handler, 'fillParserOutput', [ $content, $params, &$output ] );
+
+		// Should produce empty output (no Vue app will load)
+		$this->assertSame( '', $output->getRawText() );
+	}
+
 	public function testFillParserOutput() {
 		$handler = $this->buildAbstractWikiContentHandler();
 
@@ -119,7 +231,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$this->runPrivateMethod( $handler, 'fillParserOutput', [ $content, $params, &$output ] );
 
-		// Output contains div id="ext-wikilambda-app"
+		// Output contains div id="ext-wikilambda-app" (where the Vue app will load)
 		$this->assertStringContainsString( 'id="ext-wikilambda-app"', $output->getRawText() );
 
 		// Output has the appropriate config vars
