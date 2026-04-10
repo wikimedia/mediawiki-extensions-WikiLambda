@@ -55,7 +55,7 @@ class AbstractWikiRequest {
 		string $cacheKeyFresh,
 		string $cacheKeyStale
 	): array {
-		$cachedValue = [];
+		$valueToCache = [];
 		// Set initial TTL, for successful renders or 400/bad requests:
 		// * fresh value for at least 48 hours to ensure availability through timezones
 		// * stale value for a month
@@ -73,37 +73,69 @@ class AbstractWikiRequest {
 			);
 
 			// 3. Cache sucessful sanitized fragment preview
-			$cachedValue[ 'success' ] = true;
-			$cachedValue[ 'value' ] = $sanitizedHtml;
+			$valueToCache[ 'success' ] = true;
+			$valueToCache[ 'value' ] = $sanitizedHtml;
 
 		} catch ( WikifunctionCallException $e ) {
-			// For temporary server errors: reduce fresh TTL to a minute
-			if (
-				$e->getHttpStatusCode() === HttpStatus::INTERNAL_SERVER_ERROR ||
-				$e->getHttpStatusCode() === HttpStatus::SERVICE_UNAVAILABLE
-			) {
+			// Cache the failed request
+			$valueToCache[ 'success' ] = false;
+			$valueToCache[ 'value' ] = $e->toArray();
+
+			// First, check if it's a user-triggered error. If so, debug-log with the extra data
+			// but don't make noise; use the default TTL for a request.
+			if ( $e->getHttpStatusCode() === HttpStatus::BAD_REQUEST ) {
+				$logContext = [];
+				if ( $e->hasZError() ) {
+					$logContext[ 'zerror' ] = $e->getZError();
+				}
+				$this->logger->debug(
+					__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment failed: {error}',
+					[ 'error' => $e->getMessage() ] + $logContext
+				);
+			} else {
+				// For temporary server errors: reduce fresh TTL to a minute
 				$freshValueTTL = $this->objectCache::TTL_MINUTE;
+
+				// Possible error cases that are "our fault" and should be logged noisily:
+				// - HttpStatus::NOT_IMPLEMENTED (server not configured)
+				// - HttpStatus::INTERNAL_SERVER_ERROR
+				// Possible error cases that might be load issues, but log anyway for now:
+				// - HttpStatus::SERVICE_UNAVAILABLE
+				// - HttpStatus::FORBIDDEN
+				// - HttpStatus::TOO_MANY_REQUESTS (not currently emitted below)
+				if (
+					$e->getHttpStatusCode() === HttpStatus::NOT_IMPLEMENTED ||
+					$e->getHttpStatusCode() === HttpStatus::INTERNAL_SERVER_ERROR ||
+					$e->getHttpStatusCode() === HttpStatus::SERVICE_UNAVAILABLE ||
+					$e->getHttpStatusCode() === HttpStatus::FORBIDDEN ||
+					$e->getHttpStatusCode() === HttpStatus::TOO_MANY_REQUESTS
+				) {
+					$this->logger->warning(
+						__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment triggered a server issue: {error}',
+						[
+							'error' => $e->getMessage(),
+							'exception' => $e
+						]
+					);
+				} else {
+					// Something's gone wrong as an unpected error state, log as an error:
+					$this->logger->error(
+						__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment has unhandled error: {error}',
+						[
+							'error' => $e->getMessage(),
+							'exception' => $e
+						]
+					);
+				}
 			}
-
-			// Cache serialized error
-			$cachedValue[ 'success' ] = false;
-			$cachedValue[ 'value' ] = $e->toArray();
-
-			$this->logger->error(
-				__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment threw an Exception: {error}',
-				[
-					'error' => $e->getMessage(),
-					'exception' => $e
-				]
-			);
 		}
 
 		// 4. Cache the response with both the fresh and the stale keys
-		$cachedValueStr = json_encode( $cachedValue );
+		$cachedValueStr = json_encode( $valueToCache );
 		$this->objectCache->set( $cacheKeyFresh, $cachedValueStr, $freshValueTTL );
 		$this->objectCache->set( $cacheKeyStale, $cachedValueStr, $staleValueTTL );
 
-		return $cachedValue;
+		return $valueToCache;
 	}
 
 	/**
@@ -252,7 +284,8 @@ class AbstractWikiRequest {
 			throw new WikifunctionCallException(
 				'apierror-abstractwiki_run_fragment-returned-zerror',
 				HttpStatus::BAD_REQUEST,
-				$zerror
+				$zerror,
+				[ $zerror->{'Z5K1'} ?? 'No error code provided' ]
 			);
 		}
 
