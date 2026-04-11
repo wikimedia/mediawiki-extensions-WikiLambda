@@ -16,6 +16,7 @@ use MediaWiki\Rest\RequestData;
 use MediaWiki\Tests\Rest\Handler\HandlerTestTrait;
 use Wikimedia\Message\MessageValue;
 use Wikimedia\Telemetry\SpanInterface;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\RESTAPI\FunctionCallHandler
@@ -518,14 +519,15 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
+		$wrapper = TestingAccessWrapper::newFromObject( $handler );
 
 		if ( $success ) {
-			$targetFunction = $this->runPrivateMethod( $handler, 'getTargetFunction', [ $functionZid, $spanMock ] );
+			$targetFunction = $wrapper->getTargetFunction( $functionZid, $spanMock );
 			$this->assertTrue( $targetFunction instanceof ZFunction );
 			$this->assertSame( $functionZid, $targetFunction->getIdentity() );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'getTargetFunction', [ $functionZid, $spanMock ] );
+				$wrapper->getTargetFunction( $functionZid, $spanMock );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}
@@ -583,13 +585,14 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 	) {
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
+		$wrapper = TestingAccessWrapper::newFromObject( $handler );
 
 		if ( $success ) {
-			$actualLangZid = $this->runPrivateMethod( $handler, 'getLanguageZid', [ $langCode, 'argKey', $spanMock ] );
+			$actualLangZid = $wrapper->getLanguageZid( $langCode, 'argKey', $spanMock );
 			$this->assertSame( $expectedLangZid, $actualLangZid );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'getLanguageZid', [ $langCode, 'argKey', $spanMock ] );
+				$wrapper->getLanguageZid( $langCode, 'argKey', $spanMock );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}
@@ -630,14 +633,15 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 
 		$spanMock = $this->getSpanMock();
+		$wrapper = TestingAccessWrapper::newFromObject( $handler );
+		$callArgs = [ ...$args, $spanMock ];
 
 		if ( $success ) {
-			$actualArgs = $this->runPrivateMethod(
-				$handler, 'buildArgumentsForCall', [ ...$args, $spanMock ] );
+			$actualArgs = $wrapper->buildArgumentsForCall( ...$callArgs );
 			$this->assertEquals( $expectedArgs, $actualArgs );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'buildArgumentsForCall', [ ...$args, $spanMock ] );
+				$wrapper->buildArgumentsForCall( ...$callArgs );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}
@@ -765,13 +769,15 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
+		$wrapper = TestingAccessWrapper::newFromObject( $handler );
+		$callArgs = [ ...$args, $spanMock ];
 
 		if ( $success ) {
-			$actualArg = $this->runPrivateMethod( $handler, 'buildParsedArgument', [ ...$args, $spanMock ] );
+			$actualArg = $wrapper->buildParsedArgument( ...$callArgs );
 			$this->assertEquals( $expectedArg, $actualArg );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'buildParsedArgument', [ ...$args, $spanMock ] );
+				$wrapper->buildParsedArgument( ...$callArgs );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}
@@ -871,13 +877,15 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
+		$wrapper = TestingAccessWrapper::newFromObject( $handler );
+		$callArgs = [ ...$args, $spanMock ];
 
 		if ( $success ) {
-			$actualResult = $this->runPrivateMethod( $handler, 'isArgumentValidReference', [ ...$args, $spanMock ] );
+			$actualResult = $wrapper->isArgumentValidReference( ...$callArgs );
 			$this->assertSame( $expectedResult, $actualResult );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'isArgumentValidReference', [ ...$args, $spanMock ] );
+				$wrapper->isArgumentValidReference( ...$callArgs );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}
@@ -944,13 +952,15 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$handler = new FunctionCallHandler( $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
+		$wrapper = TestingAccessWrapper::newFromObject( $handler );
+		$callArgs = [ ...$args, $spanMock ];
 
 		if ( $success ) {
-			$output = $this->runPrivateMethod( $handler, 'buildRenderedOutput', [ ...$args, $spanMock ] );
+			$output = $wrapper->buildRenderedOutput( ...$callArgs );
 			$this->assertEquals( $expectedOutput, $output );
 		} else {
 			try {
-				$this->runPrivateMethod( $handler, 'buildRenderedOutput', [ ...$args, $spanMock ] );
+				$wrapper->buildRenderedOutput( ...$callArgs );
 			} catch ( LocalizedHttpException $exception ) {
 				$this->assertHttpAndZError( $expectedError, $exception );
 			}

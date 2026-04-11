@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Registry;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Title\Title;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry
@@ -38,7 +39,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 		$registry = ZErrorTypeRegistry::singleton();
 
-		$this->runPrivateMethod( $registry, 'register', [ $customErrorEnLabel, 'error type' ] );
+		TestingAccessWrapper::newFromObject( $registry )->register( $customErrorEnLabel, 'error type' );
 		$this->assertTrue( $registry->isZErrorTypeKnown( $customErrorType ) );
 
 		$registry->unregister( 'Z505' );
@@ -149,7 +150,7 @@ EOT;
 		$this->editPage( $title, $errorContent, "Test creation object", NS_MAIN );
 
 		$this->assertFalse(
-			$this->runPrivateMethod( $registry, 'isZErrorTypeCached', [ $errorType ] ),
+			TestingAccessWrapper::newFromObject( $registry )->isZErrorTypeCached( $errorType ),
 			'The valid ZErrorType Zid is not yet cached.'
 		);
 
@@ -186,13 +187,13 @@ EOT;
 		);
 
 		$this->assertTrue(
-			$this->runPrivateMethod( $registry, 'isZErrorTypeCached', [ $errorType ] ),
+			TestingAccessWrapper::newFromObject( $registry )->isZErrorTypeCached( $errorType ),
 			'The valid ZErrorType Zid is now cached.'
 		);
 
 		$registry->unregister( $errorType );
 		$this->assertFalse(
-			$this->runPrivateMethod( $registry, 'isZErrorTypeCached', [ $errorType ] ),
+			TestingAccessWrapper::newFromObject( $registry )->isZErrorTypeCached( $errorType ),
 			'The valid ZErrorType Zid is not cached after unregistering it.'
 		);
 	}

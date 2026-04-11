@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry
@@ -151,7 +152,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$content = ZObjectContentHandler::makeContent( $data, $title );
 
-		$code = $this->runPrivateMethod( $this->registry, 'getLanguageCodeFromContent', [ $content ] );
+		$code = TestingAccessWrapper::newFromObject( $this->registry )->getLanguageCodeFromContent( $content );
 		$this->assertSame( 'fr', $code );
 	}
 
@@ -162,7 +163,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$content = ZObjectContentHandler::makeContent( $data, $title );
 
-		$found = $this->runPrivateMethod( $this->registry, 'getLanguageCodeFromContent', [ $content ] );
+		$found = TestingAccessWrapper::newFromObject( $this->registry )->getLanguageCodeFromContent( $content );
 		$this->assertFalse( $found );
 	}
 

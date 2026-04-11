@@ -108,11 +108,10 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		// Build job:
 		$job = $this->buildJob( $functionZid, $arguments );
 
-		// Inject mock HttpRequestFactory:
-		TestingAccessWrapper::newFromObject( $job )->httpRequestFactory = $mockHttpRequestFactory;
-
-		// Run private remoteCall method:
-		$this->runPrivateMethod( $job, 'buildRequest', [ $functionZid, $arguments, 'en', 'en' ] );
+		// Inject mock HttpRequestFactory and invoke private buildRequest:
+		$jobWrapper = TestingAccessWrapper::newFromObject( $job );
+		$jobWrapper->httpRequestFactory = $mockHttpRequestFactory;
+		$jobWrapper->buildRequest( $functionZid, $arguments, 'en', 'en' );
 	}
 
 	/**
@@ -134,7 +133,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		$job = $this->buildJob( $functionZid, $arguments );
 
 		// Run private remoteCall method:
-		$output = $this->runPrivateMethod( $job, 'remoteCall', [ $functionZid, $arguments, 'en', 'en' ] );
+		$output = TestingAccessWrapper::newFromObject( $job )->remoteCall( $functionZid, $arguments, 'en', 'en' );
 
 		$this->assertSame(
 			[ 'value' => 'foo/bar', 'type' => 'Z6' ],
@@ -164,12 +163,12 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 
 		try {
 			// Run private remoteCall method:
-			$this->runPrivateMethod( $job, 'remoteCall', [
+			TestingAccessWrapper::newFromObject( $job )->remoteCall(
 				$request['target'],
 				$request['arguments'],
 				$request['parseLang'],
 				$request['renderLang']
-			] );
+			);
 			// Capture failure to raise the exception:
 			$this->fail( 'Expected WikifunctionCallException was not thrown.' );
 		} catch ( WikifunctionCallException $e ) {
