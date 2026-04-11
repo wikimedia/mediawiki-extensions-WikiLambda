@@ -75,17 +75,18 @@ class ZErrorFactoryTest extends MediaWikiUnitTestCase {
 		);
 	}
 
-	public function testGetErrorDescriptors_isIdempotentAndReturnsArray() {
-		// Exercise the private method so we see both the "not yet cached" and "cached"
-		// branches. NOTE: in production this method currently returns [] because its
-		// relative path (`joinPath( __DIR__, "..", "..", "function-schemata", "data" )`)
-		// points one directory too high — so the Yaml load throws and the `catch` branch
-		// populates the cache with []. We therefore only assert the invariants that hold
-		// regardless of that bug: returns an array, and the second call returns the same one.
+	public function testGetErrorDescriptors_loadsKeywordsFromRealYamlAndCaches() {
 		$wrapper = TestingAccessWrapper::newFromClass( ZErrorFactory::class );
 		$first = $wrapper->getErrorDescriptors();
 		$this->assertIsArray( $first );
+		// The error_types.yaml file groups descriptors under JSON-schema keywords; every
+		// keyword group is expected to exist on the real file shipped in the submodule.
+		$this->assertArrayHasKey( 'type', $first );
+		$this->assertArrayHasKey( 'required', $first );
+		$this->assertNotEmpty( $first['type'] );
+		$this->assertNotEmpty( $first['required'] );
 
+		// Second call should hit the cached branch and return the identical array.
 		$second = $wrapper->getErrorDescriptors();
 		$this->assertSame( $first, $second );
 	}

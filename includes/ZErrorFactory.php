@@ -39,7 +39,7 @@ class ZErrorFactory {
 				$descriptor = json_decode(
 					self::readYamlAsSecretJson(
 						self::joinPath(
-							self::joinPath( __DIR__, "..", "..", "function-schemata", "data" ),
+							self::joinPath( __DIR__, "..", "function-schemata", "data" ),
 							"errors",
 							"error_types.yaml"
 						)
