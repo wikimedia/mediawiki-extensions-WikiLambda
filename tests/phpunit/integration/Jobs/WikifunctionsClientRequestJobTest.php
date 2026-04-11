@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MockHttpTrait;
 use MWHttpRequest;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob
@@ -108,8 +109,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		$job = $this->buildJob( $functionZid, $arguments );
 
 		// Inject mock HttpRequestFactory:
-		$ref = new \ReflectionProperty( $job, 'httpRequestFactory' );
-		$ref->setValue( $job, $mockHttpRequestFactory );
+		TestingAccessWrapper::newFromObject( $job )->httpRequestFactory = $mockHttpRequestFactory;
 
 		// Run private remoteCall method:
 		$this->runPrivateMethod( $job, 'buildRequest', [ $functionZid, $arguments, 'en', 'en' ] );

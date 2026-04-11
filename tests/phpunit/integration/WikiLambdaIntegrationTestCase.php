@@ -166,9 +166,16 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	}
 
 	/**
-	 * Method to test private and protected methods using ReflectionClass
+	 * Invoke a private or protected instance method on an object and return its result.
 	 *
-	 * @param stdClass $object
+	 * Uses raw ReflectionMethod rather than TestingAccessWrapper because some callers
+	 * (e.g. ContentHandler::fillParserOutput) declare their parameters with `&` and PHP's
+	 * spread-through-__call path does not preserve reference semantics — invokeArgs would
+	 * then fail with "must be passed by reference, value given". For property access and
+	 * by-value method calls, prefer TestingAccessWrapper at the call site instead.
+	 *
+	 * @phpcs:ignore MediaWiki.Commenting.FunctionComment.ObjectTypeHintParam
+	 * @param object $object
 	 * @param string $methodName
 	 * @param array $args
 	 * @return mixed The return value of the private method invoked

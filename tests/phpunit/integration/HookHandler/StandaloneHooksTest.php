@@ -27,6 +27,7 @@ use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IDBAccessObject;
 use Wikimedia\Rdbms\SelectQueryBuilder;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks
@@ -458,8 +459,7 @@ EOT;
 					return $queryZ2->Z2K1->Z6K1 == $functionZid;
 				} ) );
 			$secondaryUpdate = $zobjectUpdates[0];
-			$ref = new \ReflectionProperty( $secondaryUpdate, 'orchestrator' );
-			$ref->setValue( $secondaryUpdate, $mockOrchestratorRequest );
+			TestingAccessWrapper::newFromObject( $secondaryUpdate )->orchestrator = $mockOrchestratorRequest;
 
 			// Execute the update.
 			$secondaryUpdate->doUpdate();
@@ -558,8 +558,7 @@ EOT;
 					return $queryZ2->Z2K1->Z6K1 == $functionZid;
 				} ) );
 			$secondaryUpdate = $zobjectUpdates[0];
-			$ref = new \ReflectionProperty( $secondaryUpdate, 'orchestrator' );
-			$ref->setValue( $secondaryUpdate, $mockOrchestratorRequest );
+			TestingAccessWrapper::newFromObject( $secondaryUpdate )->orchestrator = $mockOrchestratorRequest;
 
 			// Execute the update.
 			$secondaryUpdate->doUpdate();
