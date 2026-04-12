@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
@@ -19,7 +20,7 @@ use MediaWiki\Tests\Api\ApiTestCase;
 use StatusValue;
 
 /**
- * @coversNothing
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiAbstractWikiRunFragment
  */
 class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 
@@ -325,6 +326,78 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$this->assertTrue( $result[ 'success' ] );
 		$this->assertTrue( $result[ 'pending' ] );
 	}
+
+	// ------------------------------------------------------------------
+	// Error branches in execute()
+	// ------------------------------------------------------------------
+
+	/**
+	 * When abstract mode is disabled, the API should die with HTTP 501.
+	 */
+	public function testExecute_diesWhenAbstractModeDisabled() {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', false );
+
+		$this->expectException( ApiUsageException::class );
+
+		$this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => 'Q42',
+			'abstractwiki_run_fragment_language' => 'Z1002',
+			'abstractwiki_run_fragment_date' => '26-7-2023',
+			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89","Z89K1":"test"}',
+		] );
+	}
+
+	/**
+	 * When the fragment parameter is not valid JSON, the API should die with HTTP 400.
+	 */
+	public function testExecute_diesForInvalidFragmentJson() {
+		$this->expectException( ApiUsageException::class );
+
+		$this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => 'Q42',
+			'abstractwiki_run_fragment_language' => 'Z1002',
+			'abstractwiki_run_fragment_date' => '26-7-2023',
+			'abstractwiki_run_fragment_fragment' => 'not-valid-json{{{',
+		] );
+	}
+
+	/**
+	 * When the cached result is a failure, the API should die with the
+	 * WikifunctionCallException's error data.
+	 */
+	public function testExecute_diesWhenCachedResultIsFailure() {
+		$failureValue = [
+			'msg' => 'wikilambda-functioncall-error-message',
+			'httpStatusCode' => 400,
+			'zerror' => null,
+			'params' => [],
+		];
+
+		$cache = $this->createMock( MemcachedWrapper::class );
+		$cache->method( 'makeKey' )->willReturn( 'some-key' );
+		$cache->method( 'get' )
+			->willReturn( json_encode( [
+				'success' => false,
+				'value' => $failureValue,
+			] ) );
+		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+
+		$this->expectException( ApiUsageException::class );
+
+		$this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => 'Q42',
+			'abstractwiki_run_fragment_language' => 'Z1002',
+			'abstractwiki_run_fragment_date' => '26-7-2023',
+			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89","Z89K1":"test"}',
+		] );
+	}
+
+	// ------------------------------------------------------------------
+	// Helpers
+	// ------------------------------------------------------------------
 
 	/**
 	 * Helper function to mock HttpRequestFactory:
