@@ -40,6 +40,11 @@ class WikifunctionsClientStore {
 	/**
 	 * Track in wikifunctionsclient_usage the usage of a function on a page.
 	 *
+	 * NOTE: wfcu_targetPage is stored as getPrefixedText() (e.g. "Template:Foo bar").
+	 * All readers and writers of this column must use the same representation:
+	 * deleteWikifunctionsUsage() below, and WikifunctionsRecentChangesInsertJob
+	 * which reconstructs a Title via Title::newFromText().
+	 *
 	 * @param string $targetFunction
 	 * @param Title $targetPage
 	 * @return bool
@@ -87,6 +92,9 @@ class WikifunctionsClientStore {
 	/**
 	 * Drop tracking in wikifunctionsclient_usage of a page.
 	 *
+	 * NOTE: Must match the representation used by insertWikifunctionsUsage() — see the
+	 * note on that method for the full list of readers/writers of wfcu_targetPage.
+	 *
 	 * @param Title $targetPage
 	 * @return void
 	 */
@@ -95,7 +103,7 @@ class WikifunctionsClientStore {
 
 		$dbw->newDeleteQueryBuilder()
 			->deleteFrom( 'wikifunctionsclient_usage' )
-			->where( [ 'wfcu_targetPage' => $targetPage->getDBkey() ] )
+			->where( [ 'wfcu_targetPage' => $targetPage->getPrefixedText() ] )
 			->caller( __METHOD__ )->execute();
 	}
 

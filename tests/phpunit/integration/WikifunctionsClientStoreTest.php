@@ -39,55 +39,38 @@ class WikifunctionsClientStoreTest extends WikiLambdaClientIntegrationTestCase {
 		$this->cache = WikiLambdaServices::getMemcachedWrapper();
 	}
 
-	/**
-	 * Helper: build a main-namespace Title whose getPrefixedText() and getDBkey()
-	 * are identical. The store is inconsistent about which representation it uses
-	 * (insert: getPrefixedText, delete: getDBkey), so keeping them equal avoids
-	 * accidentally exercising that divergence in happy-path tests.
-	 */
-	private function makeSimpleTitle( string $text ): Title {
-		$title = Title::newFromText( $text, NS_MAIN );
-		$this->assertSame(
-			$title->getPrefixedText(),
-			$title->getDBkey(),
-			'Test title must have identical prefixed text and DB key'
-		);
-		return $title;
-	}
-
 	// ------------------------------------------------------------------
 	// DB side: insertWikifunctionsUsage / fetchWikifunctionsUsage / deleteWikifunctionsUsage
 	// ------------------------------------------------------------------
 
 	public function testInsertWikifunctionsUsage_insertsNewRowAndReturnsTrue() {
-		$title = $this->makeSimpleTitle( 'TestFunctionPageAlpha' );
+		$title = Title::newFromText( 'Template:Test function page', NS_MAIN );
 
 		$result = $this->store->insertWikifunctionsUsage( 'Z10001', $title );
 
 		$this->assertTrue( $result );
 		$this->assertSame(
-			[ 'TestFunctionPageAlpha' ],
+			[ 'Template:Test function page' ],
 			$this->store->fetchWikifunctionsUsage( 'Z10001' )
 		);
 	}
 
 	public function testInsertWikifunctionsUsage_duplicateInsertIsIdempotent() {
-		$title = $this->makeSimpleTitle( 'TestFunctionPageBeta' );
+		$title = Title::newFromText( 'User:Example' );
 
 		$this->store->insertWikifunctionsUsage( 'Z10002', $title );
-		// The second insert should not throw and should leave the table state unchanged.
 		$this->store->insertWikifunctionsUsage( 'Z10002', $title );
 
 		$this->assertSame(
-			[ 'TestFunctionPageBeta' ],
+			[ 'User:Example' ],
 			$this->store->fetchWikifunctionsUsage( 'Z10002' ),
 			'Duplicate inserts must not produce duplicate rows'
 		);
 	}
 
 	public function testFetchWikifunctionsUsage_returnsAllPagesForFunction() {
-		$titleOne = $this->makeSimpleTitle( 'TestFunctionPageGammaOne' );
-		$titleTwo = $this->makeSimpleTitle( 'TestFunctionPageGammaTwo' );
+		$titleOne = Title::newFromText( 'Template:Alpha function' );
+		$titleTwo = Title::newFromText( 'Help:Beta guide' );
 
 		$this->store->insertWikifunctionsUsage( 'Z10003', $titleOne );
 		$this->store->insertWikifunctionsUsage( 'Z10003', $titleTwo );
@@ -96,7 +79,7 @@ class WikifunctionsClientStoreTest extends WikiLambdaClientIntegrationTestCase {
 
 		sort( $pages );
 		$this->assertSame(
-			[ 'TestFunctionPageGammaOne', 'TestFunctionPageGammaTwo' ],
+			[ 'Help:Beta guide', 'Template:Alpha function' ],
 			$pages
 		);
 	}
@@ -109,7 +92,7 @@ class WikifunctionsClientStoreTest extends WikiLambdaClientIntegrationTestCase {
 	}
 
 	public function testDeleteWikifunctionsUsage_removesAllRowsForPage() {
-		$title = $this->makeSimpleTitle( 'TestFunctionPageDelta' );
+		$title = Title::newFromText( 'User:Cleanup target' );
 		$this->store->insertWikifunctionsUsage( 'Z10010', $title );
 		$this->store->insertWikifunctionsUsage( 'Z10011', $title );
 
@@ -120,15 +103,15 @@ class WikifunctionsClientStoreTest extends WikiLambdaClientIntegrationTestCase {
 	}
 
 	public function testDeleteWikifunctionsUsage_leavesOtherPagesUntouched() {
-		$titleToDelete = $this->makeSimpleTitle( 'TestFunctionPageEpsilonA' );
-		$titleToKeep = $this->makeSimpleTitle( 'TestFunctionPageEpsilonB' );
+		$titleToDelete = Title::newFromText( 'Template:Remove me' );
+		$titleToKeep = Title::newFromText( 'Help:Keep me' );
 		$this->store->insertWikifunctionsUsage( 'Z10020', $titleToDelete );
 		$this->store->insertWikifunctionsUsage( 'Z10020', $titleToKeep );
 
 		$this->store->deleteWikifunctionsUsage( $titleToDelete );
 
 		$this->assertSame(
-			[ 'TestFunctionPageEpsilonB' ],
+			[ 'Help:Keep me' ],
 			$this->store->fetchWikifunctionsUsage( 'Z10020' )
 		);
 	}

@@ -240,6 +240,9 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		// We can't stuff non-strings into the rc_params field, so we need to JSON-ify it
 		$generalAttributes['rc_params'] = json_encode( $changeData );
 
+		// $pagesUsingFunction values are getPrefixedText() strings written by
+		// WikifunctionsClientStore::insertWikifunctionsUsage(); Title::newFromText()
+		// can parse that form back into namespace + title.
 		foreach ( $pagesUsingFunction as $titleString ) {
 			$title = Title::newFromText( $titleString );
 
