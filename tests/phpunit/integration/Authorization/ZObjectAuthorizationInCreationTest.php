@@ -3,6 +3,11 @@
 /**
  * WikiLambda integration test suite for granular edit authorization mechanisms when creating
  *
+ * The bulk of the rights-detection logic is tested in the unit test
+ * ZObjectAuthorizationCreateRightsTest. This integration test covers:
+ * - End-to-end creation attempts that exercise the full authorization + persistence pipeline
+ * - The enum-value creation path, which requires a real DB to look up the enum type
+ *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
@@ -53,13 +58,12 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 	 * @param string $zid
 	 * @param string $testedType
 	 * @param string $createContent
-	 * @param array $expectedCreateRights
 	 * @param bool $expectedCreateAllowed
 	 * @param bool $systemBlocksAsInvalid
 	 */
 	public function testCreateNew(
 		string $userType, string $zid, string $testedType,
-		string $createContent, array $expectedCreateRights,
+		string $createContent,
 		bool $expectedCreateAllowed, bool $systemBlocksAsInvalid
 	) {
 		$user = match ( $userType ) {
@@ -68,8 +72,6 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 			'maintainer' => $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser(),
 		};
 
-		$title = Title::newFromText( $zid, NS_MAIN );
-
 		$contentObject = new ZObjectContent( $createContent );
 
 		if ( $systemBlocksAsInvalid ) {
@@ -77,7 +79,6 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				$contentObject->isValid(),
 				"The system should block the content of a '$testedType' as invalid"
 			);
-			// We can't reason about invalid ZObjects below, so instead just finish this test run.
 			return;
 		}
 
@@ -85,17 +86,6 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 			$contentObject->isValid(),
 			"The system should recognise the content of a '$testedType' as valid"
 		);
-
-		// Assert that the correct creation rights are detected
-		$actualRights = $this->zobjectAuthorization->getRequiredCreateRights( $contentObject, $title );
-
-		foreach ( $expectedCreateRights as $key => $value ) {
-			$this->assertContains(
-				$value,
-				$actualRights,
-				"Attempted creation of a '$testedType' should require the '$value' right"
-			);
-		}
 
 		// Attempt to make the creation
 		$attemptedCreation = $this->zobjectStore->updateZObject(
@@ -120,292 +110,165 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
+	/**
+	 * Representative end-to-end creation attempts. Not exhaustive — the full type→rights mapping
+	 * is tested in the unit test ZObjectAuthorizationCreateRightsTest.
+	 *
+	 * These cases exercise the DB-backed creation pipeline and verify that rights actually gate
+	 * the operation for a representative set of types, user roles, and ZID ranges.
+	 */
 	public static function provideCreateNew() {
-		$typesToTry = [
-			'type (Z4 instance)' => [
-				'testedType' => 'Z4',
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z4", '
-						. '"Z4K1": "Z0", '
-						. '"Z4K2": [ "Z3", '
-							. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z0K1", "Z3K3": '
-							. '{ "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
-						. '"Z4K3": "Z101" }, '
-					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
-				'createRights' => [ 'wikilambda-create-type' ],
-				'createAllowed' => [
-					'basic' => false, 'functioneer' => true, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-				// TODO (T342357): Wire up this test rigging; currently unused
-				'modifyContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z4", '
-						. '"Z4K1": "Z0", '
-						. '"Z4K2": [ "Z3", '
-							. '{ "Z1K1": "Z3", "Z3K1": "Z40", "Z3K2": "Z0K1", "Z3K3": '
-							. '{ "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
-						. '"Z4K3": "Z101" }, '
-					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
-				'modifyRights' => [ 'wikilambda-edit-type' ],
-				'modifyAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-				'modifyAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-				'labelRights' => [ 'wikilambda-edit-object-label' ],
-				'labelAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true
-				],
-				'labelAllowedPredefined' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true
-				],
-			],
+		// ─── User-defined (ZID > 10k) ─────────────────────────────
 
-			'function (Z8 instance)' => [
-				'testedType' => 'Z8',
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z8", '
-						. '"Z8K1": [ "Z17", { "Z1K1": "Z17", '
-							. '"Z17K1": "Z6", '
-							. '"Z17K2": "Z0K1", '
-							. '"Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
-						. '"Z8K2": "Z6", '
-						. '"Z8K3": [ "Z20" ], '
-						. '"Z8K4": [ "Z14" ], '
-						. '"Z8K5": "Z0" }, '
-					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
-				'createRights' => [ 'wikilambda-create-function' ],
-				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'implementation (Z14 instance)' => [
-				'testedType' => 'Z14',
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z14", '
-						. '"Z14K1": "Z801", "Z14K3": { "Z1K1": "Z16", '
-							. '"Z16K1": { "Z1K1": "Z61", "Z61K1": "Z601" }, '
-							. '"Z16K2": "function Z0( input ) {\n\treturn input;\n}" } }, '
-					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
-				'createRights' => [ 'wikilambda-create-implementation' ],
-				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'deserialiser (Z46 instance)' => [
-				'testedType' => 'Z46',
-				'createContent' =>
-					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
-						. '"Z2K2":{"Z1K1":"Z46",'
-						. '"Z46K1":"Z0",'
-						. '"Z46K2":"Z6",'
-						. '"Z46K3":{"Z1K1":"Z16","Z16K1":"Z600","Z16K2":"function(){return true;}"},'
-						. '"Z46K4":"BigInt"},'
-						. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
-				'createRights' => [ 'wikilambda-create-converter' ],
-				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'serialiser (Z64 instance)' => [
-				'testedType' => 'Z64',
-				'createContent' =>
-					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
-						. '"Z2K2":{"Z1K1":"Z64",'
-						. '"Z64K1":"Z0",'
-						. '"Z64K2":"Z6",'
-						. '"Z64K3":{"Z1K1":"Z16","Z16K1":"Z600","Z16K2":"function(){return true;}"},'
-						. '"Z64K4":"BigInt"},'
-						. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
-				'createRights' => [ 'wikilambda-create-converter' ],
-				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'tester (Z20 instance)' => [
-				'testedType' => 'Z20',
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z20", '
-						. '"Z20K1": "Z801", '
-						. '"Z20K2": { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "test input" }, '
-						. '"Z20K3": { "Z1K1": "Z7", "Z7K1": "Z866", '
-							. '"Z866K2": "test input" } }, '
-					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
-				'createRights' => [ 'wikilambda-create-tester' ],
-				'createAllowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'language (Z60 instance)' => [
-				'testedType' => 'Z60',
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
-						. '"Z2K2": { "Z1K1": "Z60", "Z60K1": "en-test" }, '
-						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
-				'createRights' => [ 'wikilambda-create-language' ],
-				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'programming language (Z61 instance)' => [
-				'testedType' => 'Z61',
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
-						. '"Z2K2": { "Z1K1": "Z61", "Z61K1": "test-programming-language" }, '
-						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
-				'createRights' => [ 'wikilambda-create-programming' ],
-				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'boolean (Z40 instance)' => [
-				'testedType' => 'Z40',
-				'systemBlocksAsInvalid' => false,
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
-						. '"Z2K2": { "Z1K1": "Z40", "Z40K1": "Z0" }, '
-						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
-				'createRights' => [ 'wikilambda-create-boolean' ],
-				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'unit (Z21 instance)' => [
-				'testedType' => 'Z21',
-				'systemBlocksAsInvalid' => true,
-				'createContent' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
-						. '"Z2K2": { "Z1K1": "Z21" }, '
-						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
-				'createRights' => [ 'wikilambda-create-unit' ],
-				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false
-				],
-			],
-
-			// T391913: Create lightweight Wikidata enum types
-			'function call to wikidata enum type' => [
-				'testedType' => 'Z7',
-				'createContent' =>
-					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
-					. '"Z2K2":{"Z1K1":"Z7","Z7K1":"Z6884","Z6884K1":"Z6095","Z6884K2":["Z6095",'
-					. '{"Z1K1":"Z6095","Z6095K1":"L313289"},'
-					. '{"Z1K1":"Z6095","Z6095K1":"L313272"},'
-					. '{"Z1K1":"Z6095","Z6095K1":"L338656"}],"Z6884K3":"Z0"},'
-					. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
-				'createRights' => [ 'wikilambda-create-generic-enum' ],
-				'createAllowed' => [
-					'basic' => false, 'functioneer' => true, 'maintainer' => true
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => true
-				],
-			],
-
-			'another function call' => [
-				'testedType' => 'Z7',
-				'createContent' =>
-					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
-					. '"Z2K2":{"Z1K1":"Z7","Z7K1":"Z881","Z881K1":"Z6"},'
-					. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
-				'createRights' => [ 'wikilambda-create-function-call' ],
-				'createAllowed' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false
-				],
-				'createAllowedPredefined' => [
-					'basic' => false, 'functioneer' => false, 'maintainer' => false
-				],
-			],
+		// Function: all users can create
+		yield 'User-defined function (Z8), basic user — allowed' => [
+			'basic', 'Z10000', 'Z8',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10000" }, "Z2K2": { "Z1K1": "Z8", '
+				. '"Z8K1": [ "Z17", { "Z1K1": "Z17", '
+					. '"Z17K1": "Z6", '
+					. '"Z17K2": "Z10000K1", '
+					. '"Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
+				. '"Z8K2": "Z6", '
+				. '"Z8K3": [ "Z20" ], '
+				. '"Z8K4": [ "Z14" ], '
+				. '"Z8K5": "Z10000" }, '
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ true,
+			/* $systemBlocksAsInvalid */ false,
 		];
 
-		$userZid = 10000;
-		$reservedZid = 400;
+		// Tester: all users can create
+		yield 'User-defined tester (Z20), basic user — allowed' => [
+			'basic', 'Z10001', 'Z20',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10001" }, "Z2K2": { "Z1K1": "Z20", '
+				. '"Z20K1": "Z801", '
+				. '"Z20K2": { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "test input" }, '
+				. '"Z20K3": { "Z1K1": "Z7", "Z7K1": "Z866", '
+					. '"Z866K2": "test input" } }, '
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ true,
+			/* $systemBlocksAsInvalid */ false,
+		];
 
-		foreach ( $typesToTry as $type => $attemptObject ) {
-			$expectedCreateRights = array_merge( $attemptObject['createRights'], [ 'edit', 'wikilambda-create' ] );
+		// Type: basic user cannot create, functioneer can
+		yield 'User-defined type (Z4), basic user — blocked' => [
+			'basic', 'Z10002', 'Z4',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10002" }, "Z2K2": { "Z1K1": "Z4", '
+				. '"Z4K1": "Z10002", '
+				. '"Z4K2": [ "Z3", '
+					. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z10002K1", "Z3K3": '
+					. '{ "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
+				. '"Z4K3": "Z101" }, '
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ false,
+			/* $systemBlocksAsInvalid */ false,
+		];
 
-			foreach ( $attemptObject['createAllowedPredefined'] ?? [] as $userType => $expectedCreateAllowed ) {
-				$createReservedContent = str_replace( 'Z0', 'Z' . $reservedZid, $attemptObject['createContent'] );
-				$expectedCreatePredefinedRights = array_merge(
-					$expectedCreateRights, [ 'wikilambda-create-predefined' ] );
+		yield 'User-defined type (Z4), functioneer user — allowed' => [
+			'functioneer', 'Z10002', 'Z4',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10002" }, "Z2K2": { "Z1K1": "Z4", '
+				. '"Z4K1": "Z10002", '
+				. '"Z4K2": [ "Z3", '
+					. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z10002K1", "Z3K3": '
+					. '{ "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
+				. '"Z4K3": "Z101" }, '
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ true,
+			/* $systemBlocksAsInvalid */ false,
+		];
 
-				yield "Pre-defined (ZID < 10k) $type, $userType user" => [
-					/* $userType */ $userType,
-					/* $zid */ 'Z' . $reservedZid,
-					/* $testedType */ $attemptObject['testedType'],
-					/* $createContent */ $createReservedContent,
-					/* $expectedCreateRights */ $expectedCreatePredefinedRights,
-					/* $expectedCreateAllowed */ $expectedCreateAllowed,
-					/* $systemBlocksAsInvalid */ $attemptObject['systemBlocksAsInvalid'] ?? false
-				];
+		// Language: only maintainer can create
+		yield 'User-defined language (Z60), functioneer user — blocked' => [
+			'functioneer', 'Z10003', 'Z60',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10003" }, '
+				. '"Z2K2": { "Z1K1": "Z60", "Z60K1": "en-test" }, '
+				. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ false,
+			/* $systemBlocksAsInvalid */ false,
+		];
 
-				if ( $expectedCreateAllowed ) {
-					$reservedZid++;
-				}
-			}
+		yield 'User-defined language (Z60), maintainer user — allowed' => [
+			'maintainer', 'Z10003', 'Z60',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10003" }, '
+				. '"Z2K2": { "Z1K1": "Z60", "Z60K1": "en-test" }, '
+				. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ true,
+			/* $systemBlocksAsInvalid */ false,
+		];
 
-			foreach ( $attemptObject['createAllowed'] ?? [] as $userType => $expectedCreateAllowed ) {
-				$createUserContent = str_replace( 'Z0', 'Z' . $userZid, $attemptObject['createContent'] );
+		// Unit: system blocks as invalid (nobody can create)
+		yield 'User-defined unit (Z21), maintainer user — system blocks' => [
+			'maintainer', 'Z10004', 'Z21',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10004" }, '
+				. '"Z2K2": { "Z1K1": "Z21" }, '
+				. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ false,
+			/* $systemBlocksAsInvalid */ true,
+		];
 
-				yield "User-defined (ZID > 10k) $type, $userType user" => [
-					/* $userType */ $userType,
-					/* $zid */ 'Z' . $userZid,
-					/* $testedType */ $attemptObject['testedType'],
-					/* $createContent */ $createUserContent,
-					/* $expectedCreateRights */ $expectedCreateRights,
-					/* $expectedCreateAllowed */ $expectedCreateAllowed,
-					/* $systemBlocksAsInvalid */ $attemptObject['systemBlocksAsInvalid'] ?? false
-				];
+		// ─── Pre-defined (ZID < 10k) ──────────────────────────────
 
-				if ( $expectedCreateAllowed ) {
-					$userZid++;
-				}
-			}
-		}
+		// Function: only maintainer can create predefined
+		yield 'Predefined function (Z8), functioneer user — blocked' => [
+			'functioneer', 'Z400', 'Z8',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z400" }, "Z2K2": { "Z1K1": "Z8", '
+				. '"Z8K1": [ "Z17", { "Z1K1": "Z17", '
+					. '"Z17K1": "Z6", '
+					. '"Z17K2": "Z400K1", '
+					. '"Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
+				. '"Z8K2": "Z6", '
+				. '"Z8K3": [ "Z20" ], '
+				. '"Z8K4": [ "Z14" ], '
+				. '"Z8K5": "Z400" }, '
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ false,
+			/* $systemBlocksAsInvalid */ false,
+		];
+
+		yield 'Predefined function (Z8), maintainer user — allowed' => [
+			'maintainer', 'Z400', 'Z8',
+			'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z400" }, "Z2K2": { "Z1K1": "Z8", '
+				. '"Z8K1": [ "Z17", { "Z1K1": "Z17", '
+					. '"Z17K1": "Z6", '
+					. '"Z17K2": "Z400K1", '
+					. '"Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
+				. '"Z8K2": "Z6", '
+				. '"Z8K3": [ "Z20" ], '
+				. '"Z8K4": [ "Z14" ], '
+				. '"Z8K5": "Z400" }, '
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+			/* $expectedCreateAllowed */ true,
+			/* $systemBlocksAsInvalid */ false,
+		];
+
+		// Wikidata enum: functioneer can create user-defined, not predefined
+		yield 'User-defined wikidata enum (Z7→Z6884), functioneer — allowed' => [
+			'functioneer', 'Z10005', 'Z7',
+			'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z10005"},'
+				. '"Z2K2":{"Z1K1":"Z7","Z7K1":"Z6884","Z6884K1":"Z6095","Z6884K2":["Z6095",'
+				. '{"Z1K1":"Z6095","Z6095K1":"L313289"},'
+				. '{"Z1K1":"Z6095","Z6095K1":"L313272"},'
+				. '{"Z1K1":"Z6095","Z6095K1":"L338656"}],"Z6884K3":"Z10005"},'
+				. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
+			/* $expectedCreateAllowed */ true,
+			/* $systemBlocksAsInvalid */ false,
+		];
+
+		yield 'Predefined wikidata enum (Z7→Z6884), functioneer — blocked' => [
+			'functioneer', 'Z401', 'Z7',
+			'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z401"},'
+				. '"Z2K2":{"Z1K1":"Z7","Z7K1":"Z6884","Z6884K1":"Z6095","Z6884K2":["Z6095",'
+				. '{"Z1K1":"Z6095","Z6095K1":"L313289"},'
+				. '{"Z1K1":"Z6095","Z6095K1":"L313272"},'
+				. '{"Z1K1":"Z6095","Z6095K1":"L338656"}],"Z6884K3":"Z401"},'
+				. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}',
+			/* $expectedCreateAllowed */ false,
+			/* $systemBlocksAsInvalid */ false,
+		];
 	}
 
 	public function testCreateEnumValue() {
-		$user = $this->getTestUser()->getUser();
 		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
-		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
 
 		// SETUP:
 		// Insert enum type
@@ -436,8 +299,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$this->assertContains( 'wikilambda-create-enum-value', $actualRights );
 	}
 
-	// TODO (T342357): Edits to pre-existing content, using the modifyContent/modifyRights/labelRights
-	// TODO (T342357): keys already defined in the data provider above. Cases to cover:
+	// TODO (T342357): Edits to pre-existing content, using the modifyContent/modifyRights/labelRights test rigging.
 	// TODO (T342357): Pre-defined (ZID < 10k) label change
 	// TODO (T342357): User-defined (ZID > 10k) label change
 }
