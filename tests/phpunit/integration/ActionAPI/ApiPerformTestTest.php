@@ -9,10 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
-use MediaWiki\Context\RequestContext;
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\ActionAPI\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZBoolean;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
@@ -21,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IDBAccessObject;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiPerformTest
@@ -465,7 +467,164 @@ class ApiPerformTestTest extends WikiLambdaApiTestCase {
 		] )[0]['query']['wikilambda_perform_test'];
 	}
 
+	// ------------------------------------------------------------------
+	// Early-exit guards in run() — these die before any orchestrator call
+	// ------------------------------------------------------------------
+
+	public function testRun_diesForNonexistentFunction() {
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( 'Z999999' );
+
+		$this->doApiRequestWithToken( [
+			'action' => 'wikilambda_perform_test',
+			'wikilambda_perform_test_zfunction' => 'Z999999',
+		] );
+	}
+
+	public function testRun_diesForNonFunctionZid() {
+		// Z8130 is a tester (Z20), not a function (Z8)
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( 'Z8130' );
+
+		$this->doApiRequestWithToken( [
+			'action' => 'wikilambda_perform_test',
+			'wikilambda_perform_test_zfunction' => 'Z8130',
+		] );
+	}
+
+	// ------------------------------------------------------------------
+	// isFalse() — static private helper
+	// ------------------------------------------------------------------
+
 	/**
+	 * @dataProvider provideIsFalse
+	 */
+	public function testIsFalse( $input, bool $expected, string $description ) {
+		$wrapper = TestingAccessWrapper::newFromClass( ApiPerformTest::class );
+		$this->assertSame( $expected, $wrapper->isFalse( $input ), $description );
+	}
+
+	public static function provideIsFalse() {
+		yield 'Raw string Z42 (false)' => [
+			ZTypeRegistry::Z_BOOLEAN_FALSE,
+			true,
+			'Z42 string should be false',
+		];
+
+		yield 'Raw string Z41 (true)' => [
+			ZTypeRegistry::Z_BOOLEAN_TRUE,
+			false,
+			'Z41 string should not be false',
+		];
+
+		yield 'ZReference to Z42' => [
+			new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE ),
+			true,
+			'Reference to Z42 should be false',
+		];
+
+		yield 'ZReference to Z41' => [
+			new ZReference( ZTypeRegistry::Z_BOOLEAN_TRUE ),
+			false,
+			'Reference to Z41 should not be false',
+		];
+
+		yield 'ZBoolean with false identity' => [
+			new ZBoolean( new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE ) ),
+			true,
+			'ZBoolean(Z42) should be false',
+		];
+
+		yield 'ZBoolean with true identity' => [
+			new ZBoolean( new ZReference( ZTypeRegistry::Z_BOOLEAN_TRUE ) ),
+			false,
+			'ZBoolean(Z41) should not be false',
+		];
+
+		yield 'stdClass Z9/Z42 reference' => [
+			(object)[
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
+				ZTypeRegistry::Z_REFERENCE_VALUE => ZTypeRegistry::Z_BOOLEAN_FALSE,
+			],
+			true,
+			'stdClass reference to Z42 should be false',
+		];
+
+		yield 'stdClass Z40 boolean with Z42 value' => [
+			(object)[
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_BOOLEAN,
+				ZTypeRegistry::Z_BOOLEAN_VALUE => ZTypeRegistry::Z_BOOLEAN_FALSE,
+			],
+			true,
+			'stdClass boolean with Z42 value should be false',
+		];
+
+		yield 'Arbitrary string' => [
+			'not-a-boolean',
+			false,
+			'Arbitrary string should not be false',
+		];
+	}
+
+	// ------------------------------------------------------------------
+	// compareImplementationStats() — static private helper
+	// ------------------------------------------------------------------
+
+	/**
+	 * @dataProvider provideCompareImplementationStats
+	 */
+	public function testCompareImplementationStats( array $a, array $b, int $expected, string $description ) {
+		$wrapper = TestingAccessWrapper::newFromClass( ApiPerformTest::class );
+		$this->assertSame( $expected, $wrapper->compareImplementationStats( $a, $b ), $description );
+	}
+
+	public static function provideCompareImplementationStats() {
+		yield 'Fewer failures wins' => [
+			[ 'numFailed' => 0, 'averageTime' => 500 ],
+			[ 'numFailed' => 1, 'averageTime' => 100 ],
+			-1,
+			'Fewer failures should rank higher regardless of speed',
+		];
+
+		yield 'More failures loses' => [
+			[ 'numFailed' => 2, 'averageTime' => 100 ],
+			[ 'numFailed' => 0, 'averageTime' => 500 ],
+			1,
+			'More failures should rank lower regardless of speed',
+		];
+
+		yield 'Equal failures, faster wins' => [
+			[ 'numFailed' => 0, 'averageTime' => 100 ],
+			[ 'numFailed' => 0, 'averageTime' => 500 ],
+			-1,
+			'Faster average should rank higher when failures are equal',
+		];
+
+		yield 'Equal failures, slower loses' => [
+			[ 'numFailed' => 0, 'averageTime' => 500 ],
+			[ 'numFailed' => 0, 'averageTime' => 100 ],
+			1,
+			'Slower average should rank lower when failures are equal',
+		];
+
+		yield 'Identical stats' => [
+			[ 'numFailed' => 1, 'averageTime' => 300 ],
+			[ 'numFailed' => 1, 'averageTime' => 300 ],
+			0,
+			'Identical stats should compare as equal',
+		];
+	}
+
+	// ------------------------------------------------------------------
+	// maybeUpdateImplementationRanking
+	// ------------------------------------------------------------------
+
+	/**
+	 * Tests the ranking decision logic in maybeUpdateImplementationRanking without
+	 * any DB writes. We mock the JobQueueGroup and assert purely on whether the
+	 * UpdateImplementationsJob was pushed (and with what ranking). The actual DB
+	 * persistence of the ranking is tested separately in UpdateImplementationsJobTest.
+	 *
 	 * @dataProvider provideMaybeUpdateImplementationRanking
 	 */
 	public function testMaybeUpdateImplementationRanking(
@@ -473,20 +632,13 @@ class ApiPerformTestTest extends WikiLambdaApiTestCase {
 		$expectedRanking
 	) {
 		$functionZid = 'Z813';
-		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
-		$functionRevision_0 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
-		// 1. Insert an initial ranking of 3 implementations (same for all tests)
-		// Z91300/Z91301/Z91302 don't exist in persistent storage, but no matter for these tests.
-		$initialRanking = [ new ZReference( 'Z91300' ),
-			new ZReference( 'Z91301' ), new ZReference( 'Z91302' ) ];
-		$this->updateImplementationsList( $functionZid, $targetTitle, $initialRanking );
-		$functionRevision_1 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
-		$this->assertTrue(
-			$functionRevision_1 > $functionRevision_0,
-			"The latest revision $functionRevision_1 should be greater than the initial revision $functionRevision_0"
-		);
-		// 2. Prepare the arguments to maybeUpdateImplementationRanking()
-		// The structure of $implementationMap is described in comments of maybeUpdateImplementationRanking
+		$functionRevision = 1;
+
+		// The initial ranking order: Z91300 is "currently first".
+		$attachedImplementationZids = [ 'Z91300', 'Z91301', 'Z91302' ];
+		$attachedTesterZids = [ 'Z8130', 'Z8131' ];
+
+		// Build the $implementationMap from the provider data.
 		$implementationMap = [];
 		foreach ( $testResults as $values ) {
 			$metadataMap = $this->makeMetadataMap( array_slice( $values, 2, 4 ) );
@@ -494,41 +646,29 @@ class ApiPerformTestTest extends WikiLambdaApiTestCase {
 			$implementationMap[ $values[ 0 ] ][ $values[ 1 ] ][ 'validateStatus' ] =
 				$this->makeZBoolean( $values[ 6 ] );
 		}
-		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
-		$targetFunction = $targetObject->getInnerZObject();
-		$targetImplementationZids = $targetFunction->getImplementationZids();
-		$targetTesterZids = $targetFunction->getTesterZids();
 
-		// 3.
-		ApiPerformTest::maybeUpdateImplementationRanking( $functionZid, $functionRevision_0,
-			$implementationMap, $targetImplementationZids, $targetTesterZids );
+		// Mock the job queue to capture whether a ranking update job is pushed.
+		$pushedJob = null;
+		$mockQueue = $this->createMock( \MediaWiki\JobQueue\JobQueueGroup::class );
+		$mockQueue->method( 'push' )
+			->willReturnCallback( static function ( $job ) use ( &$pushedJob ) {
+				$pushedJob = $job;
+			} );
+		$this->setService( 'JobQueueGroup', $mockQueue );
+
+		ApiPerformTest::maybeUpdateImplementationRanking( $functionZid, $functionRevision,
+			$implementationMap, $attachedImplementationZids, $attachedTesterZids );
 
 		if ( !$expectedRanking ) {
-			// In these cases no update should happen
+			$this->assertNull( $pushedJob, 'No UpdateImplementationsJob should be pushed' );
+		} else {
+			$this->assertNotNull( $pushedJob, 'An UpdateImplementationsJob should be pushed' );
 			$this->assertSame(
-				$functionRevision_1, $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST ),
-				'The new revision should match the latest DB revision, no update should have happened.'
+				$expectedRanking,
+				$pushedJob->getParams()['implementationRankingZids'],
+				'The ranking in the pushed job should match the expected order'
 			);
-			return;
 		}
-
-		// 4. Force the UpdateImplementationsJob to run now
-		$this->runJobs( [ 'maxJobs' => 1 ], [ 'type' => 'updateImplementations' ] );
-		$functionRevision_2 = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
-		$this->assertTrue(
-			$functionRevision_2 > $functionRevision_1,
-			"The new revision $functionRevision_2 should be greater than the previous revision $functionRevision_1"
-		);
-
-		// 5. Retrieve Z8K4/implementations (as ZIDs) and confirm correct
-		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
-		$targetFunction = $targetObject->getInnerZObject();
-		'@pha-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
-		$targetImplementationZids = $targetFunction->getImplementationZids();
-		$this->assertTrue(
-			$expectedRanking === $targetImplementationZids,
-			'The expected ranking should match the target implementation ZIDs'
-		);
 	}
 
 	/**
@@ -720,34 +860,6 @@ class ApiPerformTestTest extends WikiLambdaApiTestCase {
 			],
 			null
 		];
-	}
-
-	/**
-	 * @param string $functionZid
-	 * @param Title $targetTitle
-	 * @param array $newList
-	 */
-	private function updateImplementationsList( $functionZid, $targetTitle, $newList ) {
-		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
-		$targetFunction = $targetObject->getInnerZObject();
-
-		// Update ZFunction with the new ranking
-		$targetFunction->setValueByKey(
-			ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
-			new ZTypedList(
-				ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_IMPLEMENTATION ) ),
-				$newList
-			)
-		);
-		// Update persistent storage
-		$creatingComment = wfMessage( 'wikilambda-updated-implementations-summary' )
-			->inLanguage( 'en' )->text();
-		$this->store->updateZObjectAsSystemUser(
-			RequestContext::getMain(),
-			$functionZid,
-			$targetObject->getZObject()->__toString(),
-			$creatingComment
-		);
 	}
 
 	private function makeMetadataMap( $values ) {
