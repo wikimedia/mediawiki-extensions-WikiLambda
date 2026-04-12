@@ -112,7 +112,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 				__CLASS__ . ' triggered for {item} with unrecognised action {action}; data error?',
 				[
 					'item' => $this->params['target'],
-					'action' => var_export( $this->params ),
+					'action' => var_export( $this->params, true ),
 					// 'action' => $changeAction,
 				]
 			);
