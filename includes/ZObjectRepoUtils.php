@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Language\Language;
 use MediaWiki\MediaWikiServices;
@@ -52,17 +51,16 @@ class ZObjectRepoUtils {
 
 		// Given this is user input, validate the language code, and fall back if it's not valid
 		if ( !$services->getLanguageNameUtils()->isSupportedLanguage( $targetLanguage ) ) {
-			$targetLanguage = $fallback;
+			if ( !$services->getLanguageNameUtils()->isSupportedLanguage( $fallback ) ) {
+				// Recover from invalid fallback language codes by using the default language
+				$targetLanguage = 'en';
+			} else {
+				$targetLanguage = $fallback;
+			}
 		}
 
-		try {
-			$targetLanguageObject = $services->getLanguageFactory()->getLanguage( $targetLanguage );
-		} catch ( InvalidArgumentException ) {
-			// Try to recover from invalid language codes by falling back to the default language
-			return self::getLanguageFromString( $fallback, 'en' );
-		}
-
-		return $targetLanguageObject;
+		// Given we've validated above the language (or fallback), we don't need to catch InvalidArgumentException.
+		return $services->getLanguageFactory()->getLanguage( $targetLanguage );
 	}
 
 }

@@ -44,5 +44,6 @@ class ZObjectRepoUtilsTest extends WikiLambdaIntegrationTestCase {
 
 		yield 'invalid language code without fallback returns en' => [ [ ' yo' ], 'en' ];
 		yield 'invalid language code with fallback returns fallback' => [ [ ' yo?', 'es' ], 'es' ];
+		yield 'invalid language and fallback returns default fallback' => [ [ 'yo&&&yo', 'yo&yo' ], 'en' ];
 	}
 }
