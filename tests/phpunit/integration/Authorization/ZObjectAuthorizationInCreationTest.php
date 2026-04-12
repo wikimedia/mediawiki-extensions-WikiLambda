@@ -42,7 +42,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 
 		$this->insertZids( [
 			'Z1', 'Z2', 'Z6', 'Z7', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16',
-			'Z24', 'Z40', 'Z46', 'Z60', 'Z61', 'Z64', 'Z801', 'Z6884', 'Z6095'
+			'Z20', 'Z24', 'Z40', 'Z46', 'Z60', 'Z61', 'Z64', 'Z801', 'Z6884', 'Z6095'
 		] );
 	}
 
@@ -241,8 +241,23 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				],
 			],
 
-			// TODO (T342357): Pre-defined (ZID < 10k) tester (Z20 instance)
-			// TODO (T342357): User-defined (ZID > 10k) tester (Z20 instance)
+			'tester (Z20 instance)' => [
+				'testedType' => 'Z20',
+				'createContent' =>
+					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z20", '
+						. '"Z20K1": "Z801", '
+						. '"Z20K2": { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "test input" }, '
+						. '"Z20K3": { "Z1K1": "Z7", "Z7K1": "Z866", '
+							. '"Z866K2": "test input" } }, '
+					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+				'createRights' => [ 'wikilambda-create-tester' ],
+				'createAllowed' => [
+					'basic' => true, 'functioneer' => true, 'maintainer' => true
+				],
+				'createAllowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true
+				],
+			],
 
 			'language (Z60 instance)' => [
 				'testedType' => 'Z60',
@@ -421,7 +436,8 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$this->assertContains( 'wikilambda-create-enum-value', $actualRights );
 	}
 
-	// TODO (T342357): Edits to pre-existing content, especially:
+	// TODO (T342357): Edits to pre-existing content, using the modifyContent/modifyRights/labelRights
+	// TODO (T342357): keys already defined in the data provider above. Cases to cover:
 	// TODO (T342357): Pre-defined (ZID < 10k) label change
 	// TODO (T342357): User-defined (ZID > 10k) label change
 }
