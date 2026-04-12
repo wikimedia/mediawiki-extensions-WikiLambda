@@ -1608,6 +1608,153 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
+	// ------------------------------------------------------------------
+	// Coverage-gap tests: simple query methods and edge cases
+	// ------------------------------------------------------------------
+
+	public function testGetRevisionById_returnsRevision() {
+		$this->insertZids( [ 'Z17' ] );
+		$title = Title::newFromText( 'Z17', NS_MAIN );
+		$revId = $title->getLatestRevID();
+		$revision = $this->zobjectStore->getRevisionById( $revId );
+		$this->assertNotNull( $revision );
+		$this->assertSame( $revId, $revision->getId() );
+	}
+
+	public function testGetRevisionById_returnsNullForBadId() {
+		$this->assertNull( $this->zobjectStore->getRevisionById( 999999999 ) );
+	}
+
+	public function testFetchAllZLanguageCodes_returnsArrayOfStrings() {
+		// Seed the languages cache table directly, since insertZids doesn't populate it.
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1002', 'en' );
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'Z1003', 'es' );
+
+		$codes = $this->zobjectStore->fetchAllZLanguageCodes();
+		$this->assertIsArray( $codes );
+		$this->assertContains( 'en', $codes );
+		$this->assertContains( 'es', $codes );
+	}
+
+	public function testGetCountOfTypeInstances_specificType() {
+		$this->insertZids( [ 'Z17' ] );
+		$count = $this->zobjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_KEY );
+		$this->assertIsInt( $count );
+		$this->assertGreaterThanOrEqual( 0, $count );
+	}
+
+	public function testGetCountOfTypeInstances_genericZ1CountsAllZids() {
+		$this->insertZids( [ 'Z17' ] );
+		$count = $this->zobjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_OBJECT );
+		$this->assertGreaterThanOrEqual( 1, $count );
+	}
+
+	public function testFetchAllImplementations_returnsArray() {
+		$this->insertZids( [ 'Z14' ] );
+		$impls = $this->zobjectStore->fetchAllImplementations();
+		$this->assertIsArray( $impls );
+	}
+
+	public function testPushZObject_createsPage() {
+		$zid = 'Z40001';
+		$data = '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"' . $zid . '"},'
+			. '"Z2K2":{"Z1K1":"Z6","Z6K1":"test push"},'
+			. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]},'
+			. '"Z2K4":{"Z1K1":"Z32","Z32K1":["Z31"]},'
+			. '"Z2K5":{"Z1K1":"Z12","Z12K1":["Z11"]}}';
+
+		$result = $this->zobjectStore->pushZObject( $zid, $data, 'Test push' );
+		$this->assertTrue( $result );
+
+		$title = Title::newFromText( $zid, NS_MAIN );
+		$this->assertTrue( $title->exists() );
+	}
+
+	public function testFetchZObject_returnsFalseForInvalidTitle() {
+		$result = $this->zobjectStore->fetchZObject( '||||invalid||||' );
+		$this->assertFalse( $result );
+	}
+
+	public function testFetchZObject_returnsFalseForNonexistentZid() {
+		$result = $this->zobjectStore->fetchZObject( 'Z99999' );
+		$this->assertFalse( $result );
+	}
+
+	// ------------------------------------------------------------------
+	// updateZObject: disallowed root type
+	// ------------------------------------------------------------------
+
+	public function testUpdateZObject_disallowedRootType() {
+		$context = RequestContext::getMain();
+		$user = $this->getTestSysop()->getUser();
+		// A bare ZReference is a disallowed root ZObject type
+		$data = '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z0"},'
+			. '"Z2K2":{"Z1K1":"Z9","Z9K1":"Z6"},'
+			. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]},'
+			. '"Z2K4":{"Z1K1":"Z32","Z32K1":["Z31"]},'
+			. '"Z2K5":{"Z1K1":"Z12","Z12K1":["Z11"]}}';
+
+		$result = $this->zobjectStore->createNewZObject( $context, $data, 'test', $user );
+		$this->assertInstanceOf( ZObjectPage::class, $result );
+		$this->assertNull( $result->getWikiPage(), 'A disallowed root type should produce a fatal ZObjectPage' );
+	}
+
+	// ------------------------------------------------------------------
+	// findZTesterResult: edge cases
+	// ------------------------------------------------------------------
+
+	public function testFindZTesterResult_withRevisionConditions() {
+		$this->zobjectStore->insertZTesterResult(
+			'Z420', 10, 'Z421', 20, 'Z422', 30, true, self::$testResponse
+		);
+
+		// All conditions specified (including revisions) — should match
+		$found = $this->zobjectStore->findZTesterResult( 'Z420', 10, 'Z421', 20, 'Z422', 30 );
+		$this->assertInstanceOf( ZResponseEnvelope::class, $found );
+
+		// Wrong revision — should miss
+		$notFound = $this->zobjectStore->findZTesterResult( 'Z420', 99, 'Z421', 20, 'Z422', 30 );
+		$this->assertNull( $notFound );
+	}
+
+	public function testFindZTesterResult_nonZResponseEnvelopeIsLoggedAndReturnsNull() {
+		// Insert a valid ZObject that is NOT a ZResponseEnvelope (a plain ZString)
+		$notAnEnvelope = '{"Z1K1":"Z6","Z6K1":"I am not a Z22"}';
+		$this->zobjectStore->insertZTesterResult(
+			'Z430', 1, 'Z431', 2, 'Z432', 3, true, $notAnEnvelope
+		);
+
+		$result = $this->zobjectStore->findZTesterResult( 'Z430', null, 'Z431', null, 'Z432', null );
+		$this->assertNull( $result );
+	}
+
+	// ------------------------------------------------------------------
+	// removeReferenceFromFunction: edge cases
+	// ------------------------------------------------------------------
+
+	public function testRemoveReferenceFromFunction_returnsEarlyForNonexistentFunction() {
+		// Should not throw, just return silently
+		$this->zobjectStore->removeReferenceFromFunction( 'Z999999', 'Z8K4', 'Z14', 'Z999998' );
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function testRemoveFunctionReferenceIfImplementationOrTester_returnsEarlyForInvalidContent() {
+		// Non-existent ZID → fetchZObject returns false → early return
+		$this->zobjectStore->removeFunctionReferenceIfImplementationOrTester( 'Z999997' );
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function testRemoveFunctionReferenceIfImplementationOrTester_returnsEarlyForNonImplNonTester() {
+		// Z17 is a Key (Z3), not an implementation or tester
+		$this->insertZids( [ 'Z17' ] );
+		$this->zobjectStore->removeFunctionReferenceIfImplementationOrTester( 'Z17' );
+		$this->addToAssertionCount( 1 );
+	}
+
+	// ------------------------------------------------------------------
+	// Existing helpers follow
+	// ------------------------------------------------------------------
+
 	private function injectZTesterResults(): void {
 		$this->zobjectStore->insertZTesterResult(
 			'Z410', 1, 'Z401', 2, 'Z402', 3, true, self::$testResponse
