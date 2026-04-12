@@ -9,8 +9,14 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Context\DerivativeContext;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ActionAPI\ApiPerformTest;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZBoolean;
@@ -20,8 +26,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\Title\Title;
-use Wikimedia\Rdbms\IDBAccessObject;
+use MediaWiki\Request\FauxRequest;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -65,406 +70,152 @@ class ApiPerformTestTest extends WikiLambdaApiTestCase {
 	}
 
 	/**
-	 * @dataProvider provideExecuteSuccessfully
-	 * TODO (T374242): Fix Beta Cluster so we can re-enable these tests.
-	 * @group Broken
-	 */
-	public function testExecuteSuccessfully(
-		$requestedFunction,
-		$requestedZImplementations,
-		$requestedZTesters,
-		$expectedResults,
-		$expectedThrownError = null
-	) {
-		if ( $expectedThrownError ) {
-			$this->expectExceptionMessage( $expectedThrownError );
-		}
-
-		$results = $this->doApiRequestWithToken( [
-			'action' => 'wikilambda_perform_test',
-			'wikilambda_perform_test_zfunction' => $requestedFunction,
-			'wikilambda_perform_test_zimplementations' => $requestedZImplementations,
-			'wikilambda_perform_test_ztesters' => $requestedZTesters
-		] )[0]['query']['wikilambda_perform_test'];
-
-		if ( $expectedThrownError ) {
-			return;
-		}
-
-		$this->assertSameSize( $expectedResults, $results );
-
-		for ( $i = 0; $i < count( $expectedResults ); $i++ ) {
-			$this->assertNotNull(
-				$results[$i]['testMetadata'],
-				'We should have a meta-data field returned for each result'
-			);
-			$this->assertEquals(
-				$requestedFunction,
-				$results[$i]['zFunctionId'],
-				'We should have the correct Function ZID returned for each result'
-			);
-			$this->assertEquals(
-				$expectedResults[$i]['zimplementationId'],
-				$results[$i]['zImplementationId'],
-				'We should have the correct Implementation ZID returned for each result'
-			);
-			$this->assertEquals(
-				$expectedResults[$i]['ztesterId'],
-				$results[$i]['zTesterId'],
-				'We should have the correct Tester ZID returned for each result'
-			);
-			$this->assertEquals(
-				json_decode( $expectedResults[$i]['validateStatus'] ),
-				json_decode( $results[$i]['validateStatus'] ),
-				'We should have the correct validation status returned for each result'
-			);
-			if ( array_key_exists( 'expectedValue', $expectedResults[$i] ) ) {
-				$actualExpectedValueItem = current( array_filter(
-					json_decode( $results[$i]['testMetadata'] )->K1,
-					static function ( $item ) {
-						return property_exists( $item, 'K1' ) && $item->K1 === 'expectedTestResult';
-					}
-				) );
-				$this->assertNotFalse(
-					$actualExpectedValueItem,
-					'We should have the expected value specified for each appropriate result'
-				);
-				$this->assertEquals(
-					json_decode( $expectedResults[$i]['expectedValue'] ),
-					$actualExpectedValueItem->K2,
-					'We should have the correct expected value returned for each result'
-				);
-			}
-			if ( array_key_exists( 'actualValue', $expectedResults[$i] ) ) {
-				$actualActualValueItem = current( array_filter(
-					json_decode( $results[$i]['testMetadata'] )->K1,
-					static function ( $item ) {
-						return property_exists( $item, 'K1' ) && $item->K1 === 'actualTestResult';
-					}
-				) );
-				$this->assertNotFalse(
-					$actualActualValueItem,
-					'We should have the actual value specified for each appropriate result'
-				);
-				$this->assertEquals(
-					json_decode( $expectedResults[$i]['actualValue'] ),
-					$actualActualValueItem->K2,
-					'We should have the correct actual value returned for each result'
-				);
-			}
-			if ( array_key_exists( 'functionCallErrorType', $expectedResults[$i] ) ) {
-				$this->assertEquals(
-					'errors',
-					json_decode( $results[$i]['testMetadata'] )->K1[1]->K1,
-					'We should have an errors block returned for each appropriate result'
-				);
-				$this->assertEquals(
-					$expectedResults[$i]['functionCallErrorType'],
-					json_decode( $results[$i]['testMetadata'] )->K1[1]->K2->{ZTypeRegistry::Z_ERROR_TYPE},
-					'We should have the correct error type returned for each appropriate result'
-				);
-			}
-			if ( array_key_exists( 'validationCallErrorType', $expectedResults[$i] ) ) {
-				$this->assertEquals(
-					'validateErrors',
-					json_decode( $results[$i]['testMetadata'] )->K1[9]->K1,
-					'We should have a validation errors block returned for each appropriate result'
-				);
-				$this->assertEquals(
-					$expectedResults[$i]['validationCallErrorType'],
-					json_decode( $results[$i]['testMetadata'] )->K1[9]->K2->{ZTypeRegistry::Z_ERROR_TYPE},
-					'We should have the correct validation error type returned for each appropriate result'
-				);
-			}
-		}
-
-		// Checks related to ApiPerformTest::maybeUpdateImplementationRanking
-		$targetTitle = Title::newFromText( $requestedFunction, NS_MAIN );
-		$functionRevisionBefore = $targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
-		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
-		$targetFunction = $targetObject->getInnerZObject();
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
-		$targetImplementationZids = $targetFunction->getImplementationZids();
-		$targetTesterZids = $targetFunction->getTesterZids();
-		if ( count( $targetImplementationZids ) <= 1 ||
-			array_diff( $targetImplementationZids, $requestedZImplementations ) ||
-			array_diff( $targetTesterZids, $requestedZTesters ) ) {
-			// No update to implementation ranking should be done
-			$this->assertEquals( $functionRevisionBefore,
-				$targetTitle->getLatestRevID( IDBAccessObject::READ_LATEST ) );
-		}
-	}
-
-	public static function provideExecuteSuccessfully() {
-		yield 'Request specifies implementation and tester, both by reference' => [
-			'Z813',
-			'Z913',
-			'Z8130',
-			[
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
-
-		yield 'Request specifies implementation by reference' => [
-			'Z813',
-			'Z913',
-			'',
-			[
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				],
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z8131',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
-
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Request specifies JSON for new implementation' => [
-		// 	'Z813',
-		// 	self::getTestFileContents( 'new-zimplementation.json' ),
-		// 	'',
-		// 	[
-		// 		[
-		// 			'zimplementationId' => 'Z0',
-		// 			'ztesterId' => 'Z8130',
-		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-		// 			'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-		// 			'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
-		// 		],
-		// 		[
-		// 			'zimplementationId' => 'Z0',
-		// 			'ztesterId' => 'Z8131',
-		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-		// 		]
-		// 	]
-		// ];
-
-		// TODO (T371837): Fix Beta Cluster so we can re-enable this test.
-		// yield 'Request specifies JSON for edited version of existing implementation' => [
-		// 	'Z813',
-		// 	str_replace( "true", "false", self::getTestFileContents( 'existing-zimplementation.json' ) ),
-		// 	'',
-		// 	[
-		// 		[
-		// 			'zimplementationId' => 'Z1000000',
-		// 			'ztesterId' => 'Z8130',
-		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-		// 			'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-		// 			'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
-		// 		],
-		// 		[
-		// 			'zimplementationId' => 'Z1000000',
-		// 			'ztesterId' => 'Z8131',
-		// 			'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-		// 		]
-		// 	]
-		// ];
-
-		yield 'Request specifies tester by reference' => [
-			'Z813',
-			'',
-			'Z8130',
-			[
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
-
-		yield 'Request specifies JSON for new tester' => [
-			'Z813',
-			'',
-			self::getTestFileContents( 'new-ztester.json' ),
-			[
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z0',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
-
-		yield 'Request specifies JSON for edited version of existing tester' => [
-			'Z813',
-			'',
-			str_replace( "Z41", "Z42", self::getTestFileContents( 'existing-ztester.json' ) ),
-			[
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z2000000',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
-
-		yield 'Request specifies non-existent function' => [
-			'Z123456789',
-			'',
-			'',
-			[],
-			'Perform test error: \'Z123456789\' isn\'t a known Object'
-		];
-
-		yield 'Request specifies non-existent implementation' => [
-			'Z813',
-			'Z123456789',
-			'Z8130',
-			[
-				[
-					'zimplementationId' => 'Z123456789',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					// Error in evaluation
-					// TODO (T367089): This should be Z504 instead of Z503
-					// 'functionCallErrorType' => 'Z504',
-					'functionCallErrorType' => 'Z503',
-				]
-			],
-		];
-
-		yield 'Request specifies non-existent tester' => [
-			'Z813',
-			'',
-			'Z123456789',
-			[],
-			'Perform test error: \'Z123456789\' isn\'t a known Object'
-		];
-
-		yield 'Request specifies non-function as function' => [
-			'Z8130',
-			'',
-			'',
-			[],
-			'Perform test error: \'Z8130\' isn\'t a function'
-		];
-
-		yield 'Request specifies non-implementation as implementation, by reference' => [
-			'Z813',
-			'Z8130',
-			'Z8130',
-			[
-				[
-					'zimplementationId' => 'Z8130',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					// Not wellformed error
-					// TODO (T367089): This should be Z504 instead of Z503
-					// 'functionCallErrorType' => 'Z517'
-					'functionCallErrorType' => 'Z503'
-				]
-			],
-		];
-
-		yield 'Request specifies non-implementation as implementation, by JSON' => [
-			'Z813',
-			self::getTestFileContents( 'existing-ztester.json' ),
-			'',
-			[],
-			'Perform test error: \'{ "Z1K1": "Z20", "Z20K1": "Z813", "Z20K2": { "Z1K1": "Z7", "Z7K1": "Z813", ' .
-				'"Z813K1": [ "Z1" ] }, "Z20K3": { "Z1K1": "Z7", "Z7K1": "Z844", "Z844K2": { "Z1K1": "Z40", "Z40K1": ' .
-				'"Z41" } } }\' isn\'t an implementation'
-		];
-
-		yield 'Request specifies non-tester as tester' => [
-			'Z813',
-			'',
-			'Z1000000',
-			[],
-			'Perform test error: \'{ "Z1K1": "Z14", "Z14K1": "Z813", "Z14K3": { "Z1K1": "Z16", "Z16K1": ' .
-				'"Z600", "Z16K2": "function Z813( Z813K1 ) { return true; }" } }\' isn\'t a test case.'
-		];
-
-		/* Temporarily skipped
-		yield 'Request specifies implementation that throws an error' => [
-			'Z813',
-			str_replace(
-				"return false",
-				"throw new Error( 'some error' )",
-				self::getTestFileContents( 'new-zimplementation.json' ) ),
-			'Z8130',
-			[
-				[
-					'zimplementationId' => 'Z0',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "\"Z42\"",
-					// Error in evaluation
-					'functionCallErrorType' => 'Z507'
-				]
-			]
-		]; */
-
-		yield 'Request specifies tester that throws an error' => [
-			'Z813',
-			'',
-			// Adjust tester so that its validation call tries to call boolean equality on a non-boolean
-			str_replace( "Z42", "not a boolean", self::getTestFileContents( 'new-ztester.json' ) ),
-			[
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z0',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
-					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"not a boolean\"}",
-					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
-
-		yield 'Request with no implementations or testers specified' => [
-			'Z813',
-			'',
-			'',
-			[
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				],
-				[
-					'zimplementationId' => 'Z913',
-					'ztesterId' => 'Z8131',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
-				]
-			]
-		];
-	}
-
-	/**
-	 * This now doesn't work, because we're mocking the request without trying the network.
+	 * Build an ApiPerformTest module with a FauxRequest, inject a mock orchestrator
+	 * that returns the given responses in sequence, execute, and return the result array.
 	 *
-	 * @group Broken
+	 * We're here to test the API code and business logic, not the OrchestratorRequest class nor
+	 * the function-orchestrator/function-evaluator services themselves, so we mock the responses.
+	 *
+	 * @param array $apiParams Request parameters (without module prefix)
+	 * @param array $orchestratorResponses Sequential return values for orchestrate()
+	 * @return array The result array from the API
 	 */
-	public function testExecuteFailure_noServer() {
-		$this->overrideConfigValue(
-			'WikiLambdaOrchestratorLocation',
-			'https://wikifunctions-not-the-orchestrator.wmflabs.org'
+	private function executeWithMockedOrchestrator( array $apiParams, array $orchestratorResponses ): array {
+		$prefixed = [ 'action' => 'wikilambda_perform_test' ];
+		foreach ( $apiParams as $k => $v ) {
+			$prefixed[ 'wikilambda_perform_test_' . $k ] = $v;
+		}
+
+		$request = new FauxRequest( $prefixed, true );
+		$context = new DerivativeContext( RequestContext::getMain() );
+		$context->setRequest( $request );
+		$context->setUser( $this->getTestSysop()->getUser() );
+
+		$main = new ApiMain( $context, true );
+		$module = new ApiPerformTest( $main, 'wikilambda_perform_test', $this->store );
+
+		$mock = $this->createMock( OrchestratorRequest::class );
+		$mock->method( 'orchestrate' )
+			->willReturnOnConsecutiveCalls( ...$orchestratorResponses );
+		TestingAccessWrapper::newFromObject( $module )->orchestrator = $mock;
+
+		$module->execute();
+		$data = $module->getResult()->getResultData();
+		return $data['query']['wikilambda_perform_test'] ?? [];
+	}
+
+	private static function makeZ22( string $boolZid, bool $withMap = false ): array {
+		$metadata = $withMap
+			? '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},"K1":["Z882"]}'
+			: '{"Z1K1":"Z9","Z9K1":"Z24"}';
+		return [
+			'result' => '{"Z1K1":"Z22",'
+				. '"Z22K1":{"Z1K1":"Z40","Z40K1":"' . $boolZid . '"},'
+				. '"Z22K2":' . $metadata . '}',
+			'httpStatusCode' => 200,
+		];
+	}
+
+	private static function makePassingZ22( bool $withMap = false ): array {
+		return self::makeZ22( 'Z41', $withMap );
+	}
+
+	private static function makeFailingZ22(): array {
+		return self::makeZ22( 'Z42' );
+	}
+
+	public function testRun_happyPath_singleImplSingleTester() {
+		$results = $this->executeWithMockedOrchestrator(
+			[ 'zfunction' => 'Z813', 'zimplementations' => 'Z913', 'ztesters' => 'Z8130' ],
+			[ self::makePassingZ22(), self::makePassingZ22() ]
 		);
 
-		$this->expectExceptionMessage(
-			'Could not resolve host \'https://wikifunctions-not-the-orchestrator.wmflabs.org\', probably because the ' .
-			'orchestrator is not running. Please consult the README to add the orchestrator to your docker-compose ' .
-			'configuration.' );
+		$this->assertCount( 1, $results );
+		$this->assertSame( 'Z813', $results[0]['zFunctionId'] );
+		$this->assertSame( 'Z913', $results[0]['zImplementationId'] );
+		$this->assertSame( 'Z8130', $results[0]['zTesterId'] );
+	}
 
-		$results = $this->doApiRequestWithToken( [
+	public function testRun_happyPath_singleImplMultipleTesters() {
+		$results = $this->executeWithMockedOrchestrator(
+			[ 'zfunction' => 'Z813', 'zimplementations' => 'Z913', 'ztesters' => 'Z8130|Z8131' ],
+			[
+				self::makePassingZ22(), self::makePassingZ22(),
+				self::makePassingZ22(), self::makePassingZ22(),
+			]
+		);
+
+		$this->assertCount( 2, $results );
+		$this->assertSame( 'Z8130', $results[0]['zTesterId'] );
+		$this->assertSame( 'Z8131', $results[1]['zTesterId'] );
+	}
+
+	public function testRun_testPassesButValidationFails() {
+		// The first response (test execution) needs a ZTypedMap as Z22K2 because the
+		// validation-failure path calls $testMetadata->setValueForKey() to store the
+		// actual/expected values on it.
+		$results = $this->executeWithMockedOrchestrator(
+			[ 'zfunction' => 'Z813', 'zimplementations' => 'Z913', 'ztesters' => 'Z8130' ],
+			[ self::makePassingZ22( true ), self::makeFailingZ22() ]
+		);
+
+		$this->assertCount( 1, $results );
+		$status = json_decode( $results[0]['validateStatus'], true );
+		$this->assertSame( 'Z42', $status['Z40K1'] ?? $status );
+	}
+
+	public function testRun_nonExistentImplementation_returnsValidationError() {
+		$results = $this->executeWithMockedOrchestrator(
+			[ 'zfunction' => 'Z813', 'zimplementations' => 'Z123456789', 'ztesters' => 'Z8130' ],
+			[]
+		);
+
+		$this->assertCount( 1, $results );
+		$this->assertSame( 'Z123456789', $results[0]['zImplementationId'] );
+		$status = json_decode( $results[0]['validateStatus'], true );
+		$this->assertSame( 'Z42', $status['Z40K1'] ?? $status );
+	}
+
+	public function testRun_defaultsToConnectedImplsAndTesters() {
+		$results = $this->executeWithMockedOrchestrator(
+			[ 'zfunction' => 'Z813' ],
+			[
+				self::makePassingZ22(), self::makePassingZ22(),
+				self::makePassingZ22(), self::makePassingZ22(),
+			]
+		);
+
+		$this->assertCount( 2, $results );
+		$this->assertSame( 'Z913', $results[0]['zImplementationId'] );
+		$this->assertSame( 'Z913', $results[1]['zImplementationId'] );
+	}
+
+	public function testRun_orchestratorConnectionFailure_diesWithError() {
+		$this->expectException( ApiUsageException::class );
+
+		$request = new FauxRequest( [
 			'action' => 'wikilambda_perform_test',
 			'wikilambda_perform_test_zfunction' => 'Z813',
 			'wikilambda_perform_test_zimplementations' => 'Z913',
-			'wikilambda_perform_test_ztesters' => 'Z8130'
-		] )[0]['query']['wikilambda_perform_test'];
+			'wikilambda_perform_test_ztesters' => 'Z8130',
+		], true );
+		$context = new DerivativeContext( RequestContext::getMain() );
+		$context->setRequest( $request );
+		$context->setUser( $this->getTestSysop()->getUser() );
+
+		$main = new ApiMain( $context, true );
+		$module = new ApiPerformTest( $main, 'wikilambda_perform_test', $this->store );
+
+		$mock = $this->createMock( OrchestratorRequest::class );
+		$mock->method( 'orchestrate' )
+			->willThrowException( new ConnectException(
+				'Connection refused',
+				new GuzzleRequest( 'POST', 'http://orchestrator.invalid' )
+			) );
+		TestingAccessWrapper::newFromObject( $module )->orchestrator = $mock;
+		TestingAccessWrapper::newFromObject( $module )->orchestratorHost = 'http://orchestrator.invalid';
+
+		$module->execute();
 	}
 
 	// ------------------------------------------------------------------
