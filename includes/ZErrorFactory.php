@@ -19,6 +19,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
+use MediaWiki\Logger\LoggerFactory;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class ZErrorFactory {
@@ -27,6 +29,13 @@ class ZErrorFactory {
 	 * @var array
 	 */
 	private static $errorDescriptors;
+
+	private static ?LoggerInterface $logger = null;
+
+	private static function getLogger(): LoggerInterface {
+		self::$logger ??= LoggerFactory::getInstance( 'WikiLambda' );
+		return self::$logger;
+	}
 
 	/**
 	 * Read and parse the yaml file with the error type descriptors
@@ -51,9 +60,16 @@ class ZErrorFactory {
 				) {
 					self::$errorDescriptors = $descriptor['patterns']['keywords'];
 				} else {
+					self::getLogger()->warning(
+						__METHOD__ . ': error_types.yaml loaded but missing expected structure'
+					);
 					self::$errorDescriptors = [];
 				}
-			} catch ( Exception ) {
+			} catch ( Exception $e ) {
+				self::getLogger()->warning(
+					__METHOD__ . ': Failed to load error_types.yaml: {message}',
+					[ 'message' => $e->getMessage() ]
+				);
 				self::$errorDescriptors = [];
 			}
 		}
