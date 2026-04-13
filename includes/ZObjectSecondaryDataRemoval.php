@@ -44,6 +44,11 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 	public function doUpdate() {
 		$zid = $this->title->getDBkey();
 
+		$this->logger->info(
+			__METHOD__ . ': Removing secondary data for {zid}',
+			[ 'zid' => $zid ]
+		);
+
 		// Remove all secondary store data for the given ZID.
 		$this->zObjectStore->deleteZObjectLabelsByZid( $zid );
 		$this->zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
@@ -65,6 +70,12 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 		// Unregister the ZID from caches and clear object cache.
 		ZObjectRegistry::unregisterZid( $zid );
 		$cacheKey = $this->zObjectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
-		$this->zObjectCache->delete( $cacheKey );
+		$cacheResult = $this->zObjectCache->delete( $cacheKey );
+		if ( !$cacheResult ) {
+			$this->logger->warning(
+				__METHOD__ . ': Failed to delete object cache for {zid}',
+				[ 'zid' => $zid ]
+			);
+		}
 	}
 }
