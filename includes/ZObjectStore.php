@@ -391,8 +391,16 @@ class ZObjectStore {
 		try {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
 		} catch ( ZErrorException $e ) {
+			$this->logger->info(
+				__METHOD__ . ': makeContent threw ZErrorException for {zid}: {message}',
+				[ 'zid' => $zid, 'message' => $e->getMessage() ]
+			);
 			return ZObjectPage::newFatal( $e->getZError() );
 		} catch ( MWContentSerializationException $mwe ) {
+			$this->logger->info(
+				__METHOD__ . ': makeContent threw MWContentSerializationException for {zid}: {message}',
+				[ 'zid' => $zid, 'message' => $mwe->getMessage() ]
+			);
 			return ZObjectPage::newFatal(
 				// We can't cleanly recover the inner ZErrorException (if indeed it was even thrown by us), so
 				// for now just pass this down as a Z500, perhaps with the ErrorType as the message.
