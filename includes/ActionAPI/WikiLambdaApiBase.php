@@ -307,7 +307,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				// return normally with all those tests that could be run before.
 				'error' => function ( Status $status ) use ( $queryArguments, $userName, $method ): never {
 					$this->getLogger()->info(
-						'{ethod} rejected {caller} request due to too many requests from source "{user}"',
+						'{method} rejected {caller} request due to too many requests from source "{user}"',
 						[
 							'method' => $method,
 							'caller' => static::class,
