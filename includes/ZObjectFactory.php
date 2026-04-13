@@ -19,9 +19,22 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
+use Psr\Log\LoggerInterface;
 
 class ZObjectFactory {
+
+	private static ?LoggerInterface $logger = null;
+
+	/**
+	 * Because much of the uses of this class is static, we can't just create the logger in the
+	 * constructor like we do elsewhere, so instead we have a static LoggerInterface instance.
+	 */
+	private static function getLogger(): LoggerInterface {
+		self::$logger ??= LoggerFactory::getInstance( 'WikiLambda' );
+		return self::$logger;
+	}
 
 	/**
 	 * Validates and creates a ZPersistentObject from the given input data.
@@ -45,7 +58,10 @@ class ZObjectFactory {
 			$inputTypeZObject = self::extractObjectType( $input );
 			$typeZid = $inputTypeZObject->getZValue();
 		} catch ( ZErrorException $e ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': Parsing input failed: ' . $e->getMessage() );
+			self::getLogger()->info(
+				__METHOD__ . ': Parsing input failed: {message}',
+				[ 'message' => $e->getMessage() ]
+			);
 			throw new ZErrorException(
 				ZErrorFactory::createValidationZError( $e->getZError() )
 			);
@@ -59,7 +75,10 @@ class ZObjectFactory {
 			try {
 				$object = self::extractInnerObject( $input );
 			} catch ( ZErrorException $e ) {
-				wfDebugLog( 'WikiLambda', __METHOD__ . ': type loading failed: ' . $e->getMessage() );
+				self::getLogger()->info(
+					__METHOD__ . ': type loading failed: {message}',
+					[ 'message' => $e->getMessage() ]
+				);
 				throw new ZErrorException(
 					ZErrorFactory::createValidationZError( $e->getZError() )
 				);
@@ -69,7 +88,10 @@ class ZObjectFactory {
 				$innerTypeZObject = self::extractObjectType( $object );
 				$typeZid = $innerTypeZObject->getZValue();
 			} catch ( ZErrorException $e ) {
-				wfDebugLog( 'WikiLambda', __METHOD__ . ': type parsing failed: ' . $e->getMessage() );
+				self::getLogger()->info(
+					__METHOD__ . ': type parsing failed: {message}',
+					[ 'message' => $e->getMessage() ]
+				);
 				throw new ZErrorException(
 					ZErrorFactory::createValidationZError( $e->getZError() )
 				);
@@ -79,7 +101,10 @@ class ZObjectFactory {
 		// 3. Make sure that the ZObject type is not one of the disallowed types
 		// to directly wrap in a ZPersistentObject
 		if ( in_array( $typeZid, ZTypeRegistry::DISALLOWED_ROOT_ZOBJECTS ) ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': banned type attempted: ' . $typeZid );
+			self::getLogger()->info(
+				__METHOD__ . ': Disallowed root ZObject type attempted: {typeZid}',
+				[ 'typeZid' => $typeZid ]
+			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
@@ -101,7 +126,10 @@ class ZObjectFactory {
 			try {
 				self::validatePersistentKeys( $input );
 			} catch ( ZErrorException $e ) {
-				wfDebugLog( 'WikiLambda', __METHOD__ . ': validating key failed: ' . $e->getMessage() );
+				self::getLogger()->info(
+					__METHOD__ . ': validating key failed: {message}',
+					[ 'message' => $e->getMessage() ]
+				);
 				throw new ZErrorException(
 					ZErrorFactory::createValidationZError( $e->getZError() )
 				);
@@ -140,7 +168,7 @@ class ZObjectFactory {
 
 		// 4.6. Check validity, to make sure that ID, label and aliases have the right format
 		if ( !$persistentObject->isValid() ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': validating ZPO keys failed' );
+			self::getLogger()->info( __METHOD__ . ': ZPersistentObject keys failed validation' );
 			throw new ZErrorException(
 				// TODO (T300506): Detail persistent object-related errors
 				ZErrorFactory::createZErrorInstance(
@@ -168,7 +196,7 @@ class ZObjectFactory {
 	public static function validatePersistentKeys( $input ): bool {
 		// We have a different error for Z2K2 being missing vs. the others.
 		if ( !property_exists( $input, ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': Input missing value key' );
+			self::getLogger()->info( __METHOD__ . ': Input missing Z_PERSISTENTOBJECT_VALUE key' );
 			throw new ZErrorException( ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_MISSING_PERSISTENT_VALUE,
 				[ 'data' => $input ],
@@ -186,7 +214,10 @@ class ZObjectFactory {
 
 		foreach ( $otherRequiredKeys as $_i => $requiredKey ) {
 			if ( !property_exists( $input, $requiredKey ) ) {
-				wfDebugLog( 'WikiLambda', __METHOD__ . ": Input missing $requiredKey key" );
+				self::getLogger()->info(
+					__METHOD__ . ': Input missing required key {key}',
+					[ 'key' => $requiredKey ]
+				);
 				throw new ZErrorException( ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
 					[
@@ -225,7 +256,7 @@ class ZObjectFactory {
 
 		if ( is_array( $object ) ) {
 			if ( count( $object ) === 0 ) {
-				wfDebugLog( 'WikiLambda', __METHOD__ . ': Input array empty' );
+				self::getLogger()->info( __METHOD__ . ': Input array empty' );
 				throw new ZErrorException(
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_UNDEFINED_LIST_TYPE,
@@ -252,7 +283,10 @@ class ZObjectFactory {
 				// … occasionally it's an inline ZType (or a dereferenced one)
 				$listType instanceof ZType
 			) ) {
-				wfDebugLog( 'WikiLambda', __METHOD__ . ': Input type is not allowed: ' . $rawListType );
+				self::getLogger()->info(
+					__METHOD__ . ': Input list type is not allowed: {rawListType}',
+					[ 'rawListType' => $rawListType ]
+				);
 				throw new ZErrorException(
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE,
@@ -272,7 +306,10 @@ class ZObjectFactory {
 					// We increment the index to point at the correct array item
 					// because we removed the first element by doing array_shift
 					$arrayIndex = $index + 1;
-					wfDebugLog( 'WikiLambda', __METHOD__ . ": Key $arrayIndex broken: " . $e->getMessage() );
+					self::getLogger()->info(
+						__METHOD__ . ': Key {index} broken: {message}',
+						[ 'index' => $arrayIndex, 'message' => $e->getMessage() ]
+					);
 					throw new ZErrorException(
 						ZErrorFactory::createArrayElementZError( (string)( $arrayIndex ), $e->getZError() )
 					);
@@ -284,7 +321,10 @@ class ZObjectFactory {
 		}
 
 		if ( !is_object( $object ) ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': Output is not a valid ZObject' );
+			self::getLogger()->info(
+				__METHOD__ . ': Input is not a valid ZObject (type: {type})',
+				[ 'type' => gettype( $object ) ]
+			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
@@ -324,7 +364,10 @@ class ZObjectFactory {
 		// * we call the ZObject constructor
 		$targetTitle = Title::newFromText( $typeZid, NS_MAIN );
 		if ( !$targetTitle->exists() ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': generic for ' . $targetTitle->getText() . ', not found on wiki' );
+			self::getLogger()->info(
+				__METHOD__ . ': User-defined type {typeZid} not found on wiki',
+				[ 'typeZid' => $typeZid ]
+			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
@@ -337,7 +380,10 @@ class ZObjectFactory {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( !$targetObject ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': generic for ' . $targetTitle->getText() . ', broke store' );
+			self::getLogger()->warning(
+				__METHOD__ . ': User-defined type {typeZid} found but could not be fetched from store',
+				[ 'typeZid' => $typeZid ]
+			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
@@ -377,7 +423,10 @@ class ZObjectFactory {
 					try {
 						$creationArray[] = self::create( $objectVars[ $key ] );
 					} catch ( ZErrorException $e ) {
-						wfDebugLog( 'WikiLambda', __METHOD__ . ": Key value $key broken: " . $e->getMessage() );
+						self::getLogger()->info(
+							__METHOD__ . ': Key value {key} broken: {message}',
+							[ 'key' => $key, 'message' => $e->getMessage() ]
+						);
 						throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 					}
 				}
@@ -391,7 +440,10 @@ class ZObjectFactory {
 				$creationArray[] = null;
 				if ( array_key_exists( 'required', $settings ) && ( $settings['required'] ) ) {
 					// Error Z511/Missing key
-					wfDebugLog( 'WikiLambda', __METHOD__ . ": Key value $key missing" );
+					self::getLogger()->info(
+						__METHOD__ . ': Required key {key} missing',
+						[ 'key' => $key ]
+					);
 					throw new ZErrorException(
 						ZErrorFactory::createZErrorInstance(
 							ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
@@ -416,7 +468,10 @@ class ZObjectFactory {
 				try {
 					$args[ $key ] = self::create( $value );
 				} catch ( ZErrorException $e ) {
-					wfDebugLog( 'WikiLambda', __METHOD__ . ": Additional key $key broken: " . $e->getMessage() );
+					self::getLogger()->info(
+						__METHOD__ . ': Additional key {key} broken: {message}',
+						[ 'key' => $key, 'message' => $e->getMessage() ]
+					);
 					throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 				}
 			}
@@ -436,7 +491,7 @@ class ZObjectFactory {
 	 */
 	private static function extractInnerObject( $object ) {
 		if ( !property_exists( $object, ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': Missing ZPO value key' );
+			self::getLogger()->info( __METHOD__ . ': Missing Z_PERSISTENTOBJECT_VALUE key' );
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
@@ -488,7 +543,10 @@ class ZObjectFactory {
 
 		// Error invalid type
 		if ( !is_object( $object ) ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': Invalid type ' . var_export( $object, true ) );
+			self::getLogger()->info(
+				__METHOD__ . ': Invalid type (got {type})',
+				[ 'type' => gettype( $object ) ]
+			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
@@ -501,7 +559,7 @@ class ZObjectFactory {
 
 		// Error key Z1K1 does not exist
 		if ( !property_exists( $object, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
-			wfDebugLog( 'WikiLambda', __METHOD__ . ': Input missing Z1K1 key: ' . var_export( $object, true ) );
+			self::getLogger()->info( __METHOD__ . ': Input missing Z1K1 key' );
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE,
@@ -536,7 +594,10 @@ class ZObjectFactory {
 			// * the process would not be fully trustworthy, or
 			// * we'd need to make sure that types and functions are stored with labels
 			if ( !$typeRegistry->isZObjectKeyKnown( $typeZid ) ) {
-				wfDebugLog( 'WikiLambda', __METHOD__ . ': Reference type unknown per isZObjectKeyKnown: ' . $typeZid );
+				self::getLogger()->info(
+					__METHOD__ . ': Reference type unknown: {typeZid}',
+					[ 'typeZid' => $typeZid ]
+				);
 				throw new ZErrorException(
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
@@ -558,7 +619,10 @@ class ZObjectFactory {
 				$returnType = $type->getReturnType();
 				// Make sure that the function Zid exists
 				if ( $returnType === null ) {
-					wfDebugLog( 'WikiLambda', __METHOD__ . ': Call return type ' . $type->getZValue() . ' not found' );
+					self::getLogger()->info(
+						__METHOD__ . ': Function call return type for {zValue} not found',
+						[ 'zValue' => $type->getZValue() ]
+					);
 					throw new ZErrorException(
 						ZErrorFactory::createZErrorInstance(
 							ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
@@ -573,7 +637,10 @@ class ZObjectFactory {
 					( $returnType !== ZTypeRegistry::Z_TYPE ) &&
 					( $returnType !== ZTypeRegistry::Z_OBJECT )
 				) {
-					wfDebugLog( 'WikiLambda', __METHOD__ . ': Call return type is wrong: ' . $type->getReturnType() );
+					self::getLogger()->info(
+						__METHOD__ . ': Function call return type is wrong: {returnType}',
+						[ 'returnType' => $type->getReturnType() ]
+					);
 					throw new ZErrorException(
 						ZErrorFactory::createZErrorInstance(
 							ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE,
@@ -595,7 +662,10 @@ class ZObjectFactory {
 		}
 
 		// Invalid type: Z1K1 contains something else than a ZReference or a ZFunctionCall
-		wfDebugLog( 'WikiLambda', __METHOD__ . ': Z1K1 is not Z9 or a Z7: ' . var_export( $type->getZValue(), true ) );
+		self::getLogger()->info(
+			__METHOD__ . ': Z1K1 is not a ZReference or ZFunctionCall (class: {class})',
+			[ 'class' => get_class( $type ) ]
+		);
 		throw new ZErrorException(
 			ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID,
