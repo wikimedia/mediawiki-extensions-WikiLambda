@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Meno25"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "واجهة برمجة تطبيقات Wikifunctions",
+	"wikifunctions-rest-module-v0-desc": "واجهات برمجة التطبيقات للتفاعل مع وظائف ويكي",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "جلب كائنات Z",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "استرجاع الإصدارات التاريخية من كائنات ZObjects",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "استدعاء دالة",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "استدعاء دالة، مع لغات تحليل وعرض مخصصة"
+}

@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mdktb"
+			"Mdktb",
+			"Meno25"
 		]
 	},
 	"action-wikilambda-abstract-create": "إنشاء مقالات مجردة جديدة",
@@ -21,9 +22,23 @@
 	"wikilambda-abstract-error-invalid-json": "المقالة المجردة ليست بتنسيق JSON صالح.",
 	"wikilambda-abstract-error-invalid-title": "العنوان المقدّم '$1' ليس صالحًا لمقالة مجردة.",
 	"wikilambda-abstract-error-missing-lede-section": "يجب أن يحتوي كائن المقالة المجردة على قسم افتتاحي (Q8776414).",
+	"wikilambda-abstract-error-missing-section-fragments": "القسم الذي يحمل المفتاح ' $1 ' لا يحتوي على أجزاء.",
 	"wikilambda-abstract-error-missing-sections": "يجب أن تحتوي المقالة المجردة على قسم واحد على الأقل.",
+	"wikilambda-abstract-error-unmatching-qid": "قيمة الخاصية 'qid' (' $1 ') لا تتطابق مع عنوان الصفحة ' $2 '",
+	"wikilambda-abstract-fragment-actions-menu": "قائمة إجراءات Fragment",
+	"wikilambda-abstract-menu-fragments-accessible-label": "قائمة لاختيار وإضافة جزء جديد",
+	"wikilambda-abstract-menu-group-basic-fragments": "إجراءات التجزئة الأساسية",
+	"wikilambda-abstract-menu-group-insert-fragments": "أدخل أجزاء",
+	"wikilambda-abstract-menu-group-move-fragments": "نقل الأجزاء",
+	"wikilambda-abstract-menu-group-special-fragments": "إجراءات الشظايا الخاصة",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "أضف جزءًا فارغًا",
 	"wikilambda-abstract-menu-option-add-named-fragment": "أضف $1",
 	"wikilambda-abstract-menu-option-add-section": "أضف قسم",
+	"wikilambda-abstract-menu-option-delete-fragment": "حذف الجزء",
+	"wikilambda-abstract-menu-option-insert-after": "أدرج الجزء بعد",
+	"wikilambda-abstract-menu-option-insert-before": "أدخل الجزء قبل",
+	"wikilambda-abstract-menu-option-move-after": "انقل الجزء بعد",
+	"wikilambda-abstract-menu-option-move-before": "انقل الجزء قبل",
 	"wikilambda-abstract-preview-fragment-max-retries": "وصلت الحد الأقصى للمحاولات. حاول مجددًا لاحقًا.",
 	"wikilambda-abstract-preview-fragment-retry": "أعد المحاولة",
 	"wikilambda-abstract-preview-in-language": "نص مولّد",
