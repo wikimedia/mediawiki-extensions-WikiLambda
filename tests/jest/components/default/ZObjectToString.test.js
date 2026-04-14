@@ -189,16 +189,37 @@ describe( 'ZObjectToString', () => {
 				const wrapper = renderZObjectToString();
 
 				const childElements = wrapper.findAllComponents( { name: 'wl-z-object-to-string' } );
-				const dividerElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+				const openParen = wrapper.find( '.ext-wikilambda-app-object-to-string__open-paren' );
+				const commaToken = wrapper.find( '.ext-wikilambda-app-object-to-string__comma-token' );
+				const closeParen = wrapper.find( '.ext-wikilambda-app-object-to-string__close-paren' );
 
 				expect( childElements.length ).toBe( 3 );
 				expect( childElements[ 0 ].text() ).toBe( 'And' );
 				expect( childElements[ 1 ].text() ).toBe( '"first arg"' );
 				expect( childElements[ 2 ].text() ).toBe( '"second arg"' );
 
-				expect( dividerElements[ 0 ].text() ).toBe( '(' );
-				expect( dividerElements[ 1 ].text() ).toBe( ',' );
-				expect( dividerElements[ 2 ].text() ).toBe( ')' );
+				expect( openParen.exists() ).toBe( true );
+				expect( openParen.text() ).toBe( '(' );
+				expect( openParen.element.textContent.charCodeAt( 0 ) ).toBe( 160 ); // &nbsp;
+				expect( commaToken.element.textContent ).toBe( ', ' );
+				expect( closeParen.text() ).toBe( ')' );
+			} );
+
+			it( 'renders tokenized wrappers for stable spacing', () => {
+				const wrapper = renderZObjectToString();
+
+				expect( wrapper.find( '.ext-wikilambda-app-object-to-string__base-token' ).exists() ).toBe( true );
+				expect( wrapper.findAll( '.ext-wikilambda-app-object-to-string__argument-token' ) ).toHaveLength( 2 );
+				expect( wrapper.findAll( '.ext-wikilambda-app-object-to-string__comma-token' ) ).toHaveLength( 1 );
+			} );
+
+			it( 'preserves whitespace around separators', () => {
+				const wrapper = renderZObjectToString();
+				const openParen = wrapper.find( '.ext-wikilambda-app-object-to-string__open-paren' );
+				const commaToken = wrapper.find( '.ext-wikilambda-app-object-to-string__comma-token' );
+
+				expect( openParen.element.textContent.startsWith( '\u00A0(' ) ).toBe( true );
+				expect( commaToken.element.textContent ).toBe( ', ' );
 			} );
 		} );
 
@@ -230,13 +251,14 @@ describe( 'ZObjectToString', () => {
 
 				const parentElement = heading.find( '.ext-wikilambda-app-object-to-string__parent' );
 				const childElements = heading.findAll( '.ext-wikilambda-app-object-to-string__child' );
-				const dividerElements = heading.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+				const openParen = heading.find( '.ext-wikilambda-app-object-to-string__open-paren' );
+				const closeParen = heading.find( '.ext-wikilambda-app-object-to-string__close-paren' );
 
 				expect( parentElement.text() ).toBe( 'Echo' );
 				expect( childElements.length ).toBe( 1 );
 				expect( childElements[ 0 ].text() ).toBe( 'And' );
-				expect( dividerElements[ 0 ].text() ).toBe( '(' );
-				expect( dividerElements[ 1 ].text() ).toBe( ')' );
+				expect( openParen.text() ).toBe( '(' );
+				expect( closeParen.text() ).toBe( ')' );
 			} );
 
 			it( 'renders children function call arguments', () => {
@@ -247,14 +269,16 @@ describe( 'ZObjectToString', () => {
 				const args = children[ 1 ];
 
 				const childElements = args.findAll( '.ext-wikilambda-app-object-to-string__child' );
-				const dividerElements = args.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+				const openParen = args.find( '.ext-wikilambda-app-object-to-string__open-paren' );
+				const commaToken = args.find( '.ext-wikilambda-app-object-to-string__comma-token' );
+				const closeParen = args.find( '.ext-wikilambda-app-object-to-string__close-paren' );
 
 				expect( childElements.length ).toBe( 2 );
 				expect( childElements[ 0 ].text() ).toBe( '"first arg"' );
 				expect( childElements[ 1 ].text() ).toBe( '"second arg"' );
-				expect( dividerElements[ 0 ].text() ).toBe( '(' );
-				expect( dividerElements[ 1 ].text() ).toBe( ',' );
-				expect( dividerElements[ 2 ].text() ).toBe( ')' );
+				expect( openParen.text() ).toBe( '(' );
+				expect( commaToken.element.textContent ).toBe( ', ' );
+				expect( closeParen.text() ).toBe( ')' );
 			} );
 		} );
 
@@ -296,14 +320,16 @@ describe( 'ZObjectToString', () => {
 				const args = children[ 0 ];
 
 				const childElements = args.findAll( '.ext-wikilambda-app-object-to-string__child' );
-				const dividerElements = args.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+				const openParen = args.find( '.ext-wikilambda-app-object-to-string__open-paren' );
+				const commaToken = args.find( '.ext-wikilambda-app-object-to-string__comma-token' );
+				const closeParen = args.find( '.ext-wikilambda-app-object-to-string__close-paren' );
 
 				expect( childElements.length ).toBe( 2 );
 				expect( childElements[ 0 ].text() ).toBe( '"first arg"' );
 				expect( childElements[ 1 ].text() ).toBe( '"second arg"' );
-				expect( dividerElements[ 0 ].text() ).toBe( '(' );
-				expect( dividerElements[ 1 ].text() ).toBe( ',' );
-				expect( dividerElements[ 2 ].text() ).toBe( ')' );
+				expect( openParen.text() ).toBe( '(' );
+				expect( commaToken.element.textContent ).toBe( ', ' );
+				expect( closeParen.text() ).toBe( ')' );
 			} );
 		} );
 
@@ -577,15 +603,17 @@ describe( 'ZObjectToString', () => {
 
 				const parentElement = wrapper.find( '.ext-wikilambda-app-object-to-string__parent' );
 				const childElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string__child' );
-				const dividerElements = wrapper.findAll( '.ext-wikilambda-app-object-to-string__divider' );
+				const openParen = wrapper.find( '.ext-wikilambda-app-object-to-string__open-paren' );
+				const commaToken = wrapper.find( '.ext-wikilambda-app-object-to-string__comma-token' );
+				const closeParen = wrapper.find( '.ext-wikilambda-app-object-to-string__close-paren' );
 
 				expect( parentElement.text() ).toBe( 'Monolingual text' );
 				expect( childElements[ 0 ].text() ).toBe( 'English' );
 				expect( childElements[ 1 ].text() ).toBe( '"string value"' );
 
-				expect( dividerElements[ 0 ].text() ).toBe( '(' );
-				expect( dividerElements[ 1 ].text() ).toBe( ',' );
-				expect( dividerElements[ 2 ].text() ).toBe( ')' );
+				expect( openParen.text() ).toBe( '(' );
+				expect( commaToken.element.textContent ).toBe( ', ' );
+				expect( closeParen.text() ).toBe( ')' );
 			} );
 
 			it( 'renders each argument with another ZObjectToString component', () => {

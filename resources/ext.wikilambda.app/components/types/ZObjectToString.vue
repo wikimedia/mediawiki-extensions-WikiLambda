@@ -7,7 +7,10 @@
 <template>
 	<span class="ext-wikilambda-app-object-to-string">
 		<span class="ext-wikilambda-app-object-to-string ext-wikilambda-app-object-to-string__parent">
-			<span :class="classNames">
+			<span
+				class="ext-wikilambda-app-object-to-string__base-token"
+				:class="classNames"
+			>
 				<cdx-icon
 					v-if="icon"
 					:icon="icon"
@@ -50,26 +53,27 @@
 		--><span
 			v-if="childKeys.length"
 			class="ext-wikilambda-app-object-to-string__children">
-				<span class="ext-wikilambda-app-object-to-string__space-separator"> </span
-				><span class="ext-wikilambda-app-object-to-string__divider">(</span
-				><span>
-				<template
+				<span class="ext-wikilambda-app-object-to-string__open-paren">
+					{{ spaceSeparator }}(
+				</span><!--
+				--><template
 					v-for="( childKey, index ) in childKeys"
 					:key="childKey"
 					>
-					<wl-z-object-to-string
-						:key-path="`${ keyPath }.${ childKey }`"
-						:object-value="objectValue[ childKey ]"
-						:edit="edit"
-						class="ext-wikilambda-app-object-to-string__child"
-						@expand="expand"
-					></wl-z-object-to-string
-					><span
+					<span class="ext-wikilambda-app-object-to-string__argument-token"
+						><wl-z-object-to-string
+							:key-path="`${ keyPath }.${ childKey }`"
+							:object-value="objectValue[ childKey ]"
+							:edit="edit"
+							class="ext-wikilambda-app-object-to-string__child"
+							@expand="expand"
+						></wl-z-object-to-string
+					></span><span
 						v-if="hasComma( index )"
-						class="ext-wikilambda-app-object-to-string__divider"
-						>, </span>
-				</template>
-				</span><span class="ext-wikilambda-app-object-to-string__divider">)</span>
+						class="ext-wikilambda-app-object-to-string__comma-token"
+					>{{ commaSeparator }}</span>
+				</template><!--
+				--><span class="ext-wikilambda-app-object-to-string__close-paren">)</span>
 		</span>
 	</span>
 </template>
@@ -440,6 +444,9 @@ module.exports = exports = defineComponent( {
 		} );
 
 		// Display data
+		const spaceSeparator = '\u00A0'; // &nbsp;
+		const commaSeparator = ', ';
+
 		/**
 		 * Whether a ZObject child needs a trailing comma given its index
 		 *
@@ -584,8 +591,8 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		const classNames = computed( () => ( {
-			'ext-wikilambda-app-object-to-string--rendering': rendererRunning.value,
-			'ext-wikilambda-app-object-to-string--with-icon': icon.value
+			'ext-wikilambda-app-object-to-string__base-token--rendering': rendererRunning.value,
+			'ext-wikilambda-app-object-to-string__base-token--with-icon': icon.value
 		} ) );
 
 		// Actions
@@ -639,7 +646,9 @@ module.exports = exports = defineComponent( {
 			isWikidataType,
 			labelData,
 			link,
+			commaSeparator,
 			showLink,
+			spaceSeparator,
 			textValue,
 			valueKey
 		};
@@ -653,17 +662,45 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-app-object-to-string {
 	display: inline;
 
-	.ext-wikilambda-app-object-to-string__child {
+	.ext-wikilambda-app-object-to-string__parent a,
+	.ext-wikilambda-app-object-to-string__parent .ext-wikilambda-app-object-to-string__text {
 		overflow-wrap: anywhere;
+		word-break: normal;
+		white-space: normal;
 	}
 
-	.ext-wikilambda-app-object-to-string__divider {
+	.ext-wikilambda-app-object-to-string__base-token {
+		white-space: normal;
+
+		// When the function token has an icon, we want to wrap the text normally
+		// but the icon should be inline with the text.
+		&--with-icon {
+			white-space: nowrap;
+
+			> span,
+			> a {
+				white-space: normal;
+			}
+		}
+
+		&--rendering {
+			color: @color-placeholder;
+		}
+	}
+
+	.ext-wikilambda-app-object-to-string__open-paren,
+	.ext-wikilambda-app-object-to-string__close-paren {
 		color: @color-subtle;
 		white-space: nowrap;
 	}
 
-	.ext-wikilambda-app-object-to-string__space-separator {
-		white-space: pre;
+	.ext-wikilambda-app-object-to-string__comma-token {
+		color: @color-subtle;
+		white-space: normal;
+	}
+
+	.ext-wikilambda-app-object-to-string__argument-token {
+		display: inline;
 	}
 
 	.ext-wikilambda-app-object-to-string__blank {
@@ -674,30 +711,11 @@ module.exports = exports = defineComponent( {
 		font-size: inherit;
 	}
 
-	// T343608: preserve leading whitespace in text value!
-	.ext-wikilambda-app-object-to-string__text {
-		white-space: pre-wrap;
-	}
-
 	.ext-wikilambda-app-object-to-string__icon.cdx-icon {
 		padding-right: @spacing-25;
 		position: relative;
 		top: -1px;
 		vertical-align: middle;
-	}
-
-	&--with-icon {
-		white-space: nowrap;
-		display: inline;
-
-		> span,
-		> a {
-			white-space: pre-wrap;
-		}
-	}
-
-	&--rendering {
-		color: @color-placeholder;
 	}
 }
 </style>
