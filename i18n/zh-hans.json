@@ -366,6 +366,7 @@
 	"wikilambda-publishchanges": "发布更改",
 	"wikilambda-publishnew": "发布",
 	"wikilambda-reference": "引用",
+	"wikilambda-renderer-api-error": "出错了。请稍后重试。",
 	"wikilambda-renderer-view-invalid-result": "无显示值",
 	"wikilambda-return-typeselector-label": "选择要返回的类型",
 	"wikilambda-savechanges": "保存更改",
