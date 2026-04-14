@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 use stdClass;
+use Wikimedia\Rdbms\IDBAccessObject;
 use Wikimedia\Rdbms\IResultWrapper;
 
 /**
@@ -1821,6 +1822,78 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$findRes = $this->zobjectStore->findZTesterResult( 'Z410', null, 'Z401', null, 'Z402', null );
 		$this->assertNull( $findRes );
+	}
+
+	public function testInsertZTesterResultWithStatus_skipsStaleWriteAfterImplementationRevisionChange() {
+		$context = RequestContext::getMain();
+		$user = $this->getTestSysop()->getUser();
+		$baseObject = static fn ( string $label ) => '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. '"Z2K2": "' . $label . '",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		$functionZid = $this->zobjectStore->getNextAvailableZid();
+		$this->zobjectStore->createNewZObject( $context, $baseObject( 'function-r1' ), 'Create function', $user );
+
+		$implementationZid = $this->zobjectStore->getNextAvailableZid();
+		$this->zobjectStore->createNewZObject(
+			$context,
+			$baseObject( 'implementation-r1' ),
+			'Create implementation',
+			$user
+		);
+
+		$testerZid = $this->zobjectStore->getNextAvailableZid();
+		$this->zobjectStore->createNewZObject( $context, $baseObject( 'tester-r1' ), 'Create tester', $user );
+
+		$functionTitle = Title::newFromText( $functionZid, NS_MAIN );
+		$implementationTitle = Title::newFromText( $implementationZid, NS_MAIN );
+		$testerTitle = Title::newFromText( $testerZid, NS_MAIN );
+
+		$functionRevisionR1 = $functionTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
+		$implementationRevisionR1 = $implementationTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
+		$testerRevisionR1 = $testerTitle->getLatestRevID( IDBAccessObject::READ_LATEST );
+
+		$insertOutcome = $this->zobjectStore->insertZTesterResult(
+			$functionZid,
+			$functionRevisionR1,
+			$implementationZid,
+			$implementationRevisionR1,
+			$testerZid,
+			$testerRevisionR1,
+			true,
+			self::$testResponse
+		);
+		$this->assertSame( ZObjectStore::TESTER_RESULT_CACHE_WRITE_INSERTED, $insertOutcome );
+
+		// Simulate invalidation on edit and then a delayed stale async write from R1.
+		$updatedImplementationText = str_replace(
+			'implementation-r1',
+			'implementation-r2',
+			$this->zobjectStore->fetchZObjectByTitle( $implementationTitle )->getText()
+		);
+		$this->zobjectStore->updateZObject(
+			$context,
+			$implementationZid,
+			$updatedImplementationText,
+			'Update implementation',
+			$user
+		);
+		$this->zobjectStore->deleteZImplementationFromZTesterResultsCache( $implementationZid );
+
+		$staleOutcome = $this->zobjectStore->insertZTesterResult(
+			$functionZid,
+			$functionRevisionR1,
+			$implementationZid,
+			$implementationRevisionR1,
+			$testerZid,
+			$testerRevisionR1,
+			false,
+			self::$testResponse
+		);
+		$this->assertSame( ZObjectStore::TESTER_RESULT_CACHE_WRITE_STALE, $staleOutcome );
+
+		$results = $this->getZTesterResultsFromDB( $functionZid );
+		$this->assertSame( 0, $results->numRows(), 'Stale delayed write should not repopulate cache rows.' );
 	}
 
 	public function testInsertZLanguage() {

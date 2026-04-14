@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use SpecialPageTestBase;
+use Wikimedia\Rdbms\IDBAccessObject;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Pagers\AbstractZObjectPager
@@ -47,6 +48,15 @@ class SpecialListFunctionsByTestsTest extends SpecialPageTestBase {
 		$this->editPage( 'Z10001', json_encode( $data->Z10001 ), 'function Z10001', NS_MAIN );
 		$this->editPage( 'Z10002', json_encode( $data->Z10002 ), 'function Z10002', NS_MAIN );
 		DeferredUpdates::doUpdates();
+		$functionRevisionA = $this->getServiceContainer()->getTitleFactory()
+			->newFromText( 'Z10001', NS_MAIN )
+			->getLatestRevID( IDBAccessObject::READ_LATEST );
+		$functionRevisionB = $this->getServiceContainer()->getTitleFactory()
+			->newFromText( 'Z10000', NS_MAIN )
+			->getLatestRevID( IDBAccessObject::READ_LATEST );
+		$functionRevisionC = $this->getServiceContainer()->getTitleFactory()
+			->newFromText( 'Z10002', NS_MAIN )
+			->getLatestRevID( IDBAccessObject::READ_LATEST );
 
 		// Manually setup wikilambda_zobject_function_join: available tests and implementations
 		$availableTestsAndImps = [
@@ -77,33 +87,33 @@ class SpecialListFunctionsByTestsTest extends SpecialPageTestBase {
 			// Function B:
 			// * 3 connected tests
 			// * all passing
-			[ 'Z10000', 100, 'Z30001', 301, 'Z20001', 201, true, 'x' ],
-			[ 'Z10000', 100, 'Z30001', 301, 'Z20002', 202, true, 'x' ],
-			[ 'Z10000', 100, 'Z30001', 301, 'Z20003', 203, true, 'x' ],
-			[ 'Z10000', 100, 'Z30002', 302, 'Z20001', 201, true, 'x' ],
-			[ 'Z10000', 100, 'Z30002', 302, 'Z20002', 202, true, 'x' ],
-			[ 'Z10000', 100, 'Z30002', 302, 'Z20003', 203, true, 'x' ],
+			[ 'Z10000', $functionRevisionB, 'Z30001', 301, 'Z20001', 201, true, 'x' ],
+			[ 'Z10000', $functionRevisionB, 'Z30001', 301, 'Z20002', 202, true, 'x' ],
+			[ 'Z10000', $functionRevisionB, 'Z30001', 301, 'Z20003', 203, true, 'x' ],
+			[ 'Z10000', $functionRevisionB, 'Z30002', 302, 'Z20001', 201, true, 'x' ],
+			[ 'Z10000', $functionRevisionB, 'Z30002', 302, 'Z20002', 202, true, 'x' ],
+			[ 'Z10000', $functionRevisionB, 'Z30002', 302, 'Z20003', 203, true, 'x' ],
 			// Function A:
 			// * 2 connected, 1 disconnected
 			// * all tests passing against all connected implementations
-			[ 'Z10001', 101, 'Z30011', 311, 'Z20011', 211, true, 'x' ],
-			[ 'Z10001', 101, 'Z30011', 311, 'Z20012', 212, true, 'x' ],
-			[ 'Z10001', 101, 'Z30011', 311, 'Z20013', 213, true, 'x' ],
-			[ 'Z10001', 101, 'Z30012', 312, 'Z20011', 211, true, 'x' ],
-			[ 'Z10001', 101, 'Z30012', 312, 'Z20012', 212, true, 'x' ],
-			[ 'Z10001', 101, 'Z30012', 312, 'Z20013', 213, true, 'x' ],
-			[ 'Z10001', 101, 'Z30013', 313, 'Z20011', 213, false, 'x' ],
-			[ 'Z10001', 101, 'Z30013', 313, 'Z20012', 212, false, 'x' ],
-			[ 'Z10001', 101, 'Z30013', 313, 'Z20013', 213, false, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30011', 311, 'Z20011', 211, true, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30011', 311, 'Z20012', 212, true, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30011', 311, 'Z20013', 213, true, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30012', 312, 'Z20011', 211, true, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30012', 312, 'Z20012', 212, true, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30012', 312, 'Z20013', 213, true, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30013', 313, 'Z20011', 213, false, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30013', 313, 'Z20012', 212, false, 'x' ],
+			[ 'Z10001', $functionRevisionA, 'Z30013', 313, 'Z20013', 213, false, 'x' ],
 			// Function C:
 			// * 0 connected
 			// * 1 test failing
-			[ 'Z10002', 102, 'Z30021', 321, 'Z20021', 221, false, 'x' ],
-			[ 'Z10002', 102, 'Z30021', 321, 'Z20022', 222, true, 'x' ],
-			[ 'Z10002', 102, 'Z30021', 321, 'Z20023', 223, true, 'x' ],
-			[ 'Z10002', 102, 'Z30022', 322, 'Z20021', 221, false, 'x' ],
-			[ 'Z10002', 102, 'Z30022', 322, 'Z20022', 222, true, 'x' ],
-			[ 'Z10002', 102, 'Z30022', 322, 'Z20023', 223, true, 'x' ],
+			[ 'Z10002', $functionRevisionC, 'Z30021', 321, 'Z20021', 221, false, 'x' ],
+			[ 'Z10002', $functionRevisionC, 'Z30021', 321, 'Z20022', 222, true, 'x' ],
+			[ 'Z10002', $functionRevisionC, 'Z30021', 321, 'Z20023', 223, true, 'x' ],
+			[ 'Z10002', $functionRevisionC, 'Z30022', 322, 'Z20021', 221, false, 'x' ],
+			[ 'Z10002', $functionRevisionC, 'Z30022', 322, 'Z20022', 222, true, 'x' ],
+			[ 'Z10002', $functionRevisionC, 'Z30022', 322, 'Z20023', 223, true, 'x' ],
 		];
 		foreach ( $testResults as $row ) {
 			$this->zObjectStore->insertZTesterResult( ...$row );

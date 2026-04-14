@@ -59,6 +59,9 @@ class ZObjectStore {
 	private const PREDEFINED_TOP_LIMIT = 'Z9999';
 
 	public const ZOBJECT_CACHE_KEY_PREFIX = 'WikiLambdaObjectStorage';
+	public const TESTER_RESULT_CACHE_WRITE_INSERTED = 'inserted';
+	public const TESTER_RESULT_CACHE_WRITE_STALE = 'stale';
+	public const TESTER_RESULT_CACHE_WRITE_FAILED = 'failed';
 
 	/**
 	 * @param IConnectionProvider $dbProvider
@@ -2131,7 +2134,7 @@ class ZObjectStore {
 	 * @param int $testerRevision The revision ID of the ZTester
 	 * @param bool $testerResult Whether the test run passed (true) or failed (false)
 	 * @param string $testerResponse The test run response JSON object
-	 * @return bool
+	 * @return string One of self::TESTER_RESULT_CACHE_WRITE_* constants
 	 */
 	public function insertZTesterResult(
 		string $functionZID,
@@ -2142,7 +2145,18 @@ class ZObjectStore {
 		int $testerRevision,
 		bool $testerResult,
 		string $testerResponse
-	): bool {
+	): string {
+		// Check if the revision tuple is current
+		if ( !$this->isLatestRevisionTuple(
+			$functionZID,
+			$functionRevision,
+			$implementationZID,
+			$implementationRevision,
+			$testerZID,
+			$testerRevision
+		) ) {
+			return self::TESTER_RESULT_CACHE_WRITE_STALE;
+		}
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
 		$dbw->newInsertQueryBuilder()
@@ -2169,7 +2183,65 @@ class ZObjectStore {
 			] )
 			->caller( __METHOD__ )->execute();
 
-		return (bool)$dbw->affectedRows();
+		return $dbw->affectedRows() > 0 ?
+			self::TESTER_RESULT_CACHE_WRITE_INSERTED :
+			self::TESTER_RESULT_CACHE_WRITE_FAILED;
+	}
+
+	/**
+	 * Returns whether the supplied revision tuple is still current.
+	 *
+	 * If a referenced ZID cannot currently be resolved to a latest revision, we treat it as current
+	 * to preserve existing behavior for synthetic/non-existent fixtures.
+	 *
+	 * @param string $functionZID
+	 * @param int $functionRevision
+	 * @param string $implementationZID
+	 * @param int $implementationRevision
+	 * @param string $testerZID
+	 * @param int $testerRevision
+	 * @return bool
+	 */
+	private function isLatestRevisionTuple(
+		string $functionZID,
+		int $functionRevision,
+		string $implementationZID,
+		int $implementationRevision,
+		string $testerZID,
+		int $testerRevision
+	): bool {
+		return $this->isLatestRevision( $functionZID, $functionRevision ) &&
+			$this->isLatestRevision( $implementationZID, $implementationRevision ) &&
+			$this->isLatestRevision( $testerZID, $testerRevision );
+	}
+
+	/**
+	 * Returns whether the supplied revision matches the current latest revision for this ZID.
+	 *
+	 * @param string $zid
+	 * @param int $revision
+	 * @return bool
+	 */
+	private function isLatestRevision( string $zid, int $revision ): bool {
+		$dbr = $this->dbProvider->getReplicaDatabase();
+		// We intentionally read from replica to keep normal read/write topology.
+		// Residual risk: during replica lag, a delayed stale job may still look current.
+		$latestRevision = $dbr->newSelectQueryBuilder()
+			->select( 'page_latest' )
+			->from( 'page' )
+			->where( [
+				'page_namespace' => NS_MAIN,
+				'page_title' => $zid,
+			] )
+			->caller( __METHOD__ )
+			->fetchField();
+
+		// Preserve prior behavior when there is no known latest revision for this ZID.
+		if ( $latestRevision === false ) {
+			return true;
+		}
+
+		return (int)$latestRevision === $revision;
 	}
 
 	/**

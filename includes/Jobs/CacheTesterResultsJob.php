@@ -48,7 +48,7 @@ class CacheTesterResultsJob extends Job implements GenericParameterJob {
 	 * @return bool
 	 */
 	public function run() {
-		$success = $this->zObjectStore->insertZTesterResult(
+		$outcome = $this->zObjectStore->insertZTesterResult(
 			$this->params['functionZid'],
 			$this->params['functionRevision'],
 			$this->params['implementationZid'],
@@ -59,12 +59,24 @@ class CacheTesterResultsJob extends Job implements GenericParameterJob {
 			$this->params['stashedResult']
 		);
 
-		if ( $success ) {
+		if ( $outcome === ZObjectStore::TESTER_RESULT_CACHE_WRITE_INSERTED ) {
 			$this->logger->debug(
 				__CLASS__ . ' Updated cache for tester result',
 				[
 					'functionZid' => $this->params['functionZid'],
 					'functionRevision' => $this->params['functionRevision']
+				]
+			);
+		} elseif ( $outcome === ZObjectStore::TESTER_RESULT_CACHE_WRITE_STALE ) {
+			$this->logger->info(
+				__CLASS__ . ' Skipped stale tester result cache write',
+				[
+					'functionZid' => $this->params['functionZid'],
+					'functionRevision' => $this->params['functionRevision'],
+					'implementationZid' => $this->params['implementationZid'],
+					'implementationRevision' => $this->params['implementationRevision'],
+					'testerZid' => $this->params['testerZid'],
+					'testerRevision' => $this->params['testerRevision']
 				]
 			);
 		} else {

@@ -54,7 +54,7 @@ class CacheTesterResultsJobTest extends WikiLambdaIntegrationTestCase {
 				// stashedResult
 				'{"Z1K1":"Z40","Z40K1":"Z41"}'
 			)
-			->willReturn( true );
+			->willReturn( ZObjectStore::TESTER_RESULT_CACHE_WRITE_INSERTED );
 
 		$this->setService( 'WikiLambdaZObjectStore', $mockStore );
 
@@ -67,7 +67,7 @@ class CacheTesterResultsJobTest extends WikiLambdaIntegrationTestCase {
 		$mockStore = $this->createMock( ZObjectStore::class );
 		$mockStore->expects( $this->once() )
 			->method( 'insertZTesterResult' )
-			->willReturn( false );
+			->willReturn( ZObjectStore::TESTER_RESULT_CACHE_WRITE_FAILED );
 
 		$this->setService( 'WikiLambdaZObjectStore', $mockStore );
 
@@ -91,7 +91,7 @@ class CacheTesterResultsJobTest extends WikiLambdaIntegrationTestCase {
 				false,
 				'{"Z1K1":"Z40","Z40K1":"Z42"}'
 			)
-			->willReturn( true );
+			->willReturn( ZObjectStore::TESTER_RESULT_CACHE_WRITE_INSERTED );
 
 		$this->setService( 'WikiLambdaZObjectStore', $mockStore );
 
@@ -106,6 +106,18 @@ class CacheTesterResultsJobTest extends WikiLambdaIntegrationTestCase {
 			'stashedResult' => '{"Z1K1":"Z40","Z40K1":"Z42"}',
 		] );
 
+		$this->assertTrue( $job->run() );
+	}
+
+	public function testRun_staleInsertIsSkipped() {
+		$mockStore = $this->createMock( ZObjectStore::class );
+		$mockStore->expects( $this->once() )
+			->method( 'insertZTesterResult' )
+			->willReturn( ZObjectStore::TESTER_RESULT_CACHE_WRITE_STALE );
+
+		$this->setService( 'WikiLambdaZObjectStore', $mockStore );
+
+		$job = $this->buildJob();
 		$this->assertTrue( $job->run() );
 	}
 }
