@@ -140,6 +140,43 @@
 	}
 
 	/**
+	 * Fetch thumbnail URLs for Wikidata entities via action=query&prop=pageimages.
+	 *
+	 * @param {Object} options
+	 * @param {Array<string>} options.qids QIDs to fetch thumbnails for
+	 * @param {AbortSignal} options.signal Abort signal
+	 * @return {Promise<Map<string, {url: string, width: number, height: number}>>} Map of QID → thumbnail
+	 */
+	function fetchWikidataThumbnails( { qids, signal } ) {
+		const api = newWikidataApi();
+		return api.get( {
+			action: 'query',
+			format: 'json',
+			formatversion: '2',
+			titles: qids.join( '|' ),
+			prop: 'pageimages',
+			piprop: 'thumbnail',
+			pithumbsize: 50
+		}, { signal } ).then( ( data ) => {
+			const thumbnailMap = new Map();
+			if ( !data.query || !data.query.pages ) {
+				return thumbnailMap;
+			}
+			data.query.pages.forEach( ( page ) => {
+				const qid = getQidFromPage( page );
+				if ( qid && page.thumbnail && page.thumbnail.source ) {
+					thumbnailMap.set( qid, {
+						url: page.thumbnail.source,
+						width: page.thumbnail.width,
+						height: page.thumbnail.height
+					} );
+				}
+			} );
+			return thumbnailMap;
+		} ).catch( () => new Map() );
+	}
+
+	/**
 	 * Batch-check which of the given page titles exist via the local API.
 	 *
 	 * @param {Object} options
@@ -167,20 +204,23 @@
 	 * @param {Object} options
 	 * @param {Object} options.entity Wikidata entity from wbsearchentities
 	 * @param {Set<string>} options.existingQids QIDs that have abstract content
+	 * @param {Map<string, Object>} options.thumbnailMap Map of QID → thumbnail data
 	 * @param {SearchContext} options.context Search context
 	 * @return {Object} Search result for Vector typeahead
 	 */
-	function transformEntityToResult( { entity, existingQids, context } ) {
+	function transformEntityToResult( { entity, existingQids, thumbnailMap, context } ) {
 		const { id: qid, label, description } = entity;
 		const renderedLabel = label || qid;
 		const hasAbstractContent = existingQids.has( qid );
 		const supportingText = hasAbstractContent ? ABSTRACT_SUPPORTING_TEXT : undefined;
+		const thumbnail = thumbnailMap.get( qid );
 
 		return {
 			value: utils.formatLabelWithId( renderedLabel, qid ),
 			match: undefined,
 			description: context.showDescription ? ( description || undefined ) : undefined,
 			supportingText,
+			thumbnail,
 			url: buildEntityUrl( { qid, hasAbstractContent, context } )
 		};
 	}
@@ -191,15 +231,17 @@
 	 * @param {Object} options
 	 * @param {Object} options.wikidataData Parsed wbsearchentities response
 	 * @param {Set<string>} options.existingQids QIDs with abstract content
+	 * @param {Map<string, Object>} options.thumbnailMap Map of QID → thumbnail data
 	 * @param {SearchContext} options.context Search context
 	 * @param {string} options.query Original search query
 	 * @return {{ query: string, results: Array, searchContinue: number|null }}
 	 */
-	function buildSearchResults( { wikidataData, existingQids, context, query } ) {
+	function buildSearchResults( { wikidataData, existingQids, thumbnailMap, context, query } ) {
 		const { search, searchContinue } = wikidataData;
 		const transform = ( entity ) => transformEntityToResult( {
 			entity,
 			existingQids,
+			thumbnailMap,
 			context
 		} );
 		return utils.buildSearchResultPayload( query, search, searchContinue, transform );
@@ -243,17 +285,19 @@
 				return { query, results: [] };
 			}
 
-			const titles = wikidataData.search.map( ( { id: qid } ) => buildAbstractWikiTitle( {
+			const qids = wikidataData.search.map( ( { id: qid } ) => qid );
+			const titles = qids.map( ( qid ) => buildAbstractWikiTitle( {
 				namespace: context.namespace,
 				qid
 			} ) );
 
-			return fetchPageExistence( {
-				titles,
-				signal: abortController.signal
-			} ).then( ( existingQids ) => buildSearchResults( {
+			return Promise.all( [
+				fetchPageExistence( { titles, signal: abortController.signal } ),
+				fetchWikidataThumbnails( { qids, signal: abortController.signal } )
+			] ).then( ( [ existingQids, thumbnailMap ] ) => buildSearchResults( {
 				wikidataData,
 				existingQids,
+				thumbnailMap,
 				context,
 				query
 			} ) );

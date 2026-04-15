@@ -28,12 +28,15 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 
 	describe( 'vectorSearchClient', () => {
 		it( 'fetchByTitle returns object with fetch promise and abort, resolving to results with value, description, supportingText, url', async () => {
-			const apiResponse = {
+			const searchResponse = {
 				search: [
 					{ id: 'Q90', label: 'Paris', description: 'capital of France' }
 				]
 			};
-			wikidataApiGetMock.mockResolvedValue( apiResponse );
+			// First ForeignApi call: wbsearchentities; second: pageimages (no thumbnail for this test)
+			wikidataApiGetMock
+				.mockResolvedValueOnce( searchResponse )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
 			apiGetMock.mockResolvedValue( {
 				query: {
 					pages: [
@@ -65,18 +68,52 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 			expect( item.url ).toContain( 'Q90' );
 		} );
 
-		it( 'loadMore returns object with fetch promise resolving to results', async () => {
-			const apiResponse = {
-				search: [
-					{ id: 'Q42', label: 'Douglas Adams', description: 'British writer' }
-				]
-			};
-			wikidataApiGetMock.mockResolvedValue( apiResponse );
-			apiGetMock.mockResolvedValue( {
-				query: {
-					pages: []
-				}
+		it( 'includes thumbnail in result when Wikidata pageimages returns one', async () => {
+			wikidataApiGetMock
+				.mockResolvedValueOnce( {
+					search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
+				} )
+				.mockResolvedValueOnce( {
+					query: {
+						pages: [ {
+							title: 'Q90',
+							thumbnail: { source: 'https://upload.wikimedia.org/paris.jpg', width: 50, height: 35 }
+						} ]
+					}
+				} );
+			apiGetMock.mockResolvedValue( { query: { pages: [] } } );
+
+			const client = wikidataSearch.vectorSearchClient;
+			const payload = await client.fetchByTitle( 'Paris', 10, true ).fetch;
+
+			expect( payload.results[ 0 ].thumbnail ).toEqual( {
+				url: 'https://upload.wikimedia.org/paris.jpg',
+				width: 50,
+				height: 35
 			} );
+		} );
+
+		it( 'sets thumbnail to undefined when no pageimage exists for an entity', async () => {
+			wikidataApiGetMock
+				.mockResolvedValueOnce( {
+					search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
+				} )
+				.mockResolvedValueOnce( { query: { pages: [ { title: 'Q90' } ] } } );
+			apiGetMock.mockResolvedValue( { query: { pages: [] } } );
+
+			const client = wikidataSearch.vectorSearchClient;
+			const payload = await client.fetchByTitle( 'Paris', 10, true ).fetch;
+
+			expect( payload.results[ 0 ].thumbnail ).toBeUndefined();
+		} );
+
+		it( 'loadMore returns object with fetch promise resolving to results', async () => {
+			wikidataApiGetMock
+				.mockResolvedValueOnce( {
+					search: [ { id: 'Q42', label: 'Douglas Adams', description: 'British writer' } ]
+				} )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
+			apiGetMock.mockResolvedValue( { query: { pages: [] } } );
 
 			const client = wikidataSearch.vectorSearchClient;
 			const result = client.loadMore( 'Adams', 1, 10, true );
@@ -101,9 +138,9 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'omits description when showDescription=false and no abstract content exists', async () => {
-			wikidataApiGetMock.mockResolvedValue( {
-				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-			} );
+			wikidataApiGetMock
+				.mockResolvedValueOnce( { search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ] } )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
 			apiGetMock.mockResolvedValue( { query: { pages: [] } } );
 
 			const client = wikidataSearch.vectorSearchClient;
@@ -115,9 +152,9 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'omits description when Wikidata description is empty but keeps supportingText for existing abstracts', async () => {
-			wikidataApiGetMock.mockResolvedValue( {
-				search: [ { id: 'Q90', label: 'Paris', description: '' } ]
-			} );
+			wikidataApiGetMock
+				.mockResolvedValueOnce( { search: [ { id: 'Q90', label: 'Paris', description: '' } ] } )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
 			apiGetMock.mockResolvedValue( {
 				query: {
 					pages: [
@@ -136,9 +173,9 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'handles existence-check response without query/pages (treats as no abstract content)', async () => {
-			wikidataApiGetMock.mockResolvedValue( {
-				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-			} );
+			wikidataApiGetMock
+				.mockResolvedValueOnce( { search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ] } )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
 			apiGetMock.mockResolvedValue( {} );
 
 			const client = wikidataSearch.vectorSearchClient;
@@ -150,9 +187,9 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 		} );
 
 		it( 'ignores page objects without a title when checking for existing abstracts', async () => {
-			wikidataApiGetMock.mockResolvedValue( {
-				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-			} );
+			wikidataApiGetMock
+				.mockResolvedValueOnce( { search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ] } )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
 			apiGetMock.mockResolvedValue( { query: { pages: [ {} ] } } );
 
 			const client = wikidataSearch.vectorSearchClient;
@@ -169,9 +206,9 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 				key === 'wgWikiLambdaAbstractPrimaryNamespace' ? '' : originalGetImpl( key )
 			) );
 
-			wikidataApiGetMock.mockResolvedValue( {
-				search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
-			} );
+			wikidataApiGetMock
+				.mockResolvedValueOnce( { search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ] } )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
 			apiGetMock.mockResolvedValue( { query: { pages: [ { title: 'Q90' } ] } } );
 
 			const client = wikidataSearch.vectorSearchClient;
