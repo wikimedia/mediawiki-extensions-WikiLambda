@@ -33,6 +33,7 @@ use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
+use OutOfBoundsException;
 use Wikimedia\HtmlArmor\HtmlArmor;
 
 class PageRenderingHandler implements
@@ -702,7 +703,12 @@ class PageRenderingHandler implements
 		}
 
 		// return label
-		return $wbEntity->getLabels()->getByLanguage( $currentPageContentLanguageCode )?->getText();
+		try {
+			return $wbEntity->getLabels()->getByLanguage( $currentPageContentLanguageCode )?->getText();
+		} catch ( OutOfBoundsException ) {
+			// This means Wikibase doesn't have a label; return null
+			return null;
+		}
 	}
 
 	/**
