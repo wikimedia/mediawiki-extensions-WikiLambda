@@ -24,6 +24,7 @@ use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\Parser;
@@ -272,8 +273,17 @@ class PageRenderingHandler implements
 		$context = RequestContext::getMain();
 		$currentPageContentLanguageCode = $context->getLanguage()->getCode();
 		// (T357702) If we don't know the language code, fall back to Z1002/'en'
-		$langRegistry = ZLangRegistry::singleton();
-		if ( !$langRegistry->isLanguageKnownGivenCode( $currentPageContentLanguageCode ) ) {
+		if (
+			// If we're in repo mode, is this a known ZLanguage?
+			(
+				// (T423515) LangRegistry can only be use in repo mode, as it relies on the ZObjectStore / DB
+				$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
+				!ZLangRegistry::singleton()->isLanguageKnownGivenCode( $currentPageContentLanguageCode )
+			) ||
+			// If we're not, just use MediaWiki's language support check
+			!MediaWikiServices::getInstance()->getLanguageNameUtils()
+				->isSupportedLanguage( $currentPageContentLanguageCode )
+		) {
 			$currentPageContentLanguageCode = 'en';
 		}
 
@@ -544,7 +554,7 @@ class PageRenderingHandler implements
 			return;
 		}
 
-		$contentLanguage = \MediaWiki\MediaWikiServices::getInstance()->getContentLanguage();
+		$contentLanguage = MediaWikiServices::getInstance()->getContentLanguage();
 
 		$extraStats['wikilambda-statistics-header'] = [
 			'wikilambda-statistics-label-allobjects' => $contentLanguage->formatNum(
