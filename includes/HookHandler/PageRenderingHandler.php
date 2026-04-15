@@ -721,7 +721,13 @@ class PageRenderingHandler implements
 	 * @return ?string The label, or null if not found
 	 */
 	private function fetchRepoModeLabel(
-		string $entityId, string $currentPageContentLanguageCode, $targetTitle, $context ): ?string {
+		string $entityId, string $currentPageContentLanguageCode, $targetTitle, $context
+	): ?string {
+		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			// (T423515) Don't do this on a non-repo, as it will explode the DB
+			return null;
+		}
+
 		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
 		// the labels table already, which is very much faster:
 		$label = $this->zObjectStore->fetchZObjectLabel(
