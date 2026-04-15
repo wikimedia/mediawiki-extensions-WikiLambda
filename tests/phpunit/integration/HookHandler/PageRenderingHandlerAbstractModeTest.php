@@ -37,6 +37,7 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 		$mockHashConfigAbstractMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
 			[ 'WikiLambdaEnableAbstractMode', true ],
+			[ 'WikiLambdaAbstractNamespaces', [ 2300 => 'Abstract_Wikipedia' ] ],
 		] );
 
 		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
@@ -122,6 +123,56 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 			'/view/en/Abstract_Wikipedia:Q715040',
 			$attribs['href'],
 			'Abstract mode link should have the correct href with namespace prefix'
+		);
+	}
+
+	public function testOnHtmlPageLinkRendererEnd_abstractMode_missingLabel() {
+		// Mock Wikibase services to return an entity with no label for the requested language
+		$mockTermList = $this->createMock( \Wikibase\DataModel\Term\TermList::class );
+		$mockTermList->method( 'getByLanguage' )
+			->willThrowException( new \OutOfBoundsException( 'Term with languageCode "en" not found' ) );
+
+		$mockItem = $this->createMock( \Wikibase\DataModel\Entity\Item::class );
+		$mockItem->method( 'getLabels' )->willReturn( $mockTermList );
+
+		$mockEntityLookup = $this->createMock( \Wikibase\DataModel\Services\Lookup\EntityLookup::class );
+		$mockEntityLookup->method( 'getEntity' )->willReturn( $mockItem );
+
+		$mockClientStore = $this->createMock( \Wikibase\Client\Store\ClientStore::class );
+		$mockClientStore->method( 'getEntityLookup' )->willReturn( $mockEntityLookup );
+
+		$mockItemId = $this->createMock( \Wikibase\DataModel\Entity\ItemId::class );
+		$mockEntityIdParser = $this->createMock( \Wikibase\DataModel\Entity\EntityIdParser::class );
+		$mockEntityIdParser->method( 'parse' )->willReturnMap( [ [ 'Q715040', $mockItemId ] ] );
+
+		$this->setService( 'WikibaseClient.Store', $mockClientStore );
+		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
+
+		// Set up a RequestContext to simulate being on a special page
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
+		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
+
+		// Create the abstract page in the test DB
+		$content = new AbstractWikiContent( '{ "qid": "Q715040", "sections": {} }' );
+		$this->editPage( 'Q715040', $content, 'test abstract page', 2300 );
+
+		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
+		$linkTarget = Title::makeTitle( 2300, 'Q715040' );
+		$isKnown = true;
+		$text = null;
+		$attribs = [ 'href' => '/wiki/Abstract_Wikipedia:Q715040' ];
+		$ret = '';
+
+		$this->pageRenderingHandlerAbstractMode->onHtmlPageLinkRendererEnd(
+			$linkRenderer, $linkTarget, $isKnown, $text, $attribs, $ret
+		);
+
+		// When label is missing, $text should remain null (hook returns early)
+		$this->assertNull(
+			$text,
+			'When no label is found, the link text should not be modified'
 		);
 	}
 }
