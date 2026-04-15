@@ -1235,6 +1235,8 @@ module.exports = {
 					Constants.Z_NATURAL_LANGUAGE,
 					// Needed for ZObject selector
 					Constants.Z_TYPE,
+					// Needed to resolve typed list labels (e.g. Z881)
+					Constants.Z_TYPED_LIST,
 					... Constants.SUGGESTIONS.LANGUAGES,
 					... Constants.SUGGESTIONS.TYPES
 				];
