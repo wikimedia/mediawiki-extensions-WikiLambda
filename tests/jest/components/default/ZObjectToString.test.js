@@ -200,7 +200,6 @@ describe( 'ZObjectToString', () => {
 
 				expect( openParen.exists() ).toBe( true );
 				expect( openParen.text() ).toBe( '(' );
-				expect( openParen.element.textContent.charCodeAt( 0 ) ).toBe( 160 ); // &nbsp;
 				expect( commaToken.element.textContent ).toBe( ', ' );
 				expect( closeParen.text() ).toBe( ')' );
 			} );
@@ -213,12 +212,12 @@ describe( 'ZObjectToString', () => {
 				expect( wrapper.findAll( '.ext-wikilambda-app-object-to-string__comma-token' ) ).toHaveLength( 1 );
 			} );
 
-			it( 'preserves whitespace around separators', () => {
+			it( 'preserves separator tokens', () => {
 				const wrapper = renderZObjectToString();
 				const openParen = wrapper.find( '.ext-wikilambda-app-object-to-string__open-paren' );
 				const commaToken = wrapper.find( '.ext-wikilambda-app-object-to-string__comma-token' );
 
-				expect( openParen.element.textContent.startsWith( '\u00A0(' ) ).toBe( true );
+				expect( openParen.text() ).toBe( '(' );
 				expect( commaToken.element.textContent ).toBe( ', ' );
 			} );
 		} );

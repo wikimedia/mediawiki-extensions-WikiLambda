@@ -54,7 +54,7 @@
 			v-if="childKeys.length"
 			class="ext-wikilambda-app-object-to-string__children">
 				<span class="ext-wikilambda-app-object-to-string__open-paren">
-					{{ spaceSeparator }}(
+					&nbsp;(
 				</span><!--
 				--><template
 					v-for="( childKey, index ) in childKeys"
@@ -444,7 +444,6 @@ module.exports = exports = defineComponent( {
 		} );
 
 		// Display data
-		const spaceSeparator = '\u00A0'; // &nbsp;
 		const commaSeparator = ', ';
 
 		/**
@@ -648,7 +647,6 @@ module.exports = exports = defineComponent( {
 			link,
 			commaSeparator,
 			showLink,
-			spaceSeparator,
 			textValue,
 			valueKey
 		};
@@ -712,10 +710,20 @@ module.exports = exports = defineComponent( {
 	}
 
 	.ext-wikilambda-app-object-to-string__icon.cdx-icon {
-		padding-right: @spacing-25;
+		padding-inline-end: @spacing-25;
 		position: relative;
 		top: -1px;
 		vertical-align: middle;
+	}
+}
+
+// In RTL UI, mixed-direction function labels and punctuation can reorder
+// unexpectedly. Isolate each object-to-string run so neutral separators
+// (commas/parentheses) stay with their local token sequence.
+// This also makes sure param names of function calls stay in their natural direction.
+[ dir='rtl' ] {
+	.ext-wikilambda-app-object-to-string {
+		unicode-bidi: isolate;
 	}
 }
 </style>
