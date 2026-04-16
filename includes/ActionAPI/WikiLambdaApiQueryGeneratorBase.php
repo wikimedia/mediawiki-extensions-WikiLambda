@@ -71,7 +71,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 		WikiLambdaApiBase::dieWithZError(
 			ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
-				[ 'You must implement your run() method when using WikiLambdaApiBase' ]
+				[ 'message' => 'You must implement your run() method when using WikiLambdaApiBase' ]
 			),
 			HttpStatus::NOT_IMPLEMENTED
 		);
