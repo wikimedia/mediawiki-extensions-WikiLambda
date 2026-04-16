@@ -199,10 +199,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				]
 			);
 
-			// Load ext.wikilambda.inlineerrors css
+			// Load ext.wikilambda.inlineerrors css. We pass the enum's string value because
+			// Parsoid's StubMetadataCollector::appendOutputStrings() only accepts a string
+			// (unlike ParserOutput which accepts string|ParserOutputStringSets).
 			$extApi->getMetadata()->appendOutputStrings(
-				// @phan-suppress-next-line PhanTypeMismatchArgumentReal Parsoid's type hint should be updated
-				\MediaWiki\Parser\ParserOutputStringSets::MODULE,
+				\MediaWiki\Parser\ParserOutputStringSets::MODULE->value,
 				[ 'ext.wikilambda.inlineerrors' ]
 			);
 

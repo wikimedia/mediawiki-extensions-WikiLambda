@@ -27,6 +27,7 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\Lib\Store\SiteLinkLookup;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
+use Wikimedia\Parsoid\Fragments\LiteralStringPFragment;
 use Wikimedia\Parsoid\Fragments\WikitextPFragment;
 use Wikimedia\Parsoid\Mocks\MockEnv;
 use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
@@ -508,5 +509,156 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			. 'Dabin-Unicorn-Main-Product-Image.jpg/1200px-Dabin-Unicorn-Main-Product-Image.jpg" alt="unicorns"/&gt;',
 			$html
 		);
+	}
+
+	// ------------------------------------------------------------------
+	// Additional coverage: disabled/offline/cached-non-HTML/cached-failure branches.
+	// These all short-circuit sourceToFragment() before it schedules a render job,
+	// and each one is a distinct user-visible rendering mode on the client wiki.
+	// ------------------------------------------------------------------
+
+	/**
+	 * Assemble a handler with a ClientStore whose cache-fetch returns $cacheValue, and
+	 * capture any jobs that lazyPush receives.
+	 *
+	 * @param array|false|null $cacheValue value to return from fetchFromFunctionCallCache()
+	 * @param array &$pushedJobs populated by the mock JobQueueGroup
+	 * @return array{0: WikifunctionsPFragmentHandler, 1: ParsoidExtensionAPI}
+	 */
+	private function buildHandlerWithCachedValue( $cacheValue, array &$pushedJobs ): array {
+		$mainConfig = $this->getServiceContainer()->getMainConfig();
+
+		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
+		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
+		$mockClientStore->method( 'fetchFromFunctionCallCache' )->willReturn( $cacheValue );
+		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
+
+		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$mockJobQueueGroup
+			->method( 'lazyPush' )
+			->willReturnCallback( static function ( $job ) use ( &$pushedJobs ) {
+				$pushedJobs[] = $job;
+				return true;
+			} );
+
+		$handler = new WikifunctionsPFragmentHandler(
+			$mainConfig,
+			$mockJobQueueGroup,
+			$this->createMock( HttpRequestFactory::class )
+		);
+
+		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
+		return [ $handler, $extApi ];
+	}
+
+	public function testSourceToFragment_returnsErrorLiteralWhenClientModeDisabled() {
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
+
+		$pushedJobs = [];
+		[ $handler, $extApi ] = $this->buildHandlerWithCachedValue( null, $pushedJobs );
+
+		$fragment = $handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'Z10000', 'foo' ] ), false );
+
+		// WikifunctionsPFragment extends LiteralStringPFragment, but its inherited
+		// newFromLiteral() doesn't use late static binding — so the actual returned
+		// type is the parent LiteralStringPFragment. What we care about is that we
+		// got a literal string fragment, not a pending/HTML one.
+		$this->assertInstanceOf(
+			LiteralStringPFragment::class,
+			$fragment,
+			'Disabled client mode returns an error literal, not a pending fragment or HTML'
+		);
+		$this->assertNotInstanceOf( HtmlPFragment::class, $fragment );
+		$this->assertNotInstanceOf( WikifunctionsPendingFragment::class, $fragment );
+		$this->assertSame(
+			[], $pushedJobs,
+			'Disabled client mode must not queue any jobs — nothing to render, nothing to track'
+		);
+	}
+
+	public function testSourceToFragment_returnsErrorBoxWhenClientModeOffline() {
+		$this->overrideConfigValue( 'WikiLambdaClientModeOffline', true );
+
+		// Cache miss — we need to reach the offline check, which sits after the cache branch.
+		$pushedJobs = [];
+		[ $handler, $extApi ] = $this->buildHandlerWithCachedValue( null, $pushedJobs );
+
+		$fragment = $handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'Z10000', 'foo' ] ), false );
+
+		$this->assertInstanceOf( HtmlPFragment::class, $fragment );
+		$this->assertStringContainsString(
+			'cdx-message--error',
+			$fragment->asHtmlString( $extApi ),
+			'Offline mode renders Html::errorBox() — expect the Codex error-message class'
+		);
+		// The usage-tracking job runs before the offline branch; the render job does not.
+		$this->assertCount(
+			1, $pushedJobs,
+			'Only the usage-tracking job is queued — not the render job'
+		);
+		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
+	}
+
+	public function testSourceToFragment_returnsLiteralForCachedNonHtmlSuccess() {
+		$pushedJobs = [];
+		[ $handler, $extApi ] = $this->buildHandlerWithCachedValue(
+			[
+				'success' => true,
+				// No 'type' key → fall through the Z89 check, return as literal.
+				'value' => 'cached answer',
+			],
+			$pushedJobs
+		);
+
+		$fragment = $handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'Z10000', 'foo' ] ), false );
+
+		$this->assertInstanceOf(
+			LiteralStringPFragment::class,
+			$fragment,
+			'Non-HtmlFragment cached success returns a literal fragment'
+		);
+		$this->assertNotInstanceOf( HtmlPFragment::class, $fragment );
+		$this->assertNotInstanceOf( WikifunctionsPendingFragment::class, $fragment );
+		// Cache hit → render job skipped; usage-tracking job still pushed.
+		$this->assertCount( 1, $pushedJobs );
+		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
+	}
+
+	public function testSourceToFragment_returnsErrorFragmentForCachedFailure() {
+		// Parsoid's MockDataAccess only accepts a hard-coded allowlist of tracking
+		// categories (broken-file-category, magiclink-tracking-*, hidden-category-category).
+		// Extension-registered categories from extension.json are invisible to the mock,
+		// so we use 'broken-file' here — not a real WikiLambda error key, but the handler
+		// treats the key as opaque and this exercises the same branch.
+		$pushedJobs = [];
+		[ $handler, $extApi ] = $this->buildHandlerWithCachedValue(
+			[
+				'success' => false,
+				'errorMessageKey' => 'broken-file',
+			],
+			$pushedJobs
+		);
+
+		$fragment = $handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'Z10000', 'foo' ] ), false );
+
+		$this->assertInstanceOf(
+			HtmlPFragment::class,
+			$fragment,
+			'Cached failure returns an HTML error chip, not a literal'
+		);
+		$html = $fragment->asHtmlString( $extApi );
+		$this->assertStringContainsString(
+			'cdx-info-chip--error', $html,
+			'Error chip uses the Codex error-chip class'
+		);
+		$this->assertStringContainsString(
+			'data-error-key="broken-file"', $html,
+			'The cached error message key is preserved verbatim as a data attribute'
+		);
+		$this->assertCount(
+			1, $pushedJobs,
+			'Cached-failure path still tracks usage but does not re-queue a render job'
+		);
+		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
 	}
 }
