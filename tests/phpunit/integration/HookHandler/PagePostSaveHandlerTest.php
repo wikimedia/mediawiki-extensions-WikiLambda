@@ -11,10 +11,12 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\WikiLambda\HookHandler\PagePostSaveHandler;
+use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IConnectionProvider;
@@ -70,20 +72,46 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->mockICP->method( 'getReplicaDatabase' )->willReturn( $this->mockDBr );
 	}
 
+	/**
+	 * Build a JobQueueGroup mock whose lazyPush() appends each pushed job to $pushedJobs,
+	 * so tests can assert on what the handler pushed without involving the real queue (whose
+	 * lazy buffer is only flushed at end-of-request and can be drained out from under tests).
+	 */
+	private function makeMockJobQueueGroup( array &$pushedJobs ): JobQueueGroup {
+		$mock = $this->createMock( JobQueueGroup::class );
+		$mock->method( 'lazyPush' )
+			->willReturnCallback( static function ( $job ) use ( &$pushedJobs ) {
+				$pushedJobs[] = $job;
+			} );
+		return $mock;
+	}
+
+	/**
+	 * Assert that a fan-out job was pushed for Z400 at the fixed test timestamp.
+	 */
+	private function assertFanOutJobPushed( array $pushedJobs ): WikifunctionsClientFanOutQueueJob {
+		$this->assertCount( 1, $pushedJobs, 'Exactly one fan-out job was pushed' );
+		$this->assertInstanceOf( WikifunctionsClientFanOutQueueJob::class, $pushedJobs[0] );
+		$params = $pushedJobs[0]->getParams();
+		$this->assertSame( 'Z400', $params['target'] );
+		$this->assertSame( 20250301000000, $params['timestamp'] );
+		$this->assertSame( false, $params['bot'] );
+		return $pushedJobs[0];
+	}
+
 	public function testOnRecentChange_nonRepo_mocked() {
+		$pushedJobs = [];
 		$pagePostSaveHandlerRepoModeOff = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigNotRepoMode,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
-
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
 
 		$response = $pagePostSaveHandlerRepoModeOff->onRecentChange_save( new RecentChange() );
 
 		$this->assertNull( $response, 'Handler returns null when not in repo mode' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'No fan-out jobs have been inserted' );
+		$this->assertSame( [], $pushedJobs, 'No fan-out job was pushed' );
 	}
 
 	public function testOnRecentChange_editNonFunction_mocked() {
@@ -93,10 +121,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockZObjectStore->method( 'fetchZObjectByTitle' )
 			->willReturn( ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title ) );
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -104,13 +134,10 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsEditCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertNull( $response, 'Handler does not care about the edit for a non-Function ZObject' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'No fan-out jobs have been inserted' );
+		$this->assertSame( [], $pushedJobs, 'No fan-out job was pushed' );
 	}
 
 	public function testOnRecentChange_createFunction_mocked() {
@@ -124,10 +151,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
 		);
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -135,14 +164,10 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsCreationCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertTrue( $response, 'Handler does care about the creation for a Function ZObject' );
-		// FIXME: The job is getting created, but it's getting processed before we reach this point
-		// $this->assertSame( 1, $jobQueue->getSize(), 'A fan-out job was inserted' );
+		$this->assertFanOutJobPushed( $pushedJobs );
 	}
 
 	public function testOnRecentChange_undeletionFunction_mocked() {
@@ -156,10 +181,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
 		);
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -167,14 +194,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 		->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsUndeletionCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertTrue( $response, 'Handler does care about the undeletion of a Function ZObject' );
-		// FIXME: The job is getting created, but it's getting processed before we reach this point
-		// $this->assertSame( 1, $jobQueue->getSize(), 'A fan-out job was inserted' );
+		$job = $this->assertFanOutJobPushed( $pushedJobs );
+		$this->assertSame( 'restore', $job->getParams()['data']['action'],
+			'Undeletion is recorded as a restore action in the fan-out job' );
 	}
 
 	public function testOnRecentChange_revDeletionFunction_mocked() {
@@ -188,10 +213,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
 		);
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -199,13 +226,10 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 		->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsRevDeletionCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertNull( $response, 'Handler does not care about the revision deletion of a Function ZObject' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'No fan-out jobs have been inserted' );
+		$this->assertSame( [], $pushedJobs, 'No fan-out job was pushed' );
 	}
 
 	public function testOnRecentChange_editFunctionLabels_mocked() {
@@ -219,10 +243,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
 		);
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -230,13 +256,10 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsLabelsOnlyEditCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertNull( $response, 'Handler does not care about a label-only edit for a Function ZObject' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'No fan-out jobs have been inserted' );
+		$this->assertSame( [], $pushedJobs, 'No fan-out job was pushed' );
 	}
 
 	public function testOnRecentChange_editFunction_mocked() {
@@ -250,10 +273,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
 		);
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -261,14 +286,10 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsEditCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertTrue( $response, 'Handler does care about a non-label edit to a Function ZObject' );
-		// FIXME: The job is getting created, but it's getting processed before we reach this point
-		// $this->assertSame( 1, $jobQueue->getSize(), 'A fan-out job was inserted' );
+		$this->assertFanOutJobPushed( $pushedJobs );
 	}
 
 	public function testOnRecentChange_editFunctionDrop_mocked() {
@@ -282,10 +303,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
 		);
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -293,14 +316,10 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsDropImplementationEditCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertTrue( $response, 'Handler does care about dropping an Implementation from a Function ZObject' );
-		// FIXME: The job is getting created, but it's getting processed before we reach this point
-		// $this->assertSame( 1, $jobQueue->getSize(), 'A fan-out job was inserted' );
+		$this->assertFanOutJobPushed( $pushedJobs );
 	}
 
 	public function testOnRecentChange_editFunctionSwap_mocked() {
@@ -314,10 +333,12 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
 		);
 
+		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
 			$this->mockHashConfigRepoMode,
-			$mockZObjectStore
+			$mockZObjectStore,
+			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -325,14 +346,10 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange->method( 'getAttribute' )
 			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsSwapTesterEditCallback' ) );
 
-		$jobQueue = $this->getServiceContainer()->getJobQueueGroup()->get( 'wikifunctionsClientFanOutQueue' );
-		$this->assertTrue( $jobQueue->isEmpty(), 'Queue begins empty' );
-
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
 		$this->assertTrue( $response, 'Handler does care about swapping a Tester in a Function ZObject' );
-		// FIXME: The job is getting created, but it's getting processed before we reach this point
-		// $this->assertSame( 1, $jobQueue->getSize(), 'A fan-out job was inserted' );
+		$this->assertFanOutJobPushed( $pushedJobs );
 	}
 
 	// Remaining RC test cases – edit to an implementation, edit to a tester.

@@ -305,7 +305,8 @@
 			"services": [
 				"ConnectionProvider",
 				"MainConfig",
-				"WikiLambdaZObjectStore"
+				"WikiLambdaZObjectStore",
+				"JobQueueGroup"
 			]
 		},
 		"PageRenderingHandler": {

@@ -18,8 +18,8 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
@@ -35,8 +35,8 @@ class PagePostSaveHandler implements
 	public function __construct(
 		IConnectionProvider $dbProvider,
 		private readonly Config $config,
-		private readonly ZObjectStore $zObjectStore
-
+		private readonly ZObjectStore $zObjectStore,
+		private readonly JobQueueGroup $jobQueueGroup
 	) {
 			$this->dbr = $dbProvider->getReplicaDatabase();
 			$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
@@ -401,8 +401,7 @@ class PagePostSaveHandler implements
 			'bot' => $recentChange->getAttribute( 'rc_bot' ),
 		] );
 
-		$jobQueueGroup = MediaWikiServices::getInstance()->getJobQueueGroup();
-		$jobQueueGroup->lazyPush( $generalUpdateJob );
+		$this->jobQueueGroup->lazyPush( $generalUpdateJob );
 
 		// The return value isn't used, but we return something so we can show in tests that we reached this point
 		return true;
