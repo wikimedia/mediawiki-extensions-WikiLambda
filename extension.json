@@ -1086,6 +1086,7 @@
 				"wikilambda-function-evaluator-running",
 				"wikilambda-function-evaluator-result",
 				"wikilambda-function-evaluator-result-details",
+				"wikilambda-function-evaluator-result-error",
 				"wikilambda-function-evaluator-run-function",
 				"wikilambda-function-evaluator-share-button",
 				"wikilambda-function-evaluator-share-button-tooltip",

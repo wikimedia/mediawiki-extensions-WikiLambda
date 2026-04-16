@@ -20,6 +20,12 @@ const responseObject = {
 	Z22K2: {}
 };
 
+const voidResponseObject = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z22' },
+	Z22K1: { Z1K1: 'Z9', Z9K1: 'Z24' },
+	Z22K2: {}
+};
+
 describe( 'EvaluationResult', () => {
 	let store;
 
@@ -93,6 +99,30 @@ describe( 'EvaluationResult', () => {
 			expect( resultComponent.exists() ).toBe( true );
 			expect( resultComponent.props( 'keyPath' ) ).toBe( 'response.Z22K1' );
 			expect( resultComponent.props( 'objectValue' ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'one two' } );
+		} );
+	} );
+
+	describe( 'with void result', () => {
+		beforeEach( () => {
+			store.getZObjectByKeyPath = createGettersWithFunctionsMock( voidResponseObject );
+		} );
+
+		it( 'renders without errors', () => {
+			const wrapper = renderEvaluationResult();
+			expect( wrapper.find( '.ext-wikilambda-app-evaluation-result' ).exists() ).toBe( true );
+		} );
+
+		it( 'shows error message instead of ZObjectKeyValue', () => {
+			const wrapper = renderEvaluationResult();
+			const result = wrapper.find( '.ext-wikilambda-app-evaluation-result__result' );
+
+			expect( result.findComponent( { name: 'cdx-message' } ).exists() ).toBe( true );
+			expect( result.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( false );
+		} );
+
+		it( 'does not show ZObjectKeyValue for void result', () => {
+			const wrapper = renderEvaluationResult();
+			expect( wrapper.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( false );
 		} );
 	} );
 

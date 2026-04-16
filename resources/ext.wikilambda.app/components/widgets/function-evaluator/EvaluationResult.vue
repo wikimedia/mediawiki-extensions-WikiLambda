@@ -7,7 +7,16 @@
 <template>
 	<div class="ext-wikilambda-app-evaluation-result" data-testid="z-evaluation-result">
 		<div class="ext-wikilambda-app-evaluation-result__result">
+			<cdx-message
+				v-if="isVoidResult"
+				inline
+				type="error"
+				class="ext-wikilambda-app-evaluation-result__error"
+			>
+				{{ i18n( 'wikilambda-function-evaluator-result-error' ).text() }}
+			</cdx-message>
 			<wl-z-object-key-value
+				v-else
 				:skip-key="true"
 				:key-path="responseKeyPath"
 				:object-value="responseObject[ responseKey ]"
@@ -56,7 +65,7 @@ const useMainStore = require( '../../../store/index.js' );
 const useClipboard = require( '../../../composables/useClipboard.js' );
 const useEventLog = require( '../../../composables/useEventLog.js' );
 const { hybridToCanonical } = require( '../../../utils/schemata.js' );
-const { getZFunctionCallFunctionId } = require( '../../../utils/zobjectUtils.js' );
+const { getZFunctionCallFunctionId, getZReferenceTerminalValue } = require( '../../../utils/zobjectUtils.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const icons = require( '../../../../lib/icons.json' );
 
@@ -65,13 +74,14 @@ const ZObjectKeyValue = require( '../../types/ZObjectKeyValue.vue' );
 // Widget components
 const FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' );
 // Codex components
-const { CdxButton, CdxIcon, CdxTooltip } = require( '../../../../codex.js' );
+const { CdxButton, CdxIcon, CdxMessage, CdxTooltip } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-evaluation-result',
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
+		'cdx-message': CdxMessage,
 		'wl-function-metadata-dialog': FunctionMetadataDialog,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
@@ -109,6 +119,20 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		const responseObject = computed( () => store.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.RESPONSE ] ) );
+
+		/**
+		 * Returns whether the result value is void (Z24),
+		 * which indicates the function call returned an error.
+		 *
+		 * @return {boolean}
+		 */
+		const isVoidResult = computed( () => {
+			if ( !responseObject.value ) {
+				return false;
+			}
+			const resultValue = responseObject.value[ Constants.Z_RESPONSEENVELOPE_VALUE ];
+			return getZReferenceTerminalValue( resultValue ) === Constants.Z_VOID;
+		} );
 
 		/**
 		 * Returns whether there's a metadata value
@@ -222,6 +246,7 @@ module.exports = exports = defineComponent( {
 		return {
 			i18n,
 			hasMetadata,
+			isVoidResult,
 			hasChosenImplementation,
 			iconLink,
 			iconCheck,
@@ -248,6 +273,11 @@ module.exports = exports = defineComponent( {
 		display: flex;
 		gap: @spacing-50;
 		flex-wrap: wrap;
+	}
+
+	.ext-wikilambda-app-evaluation-result__error {
+		margin-bottom: @spacing-100;
+		margin-top: @spacing-50;
 	}
 }
 </style>

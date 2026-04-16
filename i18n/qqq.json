@@ -294,6 +294,7 @@
 	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Message shown when no function is selected in the Function Evaluator widget for an implementation.",
 	"wikilambda-function-evaluator-result": "The text shown in the function evaluator widget for the result section",
 	"wikilambda-function-evaluator-result-details": "Link to open the details dialog of the function evaluation result",
+	"wikilambda-function-evaluator-result-error": "Error message shown in the function evaluator result section when the function call returned void (Z24), indicating no result was produced. The related button label it refers to is {{msg-mw|wikilambda-function-evaluator-result-details}}.",
 	"wikilambda-function-evaluator-run-function": "Label for button that runs a function",
 	"wikilambda-function-evaluator-running": "Message showing that the function evaluator is waiting for the return of the function call",
 	"wikilambda-function-evaluator-share-button": "Label for the button that creates a shareable link to the current function call",

@@ -278,6 +278,7 @@
 	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Select a function to try this implementation.",
 	"wikilambda-function-evaluator-result": "Result",
 	"wikilambda-function-evaluator-result-details": "Details",
+	"wikilambda-function-evaluator-result-error": "No result returned. Open ‘Details’ for more information.",
 	"wikilambda-function-evaluator-run-function": "Run function",
 	"wikilambda-function-evaluator-running": "Running…",
 	"wikilambda-function-evaluator-share-button": "Copy result link",
