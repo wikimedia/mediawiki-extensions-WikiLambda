@@ -10,6 +10,7 @@
 	"apihelp-wikilambda_function_call-example-timeout": "Invoca una funzione che tenta di essere eseguita per sempre e quindi va in timeout nel valutatore",
 	"apihelp-query+wikilambdaload_zlanguages-summary": "Associa i codici lingua ai corrispondenti ZID di ZLanguage.",
 	"apihelp-query+wikilambdaload_zlanguages-param-codes": "I codici lingua da mappare agli ZID di ZLanguage.",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "Indica se includere le etichette della lingua preferita per ogni ZLanguage ZID risolto.",
 	"apihelp-query+wikilambdaload_zlanguages-example-single": "Associa un singolo codice lingua (en) al suo ZLanguage ZID.",
 	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "Associa più codici lingua (en, es, fr) ai rispettivi ZID ZLanguage in un'unica richiesta.",
 	"apihelp-wikilambda_edit-summary": "Crea o modifica uno ZObject."

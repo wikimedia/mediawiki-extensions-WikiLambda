@@ -82,6 +82,7 @@
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Versuch, das ZObjekt Z010 mit falschen Daten zu aktualisieren",
 	"apihelp-query+wikilambdaload_zlanguages-summary": "Ordne Sprachcodes ihren entsprechenden ZLanguage-ZIDs zu.",
 	"apihelp-query+wikilambdaload_zlanguages-param-codes": "Die Sprachcodes, die den ZLanguage-ZIDs zugeordnet werden sollen.",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "Ob für jede aufgelöste ZLanguage-ZID die bevorzugten Sprachbezeichnungen angegeben werden sollen.",
 	"apihelp-query+wikilambdaload_zlanguages-example-single": "Ordne einen einzelnen Sprachcode (en) seiner ZLanguage-ZID zu.",
 	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "Ordne mehrere Sprachcodes (en, es, fr) ihren ZLanguage-ZIDs in einer einzigen Anfrage zu.",
 	"apihelp-wikilambda_edit-summary": "Erstellt oder bearbeitet ein ZObjekt.",
