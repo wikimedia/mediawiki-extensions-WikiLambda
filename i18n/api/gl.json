@@ -75,6 +75,7 @@
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Intento de actualizar o ZObject Z010 con datos incorrectos",
 	"apihelp-query+wikilambdaload_zlanguages-summary": "Correspondencia entre os códigos de lingua e os ZID de ZLanguage.",
 	"apihelp-query+wikilambdaload_zlanguages-param-codes": "Os códigos de lingua cos que se fará a correspondencia cos ZID de ZLanguage.",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "Indica se se deben incluír etiquetas de lingua preferida para cada ZID de ZLanguage resolto.",
 	"apihelp-query+wikilambdaload_zlanguages-example-single": "Correspondencia entre un código de lingua único (en) e o seu ZID de ZLanguage.",
 	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "Correspondencia entre varios códigos de lingua (en, es, fr) e os seus ZID de ZLanguage nunha única solicitude.",
 	"apihelp-wikilambda_edit-summary": "Crear ou editar un ZObject.",

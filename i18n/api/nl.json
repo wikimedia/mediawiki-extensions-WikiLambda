@@ -78,6 +78,7 @@
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Probeer het ZObject Z010 bij te werken met onjuiste gegevens",
 	"apihelp-query+wikilambdaload_zlanguages-summary": "Taalcodes koppelen aan de bijbehorende ZLanguage ZID's.",
 	"apihelp-query+wikilambdaload_zlanguages-param-codes": "De taalcodes die moeten worden toegewezen aan ZLanguage ZIDs.",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "Of er labels voor de voorkeurstaal moeten worden opgenomen voor elke opgeloste ZLanguage ZID.",
 	"apihelp-query+wikilambdaload_zlanguages-example-single": "Koppel een enkele taalcode (en) aan de bijbehorende ZLanguage ZID.",
 	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "Koppel meerdere taalcodes (en, es, fr) aan hun ZLanguage ZID's in één verzoek.",
 	"apihelp-wikilambda_edit-summary": "Een ZObject aanmaken of bewerken.",
