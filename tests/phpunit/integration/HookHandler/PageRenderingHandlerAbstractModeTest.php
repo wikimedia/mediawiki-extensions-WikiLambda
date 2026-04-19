@@ -2,18 +2,18 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
-use HashConfig;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\Languages\LanguageFactory;
-use MediaWiki\Languages\LanguageNameUtils;
+use MediaWiki\Language\LanguageFactory;
+use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
-use MediaWiki\User\UserOptionsLookup;
-use RequestContext;
+use MediaWiki\User\Options\UserOptionsLookup;
 use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**

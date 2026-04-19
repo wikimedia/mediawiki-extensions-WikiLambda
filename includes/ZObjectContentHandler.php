@@ -15,13 +15,13 @@ use InvalidArgumentException;
 use MediaWiki\Config\Config;
 use MediaWiki\Content\Content;
 use MediaWiki\Content\ContentHandler;
+use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
-use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectContentDifferenceEngine;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -139,7 +139,7 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param string $text
 	 * @param string|null $format
 	 * @return ZObjectContent
-	 * @throws MWContentSerializationException if input causes an error
+	 * @throws ContentSerializationException if input causes an error
 	 */
 	public function unserializeContent( $text, $format = null ) {
 		$this->checkFormat( $format );
@@ -149,7 +149,7 @@ class ZObjectContentHandler extends ContentHandler {
 			return new $class( $text );
 		} catch ( ZErrorException $zerror ) {
 			// (T381115) If the passed user input isn't valid, we're expected to throw this particular MW error
-			throw new MWContentSerializationException( $zerror->getZError()->getMessage() );
+			throw new ContentSerializationException( $zerror->getZError()->getMessage() );
 		}
 	}
 

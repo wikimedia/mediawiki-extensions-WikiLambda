@@ -6,6 +6,7 @@ use MediaWiki\Exception\PermissionsError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Special\SpecialCreateAbstract;
 use MediaWiki\Permissions\Authority;
+use MediaWiki\Tests\Specials\SpecialPageTestBase;
 use MediaWiki\Title\Title;
 
 /**

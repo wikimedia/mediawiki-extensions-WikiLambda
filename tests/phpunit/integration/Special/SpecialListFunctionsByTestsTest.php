@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
-use SpecialPageTestBase;
+use MediaWiki\Tests\Specials\SpecialPageTestBase;
 use Wikimedia\Rdbms\IDBAccessObject;
 
 /**

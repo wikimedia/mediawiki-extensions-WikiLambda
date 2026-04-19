@@ -10,10 +10,10 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use InvalidArgumentException;
+use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Content\WikitextContent;
-use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
@@ -112,7 +112,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	public function testUnserializeContent_invalidJson() {
 		$handler = $this->buildAbstractWikiContentHandler();
 
-		$this->expectException( MWContentSerializationException::class );
+		$this->expectException( ContentSerializationException::class );
 		$handler->unserializeContent( "{'invalid': JSON]" );
 	}
 

@@ -10,10 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
-use DifferenceEngine;
 use MediaWiki\Content\Content;
 use MediaWiki\Context\RequestContext;
-use TextSlotDiffRenderer;
+use MediaWiki\Diff\DifferenceEngine;
+use MediaWiki\Diff\TextSlotDiffRenderer;
 
 class AbstractContentDifferenceEngine extends DifferenceEngine {
 

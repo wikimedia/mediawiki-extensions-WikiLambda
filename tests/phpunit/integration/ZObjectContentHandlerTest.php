@@ -9,11 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\TextContent;
 use MediaWiki\Content\Transform\PreSaveTransformParamsValue;
 use MediaWiki\Content\ValidationParams;
-use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -111,7 +111,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	public function testUnserializeContent_invalidJson() {
 		$notValidObjectString = 'This is not JSON!';
 		$handler = $this->buildZObjectContentHandler();
-		$this->expectException( MWContentSerializationException::class );
+		$this->expectException( ContentSerializationException::class );
 		$handler->unserializeContent( $notValidObjectString );
 	}
 

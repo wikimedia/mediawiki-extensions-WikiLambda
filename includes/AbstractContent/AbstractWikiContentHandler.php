@@ -15,11 +15,12 @@ use MediaWiki\Config\Config;
 use MediaWiki\Content\Content;
 use MediaWiki\Content\ContentHandler;
 use MediaWiki\Content\ContentHandlerFactory;
+use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
-use MediaWiki\Exception\MWContentSerializationException;
+use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
@@ -27,7 +28,6 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
-use TextSlotDiffRenderer;
 
 class AbstractWikiContentHandler extends ContentHandler {
 
@@ -117,7 +117,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * @param string $text
 	 * @param string|null $format
 	 * @return AbstractWikiContent
-	 * @throws MWContentSerializationException if input causes an error
+	 * @throws ContentSerializationException if input causes an error
 	 */
 	public function unserializeContent( $text, $format = null ) {
 		$class = $this->getContentClass();
@@ -125,7 +125,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 			return new $class( $text );
 		} catch ( InvalidArgumentException $error ) {
 			// (T381115) If the passed user input isn't valid, we're expected to throw this particular MW error
-			throw new MWContentSerializationException( $error->getMessage() );
+			throw new ContentSerializationException( $error->getMessage() );
 		}
 	}
 

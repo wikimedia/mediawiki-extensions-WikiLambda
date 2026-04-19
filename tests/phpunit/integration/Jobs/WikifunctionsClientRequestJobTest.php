@@ -17,8 +17,8 @@ use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
+use MediaWiki\Http\MWHttpRequest;
 use MockHttpTrait;
-use MWHttpRequest;
 use Wikimedia\TestingAccessWrapper;
 
 /**

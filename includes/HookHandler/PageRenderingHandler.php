@@ -42,7 +42,7 @@ class PageRenderingHandler implements
 	\MediaWiki\Hook\WebRequestPathInfoRouterHook,
 	\MediaWiki\Output\Hook\BeforePageDisplayHook,
 	\MediaWiki\Page\Hook\BeforeDisplayNoArticleTextHook,
-	\MediaWiki\Hook\GetMagicVariableIDsHook,
+	\MediaWiki\Parser\Hook\GetMagicVariableIDsHook,
 	\MediaWiki\Parser\Hook\ParserFirstCallInitHook,
 	\MediaWiki\Parser\Hook\ParserGetVariableValueSwitchHook,
 	\MediaWiki\Specials\Hook\SpecialStatsAddExtraHook,

@@ -11,8 +11,8 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Exception;
+use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Context\RequestContext;
-use MediaWiki\Exception\MWContentSerializationException;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -399,9 +399,9 @@ class ZObjectStore {
 				[ 'zid' => $zid, 'message' => $e->getMessage() ]
 			);
 			return ZObjectPage::newFatal( $e->getZError() );
-		} catch ( MWContentSerializationException $mwe ) {
+		} catch ( ContentSerializationException $mwe ) {
 			$this->logger->info(
-				__METHOD__ . ': makeContent threw MWContentSerializationException for {zid}: {message}',
+				__METHOD__ . ': makeContent threw ContentSerializationException for {zid}: {message}',
 				[ 'zid' => $zid, 'message' => $mwe->getMessage() ]
 			);
 			return ZObjectPage::newFatal(

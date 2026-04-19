@@ -7,6 +7,7 @@ use MediaWiki\Extension\WikiLambda\Special\SpecialViewAbstract;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Storage\PageUpdateStatus;
+use MediaWiki\Tests\Specials\SpecialPageTestBase;
 use MediaWiki\Title\Title;
 
 /**
