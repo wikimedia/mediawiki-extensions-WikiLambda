@@ -10,7 +10,6 @@ use JsonException;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
-use MediaWiki\Extension\EventLogging\EventLogging;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -25,7 +24,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Status\Status;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -50,6 +48,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	protected LoggerInterface $logger;
 
 	public const FUNCTIONCALL_POOL_COUNTER_TYPE = 'WikiLambdaFunctionCall';
+	public const INSTRUMENT_NAME = 'WikiLambdaApi';
 
 	public function __construct(
 		ApiMain $mainModule,
@@ -594,21 +593,12 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 *  these must conform to the specified schema.
 	 * @return void
 	 */
-	protected function submitMetricsEvent( $action, $eventData ) {
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'EventLogging' ) ) {
-			EventLogging::getMetricsPlatformClient()->submitInteraction(
-				'mediawiki.product_metrics.wikilambda_api',
-				'/analytics/mediawiki/product_metrics/wikilambda/api/1.0.0',
-				$action,
-				$eventData );
-		} else {
-			$this->getLogger()->debug(
-				__METHOD__ . ' unable to submit event; EventLogging not loaded',
-				[
-					'action' => $action,
-					'eventData' => $eventData
-				]
-			);
+	protected function submitMetricsEvent( $action, $eventData ): void {
+		$services = MediaWikiServices::getInstance();
+		if ( $services->hasService( 'TestKitchen.InstrumentManager' ) ) {
+			$instrumentManager = $services->getService( 'TestKitchen.InstrumentManager' );
+			$instrument = $instrumentManager->getInstrument( self::INSTRUMENT_NAME );
+			$instrument->send( $action, $eventData );
 		}
 	}
 

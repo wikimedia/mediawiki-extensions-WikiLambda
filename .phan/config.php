@@ -17,7 +17,8 @@ $cfg['directory_list'] = array_merge(
 		'../../extensions/CommunityConfiguration',
 		'../../extensions/EventLogging',
 		'../../extensions/SiteMatrix',
-		'../../extensions/Wikibase'
+		'../../extensions/Wikibase',
+		'../../extensions/TestKitchen'
 	]
 );
 
@@ -27,7 +28,8 @@ $cfg['exclude_analysis_directory_list'] = array_merge(
 		'../../extensions/CommunityConfiguration',
 		'../../extensions/EventLogging',
 		'../../extensions/SiteMatrix',
-		'../../extensions/Wikibase'
+		'../../extensions/Wikibase',
+		'../../extensions/TestKitchen'
 	]
 );
 
