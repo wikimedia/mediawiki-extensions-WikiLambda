@@ -134,30 +134,6 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Unit\Cache {
 		/**
 		 * @covers \MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper::__construct
 		 */
-		public function testConstructor_supportsDeprecatedHostPortConfig(): void {
-			$config = new HashConfig( [
-				'WikiLambdaObjectCaches' => [
-					'primary' => [
-						'host' => 'legacy.local',
-						'port' => '11211',
-					],
-				],
-				'WikiLambdaObjectCacheBroadcast' => null,
-			] );
-
-			$wrapper = new MemcachedWrapper( $config );
-			$access = TestingAccessWrapper::newFromObject( $wrapper );
-
-			[ $service ] = $access->services['primary'];
-			// The string port should be cast to int in the deprecated branch
-			$servers = $service->getServerList();
-			$this->assertSame( 'legacy.local', $servers[0]['host'] );
-			$this->assertSame( 11211, $servers[0]['port'] );
-		}
-
-		/**
-		 * @covers \MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper::__construct
-		 */
 		public function testConstructor_usesConfiguredBroadcastRoute(): void {
 			$config = new HashConfig( [
 				'WikiLambdaObjectCaches' => [

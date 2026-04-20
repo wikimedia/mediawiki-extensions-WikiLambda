@@ -53,26 +53,20 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 			);
 
 			$memcached = new Memcached();
-			if ( isset( $serviceConfig['server'] ) ) {
-				// Parse the server address (host:port or UDS path) using the same logic as
-				// MemcachedPeclBagOStuff, to ensure config compatibility.
-				if ( preg_match( '/^\[(.+)\]:(\d+)$/', $serviceConfig['server'], $m ) ) {
-					// (ipv6, port)
-					$host = $m[1];
-					$port = (int)$m[2];
-				} elseif ( preg_match( '/^([^:]+):(\d+)$/', $serviceConfig['server'], $m ) ) {
-					// (ipv4 or domain name, port)
-					$host = $m[1];
-					$port = (int)$m[2];
-				} else {
-					// (socket path, no port)
-					$host = $serviceConfig['server'];
-					$port = false;
-				}
+			// Parse the server address (host:port or UDS path) using the same logic as
+			// MemcachedPeclBagOStuff, to ensure config compatibility.
+			if ( preg_match( '/^\[(.+)\]:(\d+)$/', $serviceConfig['server'], $m ) ) {
+				// (ipv6, port)
+				$host = $m[1];
+				$port = (int)$m[2];
+			} elseif ( preg_match( '/^([^:]+):(\d+)$/', $serviceConfig['server'], $m ) ) {
+				// (ipv4 or domain name, port)
+				$host = $m[1];
+				$port = (int)$m[2];
 			} else {
-				// Deprecated: use 'server' instead of 'host' and 'port'.
-				$host = $serviceConfig['host'];
-				$port = (int)$serviceConfig['port'];
+				// (socket path, no port)
+				$host = $serviceConfig['server'];
+				$port = false;
 			}
 			$memcached->addServer( $host, $port );
 
