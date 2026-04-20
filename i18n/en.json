@@ -525,7 +525,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Oldest first",
 	"wikilambda-special-objectsbytype-form-type": "Type",
 	"wikilambda-special-objectsbytype-link": "List of all Types with instances",
-	"wikilambda-special-objectsbytype-listheader": "All Objects of type $1 ($2)",
+	"wikilambda-special-objectsbytype-listheader": "All Objects of type '$1' ($2)",
 	"wikilambda-special-objectsbytype-summary": "Click on one of the types listed below to see all Objects of that type.",
 	"wikilambda-special-runfunction": "Run a function",
 	"wikilambda-special-runfunction-intro": "Make sure that you follow [[$1|community policies]], and copyright and patent rules.",
