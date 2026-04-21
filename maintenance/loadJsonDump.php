@@ -11,6 +11,9 @@
  * @license MIT
  */
 
+namespace MediaWiki\Extension\WikiLambda\Maintenance;
+
+use Exception;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;

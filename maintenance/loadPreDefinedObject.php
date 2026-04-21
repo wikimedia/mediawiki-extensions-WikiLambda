@@ -11,6 +11,9 @@
  * @license MIT
  */
 
+namespace MediaWiki\Extension\WikiLambda\Maintenance;
+
+use Exception;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
@@ -20,6 +23,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
+use RuntimeException;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {

@@ -11,6 +11,9 @@
  * @license MIT
  */
 
+namespace MediaWiki\Extension\WikiLambda\Maintenance;
+
+use Exception;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Maintenance\Maintenance;

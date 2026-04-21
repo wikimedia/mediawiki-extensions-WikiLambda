@@ -11,7 +11,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extensions\WikiLambda\Maintenance;
+namespace MediaWiki\Extension\WikiLambda\Maintenance;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
