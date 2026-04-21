@@ -27,9 +27,9 @@ class CommunityConfigurationHooks implements CommunityConfigurationProvider_init
 	}
 
 	/**
-	 * Hide the WikifunctionsSuggestions provider on wikis not running in
-	 * client mode; its data only matters where the {{#function:…}} parser
-	 * function is active.
+	 * Hide each of our CC providers on wikis where its feature mode is off,
+	 * so the Special:CommunityConfiguration dashboard only shows providers
+	 * whose data is actually consumed on this wiki.
 	 *
 	 * @param array &$providers
 	 * @return void
@@ -37,6 +37,9 @@ class CommunityConfigurationHooks implements CommunityConfigurationProvider_init
 	public function onCommunityConfigurationProvider_initList( array &$providers ): void {
 		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
 			unset( $providers['WikifunctionsSuggestions'] );
+		}
+		if ( !$this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			unset( $providers['AbstractWikiSuggestedWikifunctions'] );
 		}
 	}
 }

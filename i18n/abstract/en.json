@@ -5,9 +5,13 @@
 			"James D. Forrester"
 		]
 	},
-	"abstractwiki-suggested-functions.json": "null",
 	"action-wikilambda-abstract-create": "create new Abstract Articles",
 	"action-wikilambda-abstract-edit": "edit existing Abstract Articles",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Suggested Wikifunctions for Abstract Wiki",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "The list of HTML-returning Wikifunctions (by ZID) offered in the Abstract Article \"Add fragment\" menu. Up to ten entries.",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Suggested Wikifunctions",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "Up to ten HTML-returning Wikifunctions by their ZID (for example <code>Z20756</code>) to feature in the Abstract Article fragment menu.",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "Suggested Wikifunction $1",
 	"content-model-abstractwiki": "Abstract Article",
 	"right-wikilambda-abstract-create": "Create new Abstract Articles",
 	"right-wikilambda-abstract-edit": "Edit existing Abstract Articles",

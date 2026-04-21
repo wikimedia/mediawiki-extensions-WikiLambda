@@ -135,6 +135,9 @@ global.mw = {
 					return null;
 				case 'wgWikiLambdaAbstractPrimaryNamespace':
 					return 'Abstract_Wikipedia';
+				case 'wgWikiLambdaSuggestedFunctions':
+				case 'wgWikiLambdaAbstractSuggestions':
+					return [];
 				case 'wgUserLanguage':
 					return 'en';
 				case 'wgPageContentLanguage':

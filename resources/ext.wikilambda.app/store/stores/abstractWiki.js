@@ -167,15 +167,13 @@ const abstractWikiStore = {
 			} );
 			this.setAbstractWikiId( this.getWikilambdaConfig.title );
 
-			// Initialize suggested fragment functions (discard any bad entries)
-			let suggestedZids = [];
-			try {
-				const suggested = JSON.parse( mw.msg( 'abstractwiki-suggested-functions.json' ) );
-				suggestedZids = suggested.filter( ( item ) => isValidZidFormat( item ) );
-				this.setSuggestedHtmlFunctions( suggestedZids );
-			} catch ( e ) {
-				// do nothing
-			}
+			// Initialize suggested fragment functions. Configured via CommunityConfiguration
+			// (see MediaWiki:AbstractWikiSuggestedWikifunctions.json; T394410) and exposed
+			// server-side in onMakeGlobalVariablesScript. The schema pattern-validates each
+			// entry at save time; the filter here is defence in depth.
+			const suggestedZids = ( mw.config.get( 'wgWikiLambdaAbstractSuggestions' ) || [] )
+				.filter( ( item ) => isValidZidFormat( item ) );
+			this.setSuggestedHtmlFunctions( suggestedZids );
 
 			// Prefetch mentioned zids in content
 			const zids = extractZIDs( content );

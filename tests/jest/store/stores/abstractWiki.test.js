@@ -216,8 +216,15 @@ describe( 'abstractWiki Pinia store', () => {
 				store.fetchItems = jest.fn();
 				store.setInitialized = jest.fn();
 				store.setSuggestedHtmlFunctions = jest.fn();
-				// Mock mw.msg with suggested functions
-				global.mw.msg = jest.fn().mockReturnValue( '[ "Z10001", "badzid", "Z10002"]' );
+				// Mock mw.config.get to inject the suggested-Wikifunctions list
+				// that ClientHooks::onMakeGlobalVariablesScript would emit at runtime.
+				const originalConfigGet = global.mw.config.get.getMockImplementation();
+				global.mw.config.get.mockImplementation( ( key ) => {
+					if ( key === 'wgWikiLambdaAbstractSuggestions' ) {
+						return [ 'Z10001', 'badzid', 'Z10002' ];
+					}
+					return originalConfigGet ? originalConfigGet( key ) : null;
+				} );
 			} );
 
 			it( 'initializes the Abstract Wiki content', async () => {

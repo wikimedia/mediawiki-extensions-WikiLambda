@@ -759,7 +759,6 @@
 			"messages": [
 				"apierror-abstractwiki_run_fragment-returned-zerror",
 				"apierror-abstractwiki_run_fragment-unknown-error",
-				"abstractwiki-suggested-functions.json",
 				"comma-separator",
 				"colon-separator",
 				"parentheses",
@@ -1262,6 +1261,17 @@
 					"validator": {
 						"type": "jsonschema",
 						"args": [ "MediaWiki\\Extension\\WikiLambda\\Config\\SuggestedFunctionsSchema" ]
+					},
+					"type": "data"
+				},
+				"AbstractWikiSuggestedWikifunctions": {
+					"store": {
+						"type": "wikipage",
+						"args": [ "MediaWiki:AbstractWikiSuggestedWikifunctions.json" ]
+					},
+					"validator": {
+						"type": "jsonschema",
+						"args": [ "MediaWiki\\Extension\\WikiLambda\\Config\\AbstractSuggestedFunctionsSchema" ]
 					},
 					"type": "data"
 				}

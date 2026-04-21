@@ -94,24 +94,55 @@ class ClientHooks implements
 			$vars['wgWikiLambdaAbstractPrimaryNamespace'] = array_values( $namespaces )[0][0];
 		}
 
-		// 4. In client mode, expose the recommended-Wikifunctions list to the VE dialog.
-		// Prefer CommunityConfiguration (T394410) and fall back to the legacy interface
-		// message MediaWiki:Wikilambda-suggested-functions.json until the migration is
-		// complete everywhere.
+		// 4. In client mode, expose the recommended-Wikifunctions list for the VE dialog.
+		// Prefer CommunityConfiguration (T394410); fall back to the legacy interface
+		// message MediaWiki:Wikilambda-suggested-functions.json until all wikis have
+		// been migrated.
 		if ( $this->config->get( 'WikiLambdaEnableClientMode' ) ) {
-			$vars['wgWikiLambdaSuggestedFunctions'] = $this->getSuggestedFunctions();
+			$vars['wgWikiLambdaSuggestedFunctions'] = $this->loadProviderList(
+				'WikifunctionsSuggestions',
+				'wikilambda-suggested-functions.json',
+				5
+			);
+		}
+
+		// 5. In abstract mode, expose the suggested HTML-returning Wikifunctions shown
+		// in the Abstract Article "Add fragment" menu. There is only ever one wiki
+		// in abstract mode (abstract.wikipedia.org), so no legacy-message fallback is
+		// needed — the schema DEFAULT ships the seed list.
+		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			$vars['wgWikiLambdaAbstractSuggestions'] = $this->loadProviderList(
+				'AbstractWikiSuggestedWikifunctions'
+			);
 		}
 	}
 
 	/**
+	 * Resolve a CC-managed list of ZIDs for injection into wgWikiLambda* config.
+	 *
+	 * Reads from the CommunityConfiguration provider when the extension is loaded.
+	 * If a $legacyMessageKey is supplied, falls back to parsing that interface
+	 * message (pre-T394410 behaviour) — used during migration windows where wikis
+	 * may still hold config in the old MediaWiki: message.
+	 *
+	 * @param string $providerId CC provider ID (e.g. "WikifunctionsSuggestions")
+	 * @param string|null $legacyMessageKey Interface-message key to fall back to, or
+	 *   null to skip the legacy path entirely (when the CC schema DEFAULT is seeded
+	 *   with the initial values and no migration from a MediaWiki: message exists)
+	 * @param int $legacyCap Maximum entries to keep from the legacy fallback; ignored
+	 *   when $legacyMessageKey is null
 	 * @return string[]
 	 */
-	private function getSuggestedFunctions(): array {
+	private function loadProviderList(
+		string $providerId,
+		?string $legacyMessageKey = null,
+		int $legacyCap = 0
+	): array {
 		if ( ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
 			try {
 				$provider = MediaWikiServices::getInstance()
 					->getService( 'CommunityConfiguration.ProviderFactory' )
-					->newProvider( 'WikifunctionsSuggestions' );
+					->newProvider( $providerId );
 				$status = $provider->loadValidConfiguration();
 				if ( $status->isOK() ) {
 					$value = $status->getValue();
@@ -119,18 +150,22 @@ class ClientHooks implements
 				}
 			} catch ( Throwable $e ) {
 				$this->logger->warning(
-					__METHOD__ . ': CommunityConfiguration lookup failed: {msg}',
-					[ 'msg' => $e->getMessage() ]
+					__METHOD__ . ': CommunityConfiguration lookup for {id} failed: {msg}',
+					[ 'id' => $providerId, 'msg' => $e->getMessage() ]
 				);
 			}
 		}
 
+		if ( $legacyMessageKey === null ) {
+			return [];
+		}
+
 		// Legacy fallback: parse the interface message.
-		$msg = wfMessage( 'wikilambda-suggested-functions.json' )->inContentLanguage();
+		$msg = wfMessage( $legacyMessageKey )->inContentLanguage();
 		if ( $msg->exists() ) {
 			$decoded = json_decode( $msg->plain(), true );
 			if ( is_array( $decoded ) ) {
-				return array_slice( array_values( $decoded ), 0, 5 );
+				return array_slice( array_values( $decoded ), 0, $legacyCap );
 			}
 		}
 		return [];
