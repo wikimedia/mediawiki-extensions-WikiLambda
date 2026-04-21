@@ -24,7 +24,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZNaturalLanguage
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @group Database
  */
 class ZNaturalLanguageTest extends WikiLambdaIntegrationTestCase {

@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectEditingPageTrait;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
 

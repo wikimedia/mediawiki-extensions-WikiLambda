@@ -8,10 +8,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use Exception;
 use MediaWiki\Actions\HistoryAction;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 
 class ZObjectHistoryAction extends HistoryAction {
 	/**

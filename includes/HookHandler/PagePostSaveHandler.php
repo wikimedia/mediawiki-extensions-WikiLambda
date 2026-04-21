@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;

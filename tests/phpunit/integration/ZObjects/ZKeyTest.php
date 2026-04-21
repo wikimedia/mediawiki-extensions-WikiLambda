@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
@@ -25,7 +25,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @group Database
  */
 class ZKeyTest extends WikiLambdaIntegrationTestCase {

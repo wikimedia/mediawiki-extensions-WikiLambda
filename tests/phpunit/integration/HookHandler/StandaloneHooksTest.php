@@ -18,8 +18,8 @@ use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\Json\FormatJson;
@@ -31,9 +31,9 @@ use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataRemoval
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
  * @covers \MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper

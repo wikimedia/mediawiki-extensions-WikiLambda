@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Authorization;
 
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Title\Title;
 
 class ZObjectFilterTypeChanged implements ZObjectFilter {

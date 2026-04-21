@@ -20,7 +20,7 @@ use MediaWiki\Title\Title;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry
  * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler
  * @group Database
  */
 class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {

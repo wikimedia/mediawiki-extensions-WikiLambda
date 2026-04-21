@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**

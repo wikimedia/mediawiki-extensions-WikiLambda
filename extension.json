@@ -37,7 +37,7 @@
 	"callback": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks::registerExtension",
 	"ContentHandlers": {
 		"zobject": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler",
+			"class": "MediaWiki\\Extension\\WikiLambda\\ZObjectContent\\ZObjectContentHandler",
 			"services": [
 				"MainConfig",
 				"WikiLambdaZObjectStore",

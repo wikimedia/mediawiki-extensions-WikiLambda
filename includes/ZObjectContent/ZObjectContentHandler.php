@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use GuzzleHttp\Client;
 use InvalidArgumentException;
@@ -23,10 +23,16 @@ use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
-use MediaWiki\Extension\WikiLambda\Diff\ZObjectContentDifferenceEngine;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\UIUtils;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\Language;

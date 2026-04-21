@@ -13,8 +13,8 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Extension\WikiLambda\ZObjectPage;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -24,11 +24,11 @@ use Wikimedia\Rdbms\IDBAccessObject;
 use Wikimedia\Rdbms\IResultWrapper;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectPage
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectPage
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataRemoval
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @group Database
  */

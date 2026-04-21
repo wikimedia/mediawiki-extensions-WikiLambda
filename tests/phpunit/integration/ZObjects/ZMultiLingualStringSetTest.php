@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
@@ -24,7 +24,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @group Database
  */
 class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {

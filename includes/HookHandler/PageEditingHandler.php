@@ -15,7 +15,7 @@ use MediaWiki\Api\ApiMessage;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Linker\LinkTarget;

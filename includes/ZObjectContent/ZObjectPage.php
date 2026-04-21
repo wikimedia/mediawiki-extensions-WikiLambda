@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Page\WikiPage;

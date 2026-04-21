@@ -8,9 +8,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Actions\Action;
+use MediaWiki\Extension\WikiLambda\UIUtils;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;

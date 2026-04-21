@@ -16,7 +16,7 @@ namespace MediaWiki\Extension\WikiLambda\Maintenance;
 use Exception;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Logger\LoggerFactory;

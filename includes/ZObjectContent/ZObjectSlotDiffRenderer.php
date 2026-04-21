@@ -8,11 +8,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Diff;
+namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Content\Content;
 use MediaWiki\Diff\SlotDiffRenderer;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 
 class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 

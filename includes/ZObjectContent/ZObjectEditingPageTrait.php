@@ -8,10 +8,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;

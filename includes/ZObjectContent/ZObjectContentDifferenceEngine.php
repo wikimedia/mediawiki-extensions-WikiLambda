@@ -8,14 +8,12 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Diff;
+namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Content\Content;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\DifferenceEngine;
 use MediaWiki\Diff\TextSlotDiffRenderer;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 
 class ZObjectContentDifferenceEngine extends DifferenceEngine {
 

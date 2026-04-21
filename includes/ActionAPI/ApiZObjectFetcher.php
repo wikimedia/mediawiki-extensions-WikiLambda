@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;

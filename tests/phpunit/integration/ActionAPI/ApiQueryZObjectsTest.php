@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Title\Title;
 
 /**

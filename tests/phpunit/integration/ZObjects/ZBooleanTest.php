@@ -11,14 +11,14 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZBoolean;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZBoolean
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  *
  * @group Database
  */

@@ -11,7 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Unit\Authorization;
 
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Title\Title;
 use MediaWikiUnitTestCase;

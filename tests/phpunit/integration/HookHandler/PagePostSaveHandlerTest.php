@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\HookHandler\PagePostSaveHandler;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\RecentChanges\RecentChange;

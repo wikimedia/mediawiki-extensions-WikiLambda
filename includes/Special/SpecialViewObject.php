@@ -13,7 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
-use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectRepoUtils;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;

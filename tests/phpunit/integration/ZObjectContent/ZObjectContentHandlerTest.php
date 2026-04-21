@@ -18,11 +18,11 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjectEditAction;
-use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval;
-use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectEditAction;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataRemoval;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Parser\ParserOptions;
@@ -32,10 +32,10 @@ use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
- * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataRemoval
  * @group Database
  */
 class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
