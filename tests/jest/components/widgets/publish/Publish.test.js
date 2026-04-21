@@ -66,6 +66,23 @@ describe( 'Publish widget', () => {
 		expect( wrapper.emitted( 'start-publish' ) ).toBeTruthy();
 	} );
 
+	it( 'passes disconnectFunctionObjects to submit action when function signature changed', async () => {
+		const wrapper = renderPublish( {
+			isDirty: true,
+			functionSignatureChanged: true
+		} );
+		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
+
+		wrapper.get( '.ext-wikilambda-app-publish-widget__publish-button' ).trigger( 'click' );
+		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( true ) );
+
+		await publishDialog.props( 'submitAction' )( { summary: 'A summary' } );
+		expect( store.submitZObject ).toHaveBeenCalledWith( {
+			summary: 'A summary',
+			disconnectFunctionObjects: true
+		} );
+	} );
+
 	it( 'does not open the publish dialog if validateZObject returns isValid false', async () => {
 		store.validateZObject.mockReturnValue( false );
 

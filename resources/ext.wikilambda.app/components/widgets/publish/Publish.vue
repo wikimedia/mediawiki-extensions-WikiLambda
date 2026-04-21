@@ -213,7 +213,7 @@ module.exports = exports = defineComponent( {
 		function submitAction( { summary } ) {
 			return store.submitZObject( {
 				summary,
-				shouldDisconnectFunctionObjects: props.functionSignatureChanged
+				disconnectFunctionObjects: props.functionSignatureChanged
 			} );
 		}
 
