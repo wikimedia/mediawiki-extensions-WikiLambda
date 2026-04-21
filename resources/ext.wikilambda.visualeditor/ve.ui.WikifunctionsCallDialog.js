@@ -195,14 +195,11 @@ ve.ui.WikifunctionsCallDialog.prototype.getSetupProcess = function ( data ) {
 		.next( () => {
 			// Wait till the Vue app is loaded, so we can access piniaStore
 			ve.init.mw.WikifunctionsCall.vueAppLoaded.then( () => {
-				// Get the suggested functions messages and parse the JSON (if any)
-				let suggestedFunctions = [ 'Z20756', 'Z18428' ];
-				try {
-					suggestedFunctions = JSON.parse( OO.ui.msg( 'wikilambda-suggested-functions.json' ) );
-				} catch ( e ) {}
-
-				// Trim to the first five elements of the array, so it's not too long for users.
-				suggestedFunctions = suggestedFunctions.slice( 0, 5 );
+				// The recommended-function list is configured via CommunityConfiguration
+				// (see MediaWiki:WikifunctionsSuggestions.json; T394410) and exposed
+				// server-side in onMakeGlobalVariablesScript. The schema enforces the
+				// 5-entry cap at save time, so no client-side slicing is needed.
+				const suggestedFunctions = mw.config.get( 'wgWikiLambdaSuggestedFunctions' ) || [];
 
 				// Get the selected text from the captured selection
 				const lastSelection = this.getLastSelection();

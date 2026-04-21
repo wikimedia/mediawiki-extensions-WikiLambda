@@ -318,6 +318,12 @@
 				"LanguageFactory",
 				"WikiLambdaZObjectStore"
 			]
+		},
+		"WikiLambdaCommunityConfigurationHooks": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\CommunityConfigurationHooks",
+			"services": [
+				"MainConfig"
+			]
 		}
 	},
 	"Hooks": {
@@ -345,7 +351,8 @@
 		"ParserGetVariableValueSwitch": "PageRenderingHandler",
 		"SpecialStatsAddExtra": "PageRenderingHandler",
 		"ParserFirstCallInit": "PageRenderingHandler",
-		"SkinPageReadyConfig": "PageRenderingHandler"
+		"SkinPageReadyConfig": "PageRenderingHandler",
+		"CommunityConfigurationProvider_initList": "WikiLambdaCommunityConfigurationHooks"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
@@ -1243,6 +1250,21 @@
 			"PluginModules": [
 				"ext.wikilambda.visualeditor"
 			]
+		},
+		"CommunityConfiguration": {
+			"Providers": {
+				"WikifunctionsSuggestions": {
+					"store": {
+						"type": "wikipage",
+						"args": [ "MediaWiki:WikifunctionsSuggestions.json" ]
+					},
+					"validator": {
+						"type": "jsonschema",
+						"args": [ "MediaWiki\\Extension\\WikiLambda\\Config\\SuggestedFunctionsSchema" ]
+					},
+					"type": "data"
+				}
+			}
 		}
 	},
 	"ParsoidModules": [

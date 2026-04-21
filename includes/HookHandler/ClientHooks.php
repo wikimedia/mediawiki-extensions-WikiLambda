@@ -14,6 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -24,6 +25,7 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\User\UserIdentity;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class ClientHooks implements
 	\MediaWiki\Storage\Hook\PageSaveCompleteHook,
@@ -91,6 +93,47 @@ class ClientHooks implements
 			$namespaces = $this->config->get( 'WikiLambdaAbstractNamespaces' );
 			$vars['wgWikiLambdaAbstractPrimaryNamespace'] = array_values( $namespaces )[0][0];
 		}
+
+		// 4. In client mode, expose the recommended-Wikifunctions list to the VE dialog.
+		// Prefer CommunityConfiguration (T394410) and fall back to the legacy interface
+		// message MediaWiki:Wikilambda-suggested-functions.json until the migration is
+		// complete everywhere.
+		if ( $this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+			$vars['wgWikiLambdaSuggestedFunctions'] = $this->getSuggestedFunctions();
+		}
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function getSuggestedFunctions(): array {
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
+			try {
+				$provider = MediaWikiServices::getInstance()
+					->getService( 'CommunityConfiguration.ProviderFactory' )
+					->newProvider( 'WikifunctionsSuggestions' );
+				$status = $provider->loadValidConfiguration();
+				if ( $status->isOK() ) {
+					$value = $status->getValue();
+					return array_values( (array)( $value->SuggestedFunctions ?? [] ) );
+				}
+			} catch ( Throwable $e ) {
+				$this->logger->warning(
+					__METHOD__ . ': CommunityConfiguration lookup failed: {msg}',
+					[ 'msg' => $e->getMessage() ]
+				);
+			}
+		}
+
+		// Legacy fallback: parse the interface message.
+		$msg = wfMessage( 'wikilambda-suggested-functions.json' )->inContentLanguage();
+		if ( $msg->exists() ) {
+			$decoded = json_decode( $msg->plain(), true );
+			if ( is_array( $decoded ) ) {
+				return array_slice( array_values( $decoded ), 0, 5 );
+			}
+		}
+		return [];
 	}
 
 	/**
@@ -149,7 +192,6 @@ class ClientHooks implements
 				'remoteExtPath' => 'WikiLambda/resources',
 				'packageFiles' => $files,
 				'messages' => [
-					'wikilambda-suggested-functions.json',
 					'wikilambda-visualeditor-wikifunctionscall-ce-loading',
 					'wikilambda-visualeditor-wikifunctionscall-ce-abort',
 					'wikilambda-visualeditor-wikifunctionscall-error',

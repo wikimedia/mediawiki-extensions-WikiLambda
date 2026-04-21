@@ -36,7 +36,9 @@ you have cloned the `mediawiki/core` repository.
   ```
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventLogging
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventBus
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/CommunityConfiguration
   ```
+  When CommunityConfiguration is loaded on a client-mode wiki, WikiLambda registers a `WikifunctionsSuggestions` provider (visible at `Special:CommunityConfiguration`) so wiki administrators can curate the recommended-Wikifunctions list shown in the VisualEditor `{{#function:…}}` dialog through a validated form instead of editing a raw JSON interface message. The soft dependency is optional: without CommunityConfiguration, the extension falls back to reading `MediaWiki:Wikilambda-suggested-functions.json` as before.
 * Extend MediaWiki's composer dependencies to use ours by adding a `composer.local.json` file in your `mediawiki/` directory:
   ```
   {

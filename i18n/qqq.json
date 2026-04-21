@@ -23,6 +23,11 @@
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
+	"communityconfiguration-wikifunctionssuggestions-title": "Title of the WikifunctionsSuggestions provider in the CommunityConfiguration UI (Special:CommunityConfiguration). The provider manages the list of recommended Wikifunctions shown in the VisualEditor function-call dialog.",
+	"communityconfiguration-wikifunctionssuggestions-description": "Description shown under the provider title in the CommunityConfiguration UI. Explains what the list is used for.",
+	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-label": "Label for the array-of-ZIDs field in the CommunityConfiguration editor form.",
+	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-help-text": "Help text shown with the field. Explains the expected input (a Wikifunctions ZID) and the five-entry cap.\n\n* <code>Z20756</code> — an example ZID, does not need translation.",
+	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-item-label": "Label used for each row of the recommended-functions list in the CommunityConfiguration editor form. Parameters:\n* $1 — the 1-based position of the row (1, 2, 3, ...).",
 	"action-wikifunctions-run": "{{doc-action|wikifunctions-run}}\n{{Doc-wikilambda}}",
 	"action-wikilambda-bypass-cache": "{{doc-action|wikilambda-bypass-cache}}",
 	"action-wikilambda-connect-implementation": "{{doc-action|wikilambda-connect-implementation}}",
