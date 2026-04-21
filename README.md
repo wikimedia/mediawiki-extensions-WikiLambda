@@ -43,7 +43,7 @@ you have cloned the `mediawiki/core` repository.
   ```
   git clone <https://gerrit.wikimedia.org/r/mediawiki/extensions/CommunityConfiguration>
   ```
-  When CommunityConfiguration is loaded, WikiLambda registers two providers (visible at `Special:CommunityConfiguration`): `WikifunctionsSuggestions` for the recommended-Wikifunctions list shown in the VisualEditor `{{#function:…}}` dialog (on client-mode wikis), and `AbstractWikiSuggestedWikifunctions` for the HTML-returning functions offered in the Abstract Article "Add fragment" menu (on the abstract-mode wiki). The soft dependency is optional: without CommunityConfiguration, the extension temporarily falls back to reading `MediaWiki:Wikilambda-suggested-functions.json` as before for the client-mode list.
+  When CommunityConfiguration is loaded, WikiLambda registers two providers (visible at `Special:CommunityConfiguration`): `WikifunctionsSuggestions` for the recommended-Wikifunctions list shown in the VisualEditor `{{#function:…}}` dialog (on client-mode wikis), and `AbstractWikiSuggestedWikifunctions` for the HTML-returning functions offered in the Abstract Article "Add fragment" menu (on the abstract-mode wiki). Without CommunityConfiguration loaded, neither list is populated — install it on any wiki where you want administrators to be able to curate these lists.
   For Wikidata content use:
   ```
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Wikibase

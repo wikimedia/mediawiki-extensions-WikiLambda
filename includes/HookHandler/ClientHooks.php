@@ -95,21 +95,15 @@ class ClientHooks implements
 		}
 
 		// 4. In client mode, expose the recommended-Wikifunctions list for the VE dialog.
-		// Prefer CommunityConfiguration (T394410); fall back to the legacy interface
-		// message MediaWiki:Wikilambda-suggested-functions.json until all wikis have
-		// been migrated.
+		// Sourced from CommunityConfiguration (T394410).
 		if ( $this->config->get( 'WikiLambdaEnableClientMode' ) ) {
 			$vars['wgWikiLambdaSuggestedFunctions'] = $this->loadProviderList(
-				'WikifunctionsSuggestions',
-				'wikilambda-suggested-functions.json',
-				5
+				'WikifunctionsSuggestions'
 			);
 		}
 
 		// 5. In abstract mode, expose the suggested HTML-returning Wikifunctions shown
-		// in the Abstract Article "Add fragment" menu. There is only ever one wiki
-		// in abstract mode (abstract.wikipedia.org), so no legacy-message fallback is
-		// needed — the schema DEFAULT ships the seed list.
+		// in the Abstract Article "Add fragment" menu.
 		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			$vars['wgWikiLambdaAbstractSuggestions'] = $this->loadProviderList(
 				'AbstractWikiSuggestedWikifunctions'
@@ -118,55 +112,31 @@ class ClientHooks implements
 	}
 
 	/**
-	 * Resolve a CC-managed list of ZIDs for injection into wgWikiLambda* config.
-	 *
-	 * Reads from the CommunityConfiguration provider when the extension is loaded.
-	 * If a $legacyMessageKey is supplied, falls back to parsing that interface
-	 * message (pre-T394410 behaviour) — used during migration windows where wikis
-	 * may still hold config in the old MediaWiki: message.
+	 * Resolve a CommunityConfiguration-managed list of ZIDs for injection into
+	 * wgWikiLambda* config. Returns an empty list if CommunityConfiguration is
+	 * not loaded or the lookup fails.
 	 *
 	 * @param string $providerId CC provider ID (e.g. "WikifunctionsSuggestions")
-	 * @param string|null $legacyMessageKey Interface-message key to fall back to, or
-	 *   null to skip the legacy path entirely (when the CC schema DEFAULT is seeded
-	 *   with the initial values and no migration from a MediaWiki: message exists)
-	 * @param int $legacyCap Maximum entries to keep from the legacy fallback; ignored
-	 *   when $legacyMessageKey is null
 	 * @return string[]
 	 */
-	private function loadProviderList(
-		string $providerId,
-		?string $legacyMessageKey = null,
-		int $legacyCap = 0
-	): array {
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
-			try {
-				$provider = MediaWikiServices::getInstance()
-					->getService( 'CommunityConfiguration.ProviderFactory' )
-					->newProvider( $providerId );
-				$status = $provider->loadValidConfiguration();
-				if ( $status->isOK() ) {
-					$value = $status->getValue();
-					return array_values( (array)( $value->SuggestedFunctions ?? [] ) );
-				}
-			} catch ( Throwable $e ) {
-				$this->logger->warning(
-					__METHOD__ . ': CommunityConfiguration lookup for {id} failed: {msg}',
-					[ 'id' => $providerId, 'msg' => $e->getMessage() ]
-				);
-			}
-		}
-
-		if ( $legacyMessageKey === null ) {
+	private function loadProviderList( string $providerId ): array {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
 			return [];
 		}
-
-		// Legacy fallback: parse the interface message.
-		$msg = wfMessage( $legacyMessageKey )->inContentLanguage();
-		if ( $msg->exists() ) {
-			$decoded = json_decode( $msg->plain(), true );
-			if ( is_array( $decoded ) ) {
-				return array_slice( array_values( $decoded ), 0, $legacyCap );
+		try {
+			$provider = MediaWikiServices::getInstance()
+				->getService( 'CommunityConfiguration.ProviderFactory' )
+				->newProvider( $providerId );
+			$status = $provider->loadValidConfiguration();
+			if ( $status->isOK() ) {
+				$value = $status->getValue();
+				return array_values( (array)( $value->SuggestedFunctions ?? [] ) );
 			}
+		} catch ( Throwable $e ) {
+			$this->logger->warning(
+				__METHOD__ . ': CommunityConfiguration lookup for {id} failed: {msg}',
+				[ 'id' => $providerId, 'msg' => $e->getMessage() ]
+			);
 		}
 		return [];
 	}
