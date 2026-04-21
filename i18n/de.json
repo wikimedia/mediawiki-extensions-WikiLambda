@@ -503,7 +503,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Ältestes zuerst",
 	"wikilambda-special-objectsbytype-form-type": "Typ",
 	"wikilambda-special-objectsbytype-link": "Liste aller Typen mit Instanzen",
-	"wikilambda-special-objectsbytype-listheader": "Alle Objekte des Typs $1 ($2)",
+	"wikilambda-special-objectsbytype-listheader": "Alle Objekte des Typs „$1“ ($2)",
 	"wikilambda-special-objectsbytype-summary": "Klicke auf einen der unten aufgeführten Typen, um alle Objekte dieses Typs zu sehen.",
 	"wikilambda-special-runfunction": "Einen Funktionsaufruf auswerten",
 	"wikilambda-special-runfunction-intro": "Vergewissere dich, dass du die [[$1|Gemeinschaftsrichtlinien]] sowie die Urheberrechts- und Patentvorschriften befolgst.",
