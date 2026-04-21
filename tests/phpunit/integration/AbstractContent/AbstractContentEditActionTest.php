@@ -9,13 +9,17 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Context\DerivativeContext;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Page\Article;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction
+ * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditPageTrait
  * @group Database
  */
 class AbstractContentEditActionTest extends WikiLambdaIntegrationTestCase {
@@ -24,22 +28,38 @@ class AbstractContentEditActionTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @param Title $title
+	 * @param FauxRequest|null $request
 	 * @return AbstractContentEditAction
 	 */
-	private function buildAction( Title $title ): AbstractContentEditAction {
-		$context = $this->getTestContext( $title );
+	private function buildAction( Title $title, ?FauxRequest $request = null ): AbstractContentEditAction {
+		$context = $this->getTestContext( $title, $request );
 		$article = Article::newFromTitle( $title, $context );
 		return new AbstractContentEditAction( $article, $context );
 	}
 
 	/**
 	 * @param Title $title
-	 * @return \MediaWiki\Context\DerivativeContext
+	 * @param FauxRequest|null $request
+	 * @return DerivativeContext
 	 */
-	private function getTestContext( Title $title ) {
-		$context = new \MediaWiki\Context\DerivativeContext( \MediaWiki\Context\RequestContext::getMain() );
+	private function getTestContext( Title $title, ?FauxRequest $request = null ): DerivativeContext {
+		$context = new DerivativeContext( RequestContext::getMain() );
 		$context->setTitle( $title );
+		if ( $request !== null ) {
+			$context->setRequest( $request );
+		}
 		return $context;
+	}
+
+	/**
+	 * @return AbstractWikiContentHandler
+	 */
+	private function getAbstractContentHandler(): AbstractWikiContentHandler {
+		return new AbstractWikiContentHandler(
+			CONTENT_MODEL_ABSTRACT,
+			$this->getServiceContainer()->getMainConfig(),
+			$this->getServiceContainer()->getContentHandlerFactory()
+		);
 	}
 
 	public function testGetName() {
@@ -88,11 +108,7 @@ class AbstractContentEditActionTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
 		$jsonContent = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
 
-		$contentHandler = new AbstractWikiContentHandler(
-			CONTENT_MODEL_ABSTRACT,
-			$this->getServiceContainer()->getMainConfig(),
-			$this->getServiceContainer()->getContentHandlerFactory()
-		);
+		$contentHandler = $this->getAbstractContentHandler();
 		$content = $contentHandler->makeContent( $jsonContent, $title, CONTENT_MODEL_ABSTRACT );
 		$this->editPage( $title, $content );
 
@@ -106,5 +122,74 @@ class AbstractContentEditActionTest extends WikiLambdaIntegrationTestCase {
 		$jsVars = $output->getJsConfigVars();
 		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'createNewPage' ] );
 		$this->assertSame( $jsonContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+	}
+
+	public function testShow_existingPageWithOldid() {
+		// Create initial revision, then make a second revision
+		$title = Title::newFromText( 'Q43', self::TEST_ABSTRACT_NS );
+		$contentHandler = $this->getAbstractContentHandler();
+
+		$firstContent = '{"qid":"Q43","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$firstStatus = $this->editPage(
+			$title,
+			$contentHandler->makeContent( $firstContent, $title, CONTENT_MODEL_ABSTRACT )
+		);
+		$firstRevId = $firstStatus->getNewRevision()->getId();
+
+		$secondContent = '{"qid":"Q43","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$this->editPage(
+			$title,
+			$contentHandler->makeContent( $secondContent, $title, CONTENT_MODEL_ABSTRACT )
+		);
+
+		// Build an action whose request points at the older revision
+		$action = $this->buildAction( $title, new FauxRequest( [ 'oldid' => $firstRevId ] ) );
+
+		$action->show();
+
+		$output = $action->getOutput();
+		$jsVars = $output->getJsConfigVars();
+
+		// Content should be the first revision's content, not the latest
+		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'createNewPage' ] );
+		$this->assertSame( $firstContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+
+		// Revision id should be set on the output page (T364318)
+		$this->assertSame( $firstRevId, $output->getRevisionId() );
+	}
+
+	public function testShow_existingPageWithOldidFromAnotherTitle() {
+		// Create the target page (Q44) and a second page (Q45) with its own revision
+		$contentHandler = $this->getAbstractContentHandler();
+
+		$targetTitle = Title::newFromText( 'Q44', self::TEST_ABSTRACT_NS );
+		$targetContent = '{"qid":"Q44","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$this->editPage(
+			$targetTitle,
+			$contentHandler->makeContent( $targetContent, $targetTitle, CONTENT_MODEL_ABSTRACT )
+		);
+
+		$otherTitle = Title::newFromText( 'Q45', self::TEST_ABSTRACT_NS );
+		$otherContent = '{"qid":"Q45","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$otherStatus = $this->editPage(
+			$otherTitle,
+			$contentHandler->makeContent( $otherContent, $otherTitle, CONTENT_MODEL_ABSTRACT )
+		);
+		$otherRevId = $otherStatus->getNewRevision()->getId();
+
+		// Visit edit for Q44 with oldid pointing at Q45's revision
+		$action = $this->buildAction( $targetTitle, new FauxRequest( [ 'oldid' => $otherRevId ] ) );
+
+		$action->show();
+
+		$output = $action->getOutput();
+		$jsVars = $output->getJsConfigVars();
+
+		// getRevisionByTitle returns null for a mismatched title/revision, so content is false
+		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'createNewPage' ] );
+		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+
+		// Revision id is still set on the output
+		$this->assertSame( $otherRevId, $output->getRevisionId() );
 	}
 }
