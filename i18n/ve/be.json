@@ -67,7 +67,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Перадпаказ",
 	"wikilambda-visualeditor-wikifunctionscall-preview-no-result": "Увядзіце значэнні для перадпаказу выніку.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Функцыя не можа адлюстраваць вынік. Паўтарыце спробу пазней.",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Адменена",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Скасаванае",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Скінуць",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Скасаваць"
 }

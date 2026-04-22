@@ -359,6 +359,7 @@
 	"wikilambda-special-objectsbytype-form-orderby": "Zortéieren no",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Numm",
 	"wikilambda-special-objectsbytype-form-type": "Typ",
+	"wikilambda-special-objectsbytype-listheader": "All Objete vum Typ „$1“ ($2)",
 	"wikilambda-special-runfunction": "Funktioun ausféieren",
 	"wikilambda-statistics-header": "Wikifunctions-Inhaltsstatistiken",
 	"wikilambda-statistics-label-functions": "Zuel vun de Funktiounen",
