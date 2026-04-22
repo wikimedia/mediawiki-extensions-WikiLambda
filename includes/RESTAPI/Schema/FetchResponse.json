@@ -1,0 +1,9 @@
+{
+	"x-i18n-description": "wikifunctions-rest-module-v0-fetch-response-desc",
+	"type": "object",
+	"additionalProperties": {
+		"type": "string",
+		"x-i18n-description": "wikifunctions-rest-module-v0-fetch-response-zobject-desc",
+		"example": "{\"Z1K1\":\"Z2\",\"Z2K1\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z801\"},\"Z2K2\":{\"Z1K1\":\"Z8\",\"Z8K1\":[\"Z17\"],\"Z8K2\":\"Z1\",\"Z8K3\":[\"Z20\"],\"Z8K4\":[\"Z14\"],\"Z8K5\":\"Z801\"},\"Z2K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\"]}}"
+	}
+}

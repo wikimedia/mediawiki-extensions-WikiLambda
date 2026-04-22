@@ -22,6 +22,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Rest\ResponseInterface;
 use MediaWiki\Title\Title;
+use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
 
@@ -201,6 +202,11 @@ class FetchHandler extends WikiLambdaRESTHandler {
 	}
 
 	/** @inheritDoc */
+	public function getResponseBodySchemaFileName( string $method ): ?string {
+		return __DIR__ . '/Schema/FetchResponse.json';
+	}
+
+	/** @inheritDoc */
 	public function needsWriteAccess() {
 		return false;
 	}
@@ -221,24 +227,31 @@ class FetchHandler extends WikiLambdaRESTHandler {
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_ISMULTI => true,
 				ParamValidator::PARAM_REQUIRED => true,
+				self::PARAM_DESCRIPTION => new MessageValue( 'wikifunctions-rest-module-v0-fetch-param-zids-desc' ),
 			],
 			'revisions' => [
 				self::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_ISMULTI => true,
 				ParamValidator::PARAM_REQUIRED => false,
+				self::PARAM_DESCRIPTION =>
+					new MessageValue( 'wikifunctions-rest-module-v0-fetch-param-revisions-desc' ),
 			],
 			'language' => [
 				self::PARAM_SOURCE => 'query',
 				ParamValidator::PARAM_TYPE => $supportedLanguageCodes,
 				ParamValidator::PARAM_DEFAULT => null,
 				ParamValidator::PARAM_REQUIRED => false,
+				self::PARAM_DESCRIPTION => new MessageValue( 'wikifunctions-rest-module-v0-fetch-param-language-desc' ),
 			],
 			'getDependencies' => [
 				self::PARAM_SOURCE => 'query',
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ParamValidator::PARAM_DEFAULT => false,
 				ParamValidator::PARAM_REQUIRED => false,
+				self::PARAM_DESCRIPTION => new MessageValue(
+					'wikifunctions-rest-module-v0-fetch-param-getdependencies-desc'
+				),
 			],
 		];
 	}

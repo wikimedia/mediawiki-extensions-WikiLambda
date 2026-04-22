@@ -6,6 +6,12 @@
 	"wikifunctions-rest-module-v0-desc": "{{Experimental}} Description of the Attribution API REST module",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "{{Experimental}} Description of the fetch ZIDs endpoint",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "{{Experimental}} Description of the fetch ZIDs and revisions endpoint",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "{{Experimental}} Description of the 'zids' path parameter of the fetch endpoint",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "{{Experimental}} Description of the 'revisions' path parameter of the fetch endpoint",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "{{Experimental}} Description of the 'language' query parameter of the fetch endpoint",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "{{Experimental}} Description of the 'getDependencies' query parameter of the fetch endpoint",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "{{Experimental}} Description of the 200 OK response body of the fetch endpoint, a map of ZIDs to serialised ZObjects",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "{{Experimental}} Description of an individual ZObject value in the fetch endpoint response map",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "{{Experimental}} Description of the call ZID and arguments endpoint",
 	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "{{Experimental}} Description of the call ZID and arguments and parse and render the result endpoint"
 }

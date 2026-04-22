@@ -7,6 +7,12 @@
 	"wikifunctions-rest-module-v0-desc": "APIs for interacting with Wikifunctions",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "Fetch ZObjects",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Fetch historic versions of ZObjects",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "Pipe-separated list of ZIDs to fetch, with a maximum of 50 per request",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Pipe-separated list of revision IDs, one per requested ZID, to fetch historic versions; if omitted, the latest revision of each ZID is returned",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "BCP-47 language code to use when resolving multilingual labels in the returned ZObjects; if omitted, all languages are returned",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "Whether to additionally return the ZObjects referenced as types in the keys or arguments of the requested ZObjects",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "A map from each requested (and, if getDependencies is set, dependency) ZID to its ZObject serialised as a JSON string",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "A ZObject serialised as a JSON string, as returned by the page-content representation endpoint",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Call a function",
 	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Call a function, with custom parse and render languages"
 }
