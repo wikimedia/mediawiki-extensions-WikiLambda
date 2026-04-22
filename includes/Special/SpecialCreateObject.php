@@ -20,7 +20,12 @@ class SpecialCreateObject extends SpecialPage {
 	use ZObjectEditingPageTrait;
 
 	public function __construct() {
-		parent::__construct( 'CreateObject', 'wikilambda-create' );
+		parent::__construct( 'CreateObject' );
+	}
+
+	/** @inheritDoc */
+	public function getRestriction(): string {
+		return 'wikilambda-create';
 	}
 
 	/**

@@ -19,7 +19,12 @@ use MediaWiki\User\User;
 class SpecialRunFunction extends SpecialPage {
 
 	public function __construct() {
-		parent::__construct( 'RunFunction', 'wikilambda-execute' );
+		parent::__construct( 'RunFunction' );
+	}
+
+	/** @inheritDoc */
+	public function getRestriction(): string {
+		return 'wikilambda-execute';
 	}
 
 	/**

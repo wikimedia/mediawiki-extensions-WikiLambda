@@ -39,10 +39,15 @@ class SpecialViewObject extends UnlistedSpecialPage {
 		UrlUtils $urlUtils,
 		private readonly ZObjectStore $zObjectStore
 	) {
-		parent::__construct( 'ViewObject', 'read' );
+		parent::__construct( 'ViewObject' );
 		$this->contentRenderer = $contentRenderer;
 		$this->languageFactory = $languageFactory;
 		$this->urlUtils = $urlUtils;
+	}
+
+	/** @inheritDoc */
+	public function getRestriction(): string {
+		return 'read';
 	}
 
 	/**

@@ -37,11 +37,16 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		LanguageNameUtils $languageNameUtils,
 		UrlUtils $urlUtils,
 	) {
-		parent::__construct( 'ViewAbstract', 'read' );
+		parent::__construct( 'ViewAbstract' );
 		$this->contentRenderer = $contentRenderer;
 		$this->languageFactory = $languageFactory;
 		$this->languageNameUtils = $languageNameUtils;
 		$this->urlUtils = $urlUtils;
+	}
+
+	/** @inheritDoc */
+	public function getRestriction(): string {
+		return 'read';
 	}
 
 	/**

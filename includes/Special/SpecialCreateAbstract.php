@@ -20,7 +20,12 @@ class SpecialCreateAbstract extends SpecialPage {
 	use AbstractContentEditPageTrait;
 
 	public function __construct() {
-		parent::__construct( 'CreateAbstract', 'wikilambda-abstract-create' );
+		parent::__construct( 'CreateAbstract' );
+	}
+
+	/** @inheritDoc */
+	public function getRestriction(): string {
+		return 'wikilambda-abstract-create';
 	}
 
 	/**
