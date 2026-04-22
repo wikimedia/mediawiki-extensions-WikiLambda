@@ -1,0 +1,24 @@
+{
+	"x-i18n-description": "wikifunctions-rest-module-v0-call-response-desc",
+	"type": "object",
+	"required": [
+		"value",
+		"type"
+	],
+	"properties": {
+		"value": {
+			"type": "string",
+			"x-i18n-description": "wikifunctions-rest-module-v0-call-response-value-desc",
+			"example": "Hello, world!"
+		},
+		"type": {
+			"type": "string",
+			"enum": [
+				"Z6",
+				"Z89"
+			],
+			"x-i18n-description": "wikifunctions-rest-module-v0-call-response-type-desc",
+			"example": "Z6"
+		}
+	}
+}

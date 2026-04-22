@@ -41,6 +41,7 @@ use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\ResponseInterface;
 use stdClass;
+use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
 
@@ -1065,6 +1066,11 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 	}
 
 	/** @inheritDoc */
+	public function getResponseBodySchemaFileName( string $method ): ?string {
+		return __DIR__ . '/Schema/CallResponse.json';
+	}
+
+	/** @inheritDoc */
 	public function needsWriteAccess(): bool {
 		// This is a rough approximation, as we have no access to the User object in the REST API, but
 		// we want the system to scale back access to this endpoint.
@@ -1079,24 +1085,34 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_ISMULTI => false,
 				ParamValidator::PARAM_REQUIRED => true,
+				Handler::PARAM_DESCRIPTION => new MessageValue( 'wikifunctions-rest-module-v0-call-param-zid-desc' ),
 			],
 			'arguments' => [
 				Handler::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_ISMULTI => false,
 				ParamValidator::PARAM_REQUIRED => true,
+				Handler::PARAM_DESCRIPTION => new MessageValue(
+					'wikifunctions-rest-module-v0-call-param-arguments-desc'
+				),
 			],
 			'parselang' => [
 				Handler::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_DEFAULT => 'en',
 				ParamValidator::PARAM_REQUIRED => false,
+				Handler::PARAM_DESCRIPTION => new MessageValue(
+					'wikifunctions-rest-module-v0-call-param-parselang-desc'
+				),
 			],
 			'renderlang' => [
 				Handler::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_DEFAULT => 'en',
 				ParamValidator::PARAM_REQUIRED => false,
+				Handler::PARAM_DESCRIPTION => new MessageValue(
+					'wikifunctions-rest-module-v0-call-param-renderlang-desc'
+				),
 			],
 		];
 	}

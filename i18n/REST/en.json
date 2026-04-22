@@ -14,5 +14,12 @@
 	"wikifunctions-rest-module-v0-fetch-response-desc": "A map from each requested (and, if getDependencies is set, dependency) ZID to its ZObject serialised as a JSON string",
 	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "A ZObject serialised as a JSON string, as returned by the page-content representation endpoint",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Call a function",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Call a function, with custom parse and render languages"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Call a function, with custom parse and render languages",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID of the function to call",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "Pipe-separated list of arguments to pass to the function, in the order in which its arguments are declared, with each argument URL-encoded",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "BCP-47 language code used to parse string-valued arguments that have a parser function; defaults to 'en'",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "BCP-47 language code used to render the function's output and any error messages; defaults to 'en'",
+	"wikifunctions-rest-module-v0-call-response-desc": "The result of evaluating the function call",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "The evaluated output as a string; either a plain string (for Z6) or an HTML fragment (for Z89)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "The ZID of the type of the evaluated output: 'Z6' for a plain string, 'Z89' for an HTML fragment"
 }

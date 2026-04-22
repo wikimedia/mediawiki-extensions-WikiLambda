@@ -13,5 +13,12 @@
 	"wikifunctions-rest-module-v0-fetch-response-desc": "{{Experimental}} Description of the 200 OK response body of the fetch endpoint, a map of ZIDs to serialised ZObjects",
 	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "{{Experimental}} Description of an individual ZObject value in the fetch endpoint response map",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "{{Experimental}} Description of the call ZID and arguments endpoint",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "{{Experimental}} Description of the call ZID and arguments and parse and render the result endpoint"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "{{Experimental}} Description of the call ZID and arguments and parse and render the result endpoint",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "{{Experimental}} Description of the 'zid' path parameter of the call endpoint",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "{{Experimental}} Description of the 'arguments' path parameter of the call endpoint",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "{{Experimental}} Description of the 'parselang' path parameter of the call endpoint",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "{{Experimental}} Description of the 'renderlang' path parameter of the call endpoint",
+	"wikifunctions-rest-module-v0-call-response-desc": "{{Experimental}} Description of the 200 OK response body of the call endpoint",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "{{Experimental}} Description of the 'value' field of the call endpoint response",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "{{Experimental}} Description of the 'type' field of the call endpoint response"
 }
