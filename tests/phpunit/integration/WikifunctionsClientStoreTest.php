@@ -127,7 +127,7 @@ class WikifunctionsClientStoreTest extends WikiLambdaClientIntegrationTestCase {
 	public function testFetchFromZObjectCache_returnsDecodedJsonOnHit() {
 		$zid = 'Z10100';
 		$cacheKey = $this->cache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
-		$payload = [ 'Z1K1' => 'Z2', 'Z2K1' => [ 'Z1K1' => 'Z9', 'Z9K1' => $zid ] ];
+		$payload = [ 'Z1K1' => 'Z2', 'Z2K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => $zid ] ];
 		$this->cache->set( $cacheKey, json_encode( $payload ) );
 
 		$this->assertSame( $payload, $this->store->fetchFromZObjectCache( $zid ) );

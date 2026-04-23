@@ -25,7 +25,7 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 	/**
 	 * @var string
 	 */
-	private $unavailableZid = 'Z0123456789';
+	private $unavailableZid = 'Z123456789';
 
 	/**
 	 * @var string

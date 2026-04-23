@@ -200,9 +200,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "K1 ": "a", "Z1K1 ": "Z60" }',
 				'{ "Z1K1": "Z60", "K1": "a" }'
 			],
-			'escaped string' => [
+			'escaped string with zid' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Z6" }',
 				'{ "Z1K1": "Z6", "Z6K1": "Z6" }'
+			],
+			'escaped string with empty zid' => [
+				'{ "Z1K1": "Z6", "Z6K1": "Z0" }',
+				'{ "Z1K1": "Z6", "Z6K1": "Z0" }'
 			],
 			'unnecessary escaped string' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Z" }',

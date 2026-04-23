@@ -220,14 +220,14 @@ class ZObjectUtils {
 					// Type is ZString
 					if ( $type === ZTypeRegistry::Z_STRING
 						&& array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $output )
-						&& !self::isValidZObjectReference( $output[ ZTypeRegistry::Z_STRING_VALUE ] ) ) {
+						&& !self::isValidOrNullZObjectReference( $output[ ZTypeRegistry::Z_STRING_VALUE ] ) ) {
 						return self::canonicalize( $output[ ZTypeRegistry::Z_STRING_VALUE ] );
 					}
 
 					// Type is a ZReference
 					if ( $type === ZTypeRegistry::Z_REFERENCE
 						&& array_key_exists( ZTypeRegistry::Z_REFERENCE_VALUE, $output )
-						&& self::isValidZObjectReference( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
+						&& self::isValidOrNullZObjectReference( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
 						return self::canonicalize( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
 					}
 				}
