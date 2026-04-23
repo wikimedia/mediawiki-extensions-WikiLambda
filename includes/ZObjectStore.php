@@ -1036,7 +1036,8 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Create OR aggregated LIKE statements for each token from the searchTerm.
+	 * Create OR aggregated LIKE statements for the whole (trimmed) substring, and
+	 * for each large token (>2 chars) from the searchTerm.
 	 * The search term is tokenized by splitting by whitespace characters.
 	 *
 	 * @param string $searchColumn
@@ -1045,7 +1046,6 @@ class ZObjectStore {
 	 */
 	private function getStringMatchCondition( $searchColumn, $searchTerm ) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
-
 		$tokens = preg_split( '/\s+/', trim( $searchTerm ), -1, PREG_SPLIT_NO_EMPTY );
 
 		// Return null if there are no string match conditions
@@ -1054,12 +1054,26 @@ class ZObjectStore {
 		}
 
 		$conditions = [];
+
+		// Add condition for whole substring (trimmed)
+		$conditions[] = $dbr->expr(
+			$searchColumn,
+			IExpression::LIKE,
+			new LikeValue( $dbr->anyString(), trim( $searchTerm ), $dbr->anyString() )
+		);
+
+		// Add additional conditions for largest tokens
 		foreach ( $tokens as $token ) {
-			$conditions[] = $dbr->expr(
-				$searchColumn,
-				IExpression::LIKE,
-				new LikeValue( $dbr->anyString(), $token, $dbr->anyString() )
-			);
+			if ( strlen( $token ) > 2 ) {
+				// NOTE: length this is not a good method to determine stop words and is not
+				// applicable to all languages, but the whole substring is already part of the
+				// search and this method effective to filter out most of the bad matches.
+				$conditions[] = $dbr->expr(
+					$searchColumn,
+					IExpression::LIKE,
+					new LikeValue( $dbr->anyString(), $token, $dbr->anyString() )
+				);
+			}
 		}
 
 		// Use OR to aggregate results
@@ -1110,7 +1124,6 @@ class ZObjectStore {
 		$searchTerm = ZObjectUtils::comparableString( $searchTerm );
 		$searchColumn = ZObjectUtils::isValidZObjectReference( $searchTerm ) ?
 			'wlzl_zobject_zid' : 'wlzl_label_normalised';
-		$stringMatchCondition = $this->getStringMatchCondition( $searchColumn, $searchTerm );
 
 		// Create main query builder
 		$queryBuilder = $dbr->newSelectQueryBuilder()
@@ -1131,7 +1144,8 @@ class ZObjectStore {
 			->join( $preferredLabelsQuery, 'pl', 'lb.wlzl_zobject_zid = pl.wlzl_zobject_zid' )
 			->where( [ 'wlzl_type' => 'Z8' ] );
 
-		// If stringMatchCondition is not null, add where condition
+		// If searchTerm is not empty, add string match conditions
+		$stringMatchCondition = $this->getStringMatchCondition( $searchColumn, $searchTerm );
 		if ( $stringMatchCondition ) {
 			$queryBuilder->andWhere( $stringMatchCondition );
 		}
@@ -1269,9 +1283,11 @@ class ZObjectStore {
 			$searchColumn = 'wlzl_label_normalised';
 			$searchTerm = ZObjectUtils::comparableString( $searchTerm );
 		}
+
+		// If searchTerm is not empty, add string match conditions
 		$stringMatchCondition = $this->getStringMatchCondition( $searchColumn, $searchTerm );
 		if ( $stringMatchCondition ) {
-			$conditions[] = $this->getStringMatchCondition( $searchColumn, $searchTerm );
+			$conditions[] = $stringMatchCondition;
 		}
 
 		// Create query builder
