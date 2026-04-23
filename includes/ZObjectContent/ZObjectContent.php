@@ -246,6 +246,9 @@ class ZObjectContent extends AbstractContent {
 	/**
 	 * Two string representations (and the language code of that representation) of this ZObject
 	 *
+	 *  Note: This method is specific to ZObjects and should not be used for Abstract Wikipedia
+	 *  content, where entities are identified by Wikidata QIDs and labels are fetched via Wikibase.
+	 *
 	 * @param Language $language Language in which to provide the string.
 	 * @return array An array containing the following keys (all in string form):
 	 * 		title => the label of the type

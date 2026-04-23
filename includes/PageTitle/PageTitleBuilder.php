@@ -497,7 +497,7 @@ class PageTitleBuilder {
 	/**
 	 * Create Abstract view-page title HTML (`OutputPage::setPageTitle()`).
 	 *
-	 * @param string $headingText Plain text
+	 * @param string $titleText Plain text
 	 * @param string $qid Wikidata QID string (displayed only; not fetched server-side)
 	 * @param string $lang
 	 * @param string $dir
@@ -505,7 +505,7 @@ class PageTitleBuilder {
 	 * @return string
 	 */
 	public static function createAbstractViewPageTitle(
-		string $headingText,
+		string $titleText,
 		string $qid,
 		string $lang,
 		string $dir,
@@ -513,10 +513,10 @@ class PageTitleBuilder {
 	): string {
 		return self::createAbstractPageTitle(
 			self::VIEW_HEADER_CLASS,
-			$headingText,
+			$titleText,
+			$qid,
 			$lang,
 			$dir,
-			$qid,
 			$wrapperAttrs
 		);
 	}
@@ -524,7 +524,7 @@ class PageTitleBuilder {
 	/**
 	 * Create Abstract edit-page title HTML (`OutputPage::setPageTitle()`).
 	 *
-	 * @param string $headingText Plain text
+	 * @param string $titleText Plain text
 	 * @param string $qid Wikidata QID string (displayed only; not fetched server-side)
 	 * @param string $lang
 	 * @param string $dir
@@ -532,7 +532,7 @@ class PageTitleBuilder {
 	 * @return string
 	 */
 	public static function createAbstractEditPageTitle(
-		string $headingText,
+		string $titleText,
 		string $qid,
 		string $lang,
 		string $dir,
@@ -540,10 +540,10 @@ class PageTitleBuilder {
 	): string {
 		return self::createAbstractPageTitle(
 			self::EDIT_HEADER_CLASS,
-			$headingText,
+			$titleText,
+			$qid,
 			$lang,
 			$dir,
-			$qid,
 			$wrapperAttrs
 		);
 	}
@@ -553,18 +553,18 @@ class PageTitleBuilder {
 	 *
 	 * @param string $wrapperClass
 	 * @param string $titleText
+	 * @param string|null $qid
 	 * @param string|null $lang
 	 * @param string|null $dir
-	 * @param string|null $identifierValue
 	 * @param array $wrapperAttrs
 	 * @return string
 	 */
 	private static function createAbstractPageTitle(
 		string $wrapperClass,
 		string $titleText,
+		?string $qid,
 		?string $lang,
 		?string $dir,
-		?string $identifierValue,
 		array $wrapperAttrs
 	): string {
 		$wrapperAttrs['class'] = $wrapperClass;
@@ -577,8 +577,8 @@ class PageTitleBuilder {
 			$titleAttrs['dir'] = $dir;
 		}
 		$html = Html::element( 'span', $titleAttrs, $titleText );
-		if ( $identifierValue !== null ) {
-			$html .= ' ' . self::createCopyableIdentifierSpan( $wrapperClass, 'qid', $identifierValue );
+		if ( $qid !== null ) {
+			$html .= ' ' . self::createCopyableIdentifierSpan( $wrapperClass, 'qid', $qid );
 		}
 
 		return Html::rawElement( 'span', $wrapperAttrs, $html );

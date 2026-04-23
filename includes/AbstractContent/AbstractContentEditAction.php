@@ -40,19 +40,19 @@ class AbstractContentEditAction extends Action {
 		// Set page header (edit or create, depending on the returned config vars)
 		$lang = $this->getContext()->getLanguage();
 		$qid = $pageTitle->getBaseText();
-		$label = $this->getPageTitleMsg( $pageTitle );
+		$editPageTitle = $this->getPageTitleMsg( $pageTitle );
 
 		// Rich HTML for the H1 display
 		$output->setPageTitle(
 			PageTitleBuilder::createAbstractEditPageTitle(
-				$label,
+				$editPageTitle,
 				$qid,
 				$lang->getCode(),
 				$lang->getDir(),
 			)
 		);
 		// Plain-text override for the browser <title> tag
-		$output->setHTMLTitle( $label . ' (' . $qid . ')' );
+		$output->setHTMLTitle( $editPageTitle . ' (' . $qid . ')' );
 	}
 
 	/**
@@ -65,9 +65,25 @@ class AbstractContentEditAction extends Action {
 	 */
 	protected function getPageTitleMsg( Title $title ): string {
 		$pageExists = $title->exists();
-		return $pageExists ?
-			$this->msg( 'wikilambda-abstract-edit-title' )->params( $title->getText() )->text() :
-			$this->msg( 'wikilambda-abstract-special-create-qid' )->params( $title->getText() )->text();
+
+		if ( !$pageExists ) {
+			return $this->msg( 'wikilambda-abstract-special-create-qid' )
+				->params( $title->getText() )->text();
+		}
+
+		$label = AbstractContentUtils::resolveAbstractLabel(
+			$title->getText(),
+			$this->getLanguage()->getCode()
+		);
+
+		if ( $label === null ) {
+			return $this->msg( 'wikilambda-abstract-edit-title' )
+				->params( $title->getText() )->text();
+		}
+
+		// fallback when no label found
+		return $this->msg( 'wikilambda-abstract-edit-title-with-label' )
+			->params( $label, $title->getText() )->text();
 	}
 
 	/**

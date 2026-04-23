@@ -19,6 +19,7 @@
 	"specialpages-group-abstractwiki": "Abstract Wikipedia pages",
 	"wikilambda-abstract-content-object": "Abstract Article",
 	"wikilambda-abstract-content-history-title": "Revision history of \"$1\" ($2)",
+	"wikilambda-abstract-edit-title-with-label": "Edit Abstract Article for \"$1\" ($2)",
 	"wikilambda-abstract-edit-title": "Edit Abstract Article for $1",
 	"wikilambda-abstract-error-bad-fragments-type": "The section with key '$1' has a badly typed fragment list.",
 	"wikilambda-abstract-error-bad-qid": "The value of the 'qid' property ('$1') is not a valid Wikidata Item Qid.",
