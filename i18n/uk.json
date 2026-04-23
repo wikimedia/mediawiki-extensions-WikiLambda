@@ -395,7 +395,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-name": "Назвою",
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Спочатку старіші",
 	"wikilambda-special-objectsbytype-form-type": "Типом",
-	"wikilambda-special-objectsbytype-listheader": "Усі Об'єкти типу $1 ($2)",
+	"wikilambda-special-objectsbytype-listheader": "Усі Об'єкти типу '$1' ($2)",
 	"wikilambda-special-objectsbytype-summary": "Натисніть на один із перелічених нижче типів, щоб побачити всі Об'єкти цього типу.",
 	"wikilambda-special-runfunction": "Виконання функції",
 	"wikilambda-special-runfunction-intro": "Переконайтеся, що ви дотримуєтесь [[$1|політики спільноти]], а також авторських та патентних правил.",

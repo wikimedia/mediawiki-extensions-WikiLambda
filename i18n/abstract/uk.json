@@ -4,8 +4,21 @@
 			"Repakr"
 		]
 	},
+	"specialpages-group-abstractwiki": "Сторінки Абстрактної Вікіпедії",
+	"wikilambda-abstract-fragment-actions-menu": "Меню дій з фрагментом",
+	"wikilambda-abstract-menu-fragments-accessible-label": "Меню для вибору і додавання нового фрагменту",
+	"wikilambda-abstract-menu-group-basic-fragments": "Основні дії з фрагментом",
+	"wikilambda-abstract-menu-group-insert-fragments": "Вставити фрагменти",
+	"wikilambda-abstract-menu-group-move-fragments": "Перемістити фрагменти",
+	"wikilambda-abstract-menu-group-special-fragments": "Особливі дії з фрагментом",
+	"wikilambda-abstract-menu-option-add-empty-fragment": "Додати пустий фрагмент",
 	"wikilambda-abstract-menu-option-add-named-fragment": "Додати $1",
 	"wikilambda-abstract-menu-option-add-section": "Додати розділ",
+	"wikilambda-abstract-menu-option-delete-fragment": "Видалити фрагмент",
+	"wikilambda-abstract-menu-option-insert-after": "Вставити фрагмент після",
+	"wikilambda-abstract-menu-option-insert-before": "Вставити фрагмент до",
+	"wikilambda-abstract-menu-option-move-after": "Перемістити фрагмент після",
+	"wikilambda-abstract-menu-option-move-before": "Перемістити фрагмент до",
 	"wikilambda-abstract-preview-fragment-retry": "Повторити",
 	"wikilambda-abstract-special-create-createbutton-label": "Створити"
 }

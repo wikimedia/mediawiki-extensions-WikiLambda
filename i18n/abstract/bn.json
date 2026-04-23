@@ -2,15 +2,16 @@
 	"@metadata": {
 		"authors": [
 			"Asked42",
-			"Saurmandal"
+			"Saurmandal",
+			"Tanbiruzzaman"
 		]
 	},
-	"action-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করার",
-	"action-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলি সম্পাদনা করার",
+	"action-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
+	"action-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলো সম্পাদনা করুন",
 	"content-model-abstractwiki": "বিমূর্ত নিবন্ধ",
 	"right-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
 	"right-wikilambda-abstract-edit": "বিদ্যমান বিমূর্ত নিবন্ধগুলি সম্পাদনা করুন",
-	"specialpages-group-abstractwiki": "বিমূর্ত উইকিপিডিয়ার পৃষ্ঠাগুলি",
+	"specialpages-group-abstractwiki": "বিমূর্ত উইকিপিডিয়া পাতা",
 	"wikilambda-abstract-content-object": "বিমূর্ত নিবন্ধ",
 	"wikilambda-abstract-edit-title": "$1 বিমূর্ত নিবন্ধটি সম্পাদনা করুন",
 	"wikilambda-abstract-error-bad-fragments-type": "'$1' নির্দেশক সহ অনুচ্ছেদে একটি ভুল ধরনের ফ্র্যাগমেন্ট তালিকা রয়েছে।",
