@@ -65,8 +65,12 @@ module.exports = {
 
 			const objectType = getZObjectType( value );
 			const resolvingType = this.getResolvingType( value );
-			const zids = extractZIDs( resolvingType );
-			this.fetchZids( { zids } );
+			// On edge cases like blank or partially unconfigured objects,
+			// resolving type can be undefined:
+			if ( resolvingType ) {
+				const zids = extractZIDs( resolvingType );
+				this.fetchZids( { zids } );
+			}
 
 			// For the item id, get the label of the key and assign a number.
 			const keyLabel = this.getLabelData( originKey ).label;

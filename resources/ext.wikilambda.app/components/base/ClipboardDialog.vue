@@ -47,13 +47,13 @@
 				:class="{ 'ext-wikilambda-app-clipboard__item--disabled': !item.isCompatible }"
 				@click="selectClipboardItem( item )"
 			>
-				<!-- Item header; item Id and resolving type -->
+				<!-- Item header; item Id and resolving type (or object type if resolving is undefined) -->
 				<div class="ext-wikilambda-app-clipboard__item-head">
 					<em>{{ item.itemId }}</em>
 					<span>type:
 						<wl-z-object-to-string
 							:key-path="item.originKey"
-							:object-value="item.resolvingType"
+							:object-value="item.resolvingType || item.objectType"
 							:edit="false"
 						></wl-z-object-to-string>
 					</span>

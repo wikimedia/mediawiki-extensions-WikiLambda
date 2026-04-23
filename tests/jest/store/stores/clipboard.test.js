@@ -107,7 +107,8 @@ describe( 'clipboard Pinia store', () => {
 
 			beforeEach( () => {
 				const mockLabels = {
-					Z802K2: 'then'
+					Z802K2: 'then',
+					Z11K1: 'language'
 				};
 
 				store.clipboardItems = [];
@@ -160,6 +161,9 @@ describe( 'clipboard Pinia store', () => {
 				expect( store.clipboardItems[ 0 ].itemId ).toBe( 'then#1' );
 				expect( store.clipboardItems[ 0 ].objectType ).toBe( 'Z7' );
 				expect( store.clipboardItems[ 0 ].resolvingType ).toBe( 'Z6' );
+
+				// Check possibly new zids get fetched:
+				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z6' ] } );
 
 				// Check that local storage is updated
 				expect( mw.storage.set ).toHaveBeenCalledWith( 'ext-wikilambda-app-clipboard', expect.any( String ) );
@@ -217,6 +221,9 @@ describe( 'clipboard Pinia store', () => {
 				expect( store.clipboardItems[ 0 ].objectType ).toBe( 'Z7' );
 				expect( store.clipboardItems[ 0 ].resolvingType ).toBe( 'Z6' );
 
+				// Check possibly new zids get fetched:
+				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z6' ] } );
+
 				// Check old item is now in second place
 				expect( store.clipboardItems[ 1 ].itemId ).toBe( 'then#1' );
 
@@ -227,6 +234,46 @@ describe( 'clipboard Pinia store', () => {
 				const interactionData = {
 					zobjectid: 'Q123',
 					zobjecttype: 'abstractwiki',
+					zlang: 'Z1002'
+				};
+				expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'copy', interactionData );
+			} );
+
+			it( 'copies a partially blank object to the clipboard', () => {
+				Object.defineProperty( store, 'getResolvingType', {
+					value: jest.fn().mockReturnValue( undefined )
+				} );
+
+				const payload = {
+					originKey: 'Z11K1',
+					originSlotType: 'Z60',
+					value: { Z1K1: 'Z9', Z9K1: '' }
+				};
+
+				store.copyToClipboard( payload );
+
+				expect( store.clipboardItems.length ).toBe( 1 );
+
+				// Check values that stay the same:
+				expect( store.clipboardItems[ 0 ].originKey ).toBe( payload.originKey );
+				expect( store.clipboardItems[ 0 ].originSlotType ).toBe( payload.originSlotType );
+				expect( store.clipboardItems[ 0 ].value ).toEqual( payload.value );
+
+				// Check new values added by this action:
+				expect( store.clipboardItems[ 0 ].itemId ).toBe( 'language#1' );
+				expect( store.clipboardItems[ 0 ].objectType ).toBe( 'Z9' );
+				expect( store.clipboardItems[ 0 ].resolvingType ).toBeUndefined();
+
+				// Check possibly new zids get fetched:
+				expect( store.fetchZids ).not.toHaveBeenCalled();
+
+				// Check that local storage is updated
+				expect( mw.storage.set ).toHaveBeenCalledWith( 'ext-wikilambda-app-clipboard', expect.any( String ) );
+
+				// Check that event is submitted
+				const interactionData = {
+					zobjectid: 'Z0',
+					zobjecttype: 'Z14',
 					zlang: 'Z1002'
 				};
 				expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'copy', interactionData );

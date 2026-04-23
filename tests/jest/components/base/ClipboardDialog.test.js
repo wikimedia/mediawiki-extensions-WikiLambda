@@ -150,6 +150,27 @@ describe( 'ClipboardDialog', () => {
 		expect( type.props( 'objectValue' ) ).toBe( typedList );
 	} );
 
+	it( 'renders the item object type when resolving type is undefined', () => {
+		store.getClipboardItems = [ {
+			itemId: 'language#1',
+			originKey: 'Z11K1',
+			originSlotType: 'Z60',
+			objectType: 'Z9',
+			resolvingType: undefined,
+			value: { Z1K1: 'Z9', Z9K1: '' }
+		} ];
+
+		const wrapper = renderClipboardDialog();
+
+		const item = wrapper.findAll( '.ext-wikilambda-app-clipboard__item' )[ 0 ];
+
+		const head = item.find( '.ext-wikilambda-app-clipboard__item-head' );
+		const type = head.findComponent( { name: 'wl-z-object-to-string' } );
+		expect( type.exists() ).toBe( true );
+		expect( type.props( 'edit' ) ).toBe( false );
+		expect( type.props( 'objectValue' ) ).toBe( 'Z9' );
+	} );
+
 	it( 'renders the item value', () => {
 		const copiedValue = { Z1K1: 'Z7', Z7K1: 'Z10000', Z10000K1: 'foo' };
 		store.getClipboardItems = [ {
