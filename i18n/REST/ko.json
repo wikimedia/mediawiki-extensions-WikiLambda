@@ -1,8 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
+			"Tensama0415",
 			"Ykhwong"
 		]
 	},
-	"wikifunctions-rest-module-v0-title": "위키함수 API"
+	"wikifunctions-rest-module-v0-title": "위키함수 API",
+	"wikifunctions-rest-module-v0-desc": "Wikifunctions와 상호작용하기 위한 API들입니다",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "ZObjects를 가져옵니다",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "ZObjects의 이전 버전을 가져옵니다",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "함수를 호출합니다",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "사용자 지정 구문 분석 및 렌더링 언어를 이용해 함수를 호출합니다"
 }

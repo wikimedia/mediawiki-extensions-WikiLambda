@@ -508,7 +508,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Oudste eerst",
 	"wikilambda-special-objectsbytype-form-type": "Type",
 	"wikilambda-special-objectsbytype-link": "Lijst van alle typen met instanties",
-	"wikilambda-special-objectsbytype-listheader": "Alle objecten van type $1 ($2)",
+	"wikilambda-special-objectsbytype-listheader": "Alle objecten van het type ‘$1’ ($2)",
 	"wikilambda-special-objectsbytype-summary": "Klik op een van de onderstaande typen om alle objecten van dat type te bekijken.",
 	"wikilambda-special-runfunction": "Een functie uitvoeren",
 	"wikilambda-special-runfunction-intro": "Zorg ervoor dat u het [[$1|gemeenschapsbeleid]] en de auteursrecht- en patentregels volgt.",

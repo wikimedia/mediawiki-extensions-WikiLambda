@@ -3,6 +3,7 @@
 		"authors": [
 			"Bluehill",
 			"MemphisA5",
+			"Tensama0415",
 			"Theshinster123",
 			"Whatback11",
 			"YeBoy371",
@@ -161,7 +162,7 @@
 	"wikilambda-code-editor-label": "코드 편집기",
 	"wikilambda-confirm": "확인",
 	"wikilambda-context-menu": "콘텍스트 메뉴",
-	"wikilambda-continue-editing": "편집 계속",
+	"wikilambda-continue-editing": "편집 계속하기",
 	"wikilambda-create-function": "함수 만들기",
 	"wikilambda-create-type": "유형 만들기",
 	"wikilambda-delete-list-item": "항목 삭제",

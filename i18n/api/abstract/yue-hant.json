@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"JeffreyKim"
+		]
+	},
+	"apihelp-abstractwiki_run_fragment-summary": "根據指定嘅維基數據項目ID、語言 Zid 同埋日期，嚟渲染一段跨維基百科內容片段。",
+	"apihelp-abstractwiki_run_fragment-param-async": "設定呢次呼叫係用「非同步」定係「同步」方式執行。如果用非同步呼叫，喺數值未準備好嗰陣會回傳pending=true；如果用同步呼叫，系統會等Wikifunctions完成渲染片段之後，先至回傳返結果數值。",
+	"apihelp-abstractwiki_run_fragment-param-qid": "用嚟渲染片段嘅維基數據項目ID。呢個 ID 必須係有效嘅 Qid。",
+	"apihelp-abstractwiki_run_fragment-param-language": "用嚟渲染片段嘅語言ZObject ID。呢個ID必須係有效嘅Zid。",
+	"apihelp-abstractwiki_run_fragment-param-date": "用嚟渲染片段嘅日期字串。",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "片段組成嘅JSON。呢個必須係有效嘅ZObject，並且要輸出埋一個類型係Z89/HTML片段嘅物件。",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "用字面值嘅HTML物件嚟執行片段",
+	"apihelp-abstractwiki_run_fragment-example-composition": "用一個包含晒qid同語言參數嘅組成嚟執行片段",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "呢個片段唔係一個有效嘅函式呼叫。",
+	"apierror-abstractwiki_run_fragment-bad-response": "呢個片段回傳咗錯誤嘅類型。",
+	"apierror-abstractwiki_run_fragment-forbidden": "你冇足夠嘅權限去渲染呢個片段。",
+	"apierror-abstractwiki_run_fragment-not-enabled": "無法渲染跨語言維基百科嘅內容片段：呢個功能仲未啟用。",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions回傳咗嘅失敗回應：$1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "渲染服務暫時暫停運作。唔該等陣再試過。",
+	"apierror-abstractwiki_run_fragment-unknown-error": "因為發生未知錯誤，無法渲染呢個片段。"
+}
