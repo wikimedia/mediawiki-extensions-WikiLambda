@@ -1299,7 +1299,8 @@
 						"services": [
 							"MainConfig",
 							"JobQueueGroup",
-							"HttpRequestFactory"
+							"HttpRequestFactory",
+							"WikiLambdaPFragmentRenderer"
 						]
 					},
 					"options": {

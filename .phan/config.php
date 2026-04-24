@@ -14,7 +14,9 @@ $cfg['autoload_internal_extension_signatures'] = [
 $cfg['directory_list'] = array_merge(
 	$cfg['directory_list'],
 	[
+		'../../extensions/AbuseFilter',
 		'../../extensions/CommunityConfiguration',
+		'../../extensions/SpamBlacklist',
 		'../../extensions/SiteMatrix',
 		'../../extensions/Wikibase',
 		'../../extensions/TestKitchen'
@@ -24,7 +26,9 @@ $cfg['directory_list'] = array_merge(
 $cfg['exclude_analysis_directory_list'] = array_merge(
 	$cfg['exclude_analysis_directory_list'],
 	[
+		'../../extensions/AbuseFilter',
 		'../../extensions/CommunityConfiguration',
+		'../../extensions/SpamBlacklist',
 		'../../extensions/SiteMatrix',
 		'../../extensions/Wikibase',
 		'../../extensions/TestKitchen'

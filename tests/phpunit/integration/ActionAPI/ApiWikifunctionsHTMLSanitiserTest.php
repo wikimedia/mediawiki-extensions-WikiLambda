@@ -79,6 +79,30 @@ class ApiWikifunctionsHTMLSanitiserTest extends WikiLambdaApiTestCase {
 			'<a href="http://canonical.wikifunctions.mock/foo">Allowed link with http!</a>',
 		];
 
+		// Links inside ext-wikilambda-reference context elements pass the sanitiser allowlist.
+		// In production, WikifunctionsPFragmentRenderer also applies SpamBlacklist and AbuseFilter
+		// blocked-domain checks; those are absent here because neither extension is loaded in CI.
+		// See WikifunctionsPFragmentSanitiserTokenHandlerTest for the blocked-domain code path.
+		yield 'Links in reference span context are allowed' => [
+			'<span class="ext-wikilambda-reference"><a href="https://example.org/source">Source</a></span>',
+			'<span class="ext-wikilambda-reference"><a href="https://example.org/source">Source</a></span>',
+		];
+
+		yield 'Links in reference sup context are allowed' => [
+			'<sup class="ext-wikilambda-reference"><a href="https://example.org/ref">Reference</a></sup>',
+			'<sup class="ext-wikilambda-reference"><a href="https://example.org/ref">Reference</a></sup>',
+		];
+
+		yield 'Links in reference div context are allowed' => [
+			'<div class="ext-wikilambda-reference"><a href="https://example.org/ref">Reference</a></div>',
+			'<div class="ext-wikilambda-reference"><a href="https://example.org/ref">Reference</a></div>',
+		];
+
+		yield 'External links outside reference context are still prohibited' => [
+			'<a href="https://example.org/source">External link without context</a>',
+			'&lt;a href="https://example.org/source"&gt;External link without context',
+		];
+
 		// These tests need SiteMatrix extension to be loaded; ignore otherwise:
 		if ( ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			// Test links to SiteMatrix language sites

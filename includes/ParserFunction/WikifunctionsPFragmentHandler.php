@@ -50,7 +50,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	public function __construct(
 		private readonly Config $config,
 		private readonly JobQueueGroup $jobQueueGroup,
-		private readonly HttpRequestFactory $httpRequestFactory
+		private readonly HttpRequestFactory $httpRequestFactory,
+		private readonly WikifunctionsPFragmentRenderer $renderer
 	) {
 		// Non-injected items
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
@@ -510,7 +511,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 */
 	private function getSanitisedHtmlFragment( string $value ): string {
 		$html = $this->decodeHtmlFragmentValue( $value );
-		return WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment( $this->logger, $html );
+		return $this->renderer->render( $html );
 	}
 
 	/**

@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -38,6 +39,14 @@ return [
 		return WikiLambdaServices::buildMemcachedWrapper( $services );
 	},
 
+	'WikiLambdaPFragmentRenderer' => static function ( MediaWikiServices $services ): WikifunctionsPFragmentRenderer {
+		return new WikifunctionsPFragmentRenderer(
+			LoggerFactory::getInstance( 'WikiLambda' ),
+			$services->getUserFactory(),
+			$services->getMainConfig()
+		);
+	},
+
 	// For client wikis
 
 	'WikifunctionsClientStore' => static function ( MediaWikiServices $services ): WikifunctionsClientStore {
@@ -51,7 +60,8 @@ return [
 	'AbstractWikiRequest' => static function ( MediaWikiServices $services ): AbstractWikiRequest {
 		return new AbstractWikiRequest(
 			$services->getMainConfig(),
-			$services->getHttpRequestFactory()
+			$services->getHttpRequestFactory(),
+			$services->get( 'WikiLambdaPFragmentRenderer' )
 		);
 	},
 ];

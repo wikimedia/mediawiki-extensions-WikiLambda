@@ -409,7 +409,8 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			$factory = $this->createMock( HttpRequestFactory::class );
 		}
 		$config = $this->getServiceContainer()->getMainConfig();
-		return new AbstractWikiRequest( $config, $factory );
+		$renderer = $this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' );
+		return new AbstractWikiRequest( $config, $factory, $renderer );
 	}
 
 	/**

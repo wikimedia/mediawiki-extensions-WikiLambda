@@ -141,7 +141,8 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$fragmentHandler = new WikifunctionsPFragmentHandler(
 			$mainConfig,
 			$mockJobQueueGroup,
-			$mockHttpRequestFactory
+			$mockHttpRequestFactory,
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' )
 		);
 
 		// Build mock arguments for sourceToFragment:
@@ -425,6 +426,15 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 					. ' onmouseover="alert(\'XSS1\')">A local link</a>
 				<a href="https://af.wikipedia.org/wiki/Eenhoring" data-mw="Corruption!">Wikipedia link</a>
 				<a href="https://www.google.com" target="_blank">Not a local link</a>
+				<span class="ext-wikilambda-reference">
+					<a href="https://www.google.com/ref-span" target="_blank">Reference span link</a>
+				</span>
+				<sup class="ext-wikilambda-reference">
+					<a href="https://www.google.com/ref-sup" target="_blank">Reference sup link</a>
+				</sup>
+				<div class="ext-wikilambda-reference">
+					<a href="https://www.google.com/ref-div" target="_blank">Reference div link</a>
+				</div>
 				<script>setTimeout(function(){window.alert(\'I killed visual editor\')},10000);</script>
 				<button type="button" data-ooui="Fiddles!">inject buttons</button><br/>
 				<iframe
@@ -451,7 +461,8 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$fragmentHandler = new WikifunctionsPFragmentHandler(
 			$mainConfig,
 			$mockJobQueueGroup,
-			$mockHttpRequestFactory
+			$mockHttpRequestFactory,
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' )
 		);
 
 		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
@@ -483,6 +494,25 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$this->assertStringContainsString(
 			'&lt;a href="https://www.google.com" target="_blank"&gt;Not a local link',
 			$html
+		);
+		$normalisedTagSpacingHtml = preg_replace( '/>\s+</', '><', $html ) ?? $html;
+		$this->assertStringContainsString(
+			'<span class="ext-wikilambda-reference">' .
+				'<a href="https://www.google.com/ref-span">Reference span link</a>' .
+			'</span>',
+			$normalisedTagSpacingHtml
+		);
+		$this->assertStringContainsString(
+			'<sup class="ext-wikilambda-reference">' .
+				'<a href="https://www.google.com/ref-sup">Reference sup link</a>' .
+			'</sup>',
+			$normalisedTagSpacingHtml
+		);
+		$this->assertStringContainsString(
+			'<div class="ext-wikilambda-reference">' .
+				'<a href="https://www.google.com/ref-div">Reference div link</a>' .
+			'</div>',
+			$normalisedTagSpacingHtml
 		);
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		$this->assertStringContainsString(
@@ -544,7 +574,8 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$handler = new WikifunctionsPFragmentHandler(
 			$mainConfig,
 			$mockJobQueueGroup,
-			$this->createMock( HttpRequestFactory::class )
+			$this->createMock( HttpRequestFactory::class ),
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' )
 		);
 
 		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );

@@ -13,7 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
+use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -29,7 +29,8 @@ class AbstractWikiRequest {
 
 	public function __construct(
 		private readonly Config $config,
-		private readonly HttpRequestFactory $httpRequestFactory
+		private readonly HttpRequestFactory $httpRequestFactory,
+		private readonly WikifunctionsPFragmentRenderer $renderer
 	) {
 		// Non-injected items
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
@@ -65,9 +66,8 @@ class AbstractWikiRequest {
 			// 1. Run fragment function call, should return a Z89/Html fragment object
 			$htmlFragment = $this->fetchRenderedFragment( $functionCall );
 
-			// 2. If successful, sanitize the Z89K1/Html fragment value
-			$sanitizedHtml = WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
-				$this->logger,
+			// 2. If successful, render the Z89K1/Html fragment value
+			$sanitizedHtml = $this->renderer->render(
 				$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
 			);
 

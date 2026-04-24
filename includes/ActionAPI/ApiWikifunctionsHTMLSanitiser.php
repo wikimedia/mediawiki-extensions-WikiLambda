@@ -12,8 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
-use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -30,26 +29,27 @@ class ApiWikifunctionsHTMLSanitiser extends WikiLambdaApiBase {
 	 */
 	protected function run(): void {
 		$userHTMLToClean = $this->getParameter( 'html' );
-
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$renderer = WikiLambdaServices::getPFragmentRenderer();
 
 		// Use a pool counter to limit concurrency; this is probably over-kill for simple HTML sanitisation.
 		$work = new PoolCounterWorkViaCallback(
 			'WikifunctionsSanitiseHTMLFragment',
 			$this->getUser()->getName(),
 			[
-				'doWork' => static function () use ( $logger, $userHTMLToClean ) {
-					return WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
-						$logger,
-						$userHTMLToClean
-					);
+				'doWork' => static function () use ( $renderer, $userHTMLToClean ) {
+					return $renderer->render( $userHTMLToClean );
 				},
+				// The error callback fires when the pool counter reaches its concurrency limit (e.g. Redis
+				// is down or the slot can't be acquired). This requires real pool counter infrastructure
+				// unavailable in CI, so we exclude it from coverage tracking.
+				// @codeCoverageIgnoreStart
 				'error' => function ( \MediaWiki\Status\Status $status ): never {
 					$this->dieWithError(
 						[ "apierror-wikifunctions_sanitise_html_fragment-concurrency-limit" ],
 						null, null, HttpStatus::TOO_MANY_REQUESTS
 					);
 				}
+				// @codeCoverageIgnoreEnd
 			]
 		);
 		$response = $work->execute();
