@@ -75,6 +75,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_INVALID_EVALUATION_RESULT = 'Z560';
 	public const Z_ERROR_ORCHESTRATOR_RATE_LIMIT = 'Z570';
 	public const Z_ERROR_EVALUATOR_RATE_LIMIT = 'Z571';
+	public const Z_ERROR_INVALID_ORCHESTRATOR_RESULT = 'Z577';
 
 	public const Z_ERROR_DUPLICATE_LANGUAGES = 'Z580';
 

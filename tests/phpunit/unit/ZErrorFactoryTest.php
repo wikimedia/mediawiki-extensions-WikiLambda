@@ -636,6 +636,18 @@ class ZErrorFactoryTest extends MediaWikiUnitTestCase {
 				[ ZQuote::class ],
 				[ 'something' ],
 			],
+			'Z577 invalid orchestrator result with raw string body' => [
+				ZErrorTypeRegistry::Z_ERROR_INVALID_ORCHESTRATOR_RESULT,
+				[ 'request' => 'some-request', 'response' => 'not-a-z22-response' ],
+				[ ZQuote::class, ZQuote::class ],
+				[ 'some-request', 'not-a-z22-response' ],
+			],
+			'Z577 invalid orchestrator result with structured body' => [
+				ZErrorTypeRegistry::Z_ERROR_INVALID_ORCHESTRATOR_RESULT,
+				[ 'request' => 'some-request', 'response' => [ 'Z1K1' => 'Z9', 'Z9K1' => 'Z24' ] ],
+				[ ZQuote::class, ZQuote::class ],
+				[ 'some-request', [ 'Z1K1' => 'Z9', 'Z9K1' => 'Z24' ] ],
+			],
 			'Z580 duplicate languages' => [
 				ZErrorTypeRegistry::Z_ERROR_DUPLICATE_LANGUAGES,
 				[ 'language' => 'en' ],

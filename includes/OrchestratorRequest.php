@@ -13,7 +13,11 @@ namespace MediaWiki\Extension\WikiLambda;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
+use JsonException;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
@@ -180,6 +184,36 @@ class OrchestratorRequest {
 		] );
 		$httpStatusCode = $response->getStatusCode();
 		$responseBody = $response->getBody()->getContents();
+
+		try {
+			// (T414062) Check if the response body is a valid JSON string, and a Z22 as expected.
+			$responseBodyObject = json_decode( $responseBody, true, 512, JSON_THROW_ON_ERROR );
+			if (
+				!is_array( $responseBodyObject ) ||
+				!isset( $responseBodyObject['Z1K1'] ) ||
+				$responseBodyObject['Z1K1'] !== 'Z22'
+			) {
+				throw new JsonException( 'Response is not a Z22: ' . var_export( $responseBody, true ) );
+			}
+		} catch ( JsonException $e ) {
+			$this->logger->warning(
+				'Orchestrator response was either not JSON, or somehow not a Z22',
+				[
+					// Shortened to avoid over-loading the logging system
+					'responseBody' => substr( $responseBody, 0, 1000 ),
+					'httpStatusCode' => $httpStatusCode,
+					'exceptionMessage' => $e->getMessage(),
+				]
+			);
+
+			// Make an actual Z22 response for the user of a Z24 with with a Z577 error inside, quoting the bad response
+			$responseError = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_INVALID_ORCHESTRATOR_RESULT,
+				[ 'request' => $query, 'response' => $responseBody ]
+			);
+			$badResponse = new ZResponseEnvelope( null, ZResponseEnvelope::wrapErrorInResponseMap( $responseError ) );
+			return [ 'result' => FormatJson::encode( $badResponse->getSerialized() ), 'httpStatusCode' => 500 ];
+		}
 
 		return [ 'result' => $responseBody, 'httpStatusCode' => $httpStatusCode ];
 	}

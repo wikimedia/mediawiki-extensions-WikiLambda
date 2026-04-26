@@ -559,6 +559,11 @@ class ZErrorFactory {
 				$zErrorValue[] = new ZString( $payload['language'] );
 				break;
 
+			case ZErrorTypeRegistry::Z_ERROR_INVALID_ORCHESTRATOR_RESULT:
+				$zErrorValue[] = new ZQuote( $payload['request'] );
+				$zErrorValue[] = new ZQuote( $payload['response'] );
+				break;
+
 			default:
 				break;
 		}
