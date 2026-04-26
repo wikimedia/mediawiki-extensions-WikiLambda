@@ -29,10 +29,12 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$handler = HandlerStack::create( $mock );
 		$client = new Client( [ 'handler' => $handler ] );
 
-		$expectedString = '{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z40"},' .
-			'"Z40K1":{"Z1K1":"Z6","Z6K1":"Z42"}}';
+		// A real orchestrator response wraps the function-call value (here a Z40) inside a Z22
+		// envelope, with Z22K2 holding the meta-data map (Z24/void as nothing reads it on success).
+		$value = '{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z40"},"Z40K1":{"Z1K1":"Z6","Z6K1":"Z42"}}';
+		$envelopeString = '{"Z1K1":"Z22","Z22K1":' . $value . ',"Z22K2":"Z24"}';
 
-		$mock->append( new Response( HttpStatus::OK, [], $expectedString ) );
+		$mock->append( new Response( HttpStatus::OK, [], $envelopeString ) );
 
 		$inputFile = __DIR__ .
 			DIRECTORY_SEPARATOR .
@@ -45,8 +47,9 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
 		$orchestrator = new OrchestratorRequest( $client );
-		$result = $orchestrator->orchestrate( json_decode( $Z902 ) )['result'];
-		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
+		$response = $orchestrator->orchestrate( json_decode( $Z902 ) );
+		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
+		$this->assertEquals( json_decode( $envelopeString ), json_decode( $response['result'] ) );
 	}
 
 	public function testUnsuccessfulExecute() {
@@ -70,8 +73,9 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$timeout = file_get_contents( $inputFile );
 		$timeout = preg_replace( '/[\s\n]/', '', $timeout );
 
-		$result = $orchestrator->orchestrate( json_decode( $timeout ) )['result'];
-		$this->assertEquals( 'Internal Server Error', $result );
+		$response = $orchestrator->orchestrate( json_decode( $timeout ) );
+		$this->assertEquals( HttpStatus::INTERNAL_SERVER_ERROR, $response['httpStatusCode'] );
+		$this->assertEquals( 'Internal Server Error', $response['result'] );
 	}
 
 	public function testSupportedProgrammingLanguages() {
