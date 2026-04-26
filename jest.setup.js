@@ -43,6 +43,11 @@ Api.prototype.get = jest.fn().mockReturnValue( $.Deferred().resolve().promise() 
 function ForeignApi() {}
 ForeignApi.prototype.get = jest.fn().mockReturnValue( $.Deferred().resolve().promise() );
 
+// Jest uses jsdom which is in incomplete mock of browser API, inclduing no scrollIntoView()
+// thatis used by Codex; make sure it doesn't trigger fatals.
+// eslint-disable-next-line no-undef
+Element.prototype.scrollIntoView = jest.fn();
+
 class Title {
 	constructor( page ) {
 		this.page = page;
