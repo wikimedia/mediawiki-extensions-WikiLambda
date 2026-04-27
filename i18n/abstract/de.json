@@ -1,9 +1,16 @@
 {
 	"@metadata": {
-		"authors": []
+		"authors": [
+			"Brettchenweber"
+		]
 	},
 	"action-wikilambda-abstract-create": "neuen abstrakten Artikel zu erstellen",
 	"action-wikilambda-abstract-edit": "abstrakten Artikel zu bearbeiten",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Vorgeschlagene Wikifunktionen für das abstrakte Wiki",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "Die Liste der HTML-rückgebenden Wiki-Funktionen (nach ZID), die im Menü „Fragment hinzufügen“ des Abstract-Artikels angeboten werden. Bis zu zehn Einträge.",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Vorgeschlagene Wikifunktionen",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "Bis zu zehn HTML-zurückgebende Wikifunktionen anhand ihrer ZID (z. B. <code>Z20756</code>), die im Menü des Abstract-Article-Fragments angezeigt werden sollen.",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "Vorgeschlagene Wikifunktion $1",
 	"content-model-abstractwiki": "Abstrakter Artikel",
 	"right-wikilambda-abstract-create": "Neuen abstrakten Artikel erstellen",
 	"right-wikilambda-abstract-edit": "Abstrakten Artikel bearbeiten",
