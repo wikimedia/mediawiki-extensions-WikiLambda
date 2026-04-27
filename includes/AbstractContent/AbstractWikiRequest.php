@@ -154,7 +154,9 @@ class AbstractWikiRequest {
 				HttpStatus::NOT_IMPLEMENTED
 			);
 		}
-		$apiUrl = $targetUrl . '/w/api.php';
+		// The action must be present in the URL query string (not just the POST body)
+		// so it shows up in HTTP-layer logs on the remote wiki.
+		$apiUrl = $targetUrl . '/w/api.php?action=wikilambda_function_call';
 
 		// Stringify the function call
 		$functionCallEncoded = json_encode( $functionCall, JSON_THROW_ON_ERROR );

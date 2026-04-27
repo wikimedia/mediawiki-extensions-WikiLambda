@@ -431,7 +431,17 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 		$httpRequest->method( 'getStatus' )->willReturn( $httpStatusCode );
 
 		$factory = $this->createMock( HttpRequestFactory::class );
-		$factory->method( 'create' )->willReturn( $httpRequest );
+		$factory->method( 'create' )
+			->willReturnCallback( function ( $url ) use ( $httpRequest ) {
+				// The action must be present in the URL query string (not just the POST body)
+				// so it shows up in HTTP-layer logs on the remote wiki.
+				$this->assertStringContainsString(
+					'action=wikilambda_function_call',
+					$url,
+					'API URL must include the action=wikilambda_function_call query parameter'
+				);
+				return $httpRequest;
+			} );
 
 		return $factory;
 	}

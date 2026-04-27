@@ -423,7 +423,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$request->method( 'getContent' )->willReturn( $apiResponse );
 
 		// Mock HttpRequestFactory and assert the expected request
-		$expectedUri = 'test.wikifunctions.org/w/api.php';
+		$expectedUri = 'test.wikifunctions.org/w/api.php?action=wikilambda_function_call';
 		$expectedPaylod = [
 			'method' => 'POST',
 			'postData' => [
