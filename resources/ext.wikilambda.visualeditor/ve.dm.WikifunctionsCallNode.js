@@ -64,7 +64,8 @@ ve.dm.WikifunctionsCallNode.static.getWikitext = function ( mwData ) {
 };
 
 /**
- * @inheritdoc ve.dm.GeneratedContentNode
+ * @inheritdoc
+ * @see ve.dm.GeneratedContentNode#getHashObjectForRendering
  */
 ve.dm.WikifunctionsCallNode.static.getHashObjectForRendering = function ( dataElement ) {
 	return {
