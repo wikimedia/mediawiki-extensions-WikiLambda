@@ -568,7 +568,8 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-about-language-block__description,
 	.ext-wikilambda-app-about-language-block__aliases {
-		overflow-wrap: break-word;
+		word-break: normal;
+		overflow-wrap: anywhere;
 		margin-top: @spacing-50;
 	}
 

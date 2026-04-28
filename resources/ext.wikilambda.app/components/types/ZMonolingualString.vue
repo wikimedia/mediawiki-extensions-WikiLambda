@@ -234,7 +234,8 @@ module.exports = exports = defineComponent( {
 		display: flex;
 		flex-direction: row;
 		align-items: baseline;
-		word-break: break-word;
+		word-break: normal;
+		overflow-wrap: anywhere;
 
 		.ext-wikilambda-app-monolingual-string__chip {
 			margin-right: @spacing-50;

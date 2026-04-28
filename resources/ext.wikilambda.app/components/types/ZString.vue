@@ -99,8 +99,9 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-string__value {
 		margin: 0;
 		color: @color-base;
-		word-break: break-word;
-		// T343608: preserve leading whitespace in text value!
+		word-break: normal;
+		overflow-wrap: anywhere;
+		// (T343608) Preserve leading whitespace in text value!
 		white-space: pre-wrap;
 	}
 }

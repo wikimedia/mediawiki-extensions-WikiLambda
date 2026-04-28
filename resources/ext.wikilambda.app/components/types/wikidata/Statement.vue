@@ -126,7 +126,8 @@ module.exports = exports = defineComponent( {
 		box-sizing: border-box;
 		min-height: @min-size-interactive-pointer;
 		padding-top: calc( calc( @min-size-interactive-pointer - var( --line-height-current ) ) / 2 );
-		word-break: break-word;
+		word-break: normal;
+		overflow-wrap: anywhere;
 	}
 
 	.ext-wikilambda-app-wikidata-statement__separator {

@@ -211,7 +211,8 @@ module.exports = exports = defineComponent( {
 				-webkit-line-clamp: 2;
 				line-clamp: 2;
 				-webkit-box-orient: vertical;
-				overflow-wrap: break-word;
+				word-break: normal;
+				overflow-wrap: anywhere;
 				overflow: hidden;
 				text-overflow: ellipsis;
 

@@ -229,7 +229,8 @@ module.exports = exports = defineComponent( {
 		margin-right: 0;
 		display: block;
 		color: @color-base;
-		word-break: break-word;
+		word-break: normal;
+		overflow-wrap: anywhere;
 
 		&:visited {
 			color: @color-base;

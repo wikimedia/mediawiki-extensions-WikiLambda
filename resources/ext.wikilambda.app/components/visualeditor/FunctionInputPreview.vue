@@ -496,7 +496,8 @@ module.exports = exports = defineComponent( {
 		padding: 0 @spacing-150;
 		font-size: @font-size-medium;
 		min-height: @size-200;
-		word-break: break-word;
+		word-break: normal;
+		overflow-wrap: anywhere;
 	}
 
 	.ext-wikilambda-app-function-input-preview__cancelled,

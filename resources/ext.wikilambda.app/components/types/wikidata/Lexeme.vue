@@ -220,7 +220,8 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-wikidata-lexeme__link {
 		line-height: var( --line-height-current );
-		word-break: break-word;
+		word-break: normal;
+		overflow-wrap: anywhere;
 	}
 
 	.ext-wikilambda-app-wikidata-lexeme__unknown {
