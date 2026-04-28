@@ -44,8 +44,10 @@
 	"wikilambda-edit": "Рэдагаваць",
 	"wikilambda-functioncall-metadata-select-label": "Выклікі функцыяў",
 	"wikilambda-loading": "Загрузка зьвестак",
+	"wikilambda-metadata-labels-table-label": "Меткі",
 	"wikilambda-special-edit-function-definition-description": "Вы рэдагуеце старонку апісаньня функцыі. Зьмяняць азначэньне функцыі могуць $1. Рэдагаваць меткі можа кожны. Пераканайцеся, што зьбераглі свой унёсак, націснуўшы блакітную кнопку „Апублікаваць“ ніжэй.",
 	"wikilambda-tester-status-cancel": "Скасаваць",
+	"wikilambda-zobject-to-string-select-object": "Выбраць $1",
 	"wikilambda-ztyped-pair-key-label": "Ключ",
 	"wikilambda-ztyped-pair-value-label": "Значэньне"
 }
