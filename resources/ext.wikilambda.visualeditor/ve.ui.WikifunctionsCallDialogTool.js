@@ -9,7 +9,7 @@
  * MediaWiki UserInterface dialog tool.
  *
  * @class
- * @extends ve.ui.FragmentDialogTool
+ * @extends ve.ui.FragmentWindowTool
  * @constructor
  * @param {OO.ui.ToolGroup} toolGroup
  * @param {Object} [config] Configuration options
