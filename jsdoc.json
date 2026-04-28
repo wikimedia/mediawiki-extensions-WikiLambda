@@ -24,7 +24,19 @@
 			"useLongnameInNav": true
 		},
 		"wmf": {
-			"repository": "https://gerrit.wikimedia.org/g/mediawiki/extensions/WikiLambda/"
+			"repository": "https://gerrit.wikimedia.org/g/mediawiki/extensions/WikiLambda/",
+			"prefixMap": {
+				"ve.dm.Wikifunctions": true,
+				"ve.ce.Wikifunctions": true,
+				"ve.ui.Wikifunctions": true,
+				"mw.libs.ve.": "https://doc.wikimedia.org/VisualEditor/master/js/{type}.html",
+				"mw.": "https://doc.wikimedia.org/mediawiki-core/master/js/{type}.html",
+				"ve.dm.MW": "https://doc.wikimedia.org/VisualEditor/master/js/{type}.html",
+				"ve.ce.MW": "https://doc.wikimedia.org/VisualEditor/master/js/{type}.html",
+				"ve.ui.MW": "https://doc.wikimedia.org/VisualEditor/master/js/{type}.html",
+				"ve.init.mw.": "https://doc.wikimedia.org/VisualEditor/master/js/{type}.html",
+				"ve.": "https://doc.wikimedia.org/visualeditor-standalone/master/{type}.html"
+			}
 		}
 	}
 }
