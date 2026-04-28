@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Bisang",
+			"Tensama0415",
 			"YeBoy371",
 			"Ykhwong"
 		]
@@ -43,8 +44,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "텍스트 입력",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "함수 제안",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title": "[[f:Wikifunctions:Project chat|커뮤니티에 제안하기]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-description": "토론을 시작하고 기여자들에게 함수 구축에 대한 도움을 요청하세요",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-title": "[[f:Special:CreateObject|함수 만들기]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-description": "함수를 직접 생성해 Wikifunctions를 발전시키는 데 기여해주세요",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-title": "[[f:Special:ListObjectsByType|모든 함수 보기]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-description": "Wikifunctions의 모든 함수 목록을 살펴보세요",
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "누락됐거나 잘못된 값을 수정하려면 함수를 편집하세요.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "선택된 옵션이 없습니다.",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "선택된 언어가 없습니다.",
@@ -54,6 +58,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-property": "유효하지 않은 위키데이터 속성입니다.",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-item": "유효하지 않은 위키데이터 항목입니다.",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme-form": "유효하지 않은 위키데이터 어휘소 양식입니다.",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "[[f:$1|Wikifunctions]]에서 누락된 콘텐츠를 여러분의 언어로 번역하는 데 도움을 주세요.",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "설명 없음",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "레이블 없음",
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "이름 없음",

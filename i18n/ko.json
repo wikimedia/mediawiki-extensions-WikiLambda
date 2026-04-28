@@ -408,7 +408,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "최초 먼저",
 	"wikilambda-special-objectsbytype-form-type": "유형",
 	"wikilambda-special-objectsbytype-link": "인스턴스가 있는 모든 유형 목록",
-	"wikilambda-special-objectsbytype-listheader": "$1 ($2) 유형의 모든 객체",
+	"wikilambda-special-objectsbytype-listheader": "'$1' ($2) 유형의 모든 객체",
 	"wikilambda-special-runfunction": "함수 실행",
 	"wikilambda-special-runfunction-intro": "커뮤니티 정책, 저작권, 특허 규정을 준수하세요.",
 	"wikilambda-special-runfunction-summary": "이 양식을 사용하면 함수를 실행할 수 있습니다.",
