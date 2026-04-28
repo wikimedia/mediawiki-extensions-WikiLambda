@@ -571,7 +571,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		}
 
 		// This is our submission to the Analytics / metrics system (private data stream);
-		// if EventLogging isn't enabled, this will be a no-op.
+		// if TestKitchen isn't enabled, this will be a no-op.
 		$this->submitMetricsEvent( $action, $eventData );
 
 		// (T390548) This is our submission to the Prometheus / SLO system (public data stream).

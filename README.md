@@ -23,20 +23,24 @@ you have cloned the `mediawiki/core` repository.
 ### Full setup instructions
 
 * Bring up a [development environment](https://www.mediawiki.org/wiki/How_to_become_a_MediaWiki_hacker) for MediaWiki (e.g. [Docker](https://www.mediawiki.org/wiki/MediaWiki-Docker) or [Vagrant](https://www.mediawiki.org/wiki/MediaWiki-Vagrant)). Be sure to install docker compose v2 instead of v1.
-* In your `mediawiki/extensions/` subdirectory, clone the extension as follows:
+* In your `mediawiki/extensions/` sub-directory, clone the extension as follows:
   ```
   git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda
   ```
-* In your `mediawiki/extensions/` subdirectory, also clone the WikimediaMessages and UniversalLanguageSelector extensions:
+* In your `mediawiki/extensions/` sub-directory, also clone the WikimediaMessages and UniversalLanguageSelector extensions:
   ```
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/UniversalLanguageSelector
   ```
-  The following extensions are also recommended installations in the same directory:
+  The following extensions are also recommended, for metrics emission:
   ```
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventLogging
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventBus
-  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/CommunityConfiguration
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/TestKitchen
+  ```
+  The following extension is also recommended, for configuration:
+  ```
+  git clone <https://gerrit.wikimedia.org/r/mediawiki/extensions/CommunityConfiguration>
   ```
   When CommunityConfiguration is loaded, WikiLambda registers two providers (visible at `Special:CommunityConfiguration`): `WikifunctionsSuggestions` for the recommended-Wikifunctions list shown in the VisualEditor `{{#function:…}}` dialog (on client-mode wikis), and `AbstractWikiSuggestedWikifunctions` for the HTML-returning functions offered in the Abstract Article "Add fragment" menu (on the abstract-mode wiki). The soft dependency is optional: without CommunityConfiguration, the extension temporarily falls back to reading `MediaWiki:Wikilambda-suggested-functions.json` as before for the client-mode list.
 * Extend MediaWiki's composer dependencies to use ours by adding a `composer.local.json` file in your `mediawiki/` directory:
