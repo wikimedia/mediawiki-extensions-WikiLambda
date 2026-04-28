@@ -660,7 +660,6 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-function-viewer-details__tables {
 		flex: 1;
-		flex-grow: 1;
 		width: calc( 100% - 400px );
 
 		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
