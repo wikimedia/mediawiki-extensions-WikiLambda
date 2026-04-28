@@ -32,17 +32,23 @@ you have cloned the `mediawiki/core` repository.
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/UniversalLanguageSelector
   ```
-  The following extensions are also recommended, for metrics emission:
+* There are a number of recommended extensions to have locally, for various reasons.
+  For metrics emission:
   ```
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventLogging
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/EventBus
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/TestKitchen
   ```
-  The following extension is also recommended, for configuration:
+  For configuration:
   ```
   git clone <https://gerrit.wikimedia.org/r/mediawiki/extensions/CommunityConfiguration>
   ```
   When CommunityConfiguration is loaded, WikiLambda registers two providers (visible at `Special:CommunityConfiguration`): `WikifunctionsSuggestions` for the recommended-Wikifunctions list shown in the VisualEditor `{{#function:…}}` dialog (on client-mode wikis), and `AbstractWikiSuggestedWikifunctions` for the HTML-returning functions offered in the Abstract Article "Add fragment" menu (on the abstract-mode wiki). The soft dependency is optional: without CommunityConfiguration, the extension temporarily falls back to reading `MediaWiki:Wikilambda-suggested-functions.json` as before for the client-mode list.
+  For Wikidata content use:
+  ```
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Wikibase
+  ```
+  This powers the Wikidata integration in client-mode and abstract-mode features (page-to-QID default values for `{{#function:…}}` arguments, Wikidata usage tracking, abstract-mode entity label lookup, and the two PHPUnit integration test files which otherwise `markTestSkipped`). See the [Optional integration: WikibaseClient](#optional-integration-wikibaseclient) section below for what changes when it's installed (and the `LocalSettings.php` snippet to enable client-only mode pointed at production Wikidata). Cloning Wikibase here is also what makes `composer phan` resolve the absolute `\Wikibase\Client\WikibaseClient::*` references in our integration call sites.
 * Extend MediaWiki's composer dependencies to use ours by adding a `composer.local.json` file in your `mediawiki/` directory:
   ```
   {
@@ -62,8 +68,10 @@ you have cloned the `mediawiki/core` repository.
   $wgWikiLambdaEnableRepoMode = true;
   $wgWikiLambdaEnableClientMode = true;
   $wgWikiLambdaEnableAbstractMode = true;
-  wfLoadExtension( 'WikimediaMessages' );
-  wfLoadExtension( 'UniversalLanguageSelector' );
+  wfLoadExtensions( ['WikimediaMessages', 'UniversalLanguageSelector'] ); # Required
+  wfLoadExtensions( ['EventLogging', 'EventBus', 'TestKitchen'] ); # Recommended, for metrics
+  wfLoadExtensions( ['CommunityConfiguration'] ); # Recommended, for configuration
+  wfLoadExtension('WikibaseClient', "$IP/extensions/Wikibase/extension-client.json"); # Recommended, for Wikidata
   ```
 * Run `php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` (or `docker compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` if MediaWiki is setup through Docker) to give your Admin user the special rights for creating and editing ZObjects.
 * Run `php maintenance/run.php update` (or `docker compose exec mediawiki php maintenance/run.php update` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
@@ -627,8 +635,54 @@ Now try to use your new Function as an embedded call:
 
   {{#function:Z12345|Q42|en}}
 
-Note that for embedded Function calls, we default blank language parameter values to the page content render language, and Wikidata item parameter values to the associated QID of the page on which the fragment is being rendered, if available. Consequently, on https://en.wikipedia.org/wiki/Douglas_Adams, the above could be written simply as {{#function:Z12345}}.
+Note that for embedded Function calls, we default blank language parameter values to the page content render language, and Wikidata item parameter values to the associated QID of the page on which the fragment is being rendered, if available. Consequently, on https://en.wikipedia.org/wiki/Douglas_Adams, the above could be written simply as {{#function:Z12345}}. The page-to-QID lookup behind that default is a WikibaseClient feature; see the next section for what changes when WikibaseClient is (or isn't) installed locally.
 
+
+## Optional integration: WikibaseClient
+
+WikiLambda has a *soft* optional dependency on the [WikibaseClient](https://www.mediawiki.org/wiki/Wikibase/Installation) extension. Every integration point gates on `ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' )` at runtime, so the extension loads, runs, and serves pages without it — but a few features degrade gracefully or are silently disabled. There is no entry in `extension.json` `requires`, and you do not need to enable repo-mode Wikibase on your local wiki: a client-only install pointed at production Wikidata is enough for development.
+
+To clone and load it alongside WikiLambda, in `mediawiki/extensions/`:
+
+```bash
+git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Wikibase
+```
+
+Then in `LocalSettings.php`, after the `wfLoadExtension( 'WikiLambda' )` line:
+
+```php
+$wgEnableWikibaseRepo = false;
+$wgEnableWikibaseClient = true;
+require_once "$IP/extensions/Wikibase/client/WikibaseClient.php";
+
+// Point the client at production Wikidata so item lookups resolve.
+$wgWBClientSettings['repoUrl'] = 'https://www.wikidata.org';
+$wgWBClientSettings['repoScriptPath'] = '/w';
+$wgWBClientSettings['repoArticlePath'] = '/wiki/$1';
+$wgWBClientSettings['siteGlobalID'] = 'enwiki';
+```
+
+(Adjust `siteGlobalID` to match the sitelink group you want default-QID resolution against; `enwiki` is a reasonable default for local testing.)
+
+### What works *only* with WikibaseClient installed
+
+* **Wikidata item default values for `{{#function:…}}` arguments.** When a function takes a `Z6001` (Wikidata Item) or `Z6091` (Wikidata Item Reference) argument and the call site omits it, the default is the QID linked to the current client page — looked up via `\Wikibase\Client\WikibaseClient::getStore()->getSiteLinkLookup()`. Without WikibaseClient the default resolves to an empty string, so the function will be invoked with a blank QID and likely error out. See `includes/ParserFunction/WikifunctionsCallDefaultValues.php`.
+* **Wikidata usage tracking for QID arguments.** When a `{{#function:…}}` call passes a QID-shaped string (whether explicit or from the default above), WikiLambda records the page as a user of that entity through `WikibaseClient::getUsageAccumulatorFactory()`. That is what makes the page repurge when the linked Wikidata item is edited. Without WikibaseClient the QID is still passed to the function, but no usage is tracked, so cached output won't be invalidated on Wikidata changes. See `includes/ParserFunction/WikifunctionsPFragmentHandler.php`.
+* **Wikidata-item labels in abstract-mode rendering.** `PageRenderingHandler::fetchAbstractModeLabel()` resolves a QID to a label in the current page's content language via `WikibaseClient::getStore()->getEntityLookup()`. Without WikibaseClient it returns `null` and abstract-mode renderers silently omit the label.
+* **Two PHPUnit integration test files.** `tests/phpunit/integration/HookHandler/PageRenderingHandlerAbstractModeTest.php` and `tests/phpunit/integration/ParserFunction/WikifunctionsPFragmentHandlerTest.php` both call `markTestSkipped( 'WikibaseClient not available' )` if the extension is absent. Without WikibaseClient these tests show as skipped (not failed); if you are debugging abstract-mode label rendering or PFragment usage tracking, install Wikibase first or you will be running with no coverage of those paths.
+* **`composer phan` static analysis.** `.phan/config.php` lists `../../extensions/Wikibase` in `directory_list` (and excludes it from analysis) so that absolute references like `\Wikibase\Client\WikibaseClient::getEntityIdParser()` resolve. Without a Wikibase clone in `extensions/`, `composer phan` reports undefined classes at the integration call sites.
+
+### What works the *same* either way
+
+* The full repo-mode editing UI for ZObjects.
+* Function evaluation (`Special:RunFunction`, the Action/REST APIs, the orchestrator round-trip).
+* The Wikidata-typed UI components in `resources/ext.wikilambda.app/components/types/wikidata/*` and the search-side `ext.wikilambda.search/wikidata.js`. These talk directly to the public Wikidata Action API over HTTP; they do **not** consult WikibaseClient services. Installing WikibaseClient does not change their behaviour.
+* `{{#function:…}}` calls that take only string arguments (the original limited form). The QID-handling code path is skipped when no argument parses as a Wikidata `EntityId`.
+
+### Things to know
+
+* When `wgWikibaseItemId` is read from the front-end (in `resources/ext.wikilambda.app/components/visualeditor/FunctionInputPreview.vue` and `store/stores/visualeditor.js`), it is populated by WikibaseClient itself on pages that have a sitelink. Without WikibaseClient the global is `undefined` and the code coerces it to `''` — VE preview just won't pre-fill the QID.
+* If you toggle WikibaseClient on after running tests, also run `git submodule update --init --recursive` in `function-schemata/` — Wikidata-typed builtins (`Z6001`, `Z6091`, `Z6010`, `Z6011`, `Z6062`, `Z6064`) live there and a stale submodule is a common cause of confusing test failures around these types.
 
 ## Abstract mode
 
