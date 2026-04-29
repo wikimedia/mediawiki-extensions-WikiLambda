@@ -24,23 +24,32 @@
 				data-testid="z-reference-wikidata-reference-selector"
 				@select-item="setValue"
 			></wl-wikidata-reference-selector>
-			<wl-z-object-selector
-				v-else
-				:key-path="keyPath"
-				:disabled="disabled"
-				:selected-zid="value"
-				:type="type"
-				:return-type="returnType"
-				:exclude-zids="excludeZids"
-				data-testid="z-reference-selector"
-				@select-item="setValue"
-			></wl-z-object-selector>
+			<template v-else>
+				<wl-z-object-selector
+					:key-path="keyPath"
+					:disabled="disabled"
+					:selected-zid="value"
+					:type="type"
+					:return-type="returnType"
+					:exclude-zids="excludeZids"
+					data-testid="z-reference-selector"
+					@select-item="setValue"
+				></wl-z-object-selector>
+				<span
+					v-if="showHelperInfo"
+					class="ext-wikilambda-app-reference__helper-text"
+				>{{ selectorHelperText }}&nbsp;<wl-function-selector-help
+					placement="bottom-end"
+					:return-type="returnType"
+					:return-type-label="returnTypeLabel"
+				></wl-function-selector-help></span>
+			</template>
 		</template>
 	</div>
 </template>
 
 <script>
-const { defineComponent, computed } = require( 'vue' );
+const { defineComponent, computed, inject } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useType = require( '../../composables/useType.js' );
@@ -49,12 +58,14 @@ const useMainStore = require( '../../store/index.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 
 // Base components
+const FunctionSelectorHelp = require( './../base/FunctionSelectorHelp.vue' );
 const ZObjectSelector = require( './../base/ZObjectSelector.vue' );
 const WikidataReferenceSelector = require( './wikidata/ReferenceSelector.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',
 	components: {
+		'wl-function-selector-help': FunctionSelectorHelp,
 		'wl-z-object-selector': ZObjectSelector,
 		'wl-wikidata-reference-selector': WikidataReferenceSelector
 	},
@@ -87,6 +98,7 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
+		const i18n = inject( 'i18n' );
 		const { typeToString, isKeyTypedListItem } = useType();
 		const { getZReferenceTerminalValue, key, parentKey } = useZObject( { keyPath: props.keyPath } );
 		const store = useMainStore();
@@ -159,6 +171,45 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Returns the label of the return type for use in the helper text and popover.
+		 *
+		 * @return {string}
+		 */
+		const returnTypeLabel = computed( () => returnType.value ?
+			store.getLabelData( returnType.value ).label :
+			undefined
+		);
+
+		/**
+		 * Whether to show the helper row (text + help button) for the function selector
+		 * in Abstract content. Only shown when the field is empty (no function selected).
+		 *
+		 * @return {boolean}
+		 */
+		const showHelperInfo = computed( () => {
+			const isAbstractContent = store.isAbstractContent();
+			const isFunctionSelector = key.value === Constants.Z_FUNCTION_CALL_FUNCTION;
+			const hasBoundReturnType = !!returnType.value;
+			return isAbstractContent && isFunctionSelector && hasBoundReturnType && !value.value;
+		} );
+
+		/**
+		 * Returns helper text for the function selector in Abstract content.
+		 *
+		 * @return {string}
+		 */
+		const selectorHelperText = computed( () => {
+			if ( !showHelperInfo.value ) {
+				return '';
+			}
+			return i18n(
+				'wikilambda-abstract-fragment-function-selector-helper-text',
+				returnType.value,
+				returnTypeLabel.value
+			).text();
+		} );
+
+		/**
 		 * Returns the list of Zids to exclude from the ZObjectSelector lookup,
 		 * depending on the current key and parent key.
 		 * - For Z2K2 content type, excludes keys from EXCLUDE_FROM_PERSISTENT_CONTENT.
@@ -210,7 +261,10 @@ module.exports = exports = defineComponent( {
 			excludeZids,
 			isWikidataEnum,
 			returnType,
+			returnTypeLabel,
+			selectorHelperText,
 			setValue,
+			showHelperInfo,
 			type,
 			value,
 			valueLabel,
@@ -220,3 +274,22 @@ module.exports = exports = defineComponent( {
 } );
 
 </script>
+
+<style lang="less">
+@import '../../ext.wikilambda.app.variables.less';
+
+.ext-wikilambda-app-reference {
+	.ext-wikilambda-app-reference__helper-text {
+		display: inline-block;
+		color: @color-subtle;
+		font-size: @font-size-small;
+		padding-top: @spacing-50;
+		white-space: normal;
+
+		.ext-wikilambda-app-function-selector-help.cdx-toggle-button {
+			display: inline;
+			vertical-align: baseline;
+		}
+	}
+}
+</style>

@@ -13,8 +13,9 @@
 		</wl-function-input-preview>
 		<div class="ext-wikilambda-app-function-input-setup__body">
 			<cdx-message v-if="hasMissingContent">
-				<!-- eslint-disable-next-line vue/no-v-html -->
-				<span v-html="missingContentMsg"></span>
+				<span
+					v-i18n-html:wikilambda-visualeditor-wikifunctionscall-info-missing-content="[ functionZid ]"
+				></span>
 			</cdx-message>
 			<wl-expandable-description
 				v-if="functionDescription"
@@ -166,17 +167,6 @@ module.exports = exports = defineComponent( {
 			!functionDescription.value || !functionDescription.value.isUserLang ||
 			!inputFields.value.every( ( item ) => item.labelData.isUserLang )
 		) );
-
-		/**
-		 * Returns the message notifying about missing content in the user language
-		 * with a link to the Wikifunctions page for the function.
-		 *
-		 * @return {string}
-		 */
-		const missingContentMsg = computed( () => i18n(
-			'wikilambda-visualeditor-wikifunctionscall-info-missing-content',
-			functionZid.value
-		).parse() );
 
 		// Input field initialisation
 		/**
@@ -346,12 +336,12 @@ module.exports = exports = defineComponent( {
 			functionCallPayload,
 			functionDescription,
 			functionLink,
+			functionZid,
 			handleUpdate,
 			handleValidation,
 			hasMissingContent,
 			icon,
 			inputFields,
-			missingContentMsg,
 			showValidation,
 			i18n
 		};

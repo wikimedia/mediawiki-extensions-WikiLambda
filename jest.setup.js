@@ -85,17 +85,21 @@ const englishMessages = Object.assign(
 );
 
 class Mocki18n {
-	constructor( string, param ) {
+	constructor( string, ...params ) {
 		this.string = string;
-		this.param = param || null;
+		this.paramsList = params;
 	}
 
 	interpolate( str ) {
 		if ( !str ) {
 			return '';
 		}
-		if ( this.param !== null ) {
-			return str.replace( /\$1/g, this.param );
+		if ( this.paramsList.length ) {
+			let interpolated = str;
+			this.paramsList.forEach( ( param, index ) => {
+				interpolated = interpolated.replace( new RegExp( `\\$${ index + 1 }`, 'g' ), param );
+			} );
+			return interpolated;
 		}
 		return str;
 	}
@@ -202,8 +206,8 @@ global.mw = {
 			console.log( 'Metrics Platform event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
 		} )
 	},
-	message: jest.fn( ( str, param ) => new Mocki18n( str, param ) ),
-	msg: jest.fn( ( str, param ) => new Mocki18n( str, param ) ),
+	message: jest.fn( ( str, ...params ) => new Mocki18n( str, ...params ) ),
+	msg: jest.fn( ( str, ...params ) => new Mocki18n( str, ...params ) ),
 	Uri: jest.fn().mockReturnValue( {
 		path: jest.fn(),
 		query: jest.fn()
@@ -214,7 +218,7 @@ global.mw = {
 };
 
 // Mock i18n & store for all tests
-global.$i18n = jest.fn( ( str, param ) => new Mocki18n( str, param ) );
+global.$i18n = jest.fn( ( str, ...params ) => new Mocki18n( str, ...params ) );
 
 vueTestUtils.config.global.mocks = {
 	$i18n: global.$i18n

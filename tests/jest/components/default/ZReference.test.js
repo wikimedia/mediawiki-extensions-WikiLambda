@@ -15,6 +15,7 @@ const ZReference = require( '../../../../resources/ext.wikilambda.app/components
 // General use
 const keyPath = 'main.Z2K2.Z1K1';
 const objectValue = { Z1K1: 'Z9', Z9K1: 'Z6' };
+const emptyObjectValue = { Z1K1: 'Z9', Z9K1: '' };
 
 // Terminal value
 const terminalKeyPath = 'main.Z2K2.Z1K1.Z9K1';
@@ -49,7 +50,8 @@ describe( 'ZReference', () => {
 		store = useMainStore();
 		store.getUserLangCode = 'en';
 		store.getLabelData = createLabelDataMock( {
-			Z6: 'String'
+			Z6: 'String',
+			Z89: 'HTML Fragment'
 		} );
 	} );
 
@@ -121,6 +123,74 @@ describe( 'ZReference', () => {
 			const selector = wrapper.getComponent( { name: 'wl-z-object-selector' } );
 			expect( selector.props( 'returnType' ) ).toBe( Constants.Z_STRING );
 			expect( selector.props( 'type' ) ).toBe( Constants.Z_FUNCTION );
+		} );
+
+		it( 'shows helper text and help button inline in abstract content when function field is empty', () => {
+			store.isAbstractContent = jest.fn().mockReturnValue( true );
+
+			const wrapper = renderZReference( {
+				keyPath: functionCallKeyPath,
+				objectValue: emptyObjectValue,
+				edit: true,
+				expectedType: Constants.Z_FUNCTION,
+				parentExpectedType: Constants.Z_HTML_FRAGMENT
+			} );
+
+			expect( wrapper.find( '.ext-wikilambda-app-reference__helper-text' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-reference__helper-text' ).text() ).toContain(
+				'Only functions that return a HTML Fragment (Z89) are listed.'
+			);
+			expect( wrapper.findComponent( { name: 'wl-function-selector-help' } ).exists() ).toBe( true );
+		} );
+
+		it( 'hides helper text when a function is already selected', () => {
+			store.isAbstractContent = jest.fn().mockReturnValue( true );
+
+			const wrapper = renderZReference( {
+				keyPath: functionCallKeyPath,
+				objectValue: { Z1K1: 'Z9', Z9K1: 'Z89' },
+				edit: true,
+				expectedType: Constants.Z_FUNCTION,
+				parentExpectedType: Constants.Z_HTML_FRAGMENT
+			} );
+
+			expect( wrapper.find( '.ext-wikilambda-app-reference__helper-text' ).exists() ).toBe( false );
+			expect( wrapper.findComponent( { name: 'wl-function-selector-help' } ).exists() ).toBe( false );
+		} );
+
+		it( 'does not show helper text outside abstract content', () => {
+			store.isAbstractContent = jest.fn().mockReturnValue( false );
+
+			const wrapper = renderZReference( {
+				keyPath: functionCallKeyPath,
+				objectValue: emptyObjectValue,
+				edit: true,
+				expectedType: Constants.Z_FUNCTION,
+				parentExpectedType: Constants.Z_HTML_FRAGMENT
+			} );
+
+			expect( wrapper.find( '.ext-wikilambda-app-reference__helper-text' ).exists() ).toBe( false );
+		} );
+
+		it( 'shows helper text for non-HTML bound return types when field is empty', () => {
+			store.getLabelData = createLabelDataMock( {
+				Z6: 'String'
+			} );
+			store.isAbstractContent = jest.fn().mockReturnValue( true );
+
+			const wrapper = renderZReference( {
+				keyPath: functionCallKeyPath,
+				objectValue: emptyObjectValue,
+				edit: true,
+				expectedType: Constants.Z_FUNCTION,
+				parentExpectedType: Constants.Z_STRING
+			} );
+
+			expect( wrapper.find( '.ext-wikilambda-app-reference__helper-text' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-reference__helper-text' ).text() ).toContain(
+				'Only functions that return a String (Z6) are listed.'
+			);
+			expect( wrapper.findComponent( { name: 'wl-function-selector-help' } ).exists() ).toBe( true );
 		} );
 
 		it( 'returns empty returnType when the key is a function call but parent expected type is unbound', async () => {

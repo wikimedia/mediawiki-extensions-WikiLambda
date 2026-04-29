@@ -43,6 +43,11 @@
 					@delete-arg="deleteArgument"
 					@copy="copyToClipboard"
 				></wl-mode-selector>
+				<wl-function-selector-help
+					v-if="showFunctionSelectorHelp"
+					:return-type="functionSelectorReturnType"
+					:return-type-label="functionSelectorReturnTypeLabel"
+				></wl-function-selector-help>
 			</template>
 			<!-- Value: will always be rendered -->
 			<template #value>
@@ -81,6 +86,7 @@ const LabelData = require( '../../store/classes/LabelData.js' );
 
 // Base components
 const ExpandedToggle = require( '../base/ExpandedToggle.vue' );
+const FunctionSelectorHelp = require( '../base/FunctionSelectorHelp.vue' );
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
 const LocalizedLabel = require( '../base/LocalizedLabel.vue' );
 const ModeSelector = require( '../base/ModeSelector.vue' );
@@ -115,6 +121,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		// Base components
 		'wl-expanded-toggle': ExpandedToggle,
+		'wl-function-selector-help': FunctionSelectorHelp,
 		'wl-key-value-block': KeyValueBlock,
 		'wl-localized-label': LocalizedLabel,
 		// Type components
@@ -199,6 +206,7 @@ module.exports = exports = defineComponent( {
 			getZKeyIsIdentity,
 			getZMonolingualLangValue,
 			getZObjectType,
+			getZReferenceTerminalValue,
 			isWikidataFetch,
 			key,
 			parentKey,
@@ -326,6 +334,47 @@ module.exports = exports = defineComponent( {
 			// If ZnKn shaped key, get expected from the key definition
 			return parentKey.value ? store.getExpectedTypeOfKey( parentKey.value ) : undefined;
 		} );
+
+		// Abstract content function selector help
+		/**
+		 * Returns the return type ZID for the function selector help button,
+		 * or null when the current key is not a function call function (Z7K1)
+		 * or the return type is unbound.
+		 *
+		 * @return {string|null}
+		 */
+		const functionSelectorReturnType = computed( () => {
+			const unboundTypes = [ Constants.Z_OBJECT, ...Constants.RESOLVER_TYPES ];
+			if ( key.value !== Constants.Z_FUNCTION_CALL_FUNCTION ) {
+				return null;
+			}
+			if ( unboundTypes.includes( parentExpectedType.value ) ) {
+				return null;
+			}
+			return typeToString( parentExpectedType.value, true );
+		} );
+
+		/**
+		 * Whether to show the function selector help button in the key row.
+		 * Only shown when a function is already selected (field is filled).
+		 *
+		 * @return {boolean}
+		 */
+		const showFunctionSelectorHelp = computed( () => props.edit &&
+			store.isAbstractContent() &&
+			!!functionSelectorReturnType.value &&
+			!!getZReferenceTerminalValue( props.objectValue )
+		);
+
+		/**
+		 * Returns the label of the expected return type for the function selector help popover.
+		 *
+		 * @return {string}
+		 */
+		const functionSelectorReturnTypeLabel = computed( () => functionSelectorReturnType.value ?
+			store.getLabelData( functionSelectorReturnType.value ).label :
+			undefined
+		);
 
 		// Layout configuration
 		/**
@@ -883,6 +932,8 @@ module.exports = exports = defineComponent( {
 			deleteListItem,
 			disableEdit,
 			expectedType,
+			functionSelectorReturnType,
+			functionSelectorReturnTypeLabel,
 			hasPreColumn,
 			hasToggle,
 			idValue,
@@ -893,6 +944,7 @@ module.exports = exports = defineComponent( {
 			moveBefore,
 			parentExpectedType,
 			renderComponent,
+			showFunctionSelectorHelp,
 			setExpanded,
 			setType,
 			setValue,
