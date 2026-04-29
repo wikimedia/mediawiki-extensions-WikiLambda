@@ -21,7 +21,7 @@
 	"license-name": "MIT",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.46",
+		"MediaWiki": ">= 1.47.0",
 		"extensions": {
 			"WikimediaMessages": "*",
 			"UniversalLanguageSelector": "*"
@@ -1256,22 +1256,30 @@
 				"WikifunctionsSuggestions": {
 					"store": {
 						"type": "wikipage",
-						"args": [ "MediaWiki:WikifunctionsSuggestions.json" ]
+						"args": [
+							"MediaWiki:WikifunctionsSuggestions.json"
+						]
 					},
 					"validator": {
 						"type": "jsonschema",
-						"args": [ "MediaWiki\\Extension\\WikiLambda\\Config\\SuggestedFunctionsSchema" ]
+						"args": [
+							"MediaWiki\\Extension\\WikiLambda\\Config\\SuggestedFunctionsSchema"
+						]
 					},
 					"type": "data"
 				},
 				"AbstractWikiSuggestedWikifunctions": {
 					"store": {
 						"type": "wikipage",
-						"args": [ "MediaWiki:AbstractWikiSuggestedWikifunctions.json" ]
+						"args": [
+							"MediaWiki:AbstractWikiSuggestedWikifunctions.json"
+						]
 					},
 					"validator": {
 						"type": "jsonschema",
-						"args": [ "MediaWiki\\Extension\\WikiLambda\\Config\\AbstractSuggestedFunctionsSchema" ]
+						"args": [
+							"MediaWiki\\Extension\\WikiLambda\\Config\\AbstractSuggestedFunctionsSchema"
+						]
 					},
 					"type": "data"
 				}
