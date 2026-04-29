@@ -48,8 +48,7 @@
 		"abstractwiki": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\AbstractContent\\AbstractWikiContentHandler",
 			"services": [
-				"MainConfig",
-				"ContentHandlerFactory"
+				"MainConfig"
 			]
 		}
 	},

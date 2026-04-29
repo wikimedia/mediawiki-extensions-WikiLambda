@@ -548,7 +548,11 @@ class ZObjectContentHandler extends ContentHandler {
 	 * Access level widened to public for use in ZObjectContentDifferenceEngine
 	 */
 	public function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
-		// TODO (T362246): Dependency-inject (if we haven't replaced this by then)
+		// NOTE: We intentionally avoid injecting ContentHandlerFactory here.
+		// Accessing MediaWikiServices during early service construction can
+		// trigger premature initialization of ContentHandlerFactory, which may
+		// prevent other extensions (e.g. Wikibase) from registering their
+		// content models correctly.
 		$slotDiffRenderer = MediaWikiServices::getInstance()
 			->getContentHandlerFactory()
 			->getContentHandler( CONTENT_MODEL_TEXT )

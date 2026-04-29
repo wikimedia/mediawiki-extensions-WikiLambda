@@ -1,0 +1,10 @@
+{
+	"type": "item",
+	"id": "Q319",
+	"labels": {
+		"en": { "language": "en", "value": "Jupiter" }
+	},
+	"descriptions": {
+		"en": { "language": "en", "value": "fifth planet in the Solar System and largest among all" }
+	}
+}

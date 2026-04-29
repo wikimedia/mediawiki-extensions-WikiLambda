@@ -71,14 +71,31 @@ you have cloned the `mediawiki/core` repository.
   wfLoadExtensions( ['WikimediaMessages', 'UniversalLanguageSelector'] ); # Required
   wfLoadExtensions( ['EventLogging', 'EventBus', 'TestKitchen'] ); # Recommended, for metrics
   wfLoadExtensions( ['CommunityConfiguration'] ); # Recommended, for configuration
-  wfLoadExtension('WikibaseClient', "$IP/extensions/Wikibase/extension-client.json"); # Recommended, for Wikidata
   ```
+* Add any other optional (advanced) settings following the documentation below.
 * Run `php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` (or `docker compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` if MediaWiki is setup through Docker) to give your Admin user the special rights for creating and editing ZObjects.
 * Run `php maintenance/run.php update` (or `docker compose exec mediawiki php maintenance/run.php update` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
 
 Done! Navigate to the newly created `Z1` page on your wiki to verify that the extension is successfully installed.
 
-### Loading ZObject data
+### Loading data
+
+There are a number of maintenance scripts used for loading data into your WikiLambda environment.
+Some data objects are mandatory for a basic configuration and others are just useful for local
+development and testing purposes.
+
+Here's a summary of your options depending on your needs:
+
+* For **Wikifunctions Repo**:
+  * (mandatory) for a basic Wikifunctions setup, load the built-in ZObjects [with loadPreDefinedObject](#loading-the-built-in-data)
+  * (optional) for advanced debugging, load ZObjects downloaded from production Wikifunctions [with loadJsonDump](#loading-a-wikifunctions-production-data-dump)
+
+* For **Abstract Wikipedia Repo**:
+  * (optional) for advanced debugging, load Abstract content objects downloaded from production Abstract Wikipedia [with
+  loadAbstractDump](#loading-an-abstract-wikipedia-production-data-dump)
+  * (optional) to test titles and links in Abstract Wikipedia pages, [setup your Wikibase
+  extension](#local-wikibaseclient-setup-for-entitylookup) and load Wikidata fixtures [with
+  loadWikidataFixtures](#loading-wikidata-fixtures-for-entitylookup-testing)
 
 #### Loading the built-in data
 
@@ -100,7 +117,8 @@ $ git submodule update --init --recursive
 
 To run the script, from your MediaWiki installation directory, do:
 ```
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php <OPTIONS>
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php <OPTIONS>
 ```
 
 ##### Options
@@ -155,40 +173,46 @@ Z14, Z50, Z61, Z1002
 
 To load all built-in objects (only new ones, skip those which are already loaded), use the `--all` option:
 ```
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---all
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --all
 ```
 
 To load a given Zid, use the `--zid` option:
 ```
 # Update Z14
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---zid Z14
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --zid Z14
 ```
 
 To load all missing objects in a range of zids, use the `--from` and `--to` options:
 ```
 # Update from Z6000 to Z7000
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---from Z6000 --to Z7000
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --from Z6000 --to Z7000
 ```
 
 To forcefully insert all objects, overwriting the ones that already exist, use the `--force` option:
 ```
 # Force all
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---all --force
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --all --force
 
 # Rewrite Z6005 with its builtin version
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---zid Z6005 --force
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --zid Z6005 --force
 ```
 
 To insert all non-existing objects, and merge the already existing ones, use the `--merge` option.
 
 ```
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---all --merge
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --all --merge
 ```
 
 If conflicts are found, the script will request input from the user:
@@ -211,16 +235,18 @@ To insert all non-existing objects, and merge the already existing ones by alway
 current values whenever there are conflicts, use the `--merge --current` options.
 
 ```
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---all --merge --current
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --all --merge --current
 ```
 
 To insert all non-existing objects, and merge the already existing ones by always resetting the
 builtin values whenever there are conflicts, use the `--merge --builtin` options.
 
 ```
-$ docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
---all --merge --builtin
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadPreDefinedObject.php \
+   --all --merge --builtin
 ```
 
 #### Loading a Wikifunctions production data dump
@@ -261,24 +287,28 @@ You are now ready to use the `loadJsonDump.php` maintenance script to load all t
 local installation, using the argument `--dir` to specify the data directory:
 
 ```
-docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache
 ```
 
 To insert a given zid, use the argument `--zid`:
 
 ```
-docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache --zid Z6005
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache --zid Z6005
 ```
 
 To load a Zid range, use `--from` and `--to` together:
 
 ```
-docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache --from Z1 --to Z500
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache --from Z1 --to Z500
 ```
-NOTE (`--zid` only): You must use this option **very carefully**, as it will only force insert the specified Zid without
-being concerned about its dependencies between this and other objects. While it's safe to push locally the
-whole production database, as we are replicating the full context in one go, pushing one Zid should
-only be done if we are sure that the context matches this object perfectly.
+NOTE: You must use `--zid` and `--from/to` options **very carefully**, as they will insert the
+specified Zid or range of Zids without being concerned about their dependencies with other objects.
+While it's safe to push locally the whole production database, as we are replicating the full
+context in one go, pushing specified Zids should only be done if we are sure that the context
+matches the inserted object(s) perfectly.
 
 #### Loading an Abstract Wikipedia production data dump
 
@@ -291,19 +321,77 @@ For Abstract Wikipedia content, use the separate downloader and importer flow:
 After downloading pages into `extensions/WikiLambda/abstractcache`, load all pages with:
 
 ```
-docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache
+docker compose exec mediawiki php maintenance/run.php \
+  ./extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache
 ```
 
 Load one page:
 
 ```
-docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --title Q1
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --title Q1
 ```
 
 Load a title range:
 
 ```
-docker compose exec mediawiki php extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --from Q1 --to Q500
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --from Q1 --to Q500
+```
+
+#### Loading Wikidata fixtures for EntityLookup testing
+
+To locally test the `WikibaseClient`'s `EntittyLookup` features that enrich Abstract Wikipedia, this
+maintenance script helps load a small collection of Wikidata fixtures locally to replicate a minimal
+setup of Wikibase Repository, so that the Wikibase Client extension can retrieve these entities in a
+non-pruduction environment.
+
+Before running this script, make sure that you have correctly [setup your Wikibase
+extension following these instructions](#local-wikibaseclient-setup-for-entitylookup).
+
+This script loads one or all the items available in the Wikidata fixtures directory.  The default
+fixture directory is in the WikiLambda base repo directory, under the `fixtures/wikidata`
+subdiretory. The script can also be called so that it gets the fixtures from another directory with
+`--path`.
+
+To load all the files from `/fixtures/wikidata/*.json` do:
+
+```bash
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadWikibaseFixtures.php
+```
+
+To load all the files from another directory (reachable from the docker volume):
+
+```bash
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadWikibaseFixtures.php \
+   --path ./relative/path/to/fixtures
+```
+
+The fixtures directory must contain one JSON file per Wikidata Item object to insert (or update).
+Each file must have a serializable Item object, like:
+
+```json
+{
+  "type": "item",
+  "id": "Q319",
+  "labels": {
+    "en": { "language": "en", "value": "Jupiter" }
+  },
+  "descriptions": {
+    "en": { "language": "en", "value": "fifth planet in the Solar System and largest among all" }
+  }
+}
+```
+
+By default, all files in the fixtures directory will be inserted in alphabetical order. To load
+only one, pass the name with the option `--file`.
+
+```bash
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadWikibaseFixtures.php \
+   --file Q319_with_descriptions.json
 ```
 
 ### Back-end services
@@ -640,49 +728,198 @@ Note that for embedded Function calls, we default blank language parameter value
 
 ## Optional integration: WikibaseClient
 
-WikiLambda has a *soft* optional dependency on the [WikibaseClient](https://www.mediawiki.org/wiki/Wikibase/Installation) extension. Every integration point gates on `ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' )` at runtime, so the extension loads, runs, and serves pages without it — but a few features degrade gracefully or are silently disabled. There is no entry in `extension.json` `requires`, and you do not need to enable repo-mode Wikibase on your local wiki: a client-only install pointed at production Wikidata is enough for development.
+WikiLambda has a *soft* optional dependency on the
+[WikibaseClient](https://www.mediawiki.org/wiki/Wikibase/Installation) extension. Every integration
+point gates on `ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' )` at runtime, so the
+extension loads, runs, and serves pages without it, but a few features degrade gracefully or are silently disabled.
 
-To clone and load it alongside WikiLambda, in `mediawiki/extensions/`:
+
+### Wikibase-enabled features
+
+These are the Wikibase-enabled features, the environments or setups in which they are applicable and
+the fallback behavior in case WikibasClient is not available.
+
+* **Wikidata item default values for `{{#function:…}}` arguments.**
+  * When embedding a function that accepts a Wikidata Item argument (that is, an input of type
+  `Wikidata Item`/`Z6001` or `Wikidata Item Reference`/`Z6091`), if this argument is omitted, the
+  parser function replaces the missing value with the QID linked to the current client page (if
+  any). This resolution is done through WikibaseClient's `SiteLinkLookup` service.
+  * **Environment:** This feature is only available for **Wikifunctions Client Mode**.
+  * **Fallback:** When WikibaseClient is not enabled, the function will be invoked with a blank QID
+  and likely error out.
+  * See [WikifunctionsCallDefaultValues](https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/includes/ParserFunction/WikifunctionsCallDefaultValues.php).
+
+* **Wikidata usage tracking for QID arguments.**
+  * When a `{{#function:…}}` call passes a QID-shaped string (whether explicit or from the default
+  above), WikiLambda records the page as a user of that entity through the WikibaseClient's
+  `UsageAccumulatorFactory` service. This record makes the page purge and refresh when the linked
+  Wikidata Item is edited.
+  * **Environment:** This feature is only available for **Wikifunctions Client Mode**.
+  * **Fallback:** Without WikibaseClient, no usage is tracked, so cached output won't be invalidated
+  on Wikidata changes.
+  * See
+  [WikifunctionsPFragmentHandler](https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/includes/ParserFunction/WikifunctionsPFragmentHandler.php).
+
+* **Wikidata-item labels in abstract-mode rendering.**
+  * When rendering the title of an Abstract Wikipedia article page (for example, its read, edit or
+  history page) or when generating links to Abstract Wikipedia articles, the system replaces the
+  page title (which is the Wikidata Item QID associated to the article) with the label for the
+  Wikidata Item in the user's language. This label resolution is performed via WikibaseClient's
+  `EntityLookup` service.
+  * **Environment:** This feature is only available for **Abstract Wikipedia Repo Mode**.
+  * **Fallback:** Without WikibaseClient, titles and links for Abstract Wikipedia pages are rendered
+    using the raw Wikidata Item QID instead of its label.
+  * See [AbstractContentUtils::resolveAbstractLabel](https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/includes/AbstractContent/AbstractContentUtils.php#80)
+
+
+Additionally, the absence of the WikibaseClient extension affects the following dev workflows:
+
+* **Two PHPUnit integration test files.**
+  `tests/phpunit/integration/HookHandler/PageRenderingHandlerAbstractModeTest.php` and
+  `tests/phpunit/integration/ParserFunction/WikifunctionsPFragmentHandlerTest.php` both call
+  `markTestSkipped( 'WikibaseClient not available' )` if the extension is absent. Without
+  WikibaseClient these tests show as skipped (not failed); if you are debugging abstract-mode label
+  rendering or PFragment usage tracking, install Wikibase first or you will be running with no
+  coverage of those paths.
+
+* **`composer phan` static analysis.** `.phan/config.php` lists `../../extensions/Wikibase` in
+  `directory_list` (and excludes it from analysis) so that absolute references like
+  `\Wikibase\Client\WikibaseClient::getEntityIdParser()` resolve. Without a Wikibase clone in
+  `extensions/`, `composer phan` reports undefined classes at the integration call sites.
+
+
+Other Wikidata features that **do not depend on WikibaseClient services** and will work
+in any environment, are:
+
+* In Wikifunctions Repo Mode: all the features to lookup, select and edit Wikidata Entities in the
+  UI (components in `resources/ext.wikilambda.app/components/types/wikidata/*`), as they depend on
+  remote requests to the Wikidata Action APIs.
+* In Wikifunctions Repo Mode: running functions that use Wikidata Entities or Wikidata Entity
+  references relies on the Function Orchestrator making requests to the Wikidata Action and LOD APIs.
+* In Wikifunctions Client Mode: using Visual Editor to embed a function that uses one or more
+  Wikidata Entities. These can be searched and selected using the Visual Editor interface and also
+  use remote requests to the Wikidata Action APIs.
+* In Abstract Wikipedia Mode: the typeahead search box (`ext.wikilambda.search/wikidata.js`) talks
+  directly to the public Wikidata Action API over HTTP.
+
+Other things to know:
+
+* When `wgWikibaseItemId` is read from the front-end (in
+  `resources/ext.wikilambda.app/components/visualeditor/FunctionInputPreview.vue` and
+  `store/stores/visualeditor.js`), it is populated by WikibaseClient itself on pages that have a
+  sitelink. Without WikibaseClient the global is `undefined` and the code coerces it to `''` — VE
+  preview just won't pre-fill the QID.
+* If you toggle WikibaseClient on after running tests, also run `git submodule update --init
+  --recursive` in `function-schemata/` — Wikidata-typed builtins (`Z6001`, `Z6091`, `Z6010`,
+  `Z6011`, `Z6062`, `Z6064`) live there and a stale submodule is a common cause of confusing test
+  failures around these types.
+
+
+### Local WikibaseClient Setup for EntityLookup
+
+In Wikimedia production, WikibaseClient is integrated with Wikidata as the central entity
+repository. Features such as sitelink resolution and EntityLookup rely on production-specific
+infrastructure shared between the client wikis and the repository, including site configuration and
+cross-service integration.
+
+This setup is not available by default in local or non-production environments, even if
+WikibaseClient is enabled. As a result, lookup-dependent features cannot be tested locally against
+real Wikidata infrastructure. To use and test `EntityLookup` in non-production environments, you can
+set up a minimal `WikibaseRepository` and load a minimal set of Wikidata fixtures. To accomplish
+this, follow the steps:
+
+**1. Install Wikibase**
+
+Clone the Wikibase extension and its submodules, in `mediawiki/extensions/`, do:
 
 ```bash
 git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Wikibase
+cd Wikibase
+git submodule update --init --recursive
 ```
 
-Then in `LocalSettings.php`, after the `wfLoadExtension( 'WikiLambda' )` line:
+Make sure that Wikibase is added in your MediaWiki `composer.local.json` file and the dependencies
+are up to date with:
+
+```bash
+docker compose exec mediawiki composer install
+```
+
+**2. Enable Wikibase Repository and Client**
+
+Then add at the bottom of your `LocalSettings.php`:
 
 ```php
-$wgEnableWikibaseRepo = false;
-$wgEnableWikibaseClient = true;
-require_once "$IP/extensions/Wikibase/client/WikibaseClient.php";
+# WikibaseRepository settings:
+# ===========================
 
-// Point the client at production Wikidata so item lookups resolve.
-$wgWBClientSettings['repoUrl'] = 'https://www.wikidata.org';
-$wgWBClientSettings['repoScriptPath'] = '/w';
-$wgWBClientSettings['repoArticlePath'] = '/wiki/$1';
+wfLoadExtension( 'WikibaseRepository', "$IP/extensions/Wikibase/extension-repo.json" );
+require_once "$IP/extensions/Wikibase/repo/ExampleSettings.php";
+
+
+# WikibaseClient settings:
+# =======================
+
+wfLoadExtension( 'WikibaseClient', "$IP/extensions/Wikibase/extension-client.json" );
+require_once "$IP/extensions/Wikibase/client/ExampleSettings.php";
+
+$wgWBClientSettings['entitySources'] = [
+  'local' => [
+    'entityNamespaces' => [
+      'item' => 120,
+      'property' => 122,
+    ],
+    'repoDatabase' => $wgDBname,
+    'baseUri' => $wgServer . '/entity/',
+    'rdfNodeNamespacePrefix' => 'wd',
+    'rdfPredicateNamespacePrefix' => '',
+    'interwikiPrefix' => '',
+  ],
+];
+$wgWBClientSettings['itemAndPropertySourceName'] = 'local';
 $wgWBClientSettings['siteGlobalID'] = 'enwiki';
 ```
 
-(Adjust `siteGlobalID` to match the sitelink group you want default-QID resolution against; `enwiki` is a reasonable default for local testing.)
+**3. Run the maintenance scripts**
 
-### What works *only* with WikibaseClient installed
+Initialize the `WikibaseRepository` and `WikibaseClient` tables and site metadata:
 
-* **Wikidata item default values for `{{#function:…}}` arguments.** When a function takes a `Z6001` (Wikidata Item) or `Z6091` (Wikidata Item Reference) argument and the call site omits it, the default is the QID linked to the current client page — looked up via `\Wikibase\Client\WikibaseClient::getStore()->getSiteLinkLookup()`. Without WikibaseClient the default resolves to an empty string, so the function will be invoked with a blank QID and likely error out. See `includes/ParserFunction/WikifunctionsCallDefaultValues.php`.
-* **Wikidata usage tracking for QID arguments.** When a `{{#function:…}}` call passes a QID-shaped string (whether explicit or from the default above), WikiLambda records the page as a user of that entity through `WikibaseClient::getUsageAccumulatorFactory()`. That is what makes the page repurge when the linked Wikidata item is edited. Without WikibaseClient the QID is still passed to the function, but no usage is tracked, so cached output won't be invalidated on Wikidata changes. See `includes/ParserFunction/WikifunctionsPFragmentHandler.php`.
-* **Wikidata-item labels in abstract-mode rendering.** `PageRenderingHandler::fetchAbstractModeLabel()` resolves a QID to a label in the current page's content language via `WikibaseClient::getStore()->getEntityLookup()`. Without WikibaseClient it returns `null` and abstract-mode renderers silently omit the label.
-* **Two PHPUnit integration test files.** `tests/phpunit/integration/HookHandler/PageRenderingHandlerAbstractModeTest.php` and `tests/phpunit/integration/ParserFunction/WikifunctionsPFragmentHandlerTest.php` both call `markTestSkipped( 'WikibaseClient not available' )` if the extension is absent. Without WikibaseClient these tests show as skipped (not failed); if you are debugging abstract-mode label rendering or PFragment usage tracking, install Wikibase first or you will be running with no coverage of those paths.
-* **`composer phan` static analysis.** `.phan/config.php` lists `../../extensions/Wikibase` in `directory_list` (and excludes it from analysis) so that absolute references like `\Wikibase\Client\WikibaseClient::getEntityIdParser()` resolve. Without a Wikibase clone in `extensions/`, `composer phan` reports undefined classes at the integration call sites.
+```bash
+docker compose exec mediawiki php maintenance/run.php update
+docker compose exec mediawiki php maintenance/run.php ./extensions/Wikibase/lib/maintenance/populateSitesTable.php
+docker compose exec mediawiki php maintenance/run.php ./extensions/Wikibase/repo/maintenance/rebuildItemsPerSite.php
+docker compose exec mediawiki php maintenance/run.php populateInterwiki
+```
 
-### What works the *same* either way
+**4. Verify that Item creation is possible**
 
-* The full repo-mode editing UI for ZObjects.
-* Function evaluation (`Special:RunFunction`, the Action/REST APIs, the orchestrator round-trip).
-* The Wikidata-typed UI components in `resources/ext.wikilambda.app/components/types/wikidata/*` and the search-side `ext.wikilambda.search/wikidata.js`. These talk directly to the public Wikidata Action API over HTTP; they do **not** consult WikibaseClient services. Installing WikibaseClient does not change their behaviour.
-* `{{#function:…}}` calls that take only string arguments (the original limited form). The QID-handling code path is skipped when no argument parses as a Wikidata `EntityId`.
+Not really a necessary step, but it doesn't hurt to check:
+* Go to http://localhost:8080/wiki/Special:NewItem and publish a new Item.
+* You should be successfully redirected to http://localhost:8080/wiki/Item:Q2
 
-### Things to know
+**5. Insert Wikidata fixtures**
 
-* When `wgWikibaseItemId` is read from the front-end (in `resources/ext.wikilambda.app/components/visualeditor/FunctionInputPreview.vue` and `store/stores/visualeditor.js`), it is populated by WikibaseClient itself on pages that have a sitelink. Without WikibaseClient the global is `undefined` and the code coerces it to `''` — VE preview just won't pre-fill the QID.
-* If you toggle WikibaseClient on after running tests, also run `git submodule update --init --recursive` in `function-schemata/` — Wikidata-typed builtins (`Z6001`, `Z6091`, `Z6010`, `Z6011`, `Z6062`, `Z6064`) live there and a stale submodule is a common cause of confusing test failures around these types.
+Run the `loadWikibaseFixtures` script.
+
+```bash
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadWikibaseFixtures.php
+```
+
+Then test that the pages stored in the `/fixtures/wikidata` directory are correctly inserted by
+going to their view pages. For example, for testing `Jupiter/Q319` go to http://localhost:8080/wiki/Item:Q319
+
+**6. You can now test your EntityLookup features**
+
+If you want, you can unset `WikibasRepository` by commenting the repository-related configuration
+lines and leaving only the `WikibaseClient` configuration ones.
+
+For more configuration options, see [Wikibase advanced installation
+guide](https://www.mediawiki.org/wiki/Wikibase/Installation/Advanced_configuration#Client_only)
+
+Remember to re-enable `WikibasRepository` whenever you want to run the `loadWikibaseFixtures`
+script.
+
 
 ## Abstract mode
 

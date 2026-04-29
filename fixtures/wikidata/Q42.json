@@ -1,0 +1,11 @@
+{
+	"type": "item",
+	"id": "Q42",
+	"labels": {
+		"en": { "language": "en", "value": "Douglas Adams" },
+		"mul": { "language": "mul", "value": "Douglas Adams" }
+	},
+	"descriptions": {
+		"en": { "language": "en", "value": "British science fiction writer and humorist (1952–2001)" }
+	}
+}

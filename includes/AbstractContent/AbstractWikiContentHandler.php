@@ -14,7 +14,6 @@ use InvalidArgumentException;
 use MediaWiki\Config\Config;
 use MediaWiki\Content\Content;
 use MediaWiki\Content\ContentHandler;
-use MediaWiki\Content\ContentHandlerFactory;
 use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\ValidationParams;
@@ -24,6 +23,7 @@ use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
@@ -39,12 +39,10 @@ class AbstractWikiContentHandler extends ContentHandler {
 	/**
 	 * @param string $modelId
 	 * @param Config $config
-	 * @param ContentHandlerFactory $contentHandlerFactory
 	 */
 	public function __construct(
 		$modelId,
 		private readonly Config $config,
-		private readonly ContentHandlerFactory $contentHandlerFactory
 	) {
 		if ( $modelId !== CONTENT_MODEL_ABSTRACT ) {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
@@ -287,7 +285,13 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * Access level widened to public for use in AbstractContentDifferenceEngine
 	 */
 	public function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
-		$slotDiffRenderer = $this->contentHandlerFactory
+		// NOTE: We intentionally avoid injecting ContentHandlerFactory here.
+		// Accessing MediaWikiServices during early service construction can
+		// trigger premature initialization of ContentHandlerFactory, which may
+		// prevent other extensions (e.g. Wikibase) from registering their
+		// content models correctly.
+		$slotDiffRenderer = MediaWikiServices::getInstance()
+			->getContentHandlerFactory()
 			->getContentHandler( CONTENT_MODEL_TEXT )
 			->getSlotDiffRenderer( $context );
 		'@phan-var TextSlotDiffRenderer $slotDiffRenderer';

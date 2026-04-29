@@ -14,7 +14,6 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Deferred\DeferredUpdates;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -72,16 +71,6 @@ class RepoHooks implements
 		if ( !$config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			// Nothing for us to do.
 			return;
-		}
-
-		$contentHandler = $services->getContentHandlerFactory();
-		if ( !$contentHandler->isDefinedModel( CONTENT_MODEL_ABSTRACT ) ) {
-			if ( method_exists( $contentHandler, 'defineContentHandler' ) ) {
-				// @phan-suppress-next-line PhanUndeclaredMethod this apparently phan doesn't take the hint above
-				$contentHandler->defineContentHandler( CONTENT_MODEL_ABSTRACT, AbstractWikiContentHandler::class );
-			} else {
-				throw new ConfigException( 'Abstract content model is not registered and we cannot inject it.' );
-			}
 		}
 
 		$abstractNamespaceConfig = $config->get( 'WikiLambdaAbstractNamespaces' );
