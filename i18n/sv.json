@@ -195,6 +195,7 @@
 	"wikilambda-editor-zobject-addkey": "Lägg till nyckel:",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Nollställ värdet",
 	"wikilambda-editor-zobject-removekey-tooltip": "Ta bort den här nyckeln från det här objektet",
+	"wikilambda-empty-reference-warning": "Ange ett värde.",
 	"wikilambda-expert-mode-json-label": "Aktuellt objekt",
 	"wikilambda-fallback": "Tillbakafalls-redigerare",
 	"wikilambda-function-are-you-sure-dialog-description": "Vill du verkligen lämna redigeringsläget utan att först publicera?",
