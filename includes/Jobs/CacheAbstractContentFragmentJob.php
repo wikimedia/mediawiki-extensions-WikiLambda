@@ -50,7 +50,9 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 			[
 				'qid' => $params['qid'],
 				'language' => $params['language'],
-				'date' => $params['date']
+				'date' => $params['date'],
+				'cacheKeyFresh' => $params['cacheKeyFresh'],
+				'cacheKeyStale' => $params['cacheKeyStale'],
 			]
 		);
 	}
@@ -73,7 +75,9 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 			[
 				'qid' => $this->params['qid'],
 				'language' => $this->params['language'],
-				'date' => $this->params['date']
+				'date' => $this->params['date'],
+				'cacheKeyFresh' => $cacheKeyFresh,
+				'cacheKeyStale' => $cacheKeyStale,
 			]
 		);
 
@@ -89,7 +93,9 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 				'status' => $cachedValue[ 'success' ] ? 'successful' : 'failed',
 				'qid' => $this->params['qid'],
 				'language' => $this->params['language'],
-				'date' => $this->params['date']
+				'date' => $this->params['date'],
+				'cacheKeyFresh' => $cacheKeyFresh,
+				'cacheKeyStale' => $cacheKeyStale,
 			]
 		);
 

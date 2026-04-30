@@ -89,7 +89,11 @@ class AbstractWikiRequest {
 				}
 				$this->logger->debug(
 					__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment failed: {error}',
-					[ 'error' => $e->getMessage() ] + $logContext
+					[
+						'error' => $e->getMessage(),
+						'cacheKeyFresh' => $cacheKeyFresh,
+						'cacheKeyStale' => $cacheKeyStale,
+					] + $logContext
 				);
 			} else {
 				// For temporary server errors: reduce fresh TTL to a minute
@@ -113,7 +117,9 @@ class AbstractWikiRequest {
 						__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment triggered a server issue: {error}',
 						[
 							'error' => $e->getMessage(),
-							'exception' => $e
+							'exception' => $e,
+							'cacheKeyFresh' => $cacheKeyFresh,
+							'cacheKeyStale' => $cacheKeyStale,
 						]
 					);
 				} else {
@@ -122,7 +128,9 @@ class AbstractWikiRequest {
 						__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment has unhandled error: {error}',
 						[
 							'error' => $e->getMessage(),
-							'exception' => $e
+							'exception' => $e,
+							'cacheKeyFresh' => $cacheKeyFresh,
+							'cacheKeyStale' => $cacheKeyStale,
 						]
 					);
 				}
