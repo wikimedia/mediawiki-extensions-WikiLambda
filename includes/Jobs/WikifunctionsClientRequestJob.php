@@ -69,11 +69,11 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		$this->clientCacheKey = $params['clientCacheKey'];
 
 		$this->logger->debug(
-			__CLASS__ . ' created for {target} with {params}; to store as key {key}',
+			__CLASS__ . ' created for {target} with {params}; to store as key {clientCacheKey}',
 			[
 				'target' => $this->targetFunction,
 				'params' => var_export( $this->functionArguments, true ),
-				'key' => $this->clientCacheKey
+				'clientCacheKey' => $this->clientCacheKey
 			]
 		);
 	}
@@ -97,7 +97,13 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	 * @return bool
 	 */
 	public function run() {
-		$this->logger->debug( __CLASS__ . ' initiated for {target}', [ 'target' => $this->targetFunction ] );
+		$this->logger->debug(
+			__CLASS__ . ' initiated for {target}',
+			[
+				'target' => $this->targetFunction,
+				'clientCacheKey' => $this->clientCacheKey,
+			]
+		);
 
 		try {
 			$output = $this->remoteCall(
@@ -116,7 +122,13 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				$this->objectCache::TTL_MONTH
 			);
 
-			$this->logger->debug( __CLASS__ . ' success for {target}', [ 'target' => $this->targetFunction ] );
+			$this->logger->debug(
+				__CLASS__ . ' success for {target}',
+				[
+					'target' => $this->targetFunction,
+					'clientCacheKey' => $this->clientCacheKey,
+				]
+			);
 			return true;
 		} catch ( WikifunctionCallException $callException ) {
 			// WikifunctionCallException: we know details of the error
@@ -128,7 +140,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				__CLASS__ . '::remoteCall threw an unhandled Exception: {error}',
 				[
 					'error' => $e->getMessage(),
-					'exception' => $e
+					'exception' => $e,
+					'target' => $this->targetFunction,
+					'clientCacheKey' => $this->clientCacheKey,
 				]
 			);
 			// Show unclear error or system failure
@@ -163,7 +177,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			__CLASS__ . ' failure for {target}, error: {errorMessageKey}',
 			[
 				'target' => $this->targetFunction,
-				'errorMessageKey' => $errorMessageKey
+				'errorMessageKey' => $errorMessageKey,
+				'clientCacheKey' => $this->clientCacheKey,
 			]
 		);
 
@@ -237,7 +252,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				__METHOD__ . ' encountered an error response {httpStatusCode} with a broken ZError: {response}',
 				[
 					'httpStatusCode' => $httpStatusCode,
-					'response' => $request->getContent()
+					'response' => $request->getContent(),
+					'target' => $this->targetFunction,
+					'clientCacheKey' => $this->clientCacheKey,
 				]
 			);
 			// Triggers use of messages:
@@ -253,7 +270,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			__METHOD__ . ' encountered an error response {httpStatusCode}: {zerrorCode}',
 			[
 				'httpStatusCode' => $httpStatusCode,
-				'zerrorCode' => $zerrorCode
+				'zerrorCode' => $zerrorCode,
+				'target' => $this->targetFunction,
+				'clientCacheKey' => $this->clientCacheKey,
 			]
 		);
 
@@ -423,7 +442,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								'zerror' => $zerror,
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
-								'response' => $request->getContent()
+								'response' => $request->getContent(),
+								'target' => $this->targetFunction,
+								'clientCacheKey' => $this->clientCacheKey,
 							]
 						);
 				}
@@ -454,7 +475,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 								'zerror' => $zerror,
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
-								'response' => $request->getContent()
+								'response' => $request->getContent(),
+								'target' => $this->targetFunction,
+								'clientCacheKey' => $this->clientCacheKey,
 							]
 						);
 						// Fall-back to default handling, below.
@@ -469,7 +492,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						'zerror' => $zerror,
 						'zerrorCode' => $zerrorCode,
 						'httpStatusCode' => $httpStatusCode,
-						'response' => $request->getContent()
+						'response' => $request->getContent(),
+						'target' => $this->targetFunction,
+						'clientCacheKey' => $this->clientCacheKey,
 					]
 				);
 				// Fall-back to default handling, below.

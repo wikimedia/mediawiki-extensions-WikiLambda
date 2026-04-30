@@ -121,16 +121,17 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			}
 		}
 
+		// (T362256): This is the key we use to cache on the client wiki code here, rather than only at the repo wiki.
+		$clientCacheKey = $this->wikifunctionsClientStore->makeFunctionCallCacheKey( $expansion );
+
 		$this->logger->debug(
 			'WikiLambda client call made for {function} on {page}',
 			[
 				'function' => $expansion['target'],
-				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
+				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
+				'clientCacheKey' => $clientCacheKey,
 			]
 		);
-
-		// (T362256): This is the key we use to cache on the client wiki code here, rather than only at the repo wiki.
-		$clientCacheKey = $this->wikifunctionsClientStore->makeFunctionCallCacheKey( $expansion );
 
 		// Schedule a job to update the usage tracking to say that we use this function on this page.
 		// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
@@ -196,7 +197,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				[
 					'error' => $errorMessageKey,
 					'targetFunction' => $expansion['target'],
-					'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
+					'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
+					'clientCacheKey' => $clientCacheKey,
 				]
 			);
 
@@ -220,7 +222,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			'WikiLambda client request was uncached for request to {targetFunction} on {page}',
 			[
 				'targetFunction' => $expansion['target'],
-				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString()
+				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
+				'clientCacheKey' => $clientCacheKey,
 			]
 		);
 
