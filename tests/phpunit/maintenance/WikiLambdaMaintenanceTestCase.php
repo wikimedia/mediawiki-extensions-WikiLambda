@@ -9,12 +9,18 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 
+use FilesystemIterator;
 use MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWiki\Tests\Maintenance\MaintenanceBaseTestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use RuntimeException;
 
 abstract class WikiLambdaMaintenanceTestCase extends MaintenanceBaseTestCase {
+
+	/** @var string[] Full paths to fixture directories created via makeTempDumpDir() */
+	private array $cleanupTempDirs = [];
 
 	/**
 	 * Set configuration flag WikiLambdaEnableRepoMode to true and
@@ -54,8 +60,46 @@ abstract class WikiLambdaMaintenanceTestCase extends MaintenanceBaseTestCase {
 		return file_get_contents( $mainFile );
 	}
 
+	/**
+	 * Create a fresh fixture directory inside the WikiLambda extension tree.
+	 *
+	 * Both loadJsonDump and loadAbstractDump compute their dump path as
+	 * dirname( __DIR__ ) . '/' . $dumpDir, so fixtures must live under the
+	 * extension root rather than in wfTempDir(). The directory is removed
+	 * recursively in tearDown(), even if the test fails mid-way through.
+	 *
+	 * @return string Full filesystem path to the new directory.
+	 */
+	protected function makeTempDumpDir(): string {
+		// dirname(__DIR__, 3) resolves to the extension root (extensions/WikiLambda/),
+		// matching the dirname(__DIR__) in maintenance/load*Dump.php so the script
+		// and the test write to / read from the same place.
+		$path = dirname( __DIR__, 3 ) . '/phpunit-dump-' . wfRandomString( 8 );
+		mkdir( $path, 0o755, true );
+		$this->cleanupTempDirs[] = $path;
+		return $path;
+	}
+
 	protected function tearDown(): void {
+		foreach ( $this->cleanupTempDirs as $dir ) {
+			$this->removeDirRecursively( $dir );
+		}
+		$this->cleanupTempDirs = [];
 		ZObjectRegistry::clearAll();
 		parent::tearDown();
+	}
+
+	private function removeDirRecursively( string $dir ): void {
+		if ( !is_dir( $dir ) ) {
+			return;
+		}
+		$iter = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator( $dir, FilesystemIterator::SKIP_DOTS ),
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
+		foreach ( $iter as $file ) {
+			$file->isDir() ? rmdir( $file->getPathname() ) : unlink( $file->getPathname() );
+		}
+		rmdir( $dir );
 	}
 }

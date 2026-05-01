@@ -108,8 +108,10 @@ class LoadJsonDump extends Maintenance {
 		$refresh = $this->hasOption( 'refresh' );
 
 		// Get data files
-		// Load Z0.json
-		$indexFile = file_get_contents( "$path/Z0.json" );
+		// Load Z0.json. Suppress the PHP file-not-found warning; we check
+		// the return value explicitly below and emit our own diagnostic.
+		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$indexFile = @file_get_contents( "$path/Z0.json" );
 		if ( $indexFile === false ) {
 			$this->fatalError( "Could not load Z0.json guide file.\n"
 				. "The directory must contain the objects downloaded with "

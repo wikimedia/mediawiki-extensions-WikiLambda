@@ -88,7 +88,10 @@ class LoadAbstractDump extends Maintenance {
 		}
 		$path = dirname( __DIR__ ) . '/' . $dumpDir;
 
-		$indexFile = file_get_contents( "$path/Q0.json" );
+		// Suppress the PHP file-not-found warning; we check the return value
+		// explicitly below and emit our own diagnostic.
+		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$indexFile = @file_get_contents( "$path/Q0.json" );
 		if ( $indexFile === false ) {
 			$this->fatalError( "Could not load Q0.json guide file.\n"
 				. "The directory must contain the pages downloaded with "
