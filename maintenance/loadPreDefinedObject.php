@@ -620,12 +620,12 @@ class LoadPreDefinedObject extends Maintenance {
 			}
 
 			// Remove Z or z
-			if ( strtoupper( substr( $from, 0, 1 ) ) === 'Z' ) {
+			if ( strtoupper( substr( $from ?? '', 0, 1 ) ) === 'Z' ) {
 				$from = substr( $from, 1 );
 			}
 
 			// Remove Z or z
-			if ( strtoupper( substr( $to, 0, 1 ) ) === 'Z' ) {
+			if ( strtoupper( substr( $to ?? '', 0, 1 ) ) === 'Z' ) {
 				$to = substr( $to, 1 );
 			}
 
