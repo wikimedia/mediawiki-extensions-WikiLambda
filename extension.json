@@ -32,7 +32,8 @@
 	},
 	"TestAutoloadNamespaces": {
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\": "tests/",
-		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/"
+		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/",
+		"MediaWiki\\Extension\\WikiLambda\\Tests\\Maintenance\\": "tests/phpunit/maintenance/"
 	},
 	"callback": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks::registerExtension",
 	"ContentHandlers": {
