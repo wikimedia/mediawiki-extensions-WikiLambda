@@ -421,7 +421,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$parserOutputWithHTML = $handler->getParserOutput( $content, $cpoParamsWithHTML );
 
 		$this->assertStringContainsString(
-			'ext-wikilambda-view-invalidcontent', $parserOutputWithHTML->getRawText(),
+			'ext-wikilambda-view-invalidcontent', $parserOutputWithHTML->getContentHolderText(),
 			'Should show the error content'
 		);
 	}

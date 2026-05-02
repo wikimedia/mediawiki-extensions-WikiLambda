@@ -191,8 +191,8 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->runPrivateMethod( $handler, 'fillParserOutput', [ $content, $params, &$output ] );
 
 		// Should show error message, not the Vue app
-		$this->assertStringContainsString( 'ext-wikilambda-view-invalidcontent', $output->getRawText() );
-		$this->assertStringNotContainsString( 'ext-wikilambda-app', $output->getRawText() );
+		$this->assertStringContainsString( 'ext-wikilambda-view-invalidcontent', $output->getContentHolderText() );
+		$this->assertStringNotContainsString( 'ext-wikilambda-app', $output->getContentHolderText() );
 	}
 
 	public function testFillParserOutput_noHtmlGeneration() {
@@ -212,7 +212,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->runPrivateMethod( $handler, 'fillParserOutput', [ $content, $params, &$output ] );
 
 		// Should produce empty output (no Vue app will load)
-		$this->assertSame( '', $output->getRawText() );
+		$this->assertSame( '', $output->getContentHolderText() );
 	}
 
 	public function testFillParserOutput() {
@@ -232,7 +232,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->runPrivateMethod( $handler, 'fillParserOutput', [ $content, $params, &$output ] );
 
 		// Output contains div id="ext-wikilambda-app" (where the Vue app will load)
-		$this->assertStringContainsString( 'id="ext-wikilambda-app"', $output->getRawText() );
+		$this->assertStringContainsString( 'id="ext-wikilambda-app"', $output->getContentHolderText() );
 
 		// Output has the appropriate config vars
 		$jsVars = $output->getJsConfigVars();

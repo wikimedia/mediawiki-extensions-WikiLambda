@@ -783,12 +783,12 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$labelWikitext = '{{#wikifunctionlabel:' . $zobject
 			. ( $languageCode ? '|' . $languageCode : '' ) . '}}';
 		$result = $this->parseWikitextToHtml( $labelWikitext, $languageCode );
-		$this->assertSame( $expectedLabel, $result->getRawText() );
+		$this->assertSame( $expectedLabel, $result->getContentHolderText() );
 
 		$labelDescriptionWikitext = '{{#wikifunctionlabeldesc:' . $zobject
 			. ( $languageCode ? '|' . $languageCode : '' ) . '}}';
 		$result = $this->parseWikitextToHtml( $labelDescriptionWikitext, $languageCode );
-		$this->assertSame( $expectedLabelDescription, $result->getRawText() );
+		$this->assertSame( $expectedLabelDescription, $result->getContentHolderText() );
 	}
 
 	public static function provideLabelParserFunctions() {
