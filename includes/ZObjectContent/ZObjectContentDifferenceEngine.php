@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Content\Content;
-use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\DifferenceEngine;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 
@@ -38,7 +37,7 @@ class ZObjectContentDifferenceEngine extends DifferenceEngine {
 		'@phan-var ZObjectContentHandler $zObjectContentHandler';
 
 		$slotDiffRenderer = $zObjectContentHandler
-			->getSlotDiffRendererWithOptions( RequestContext::getMain() );
+			->getSlotDiffRendererWithOptions( $this->getContext() );
 		'@phan-var TextSlotDiffRenderer $slotDiffRenderer';
 
 		return $slotDiffRenderer->getTextDiff( $oldText, $newText );

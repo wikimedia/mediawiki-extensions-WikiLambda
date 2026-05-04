@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Content\Content;
-use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\DifferenceEngine;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 
@@ -33,7 +32,7 @@ class AbstractContentDifferenceEngine extends DifferenceEngine {
 		'@phan-var AbstractWikiContentHandler $abstractContentHandler';
 
 		$slotDiffRenderer = $abstractContentHandler
-			->getSlotDiffRendererWithOptions( RequestContext::getMain() );
+			->getSlotDiffRendererWithOptions( $this->getContext() );
 		'@phan-var TextSlotDiffRenderer $slotDiffRenderer';
 
 		return $slotDiffRenderer->getTextDiff( $oldText, $newText );
