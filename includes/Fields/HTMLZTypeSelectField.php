@@ -10,10 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Fields;
 
-use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\HTMLForm\Field\HTMLSelectField;
-use MediaWiki\HTMLForm\HTMLForm;
 
 class HTMLZTypeSelectField extends HTMLSelectField {
 
@@ -24,9 +22,7 @@ class HTMLZTypeSelectField extends HTMLSelectField {
 		parent::__construct( $params );
 
 		// Get user language to select best labels for each item
-		$languageCode = ( $this->mParent instanceof HTMLForm ) ?
-			$this->mParent->getLanguage()->getCode() :
-			RequestContext::getMain()->getLanguage()->getCode();
+		$languageCode = $this->mParent->getLanguage()->getCode();
 
 		// Get all valid WikiLambda types with instances: zids and labels
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
