@@ -87,9 +87,9 @@ ve.ui.WikifunctionsCallContextItem.prototype.setErrorState = function ( errorKey
 	const $errorMsg = $( '<div>' )
 		.addClass( 'cdx-message__content' )
 		.append(
-			// eslint-disable-next-line mediawiki/msg-doc
+
 			mw.message( groupedErrorMessageKey,
-				// eslint-disable-next-line mediawiki/msg-doc
+
 				mw.message( errorKey || 'wikilambda-functioncall-error' ).text()
 			).parse()
 		);
