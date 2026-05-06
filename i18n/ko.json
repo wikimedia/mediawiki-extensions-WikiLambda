@@ -355,6 +355,7 @@
 	"wikilambda-special-createobject-nojs": "이 문서에서는 자바스크립트를 사용해야 합니다.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "특수 권한이 있는 사용자만",
 	"wikilambda-special-functionsbytests": "테스트로 필터링된 함수 목록",
+	"wikilambda-special-functionsbytests-form-min-help": "0으로 비우기",
 	"wikilambda-special-functionsbytests-form-result-fail": "일부 실패",
 	"wikilambda-special-functionsbytests-form-result-pass": "모두 통과",
 	"wikilambda-special-functionsbytests-form-status": "테스트 연결 상태:",
