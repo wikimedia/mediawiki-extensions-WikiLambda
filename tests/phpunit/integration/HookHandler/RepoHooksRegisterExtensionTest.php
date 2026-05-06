@@ -42,6 +42,12 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 	private const ABSTRACT_USER_RIGHT = 'wikilambda-abstract-create';
 
 	/**
+	 * The new, repo-mode-only OAuth grant group; should appear in $wgGrantPermissions,
+	 * $wgGrantPermissionGroups, and $wgGrantRiskGroups only when repo mode is enabled. (T423542)
+	 */
+	private const SPECIAL_GRANT_GROUP = 'wikilambda-specialedit';
+
+	/**
 	 * Establish a known-empty baseline for every global registerExtension may
 	 * touch, plus the two mode flags it reads. setMwGlobals auto-restores in
 	 * tearDown so each test runs in isolation regardless of the bootstrap state.
@@ -67,6 +73,9 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 			'wgAddGroups' => [],
 			'wgRemoveGroups' => [],
 			'wgPrivilegedGroups' => [],
+			'wgGrantPermissions' => [],
+			'wgGrantPermissionGroups' => [],
+			'wgGrantRiskGroups' => [],
 		] );
 	}
 
@@ -117,7 +126,8 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 		RepoHooks::registerExtension();
 
 		global $wgAvailableRights, $wgGroupPermissions, $wgPrivilegedGroups,
-			$wgAddGroups, $wgRemoveGroups, $wgRateLimits;
+			$wgAddGroups, $wgRemoveGroups, $wgRateLimits,
+			$wgGrantPermissions, $wgGrantPermissionGroups, $wgGrantRiskGroups;
 
 		if ( $expectRepoModeRights ) {
 			$this->assertContains(
@@ -140,6 +150,26 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 				'wikilambda-execute', $wgRateLimits,
 				'Repo-mode rate limits must be registered when repo mode is enabled'
 			);
+			// OAuth grants: 'basic' runs functions, 'editpage' covers normal editing, and the
+			// new 'wikilambda-specialedit' group exists with its category and risk flags. (T423542)
+			$this->assertSame(
+				true, $wgGrantPermissions['basic']['wikifunctions-run'] ?? null,
+				"The 'basic' OAuth grant must allow running functions when repo mode is enabled"
+			);
+			$this->assertSame(
+				true, $wgGrantPermissions['editpage'][self::REPO_USER_RIGHT] ?? null,
+				"The 'editpage' OAuth grant must include repo editing rights when repo mode is enabled"
+			);
+			$this->assertArrayHasKey(
+				self::SPECIAL_GRANT_GROUP, $wgGrantPermissions,
+				'The higher-impact OAuth grant group must exist when repo mode is enabled'
+			);
+			$this->assertSame(
+				'page-interaction', $wgGrantPermissionGroups[self::SPECIAL_GRANT_GROUP] ?? null
+			);
+			$this->assertSame(
+				'vandalism', $wgGrantRiskGroups[self::SPECIAL_GRANT_GROUP] ?? null
+			);
 		} else {
 			$this->assertNotContains(
 				self::REPO_USER_RIGHT, $wgAvailableRights,
@@ -150,6 +180,12 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 			$this->assertNotContains( self::REPO_PRIVILEGED_GROUP, $wgAddGroups['sysop'] ?? [] );
 			$this->assertNotContains( self::REPO_PRIVILEGED_GROUP, $wgRemoveGroups['sysop'] ?? [] );
 			$this->assertArrayNotHasKey( 'wikilambda-execute', $wgRateLimits );
+			// The repo-mode OAuth grants must not leak onto client-only wikis. (T423542)
+			$this->assertArrayNotHasKey( 'wikifunctions-run', $wgGrantPermissions['basic'] ?? [] );
+			$this->assertArrayNotHasKey( self::REPO_USER_RIGHT, $wgGrantPermissions['editpage'] ?? [] );
+			$this->assertArrayNotHasKey( self::SPECIAL_GRANT_GROUP, $wgGrantPermissions );
+			$this->assertArrayNotHasKey( self::SPECIAL_GRANT_GROUP, $wgGrantPermissionGroups );
+			$this->assertArrayNotHasKey( self::SPECIAL_GRANT_GROUP, $wgGrantRiskGroups );
 		}
 
 		if ( $expectAbstractModeRights ) {
@@ -161,10 +197,18 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 				true, $wgGroupPermissions['user'][self::ABSTRACT_USER_RIGHT] ?? null,
 				"'user' must be granted the abstract-mode right when abstract mode is enabled"
 			);
+			// The abstract-authoring rights also hang off the core 'editpage' OAuth grant. (T423542)
+			$this->assertSame(
+				true, $wgGrantPermissions['editpage'][self::ABSTRACT_USER_RIGHT] ?? null,
+				"The 'editpage' OAuth grant must include abstract-authoring rights when abstract mode is enabled"
+			);
 		} else {
 			$this->assertNotContains(
 				self::ABSTRACT_USER_RIGHT, $wgAvailableRights,
 				'Abstract-mode rights must NOT leak into abstract-client wikis (T407066)'
+			);
+			$this->assertArrayNotHasKey(
+				self::ABSTRACT_USER_RIGHT, $wgGrantPermissions['editpage'] ?? []
 			);
 		}
 	}
@@ -179,7 +223,8 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 		RepoHooks::registerExtension();
 
 		global $wgAvailableRights, $wgGroupPermissions, $wgPrivilegedGroups,
-			$wgAddGroups, $wgRemoveGroups, $wgNonincludableNamespaces, $wgRateLimits;
+			$wgAddGroups, $wgRemoveGroups, $wgNonincludableNamespaces, $wgRateLimits,
+			$wgGrantPermissions, $wgGrantPermissionGroups, $wgGrantRiskGroups;
 		$snapshot = [
 			'wgAvailableRights' => $wgAvailableRights,
 			'wgGroupPermissions' => $wgGroupPermissions,
@@ -188,6 +233,9 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 			'wgRemoveGroups' => $wgRemoveGroups,
 			'wgNonincludableNamespaces' => $wgNonincludableNamespaces,
 			'wgRateLimits' => $wgRateLimits,
+			'wgGrantPermissions' => $wgGrantPermissions,
+			'wgGrantPermissionGroups' => $wgGrantPermissionGroups,
+			'wgGrantRiskGroups' => $wgGrantRiskGroups,
 		];
 
 		RepoHooks::registerExtension();
@@ -199,6 +247,9 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 		$this->assertSame( $snapshot['wgRemoveGroups'], $wgRemoveGroups );
 		$this->assertSame( $snapshot['wgNonincludableNamespaces'], $wgNonincludableNamespaces );
 		$this->assertSame( $snapshot['wgRateLimits'], $wgRateLimits );
+		$this->assertSame( $snapshot['wgGrantPermissions'], $wgGrantPermissions );
+		$this->assertSame( $snapshot['wgGrantPermissionGroups'], $wgGrantPermissionGroups );
+		$this->assertSame( $snapshot['wgGrantRiskGroups'], $wgGrantRiskGroups );
 	}
 
 	/**

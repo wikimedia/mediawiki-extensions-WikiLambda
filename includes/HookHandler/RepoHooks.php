@@ -51,10 +51,10 @@ class RepoHooks implements
 	}
 
 	/**
-	 * Configure namespaces, user rights, groups, and rate limits that exist only on a
-	 * Wikifunctions-style repo wiki. Doing this from the registerExtension callback
-	 * (rather than statically in extension.json) keeps them off Special:ListGroupRights
-	 * on client-only wikis such as Wikipedia. (T407066)
+	 * Configure namespaces, user rights, groups, rate limits, and OAuth grants that exist
+	 * only on a Wikifunctions-style repo wiki. Doing this from the registerExtension callback
+	 * (rather than statically in extension.json) keeps them off Special:ListGroupRights and
+	 * Special:ListGrants on client-only wikis such as Wikipedia. (T407066, T423542)
 	 *
 	 * Safe to call repeatedly: the merges are duplicate-free so tests that re-fire
 	 * the callback via setUpAsRepoMode() converge on the same state.
@@ -219,6 +219,63 @@ class RepoHooks implements
 		self::applyRegisteredConfig(
 			$availableRights, $groupPermissions, $rateLimits, $groupChangeRights
 		);
+
+		// OAuth grants. 'basic' and 'editpage' are core grant groups we extend; 'wikilambda-
+		// specialedit' is a new grant group, flagged 'page-interaction'/'vandalism' below so bot
+		// operators see that the rights it can assign carry real risk. Note that users can't grant
+		// a bot rights they don't hold themselves, so assigning the special group won't let a
+		// non-Functioneer's tool connect or disconnect Implementations. The maintainer- and
+		// staff-only rights are deliberately left out of every grant group for now.
+		$grantPermissions = [
+			// Always granted: run Functions (including unsaved code) and embedded Wikifunctions.
+			'basic' => [
+				'wikilambda-execute' => true,
+				'wikilambda-execute-unsaved-code' => true,
+				'wikifunctions-run' => true,
+			],
+			// Normal page editing: creating tests, adding labels, and similar everyday edits.
+			// Matches the repo-mode 'user' group permissions above. (The abstract-authoring
+			// rights also live on 'editpage', but are added by registerAbstractModeConfig().)
+			'editpage' => [
+				'wikilambda-execute-unsaved-code' => true,
+				'wikilambda-create' => true,
+				'wikilambda-create-converter' => true,
+				'wikilambda-create-function' => true,
+				'wikilambda-create-implementation' => true,
+				'wikilambda-create-tester' => true,
+				'wikilambda-edit' => true,
+				'wikilambda-edit-argument-label' => true,
+				'wikilambda-edit-converter' => true,
+				'wikilambda-edit-error-key-label' => true,
+				'wikilambda-edit-implementation' => true,
+				'wikilambda-edit-key-label' => true,
+				'wikilambda-edit-object-alias' => true,
+				'wikilambda-edit-object-description' => true,
+				'wikilambda-edit-object-label' => true,
+				'wikilambda-edit-tester' => true,
+				'wikilambda-edit-user-function' => true,
+			],
+			// Higher-impact edits: (dis)connecting implementations and testers, editing attached
+			// implementations and testers, and creating types and generic enums.
+			'wikilambda-specialedit' => [
+				'wikilambda-connect-implementation' => true,
+				'wikilambda-connect-tester' => true,
+				'wikilambda-create-generic-enum' => true,
+				'wikilambda-create-type' => true,
+				'wikilambda-disconnect-implementation' => true,
+				'wikilambda-disconnect-tester' => true,
+				'wikilambda-edit-attached-implementation' => true,
+				'wikilambda-edit-attached-tester' => true,
+				'wikilambda-edit-generic-enum-item' => true,
+				'wikilambda-edit-running-function' => true,
+			],
+		];
+
+		self::applyGrantConfig(
+			$grantPermissions,
+			[ 'wikilambda-specialedit' => 'page-interaction' ],
+			[ 'wikilambda-specialedit' => 'vandalism' ]
+		);
 	}
 
 	/**
@@ -246,6 +303,20 @@ class RepoHooks implements
 		];
 
 		self::applyRegisteredConfig( $availableRights, $groupPermissions, [], [] );
+
+		// The abstract-authoring rights are also reachable through the core 'editpage' OAuth grant.
+		// Registered here (not in registerRepoModeConfig) so they only appear on Special:ListGrants
+		// where abstract mode is enabled. (T423542)
+		self::applyGrantConfig(
+			[
+				'editpage' => [
+					'wikilambda-abstract-create' => true,
+					'wikilambda-abstract-edit' => true,
+				],
+			],
+			[],
+			[]
+		);
 	}
 
 	/**
@@ -298,6 +369,34 @@ class RepoHooks implements
 				$wgPrivilegedGroups[] = $target;
 			}
 		}
+	}
+
+	/**
+	 * Idempotent merge of WikiLambda's OAuth grant declarations.
+	 *
+	 * Mirrors applyRegisteredConfig()'s semantics: grant→right maps ($wgGrantPermissions[<grant>])
+	 * are merged with the '+' operator so values from LocalSettings.php (or an earlier pass) win
+	 * over our defaults, and the flat grant→category / grant→risk maps are only filled in for keys
+	 * we haven't already declared. Kept out of extension.json so WikiLambda's rights stay off
+	 * Special:ListGrants on client-only wikis where the underlying rights aren't registered. (T423542)
+	 *
+	 * @param array<string,array<string,bool>> $grantPermissions Map of grant group => [ right => true ]
+	 * @param array<string,string> $grantPermissionGroups Map of (new) grant group => category
+	 * @param array<string,string> $grantRiskGroups Map of (new) grant group => risk level
+	 */
+	private static function applyGrantConfig(
+		array $grantPermissions,
+		array $grantPermissionGroups,
+		array $grantRiskGroups
+	): void {
+		global $wgGrantPermissions, $wgGrantPermissionGroups, $wgGrantRiskGroups;
+
+		foreach ( $grantPermissions as $grant => $rights ) {
+			$wgGrantPermissions[$grant] = ( $wgGrantPermissions[$grant] ?? [] ) + $rights;
+		}
+
+		$wgGrantPermissionGroups += $grantPermissionGroups;
+		$wgGrantRiskGroups += $grantRiskGroups;
 	}
 
 	/**

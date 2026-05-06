@@ -67,6 +67,7 @@
 	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-help-text": "Up to five Wikifunctions by their ZID (for example <code>Z20756</code>) to feature in the editor dialog.",
 	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-item-label": "Recommended Wikifunctions $1",
 	"content-model-zobject": "WikiLambda Object",
+	"grant-wikilambda-specialedit": "Higher-impact edits to Wikifunctions",
 	"group-functioneer": "Functioneers",
 	"group-functioneer-member": "{{GENDER:$1|functioneer}}",
 	"group-functionmaintainer": "Maintainers",
