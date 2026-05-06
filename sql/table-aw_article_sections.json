@@ -1,0 +1,89 @@
+[
+	{
+		"name": "aw_article_sections",
+		"comment": "Stores rendered article sections and article metadata for Abstract Wikipedia topics.",
+		"columns": [
+			{
+				"name": "awas_topic_qid",
+				"comment": "Wikidata QID of the AW article topic (e.g. Q42)",
+				"type": "binary",
+				"options": {
+					"length": 32,
+					"notnull": true
+				}
+			},
+			{
+				"name": "awas_section_qid",
+				"comment": "Section identifier (QID-like) or METADATA literal for article metadata entry",
+				"type": "binary",
+				"options": {
+					"length": 64,
+					"notnull": true
+				}
+			},
+			{
+				"name": "awas_locale",
+				"comment": "BCP47 locale identifier (e.g. en, sr-Latn, zh-Hans)",
+				"type": "binary",
+				"options": {
+					"length": 32,
+					"notnull": true
+				}
+			},
+			{
+				"name": "awas_schema_version",
+				"comment": "Schema version of the stored payload format",
+				"type": "mwtinyint",
+				"options": {
+					"unsigned": true,
+					"notnull": true
+				}
+			},
+			{
+				"name": "awas_payload",
+				"comment": "HTML fragment for section, or JSON blob with metadata for article metadata entry",
+				"type": "blob",
+				"options": {
+					"length": 16777216,
+					"notnull": true
+				}
+			},
+			{
+				"name": "awas_last_updated",
+				"comment": "ISO-8601 timestamp when content was last updated",
+				"type": "mwtimestamp",
+				"options": {
+					"length": 32,
+					"notnull": true
+				}
+			}
+		],
+		"indexes": [
+			{
+				"name": "awas_index_primary",
+				"columns": [
+					"awas_topic_qid",
+					"awas_section_qid",
+					"awas_locale",
+					"awas_schema_version"
+				],
+				"unique": true
+			},
+			{
+				"name": "awas_index_metadata",
+				"columns": [
+					"awas_topic_qid",
+					"awas_section_qid",
+					"awas_schema_version"
+				],
+				"unique": false
+			}
+		],
+		"pk": [
+			"awas_topic_qid",
+			"awas_section_qid",
+			"awas_locale",
+			"awas_schema_version"
+		]
+	}
+]

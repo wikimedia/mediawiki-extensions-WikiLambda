@@ -106,6 +106,10 @@
 					"Q50081413"
 				]
 			}
+		},
+		"WikiLambdaEnableAbstractClientMode": {
+			"description": "If true, enable the 'abstract client' mode of WikiLambda that enables integration of Abstract Wikipedia generated articles.",
+			"value": true
 		}
 	},
 	"ConfigRegistry": {
@@ -1336,5 +1340,8 @@
 			"revision": true
 		}
 	},
+	"DatabaseVirtualDomains": [
+		"virtual-awstorage"
+	],
 	"manifest_version": 2
 }

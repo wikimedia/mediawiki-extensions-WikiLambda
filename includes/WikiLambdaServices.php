@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
 use MediaWiki\Logger\LoggerFactory;
@@ -45,6 +46,9 @@ class WikiLambdaServices {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectAuthorization' );
 	}
 
+	/**
+	 * @return MemcachedWrapper
+	 */
 	public static function getMemcachedWrapper(): MemcachedWrapper {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaMemcachedWrapper' );
 	}
@@ -61,6 +65,13 @@ class WikiLambdaServices {
 	 */
 	public static function getPFragmentRenderer(): WikifunctionsPFragmentRenderer {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaPFragmentRenderer' );
+	}
+
+	/**
+	 * @return AWArticleStore
+	 */
+	public static function getAWArticleStore(): AWArticleStore {
+		return MediaWikiServices::getInstance()->getService( 'AbstractWikiArticleStore' );
 	}
 
 	/**

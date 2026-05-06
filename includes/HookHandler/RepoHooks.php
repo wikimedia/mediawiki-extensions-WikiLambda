@@ -14,6 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -131,6 +132,35 @@ class RepoHooks implements
 
 			foreach ( $clientTables as $table ) {
 				$updater->addExtensionTable( 'wikifunctionsclient_' . $table, "$dir/$type/table-$table.sql" );
+			}
+		}
+
+		// Insert the tables for abstract-client-mode, if needed.
+		// Virtual domain must be defined for the 'virtual-awstorage' key:
+		//
+		// Locally, use the same DB with:
+		// $wgVirtualDomainsMapping['virtual-awstorage'] = [
+		// 	'db' => false
+		// ];
+		//
+		// In production, use x1 shared DB with:
+		// $wgVirtualDomainsMapping['virtual-awstorage'] = [
+		//   'cluster' => 'extension1',
+		//   'db' => 'wikishared'
+		// ];
+		if (
+			$config->has( 'WikiLambdaEnableAbstractClientMode' ) &&
+			$config->get( 'WikiLambdaEnableAbstractClientMode' )
+		) {
+			$awTables = [ 'aw_article_sections' ];
+			foreach ( $awTables as $table ) {
+				$updater->addExtensionUpdateOnVirtualDomain( [
+					AWArticleStore::AW_STORAGE_VIRTUAL_DOMAIN,
+					'addTable',
+					$table,
+					"$dir/$type/table-$table.sql",
+					true
+				] );
 			}
 		}
 
