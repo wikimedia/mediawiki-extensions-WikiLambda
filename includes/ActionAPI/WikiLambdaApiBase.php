@@ -49,6 +49,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 	public const FUNCTIONCALL_POOL_COUNTER_TYPE = 'WikiLambdaFunctionCall';
 	public const INSTRUMENT_NAME = 'WikiLambdaApi';
+	public const SCHEMA_ID = '/analytics/mediawiki/product_metrics/wikilambda/api/1.0.0';
 
 	public function __construct(
 		ApiMain $mainModule,
@@ -598,6 +599,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		if ( $services->hasService( 'TestKitchen.InstrumentManager' ) ) {
 			$instrumentManager = $services->getService( 'TestKitchen.InstrumentManager' );
 			$instrument = $instrumentManager->getInstrument( self::INSTRUMENT_NAME );
+			$instrument->setSchema( self::SCHEMA_ID );
 			$instrument->send( $action, $eventData );
 		}
 	}
