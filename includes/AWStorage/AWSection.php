@@ -14,17 +14,35 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AWSection {
 
+	/** The section contains all ready and successful fragments */
+	public const STATUS_OK = 0;
+	/** The section contains pending fragments */
+	public const STATUS_PENDING = 1;
+	/** The section contains failing fragments */
+	public const STATUS_FAILING = 2;
+	/** The section has no status record yet */
+	public const STATUS_UNKNOWN = 5;
+
+	/** String to concatenate different fragment html blobs */
+	public const FRAGMENT_SEPARATOR = "\n";
+
+	private string $payload;
 	private ConvertibleTimestamp $lastUpdated;
+	private int $status;
 
 	public function __construct(
 		private readonly string $topicQid,
 		private readonly string $sectionQid,
 		private readonly string $locale,
-		private readonly string $payload,
+		string $payload = '',
 		?ConvertibleTimestamp $lastUpdated = null,
 		private readonly int $schemaVersion = AWArticleStore::AW_STORAGE_SCHEMA_VERSION,
 	) {
+		$this->payload = $payload;
 		$this->lastUpdated = $lastUpdated ?? new ConvertibleTimestamp();
+		// If the section is initialized with a non-empty payload, we set the
+		// status as unknown, as it could have pending or failing fragments.
+		$this->status = $payload !== '' ? self::STATUS_UNKNOWN : self::STATUS_OK;
 	}
 
 	/**
@@ -76,6 +94,64 @@ class AWSection {
 	 */
 	public function getPayload(): string {
 		return $this->payload;
+	}
+
+	/**
+	 * Whether this AWSection contains any pending AWFragment.
+	 *
+	 * TODO: this is only valid when creating the section and appending its fragments one
+	 * by one, but when loading the section from the store, we don't have this info (yet).
+	 *
+	 * One solution that would make section status be accurate at any time (which might
+	 * become necessary in the future) would be to save it into the store, which means:
+	 * * a table schema update to add a new column,
+	 * * a new key in the MainStash payload,
+	 * * update the AWArticleStore interfaces and all their implementations.
+	 *
+	 * Another possibility, without having to modify the data schema is:
+	 * * if STATUS_UNKNOWN, then infer status from payload
+	 * * if the section payload has an element marked with a pending fragment class
+	 *   or attribute (e.g. with a class="wf-some-class-for-pending"), return true
+	 *
+	 * @return bool
+	 */
+	public function isPending(): bool {
+		return $this->status === self::STATUS_PENDING;
+	}
+
+	/**
+	 * Appends a fragment html blob to the existing payload.
+	 *
+	 * @param AWFragment $awFragment
+	 * @return void
+	 */
+	public function appendFragment( $awFragment ): void {
+		$htmlFragment = '';
+
+		// Fragment is a miss: set section as pending, generate pending placeholder for fragment
+		if ( $awFragment->isMissing() ) {
+			$this->status = self::STATUS_PENDING;
+			$htmlFragment = AWFragmentStore::createPendingFragmentBlock( $this->locale );
+		} else {
+			$awFragmentValue = $awFragment->getValue()['value'];
+
+			if ( !$awFragment->isOk() ) {
+				// Fragment exists but is a failure: generate error fragment html
+				$this->status = self::STATUS_FAILING;
+				$htmlFragment = AWFragmentStore::createFailingFragmentBlock( $awFragmentValue, $this->locale );
+			} else {
+				// Fragment exists and is a success:
+				$htmlFragment = $awFragmentValue;
+			}
+		}
+
+		// Precede fragment with separator if not the first one
+		if ( $this->payload !== '' ) {
+			$this->payload .= self::FRAGMENT_SEPARATOR;
+		}
+
+		// Append the fragment to the existing payload
+		$this->payload .= $htmlFragment;
 	}
 
 	/**

@@ -336,7 +336,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 	public function getAbstractContentForTitle(
 		RevisionStore $revisionStore,
 		Title $title,
-		?int $revisionId
+		?int $revisionId = null
 	) {
 		// Get requested or current revision
 		$revision = $revisionId ?
