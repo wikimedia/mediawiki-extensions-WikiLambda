@@ -1590,32 +1590,6 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Fetch all objects of type Z14/Implementation persisted in the
-	 * database, including connected, disconnected, labeled and unlabeled
-	 * implementations.
-	 *
-	 * TODO (T287153): This method is only needed for the migrateZ16K1StringsToZ61s
-	 * maintenance script, as using fetchZidsOfType(Z14) will not return
-	 * those implementations that aren't labeled. Once we eliminate the
-	 * maintenance script, we should remove this method, too.
-	 *
-	 * @return string[]
-	 */
-	public function fetchAllImplementations(): array {
-		$dbr = $this->dbProvider->getReplicaDatabase();
-		return $dbr->newSelectQueryBuilder()
-			->select( 'wlzf_ref_zid' )
-			->distinct()
-			->from( 'wikilambda_zobject_function_join' )
-			->where( [
-				'wlzf_type' => ZTypeRegistry::Z_IMPLEMENTATION
-			] )
-			->orderBy( 'wlzf_ref_zid', SelectQueryBuilder::SORT_ASC )
-			->caller( __METHOD__ )
-			->fetchFieldValues();
-	}
-
-	/**
 	 * Add a record to the database for a given ZObject ID and ZFunction ID
 	 *
 	 * @param string $refId the ZObject ref ID

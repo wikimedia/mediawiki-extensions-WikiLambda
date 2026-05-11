@@ -1689,12 +1689,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertGreaterThanOrEqual( 1, $count );
 	}
 
-	public function testFetchAllImplementations_returnsArray() {
-		$this->insertZids( [ 'Z14' ] );
-		$impls = $this->zobjectStore->fetchAllImplementations();
-		$this->assertIsArray( $impls );
-	}
-
 	public function testPushZObject_createsPage() {
 		$zid = 'Z40001';
 		$data = '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"' . $zid . '"},'
