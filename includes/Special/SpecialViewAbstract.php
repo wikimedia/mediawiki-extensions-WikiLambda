@@ -189,9 +189,9 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		$output->setPageTitle(
 			PageTitleBuilder::createAbstractViewPageTitle(
 				$label,
-				$qid,
 				$langCode,
 				$targetLanguageObject->getDir(),
+				$qid,
 			)
 		);
 		// Plain-text override for the browser <title> tag

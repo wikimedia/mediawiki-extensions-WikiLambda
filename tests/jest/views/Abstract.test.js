@@ -7,8 +7,10 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { nextTick } = require( 'vue' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractView = require( '../../../resources/ext.wikilambda.app/views/Abstract.vue' );
+const { createJQueryAbstractCreateTitleMocks } = require( '../helpers/jqueryHelpers.js' );
 
 describe( 'Abstract view', () => {
 	let store;
@@ -29,9 +31,17 @@ describe( 'Abstract view', () => {
 	beforeEach( () => {
 		store = useMainStore();
 
-		// Default store state
 		store.getAbstractWikiId = null;
 		store.getViewMode = false;
+		store.isAbstractCreatePage = jest.fn().mockReturnValue( false );
+		store.getItemLabelData = jest.fn().mockReturnValue( { isUntitled: true } );
+
+		store.getUserLangZid = 'Z1002';
+		store.getFallbackLanguageZids = [];
+		store.getLanguageIsoCodeOfZLang = jest.fn();
+		store.getLabelData = jest.fn();
+		store.getZObjectByKeyPath = jest.fn();
+		store.getZPersistentName = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
@@ -83,5 +93,41 @@ describe( 'Abstract view', () => {
 
 		expect( wrapper.emitted( 'mounted' ) ).toBeTruthy();
 		expect( wrapper.emitted( 'mounted' ).length ).toBe( 1 );
+	} );
+
+	it( 'watcher updates create-page heading when qid is selected (DOM via usePageTitle)', async () => {
+		const { $titleSpan } = createJQueryAbstractCreateTitleMocks( false );
+
+		store.getAbstractWikiId = null;
+		store.isAbstractCreatePage = jest.fn().mockReturnValue( true );
+		store.getItemLabelData = jest.fn().mockReturnValue( undefined );
+
+		const wrapper = renderAbstractView();
+
+		// Label “arrives” before qid is committed so qidLabelData goes undefined → object.
+		store.getItemLabelData.mockReturnValue( { label: 'Douglas Adams', isUntitled: false } );
+		store.getAbstractWikiId = 'Q42';
+		await nextTick();
+
+		expect( $titleSpan.text ).toHaveBeenCalled();
+		expect( wrapper.exists() ).toBe( true );
+	} );
+
+	it( 'watcher skips heading update when not on create-new-abstract page', async () => {
+		const { $titleSpan } = createJQueryAbstractCreateTitleMocks( false );
+
+		store.getAbstractWikiId = null;
+		store.isAbstractCreatePage = jest.fn().mockReturnValue( false );
+		store.getItemLabelData = jest.fn().mockReturnValue( undefined );
+
+		const wrapper = renderAbstractView();
+
+		store.getItemLabelData.mockReturnValue( { label: 'Douglas Adams', isUntitled: false } );
+		store.getAbstractWikiId = 'Q42';
+		await nextTick();
+
+		expect( store.isAbstractCreatePage ).toHaveBeenCalled();
+		expect( $titleSpan.text ).not.toHaveBeenCalled();
+		expect( wrapper.exists() ).toBe( true );
 	} );
 } );

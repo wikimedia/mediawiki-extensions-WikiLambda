@@ -74,7 +74,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
-		const { updatePageTitle } = usePageTitle();
+		const { updateZObjectPageTitle } = usePageTitle();
 
 		// Constants
 		const maxLabelChars = Constants.LABEL_CHARS_MAX;
@@ -132,7 +132,7 @@ module.exports = exports = defineComponent( {
 			} );
 
 			// After persisting in the state, update the page title
-			updatePageTitle();
+			updateZObjectPageTitle();
 			emit( 'name-updated' );
 		}
 

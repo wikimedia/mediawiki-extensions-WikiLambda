@@ -186,6 +186,16 @@ module.exports = {
 		},
 
 		/**
+		 * Check if we are creating a new Abstract Wiki page
+		 * (i.e. abstractContent is true and createNewPage is true).
+		 *
+		 * @return {boolean}
+		 */
+		isAbstractCreatePage: function () {
+			return this.getWikilambdaConfig.abstractContent && this.getWikilambdaConfig.createNewPage;
+		},
+
+		/**
 		 * Check if the path is for Special:EvaluateFunctionCall
 		 *
 		 * @param {string} title

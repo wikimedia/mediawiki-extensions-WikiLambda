@@ -182,4 +182,5 @@ describe( 'AbstractTitle', () => {
 		wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
 		expect( store.setAbstractWikiId ).not.toHaveBeenCalled();
 	} );
+
 } );

@@ -22,7 +22,7 @@ class PageTitleBuilderTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testCreateAbstractViewPageTitle_includesQid() {
-		$html = PageTitleBuilder::createAbstractViewPageTitle( 'Example', 'Q42', 'en', 'ltr' );
+		$html = PageTitleBuilder::createAbstractViewPageTitle( 'Example', 'en', 'ltr', 'Q42' );
 		$this->assertStringStartsWith( '<span class="ext-wikilambda-viewpage-header">', $html );
 		$this->assertStringContainsString(
 			'<span class="ext-wikilambda-viewpage-header__title" lang="en" dir="ltr">Example</span>',
@@ -32,42 +32,8 @@ class PageTitleBuilderTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( '>Q42<', $html );
 	}
 
-	public function testCreateAbstractViewPageTitle_withWrapperAttrs() {
-		$html = PageTitleBuilder::createAbstractViewPageTitle(
-			'Example',
-			'Q42',
-			'en',
-			'ltr',
-			[ 'data-foo' => 'bar' ]
-		);
-		$this->assertStringStartsWith( '<span ', $html );
-		$this->assertStringContainsString( 'class="ext-wikilambda-viewpage-header"', $html );
-		$this->assertStringContainsString( 'data-foo="bar"', $html );
-		$this->assertStringContainsString(
-			'<span class="ext-wikilambda-viewpage-header__title" lang="en" dir="ltr">Example</span>',
-			$html
-		);
-	}
-
-	public function testCreateAbstractEditPageTitle_withWrapperAttrs() {
-		$html = PageTitleBuilder::createAbstractEditPageTitle(
-			'Create...',
-			'Q42',
-			'en',
-			'ltr',
-			[ 'data-foo' => 'bar' ]
-		);
-		$this->assertStringStartsWith( '<span ', $html );
-		$this->assertStringContainsString( 'class="ext-wikilambda-editpage-header"', $html );
-		$this->assertStringContainsString( 'data-foo="bar"', $html );
-		$this->assertStringContainsString(
-			'<span class="ext-wikilambda-editpage-header__title" lang="en" dir="ltr">Create...</span>',
-			$html
-		);
-	}
-
-	public function testCreateAbstractEditPageTitle_includesQid() {
-		$html = PageTitleBuilder::createAbstractEditPageTitle( 'Create...', 'Q42', 'en', 'ltr' );
+	public function testCreateAbstractEditPageTitle_withQid() {
+		$html = PageTitleBuilder::createAbstractEditPageTitle( 'Create...', 'en', 'ltr', 'Q42' );
 		$this->assertStringStartsWith( '<span class="ext-wikilambda-editpage-header">', $html );
 		$this->assertStringContainsString(
 			'<span class="ext-wikilambda-editpage-header__title" lang="en" dir="ltr">Create...</span>',
@@ -75,6 +41,17 @@ class PageTitleBuilderTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertStringContainsString( '<span class="ext-wikilambda-editpage-header__qid"', $html );
 		$this->assertStringContainsString( '>Q42<', $html );
+	}
+
+	public function testCreateAbstractEditPageTitle_withoutQid() {
+		$html = PageTitleBuilder::createAbstractEditPageTitle( 'Create a New Abstract Article', 'en', 'ltr' );
+		$this->assertStringStartsWith( '<span class="ext-wikilambda-editpage-header">', $html );
+		$this->assertStringContainsString(
+			'<span class="ext-wikilambda-editpage-header__title" lang="en" dir="ltr">'
+				. 'Create a New Abstract Article</span>',
+			$html
+		);
+		$this->assertStringNotContainsString( 'ext-wikilambda-editpage-header__qid', $html );
 	}
 
 	/**

@@ -498,53 +498,49 @@ class PageTitleBuilder {
 	 * Create Abstract view-page title HTML (`OutputPage::setPageTitle()`).
 	 *
 	 * @param string $titleText Plain text
-	 * @param string $qid Wikidata QID string (displayed only; not fetched server-side)
 	 * @param string $lang
 	 * @param string $dir
-	 * @param array $wrapperAttrs
+	 * @param string $qid Wikidata QID string
 	 * @return string
 	 */
 	public static function createAbstractViewPageTitle(
 		string $titleText,
-		string $qid,
 		string $lang,
 		string $dir,
-		array $wrapperAttrs = []
+		string $qid
 	): string {
 		return self::createAbstractPageTitle(
 			self::VIEW_HEADER_CLASS,
 			$titleText,
-			$qid,
 			$lang,
 			$dir,
-			$wrapperAttrs
+			$qid
 		);
 	}
 
 	/**
-	 * Create Abstract edit-page title HTML (`OutputPage::setPageTitle()`).
+	 * Create Abstract create/edit-page title HTML (`OutputPage::setPageTitle()`).
+	 * When $qid is provided, a copyable QID chip span is included; when null (no item
+	 * selected yet), only the title span is rendered so JavaScript can append the chip later.
 	 *
 	 * @param string $titleText Plain text
-	 * @param string $qid Wikidata QID string (displayed only; not fetched server-side)
 	 * @param string $lang
 	 * @param string $dir
-	 * @param array $wrapperAttrs
+	 * @param string|null $qid Wikidata QID string, or null when not yet known
 	 * @return string
 	 */
 	public static function createAbstractEditPageTitle(
 		string $titleText,
-		string $qid,
 		string $lang,
 		string $dir,
-		array $wrapperAttrs = []
+		?string $qid = null
 	): string {
 		return self::createAbstractPageTitle(
 			self::EDIT_HEADER_CLASS,
 			$titleText,
-			$qid,
 			$lang,
 			$dir,
-			$wrapperAttrs
+			$qid
 		);
 	}
 
@@ -553,22 +549,18 @@ class PageTitleBuilder {
 	 *
 	 * @param string $wrapperClass
 	 * @param string $titleText
-	 * @param string|null $qid
 	 * @param string|null $lang
 	 * @param string|null $dir
-	 * @param array $wrapperAttrs
+	 * @param string|null $qid
 	 * @return string
 	 */
 	private static function createAbstractPageTitle(
 		string $wrapperClass,
 		string $titleText,
-		?string $qid,
 		?string $lang,
 		?string $dir,
-		array $wrapperAttrs
+		?string $qid,
 	): string {
-		$wrapperAttrs['class'] = $wrapperClass;
-
 		$titleAttrs = [ 'class' => $wrapperClass . '__title' ];
 		if ( $lang !== null ) {
 			$titleAttrs['lang'] = $lang;
@@ -581,7 +573,7 @@ class PageTitleBuilder {
 			$html .= ' ' . self::createCopyableIdentifierSpan( $wrapperClass, 'qid', $qid );
 		}
 
-		return Html::rawElement( 'span', $wrapperAttrs, $html );
+		return Html::rawElement( 'span', [ 'class' => $wrapperClass ], $html );
 	}
 
 }

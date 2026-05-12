@@ -137,7 +137,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
-		const { updatePageTitle } = usePageTitle();
+		const { updateZObjectPageTitle } = usePageTitle();
 
 		// Constants and configuration
 		const iconEdit = icons.cdxIconEdit;
@@ -366,7 +366,7 @@ module.exports = exports = defineComponent( {
 			];
 			store.setZMonolingualString( { parentKeyPath, itemKeyPath, value, lang } );
 			// After persisting in the state, update the page title
-			updatePageTitle();
+			updateZObjectPageTitle();
 			store.setDirty( true );
 		}
 

@@ -39,9 +39,10 @@
 </template>
 
 <script>
-const { computed, defineComponent, onMounted } = require( 'vue' );
+const { computed, defineComponent, onMounted, watch } = require( 'vue' );
 
 const useMainStore = require( '../store/index.js' );
+const usePageTitle = require( '../composables/usePageTitle.js' );
 
 // Abstract components
 const AbstractContent = require( '../components/abstract/AbstractContent.vue' );
@@ -58,6 +59,7 @@ module.exports = exports = defineComponent( {
 	emits: [ 'mounted' ],
 	setup( _props, { emit } ) {
 		const store = useMainStore();
+		const { updateAbstractPageTitle } = usePageTitle();
 
 		/**
 		 * Returns whether we are in an edit page according to the URL
@@ -74,6 +76,28 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		const qid = computed( () => store.getAbstractWikiId );
+
+		/**
+		 * Returns the LabelData for the selected Wikidata item, or undefined when
+		 * no item is selected. When item data has not yet been fetched, LabelData
+		 * uses the QID itself as the label (isUntitled = true).
+		 *
+		 * @return {LabelData|undefined}
+		 */
+		const qidLabelData = computed( () => store.getItemLabelData( qid.value ) );
+
+		/**
+		 * Update the page heading whenever the QID or its label changes.
+		 * Uses the resolved Wikidata label, or the QID as a placeholder until
+		 * the async fetch completes.
+		 *
+		 * @param {LabelData|undefined} labelData
+		 */
+		watch( qidLabelData, ( labelData ) => {
+			if ( labelData && store.isAbstractCreatePage() ) {
+				updateAbstractPageTitle( qid.value, labelData.label );
+			}
+		} );
 
 		/**
 		 * Lifecycle hook to emit the mounted event.

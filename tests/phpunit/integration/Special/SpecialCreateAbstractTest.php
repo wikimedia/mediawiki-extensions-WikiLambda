@@ -127,5 +127,39 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 		$this->assertSame( 'en', $wikiLambdaVars['zlang'] );
 		$this->assertFalse( $wikiLambdaVars['viewmode'] );
 		$this->assertArrayHasKey( 'content', $wikiLambdaVars );
+
+		$pageTitle = (string)$output->getPageTitle();
+		$this->assertStringContainsString( 'ext-wikilambda-editpage-header', $pageTitle );
+		$this->assertStringContainsString( 'ext-wikilambda-editpage-header__qid', $pageTitle );
+		$this->assertStringContainsString( '>Q999999<', $pageTitle );
+		$this->assertStringContainsString(
+			'Create a New Abstract Article for Q999999',
+			$pageTitle
+		);
+	}
+
+	public function testCreateAbstractSetsPageTitleWithoutQid(): void {
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html, $response ] = $this->executeSpecialPage(
+			/* subpage */ '',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertNull( $response->getHeader( 'Location' ) );
+
+		$pageTitle = (string)$context->getOutput()->getPageTitle();
+		$this->assertStringContainsString( 'ext-wikilambda-editpage-header', $pageTitle );
+		$this->assertStringNotContainsString( 'ext-wikilambda-editpage-header__qid', $pageTitle );
+		$this->assertStringContainsString(
+			'Create a New Abstract Article',
+			$pageTitle
+		);
 	}
 }

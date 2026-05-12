@@ -71,9 +71,9 @@ class AbstractContentEditAction extends Action {
 		$output->setPageTitle(
 			PageTitleBuilder::createAbstractEditPageTitle(
 				$editPageTitle,
-				$qid,
 				$lang->getCode(),
 				$lang->getDir(),
+				$qid
 			)
 		);
 		// Plain-text override for the browser <title> tag

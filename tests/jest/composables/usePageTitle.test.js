@@ -8,7 +8,7 @@
 
 const loadComposable = require( '../helpers/loadComposable.js' );
 const createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock;
-const createJQueryPageTitleMocks = require( '../helpers/jqueryHelpers.js' ).createJQueryPageTitleMocks;
+const { createJQueryZObjectPageTitleMocks, createJQueryAbstractCreateTitleMocks } = require( '../helpers/jqueryHelpers.js' );
 const createLabelDataMock = require( '../helpers/getterHelpers.js' ).createLabelDataMock;
 const usePageTitle = require( '../../../resources/ext.wikilambda.app/composables/usePageTitle.js' );
 const { canonicalToHybrid } = require( '../../../resources/ext.wikilambda.app/utils/schemata.js' );
@@ -38,7 +38,7 @@ describe( 'usePageTitle', () => {
 	} );
 
 	it( 'updates page title when name is provided', async () => {
-		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
+		const { $pageTitle, $langChip } = createJQueryZObjectPageTitleMocks();
 
 		const value = 'Name in main language';
 
@@ -47,10 +47,9 @@ describe( 'usePageTitle', () => {
 		store.getZObjectByKeyPath = jest.fn().mockImplementation( ( keyPath ) => Number( keyPath[ keyPath.length - 1 ] ) ?
 			canonicalToHybrid( { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: value } ) : undefined );
 
-		await pageTitle.updatePageTitle();
+		await pageTitle.updateZObjectPageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( pageTitle.pageTitleObject.value ).toEqual( { title: value, hasChip: false, chip: 'es', chipName: 'Spanish' } );
 		expect( $pageTitle.text ).toHaveBeenCalledWith( value );
 		expect( $langChip.text ).toHaveBeenCalledWith( 'es' );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__bcp47-code--hidden', true );
@@ -58,7 +57,7 @@ describe( 'usePageTitle', () => {
 	} );
 
 	it( 'updates page title when fallback language has a new name and current name is not set', async () => {
-		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
+		const { $pageTitle, $langChip } = createJQueryZObjectPageTitleMocks();
 
 		const value = 'New name in fallback language';
 
@@ -67,10 +66,9 @@ describe( 'usePageTitle', () => {
 		store.getZObjectByKeyPath = jest.fn().mockImplementation( ( keyPath ) => Number( keyPath[ keyPath.length - 1 ] ) ?
 			canonicalToHybrid( { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: value } ) : undefined );
 
-		await pageTitle.updatePageTitle();
+		await pageTitle.updateZObjectPageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( pageTitle.pageTitleObject.value ).toEqual( { title: value, hasChip: true, chip: 'en', chipName: 'English' } );
 		expect( $pageTitle.text ).toHaveBeenCalledWith( value );
 		expect( $langChip.text ).toHaveBeenCalledWith( 'en' );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__bcp47-code--hidden', false );
@@ -78,18 +76,49 @@ describe( 'usePageTitle', () => {
 	} );
 
 	it( 'updates page title to undefined when name is removed and there is no fallback', async () => {
-		const { $pageTitle, $langChip } = createJQueryPageTitleMocks();
+		const { $pageTitle, $langChip } = createJQueryZObjectPageTitleMocks();
 
 		// Set all names to be undefined:
 		store.getZPersistentName = createGettersWithFunctionsMock( undefined );
 
-		await pageTitle.updatePageTitle();
+		await pageTitle.updateZObjectPageTitle();
 
 		// ASSERT: Check if DOM manipulations were called with the correct arguments
-		expect( pageTitle.pageTitleObject.value ).toEqual( { title: null, hasChip: false, chip: null, chipName: null } );
 		expect( $pageTitle.text ).toHaveBeenCalledWith( 'Untitled' );
 		expect( $langChip.text ).toHaveBeenCalledWith( null );
 		expect( $langChip.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__bcp47-code--hidden', true );
 		expect( $pageTitle.toggleClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__title--untitled', true );
+	} );
+
+	describe( 'updateAbstractPageTitle', () => {
+		it( 'updates title span and creates QID chip span when none exists', () => {
+			const { $titleSpan, $wrapper, $newSpan } = createJQueryAbstractCreateTitleMocks( false );
+
+			pageTitle.updateAbstractPageTitle( 'Q42', 'Douglas Adams' );
+
+			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for $1' );
+			expect( $newSpan.addClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__qid' );
+			expect( $newSpan.attr ).toHaveBeenCalledWith( { role: 'button', tabindex: '0', 'aria-live': 'polite' } );
+			expect( $wrapper.append ).toHaveBeenCalled();
+			expect( $newSpan.text ).toHaveBeenCalledWith( 'Q42' );
+		} );
+
+		it( 'reuses existing QID chip span when already present', () => {
+			const { $titleSpan, $qidSpan, $wrapper } = createJQueryAbstractCreateTitleMocks( true );
+
+			pageTitle.updateAbstractPageTitle( 'Q42', 'Douglas Adams' );
+
+			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for $1' );
+			expect( $wrapper.append ).not.toHaveBeenCalled();
+			expect( $qidSpan.text ).toHaveBeenCalledWith( 'Q42' );
+		} );
+
+		it( 'uses qid as title parameter when no label is provided', () => {
+			const { $titleSpan } = createJQueryAbstractCreateTitleMocks( false );
+
+			pageTitle.updateAbstractPageTitle( 'Q42' );
+
+			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for $1' );
+		} );
 	} );
 } );

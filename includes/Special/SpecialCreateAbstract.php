@@ -167,20 +167,21 @@ class SpecialCreateAbstract extends SpecialPage {
 			$title
 		);
 
-		// Override page title if we are creating a new page for a pre-selected qid.
-		if ( $title->getText() !== '' ) {
-			$qid = $title->getText();
-			$langCode = $context->getLanguage()->getCode();
-			$titleMsg = $this->msg( 'wikilambda-abstract-special-create-qid' )->params( $qid )->text();
-			$output->setPageTitle(
-				PageTitleBuilder::createAbstractEditPageTitle(
-					$titleMsg,
-					$qid,
-					$langCode,
-					$context->getLanguage()->getDir(),
-				)
-			);
-		}
+		// Always set the editpage-header wrapper structure so JS can later update
+		// the title span and add the copyable QID chip once a Wikidata entity is chosen.
+		$lang = $context->getLanguage();
+		$qid = $title->getText() !== '' ? $title->getText() : null;
+		$titleMsg = $qid
+			? $this->msg( 'wikilambda-abstract-special-create-qid' )->params( $qid )->text()
+			: $this->msg( 'wikilambda-abstract-special-create' )->text();
+		$output->setPageTitle(
+			PageTitleBuilder::createAbstractEditPageTitle(
+				$titleMsg,
+				$lang->getCode(),
+				$lang->getDir(),
+				$qid
+			)
+		);
 
 		$output->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 		$output->addModuleStyles( [ 'ext.wikilambda.special.styles' ] );

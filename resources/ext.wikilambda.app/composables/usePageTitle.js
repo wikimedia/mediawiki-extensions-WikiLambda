@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const { inject, ref } = require( 'vue' );
+const { inject } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 const useMainStore = require( '../store/index.js' );
 const { getZMonolingualLangValue } = require( '../utils/zobjectUtils.js' );
@@ -20,7 +20,6 @@ const { getZMonolingualLangValue } = require( '../utils/zobjectUtils.js' );
  */
 module.exports = function usePageTitle() {
 	const i18n = inject( 'i18n' );
-	const pageTitleObject = ref( {} );
 
 	const mainStore = useMainStore();
 	const {
@@ -33,122 +32,92 @@ module.exports = function usePageTitle() {
 	} = storeToRefs( mainStore );
 
 	/**
-	 * Update the page title and language chip based on the provided data.
-	 * - First construct a new page title object based on the provided name.
-	 * - Then update the DOM elements of page title and language chip based on the new object.
+	 * Build a title data object from a resolved name terminal value.
+	 *
+	 * @param {Object} name - terminal value containing keyPath and value
+	 * @param {boolean} hasChip
+	 * @return {{title: string, hasChip: boolean, chip: string, chipName: string}}
 	 */
-	function updatePageTitle() {
-		updatePageTitleObject();
-		updatePageTitleElements();
+	function buildTitleData( name, hasChip ) {
+		const parentKeyPath = name.keyPath.split( '.' ).slice( 0, -2 );
+		const monolingual = getZObjectByKeyPath.value( parentKeyPath );
+		const langZid = getZMonolingualLangValue( monolingual );
+		const langCode = getLanguageIsoCodeOfZLang.value( langZid );
+		return {
+			title: name.value,
+			hasChip,
+			chip: langCode,
+			chipName: getLabelData.value( langZid ).label
+		};
 	}
 
 	/**
-	 * Update the DOM elements of page title and language chip based on the provided data
-	 * - page title: update the page title with the provided title
-	 * - language chip: update the language chip with the provided language code
+	 * Resolve the best available title data for the current ZObject:
+	 * - user language label if available
+	 * - first fallback language label (with chip) if available
+	 * - null title with no chip when untitled
+	 *
+	 * @return {{title: string|null, hasChip: boolean, chip: string|null, chipName: string|null}}
 	 */
-	function updatePageTitleElements() {
-		// eslint-disable-next-line no-jquery/no-global-selector
-		const $firstHeading = $( '#firstHeading' );
-		const $langChip = $firstHeading.find( '.ext-wikilambda-editpage-header__bcp47-code-name' );
-		const $pageTitle = $firstHeading.find( '.ext-wikilambda-editpage-header__title--function-name' ).first();
-		// Update the title
-		$pageTitle
-			.toggleClass( 'ext-wikilambda-editpage-header__title--untitled', !pageTitleObject.value.title )
-			.text( pageTitleObject.value.title || i18n( 'wikilambda-editor-default-name' ).text() );
-		// Update the language chip
-		$langChip
-			.toggleClass( 'ext-wikilambda-editpage-header__bcp47-code--hidden', !pageTitleObject.value.hasChip )
-			.text( pageTitleObject.value.chip )
-			.attr( 'data-title', pageTitleObject.value.chipName );
-	}
-
-	/**
-	 * Update the page title object based on the provided name;
-	 * - Is there a title in my language?
-	 *   - Yes: { title: "Title", hasChip: false }
-	 *   - No: for each lang in fallback languages [ "A", "B", "C" ], check:
-	 *     - Is there a title in a fallback language?
-	 *       - Yes: { title: "Title", hasChip: true }
-	 *       - No: { title: null, hasChip: false }
-	 * Finally update the title DOM elements to reflect the new state.
-	 */
-	function updatePageTitleObject() {
+	function resolveTitleData() {
 		const name = getZPersistentName.value( getUserLangZid.value );
-		pageTitleObject.value = pageTitleObject.value || {};
-		// Is there a title in my language?
 		if ( name ) {
-			// Yes
-			setPageTitleObject( name, false );
-		} else {
-			// No
-			const fallbackLanguages = getFallbackLanguageZids.value
-				.slice( getFallbackLanguageZids.value.indexOf( getUserLangZid.value ) + 1 );
-			// Is there a title in a fallback language?
-			const hasTitle = fallbackLanguages.some( ( lang ) => {
-				const fallbackName = getZPersistentName.value( lang );
-				// Yes, title in a fallback language
-				if ( fallbackName ) {
-					setPageTitleObject( fallbackName, true );
-					return true;
-				}
-				// No, no title available in a fallback language
-				return false;
-			} );
-			// No title available in any language
-			if ( !hasTitle ) {
-				setPageTitleObject( null, false );
+			return buildTitleData( name, false );
+		}
+		const fallbackLanguages = getFallbackLanguageZids.value
+			.slice( getFallbackLanguageZids.value.indexOf( getUserLangZid.value ) + 1 );
+		for ( const lang of fallbackLanguages ) {
+			const fallbackName = getZPersistentName.value( lang );
+			if ( fallbackName ) {
+				return buildTitleData( fallbackName, true );
 			}
 		}
+		return { title: null, hasChip: false, chip: null, chipName: null };
 	}
 
 	/**
-	 * Set the page title object based on the provided name object and chip flag
-	 *
-	 * @param {Object} name - terminal value to set as a title, contains value and keyPath
-	 * @param {boolean} hasChip - flag to indicate if the language chip should be displayed
+	 * Update the ZObject edit-page heading and language chip in the DOM.
 	 */
-	function setPageTitleObject( name, hasChip ) {
-		if ( name ) {
-			const parentKeyPath = name.keyPath.split( '.' ).slice( 0, -2 );
-			const monolingual = getZObjectByKeyPath.value( parentKeyPath );
-			const langZid = getZMonolingualLangValue( monolingual );
-			const langCode = getLanguageIsoCodeOfZLang.value( langZid );
-			pageTitleObject.value.title = name.value;
-			pageTitleObject.value.hasChip = hasChip;
-			pageTitleObject.value.chip = langCode;
-			pageTitleObject.value.chipName = getLabelData.value( langZid ).label;
-		} else {
-			pageTitleObject.value.title = null;
-			pageTitleObject.value.hasChip = false;
-			pageTitleObject.value.chip = null;
-			pageTitleObject.value.chipName = null;
-		}
-	}
-
-	/**
-	 * Set the page title for the Special:CreateAbstract page when the item is selected
-	 *
-	 * @param {string} qid
-	 */
-	function setCreateAbstractTitle( qid ) {
+	function updateZObjectPageTitle() {
+		const titleData = resolveTitleData();
 		// eslint-disable-next-line no-jquery/no-global-selector
 		const $firstHeading = $( '#firstHeading' );
-		$firstHeading.text( i18n( 'wikilambda-abstract-special-create-qid' ).params( [ qid ] ).text() );
+		const $pageTitle = $firstHeading.find( '.ext-wikilambda-editpage-header__title--function-name' ).first();
+		const $langChip = $firstHeading.find( '.ext-wikilambda-editpage-header__bcp47-code-name' );
+		$pageTitle
+			.toggleClass( 'ext-wikilambda-editpage-header__title--untitled', !titleData.title )
+			.text( titleData.title || i18n( 'wikilambda-editor-default-name' ).text() );
+		$langChip
+			.toggleClass( 'ext-wikilambda-editpage-header__bcp47-code--hidden', !titleData.hasChip )
+			.text( titleData.chip )
+			.attr( 'data-title', titleData.chipName );
 	}
 
-	return {
-		pageTitleObject,
-		getFallbackLanguageZids,
-		getLabelData,
-		getLanguageIsoCodeOfZLang,
-		getUserLangZid,
-		getZObjectByKeyPath,
-		getZPersistentName,
-		updatePageTitle,
-		updatePageTitleElements,
-		updatePageTitleObject,
-		setPageTitleObject,
-		setCreateAbstractTitle
-	};
+	/**
+	 * Update the Special:CreateAbstract page heading once a Wikidata entity is selected.
+	 * PHP has already rendered the editpage-header wrapper with a title span; this function
+	 * updates that span's text (using the label when available) and finds or creates the
+	 * copyable QID chip span, mirroring the structure PHP builds for the pre-selected case.
+	 *
+	 * @param {string} qid
+	 * @param {string} [label]
+	 */
+	function updateAbstractPageTitle( qid, label ) {
+		// eslint-disable-next-line no-jquery/no-global-selector
+		const $firstHeading = $( '#firstHeading' );
+		const titleText = i18n( 'wikilambda-abstract-special-create-qid' ).params( [ label || qid ] ).text();
+
+		$firstHeading.find( '.ext-wikilambda-editpage-header__title' ).text( titleText );
+
+		let $qidSpan = $firstHeading.find( '.ext-wikilambda-editpage-header__qid' );
+		if ( !$qidSpan.length ) {
+			$qidSpan = $( '<span>' )
+				.addClass( 'ext-wikilambda-editpage-header__qid' )
+				.attr( { role: 'button', tabindex: '0', 'aria-live': 'polite' } );
+			$firstHeading.find( '.ext-wikilambda-editpage-header' ).append( ' ', $qidSpan );
+		}
+		$qidSpan.text( qid );
+	}
+
+	return { updateZObjectPageTitle, updateAbstractPageTitle };
 };
