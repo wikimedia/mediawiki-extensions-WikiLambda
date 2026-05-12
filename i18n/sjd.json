@@ -4,5 +4,7 @@
 			"Merrahtar"
 		]
 	},
-	"wikilambda-about-widget-search-language-placeholder": "О̄дзэ кӣл"
+	"wikilambda-about-widget-search-language-placeholder": "О̄дзэ кӣл",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Вэ̄цксэ тэнн элемент тэнн Нэ̄ммлыстэсьт",
+	"wikilambda-mode-selector-delete-group-label": "Вэ̄цксэ элемент нэ̄ммлыстэсьт"
 }
