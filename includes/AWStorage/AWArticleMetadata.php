@@ -14,17 +14,15 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AWArticleMetadata {
 
-	private int $schemaVersion;
 	private ConvertibleTimestamp $lastUpdated;
 
 	public function __construct(
-		public readonly string $topicQid,
-		public readonly array $payload,
+		private readonly string $topicQid,
+		private readonly array $payload,
 		?ConvertibleTimestamp $lastUpdated = null,
-		int $schemaVersion = AWArticleStore::AW_STORAGE_SCHEMA_VERSION
+		private readonly int $schemaVersion = AWArticleStore::AW_STORAGE_SCHEMA_VERSION
 	) {
 		$this->lastUpdated = $lastUpdated ?? new ConvertibleTimestamp();
-		$this->schemaVersion = $schemaVersion;
 	}
 
 	/**

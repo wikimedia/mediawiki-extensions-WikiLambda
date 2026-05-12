@@ -21,23 +21,24 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaIntegrationTestCase 
 
 	private function buildJob( array $overrides = [] ): CacheAbstractContentFragmentJob {
 		return new CacheAbstractContentFragmentJob( array_merge( [
+			'fragment' => [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z801' ],
 			'qid' => 'Q42',
 			'language' => 'Z1002',
-			'date' => '10-4-2026',
-			'functionCall' => [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z825' ],
-			'cacheKeyFresh' => 'fresh-key',
-			'cacheKeyStale' => 'stale-key',
+			'date' => '2026-04-10',
+			'fragmentKey' => 'some-fragment-key'
 		], $overrides ) );
 	}
 
 	public function testRun_success() {
 		$mockRequest = $this->createMock( AbstractWikiRequest::class );
 		$mockRequest->expects( $this->once() )
-			->method( 'generateSafeFragment' )
+			->method( 'fetchRenderedAWFragment' )
 			->with(
-				[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z825' ],
-				'fresh-key',
-				'stale-key'
+				[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z801' ],
+				'Q42',
+				'Z1002',
+				'2026-04-10',
+				'some-fragment-key'
 			)
 			->willReturn( [ 'success' => true, 'value' => '<b>rendered</b>' ] );
 
@@ -51,7 +52,7 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaIntegrationTestCase 
 	public function testRun_failedRender() {
 		$mockRequest = $this->createMock( AbstractWikiRequest::class );
 		$mockRequest->expects( $this->once() )
-			->method( 'generateSafeFragment' )
+			->method( 'fetchRenderedAWFragment' )
 			->willReturn( [ 'success' => false, 'value' => [ 'msg' => 'some error' ] ] );
 
 		$this->setService( 'AbstractWikiRequest', $mockRequest );
@@ -91,19 +92,15 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaIntegrationTestCase 
 		// Deduplication should only keep fragment-defining parameters
 		$this->assertSame( 'Q42', $info[ 'params' ][ 'qid' ] );
 		$this->assertSame( 'Z1002', $info[ 'params' ][ 'language' ] );
-		$this->assertSame( '10-4-2026', $info[ 'params' ][ 'date' ] );
-		$this->assertArrayHasKey( 'functionCall', $info[ 'params' ] );
-
-		// Cache keys should NOT be in deduplication info
-		$this->assertArrayNotHasKey( 'cacheKeyFresh', $info[ 'params' ] );
-		$this->assertArrayNotHasKey( 'cacheKeyStale', $info[ 'params' ] );
+		$this->assertSame( '2026-04-10', $info[ 'params' ][ 'date' ] );
+		$this->assertArrayHasKey( 'fragment', $info[ 'params' ] );
 	}
 
 	public function testDeduplication_identicalCollapses() {
 		$mockRequest = $this->createMock( AbstractWikiRequest::class );
 		// Should only be called once despite two jobs being pushed
 		$mockRequest->expects( $this->once() )
-			->method( 'generateSafeFragment' )
+			->method( 'fetchRenderedAWFragment' )
 			->willReturn( [ 'success' => true, 'value' => '<b>rendered</b>' ] );
 		$this->setService( 'AbstractWikiRequest', $mockRequest );
 
@@ -128,7 +125,7 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaIntegrationTestCase 
 		$mockRequest = $this->createMock( AbstractWikiRequest::class );
 		// Should only be called once despite two jobs being pushed
 		$mockRequest->expects( $this->once() )
-			->method( 'generateSafeFragment' )
+			->method( 'fetchRenderedAWFragment' )
 			->willReturn( [ 'success' => true, 'value' => '<b>rendered</b>' ] );
 		$this->setService( 'AbstractWikiRequest', $mockRequest );
 
@@ -136,10 +133,7 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaIntegrationTestCase 
 
 		// Push two jobs with identical fragment-defining params but different cache keys
 		$job1 = $this->buildJob();
-		$job2 = $this->buildJob( [
-			'cacheKeyFresh' => 'different-fresh-key',
-			'cacheKeyStale' => 'different-stale-key',
-		] );
+		$job2 = $this->buildJob( [ 'fragmentKey' => 'different-fragment-key' ] );
 
 		$jobQueueGroup->push( $job1 );
 		$jobQueueGroup->push( $job2 );
@@ -156,7 +150,7 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaIntegrationTestCase 
 		$mockRequest = $this->createMock( AbstractWikiRequest::class );
 		// Should be called twice — once per distinct fragment
 		$mockRequest->expects( $this->exactly( 2 ) )
-			->method( 'generateSafeFragment' )
+			->method( 'fetchRenderedAWFragment' )
 			->willReturn( [ 'success' => true, 'value' => '<b>rendered</b>' ] );
 		$this->setService( 'AbstractWikiRequest', $mockRequest );
 

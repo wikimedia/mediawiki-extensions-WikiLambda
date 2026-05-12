@@ -11,79 +11,110 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
-use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
-use MediaWiki\Http\HttpRequestFactory;
-use MediaWiki\Http\MWHttpRequest;
-use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
+use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
+use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Tests\Api\ApiTestCase;
-use StatusValue;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiAbstractWikiRunFragment
  */
 class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 
+	public WikifunctionsLanguageFactory $langFactory;
+
 	protected function setUp(): void {
 		parent::setUp();
+
 		$this->overrideConfigValue( 'WikiLambdaClientTargetAPI', 'test.wikifunctions.org' );
+
+		// Mock language service and wire up
+		$this->langFactory = $this->createWikifunctionsLanguageFactoryMock();
+		$this->setService( 'WikifunctionsLanguageFactory', $this->langFactory );
+	}
+
+	private function createWikifunctionsLanguageFactoryMock(): WikifunctionsLanguageFactory {
+		$enLang = $this->getServiceContainer()->getLanguageFactory()->getLanguage( 'en' );
+		$enWfLang = new WikifunctionsLanguage( $enLang, 'Z1002' );
+
+		$langFactory = $this->createMock( WikifunctionsLanguageFactory::class );
+
+		$langFactory->method( 'getLanguageFromZid' )
+		->with( 'Z1002' )
+		->willReturn( $enWfLang );
+
+		return $langFactory;
 	}
 
 	/**
-	 * Checks that when successfully querying the cache for the Abstract
-	 * Content fragment rendered with today's date:
-	 * * it returns the fresh cache value and returns immediately,
-	 * * does not create a job to re-render the fragment,
-	 * * does not make any remote call to wikilambda_function_call, and
-	 * * does not overwrite the cache values.
+	 * Build a mock AWFragmentStore that captures one call
+	 * to the store getter with the given arguments.
+	 *
+	 * @param array $args
+	 * @param AWFragment $output
+	 * @return AWFragmentStore
 	 */
-	public function testSuccessfulFreshCacheHit() {
+	private function createMockFragmentStoreForGetter( $args, $output ): AWFragmentStore {
+		$fragmentStore = $this->createMock( AWFragmentStore::class );
+
+		$fragmentStore->expects( $this->once() )
+			->method( 'getRenderedAWFragment' )
+			->with(
+				$args['fragment'],
+				$args['topicQid'],
+				$args[ 'language'],
+				$args['date'],
+			)
+			->willReturn( $output );
+
+		return $fragmentStore;
+	}
+
+	/**
+	 * When requested a fragment that is available in the AWFragment store:
+	 * * returns the stored value
+	 * * does not make any remote call to wikilambda_function_call
+	 */
+	public function testStoredFreshAWFragment() {
 		// Parameters for abstractwiki_run_fragment
 		$qid = 'Q42';
-		$language = 'Z1002';
 		$date = '26-7-2023';
-		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
-		$cachedValue = json_encode( [
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		// Fragment
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$fragmentKey = 'some-fragment-key';
+		$fragment = json_decode( $fragmentStr, true );
+		// Response
+		$storedValue = [
 			'success' => true,
 			'value' => '<b>fresh content</b>'
-		] );
+		];
 
-		// Mock fresh cache hit: fresh value is available
-		$cache = $this->createMock( MemcachedWrapper::class );
-
-		// Mock cache key creation: when called with $date, return 'fresh-cache-key'
-		$cache->method( 'makeKey' )
-			->willReturnCallback( static function ( ...$args ) use ( $date ) {
-				return ( count( $args ) === 5 ) && ( $args[3] === $date )
-					? 'fresh-cache-key'
-					: 'stale-cache-key';
-			} );
-
-		// Mock cache access: value is available for 'fresh-cache-key'
-		$cache->expects( $this->once() )
-			->method( 'get' )
-			->with( 'fresh-cache-key' )
-			->willReturn( $cachedValue );
-
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
-
-		// Mock jobQueueGroup to assert that it never gets called
-		$queue = $this->createMock( JobQueueGroup::class );
-		$queue->expects( $this->never() )->method( 'lazyPush' );
-		$this->setService( 'JobQueueGroup', $queue );
+		// Mock fragment store: returns fresh value
+		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$storedFragment->setValue( $storedValue, AWFragment::AVAILABILITY_FRESH );
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'date' => $date,
+			'fragment' => $fragment,
+		], $storedFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
 		// Mock AbstractWikiRequest to assert that it never gets called
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
-		$awRequest->expects( $this->never() )->method( 'generateSafeFragment' );
+		$awRequest->expects( $this->never() )->method( 'fetchRenderedAWFragment' );
 		$this->setService( 'AbstractWikiRequest', $awRequest );
 
 		// Make request to abstractwiki_run_fragment
 		$result = $this->doApiRequest( [
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
-			'abstractwiki_run_fragment_language' => $language,
+			'abstractwiki_run_fragment_language' => $languageZid,
 			'abstractwiki_run_fragment_date' => $date,
-			'abstractwiki_run_fragment_fragment' => $fragment,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 		] )[0][ 'abstractwiki_run_fragment' ];
 
 		$this->assertArrayHasKey( 'success', $result );
@@ -93,74 +124,49 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	}
 
 	/**
-	 * Checks that when there is no value in the cache for the Abstract
-	 * Content fragment rendered with today's date:
-	 * * it gets stale content by removing the date from the cache key,
-	 * * it creates a job to asynchronously re-render the fragment for today's date,
-	 * * it returns the stale content and exits,
-	 * * it does not run a synchronous call to wikilambda_function_call.
+	 * When requested a fragment that is available in the AWFragment store
+	 * but the value is stale:
+	 * * returns the stored value (stale)
+	 * * does not make any remote call to wikilambda_function_call
 	 */
-	public function testStaleWhileRevalidateSync() {
-		// Parameters for abstractwiki_run_fragment
+	public function testStoredStaleAWFragment() {
 		$qid = 'Q42';
-		$language = 'Z1002';
 		$date = '26-7-2023';
-		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
-		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
-		$cachedValue = json_encode( [
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		// Fragment
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$fragmentKey = 'some-fragment-key';
+		$fragment = json_decode( $fragmentStr, true );
+		// Response
+		$storedValue = [
 			'success' => true,
 			'value' => '<b>stale content</b>'
-		] );
+		];
 
-		// Mock fresh cache hit: fresh value is available
-		$cache = $this->createMock( MemcachedWrapper::class );
-
-		// Mock cache key creation: when called with $date, return 'fresh-cache-key'
-		$cache->method( 'makeKey' )
-			->willReturnCallback( static function ( ...$args ) use ( $date ) {
-				return ( count( $args ) === 5 ) && ( $args[3] === $date )
-					? 'fresh-cache-key'
-					: 'stale-cache-key';
-			} );
-
-		// Mock cache access: miss for 'fresh-cache-key' but hit for 'stale-cache-key'
-		$cache->method( 'get' )
-			->willReturnCallback( static function ( $key ) use ( $cachedValue ) {
-				return ( $key === 'stale-cache-key' )
-					? $cachedValue
-					: false;
-			} );
-
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
-
-		// Mock jobQueueGroup to assert that revalidate job is pushed to the queue
-		$queue = $this->createMock( JobQueueGroup::class );
-		$queue->expects( $this->once() )
-			->method( 'lazyPush' )
-			->with( $this->callback( function ( $job ) use ( $functionCall ) {
-				// Assert that called job is the right type
-				$this->assertInstanceOf( CacheAbstractContentFragmentJob::class, $job );
-				// Assert that job was called with correct function call and cache keys
-				$this->assertEquals( json_decode( $functionCall, true ), $job->getParams()[ 'functionCall' ] );
-				$this->assertSame( 'fresh-cache-key', $job->getParams()[ 'cacheKeyFresh' ] );
-				$this->assertSame( 'stale-cache-key', $job->getParams()[ 'cacheKeyStale' ] );
-				return true;
-			} ) );
-
-		$this->setService( 'JobQueueGroup', $queue );
+		// Mock fragment store: returns stale value
+		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$storedFragment->setValue( $storedValue, AWFragment::AVAILABILITY_STALE );
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'date' => $date,
+			'fragment' => $fragment,
+		], $storedFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
 		// Mock AbstractWikiRequest to assert that it never gets called
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
-		$awRequest->expects( $this->never() )->method( 'generateSafeFragment' );
+		$awRequest->expects( $this->never() )->method( 'fetchRenderedAWFragment' );
 		$this->setService( 'AbstractWikiRequest', $awRequest );
 
 		// Make request to abstractwiki_run_fragment
 		$result = $this->doApiRequest( [
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
-			'abstractwiki_run_fragment_language' => $language,
+			'abstractwiki_run_fragment_language' => $languageZid,
 			'abstractwiki_run_fragment_date' => $date,
-			'abstractwiki_run_fragment_fragment' => $fragment,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 		] )[0][ 'abstractwiki_run_fragment' ];
 
 		$this->assertArrayHasKey( 'success', $result );
@@ -170,154 +176,102 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	}
 
 	/**
-	 * Checks that when there is no value in the cache for the Abstract
-	 * Content fragment rendered with today's date and there is no cached
-	 * stale value:
-	 * * it makes a synchronous call to wikilambda_function_call to render
-	 *   the fragment for today's date.
-	 * * it caches the result under a key with today's date and,
-	 * * it caches the result under a key without any date.
+	 * When requested a fragment that is missing from the AWFragment store, and
+	 * async=false (default value)
+	 * * it makes a synchronous call to AbstractWikiRequest::fetchRenderedAWFragment
+	 *   to run in Wikifunctions the given fragment for today's date.
 	 */
-	public function testRequestRemoteCallAndCache() {
-		// Parameters for abstractwiki_run_fragment
+	public function testMissingAWFragmentSync() {
 		$qid = 'Q42';
-		$language = 'Z1002';
 		$date = '26-7-2023';
-		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
-		$cachedFragment = [
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		// Fragment
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$fragmentKey = 'some-fragment-key';
+		$fragment = json_decode( $fragmentStr, true );
+		// Response
+		$renderedFragment = [
 			'success' => true,
-			'value' => '<b>literal fragment</b>'
+			'value' => '<b>rendered fragment</b>'
 		];
 
-		// Mock fresh cache hit: fresh and stale values are miss
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache->method( 'makeKey' )
-			->willReturnCallback( static function ( ...$args ) use ( $date ) {
-				return ( count( $args ) === 5 ) && ( $args[3] === $date )
-					? 'fresh-cache-key'
-					: 'stale-cache-key';
-			} );
-		$cache->method( 'get' )->willReturn( false );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+		// Mock fragment store: returns missing fragment value
+		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'date' => $date,
+			'fragment' => $fragment,
+		], $missingFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
-		// Mock jobQueueGroup to assert that it never gets called
-		$queue = $this->createMock( JobQueueGroup::class );
-		$queue->expects( $this->never() )->method( 'lazyPush' );
-		$this->setService( 'JobQueueGroup', $queue );
-
-		// Mock request to AbstractWikiRequest::generateSafeFragment
-		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
+		// Mock request to AbstractWikiRequest::fetchRenderedAWFragment
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
 		$awRequest->expects( $this->once() )
-			->method( 'generateSafeFragment' )
-			->with( json_decode( $functionCall, true ), 'fresh-cache-key', 'stale-cache-key' )
-			->willReturn( $cachedFragment );
-
+			->method( 'fetchRenderedAWFragment' )
+			->with( $fragment, $qid, $languageZid, $date, $fragmentKey )
+			->willReturn( $renderedFragment );
 		$this->setService( 'AbstractWikiRequest', $awRequest );
 
 		// Make request to abstractwiki_run_fragment
 		$result = $this->doApiRequest( [
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
-			'abstractwiki_run_fragment_language' => $language,
+			'abstractwiki_run_fragment_language' => $languageZid,
 			'abstractwiki_run_fragment_date' => $date,
-			'abstractwiki_run_fragment_fragment' => $fragment,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 		] )[0][ 'abstractwiki_run_fragment' ];
 
 		$this->assertArrayHasKey( 'success', $result );
 		$this->assertArrayHasKey( 'value', $result );
 		$this->assertTrue( $result[ 'success' ] );
-		$this->assertSame( '<b>literal fragment</b>', $result[ 'value' ] );
+		$this->assertSame( '<b>rendered fragment</b>', $result[ 'value' ] );
 	}
 
 	/**
-	 * Checks that when there is no value in the cache for the Abstract
-	 * Content fragment rendered with today's date and there is no cached
-	 * stale value:
-	 * * it makes a call remote call to wikilambda_function_call
-	 *   to run a function call to the Z825 function, with the right
-	 *   Z825K1, Z825K2 and Z825K3 arguments.
+	 * When requested a fragment that is missing from the AWFragment store, and
+	 * async=true
+	 * * it makes not call to AbstractWikiRequest::fetchRenderedAWFragment
+	 * * it returns a "pending" html fragment
 	 */
-	public function testRequestRemoteCall() {
-		// Parameters for abstractwiki_run_fragment
+	public function testMissingAWFragmentAsync() {
 		$qid = 'Q42';
-		$language = 'Z1002';
 		$date = '26-7-2023';
-		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		// Fragment
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$fragmentKey = 'some-fragment-key';
+		$fragment = json_decode( $fragmentStr, true );
+		// Response
+		$renderedFragment = [
+			'success' => true,
+			'value' => '<b>rendered fragment</b>'
+		];
 
-		// Mock fresh cache hit: fresh and stale values are miss
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache->method( 'makeKey' )->willReturn( 'some-pointless-key' );
-		$cache->method( 'get' )->willReturn( false );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+		// Mock fragment store: returns missing fragment value
+		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'date' => $date,
+			'fragment' => $fragment,
+		], $missingFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
-		// Mock jobQueueGroup to assert that it never gets called
-		$queue = $this->createMock( JobQueueGroup::class );
-		$queue->expects( $this->never() )->method( 'lazyPush' );
-		$this->setService( 'JobQueueGroup', $queue );
-
-		// Mock request to wikilambda_function_call
-		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
-		$factory = $this->getMockHttpRequestFactory( $functionCall, $fragment );
-		$this->setService( 'HttpRequestFactory', $factory );
+		// Mock AbstractWikiRequest to assert that it never gets called
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'fetchRenderedAWFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
 
 		// Make request to abstractwiki_run_fragment
 		$result = $this->doApiRequest( [
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
-			'abstractwiki_run_fragment_language' => $language,
+			'abstractwiki_run_fragment_language' => $languageZid,
 			'abstractwiki_run_fragment_date' => $date,
-			'abstractwiki_run_fragment_fragment' => $fragment,
-		] )[0][ 'abstractwiki_run_fragment' ];
-
-		$this->assertArrayHasKey( 'success', $result );
-		$this->assertArrayHasKey( 'value', $result );
-		$this->assertTrue( $result[ 'success' ] );
-		$this->assertSame( '<b>literal fragment</b>', $result[ 'value' ] );
-	}
-
-	/**
-	 * Checks that when there is no value in the cache for the Abstract
-	 * Content fragment rendered with today's date and there is no cached
-	 * stale value, when called with async=true it returns pending fragment:
-	 */
-	public function testReturnPendingWhenAsync() {
-		// Parameters for abstractwiki_run_fragment
-		$qid = 'Q42';
-		$language = 'Z1002';
-		$date = '26-7-2023';
-		$fragment = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
-		$functionCall = $this->buildWrapperFunctionCall( $qid, $language, $date, $fragment );
-
-		// Mock fresh cache hit: fresh and stale values are miss
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache->method( 'makeKey' )->willReturnOnConsecutiveCalls( 'fresh-cache-key', 'stale-cache-key', '' );
-		$cache->method( 'get' )->willReturn( false );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
-
-		// Mock jobQueueGroup to assert that revalidate job is pushed to the queue
-		$queue = $this->createMock( JobQueueGroup::class );
-		$queue->expects( $this->once() )
-			->method( 'lazyPush' )
-			->with( $this->callback( function ( $job ) use ( $functionCall ) {
-				// Assert that called job is the right type
-				$this->assertInstanceOf( CacheAbstractContentFragmentJob::class, $job );
-				// Assert that job was called with correct function call and cache keys
-				$this->assertEquals( json_decode( $functionCall, true ), $job->getParams()[ 'functionCall' ] );
-				$this->assertSame( 'fresh-cache-key', $job->getParams()[ 'cacheKeyFresh' ] );
-				$this->assertSame( 'stale-cache-key', $job->getParams()[ 'cacheKeyStale' ] );
-				return true;
-			} ) );
-
-		$this->setService( 'JobQueueGroup', $queue );
-
-		// Make request to abstractwiki_run_fragment
-		$result = $this->doApiRequest( [
-			'action' => 'abstractwiki_run_fragment',
-			'abstractwiki_run_fragment_qid' => $qid,
-			'abstractwiki_run_fragment_language' => $language,
-			'abstractwiki_run_fragment_date' => $date,
-			'abstractwiki_run_fragment_fragment' => $fragment,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 			'abstractwiki_run_fragment_async' => true,
 		] )[0][ 'abstractwiki_run_fragment' ];
 
@@ -368,106 +322,44 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 * WikifunctionCallException's error data.
 	 */
 	public function testExecute_diesWhenCachedResultIsFailure() {
+		$qid = 'Q42';
+		$date = '26-7-2023';
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		// Fragment
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>bad fragment</b>"}';
+		$fragmentKey = 'some-fragment-key';
+		$fragment = json_decode( $fragmentStr, true );
+		// Response
 		$failureValue = [
-			'msg' => 'wikilambda-functioncall-error-message',
-			'httpStatusCode' => 400,
-			'zerror' => null,
-			'params' => [],
+			'success' => false,
+			'value' => [
+				'msg' => 'wikilambda-functioncall-error-message',
+				'httpStatusCode' => 400,
+				'zerror' => null,
+				'params' => [],
+			]
 		];
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache->method( 'makeKey' )->willReturn( 'some-key' );
-		$cache->method( 'get' )
-			->willReturn( json_encode( [
-				'success' => false,
-				'value' => $failureValue,
-			] ) );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+		// Mock fragment store: returns fresh value with error
+		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$storedFragment->setValue( $failureValue, AWFragment::AVAILABILITY_FRESH );
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'date' => $date,
+			'fragment' => $fragment,
+		], $storedFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
 		$this->expectException( ApiUsageException::class );
 
 		$this->doApiRequest( [
 			'action' => 'abstractwiki_run_fragment',
-			'abstractwiki_run_fragment_qid' => 'Q42',
-			'abstractwiki_run_fragment_language' => 'Z1002',
-			'abstractwiki_run_fragment_date' => '26-7-2023',
-			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89","Z89K1":"test"}',
+			'abstractwiki_run_fragment_qid' => $qid,
+			'abstractwiki_run_fragment_language' => $languageZid,
+			'abstractwiki_run_fragment_date' => $date,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr
 		] );
-	}
-
-	// ------------------------------------------------------------------
-	// Helpers
-	// ------------------------------------------------------------------
-
-	/**
-	 * Helper function to mock HttpRequestFactory:
-	 * * expects wikilambda_function_call to be called with the given function call
-	 * * mocks the response to be the given function call response
-	 *
-	 * @param string $functionCall
-	 * @param string $functionCallResponse
-	 * @return HttpRequestFactory
-	 */
-	private function getMockHttpRequestFactory( $functionCall, $functionCallResponse ) {
-		$apiResponse = json_encode( [
-			'wikilambda_function_call' => [
-				'data' => json_encode( [
-					'Z22K1' => json_decode( $functionCallResponse ),
-					'Z22K2' => [ 'returned metadata is ignored' ]
-				] ) ]
-		] );
-
-		// Mock MWHttpRequest that returns a successful response
-		$request = $this->createMock( MWHttpRequest::class );
-		$request->method( 'execute' )->willReturn( StatusValue::newGood() );
-		$request->method( 'getContent' )->willReturn( $apiResponse );
-
-		// Mock HttpRequestFactory and assert the expected request
-		$expectedUri = 'test.wikifunctions.org/w/api.php?action=wikilambda_function_call';
-		$expectedPaylod = [
-			'method' => 'POST',
-			'postData' => [
-				'format' => 'json',
-				'action' => 'wikilambda_function_call',
-				'wikilambda_function_call_zobject' => json_encode( json_decode( $functionCall ) )
-			]
-		];
-
-		$factory = $this->createMock( HttpRequestFactory::class );
-		$factory
-			->expects( $this->once() )
-			->method( 'create' )
-			->with( $expectedUri, $expectedPaylod )
-			->willReturn( $request );
-
-		return $factory;
-	}
-
-	/**
-	 * Helper function to wrap a fragment in a function call to the Z825 function
-	 *
-	 * @param string $qid
-	 * @param string $language
-	 * @param string $date
-	 * @param string $fragment
-	 * @return string
-	 */
-	private function buildWrapperFunctionCall( $qid, $language, $date, $fragment ) {
-		return '{"Z1K1":"Z7",'
-			. '"Z7K1":{"Z1K1":"Z8",'
-			. '"Z8K1":["Z17",'
-			. '{"Z1K1":"Z17","Z17K1":"Z6091","Z17K2":"Z825K1","Z17K3":{"Z1K1":"Z12","Z12K1":["Z11",'
-			. '{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"wikidata item reference"}]}},'
-			. '{"Z1K1":"Z17","Z17K1":"Z60","Z17K2":"Z825K2","Z17K3":{"Z1K1":"Z12","Z12K1":["Z11",'
-			. '{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"language"}]}},'
-			. '{"Z1K1":"Z17","Z17K1":"Z20420","Z17K2":"Z825K3","Z17K3":{"Z1K1":"Z12","Z12K1":["Z11",'
-			. '{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"date"}]}}],'
-			. '"Z8K2":"Z89",'
-			. '"Z8K3":["Z20"],'
-			. '"Z8K4":["Z14",{"Z1K1":"Z14","Z14K1":"Z825","Z14K2":' . $fragment . '}],'
-			. '"Z8K5":"Z825"},'
-			. '"Z825K1":{"Z1K1":"Z6091","Z6091K1":"' . $qid . '"},'
-			. '"Z825K2":"' . $language . '",'
-			. '"Z825K3":{"Z1K1":"Z7","Z7K1":"Z20808","Z20808K1":"' . $date . '","Z20808K2":"' . $language . '"}}';
 	}
 }

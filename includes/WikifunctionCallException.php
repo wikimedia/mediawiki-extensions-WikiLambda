@@ -108,8 +108,14 @@ class WikifunctionCallException extends Exception {
 	}
 
 	/**
-	 * Static method to build a WikifunctionCallException
-	 * instance from a given associative array.
+	 * Static method to build a WikifunctionCallException instance
+	 * from a given associative array with the following schema:
+	 * [
+	 *   'msg' => 'some-error-msg-code',
+	 *   'httpStatusCode' => 500,
+	 *   'zerror' => [],
+	 *   'params' => []
+	 * ]
 	 *
 	 * @param array $data
 	 * @return WikifunctionCallException

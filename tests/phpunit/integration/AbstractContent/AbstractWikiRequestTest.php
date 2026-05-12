@@ -10,9 +10,10 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Http\MWHttpRequest;
 use StatusValue;
@@ -31,18 +32,19 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 		$this->overrideConfigValue( 'WikiLambdaClientTargetAPI', self::TEST_TARGET_API );
 	}
 
-	// ─── fetchRenderedFragment ───────────────────────────────────────────
+	// callRenderFunctionCall
+	// ======================
 
-	public function testFetchRenderedFragment_noTargetUrl() {
+	public function testCallRenderFunctionCall_noTargetUrl() {
 		$this->overrideConfigValue( 'WikiLambdaClientTargetAPI', '' );
 
-		$request = $this->makeAbstractWikiRequest();
+		$request = $this->buildAbstractWikiRequest();
 
 		$this->expectException( WikifunctionCallException::class );
 		$this->expectExceptionMessage( 'not enabled' );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( HttpStatus::NOT_IMPLEMENTED, $e->getHttpStatusCode() );
 			// Re-throwing so we can use expectException/etc. above.
@@ -50,33 +52,33 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function testFetchRenderedFragment_transportFailure() {
+	public function testCallRenderFunctionCall_transportFailure() {
 		$factory = $this->getMockHttpFactory(
 			StatusValue::newFatal( 'http-request-error' ),
 			'',
 			0
 		);
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( HttpStatus::SERVICE_UNAVAILABLE, $e->getHttpStatusCode() );
 		}
 	}
 
-	public function testFetchRenderedFragment_nonJsonResponse() {
+	public function testCallRenderFunctionCall_nonJsonResponse() {
 		$factory = $this->getMockHttpFactory(
 			StatusValue::newGood(),
 			'this is not JSON',
 			200
 		);
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( HttpStatus::INTERNAL_SERVER_ERROR, $e->getHttpStatusCode() );
 		}
@@ -85,7 +87,7 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @dataProvider provideApiErrorResponses
 	 */
-	public function testFetchRenderedFragment_apiError(
+	public function testCallRenderFunctionCall_apiError(
 		int $httpStatusCode,
 		int $expectedExceptionCode
 	) {
@@ -102,10 +104,10 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			$httpStatusCode
 		);
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( $expectedExceptionCode, $e->getHttpStatusCode() );
 		}
@@ -136,7 +138,7 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 		];
 	}
 
-	public function testFetchRenderedFragment_missingFunctionCallKey() {
+	public function testCallRenderFunctionCall_missingFunctionCallKey() {
 		$responseBody = json_encode( [
 			'some_other_key' => 'value'
 		] );
@@ -147,16 +149,16 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			200
 		);
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( HttpStatus::INTERNAL_SERVER_ERROR, $e->getHttpStatusCode() );
 		}
 	}
 
-	public function testFetchRenderedFragment_invalidEnvelopeJson() {
+	public function testCallRenderFunctionCall_invalidEnvelopeJson() {
 		$responseBody = json_encode( [
 			'wikilambda_function_call' => [
 				'data' => 'not valid json {'
@@ -169,28 +171,28 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			200
 		);
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( HttpStatus::INTERNAL_SERVER_ERROR, $e->getHttpStatusCode() );
 		}
 	}
 
-	public function testFetchRenderedFragment_voidResponseWithZError() {
+	public function testCallRenderFunctionCall_voidResponseWithZError() {
 		$factory = $this->getMockHttpFactoryForVoidZError();
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( HttpStatus::BAD_REQUEST, $e->getHttpStatusCode() );
 			$this->assertTrue( $e->hasZError() );
 		}
 	}
 
-	public function testFetchRenderedFragment_responseNotHtmlFragment() {
+	public function testCallRenderFunctionCall_responseNotHtmlFragment() {
 		$responseBody = json_encode( [
 			'wikilambda_function_call' => [
 				'data' => json_encode( [
@@ -206,69 +208,60 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			200
 		);
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
-			$request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 		} catch ( WikifunctionCallException $e ) {
 			$this->assertSame( HttpStatus::BAD_REQUEST, $e->getHttpStatusCode() );
 		}
 	}
 
-	public function testFetchRenderedFragment_success() {
+	public function testCallRenderFunctionCall_success() {
 		$htmlContent = '<b>Hello World</b>';
 		$factory = $this->getMockHttpFactoryForSuccess( $htmlContent );
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory );
 
-		$result = $request->fetchRenderedFragment( [ 'Z1K1' => 'Z7' ] );
+		$result = $request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 
 		$this->assertArrayHasKey( 'Z89K1', $result );
 		$this->assertSame( $htmlContent, $result[ 'Z89K1' ] );
 	}
 
-	// ─── generateSafeFragment ────────────────────────────────────────────
+	// fetchRenderedAWFragment
+	// =======================
 
-	public function testGenerateSafeFragment_success() {
+	public function testFetchRenderedAWFragment_success() {
 		$htmlContent = '<b>Hello World</b>';
+
+		// Mock the httpRequestFactory for a successful response
 		$factory = $this->getMockHttpFactoryForSuccess( $htmlContent );
 
-		// Mock the cache to capture set() calls
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$setCalls = [];
-		$cache->method( 'set' )
-			->willReturnCallback( static function ( $key, $value, $ttl ) use ( &$setCalls ) {
-				$setCalls[] = [ 'key' => $key, 'value' => $value, 'ttl' => $ttl ];
-				return true;
-			} );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+		// Mock the fragmentStore for the expected setter call
+		$fragmentStore = $this->getMockFragmentStoreForSetter( [
+			'topicQid' => 'Q42',
+			'languageZid' => 'Z1002',
+			'date' => '2026-05-14',
+			'fragmentKey' => 'hashed-fragment',
+			'value' => [ 'success' => true, 'value' => $htmlContent ]
+		] );
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory, $fragmentStore );
 
-		$result = $request->generateSafeFragment(
-			[ 'Z1K1' => 'Z7' ],
-			'fresh-key',
-			'stale-key'
+		$result = $request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* date= */ '2026-05-14',
+			/* fragmentKey= */ 'hashed-fragment',
 		);
 
 		// Assert returned structure
 		$this->assertTrue( $result[ 'success' ] );
 		$this->assertArrayHasKey( 'value', $result );
-
-		// Assert both cache keys were set
-		$this->assertCount( 2, $setCalls );
-		$this->assertSame( 'fresh-key', $setCalls[0][ 'key' ] );
-		$this->assertSame( 'stale-key', $setCalls[1][ 'key' ] );
-
-		// Assert fresh TTL is TTL_WEEK (604800)
-		$this->assertSame( 604800, $setCalls[0][ 'ttl' ] );
-		// Assert stale TTL is TTL_MONTH (2592000)
-		$this->assertSame( 2592000, $setCalls[1][ 'ttl' ] );
-
-		// Assert both keys hold the same JSON value
-		$this->assertSame( $setCalls[0][ 'value' ], $setCalls[1][ 'value' ] );
 	}
 
-	public function testGenerateSafeFragment_userErrorWithoutZError() {
+	public function testFetchRenderedAWFragment_userErrorWithoutZError() {
 		// API-level 400: the remote API rejected the request before execution.
 		// No ZError is present — just an HTTP error code.
 		$responseBody = json_encode( [
@@ -280,103 +273,128 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			HttpStatus::BAD_REQUEST
 		);
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$setCalls = [];
-		$cache->method( 'set' )
-			->willReturnCallback( static function ( $key, $value, $ttl ) use ( &$setCalls ) {
-				$setCalls[] = [ 'key' => $key, 'value' => $value, 'ttl' => $ttl ];
-				return true;
-			} );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+		// Mock the fragmentStore to be called with the failed fragment
+		$fragmentStore = $this->getMockFragmentStoreForSetter( [
+			'topicQid' => 'Q42',
+			'languageZid' => 'Z1002',
+			'date' => '2026-05-14',
+			'fragmentKey' => 'hashed-fragment',
+			'value' => [
+				'success' => false,
+				'value' => [
+					'msg' => 'apierror-abstractwiki_run_fragment-bad-fragment',
+					'httpStatusCode' => 400,
+					'zerror' => null,
+					'params' => []
+				]
+			]
+		] );
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory, $fragmentStore );
 
-		$result = $request->generateSafeFragment(
-			[ 'Z1K1' => 'Z7' ],
-			'fresh-key',
-			'stale-key'
+		$result = $request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* date= */ '2026-05-14',
+			/* fragmentKey= */ 'hashed-fragment',
 		);
 
 		// Assert failure result without a ZError
 		$this->assertFalse( $result[ 'success' ] );
 		$this->assertNull( $result[ 'value' ][ 'zerror' ] );
-
-		// Assert fresh TTL is still TTL_WEEK (user errors don't reduce TTL)
-		$this->assertSame( 604800, $setCalls[0][ 'ttl' ] );
-		// Assert stale TTL is TTL_MONTH
-		$this->assertSame( 2592000, $setCalls[1][ 'ttl' ] );
 	}
 
-	public function testGenerateSafeFragment_userErrorWithZError() {
+	public function testFetchRenderedAWFragment_userErrorWithZError() {
 		// Void response with ZError: the orchestrator ran the function but it
 		// returned Z24 (Void) with error details in the metadata.
 		$factory = $this->getMockHttpFactoryForVoidZError();
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$setCalls = [];
-		$cache->method( 'set' )
-			->willReturnCallback( static function ( $key, $value, $ttl ) use ( &$setCalls ) {
-				$setCalls[] = [ 'key' => $key, 'value' => $value, 'ttl' => $ttl ];
-				return true;
-			} );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+		// Mock the fragmentStore to be called with the failed fragment
+		$zerror = (object)[
+			'Z1K1' => 'Z5',
+			'Z5K1' => 'Z504',
+			'Z5K2' => (object)[
+				'Z1K1' => 'Z504',
+				'Z504K1' => 'Z400'
+			]
+		];
+		$fragmentStore = $this->getMockFragmentStoreForSetter( [
+			'topicQid' => 'Q42',
+			'languageZid' => 'Z1002',
+			'date' => '2026-05-14',
+			'fragmentKey' => 'hashed-fragment',
+			'value' => [
+				'success' => false,
+				'value' => [
+					'msg' => 'apierror-abstractwiki_run_fragment-returned-zerror',
+					'httpStatusCode' => 400,
+					'zerror' => $zerror,
+					'params' => [ 'Z504' ]
+				]
+			]
+		] );
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory, $fragmentStore );
 
-		$result = $request->generateSafeFragment(
-			[ 'Z1K1' => 'Z7' ],
-			'fresh-key',
-			'stale-key'
+		$result = $request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* date= */ '2026-05-14',
+			/* fragmentKey= */ 'hashed-fragment',
 		);
 
 		// Assert failure result with a ZError present
 		$this->assertFalse( $result[ 'success' ] );
 		$this->assertNotNull( $result[ 'value' ][ 'zerror' ] );
 		$this->assertSame( 'Z504', $result[ 'value' ][ 'zerror' ]->Z5K1 );
-
-		// Assert fresh TTL is still TTL_WEEK (user errors don't reduce TTL)
-		$this->assertSame( 604800, $setCalls[0][ 'ttl' ] );
-		// Assert stale TTL is TTL_MONTH
-		$this->assertSame( 2592000, $setCalls[1][ 'ttl' ] );
 	}
 
 	/**
 	 * @dataProvider provideServerErrors
 	 */
-	public function testGenerateSafeFragment_serverError(
+	public function testFetchRenderedAWFragment_serverError(
 		string $responseBody,
-		int $httpStatusCode
+		int $responseHttpStatus,
+		int $expectedHttpStatus,
+		string $expectedErrorMsg
 	) {
+		// Mock http factory to return the server error
 		$factory = $this->getMockHttpFactory(
 			StatusValue::newGood(),
 			$responseBody,
-			$httpStatusCode
+			$responseHttpStatus
 		);
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$setCalls = [];
-		$cache->method( 'set' )
-			->willReturnCallback( static function ( $key, $value, $ttl ) use ( &$setCalls ) {
-				$setCalls[] = [ 'key' => $key, 'value' => $value, 'ttl' => $ttl ];
-				return true;
-			} );
-		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+		$fragmentStore = $this->getMockFragmentStoreForSetter( [
+			'topicQid' => 'Q42',
+			'languageZid' => 'Z1002',
+			'date' => '2026-05-14',
+			'fragmentKey' => 'hashed-fragment',
+			'value' => [
+				'success' => false,
+				'value' => [
+					'msg' => $expectedErrorMsg,
+					'httpStatusCode' => $expectedHttpStatus,
+					'zerror' => null,
+					'params' => []
+				]
+			]
+		] );
 
-		$request = $this->makeAbstractWikiRequest( $factory );
+		$request = $this->buildAbstractWikiRequest( $factory, $fragmentStore );
 
-		$result = $request->generateSafeFragment(
-			[ 'Z1K1' => 'Z7' ],
-			'fresh-key',
-			'stale-key'
+		$result = $request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* date= */ '2026-05-14',
+			/* fragmentKey= */ 'hashed-fragment',
 		);
 
 		// Assert failure result
 		$this->assertFalse( $result[ 'success' ] );
-
-		// Assert fresh TTL is reduced to TTL_MINUTE (60) for server errors
-		$this->assertSame( 60, $setCalls[0][ 'ttl' ] );
-		// Assert stale TTL is still TTL_MONTH
-		$this->assertSame( 2592000, $setCalls[1][ 'ttl' ] );
 	}
 
 	public static function provideServerErrors(): array {
@@ -384,33 +402,56 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			'500 internal server error' => [
 				json_encode( [ 'error' => [ 'code' => 'internal', 'info' => 'Error' ] ] ),
 				HttpStatus::INTERNAL_SERVER_ERROR,
+				HttpStatus::INTERNAL_SERVER_ERROR,
+				'apierror-abstractwiki_run_fragment-unknown-error'
 			],
 			'503 service unavailable' => [
 				json_encode( [ 'error' => [ 'code' => 'timeout', 'info' => 'Timeout' ] ] ),
 				HttpStatus::SERVICE_UNAVAILABLE,
+				HttpStatus::SERVICE_UNAVAILABLE,
+				'apierror-abstractwiki_run_fragment-service-unavailable'
 			],
-			'non-JSON response (unknown error)' => [
+			'non-JSON response causes unknown error' => [
 				'this is not JSON at all',
-				200,
+				HttpStatus::OK,
+				HttpStatus::INTERNAL_SERVER_ERROR,
+				'apierror-abstractwiki_run_fragment-unknown-error'
 			],
 		];
 	}
 
-	// ─── Helpers ─────────────────────────────────────────────────────────
+	// Helpers
+	// =======
 
 	/**
 	 * Create an AbstractWikiRequest instance with an optional mock HttpRequestFactory.
 	 *
 	 * @param HttpRequestFactory|null $factory
+	 * @param AWFragmentStore|null $fragmentStore
 	 * @return AbstractWikiRequest
 	 */
-	private function makeAbstractWikiRequest( ?HttpRequestFactory $factory = null ): AbstractWikiRequest {
+	private function buildAbstractWikiRequest(
+		?HttpRequestFactory $factory = null,
+		?AWFragmentStore $fragmentStore = null
+	): AbstractWikiRequest {
+		// If no input, Create a basic mock for HttpRequestFactory
 		if ( $factory === null ) {
 			$factory = $this->createMock( HttpRequestFactory::class );
 		}
+		// If no input, create a basic mock for AWFragmentStore
+		if ( $fragmentStore === null ) {
+			$fragmentStore = $this->createMock( AWFragmentStore::class );
+		}
+
 		$config = $this->getServiceContainer()->getMainConfig();
-		$renderer = $this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' );
-		return new AbstractWikiRequest( $config, $factory, $renderer );
+		$fragmentRenderer = WikiLambdaServices::getPFragmentRenderer();
+
+		return new AbstractWikiRequest(
+			$config,
+			$factory,
+			$fragmentStore,
+			$fragmentRenderer
+		);
 	}
 
 	/**
@@ -510,5 +551,29 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 			$responseBody,
 			200
 		);
+	}
+
+	/**
+	 * Build a mock AWFragmentStore that captures the setter arguments and
+	 * asserts they are the expected values.
+	 *
+	 * @param array $expected
+	 * @return AWFragmentStore
+	 */
+	private function getMockFragmentStoreForSetter( $expected ): AWFragmentStore {
+		$fragmentStore = $this->createMock( AWFragmentStore::class );
+
+		$fragmentStore->expects( $this->once() )
+			->method( 'setRenderedAWFragment' )
+			->with(
+				$expected[ 'topicQid' ],
+				$expected[ 'languageZid' ],
+				$expected[ 'date' ],
+				$expected[ 'fragmentKey' ],
+				$expected[ 'value' ]
+			)
+			->willReturn( true );
+
+		return $fragmentStore;
 	}
 }

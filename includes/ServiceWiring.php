@@ -13,8 +13,9 @@ namespace MediaWiki\Extension\WikiLambda;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
-use MediaWiki\Extension\WikiLambda\AWStorage\DBAWArticleStore;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -63,19 +64,26 @@ return [
 		return new AbstractWikiRequest(
 			$services->getMainConfig(),
 			$services->getHttpRequestFactory(),
-			$services->get( 'WikiLambdaPFragmentRenderer' )
+			WikiLambdaServices::getAWFragmentStore(),
+			WikiLambdaServices::getPFragmentRenderer()
 		);
 	},
 
 	// For abstract and abstract client mode
 
 	'AbstractWikiArticleStore' => static function ( MediaWikiServices $services ): AWArticleStore {
-		// TODO: in the future, we could configure this and build additional implementations if
-		// we wanted to have alternative storage backends in different environments. If the final
-		// infrastracture is MariaDB we won't need to do this, we can depend on RDBMS to be an
-		// available backend, so we would only need to handle configuration for virtual host.
-		return new DBAWArticleStore(
-			$services->getConnectionProvider()
+		return WikiLambdaServices::buildAWArticleStore( $services );
+	},
+
+	'AbstractWikiFragmentStore' => static function ( MediaWikiServices $services ): AWFragmentStore {
+		return WikiLambdaServices::buildAWFragmentStore( $services );
+	},
+
+	// For all environments
+
+	'WikifunctionsLanguageFactory' => static function ( MediaWikiServices $services ): WikifunctionsLanguageFactory {
+		return new WikifunctionsLanguageFactory(
+			$services->getLanguageFactory()
 		);
 	}
 ];

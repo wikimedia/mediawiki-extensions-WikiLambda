@@ -1,6 +1,22 @@
 <?php
 /**
- * WikiLambda Abstract Wiki abstract class for AW Article/Section storage
+ * WikiLambda Abstract Wikipedia - Service class to handle AW Article Section storage.
+ *
+ * This store provides access to two semantically different objects:
+ *
+ * * AWSection: identified by the Topic qid, the Section qid, and the locale.
+ *   The store contains one row for each Article Section generated for a allowed language.
+ *   This is the main object that contains the rendered output that will be concatenated
+ *   when displaying an Abstract Wikipedia article.
+ *
+ * * AWArticleMetadata: identified by the Topic qid.
+ *   The store contains one Metadata row for each Article from the allowed topics.
+ *   The Metadata object is kept up to date when rendering the article sections, and
+ *   provides important information to concatenate Article Sections and build the
+ *   final Abstract Wikipedia Article.
+ *
+ * Both objects are also indexed by a schema version, which can be incremented if any
+ * of the payload expectations changes in a non-backwards-compatible way.
  *
  * @file
  * @ingroup Extensions

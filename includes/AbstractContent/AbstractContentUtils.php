@@ -51,6 +51,9 @@ class AbstractContentUtils {
 	 * This is intended to build a key for an Abstract Content fragment while in Abstract mode,
 	 * and unlike ZObject cache keys in Repo Mode, it won't add revision Ids to the references.
 	 *
+	 * NOTE: Whether the input is passed as a stdClass or as associative array it will not
+	 * make any difference for the output string key, as demonstrated in the test cases.
+	 *
 	 * @param \stdClass|array $query
 	 * @return string
 	 */

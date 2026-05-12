@@ -11,11 +11,30 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Actions\Action;
+use MediaWiki\Content\ContentHandlerFactory;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Page\Article;
+use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\Title;
 
 class AbstractContentEditAction extends Action {
 	use AbstractContentEditPageTrait;
+
+	/**
+	 * @param Article $article
+	 * @param IContextSource $context
+	 * @param RevisionStore $revisionStore
+	 * @param ContentHandlerFactory $contentHandlerFactory
+	 */
+	public function __construct(
+		Article $article,
+		IContextSource $context,
+		private readonly RevisionStore $revisionStore,
+		private readonly ContentHandlerFactory $contentHandlerFactory
+	) {
+		parent::__construct( $article, $context );
+	}
 
 	/**
 	 * @inheritDoc
@@ -31,7 +50,13 @@ class AbstractContentEditAction extends Action {
 		$output = $this->getOutput();
 
 		$pageTitle = $this->getTitle();
-		$this->generateAbstractContentPayload( $this->getContext(), $output, $pageTitle );
+		$this->generateAbstractContentPayload(
+			$this->getContext(),
+			$this->revisionStore,
+			$this->contentHandlerFactory,
+			$output,
+			$pageTitle
+		);
 
 		// Load styles and Vue app module
 		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );

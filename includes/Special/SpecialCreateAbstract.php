@@ -10,9 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
+use MediaWiki\Content\ContentHandlerFactory;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditPageTrait;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Revision\RevisionStore;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
@@ -20,7 +22,10 @@ use MediaWiki\User\User;
 class SpecialCreateAbstract extends SpecialPage {
 	use AbstractContentEditPageTrait;
 
-	public function __construct() {
+	public function __construct(
+		private readonly RevisionStore $revisionStore,
+		private readonly ContentHandlerFactory $contentHandlerFactory
+	) {
 		parent::__construct( 'CreateAbstract' );
 	}
 
@@ -154,7 +159,13 @@ class SpecialCreateAbstract extends SpecialPage {
 		$this->setHeaders();
 
 		// Generate Abstract Content payload and pass data through JS config vars
-		$this->generateAbstractContentPayload( $context, $output, $title );
+		$this->generateAbstractContentPayload(
+			$context,
+			$this->revisionStore,
+			$this->contentHandlerFactory,
+			$output,
+			$title
+		);
 
 		// Override page title if we are creating a new page for a pre-selected qid.
 		if ( $title->getText() !== '' ) {

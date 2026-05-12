@@ -14,19 +14,17 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AWSection {
 
-	private int $schemaVersion;
 	private ConvertibleTimestamp $lastUpdated;
 
 	public function __construct(
-		public readonly string $topicQid,
-		public readonly string $sectionQid,
-		public readonly string $locale,
-		public readonly string $payload,
+		private readonly string $topicQid,
+		private readonly string $sectionQid,
+		private readonly string $locale,
+		private readonly string $payload,
 		?ConvertibleTimestamp $lastUpdated = null,
-		int $schemaVersion = AWArticleStore::AW_STORAGE_SCHEMA_VERSION,
+		private readonly int $schemaVersion = AWArticleStore::AW_STORAGE_SCHEMA_VERSION,
 	) {
 		$this->lastUpdated = $lastUpdated ?? new ConvertibleTimestamp();
-		$this->schemaVersion = $schemaVersion;
 	}
 
 	/**

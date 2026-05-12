@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
@@ -25,13 +24,18 @@ use Psr\Log\LoggerInterface;
  * This job requests Wikifunctions to re-render the fragment via the
  * wikilambda_function_call Action API and updates the cache key with
  * and without today's date.
+ *
+ * Queued by:
+ * * AWFragmentStore::getLatestRenderedAWFragment when fresh fragment
+ *   is missing. This can be called from:
+ *   * ActionApi/ApiAbstractWikiRunFragment
+ *   * maintenance/updateAbstractWikiArticleStore
  */
 class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob {
 
 	private Config $config;
-	private HttpRequestFactory $httpRequestFactory;
-	private AbstractWikiRequest $abstractWikiRequest;
 	private LoggerInterface $logger;
+	private AbstractWikiRequest $abstractWikiRequest;
 
 	/**
 	 * @inheritDoc
@@ -51,8 +55,7 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 				'qid' => $params['qid'],
 				'language' => $params['language'],
 				'date' => $params['date'],
-				'cacheKeyFresh' => $params['cacheKeyFresh'],
-				'cacheKeyStale' => $params['cacheKeyStale'],
+				'fragmentKey' => $params['fragmentKey']
 			]
 		);
 	}
@@ -66,36 +69,38 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 	 * @return bool
 	 */
 	public function run() {
-		$functionCall = $this->params['functionCall'];
-		$cacheKeyFresh = $this->params['cacheKeyFresh'];
-		$cacheKeyStale = $this->params['cacheKeyStale'];
+		$fragment = $this->params['fragment'];
+		$qid = $this->params['qid'];
+		$language = $this->params['language'];
+		$date = $this->params['date'];
+		$fragmentKey = $this->params['fragmentKey'];
 
 		$this->logger->debug(
 			__CLASS__ . ' initiated for qid:{qid} language:{language} and date:{date} ',
 			[
-				'qid' => $this->params['qid'],
-				'language' => $this->params['language'],
-				'date' => $this->params['date'],
-				'cacheKeyFresh' => $cacheKeyFresh,
-				'cacheKeyStale' => $cacheKeyStale,
+				'qid' => $qid,
+				'language' => $language,
+				'date' => $date,
+				'fragmentKey' => $fragmentKey
 			]
 		);
 
-		$cachedValue = $this->abstractWikiRequest->generateSafeFragment(
-			$functionCall,
-			$cacheKeyFresh,
-			$cacheKeyStale
+		$cachedValue = $this->abstractWikiRequest->fetchRenderedAWFragment(
+			$fragment,
+			$qid,
+			$language,
+			$date,
+			$fragmentKey
 		);
 
 		$this->logger->debug(
 			__CLASS__ . ' refreshed {status} cached fragment for qid:{qid} language:{language} and date:{date} ',
 			[
 				'status' => $cachedValue[ 'success' ] ? 'successful' : 'failed',
-				'qid' => $this->params['qid'],
-				'language' => $this->params['language'],
-				'date' => $this->params['date'],
-				'cacheKeyFresh' => $cacheKeyFresh,
-				'cacheKeyStale' => $cacheKeyStale,
+				'qid' => $qid,
+				'language' => $language,
+				'date' => $date,
+				'fragmentKey' => $fragmentKey
 			]
 		);
 
@@ -122,7 +127,7 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 			'qid' => $this->params['qid'],
 			'language' => $this->params['language'],
 			'date' => $this->params['date'],
-			'functionCall' => $this->params['functionCall'],
+			'fragment' => $this->params['fragment']
 		];
 
 		return $info;

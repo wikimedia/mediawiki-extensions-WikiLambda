@@ -12,93 +12,31 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
-use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
+use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiAbstractWikiRunFragment extends ApiBase {
 
-	public const ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX = 'WikiLambdaAbstractFragment';
-
-	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
-		private readonly JobQueueGroup $jobQueueGroup,
+		private readonly WikifunctionsLanguageFactory $wfLanguageFactory,
+		private readonly AWFragmentStore $fragmentStore,
 		private readonly AbstractWikiRequest $abstractWikiRequest
 	) {
 		parent::__construct( $mainModule, $moduleName, 'abstractwiki_run_fragment_' );
-
 		// Non-injected items
-		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
-	}
-
-	/**
-	 * @see ApiBase::execute()
-	 * @inheritDoc
-	 */
-	public function execute() {
-		// Abstract Wiki not enabled: exit with HTTP 501
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableAbstractMode' ) ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-not-enabled' ],
-				null, null, HttpStatus::NOT_IMPLEMENTED
-			);
-		}
-
-		$params = $this->extractRequestParams();
-
-		$qid = $params[ 'qid' ];
-		$date = $params[ 'date' ];
-		$language = $params[ 'language' ];
-		$fragmentStr = $params[ 'fragment' ];
-		$async = filter_var( $params[ 'async' ], FILTER_VALIDATE_BOOLEAN );
-
-		// Check fragment validity
-		$fragment = json_decode( $fragmentStr, true );
-		if ( $fragment === null || !is_array( $fragment ) ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-bad-fragment' ],
-				null, null, HttpStatus::BAD_REQUEST
-			);
-		}
-
-		$result = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date, $async );
-
-		// Build WikifunctionCallException from the serialized cached error
-		// for convenience when building and throwing ApiUsageException:
-		if ( $result[ 'success' ] === false ) {
-			$e = WikifunctionCallException::fromArray( $result[ 'value' ] );
-			$errorData = [
-				'msg' => $e->getMessageKey(),
-				'zerror' => $e->getZError(),
-				'zerrorType' => $e->getZErrorType()
-			];
-
-			$this->dieWithError(
-				/* message */ $e->getMessageObject(),
-				/* code */ $e->getErrorCode(),
-				/* data */ $errorData,
-				/* status */ $e->getHttpStatusCode()
-			);
-		}
-
-		// Set successful responses (pending or finalized):
-		$pageResult = $this->getResult();
-		$pageResult->addValue( [], $this->getModuleName(), $result );
 	}
 
 	/**
@@ -152,9 +90,71 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *   ]
 	 * ]
 	 *
+	 * @see ApiBase::execute()
+	 * @inheritDoc
+	 */
+	public function execute() {
+		// Abstract Wiki not enabled: exit with HTTP 501
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			$this->dieWithError(
+				[ 'apierror-abstractwiki_run_fragment-not-enabled' ],
+				null, null, HttpStatus::NOT_IMPLEMENTED
+			);
+		}
+
+		$params = $this->extractRequestParams();
+
+		$qid = $params[ 'qid' ];
+		$date = $params[ 'date' ];
+		$languageZid = $params[ 'language' ];
+		$fragmentStr = $params[ 'fragment' ];
+		$async = filter_var( $params[ 'async' ], FILTER_VALIDATE_BOOLEAN );
+
+		// Check fragment validity
+		$fragment = json_decode( $fragmentStr, true );
+		if ( $fragment === null || !is_array( $fragment ) ) {
+			$this->dieWithError(
+				[ 'apierror-abstractwiki_run_fragment-bad-fragment' ],
+				null, null, HttpStatus::BAD_REQUEST
+			);
+		}
+
+		$language = $this->wfLanguageFactory->getLanguageFromZid( $languageZid );
+
+		$result = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date, $async );
+
+		// Build WikifunctionCallException from the serialized cached error
+		// for convenience when building and throwing ApiUsageException:
+		if ( $result[ 'success' ] === false ) {
+			$e = WikifunctionCallException::fromArray( $result[ 'value' ] );
+			$errorData = [
+				'msg' => $e->getMessageKey(),
+				'zerror' => $e->getZError(),
+				'zerrorType' => $e->getZErrorType()
+			];
+
+			$this->dieWithError(
+				/* message */ $e->getMessageObject(),
+				/* code */ $e->getErrorCode(),
+				/* data */ $errorData,
+				/* status */ $e->getHttpStatusCode()
+			);
+		}
+
+		// Set successful responses (pending or finalized):
+		$pageResult = $this->getResult();
+		$pageResult->addValue( [], $this->getModuleName(), $result );
+	}
+
+	/**
+	 * Fetch the AWFragment from AWFragmentStore, and return it if available.
+	 * If missing, return pending fragment if called with async=true, or
+	 * make a synchronous call to render and sanitize the fragment and
+	 * return whatever results of that call.
+	 *
 	 * @param array $fragment
 	 * @param string $qid
-	 * @param string $language
+	 * @param WikifunctionsLanguage $language
 	 * @param string $date
 	 * @param bool $async
 	 * @return array
@@ -162,155 +162,40 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	private function getLatestFragmentAndRevalidate(
 		array $fragment,
 		string $qid,
-		string $language,
+		WikifunctionsLanguage $language,
 		string $date,
 		bool $async
 	): array {
-		// 1. Check in the cache for a fresh fragment
-		$cacheKeyFresh = $this->objectCache->makeKey(
-			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
+		// Get stored fragment (if any)
+		$awFragment = $this->fragmentStore->getRenderedAWFragment(
+			$fragment,
 			$qid,
 			$language,
 			$date,
-			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment )
 		);
 
-		$freshValue = json_decode( $this->objectCache->get( $cacheKeyFresh ) ?: '', true );
-
-		// Fresh fragment is cached: return value and do nothing more
-		if ( is_array( $freshValue ) ) {
-			return $freshValue;
+		// Stale or fresh, return the payload and be done
+		if ( !$awFragment->isMissing() ) {
+			return $awFragment->getValue();
 		}
 
-		// Build function call for the input fragment and arguments.
-		// At this point we know we are running the call for today's value.
-		$functionCall = $this->buildFragmentFunctionCall( $fragment, $qid, $language, $date );
-
-		// 2. Check in the cache for a stale fragment (cache key without date)
-		$cacheKeyStale = $this->objectCache->makeKey(
-			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
-			$qid,
-			$language,
-			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment )
-		);
-
-		$staleValue = json_decode( $this->objectCache->get( $cacheKeyStale ) ?: '', true );
-
-		// 3.a. If we are running a sync call and there's no cached value (fresh or stale),
-		// regenerate the value synchronously and return it.
-		if ( !( $async ) && !is_array( $staleValue ) ) {
-			$cachedValue = $this->abstractWikiRequest->generateSafeFragment(
-				$functionCall,
-				$cacheKeyFresh,
-				$cacheKeyStale
-			);
-
-			return $cachedValue;
-		}
-
-		// 3.b. If we are running an async call:
-		// * push a job for the fragment to be refreshed and recashed
-		// * if there is cached stale value, we return it
-		// * if there is no cached value, we return a pending state
-		$revalidateFragmentJob = new CacheAbstractContentFragmentJob( [
-			'qid' => $qid,
-			'language' => $language,
-			'date' => $date,
-			'functionCall' => $functionCall,
-			'cacheKeyFresh' => $cacheKeyFresh,
-			'cacheKeyStale' => $cacheKeyStale
-		] );
-		$this->jobQueueGroup->lazyPush( $revalidateFragmentJob );
-
-		if ( !is_array( $staleValue ) ) {
+		// Missing fragment:
+		// if async=true, return pending value
+		if ( $async ) {
 			return [
 				'success' => true,
 				'pending' => true
 			];
 		}
 
-		return $staleValue;
-	}
-
-	/**
-	 * Builds function call to virtual function Z825/Run Abstract Fragment
-	 *
-	 * @param array $fragment
-	 * @param string $qid
-	 * @param string $language
-	 * @param string $date
-	 * @return array
-	 */
-	private function buildFragmentFunctionCall( array $fragment, string $qid, string $language, string $date ): array {
-		// We get the function definition from schemata because:
-		// * it will be available in the Abstract repo
-		// * we don't need the user-contributed labels
-		// * we can avoid making a remote fetch from wikifunctions
-		$function = $this->getFunctionDefinition();
-
-		// Set function's only implementation as fragment to execute:
-		$function[ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS ] = [
-			ZTypeRegistry::Z_IMPLEMENTATION,
-			[
-				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_IMPLEMENTATION,
-				ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION => ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT,
-				ZTypeRegistry::Z_IMPLEMENTATION_COMPOSITION => $fragment
-			]
-		];
-
-		// Build argument: Wikidata reference object from qid
-		$wikidataReference = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM,
-			ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM_ID => $qid
-		];
-
-		// Build argument: Date parser function call from date string and language
-		$dateParser = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_FUNCTIONCALL,
-			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => ZTypeRegistry::Z_DATE_PARSER,
-			ZTypeRegistry::Z_DATE_PARSER_STRING => $date,
-			ZTypeRegistry::Z_DATE_PARSER_LANGUAGE => $language
-		];
-
-		// Build function call to literal function:
-		$functionCall = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_FUNCTIONCALL,
-			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => $function,
-			ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT_QID => $wikidataReference,
-			ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT_LANGUAGE => $language,
-			ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT_DATE => $dateParser
-		];
-
-		return $functionCall;
-	}
-
-	/**
-	 * Gets the function definition for Z825/Run Abstract Fragment from
-	 * the function schemata data definitions directory.
-	 *
-	 * @return array
-	 */
-	private function getFunctionDefinition(): array {
-		$functionPath = dirname( __DIR__ ) . '/../function-schemata/data/definitions/';
-		$functionFile = ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT . '.json';
-		$functionDefinitionStr = file_get_contents( $functionPath . $functionFile );
-
-		if ( !$functionDefinitionStr ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-not-enabled' ],
-				null, null, HttpStatus::NOT_IMPLEMENTED
-			);
-		}
-
-		$functionDefinition = json_decode( $functionDefinitionStr, true );
-		if ( !is_array( $functionDefinition ) ) {
-			$this->dieWithError(
-				[ 'apierror-abstractwiki_run_fragment-not-enabled' ],
-				null, null, HttpStatus::NOT_IMPLEMENTED
-			);
-		}
-
-		return $functionDefinition[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
+		// else, synchronously run and return value
+		return $this->abstractWikiRequest->fetchRenderedAWFragment(
+			$fragment,
+			$qid,
+			$language->getZid(),
+			$date,
+			$awFragment->getKey()
+		);
 	}
 
 	/**

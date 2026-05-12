@@ -25,6 +25,7 @@ use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
@@ -173,7 +174,13 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 */
 	public function getActionOverrides() {
 		return [
-			'edit' => AbstractContentEditAction::class,
+			'edit' => [
+				'class' => AbstractContentEditAction::class,
+				'services' => [
+					'RevisionStore',
+					'ContentHandlerFactory'
+				]
+			],
 			'history' => AbstractContentHistoryAction::class
 		];
 	}
@@ -298,4 +305,41 @@ class AbstractWikiContentHandler extends ContentHandler {
 		return $slotDiffRenderer;
 	}
 
+	/**
+	 * Return the AbstractWikiContent object for a title and revisionId
+	 * or the latest revision if revisionId is null.
+	 *
+	 * Returns false if the revision is not found or the content model
+	 * of the retrieved revision doesn't match AbstractContent model.
+	 *
+	 * @param RevisionStore $revisionStore
+	 * @param Title $title
+	 * @param int|null $revisionId
+	 * @return AbstractWikiContent|false
+	 */
+	public function getAbstractContentForTitle(
+		RevisionStore $revisionStore,
+		Title $title,
+		?int $revisionId
+	) {
+		// Get requested or current revision
+		$revision = $revisionId ?
+			$revisionStore->getRevisionByTitle( $title, $revisionId, 0 ) :
+			$revisionStore->getKnownCurrentRevision( $title );
+
+		// Check revision exists
+		if ( !$revision ) {
+			return false;
+		}
+
+		// Check content model
+		$contentModel = $revision->getMainContentModel();
+		if ( $contentModel !== CONTENT_MODEL_ABSTRACT ) {
+			return false;
+		}
+
+		$content = $revision->getMainContentRaw();
+		'@phan-var AbstractWikiContent $content';
+		return $content;
+	}
 }

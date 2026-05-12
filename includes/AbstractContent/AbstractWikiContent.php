@@ -24,7 +24,7 @@ use StatusValue;
  */
 class AbstractWikiContent extends AbstractContent {
 
-	private ?\stdClass $object;
+	private ?array $object;
 	private ?StatusValue $status = null;
 
 	public const ABSTRACTCONTENT_SECTION_LEDE = 'Q8776414';
@@ -41,7 +41,7 @@ class AbstractWikiContent extends AbstractContent {
 		parent::__construct( $ourModel );
 
 		// Check that the input is a valid JSON
-		$parseStatus = FormatJson::parse( $text );
+		$parseStatus = FormatJson::parse( $text, FormatJson::FORCE_ASSOC );
 		if ( !$parseStatus->isGood() ) {
 			$errorMessage = wfMessage( $parseStatus->getErrors()[0]['message'] )->inContentLanguage()->text();
 			throw new InvalidArgumentException( $errorMessage );
@@ -78,10 +78,24 @@ EOD;
 	}
 
 	/**
-	 * @return ?\stdClass
+	 * @return ?array
 	 */
 	public function getObject() {
 		return $this->object;
+	}
+
+	/**
+	 * @return ?string
+	 */
+	public function getTopicQid() {
+		return $this->object[ 'qid' ] ?? null;
+	}
+
+	/**
+	 * @return ?array
+	 */
+	public function getSections() {
+		return $this->object['sections'] ?? null;
 	}
 
 	/**
@@ -176,60 +190,70 @@ EOD;
 
 		// Qid exists, is a string, and has the shape of a qid.
 		// Also consider null (Q0) qid as valid, as empty content objects must pass validation
-		if (
-			!isset( $this->object->qid ) || !is_string( $this->object->qid ) ||
-			( !AbstractContentUtils::isValidWikidataItemReference( $this->object->qid ) &&
-			!AbstractContentUtils::isNullWikidataItemReference( $this->object->qid ) )
+		$topicQid = $this->getTopicQid();
+		if ( !is_string( $topicQid ) ||
+			( !AbstractContentUtils::isValidWikidataItemReference( $topicQid ) &&
+			!AbstractContentUtils::isNullWikidataItemReference( $topicQid ) )
 		) {
-			$badQid = $this->object->qid ?? null;
+			$badQid = $topicQid ?? (string)null;
 			$badQid = is_string( $badQid ) ? $badQid : var_export( $badQid, true );
 			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-qid', $badQid );
 			return false;
 		}
 
 		// Sections exists and is an object
-		if ( !isset( $this->object->sections ) || !is_object( $this->object->sections ) ) {
+		$sections = $this->getSections();
+		if ( !is_array( $sections ) ) {
 			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-missing-sections' );
 			return false;
 		}
 
 		// Sections must contain a lede section
-		if ( !property_exists( $this->object->sections, self::ABSTRACTCONTENT_SECTION_LEDE ) ) {
+		if ( !array_key_exists( self::ABSTRACTCONTENT_SECTION_LEDE, $sections ) ) {
 			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-missing-lede-section' );
 			return false;
 		}
 
 		// For each section:
-		foreach ( get_object_vars( $this->object->sections ) as $key => $section ) {
+		foreach ( $sections as $sectionQid => $section ) {
 			// Section key must be a valid qid
-			if ( !AbstractContentUtils::isValidWikidataItemReference( $key ) ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-qid', $key );
+			if ( !AbstractContentUtils::isValidWikidataItemReference( $sectionQid ) ) {
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-qid', $sectionQid );
 				return false;
 			}
 
 			// Section must be an object
-			if ( !is_object( $section ) ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-content', $key );
+			if ( !is_array( $section ) ) {
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-content', $sectionQid );
 				return false;
 			}
 
+			$sectionIndex = $section['index'] ?? null;
 			// Section index must have a positive integer
-			if ( !isset( $section->index ) || !is_int( $section->index ) || $section->index < 0 ) {
-				$badIndex = $this->object->index ?? (string)null;
+			if ( !is_int( $sectionIndex ) || $sectionIndex < 0 ) {
+				$badIndex = $sectionIndex ?? (string)null;
 				$badIndex = is_string( $badIndex ) ? $badIndex : var_export( $badIndex, true );
-				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-section-index', $key, $badIndex );
+				$this->status = StatusValue::newFatal(
+					'wikilambda-abstract-error-bad-section-index',
+					$sectionQid,
+					$badIndex
+				);
 				return false;
 			}
 
+			$fragments = $section['fragments'] ?? null;
 			// Section fragments must exist and contain an array
-			if ( !isset( $section->fragments ) || !is_array( $section->fragments ) ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-missing-section-fragments', $key );
+			if ( !is_array( $fragments ) || !array_is_list( $fragments ) ) {
+				$this->status = StatusValue::newFatal(
+					'wikilambda-abstract-error-missing-section-fragments',
+					$sectionQid
+				);
 				return false;
 			}
 
 			// Section fragments must be a benjamin array of HTML/Z89 objects
-			if ( count( $section->fragments ) === 0 || $section->fragments[0] !== ZTypeRegistry::Z_HTML_FRAGMENT ) {
-				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-fragments-type', $key );
+			if ( count( $fragments ) === 0 || $fragments[0] !== ZTypeRegistry::Z_HTML_FRAGMENT ) {
+				$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-bad-fragments-type', $sectionQid );
 				return false;
 			}
 		}
@@ -250,9 +274,9 @@ EOD;
 	 * @param Title $title
 	 * @return bool
 	 */
-	public function isValidForTitle( Title $title ) {
-		// title is the same as object->qid
-		$innerQid = $this->object->qid;
+	public function isValidForTitle( Title $title ): bool {
+		// title is the same as the value of the object key 'qid'
+		$innerQid = $this->getTopicQid() ?? '';
 		$titleQid = $title->getBaseText();
 		if ( $innerQid !== $titleQid ) {
 			$this->status = StatusValue::newFatal( 'wikilambda-abstract-error-unmatching-qid', $innerQid, $titleQid );

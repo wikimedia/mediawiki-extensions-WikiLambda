@@ -1157,7 +1157,8 @@
 		"abstractwiki_run_fragment": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiAbstractWikiRunFragment",
 			"services": [
-				"JobQueueGroup",
+				"WikifunctionsLanguageFactory",
+				"AbstractWikiFragmentStore",
 				"AbstractWikiRequest"
 			]
 		}
@@ -1209,7 +1210,13 @@
 				"WikiLambdaZObjectStore"
 			]
 		},
-		"CreateAbstract": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateAbstract",
+		"CreateAbstract": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateAbstract",
+			"services": [
+				"RevisionStore",
+				"ContentHandlerFactory"
+			]
+		},
 		"CreateObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateObject",
 		"RunFunction": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialRunFunction",
 		"ListDuplicateObjectNames": {

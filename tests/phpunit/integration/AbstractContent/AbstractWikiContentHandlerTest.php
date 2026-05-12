@@ -14,11 +14,13 @@ use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Content\WikitextContent;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Json\FormatJson;
+use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Title\Title;
 
@@ -170,8 +172,18 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$overrides = $handler->getActionOverrides();
 
-		$this->assertSame( AbstractContentEditAction::class, $overrides[ 'edit' ] );
-		$this->assertSame( AbstractContentHistoryAction::class, $overrides[ 'history' ] );
+		// We should override edit and history actions
+		$this->assertCount( 2, $overrides );
+
+		$this->assertSame(
+			AbstractContentEditAction::class,
+			$this->resolveActionOverrideClass( $overrides[ 'edit' ] )
+		);
+
+		$this->assertSame(
+			AbstractContentHistoryAction::class,
+			$this->resolveActionOverrideClass( $overrides[ 'history' ] )
+		);
 	}
 
 	public function testFillParserOutput_invalidContent() {
@@ -270,5 +282,70 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$reflector = new \ReflectionClass( get_class( $object ) );
 		$method = $reflector->getMethod( $methodName );
 		return $method->invokeArgs( $object, $args );
+	}
+
+	/**
+	 * Resolve an action override definition into its resulting class name.
+	 * Actions are defined according to the specs described in
+	 * {@see ActionFactory::getActionSpec}:
+	 * * A string: class name
+	 * * A caller: taking Action and IContextSource as constructor parameters
+	 * * An array: with an ObjectFactory specification, which can include
+	 *   class, services, factory, etc.
+	 *
+	 * In our codebase, we use string and an ObjectFactory spec array,
+	 * we don't use direct caller, so we don't need to support it in tests.
+	 *
+	 * @param mixed $override
+	 * @return string|false
+	 */
+	private function resolveActionOverrideClass( $override ): string|false {
+		// Direct class name
+		if ( is_string( $override ) ) {
+			return $override;
+		}
+
+		// If callable, constructor has Article and IContextSource (see MediaWiki/Actions/Action)
+		$constructorArgs = [
+			$this->createMock( Article::class ),
+			$this->createMock( IContextSource::class )
+		];
+
+		// We don't really need to support callable, we don't use it yet
+		if ( is_callable( $override ) ) {
+			$instance = $override( ...$constructorArgs );
+			return get_class( $instance );
+		}
+
+		// If not an ObjectFactory spec, let's force an error: this helper needs
+		// to be adapted to allow for other valid ActionFactory values.
+		if ( !is_array( $override ) ) {
+			return false;
+		}
+
+		// If 'class' is set, it's a string with the class name, this is good enough
+		if ( isset( $override['class'] ) ) {
+			return $override['class'];
+		}
+
+		// Else, 'factory' must have the constructor, and additional services
+		// will be defined in the 'services' key
+		if ( isset( $override['factory'] ) ) {
+			$factory = $override['factory'];
+			if ( isset( $override['services'] ) ) {
+				foreach ( $override['services'] as $serviceName ) {
+					$service = $this->getServiceContainer()->getService( $serviceName );
+					$constructorArgs[] = $service;
+				}
+			}
+
+			if ( is_callable( $factory ) ) {
+				$instance = $factory( ...$constructorArgs );
+				return get_class( $instance );
+			}
+		}
+
+		// Else, let's force an error
+		return false;
 	}
 }

@@ -38,23 +38,20 @@ class AbstractWikiContentTest extends WikiLambdaIntegrationTestCase {
 		$testObject = new AbstractWikiContent( $validJson );
 
 		$this->assertSame( $validJson, $testObject->getText() );
-		$this->assertEquals( json_decode( $validJson ), $testObject->getObject() );
+		$this->assertEquals( json_decode( $validJson, true ), $testObject->getObject() );
 	}
 
 	public function testMakeEmptyContent() {
-		$emptyContent = AbstractWikiContent::makeEmptyContent();
-		$emptyObject = $emptyContent->getObject();
+		$emptyObject = AbstractWikiContent::makeEmptyContent();
 
-		$this->assertSame( 'Q0', $emptyObject->qid );
-		$this->assertTrue( property_exists(
-			$emptyObject->sections,
-			AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE
-		) );
+		$this->assertSame( 'Q0', $emptyObject->getTopicQid() );
+		$this->assertArrayHasKey( AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE,
+			$emptyObject->getSections() );
 
-		$ledeSection = $emptyObject->sections->{ AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE };
+		$ledeSection = $emptyObject->getSections()[ AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE ];
 
-		$this->assertSame( 0, $ledeSection->index );
-		$this->assertCount( 1, $ledeSection->fragments );
+		$this->assertSame( 0, $ledeSection['index'] );
+		$this->assertCount( 1, $ledeSection['fragments'] );
 	}
 
 	public function testEmptyContentIsValid() {
@@ -159,7 +156,7 @@ class AbstractWikiContentTest extends WikiLambdaIntegrationTestCase {
 		];
 
 		yield 'fragments is not a list' => [
-			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": {} } } }',
+			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": { "Z1K1": "Z7" } } } }',
 			false,
 			'wikilambda-abstract-error-missing-section-fragments'
 		];

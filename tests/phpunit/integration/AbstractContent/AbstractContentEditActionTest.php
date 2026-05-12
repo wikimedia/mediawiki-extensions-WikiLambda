@@ -29,8 +29,8 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 	private const TEST_ABSTRACT_NS = 2300;
 
 	protected function setUp(): void {
-		   parent::setUp();
-		   $this->setUpAsClientMode();
+		parent::setUp();
+		$this->setUpAsClientMode();
 
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
 			$this->markTestSkipped( 'WikibaseClient not available' );
@@ -45,7 +45,12 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 	private function buildAction( Title $title, ?FauxRequest $request = null ): AbstractContentEditAction {
 		$context = $this->getTestContext( $title, $request );
 		$article = Article::newFromTitle( $title, $context );
-		return new AbstractContentEditAction( $article, $context );
+		return new AbstractContentEditAction(
+			$article,
+			$context,
+			$this->getServiceContainer()->getRevisionStore(),
+			$this->getServiceContainer()->getContentHandlerFactory()
+		);
 	}
 
 	/**
@@ -69,8 +74,7 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 	private function getAbstractContentHandler(): AbstractWikiContentHandler {
 		return new AbstractWikiContentHandler(
 			CONTENT_MODEL_ABSTRACT,
-			$this->getServiceContainer()->getMainConfig(),
-			$this->getServiceContainer()->getContentHandlerFactory()
+			$this->getServiceContainer()->getMainConfig()
 		);
 	}
 

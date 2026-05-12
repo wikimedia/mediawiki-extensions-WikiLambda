@@ -10,75 +10,85 @@
 
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
+use JsonException;
 use MediaWiki\Config\Config;
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class AbstractWikiRequest {
 
-	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
 	public function __construct(
 		private readonly Config $config,
 		private readonly HttpRequestFactory $httpRequestFactory,
-		private readonly WikifunctionsPFragmentRenderer $renderer
+		private readonly AWFragmentStore $fragmentStore,
+		private readonly WikifunctionsPFragmentRenderer $fragmentRenderer
 	) {
 		// Non-injected items
-		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
 
 	/**
-	 * Re-generates a safe Abstract Wikipedia fragment by requesting it remotely
-	 * from Wikifunctions (repo), sanitising it, and storing it locally in the
-	 * cache under both the fresh and the stale keys.
+	 * Re-generates an Abstract Wikipedia fragment by requesting it remotely from
+	 * Wikifunctions (repo), sanitises it, and stores it in the AWFragmentStore.
 	 *
 	 * Returns an associative array containing the cached value, either a
 	 * successfully rendered and sanitised fragment, or a failed one.
 	 *
-	 * @param array $functionCall
-	 * @param string $cacheKeyFresh
-	 * @param string $cacheKeyStale
+	 * Callers:
+	 * * Jobs/CacheAbstractContentFragmentJob
+	 * * ActionAPIs/ApiAbstractWikiRunFragment
+	 *
+	 * @param array $fragment
+	 * @param string $topicQid
+	 * @param string $languageZid
+	 * @param string $date
+	 * @param string $fragmentKey
 	 * @return array
 	 */
-	public function generateSafeFragment(
-		array $functionCall,
-		string $cacheKeyFresh,
-		string $cacheKeyStale
+	public function fetchRenderedAWFragment(
+		array $fragment,
+		string $topicQid,
+		string $languageZid,
+		string $date,
+		string $fragmentKey
 	): array {
-		$valueToCache = [];
-		// Set initial TTL, for successful renders or 400/bad requests:
-		// * fresh value for at least 48 hours to ensure availability through timezones
-		// * stale value for a month
-		$staleValueTTL = $this->objectCache::TTL_MONTH;
-		$freshValueTTL = $this->objectCache::TTL_WEEK;
+		$renderedValue = [];
+
+		// 1. Build the Z825 function call with the fragment as composition implementation
+		$functionCall = $this->buildRenderAWFragmentCall(
+			$fragment,
+			$topicQid,
+			$languageZid,
+			$date
+		);
 
 		try {
-			// 1. Run fragment function call, should return a Z89/Html fragment object
-			$htmlFragment = $this->fetchRenderedFragment( $functionCall );
+			// 2. Run fragment function call, should return a Z89/Html fragment object
+			$htmlFragment = $this->callRenderFunctionCall( $functionCall );
 
-			// 2. If successful, render the Z89K1/Html fragment value
-			$sanitizedHtml = $this->renderer->render(
+			// 2.1. If successful, render the Z89K1/Html fragment value
+			$sanitizedHtml = $this->fragmentRenderer->render(
 				$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
 			);
 
-			// 3. Cache sucessful sanitized fragment preview
-			$valueToCache[ 'success' ] = true;
-			$valueToCache[ 'value' ] = $sanitizedHtml;
+			// ... and prepare rendered and sanitized response to be stored
+			$renderedValue[ 'success' ] = true;
+			$renderedValue[ 'value' ] = $sanitizedHtml;
 
 		} catch ( WikifunctionCallException $e ) {
-			// Cache the failed request
-			$valueToCache[ 'success' ] = false;
-			$valueToCache[ 'value' ] = $e->toArray();
+			// 2.2. If failure, log and prepare the error payload to be stored
+			$renderedValue[ 'success' ] = false;
+			$renderedValue[ 'value' ] = $e->toArray();
 
 			// First, check if it's a user-triggered error. If so, debug-log with the extra data
 			// but don't make noise; use the default TTL for a request.
@@ -88,17 +98,13 @@ class AbstractWikiRequest {
 					$logContext[ 'zerror' ] = $e->getZError();
 				}
 				$this->logger->debug(
-					__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment failed: {error}',
+					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall failed: {error}',
 					[
 						'error' => $e->getMessage(),
-						'cacheKeyFresh' => $cacheKeyFresh,
-						'cacheKeyStale' => $cacheKeyStale,
+						'fragmentKey' => $fragmentKey
 					] + $logContext
 				);
 			} else {
-				// For temporary server errors: reduce fresh TTL to a minute
-				$freshValueTTL = $this->objectCache::TTL_MINUTE;
-
 				// Possible error cases that are "our fault" and should be logged noisily:
 				// - HttpStatus::NOT_IMPLEMENTED (server not configured)
 				// - HttpStatus::INTERNAL_SERVER_ERROR
@@ -114,35 +120,123 @@ class AbstractWikiRequest {
 					$e->getHttpStatusCode() === HttpStatus::TOO_MANY_REQUESTS
 				) {
 					$this->logger->warning(
-						__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment triggered a server issue: {error}',
+						__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall got a server issue: {error}',
 						[
 							'error' => $e->getMessage(),
 							'exception' => $e,
-							'cacheKeyFresh' => $cacheKeyFresh,
-							'cacheKeyStale' => $cacheKeyStale,
+							'fragmentKey' => $fragmentKey,
 						]
 					);
 				} else {
 					// Something's gone wrong as an unpected error state, log as an error:
 					$this->logger->error(
-						__METHOD__ . ': AbstractWikiRequest::fetchRenderedFragment has unhandled error: {error}',
+						__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall got unhandled error: {error}',
 						[
 							'error' => $e->getMessage(),
 							'exception' => $e,
-							'cacheKeyFresh' => $cacheKeyFresh,
-							'cacheKeyStale' => $cacheKeyStale,
+							'fragmentKey' => $fragmentKey,
 						]
 					);
 				}
 			}
 		}
 
-		// 4. Cache the response with both the fresh and the stale keys
-		$cachedValueStr = json_encode( $valueToCache );
-		$this->objectCache->set( $cacheKeyFresh, $cachedValueStr, $freshValueTTL );
-		$this->objectCache->set( $cacheKeyStale, $cachedValueStr, $staleValueTTL );
+		// 4. Set the fragment in the AWFragmentStore
+		$this->fragmentStore->setRenderedAWFragment(
+			$topicQid,
+			$languageZid,
+			$date,
+			$fragmentKey,
+			$renderedValue
+		);
 
-		return $valueToCache;
+		return $renderedValue;
+	}
+
+	/**
+	 * Utility function to build a function call to the virtual function
+	 * Z825/Run Abstract Fragment, using the fragment as an implementation and
+	 * the args Qid, Language and Date as values for Z825K1, Z825K2 and Z825K3.
+	 *
+	 * Gets the data definition of the virtual function from function-schemata
+	 * data/definitions/Z825.json file, as this will be present in the Abstract
+	 * Repo environment (and any other)
+	 *
+	 * Returns the function call, or false if it could not be created
+	 *
+	 * @param array $fragment
+	 * @param string $qid
+	 * @param string $language
+	 * @param string $date
+	 * @return array
+	 */
+	private function buildRenderAWFragmentCall(
+		array $fragment,
+		string $qid,
+		string $language,
+		string $date
+	): array {
+		// We get the function definition from schemata because:
+		// * it will be available in the Abstract repo
+		// * we don't need the user-contributed labels
+		// * we can avoid making a remote fetch from wikifunctions
+		$function = $this->getRenderAWFragmentFunction();
+
+		// Set function's only implementation as fragment to execute:
+		$function[ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS ] = [
+			ZTypeRegistry::Z_IMPLEMENTATION,
+			[
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_IMPLEMENTATION,
+				ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION => ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT,
+				ZTypeRegistry::Z_IMPLEMENTATION_COMPOSITION => $fragment
+			]
+		];
+
+		// Build argument: Wikidata reference object from qid
+		$wikidataReference = [
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM,
+			ZTypeRegistry::Z_WIKIDATA_REFERENCE_ITEM_ID => $qid
+		];
+
+		// Build argument: Date parser function call from date string and language
+		$dateParser = [
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_FUNCTIONCALL,
+			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => ZTypeRegistry::Z_DATE_PARSER,
+			ZTypeRegistry::Z_DATE_PARSER_STRING => $date,
+			ZTypeRegistry::Z_DATE_PARSER_LANGUAGE => $language
+		];
+
+		// Build function call to literal function:
+		$functionCall = [
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_FUNCTIONCALL,
+			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => $function,
+			ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT_QID => $wikidataReference,
+			ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT_LANGUAGE => $language,
+			ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT_DATE => $dateParser
+		];
+
+		return $functionCall;
+	}
+
+	/**
+	 * Utility function to get the function definition for Z825/Render Abstract
+	 * Fragment from the function schemata data definitions directory.
+	 *
+	 * @return array
+	 * @throws RuntimeException
+	 */
+	private function getRenderAWFragmentFunction(): array {
+		$functionPath = dirname( __DIR__ ) . '/../function-schemata/data/definitions/';
+		$functionFile = ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT . '.json';
+
+		$functionDefinitionStr = file_get_contents( $functionPath . $functionFile );
+		$functionDefinition = json_decode( $functionDefinitionStr, true );
+		if ( !is_array( $functionDefinition ) ) {
+			// If the file was not found, or decoding it was not possible:
+			throw new RuntimeException( "Failed to load function-schemata definition for Z825" );
+		}
+
+		return $functionDefinition[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
 	}
 
 	/**
@@ -152,11 +246,11 @@ class AbstractWikiRequest {
 	 * @return array HTML fragment (Z89) response object
 	 * @throws WikifunctionCallException
 	 */
-	public function fetchRenderedFragment( array $functionCall ): array {
+	public function callRenderFunctionCall( array $functionCall ): array {
 		// Base API URL from config
 		$targetUrl = $this->config->get( 'WikiLambdaClientTargetAPI' );
 		if ( !$targetUrl ) {
-			// Missing configuration, abstractwiki-not-implemented error
+			// Missing configuration
 			throw new WikifunctionCallException(
 				'apierror-abstractwiki_run_fragment-not-enabled',
 				HttpStatus::NOT_IMPLEMENTED
@@ -166,8 +260,16 @@ class AbstractWikiRequest {
 		// so it shows up in HTTP-layer logs on the remote wiki.
 		$apiUrl = $targetUrl . '/w/api.php?action=wikilambda_function_call';
 
-		// Stringify the function call
-		$functionCallEncoded = json_encode( $functionCall, JSON_THROW_ON_ERROR );
+		try {
+			// Stringify the function call
+			$functionCallEncoded = json_encode( $functionCall, JSON_THROW_ON_ERROR );
+		} catch ( JsonException ) {
+			// Missing or corrupt schemata files means bad configuration
+			throw new WikifunctionCallException(
+				'apierror-abstractwiki_run_fragment-not-enabled',
+				HttpStatus::NOT_IMPLEMENTED
+			);
+		}
 
 		// Build POST params
 		$params = [
