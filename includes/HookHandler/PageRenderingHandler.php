@@ -146,11 +146,14 @@ class PageRenderingHandler implements
 		// `wfArrayToCgi` rather than hacking inline
 		$langParams = [ 'uselang' => $lang ];
 
-		// Append uselang to the 'history' link:
-		$links['views']['history']['href'] = $this->appendOrReplaceQueryParams(
-			$links['views']['history']['href'],
-			$langParams
-		);
+		// (T426241) Don't do this if the page somehow doesn't have a history tab, as it will error
+		if ( array_key_exists( 'history', $links['views'] ) ) {
+			// Append uselang to the 'history' link:
+			$links['views']['history']['href'] = $this->appendOrReplaceQueryParams(
+				$links['views']['history']['href'],
+				$langParams
+			);
+		}
 
 		// Append uselang to the 'edit' link (if it exists):
 		if ( array_key_exists( 'edit', $links['views'] ) ) {
