@@ -355,7 +355,7 @@
 	"wikilambda-functioncall-metadata-validator-errors-summary": "Tipo di errore di convalida",
 	"wikilambda-helplink-button": "Aiuto",
 	"wikilambda-helplink-tooltip": "Puoi leggere una pagina di aiuto che spiega questi metadati",
-	"wikilambda-history-title": "Storico delle revisioni di \"$1\" ($2)",
+	"wikilambda-history-title": "Cronologia di \"$1\" ($2)",
 	"wikilambda-implementation-create-new": "Aggiungi implementazione",
 	"wikilambda-implementation-none-found": "Le implementazioni che creerai appariranno qui.",
 	"wikilambda-implementation-selector": "Seleziona un'implementazione",

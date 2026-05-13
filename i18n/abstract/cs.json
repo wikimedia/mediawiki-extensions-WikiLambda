@@ -16,6 +16,8 @@
 	"right-wikilambda-abstract-edit": "Editace existujících abstraktních článků",
 	"specialpages-group-abstractwiki": "Články Abstraktní Wikipedie",
 	"wikilambda-abstract-content-object": "Abstraktní článek",
+	"wikilambda-abstract-content-history-title": "Historie revizí pro „$1“ ($2)",
+	"wikilambda-abstract-edit-title-with-label": "Editace abstraktního článku pro „$1“ ($2)",
 	"wikilambda-abstract-edit-title": "Editovat abstraktní článek pro $1",
 	"wikilambda-abstract-error-bad-fragments-type": "Sekce s klíčem „$1“ má špatně typovaný seznam fragmentů.",
 	"wikilambda-abstract-error-bad-qid": "Hodnota vlastnosti „qid“ („$1“) není platný identifikátor položky Wikidat.",

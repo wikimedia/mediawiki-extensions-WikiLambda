@@ -4,7 +4,24 @@
 			"Repakr"
 		]
 	},
+	"action-wikilambda-abstract-create": "створення нових Абстрактних статей",
+	"action-wikilambda-abstract-edit": "редагування наявних Абстрактних статей",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Пропоновані Вікіфенкції для Абсткрактної Вікіпедії",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Пропоновані Вікіфенкції",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "Пропонована Вікіфенкція $1",
+	"content-model-abstractwiki": "Абстрактна стаття",
+	"right-wikilambda-abstract-create": "Створення нових Абстрактних статей",
+	"right-wikilambda-abstract-edit": "Редагування наявних Абстрактних статей",
 	"specialpages-group-abstractwiki": "Сторінки Абстрактної Вікіпедії",
+	"wikilambda-abstract-content-object": "Абстрактна стаття",
+	"wikilambda-abstract-edit-title": "Редагувати Абстрактну статтю за $1",
+	"wikilambda-abstract-error-bad-fragments-type": "Розділ із ключем '$1' має список фрагментів з неправильним типом.",
+	"wikilambda-abstract-error-bad-qid": "Значення властивості 'qid' ('$1') не є дійсним Qid елемента Вікіданих.",
+	"wikilambda-abstract-error-bad-section-content": "Розділ із ключем '$1' має недійсний вміст.",
+	"wikilambda-abstract-error-bad-section-index": "Розділ із ключем '$1' має недійсне число індексу ('$2').",
+	"wikilambda-abstract-error-bad-section-qid": "Розділ із ключем '$1' не є дійсним Qid елемента Вікіданих.",
+	"wikilambda-abstract-error-invalid-json": "Абстрактна стаття не є дійсним JSON.",
+	"wikilambda-abstract-error-missing-section-fragments": "Розділ із ключем '$1' не має фрагментів.",
 	"wikilambda-abstract-fragment-actions-menu": "Меню дій з фрагментом",
 	"wikilambda-abstract-menu-fragments-accessible-label": "Меню для вибору і додавання нового фрагменту",
 	"wikilambda-abstract-menu-group-basic-fragments": "Основні дії з фрагментом",
@@ -20,5 +37,9 @@
 	"wikilambda-abstract-menu-option-move-after": "Перемістити фрагмент після",
 	"wikilambda-abstract-menu-option-move-before": "Перемістити фрагмент до",
 	"wikilambda-abstract-preview-fragment-retry": "Повторити",
-	"wikilambda-abstract-special-create-createbutton-label": "Створити"
+	"wikilambda-abstract-preview-in-language": "Згенерований текст",
+	"wikilambda-abstract-special-create": "Створити нову Абстрактну статтю",
+	"wikilambda-abstract-special-create-createbutton-label": "Створити",
+	"wikilambda-abstract-special-create-existing": "Для цього елемента Вікіданих вже існує Абстрактна стаття:",
+	"wikilambda-abstract-special-create-intro": "Переконайтеся, що ви дотримуєтесь [[$1|політики спільноти]], включно з авторськими правилами."
 }

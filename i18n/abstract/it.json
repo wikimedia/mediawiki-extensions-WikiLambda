@@ -10,6 +10,7 @@
 	"content-model-abstractwiki": "Articolo astratto",
 	"right-wikilambda-abstract-create": "Crea nuovi articoli astratti",
 	"wikilambda-abstract-content-object": "Articolo astratto",
+	"wikilambda-abstract-content-history-title": "Cronologia di \"$1\" ($2)",
 	"wikilambda-abstract-error-bad-section-content": "La sezione con chiave '$1' ha contenuti non validi.",
 	"wikilambda-abstract-error-missing-sections": "L'articolo astratto deve avere almeno una sezione.",
 	"wikilambda-abstract-menu-option-add-section": "Aggiungi sezione",
