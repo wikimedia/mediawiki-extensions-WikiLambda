@@ -81,22 +81,6 @@ class ZTypedErrorTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * TODO (T309798): This is now broken because Z882 is built-in. Changing this to Z885 makes
-	 * it pass, but that's also built-in, and this test doesn't justify its existence or raise
-	 * code coverage(?), so leaving it as `@group Broken` for now.
-	 *
-	 * @group Broken
-	 */
-	public function testCreate_nobuiltin() {
-		$this->insertZids( [ 'Z17', 'Z882' ] );
-		$genericError = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z9" },'
-			. ' "K1": "string value",'
-			. ' "K2": "Z111" }';
-		$testObject = ZObjectFactory::create( json_decode( $genericError ) );
-		$this->assertTrue( $testObject->isValid() );
-	}
-
 	public function testGetSerialized() {
 		$functionCallJson = '{ "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" }';
 
