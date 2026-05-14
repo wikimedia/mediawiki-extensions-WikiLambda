@@ -16,6 +16,8 @@
 	"right-wikilambda-abstract-edit": "Editar artigos abstractos existentes",
 	"specialpages-group-abstractwiki": "Páxinas da Wikipedia abstracta",
 	"wikilambda-abstract-content-object": "Artigo abstracto",
+	"wikilambda-abstract-content-history-title": "Historial de revisións de «$1» ($2)",
+	"wikilambda-abstract-edit-title-with-label": "Editar o artigo abstracto de «$1» ($2)",
 	"wikilambda-abstract-edit-title": "Editar o artigo abstracto de «$1»",
 	"wikilambda-abstract-error-bad-fragments-type": "A sección coa clave «$1» ten unha lista de fragmentos mal tipada.",
 	"wikilambda-abstract-error-bad-qid": "O valor da propiedade «qid» («$1») non é un QID de elemento de Wikidata válido.",

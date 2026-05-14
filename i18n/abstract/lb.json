@@ -16,6 +16,8 @@
 	"right-wikilambda-abstract-edit": "Besteeënd Abstrakt Artikelen änneren",
 	"specialpages-group-abstractwiki": "Abstrakt-Wikipedia-Säiten",
 	"wikilambda-abstract-content-object": "Abstrakten Artikel",
+	"wikilambda-abstract-content-history-title": "Versiounshistorique vu(n) „$1“ ($2)",
+	"wikilambda-abstract-edit-title-with-label": "Abstrakten Artikel fir „$1“ ($2) änneren",
 	"wikilambda-abstract-edit-title": "Abstrakten Artikel fir $1 änneren",
 	"wikilambda-abstract-error-bad-fragments-type": "Den Abschnitt mam Schlëssel „$1“ huet eng falsch typiséiert Fragmentlëscht.",
 	"wikilambda-abstract-error-bad-qid": "De Wäert vun der „QID“-Eegenschaft („$1“) ass keng gülteg Wikidata-Element-QID.",
