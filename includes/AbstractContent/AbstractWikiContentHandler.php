@@ -20,6 +20,7 @@ use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
+use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
@@ -235,6 +236,21 @@ class AbstractWikiContentHandler extends ContentHandler {
 		$pageIdentity = $cpoParams->getPage();
 		$title = Title::castFromPageReference( $pageIdentity );
 		'@phan-var Title $title';
+
+		// Set display title to show Wikibase label if available
+		$qid = $title->getBaseText();
+		$langCode = $userLang->getCode();
+		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode );
+		if ( $label !== null ) {
+			$parserOutput->setDisplayTitle(
+				PageTitleBuilder::createAbstractViewPageTitle(
+					$label,
+					$qid,
+					$langCode,
+					$userLang->getDir(),
+				)
+			);
+		}
 
 		// Set config variables
 		$wikilambdaConfig = [

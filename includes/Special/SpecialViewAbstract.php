@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
@@ -181,8 +182,8 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 
 		// Set page title to the object being viewed.
 		$qid = $targetTitle->getText();
-		$label = $targetTitle->getPrefixedText();
 		$langCode = $targetLanguageObject->getCode();
+		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode ) ?? $targetTitle->getPrefixedText();
 
 		// Rich HTML for the H1 display
 		$output->setPageTitle(
