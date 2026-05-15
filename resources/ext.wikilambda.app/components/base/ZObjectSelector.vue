@@ -688,6 +688,7 @@ module.exports = exports = defineComponent( {
 				// Reset to old value
 				inputValue.value = selectedLabel.value;
 				lookupConfig.value.searchQuery = selectedLabel.value;
+				lookupResults.value = [];
 			}
 		}
 

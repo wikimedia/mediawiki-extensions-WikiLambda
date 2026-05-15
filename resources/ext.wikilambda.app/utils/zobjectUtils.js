@@ -639,6 +639,18 @@ const zobjectUtils = {
 	},
 
 	/**
+	 * Extracts the M-ID string from a Z310 (Commons Image Data Reference) object.
+	 * Handles both plain string and normalized ZString (Z6) forms of Z310K1.
+	 *
+	 * @param {Object} value A Z310 object
+	 * @return {string} M-ID (e.g. "M68960758"), or empty string if absent
+	 */
+	getCommonsMediaId: function ( value ) {
+		const raw = value[ Constants.Z_COMMONS_MEDIA_REFERENCE_ID ];
+		return zobjectUtils.getZStringTerminalValue( raw ) || '';
+	},
+
+	/**
 	 * Recursively walks a nested generic type and returns
 	 * the field IDs and whether they are valid or not.
 	 * Returns a flat array of validated fields [ { fieldPath, isValid } ]

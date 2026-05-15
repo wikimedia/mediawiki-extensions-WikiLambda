@@ -123,6 +123,7 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const { hasChildErrors } = useError( { keyPath: props.keyPath } );
 		const {
+			getCommonsMediaId,
 			getWikidataEntityId,
 			getWikidataEntityReference,
 			getZArgumentReferenceTerminalValue,
@@ -204,6 +205,26 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		const isWikidataType = computed( () => isWikidataEntity( props.objectValue ) );
+
+		/**
+		 * Returns whether the object is a Commons Image Data Reference (Z310).
+		 *
+		 * @return {boolean}
+		 */
+		const isCommonsType = computed( () => type.value === Constants.Z_COMMONS_MEDIA_REFERENCE );
+
+		// Commons data
+
+		/**
+		 * Returns the M-ID string from a Z310 object (Z310K1),
+		 * or empty string if unset or the type is not Commons.
+		 *
+		 * @return {string}
+		 */
+		const commonsMediaId = computed( () => isCommonsType.value ?
+			getCommonsMediaId( props.objectValue ) :
+			undefined
+		);
 
 		// Wikidata data
 		/**
@@ -320,6 +341,10 @@ module.exports = exports = defineComponent( {
 					wikidataResolver.value;
 			}
 
+			if ( isCommonsType.value ) {
+				return commonsMediaId.value || undefined;
+			}
+
 			if ( type.value === Constants.Z_FUNCTION_CALL ) {
 				return props.objectValue[ Constants.Z_FUNCTION_CALL_FUNCTION ];
 			}
@@ -429,7 +454,7 @@ module.exports = exports = defineComponent( {
 			// * The object is one of these types: string, reference, arg reference or html
 			// * The object is a wikidata entity
 			// * The object has a successfully rendered value
-			if ( isTerminalType || isWikidataTerminal.value || isValueRendered.value ) {
+			if ( isTerminalType || isWikidataTerminal.value || isCommonsType.value || isValueRendered.value ) {
 				return [];
 			}
 
@@ -464,6 +489,9 @@ module.exports = exports = defineComponent( {
 			if ( isWikidataType.value ) {
 				return wikidataIconSvg;
 			}
+			if ( isCommonsType.value ) {
+				return icons.cdxIconImage;
+			}
 			if ( type.value === Constants.Z_ARGUMENT_REFERENCE ) {
 				return icons.cdxIconFunctionArgument;
 			}
@@ -486,6 +514,10 @@ module.exports = exports = defineComponent( {
 
 			if ( isWikidataType.value ) {
 				return store.getWikidataEntityUrl( wikidataType.value, wikidataEntityId.value );
+			}
+
+			if ( isCommonsType.value ) {
+				return store.getCommonsMediaDescriptionUrl( commonsMediaId.value );
 			}
 
 			return urlUtils.generateViewUrl( {
@@ -538,6 +570,9 @@ module.exports = exports = defineComponent( {
 			if ( isWikidataType.value ) {
 				missingType = wikidataType.value;
 			}
+			if ( isCommonsType.value ) {
+				missingType = Constants.Z_COMMONS_MEDIA_REFERENCE;
+			}
 
 			const data = store.getLabelData( missingType || Constants.Z_OBJECT );
 			const ctaMessage = i18n( 'wikilambda-zobject-to-string-select-object', data.label ).text();
@@ -560,6 +595,9 @@ module.exports = exports = defineComponent( {
 				data = placeholder.value;
 			} else if ( isWikidataType.value && !!wikidataEntityId.value ) {
 				data = wikidataLabelData.value;
+			} else if ( isCommonsType.value && !!commonsMediaId.value ) {
+				const commonsTitle = store.getCommonsMediaTitle( commonsMediaId.value );
+				data = commonsTitle ? LabelData.fromString( commonsTitle ) : undefined;
 			} else if ( isValueTerminal.value ) {
 				data = store.getLabelData( value.value );
 			}
@@ -630,6 +668,9 @@ module.exports = exports = defineComponent( {
 			generateRenderedValue();
 			if ( isWikidataType.value ) {
 				fetchWikidataEntity();
+			}
+			if ( isCommonsType.value && commonsMediaId.value ) {
+				store.fetchCommonsMedia( { ids: [ commonsMediaId.value ] } );
 			}
 		} );
 

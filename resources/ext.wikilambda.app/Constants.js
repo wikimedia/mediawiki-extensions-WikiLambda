@@ -249,6 +249,13 @@ Constants.WIKIDATA_SELECTOR_PLACEHOLDER_MSG = {
 	[ Constants.Z_WIKIDATA_PROPERTY ]: 'wikilambda-wikidata-property-selector-placeholder'
 };
 
+// Commons Media:
+Constants.COMMONS_BASE_URL = 'https://commons.wikimedia.org';
+
+// Commons Image Data Reference Type (Z310):
+Constants.Z_COMMONS_MEDIA_REFERENCE = 'Z310';
+Constants.Z_COMMONS_MEDIA_REFERENCE_ID = 'Z310K1';
+
 // Visual editor Wikidata input error messages
 Constants.WIKIDATA_INPUT_ERROR_MSG = {
 	[ Constants.Z_WIKIDATA_ITEM ]: 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-item',
@@ -394,6 +401,13 @@ Constants.BUILTIN_TYPE_CONFIG = {
 		component: 'wl-wikidata-statement',
 		allowExpansion: true,
 		collapseOnInit: false
+	},
+	// Commons Media
+	[ Constants.Z_COMMONS_MEDIA_REFERENCE ]: {
+		hasBuiltin: true,
+		component: 'wl-commons-media-reference',
+		allowExpansion: true,
+		collapseOnInit: true
 	}
 };
 

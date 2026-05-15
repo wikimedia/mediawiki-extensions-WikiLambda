@@ -580,6 +580,7 @@
 				"ext.wikilambda.app/store/stores/functionCall.js",
 				"ext.wikilambda.app/store/stores/testResults.js",
 				"ext.wikilambda.app/store/stores/visualeditor.js",
+				"ext.wikilambda.app/store/stores/commons/media.js",
 				"ext.wikilambda.app/store/stores/wikidata/entities.js",
 				"ext.wikilambda.app/store/stores/wikidata/items.js",
 				"ext.wikilambda.app/store/stores/wikidata/lexemes.js",
@@ -661,6 +662,8 @@
 				"ext.wikilambda.app/components/types/ZTypedList.vue",
 				"ext.wikilambda.app/components/types/ZTypedListType.vue",
 				"ext.wikilambda.app/components/types/ZTypedListItems.vue",
+				"ext.wikilambda.app/components/types/commons/MediaSelector.vue",
+				"ext.wikilambda.app/components/types/commons/MediaReference.vue",
 				"ext.wikilambda.app/components/types/wikidata/ReferenceSelector.vue",
 				"ext.wikilambda.app/components/types/wikidata/EntitySelector.vue",
 				"ext.wikilambda.app/components/types/wikidata/Enum.vue",
@@ -756,7 +759,8 @@
 						"cdxIconTableAddRowAfter",
 						"cdxIconTableAddRowBefore",
 						"cdxIconCopy",
-						"cdxIconPaste"
+						"cdxIconPaste",
+						"cdxIconImage"
 					]
 				}
 			],
@@ -1129,6 +1133,8 @@
 				"wikilambda-object-selector-suggested-types",
 				"wikilambda-object-selector-suggested-languages",
 				"wikilambda-edit-monolingual-text-placeholder",
+				"wikilambda-commons-media-selector-placeholder",
+				"wikilambda-commons-media-empty-value-placeholder",
 				"wikilambda-wikidata-entity-selector-placeholder",
 				"wikilambda-wikidata-entity-empty-value-placeholder",
 				"wikilambda-wikidata-item-selector-placeholder",

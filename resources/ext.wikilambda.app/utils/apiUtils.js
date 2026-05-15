@@ -37,6 +37,15 @@ const apiUtils = {
 	},
 
 	/**
+	 * Creates a new mw.ForeignApi object pointing at Wikimedia Commons.
+	 *
+	 * @return {mw.ForeignApi}
+	 */
+	newCommonsApi: function () {
+		return new mw.ForeignApi( `${ Constants.COMMONS_BASE_URL }/w/api.php`, { anonymous: true } );
+	},
+
+	/**
 	 * Calls the wikilambdaload_zlanguages internal API
 	 * to map language codes (BCP47 / MediaWiki) to ZLanguage ZIDs.
 	 *
@@ -332,6 +341,82 @@ const apiUtils = {
 				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( data.query.wikilambdafn_search ) )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
+	},
+
+	/**
+	 * Calls the Commons Action API to search for media files by keyword.
+	 * Uses generator=search in File (namespace 6).
+	 * https://www.mediawiki.org/wiki/API:Search
+	 *
+	 * @param {Object} payload
+	 * @param {string} payload.search - Search term
+	 * @param {number|null} [payload.searchContinue] - Offset for pagination
+	 * @param {AbortSignal} [payload.signal] - Optional AbortSignal to cancel the request
+	 * @return {Promise}
+	 */
+	searchCommonsMedia: function ( payload ) {
+		const api = apiUtils.newCommonsApi();
+		const params = {
+			action: 'query',
+			format: 'json',
+			formatversion: '2',
+			generator: 'search',
+			gsrsearch: payload.search,
+			gsrnamespace: '6',
+			gsrlimit: '10',
+			prop: 'imageinfo|pageimages',
+			iiprop: 'url|mime',
+			piprop: 'thumbnail',
+			pithumbsize: '120'
+		};
+		if ( payload.searchContinue ) {
+			params.gsroffset = payload.searchContinue;
+		}
+		return new Promise( ( resolve, reject ) => {
+			api.get( params, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => {
+					const rawPages = data.query ? data.query.pages : [];
+					// generator=search returns an object keyed by pageid; normalise to array
+					const pages = Array.isArray( rawPages ) ?
+						rawPages :
+						Object.values( rawPages );
+					// Sort by index so results appear in search-relevance order
+					pages.sort( ( a, b ) => ( a.index || 0 ) - ( b.index || 0 ) );
+					const searchContinue = data.continue ? data.continue.gsroffset : null;
+					resolve( { pages, searchContinue } );
+				} )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
+	},
+
+	/**
+	 * Calls the Commons Action API to fetch media metadata for specific page IDs.
+	 * Used to load display data (title, thumbnail) for a known M-ID.
+	 *
+	 * @param {Object} payload
+	 * @param {string} payload.ids - Page IDs joined by pipes (numeric, no "M" prefix)
+	 * @param {AbortSignal} [payload.signal] - Optional AbortSignal to cancel the request
+	 * @return {Promise<Object>}
+	 */
+	fetchCommonsMediaByIds: function ( payload ) {
+		const api = apiUtils.newCommonsApi();
+		return new Promise( ( resolve, reject ) => {
+			api.get( {
+				action: 'query',
+				format: 'json',
+				formatversion: '2',
+				pageids: payload.ids,
+				prop: 'imageinfo',
+				iiprop: 'url',
+				iiurlwidth: 250
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => resolve( data ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );
 	},

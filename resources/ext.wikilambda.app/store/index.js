@@ -24,6 +24,7 @@ const submissionStore = require( './stores/submission.js' );
 const testResultsStore = require( './stores/testResults.js' );
 const userStore = require( './stores/user.js' );
 const visualeditorStore = require( './stores/visualeditor.js' );
+const commonsMediaStore = require( './stores/commons/media.js' );
 const wdEntitiesStore = require( './stores/wikidata/entities.js' );
 const wdItemsStore = require( './stores/wikidata/items.js' );
 const wdLexemesStore = require( './stores/wikidata/lexemes.js' );
@@ -57,6 +58,8 @@ module.exports = defineStore( 'main', {
 		ztypeStore.state,
 		zfunctionStore.state,
 		zhtmlStore.state,
+		// Commons Media
+		commonsMediaStore.state,
 		// Wikidata
 		wdEntitiesStore.state,
 		wdLexemesStore.state,
@@ -92,6 +95,8 @@ module.exports = defineStore( 'main', {
 		ztypeStore.getters,
 		zfunctionStore.getters,
 		zhtmlStore.getters,
+		// Commons Media
+		commonsMediaStore.getters,
 		// Wikidata
 		wdEntitiesStore.getters,
 		wdLexemesStore.getters,
@@ -127,6 +132,8 @@ module.exports = defineStore( 'main', {
 		ztypeStore.actions,
 		zfunctionStore.actions,
 		zhtmlStore.actions,
+		// Commons Media
+		commonsMediaStore.actions,
 		// Wikidata
 		wdEntitiesStore.actions,
 		wdLexemesStore.actions,

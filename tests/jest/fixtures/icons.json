@@ -29,5 +29,6 @@
 	"cdxIconNext": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
 	"cdxIconFunctionArgument": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
 	"cdxIconCopy": "<path data-testid='mock-cdx-copy'/>",
-	"cdxIconPaste": "<path data-testid='mock-cdx-paste'/>"
+	"cdxIconPaste": "<path data-testid='mock-cdx-paste'/>",
+	"cdxIconImage": "<path data-testid='mock-cdx-image'/>"
 }

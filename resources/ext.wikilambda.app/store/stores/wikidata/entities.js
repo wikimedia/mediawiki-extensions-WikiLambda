@@ -187,7 +187,7 @@ module.exports = {
 			// Filter out the fetched or fetching entity IDs
 			const filteredIds = ids.filter( ( id ) => getData( id ) === undefined );
 
-			if ( filteredIds.length === 0 ) {
+			if ( !filteredIds.length ) {
 				// If list is empty, do nothing
 				return Promise.resolve();
 			}

@@ -4,12 +4,17 @@ const apiUtils = require( '../../../resources/ext.wikilambda.app/utils/apiUtils.
 const ApiError = require( '../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
 
 describe( 'apiUtils', () => {
+	let foreignApiGetMock;
 	let apiGetMock;
 	let apiPostMock;
 	let apiPostWithEditTokenMock;
-	let foreignApiGetMock;
 
-	function mockMwApi() {
+	beforeEach( () => {
+		foreignApiGetMock = jest.fn();
+		mw.ForeignApi = jest.fn( () => ( {
+			get: foreignApiGetMock
+		} ) );
+
 		apiGetMock = jest.fn();
 		apiPostMock = jest.fn();
 		apiPostWithEditTokenMock = jest.fn();
@@ -18,24 +23,14 @@ describe( 'apiUtils', () => {
 			post: apiPostMock,
 			postWithEditToken: apiPostWithEditTokenMock
 		} ) );
-	}
-
-	beforeEach( () => {
-		mockMwApi();
-		foreignApiGetMock = jest.fn();
-		mw.ForeignApi = jest.fn( () => ( {
-			get: foreignApiGetMock
-		} ) );
 	} );
 
 	describe( 'searchWikidataEntities', () => {
 		it( 'returns a native Promise with transformed response', async () => {
-			foreignApiGetMock.mockReturnValue(
-				$.Deferred().resolve( {
-					search: [ { id: 'Q42' } ],
-					'search-continue': '5'
-				} ).promise()
-			);
+			foreignApiGetMock.mockResolvedValue( {
+				search: [ { id: 'Q42' } ],
+				'search-continue': '5'
+			} );
 
 			const resultPromise = apiUtils.searchWikidataEntities( {
 				language: 'en',
@@ -65,11 +60,7 @@ describe( 'apiUtils', () => {
 		} );
 
 		it( 'maps rejection to ApiError', async () => {
-			foreignApiGetMock.mockReturnValue(
-				$.Deferred().reject( 'internal_api_error_WLWhatever', {
-					error: { info: 'nope' }
-				} ).promise()
-			);
+			foreignApiGetMock.mockRejectedValue( 'internal_api_error_WLWhatever' );
 
 			await expect( apiUtils.searchWikidataEntities( {
 				language: 'en',
@@ -81,13 +72,11 @@ describe( 'apiUtils', () => {
 
 	describe( 'fetchWikidataEntities', () => {
 		it( 'returns a native Promise with finally', async () => {
-			foreignApiGetMock.mockReturnValue(
-				$.Deferred().resolve( {
-					entities: {
-						Q42: { id: 'Q42' }
-					}
-				} ).promise()
-			);
+			foreignApiGetMock.mockResolvedValue( {
+				entities: {
+					Q42: { id: 'Q42' }
+				}
+			} );
 
 			const resultPromise = apiUtils.fetchWikidataEntities( {
 				language: 'en',
@@ -100,6 +89,79 @@ describe( 'apiUtils', () => {
 					Q42: { id: 'Q42' }
 				}
 			} );
+		} );
+	} );
+
+	describe( 'searchCommonsMedia', () => {
+		it( 'returns sorted pages and pagination offset', async () => {
+			foreignApiGetMock.mockResolvedValue( {
+				query: {
+					pages: {
+						3: { pageid: 3, title: 'File:Cat.jpg', index: 2 },
+						1: { pageid: 1, title: 'File:Apple.jpg', index: 1 }
+					}
+				},
+				continue: { gsroffset: 10 }
+			} );
+
+			const result = await apiUtils.searchCommonsMedia( { search: 'cat' } );
+			expect( result.pages[ 0 ].title ).toBe( 'File:Apple.jpg' );
+			expect( result.pages[ 1 ].title ).toBe( 'File:Cat.jpg' );
+			expect( result.searchContinue ).toBe( 10 );
+		} );
+
+		it( 'returns all file types without filtering', async () => {
+			foreignApiGetMock.mockResolvedValue( {
+				query: {
+					pages: {
+						1: { pageid: 1, title: 'File:Cat.jpg', index: 1, imageinfo: [ { mime: 'image/jpeg' } ] },
+						2: { pageid: 2, title: 'File:Video.ogv', index: 2, imageinfo: [ { mime: 'video/ogg' } ] }
+					}
+				}
+			} );
+
+			const result = await apiUtils.searchCommonsMedia( { search: 'cat' } );
+			expect( result.pages ).toHaveLength( 2 );
+		} );
+
+		it( 'passes gsroffset when searchContinue is provided', async () => {
+			foreignApiGetMock.mockResolvedValue( { query: { pages: [] } } );
+
+			await apiUtils.searchCommonsMedia( { search: 'cat', searchContinue: 20 } );
+
+			expect( foreignApiGetMock ).toHaveBeenCalledWith(
+				expect.objectContaining( { gsroffset: 20 } ),
+				expect.anything()
+			);
+		} );
+
+		it( 'maps rejection to ApiError', async () => {
+			foreignApiGetMock.mockRejectedValue( 'internal_api_error' );
+
+			await expect( apiUtils.searchCommonsMedia( { search: 'cat' } ) )
+				.rejects.toBeInstanceOf( ApiError );
+		} );
+	} );
+
+	describe( 'fetchCommonsMediaByIds', () => {
+		it( 'passes pageids and resolves data', async () => {
+			foreignApiGetMock.mockResolvedValue( {
+				query: { pages: { 123: { pageid: 123, title: 'File:Cat.jpg' } } }
+			} );
+
+			const result = await apiUtils.fetchCommonsMediaByIds( { ids: '123' } );
+			expect( result.query.pages[ 123 ].title ).toBe( 'File:Cat.jpg' );
+			expect( foreignApiGetMock ).toHaveBeenCalledWith(
+				expect.objectContaining( { action: 'query', pageids: '123' } ),
+				expect.anything()
+			);
+		} );
+
+		it( 'maps rejection to ApiError', async () => {
+			foreignApiGetMock.mockRejectedValue( 'internal_api_error' );
+
+			await expect( apiUtils.fetchCommonsMediaByIds( { ids: '123' } ) )
+				.rejects.toBeInstanceOf( ApiError );
 		} );
 	} );
 
