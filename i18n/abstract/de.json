@@ -25,6 +25,7 @@
 	"wikilambda-abstract-error-invalid-content": "Der bereitgestellte Inhalt ist kein gültiger abstrakter Artikel.",
 	"wikilambda-abstract-error-invalid-json": "Der abstrakte Artikel ist kein gültiges JSON.",
 	"wikilambda-abstract-error-invalid-title": "Der angegebene Titel „$1“ ist für einen abstrakten Artikel ungültig.",
+	"wikilambda-abstract-error-missing-lede-section": "Das Objekt des abstrakten Artikels muss einen Einleitungsteil (Q8776414) haben.",
 	"wikilambda-abstract-error-missing-section-fragments": "Der Abschnitt mit dem Schlüssel „$1“ enthält keine Fragmente.",
 	"wikilambda-abstract-error-missing-sections": "Der abstrakte Artikel muss mindestens einen Abschnitt enthalten.",
 	"wikilambda-abstract-error-unmatching-qid": "Der Wert der Eigenschaft „qid“ („$1“) stimmt nicht mit dem Seitentitel „$2“ überein.",

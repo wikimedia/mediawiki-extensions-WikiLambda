@@ -302,6 +302,8 @@
 	"wikilambda-functioncall-metadata-duration": "기간",
 	"wikilambda-functioncall-metadata-end-time": "종료 시간",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|오류}}",
+	"wikilambda-functioncall-metadata-errors-args": "오류 데이터",
+	"wikilambda-functioncall-metadata-errors-children": "스택 트레이스",
 	"wikilambda-functioncall-metadata-errors-debug-hint": "작동하지 않는 것이 있나요? <code>Wikifunctions.Debug</code>를 사용하여 코드를 추적해 보세요.",
 	"wikilambda-functioncall-metadata-errors-none": "없음",
 	"wikilambda-functioncall-metadata-errors-summary": "오류 유형",

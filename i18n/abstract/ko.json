@@ -7,6 +7,7 @@
 	},
 	"action-wikilambda-abstract-create": "새로운 추상적 글을 만들",
 	"action-wikilambda-abstract-edit": "기존의 추상적 글을 편집할",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "추상 위키에 제안된 위키함수",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "제안된 위키함수",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "제안된 위키함수 $1",
 	"content-model-abstractwiki": "추상적 글",
