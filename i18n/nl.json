@@ -512,6 +512,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-latest": "Nieuwste eerst",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Naam",
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Oudste eerst",
+	"wikilambda-special-objectsbytype-form-returntype": "Retourtype",
 	"wikilambda-special-objectsbytype-form-type": "Type",
 	"wikilambda-special-objectsbytype-link": "Lijst van alle typen met instanties",
 	"wikilambda-special-objectsbytype-listheader": "Alle objecten van het type ‘$1’ ($2)",

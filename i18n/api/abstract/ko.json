@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tensama0415"
+		]
+	},
+	"apihelp-abstractwiki_run_fragment-summary": "주어진 위키데이터 항목 ID, 언어 ZID 및 날짜에 대한 추상 위키백과 콘텐츠 조각을 렌더링합니다.",
+	"apihelp-abstractwiki_run_fragment-param-async": "이 호출을 비동기적으로 실행할지 동기적으로 실행할지 결정합니다. 비동기적으로 호출할 경우, 값이 준비되지 않으면 pending=true를 반환합니다. 동기적으로 호출할 경우, 위키함수에 의해 조각이 렌더링될 때까지 기다린 후 결과 값을 반환합니다.",
+	"apihelp-abstractwiki_run_fragment-param-qid": "해당 조각을 렌더링하는 데 사용된 위키데이터 항목 ID입니다. 유효한 Qid여야 합니다.",
+	"apihelp-abstractwiki_run_fragment-param-language": "조각을 렌더링하는 데 사용되는 언어 Z객체 ID입니다. 유효한 ZID여야 합니다.",
+	"apihelp-abstractwiki_run_fragment-param-date": "조각을 렌더링하는 데 사용된 날짜 문자열입니다.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "조각 구성 JSON입니다. 유효한 Z객체여야 하며 Z89/HTML 조각 유형의 객체를 출력해야 합니다.",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "리터럴 HTML 객체를 사용하여 조각을 실행합니다",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Qid와 언어 인수를 사용하는 구성을 포함하는 조각을 실행합니다",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "해당 조각은 유효한 함수 호출이 아닙니다.",
+	"apierror-abstractwiki_run_fragment-bad-response": "해당 조각이 잘못된 유형을 반환했습니다.",
+	"apierror-abstractwiki_run_fragment-forbidden": "이 조각을 렌더링하는 데 필요한 권한이 없습니다.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "추상 위키백과 콘텐츠 조각을 렌더링할 수 없습니다. 이 기능이 활성화되어 있지 않습니다.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "위키함수에서 실패한 응답이 반환되었습니다: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "일시적으로 렌더링 서비스를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "알 수 없는 오류로 인해 이 조각을 렌더링할 수 없습니다."
+}

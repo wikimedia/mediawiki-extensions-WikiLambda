@@ -502,6 +502,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-latest": "Plus nove primo",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Nomine",
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Plus ancian primo",
+	"wikilambda-special-objectsbytype-form-returntype": "Typo de retorno",
 	"wikilambda-special-objectsbytype-form-type": "Typo",
 	"wikilambda-special-objectsbytype-link": "Lista de tote le typos con instantias",
 	"wikilambda-special-objectsbytype-listheader": "Tote le objectos del typo ‘$1’ ($2)",
