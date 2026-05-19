@@ -25,26 +25,15 @@
 			</template>
 		</cdx-lookup>
 		<!-- Selected preview: shown below the field after a selection is made -->
-		<div
+		<wl-commons-media-preview
 			v-if="selectedPreview"
 			class="ext-wikilambda-app-commons-media-selector__selected-preview"
-		>
-			<img
-				:src="selectedPreview.url"
-				:alt="selectedPreview.title"
-				class="ext-wikilambda-app-commons-media-selector__selected-preview-image"
-			>
-			<a
-				v-if="selectedPreview.descriptionUrl"
-				:href="selectedPreview.descriptionUrl"
-				target="_blank"
-				class="ext-wikilambda-app-commons-media-selector__selected-preview-title"
-			>{{ selectedPreview.title }}</a>
-			<span
-				v-else
-				class="ext-wikilambda-app-commons-media-selector__selected-preview-title"
-			>{{ selectedPreview.title }}</span>
-		</div>
+			:url="selectedPreview.url"
+			:title="selectedPreview.title"
+			:description-url="selectedPreview.descriptionUrl"
+			:thumb-width="selectedPreview.thumbWidth"
+			:thumb-height="selectedPreview.thumbHeight"
+		></wl-commons-media-preview>
 	</div>
 </template>
 
@@ -54,13 +43,16 @@ const { computed, defineComponent, inject, ref, watch } = require( 'vue' );
 const useMainStore = require( '../../../store/index.js' );
 const icons = require( '../../../../lib/icons.json' );
 
+// Commons components
+const MediaPreview = require( './MediaPreview.vue' );
 // Codex components
 const { CdxLookup } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-commons-media-selector',
 	components: {
-		'cdx-lookup': CdxLookup
+		'cdx-lookup': CdxLookup,
+		'wl-commons-media-preview': MediaPreview
 	},
 	props: {
 		mediaId: {
@@ -118,10 +110,13 @@ module.exports = exports = defineComponent( {
 			if ( !thumbUrl ) {
 				return null;
 			}
+			const thumbSize = store.getCommonsMediaThumbSize( mid );
 			return {
 				url: thumbUrl,
 				title: store.getCommonsMediaTitle( mid ) || '',
-				descriptionUrl: store.getCommonsMediaDescriptionUrl( mid ) || null
+				descriptionUrl: store.getCommonsMediaDescriptionUrl( mid ) || null,
+				thumbWidth: thumbSize ? thumbSize.width : undefined,
+				thumbHeight: thumbSize ? thumbSize.height : undefined
 			};
 		} );
 
@@ -385,30 +380,12 @@ module.exports = exports = defineComponent( {
 		min-height: 70px;
 	}
 
-	// TODO(T426171): reuse the styles of the rendered thumbnail figure
-	&__selected-preview {
-		margin-top: @spacing-50;
+	.ext-wikilambda-app-commons-media-selector__selected-preview {
+		// Override the !important margin-top from the
+		// body.skin--responsive figure vector image styles.
+		/* stylelint-disable-next-line declaration-no-important */
+		margin: @spacing-50 0 0 0 !important;
 		width: @size-1200;
-		background-color: @background-color-base;
-		border: @border-base;
-		border-radius: @border-radius-base;
-		padding: @spacing-50 @spacing-50 @spacing-25 @spacing-50;
-	}
-
-	&__selected-preview-title {
-		display: block;
-		margin-top: @spacing-25;
-		font-size: @font-size-x-small;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	&__selected-preview-image {
-		display: block;
-		width: 100%;
-		height: auto;
-		border-radius: @border-radius-base;
 	}
 }
 </style>

@@ -443,7 +443,7 @@ class PageRenderingHandler implements
 		$out->addModules( 'ext.wikilambda.languageselector' );
 
 		// Add references module to all pages to enable references on all pages
-		$out->addModuleStyles( 'ext.wikilambda.references.styles' );
+		$out->addModuleStyles( 'ext.wikilambda.content.styles' );
 		$out->addModules( 'ext.wikilambda.references' );
 	}
 

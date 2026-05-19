@@ -19,7 +19,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\DBAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -66,9 +66,9 @@ class WikiLambdaServices {
 	}
 
 	/**
-	 * @return WikifunctionsPFragmentRenderer
+	 * @return WikifunctionsFragmentRenderer
 	 */
-	public static function getPFragmentRenderer(): WikifunctionsPFragmentRenderer {
+	public static function getPFragmentRenderer(): WikifunctionsFragmentRenderer {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaPFragmentRenderer' );
 	}
 

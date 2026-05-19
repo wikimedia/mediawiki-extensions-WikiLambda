@@ -7,24 +7,24 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ParserFunction;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Renderer;
 
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWikiIntegrationTestCase;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler
+ * @covers \MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler
  * @group Database
  */
-class WikifunctionsPFragmentSanitiserTokenHandlerTest extends MediaWikiIntegrationTestCase {
+class WikifunctionsSanitiserTokenHandlerTest extends MediaWikiIntegrationTestCase {
 
 	/**
 	 * @param string $html
 	 * @param array<string, true> $blockedDomains
 	 */
 	private function sanitise( string $html, array $blockedDomains = [] ): string {
-		return WikifunctionsPFragmentSanitiserTokenHandler::sanitiseHtmlFragment(
+		return WikifunctionsSanitiserTokenHandler::sanitiseHtmlFragment(
 			LoggerFactory::getInstance( 'WikiLambda' ),
 			$html,
 			$blockedDomains,

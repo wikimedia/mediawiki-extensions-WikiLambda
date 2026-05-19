@@ -19,7 +19,25 @@
 <script>
 const { defineComponent, ref, watch, onMounted } = require( 'vue' );
 require( '../../../lib/ace/src/ace.js' );
+require( '../../../lib/ace/src/ext-language_tools.js' );
 const useDarkMode = require( '../../composables/useDarkMode.js' );
+
+// Keep these in sync with WikifunctionsPFragmentRenderer's allowed elements/custom elements.
+// Map of custom element name → description shown in gutter annotations and autocomplete.
+const customElementDefinitions = new Map( [
+	[ 'ext-wikilambda-image', mw.message( 'wikilambda-codeeditor-image-element-description' ).text() ]
+] );
+const allowedCustomElements = new Set( customElementDefinitions.keys() );
+const allowedTags = new Set( [
+	'a', 'abbr', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'caption', 'code', 'dd',
+	'del', 'dfn', 'div', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+	'hr', 'i', 'ins', 'kbd', 'li', 'ol', 'p', 'q', 's', 'span', 'strike',
+	'strong', 'sub', 'sup', 'table', 'td', 'th', 'tr', 'u', 'ul',
+	...allowedCustomElements
+] );
+
+// Prevents registering the custom element completer more than once across editor instances.
+let customElementCompleterRegistered = false;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-code-editor',
@@ -57,7 +75,8 @@ module.exports = exports = defineComponent( {
 			maxLines: 20,
 			showPrintMargin: false,
 			fontSize: 12,
-			useSoftTabs: false
+			useSoftTabs: false,
+			enableBasicAutocompletion: true
 		};
 
 		// Theme: Chrome (light) / GitHub Dark (dark) - clean, modern, good readability
@@ -92,6 +111,7 @@ module.exports = exports = defineComponent( {
 		}
 
 		// HTML annotations
+
 		/**
 		 * Returns a custom annotation object for disallowed HTML.
 		 *
@@ -117,13 +137,6 @@ module.exports = exports = defineComponent( {
 		 * @return {Array} List of annotation objects
 		 */
 		function getDisallowedTagAnnotations( session ) {
-			// Keep this in sync with WikifunctionsPFragmentSanitiserTokenHandler::ALLOWEDELEMENTS
-			const allowedTags = new Set( [
-				'a', 'abbr', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'caption', 'code', 'dd',
-				'del', 'dfn', 'div', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-				'hr', 'i', 'ins', 'kbd', 'li', 'ol', 'p', 'q', 's', 'span', 'strike',
-				'strong', 'sub', 'sup', 'table', 'td', 'th', 'tr', 'u', 'ul'
-			] );
 
 			const disallowedTagRegex = /<\/?([a-z0-9-]+)[^>]*?>/gi;
 			const lines = session.doc.getAllLines();
@@ -222,6 +235,33 @@ module.exports = exports = defineComponent( {
 			return annotations;
 		}
 
+		/**
+		 * Returns info annotations for each custom element found in the session.
+		 * Shown as blue info markers in the gutter.
+		 *
+		 * @param {Object} session - ACE editor session
+		 * @return {Array}
+		 */
+		function getCustomElementInfoAnnotations( session ) {
+			const lines = session.doc.getAllLines();
+			const annotations = [];
+			lines.forEach( ( line, row ) => {
+				customElementDefinitions.forEach( ( description, name ) => {
+					const col = line.toLowerCase().indexOf( '<' + name );
+					if ( col !== -1 ) {
+						annotations.push( {
+							row,
+							column: col,
+							text: description,
+							type: 'info',
+							code: 'CUSTOM_ELEMENT_INFO'
+						} );
+					}
+				} );
+			} );
+			return annotations;
+		}
+
 		// Editor initialization
 		/**
 		 * Handles custom HTML annotations for disallowed tags, event attributes, and JavaScript URLs.
@@ -233,28 +273,49 @@ module.exports = exports = defineComponent( {
 			const session = editor.value.session;
 			const currentAnnotations = session.getAnnotations() || [];
 
-			// Filter out doctype annotations, which are not useful for code snippets
-			const filteredAnnotations = currentAnnotations.filter( ( a ) => !/doctype/i.test( a.text ) );
+			function mentionsCustomElement( a ) {
+				return Array.from( allowedCustomElements ).some( ( el ) => a.text.includes( el ) );
+			}
+
+			// Filter out:
+			// - doctype annotations (not useful for code snippets)
+			// - ACE built-in errors that mention one of our allowed custom elements
+			//   (e.g. "Trailing solidus not allowed on element ext-wikilambda-image.")
+			let filteredAnnotations = currentAnnotations.filter(
+				( a ) => !/doctype/i.test( a.text ) && !mentionsCustomElement( a )
+			);
+
+			// If we suppressed any custom-element annotation, ACE may also have emitted a
+			// generic "Expected closing tag. Unexpected end of file." caused solely by the
+			// self-closing custom-element syntax — suppress that artifact too.
+			const didFilterCustomElement = filteredAnnotations.length <
+				currentAnnotations.filter( ( a ) => !/doctype/i.test( a.text ) ).length;
+			if ( didFilterCustomElement ) {
+				filteredAnnotations = filteredAnnotations.filter(
+					( a ) => !/Expected closing tag/i.test( a.text )
+				);
+			}
 
 			let hasChanged = filteredAnnotations.length !== currentAnnotations.length;
-			const hasCustom = filteredAnnotations.some( ( a ) => a.code === 'DISALLOWED_HTML' );
+			const hasCustom = filteredAnnotations.some(
+				( a ) => a.code === 'DISALLOWED_HTML' || a.code === 'CUSTOM_ELEMENT_INFO'
+			);
 
 			if ( !hasCustom ) {
 				const customAnnotations = [
 					...getDisallowedTagAnnotations( session ),
 					...getEventAttributeAnnotations( session ),
-					...getJavaScriptUrlAnnotations( session )
+					...getJavaScriptUrlAnnotations( session ),
+					...getCustomElementInfoAnnotations( session )
 				];
 
 				if ( customAnnotations.length ) {
-					// Append custom annotations
 					filteredAnnotations.push( ...customAnnotations );
 					hasChanged = true;
 				}
 			}
 
 			if ( hasChanged ) {
-				// Set the new annotations
 				// This will trigger the changeAnnotation event
 				session.setAnnotations( filteredAnnotations );
 			}
@@ -267,6 +328,41 @@ module.exports = exports = defineComponent( {
 			if ( editor.value ) {
 				editor.value.setTheme( 'ace/theme/' + getEffectiveTheme() );
 			}
+		}
+
+		/**
+		 * Registers the custom element completer with ACE's language tools (once, globally).
+		 * The completer only fires in HTML mode when the cursor is inside a tag opening.
+		 */
+		function initializeAutocomplete() {
+			if ( customElementCompleterRegistered ) {
+				return;
+			}
+			customElementCompleterRegistered = true;
+			const langTools = window.ace.require( 'ace/ext/language_tools' );
+			langTools.addCompleter( {
+				getCompletions( ed, sess, pos, prefix, callback ) {
+					if ( sess.getMode().$id !== 'ace/mode/html' ) {
+						callback( null, [] );
+						return;
+					}
+					const lineBeforeCursor = sess.getLine( pos.row ).slice( 0, pos.column );
+					if ( !/<[a-z-]*$/.test( lineBeforeCursor ) ) {
+						callback( null, [] );
+						return;
+					}
+					const completions = [];
+					customElementDefinitions.forEach( ( description, name ) => {
+						completions.push( {
+							caption: name,
+							snippet: name + ' mid="$1" size="thumb" />',
+							meta: 'Commons Image',
+							docText: description
+						} );
+					} );
+					callback( null, completions );
+				}
+			} );
 		}
 
 		/**
@@ -306,6 +402,8 @@ module.exports = exports = defineComponent( {
 
 			// Set custom options
 			editor.value.setOptions( options );
+
+			initializeAutocomplete();
 
 			// Set listener
 			editor.value.on( 'change', () => {

@@ -14,8 +14,8 @@ use JsonException;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
@@ -31,7 +31,7 @@ class AbstractWikiRequest {
 		private readonly Config $config,
 		private readonly HttpRequestFactory $httpRequestFactory,
 		private readonly AWFragmentStore $fragmentStore,
-		private readonly WikifunctionsPFragmentRenderer $fragmentRenderer
+		private readonly WikifunctionsFragmentRenderer $fragmentRenderer
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );

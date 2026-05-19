@@ -173,8 +173,8 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			'We register ext.wikilambda.references; make sure that\'s set'
 		);
 		$this->assertArrayContains(
-			[ 'ext.wikilambda.references.styles' ], $outputPage->getModuleStyles(),
-			'We register ext.wikilambda.references.styles; make sure that\'s set'
+			[ 'ext.wikilambda.content.styles' ], $outputPage->getModuleStyles(),
+			'We register ext.wikilambda.content.styles; make sure that\'s set'
 		);
 
 		$outputPage = new OutputPage( $context );
@@ -190,7 +190,7 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertArrayEquals(
 			[], $outputPage->getModuleStyles(),
-			'We should not register ext.wikilambda.references.styles in non-repo mode'
+			'We should not register ext.wikilambda.content.styles in non-repo mode'
 		);
 	}
 

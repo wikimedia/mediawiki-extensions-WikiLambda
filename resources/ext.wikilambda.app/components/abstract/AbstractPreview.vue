@@ -136,6 +136,8 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-app-abstract-preview {
 	position: sticky;
 	top: @spacing-50;
+	// Clear the float after the preview
+	display: flow-root;
 
 	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 		position: static;

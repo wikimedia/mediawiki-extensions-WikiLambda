@@ -27,4 +27,36 @@ class UIUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( '<progress', $actual );
 	}
 
+	// ------------------------------------------------------------------
+	// createErrorChip
+	// ------------------------------------------------------------------
+
+	public function testCreateErrorChip_containsChipClasses() {
+		$result = UIUtils::createErrorChip( 'wikilambda-commons-image-error-invalid-mid' );
+		$this->assertStringContainsString( 'cdx-info-chip', $result );
+		$this->assertStringContainsString( 'cdx-info-chip--error', $result );
+	}
+
+	public function testCreateErrorChip_containsMessageText() {
+		$result = UIUtils::createErrorChip( 'wikilambda-commons-image-error-invalid-mid' );
+		$this->assertStringContainsString( 'Image M-ID', $result );
+	}
+
+	public function testCreateErrorChip_dataErrorKeyDefaultsToErrorKey() {
+		$result = UIUtils::createErrorChip( 'wikilambda-commons-image-error-invalid-mid' );
+		$this->assertStringContainsString(
+			'data-error-key="wikilambda-commons-image-error-invalid-mid"',
+			$result
+		);
+	}
+
+	public function testCreateErrorChip_dataErrorKeyOverride() {
+		$result = UIUtils::createErrorChip( 'wikilambda-commons-image-error-invalid-mid', 'custom-key' );
+		$this->assertStringContainsString( 'data-error-key="custom-key"', $result );
+	}
+
+	public function testCreateErrorChip_noRawScriptTags() {
+		$result = UIUtils::createErrorChip( 'wikilambda-commons-image-error-invalid-mid' );
+		$this->assertStringNotContainsString( '<script>', $result );
+	}
 }

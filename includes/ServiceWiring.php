@@ -16,7 +16,8 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
-use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentRenderer;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentImageRenderer;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -42,11 +43,18 @@ return [
 		return WikiLambdaServices::buildMemcachedWrapper( $services );
 	},
 
-	'WikiLambdaPFragmentRenderer' => static function ( MediaWikiServices $services ): WikifunctionsPFragmentRenderer {
-		return new WikifunctionsPFragmentRenderer(
+	'WikiLambdaPFragmentRenderer' => static function ( MediaWikiServices $services ): WikifunctionsFragmentRenderer {
+		$imageRenderer = new WikifunctionsFragmentImageRenderer(
+			LoggerFactory::getInstance( 'WikiLambda' ),
+			$services->getHttpRequestFactory(),
+			WikiLambdaServices::getMemcachedWrapper(),
+			$services->getBadFileLookup()
+		);
+		return new WikifunctionsFragmentRenderer(
 			LoggerFactory::getInstance( 'WikiLambda' ),
 			$services->getUserFactory(),
-			$services->getMainConfig()
+			$services->getMainConfig(),
+			$imageRenderer
 		);
 	},
 

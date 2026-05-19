@@ -134,5 +134,13 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-html-fragment-viewer__toggle-container {
 		margin-top: @spacing-50;
 	}
+
+	// Prevent images from floating in the rendered view of HTML fragments
+	.ext-wikilambda-app-html-fragment-viewer__rendered figure.ext-wikilambda-image-thumb {
+		/* stylelint-disable-next-line declaration-no-important */
+		float: none !important;
+		/* stylelint-disable-next-line declaration-no-important */
+		margin: 0 !important;
+	}
 }
 </style>

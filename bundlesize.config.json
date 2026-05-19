@@ -12,10 +12,10 @@
 		"maxSize": "3.0 kB"
 	},
 	{
-		"@note": "CSS-only module for Wikilambda References, loaded early to prevent FOUC.",
+		"@note": "CSS-only module for Wikilambda content styles (references + image figure), loaded early to prevent FOUC.",
 		"ignoreDependencies": true,
-		"resourceModule": "ext.wikilambda.references.styles",
-		"maxSize": "1.5 kB"
+		"resourceModule": "ext.wikilambda.content.styles",
+		"maxSize": "2.0 kB"
 	},
 	{
 		"@note": "WikiLambda Search module (wikidata + zobject clients, loaded based on mode).",

@@ -43,6 +43,7 @@ describe( 'CommonsMediaSelector', () => {
 		store.getCommonsMediaThumb = createGettersWithFunctionsMock( undefined );
 		store.getCommonsMediaTitle = createGettersWithFunctionsMock( undefined );
 		store.getCommonsMediaDescriptionUrl = createGettersWithFunctionsMock( undefined );
+		store.getCommonsMediaThumbSize = createGettersWithFunctionsMock( undefined );
 	} );
 
 	it( 'renders without errors', () => {
@@ -202,13 +203,17 @@ describe( 'CommonsMediaSelector', () => {
 			store.getCommonsMediaThumb = createGettersWithFunctionsMock( THUMB_URL );
 			store.getCommonsMediaTitle = createGettersWithFunctionsMock( TITLE );
 			store.getCommonsMediaDescriptionUrl = createGettersWithFunctionsMock( DESC_URL );
+			store.getCommonsMediaThumbSize = createGettersWithFunctionsMock( { width: 250, height: 188 } );
 
 			const wrapper = renderMediaSelector( { mediaId: MID, mediaTitle: TITLE } );
 
 			await waitFor( () => {
-				expect( wrapper.find( '.ext-wikilambda-app-commons-media-selector__selected-preview' ).exists() ).toBe( true );
-				expect( wrapper.find( 'img' ).attributes( 'src' ) ).toBe( THUMB_URL );
-				expect( wrapper.find( 'a' ).attributes( 'href' ) ).toBe( DESC_URL );
+				const preview = wrapper.findComponent( { name: 'wl-commons-media-preview' } );
+				expect( preview.exists() ).toBe( true );
+				expect( preview.props( 'url' ) ).toBe( THUMB_URL );
+				expect( preview.props( 'descriptionUrl' ) ).toBe( DESC_URL );
+				expect( preview.props( 'thumbWidth' ) ).toBe( 250 );
+				expect( preview.props( 'thumbHeight' ) ).toBe( 188 );
 			} );
 		} );
 

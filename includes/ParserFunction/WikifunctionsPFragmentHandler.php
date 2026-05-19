@@ -15,6 +15,8 @@ use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
+use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -51,7 +53,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		private readonly Config $config,
 		private readonly JobQueueGroup $jobQueueGroup,
 		private readonly HttpRequestFactory $httpRequestFactory,
-		private readonly WikifunctionsPFragmentRenderer $renderer
+		private readonly WikifunctionsFragmentRenderer $renderer
 	) {
 		// Non-injected items
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
@@ -165,7 +167,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// Add our special reference code and style modules to the page, we know they're likely to be used somewhere
 		$extApi->getMetadata()->addModules( [ 'ext.wikilambda.references' ] );
-		$extApi->getMetadata()->addModuleStyles( [ 'ext.wikilambda.references.styles' ] );
+		$extApi->getMetadata()->addModuleStyles( [ 'ext.wikilambda.content.styles' ] );
 
 		$cachedValue = $this->wikifunctionsClientStore->fetchFromFunctionCallCache( $clientCacheKey );
 
@@ -544,20 +546,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			$cmc->updateRuntimeAdaptiveExpiry( 60 * 60 );
 		}
 
-		// Codex will not support inline rendering of error chips or error messages, so we need to
-		// add inline styles to align it inline with the body text and to make it scale properly.
 		return HtmlPFragment::newFromHtmlString(
-			'<span class="cdx-info-chip cdx-info-chip--error"'
-				. 'style="position:relative;line-height: var(--line-height-medium, 1.375rem); padding-left:calc('
-					. 'var(--font-size-medium, 1rem) + calc(var(--font-size-medium,1rem) - 6px));"'
-				. 'data-error-key="' . htmlspecialchars( $errorMessageKey ?? '' ) . '">'
-				. '<span class="cdx-info-chip__icon"'
-					. 'style="position:absolute;left:calc((var(--font-size-medium,1rem) - 2px) * .5);"'
-					. 'aria-hidden="true"></span>'
-				. '<span class="cdx-info-chip__text" style="font-size:var(--font-size-medium,1rem);">'
-					. wfMessage( 'wikilambda-visualeditor-wikifunctionscall-error' )->text()
-				. '</span>'
-			. '</span>',
+			UIUtils::createErrorChip(
+				'wikilambda-visualeditor-wikifunctionscall-error',
+				$errorMessageKey ?? ''
+			),
 			null
 		);
 	}

@@ -34,7 +34,7 @@ use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler
- * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler
+ * @covers \MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsCallDefaultValues
  * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
  * @group API
@@ -187,8 +187,8 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'We register ext.wikilambda.references for pages with our fragment; make sure that\'s set'
 		);
 		$this->assertArrayContains(
-			[ 'ext.wikilambda.references.styles' ], $extApi->getMetadata()->getModuleStyles(),
-			'We register ext.wikilambda.references.styles for pages with our fragment; make sure that\'s set'
+			[ 'ext.wikilambda.content.styles' ], $extApi->getMetadata()->getModuleStyles(),
+			'We register ext.wikilambda.content.styles for pages with our fragment; make sure that\'s set'
 		);
 	}
 

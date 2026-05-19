@@ -13,7 +13,7 @@ use MediaWiki\Registration\ExtensionRegistry;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiWikifunctionsHTMLSanitiser
- * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentSanitiserTokenHandler
+ * @covers \MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler
  * @group Database
  * @group API
  */
@@ -80,9 +80,9 @@ class ApiWikifunctionsHTMLSanitiserTest extends WikiLambdaApiTestCase {
 		];
 
 		// Links inside ext-wikilambda-reference context elements pass the sanitiser allowlist.
-		// In production, WikifunctionsPFragmentRenderer also applies SpamBlacklist and AbuseFilter
+		// In production, WikifunctionsFragmentRenderer also applies SpamBlacklist and AbuseFilter
 		// blocked-domain checks; those are absent here because neither extension is loaded in CI.
-		// See WikifunctionsPFragmentSanitiserTokenHandlerTest for the blocked-domain code path.
+		// See WikifunctionsSanitiserTokenHandlerTest for the blocked-domain code path.
 		yield 'Links in reference span context are allowed' => [
 			'<span class="ext-wikilambda-reference"><a href="https://example.org/source">Source</a></span>',
 			'<span class="ext-wikilambda-reference"><a href="https://example.org/source">Source</a></span>',

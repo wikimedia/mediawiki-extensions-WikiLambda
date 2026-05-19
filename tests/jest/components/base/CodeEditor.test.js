@@ -82,7 +82,7 @@ describe( 'CodeEditor', () => {
 		expect( mockSetTheme ).toHaveBeenCalledWith( 'ace/theme/chrome' );
 		expect( mockSetListener ).toHaveBeenCalledWith( 'change', expect.anything() );
 		expect( mockSetOptions ).toHaveBeenCalledWith( {
-			fontSize: 12, maxLines: 20, minLines: 5, showPrintMargin: false, useSoftTabs: false
+			enableBasicAutocompletion: true, fontSize: 12, maxLines: 20, minLines: 5, showPrintMargin: false, useSoftTabs: false
 		} );
 		expect( window.ace.config.set ).toHaveBeenCalledWith(
 			'basePath',

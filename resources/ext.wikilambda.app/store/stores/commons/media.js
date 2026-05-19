@@ -74,6 +74,30 @@ module.exports = {
 		},
 
 		/**
+		 * Returns the thumbnail dimensions for a given M-ID as { width, height },
+		 * or undefined if not yet fetched.
+		 *
+		 * @return {Function}
+		 */
+		getCommonsMediaThumbSize: function () {
+			/**
+			 * @param {string} mid
+			 * @return {{ width: number, height: number }|undefined}
+			 */
+			const findCommonsMediaThumbSize = ( mid ) => {
+				const data = this.getCommonsMediaData( mid );
+				if ( data && typeof data.then !== 'function' ) {
+					const imageinfo = data.imageinfo && data.imageinfo[ 0 ];
+					if ( imageinfo && imageinfo.thumbwidth && imageinfo.thumbheight ) {
+						return { width: imageinfo.thumbwidth, height: imageinfo.thumbheight };
+					}
+				}
+				return undefined;
+			};
+			return findCommonsMediaThumbSize;
+		},
+
+		/**
 		 * Returns the Commons description page URL for a given M-ID,
 		 * or undefined if not yet fetched.
 		 *

@@ -249,9 +249,10 @@
 				"ext.wikilambda.special/ext.wikilambda.special.less"
 			]
 		},
-		"ext.wikilambda.references.styles": {
+		"ext.wikilambda.content.styles": {
 			"styles": [
-				"ext.wikilambda.references/ext.wikilambda.references.less"
+				"ext.wikilambda.references/ext.wikilambda.references.less",
+				"ext.wikilambda.image/ext.wikilambda.image.less"
 			]
 		},
 		"ext.wikilambda.references": {
@@ -367,10 +368,11 @@
 				"mediawiki.user",
 				"mediawiki.util",
 				"oojs",
-				"ext.wikilambda.references.styles",
+				"ext.wikilambda.content.styles",
 				"ext.wikilambda.references"
 			],
 			"codexComponents": [
+				"CdxImage",
 				"CdxIcon",
 				"CdxButton",
 				"CdxLookup",
@@ -505,6 +507,7 @@
 				"ext.wikilambda.app/components/types/ZTypedListType.vue",
 				"ext.wikilambda.app/components/types/ZTypedListItems.vue",
 				"ext.wikilambda.app/components/types/commons/MediaSelector.vue",
+				"ext.wikilambda.app/components/types/commons/MediaPreview.vue",
 				"ext.wikilambda.app/components/types/commons/MediaReference.vue",
 				"ext.wikilambda.app/components/types/wikidata/ReferenceSelector.vue",
 				"ext.wikilambda.app/components/types/wikidata/EntitySelector.vue",
@@ -558,6 +561,7 @@
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataItem.vue",
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataTestResult.vue",
 				"lib/ace/src/ace.js",
+				"lib/ace/src/ext-language_tools.js",
 				{
 					"name": "lib/icons.json",
 					"callback": "MediaWiki\\ResourceLoader\\CodexModule::getIcons",
@@ -975,6 +979,7 @@
 				"wikilambda-object-selector-suggested-types",
 				"wikilambda-object-selector-suggested-languages",
 				"wikilambda-edit-monolingual-text-placeholder",
+				"wikilambda-codeeditor-image-element-description",
 				"wikilambda-commons-media-selector-placeholder",
 				"wikilambda-commons-media-empty-value-placeholder",
 				"wikilambda-wikidata-entity-selector-placeholder",

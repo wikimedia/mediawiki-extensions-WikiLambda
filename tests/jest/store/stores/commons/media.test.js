@@ -16,7 +16,9 @@ const mediaData = {
 	title: 'File:Cat.jpg',
 	imageinfo: [ {
 		descriptionurl: 'https://commons.wikimedia.org/wiki/File:Cat.jpg',
-		thumburl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/Cat.jpg/250px-Cat.jpg'
+		thumburl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/Cat.jpg/250px-Cat.jpg',
+		thumbwidth: 250,
+		thumbheight: 188
 	} ]
 };
 
@@ -81,6 +83,30 @@ describe( 'Commons Media Pinia store', () => {
 			it( 'returns the description URL when data is cached', () => {
 				store.commonsMedia[ MID ] = mediaData;
 				expect( store.getCommonsMediaDescriptionUrl( MID ) ).toBe( mediaData.imageinfo[ 0 ].descriptionurl );
+			} );
+		} );
+
+		describe( 'getCommonsMediaThumbSize', () => {
+			it( 'returns undefined when no data is cached', () => {
+				expect( store.getCommonsMediaThumbSize( MID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined when data is still a promise', () => {
+				store.commonsMedia[ MID ] = Promise.resolve( mediaData );
+				expect( store.getCommonsMediaThumbSize( MID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined when imageinfo has no thumb dimensions', () => {
+				store.commonsMedia[ MID ] = {
+					...mediaData,
+					imageinfo: [ { thumburl: 'https://upload.wikimedia.org/thumb/Cat.jpg' } ]
+				};
+				expect( store.getCommonsMediaThumbSize( MID ) ).toBeUndefined();
+			} );
+
+			it( 'returns width and height when thumb dimensions are cached', () => {
+				store.commonsMedia[ MID ] = mediaData;
+				expect( store.getCommonsMediaThumbSize( MID ) ).toEqual( { width: 250, height: 188 } );
 			} );
 		} );
 	} );

@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\ParserFunction;
+namespace MediaWiki\Extension\WikiLambda\Renderer;
 
 use MediaWiki\Extension\SiteMatrix\SiteMatrix;
 use MediaWiki\Extension\SpamBlacklist\BaseBlacklist;
@@ -31,7 +31,7 @@ use Wikimedia\RemexHtml\Tokenizer\Tokenizer as RemexTokenizer;
 use Wikimedia\RemexHtml\TreeBuilder\Dispatcher;
 use Wikimedia\RemexHtml\TreeBuilder\TreeBuilder;
 
-class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
+class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 
 	private array $allowedUrls = [];
 	/** @var array<int, array{tagName: string, classes: array<int, string>}> */
@@ -427,7 +427,7 @@ class WikifunctionsPFragmentSanitiserTokenHandler extends RelayTokenHandler {
 
 		$serializer = new RemexSerializer( new RemexCompatFormatter );
 
-		$handler = new WikifunctionsPFragmentSanitiserTokenHandler(
+		$handler = new WikifunctionsSanitiserTokenHandler(
 			$logger, $serializer, $text, $blockedDomains, $spamCheckUser
 		);
 		$tokenizer = new RemexTokenizer(

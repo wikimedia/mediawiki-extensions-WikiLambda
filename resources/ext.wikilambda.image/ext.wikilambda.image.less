@@ -1,0 +1,122 @@
+/*!
+ * WikiLambda styles for <ext-wikilambda-image> rendered output
+ *
+ * Styles the <figure class="ext-wikilambda-image"> block that the PHP image
+ * renderer inserts into Wikifunctions function output fragments.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+@import ( reference ) 'mediawiki.skin.variables.less';
+
+// Regular image:
+figure.ext-wikilambda-image {
+	// Shrink-wrap to image width, matching MediaWiki's thumbnail figure behaviour
+	display: table;
+	padding: @spacing-25;
+	border: @border-subtle;
+	background-color: @background-color-interactive-subtle;
+	// Prevent the float from consuming more than half the column on narrow screens
+	max-width: 50%;
+
+	a {
+		display: block;
+	}
+
+	// The image sits on a white background with its own border, matching
+	// the MediaWiki thumbnail image element style.
+	> img,
+	> a > img {
+		display: block;
+		height: auto;
+		max-width: 100%;
+		background-color: @background-color-base;
+		border: @border-subtle;
+	}
+
+	// figcaption is optional. When present it renders below the table box via
+	// display:table-caption. background-color:inherit picks up the figure's
+	// neutral background; the left/right/bottom border closes the visual box
+	// (the figure's border-bottom serves as the caption's top edge).
+	figcaption {
+		display: table-caption;
+		caption-side: bottom;
+		background-color: inherit;
+		border-left: @border-subtle;
+		border-right: @border-subtle;
+		border-bottom: @border-subtle;
+		padding: 0 @spacing-50 @spacing-25 @spacing-50;
+		font-size: @font-size-x-small;
+		line-height: @line-height-small;
+		color: @color-subtle;
+		margin-top: -1px;
+
+		// Small severity icon prepended to the figcaption of a placeholder figure.
+		// Uses cdx-mixin-css-icon so no Vue runtime is required in the renderer context.
+		// Icon style and figcaption colour are driven by the figure-level severity class.
+		.ext-wikilambda-image__caption-icon {
+			display: inline-block;
+			vertical-align: middle;
+			// margin-inline-end respects the content direction regardless of the UI language
+			margin-inline-end: @spacing-25;
+		}
+	}
+
+	// Placeholder figure:
+	// Mirrors the cdx-image__placeholder pattern from the Codex Image component but
+	// uses a CSS-only icon so no Vue runtime is required in the renderer context.
+	.ext-wikilambda-image__placeholder {
+		background-color: @background-color-interactive-subtle;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: @border-subtle;
+		border-radius: @border-radius-base;
+	}
+
+	.ext-wikilambda-image__placeholder-icon {
+		.cdx-mixin-css-icon( @cdx-icon-image, @color-placeholder, @size-200 );
+	}
+
+	// Warning variant: alert icon in figcaption, normal image icon in placeholder
+	&.ext-wikilambda-image--warning {
+		.ext-wikilambda-image__caption-icon {
+			.cdx-mixin-css-icon( @cdx-icon-alert, @color-warning, @size-icon-small );
+		}
+	}
+
+	// Error variant: error icon + red text in figcaption, broken-image icon in placeholder
+	&.ext-wikilambda-image--error {
+		.ext-wikilambda-image__placeholder-icon {
+			.cdx-mixin-css-icon( @cdx-icon-image-broken, @color-placeholder, @size-200 );
+		}
+
+		.ext-wikilambda-image__caption-icon {
+			.cdx-mixin-css-icon( @cdx-icon-error, @color-error, @size-icon-small );
+		}
+
+		figcaption {
+			color: @color-error;
+		}
+	}
+}
+
+// Thumbnail image:
+// Use @noflip so the RTL stylesheet does not auto-flip these physical properties.
+// The content direction is set by the preview body (or the article), not the UI language,
+// so we handle RTL content explicitly with the [dir="rtl"] block below.
+/* @noflip */
+figure.ext-wikilambda-image-thumb {
+	float: right;
+	clear: right;
+	// Left and bottom margin separate the image from surrounding text
+	margin: 0 0 @spacing-75 @spacing-100;
+}
+
+// RTL content: mirror float and margins for right-to-left reading direction
+/* @noflip */
+[ dir='rtl' ] figure.ext-wikilambda-image-thumb {
+	float: left;
+	clear: left;
+	margin: 0 @spacing-100 @spacing-75 0;
+}
