@@ -59,6 +59,25 @@ class AWArticleMetadata {
 	}
 
 	/**
+	 * Returns the section QIDs ordered by their section index.
+	 *
+	 * @return string[]
+	 */
+	public function getSectionQids(): array {
+		$sectionIndices = $this->payload['sectionIndices'] ?? [];
+
+		if ( !is_array( $sectionIndices ) ) {
+			return [];
+		}
+
+		// Sort by numeric index keys
+		ksort( $sectionIndices, SORT_NUMERIC );
+
+		// Return ordered QIDs only
+		return array_values( $sectionIndices );
+	}
+
+	/**
 	 * Returns the current schema version for this object.
 	 *
 	 * NOTE: or future schema updates, schema versioning can be adapted

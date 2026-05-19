@@ -105,28 +105,4 @@ abstract class AWArticleStore {
 	 * @return bool
 	 */
 	abstract public function setArticleMetadata( AWArticleMetadata $metadata ): bool;
-
-	/**
-	 * Static method to create a placeholder section HTML payload
-	 * when a requested section + topic + locale has not yet been
-	 * generated. This blob will be shown to indicate to the reader
-	 * that something should be displayed there but is not yet ready.
-	 * Additional information can also be shared (to discuss).
-	 *
-	 * @param string $topicQid
-	 * @param string $sectionQid
-	 * @param string $locale
-	 */
-	public static function createMissingSectionBlock(
-		string $topicQid,
-		string $sectionQid,
-		string $locale,
-	): AWSection {
-		return new AWSection(
-			$topicQid,
-			$sectionQid,
-			$locale,
-			'<div class="aw-section-missing">Section not yet generated</div>',
-		);
-	}
 }

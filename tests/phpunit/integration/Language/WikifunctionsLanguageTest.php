@@ -48,11 +48,20 @@ class WikifunctionsLanguageTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertSame( 'Z1003', $language->getZid() );
 	}
 
+	public function testIsKnownLanguageCode(): void {
+		$this->assertTrue( $this->factory->isKnownLanguageCode( 'en' ) );
+		$this->assertTrue( $this->factory->isKnownLanguageCode( 'ast' ) );
+		$this->assertTrue( $this->factory->isKnownLanguageCode( 'zh-yue' ) );
+		$this->assertFalse( $this->factory->isKnownLanguageCode( 'foo' ) );
+		$this->assertFalse( $this->factory->isKnownLanguageCode( 'en-bar' ) );
+	}
+
 	public function testUnderlyingLanguageObject(): void {
 		$language = $this->factory->getLanguage( 'ar' );
 
 		$this->assertInstanceOf( Language::class, $language->getLanguage() );
 		$this->assertTrue( $language->getLanguage()->isRTL() );
+		$this->assertSame( $language->getLanguage()->getDir(), $language->getDir() );
 	}
 
 	public function testUnknownLanguageCodeThrows(): void {

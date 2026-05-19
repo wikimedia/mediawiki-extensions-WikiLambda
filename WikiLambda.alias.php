@@ -21,4 +21,5 @@ $specialPageAliases['en'] = [
 	'ListObjectsByType' => [ 'ListObjectsByType', 'ListZObjectsByType', 'ObjectsByType' ],
 	'ListMissingLabels' => [ 'ListMissingLabels' ],
 	'ListFunctionsByTests' => [ 'ListFunctionsByTests' ],
+	'PreviewAbstract' => [ 'PreviewAbstract' ],
 ];

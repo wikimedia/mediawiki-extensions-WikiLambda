@@ -147,7 +147,6 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		$output->setTitle( $targetTitle );
 
 		// If this is a redirect from Create page, announce it somehow
-		// FIXME better text
 		if ( $request->getInt( 'created' ) ) {
 			$output->addSubtitle(
 				Html::noticeBox( $this->msg( 'wikilambda-abstract-special-create-existing-redirected' )->parse() )

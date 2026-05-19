@@ -53,6 +53,22 @@ class WikifunctionsLanguageFactory {
 	}
 
 	/**
+	 * Returns whether the given language code is known in the Wikifunctions
+	 * language set and hence available in the mappings file.
+	 *
+	 * @param string $code
+	 * @return bool
+	 */
+	public function isKnownLanguageCode( string $code ): bool {
+		try {
+			$this->zidForCode( $code );
+			return true;
+		} catch ( InvalidArgumentException ) {
+			return false;
+		}
+	}
+
+	/**
 	 * Returns the BCP-47 code given a Wikifunctions language Zid given as per the
 	 * language mappings from the function-schemata naturalLanguages.json file.
 	 *

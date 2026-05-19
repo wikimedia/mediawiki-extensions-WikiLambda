@@ -34,6 +34,7 @@ use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
+use MediaWiki\Html\Html;
 use MediaWiki\JobQueue\JobQueueGroup;
 
 class AWFragmentStore {
@@ -221,19 +222,26 @@ class AWFragmentStore {
 	}
 
 	/**
-	 * @param array $value
+	 * TODO decide how we are showing a failed framgent in an integrated AW article
+	 *
 	 * @param string $locale
 	 * @return string
 	 */
-	public static function createFailingFragmentBlock( array $value, string $locale ): string {
-		return '<span>Error: ' . $value[ 'msg' ] . '</span>';
+	public static function createFailingFragmentBlock( string $locale ): string {
+		return Html::rawElement( 'span', [],
+			wfMessage( 'wikilambda-aw-fragment-error' )->inLanguage( $locale )->escaped()
+		);
 	}
 
 	/**
+	 * TODO decide how we are showing a failed framgent in an integrated AW article
+	 *
 	 * @param string $locale
 	 * @return string
 	 */
 	public static function createPendingFragmentBlock( $locale ): string {
-		return '<span>Pending fragment... try again later</span>';
+		return Html::rawElement( 'span', [],
+			wfMessage( 'wikilambda-aw-fragment-pending' )->inLanguage( $locale )->escaped()
+		);
 	}
 }

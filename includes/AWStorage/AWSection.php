@@ -10,6 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\AWStorage;
 
+use MediaWiki\Html\Html;
+use Wikimedia\HtmlArmor\HtmlArmor;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AWSection {
@@ -97,6 +99,19 @@ class AWSection {
 	}
 
 	/**
+	 * Returns the current schema version for this object.
+	 *
+	 * NOTE: or future schema updates, schema versioning can be adapted
+	 * to be externally configurable. Currently schemaVersion is hardcoded
+	 * in the AWArticleStore::AW_STORAGE_SCHEMA_VERSION constant.
+	 *
+	 * @return int
+	 */
+	public function getSchemaVersion(): int {
+		return $this->schemaVersion;
+	}
+
+	/**
 	 * Whether this AWSection contains any pending AWFragment.
 	 *
 	 * TODO: this is only valid when creating the section and appending its fragments one
@@ -111,7 +126,7 @@ class AWSection {
 	 * Another possibility, without having to modify the data schema is:
 	 * * if STATUS_UNKNOWN, then infer status from payload
 	 * * if the section payload has an element marked with a pending fragment class
-	 *   or attribute (e.g. with a class="wf-some-class-for-pending"), return true
+	 * or attribute (e.g. with a class="wf-some-class-for-pending"), return true
 	 *
 	 * @return bool
 	 */
@@ -138,9 +153,11 @@ class AWSection {
 			if ( !$awFragment->isOk() ) {
 				// Fragment exists but is a failure: generate error fragment html
 				$this->status = self::STATUS_FAILING;
-				$htmlFragment = AWFragmentStore::createFailingFragmentBlock( $awFragmentValue, $this->locale );
+				$htmlFragment = AWFragmentStore::createFailingFragmentBlock( $this->locale );
 			} else {
 				// Fragment exists and is a success:
+				// AWFragment value has been through the rendering and sanitising pipeline
+				// (WikifunctionsFragmentRender) so we know it's safe for raw HTML output.
 				$htmlFragment = $awFragmentValue;
 			}
 		}
@@ -155,15 +172,84 @@ class AWSection {
 	}
 
 	/**
-	 * Returns the current schema version for this object.
+	 * Returns the section as HtmlArmor object wrapping a <section> entity.
+	 * The section will be preceded by a heading (<h2>) element depend on the following:
+	 * * If the section is the default initial leading section (Q8776414), it will
+	 * render no heading element, but directly the content body.
+	 * * If the section is not the leading one, but the Wikidata Entity Lookup hasn't
+	 * returned a viable title, it will render no heading element.
 	 *
-	 * NOTE: or future schema updates, schema versioning can be adapted
-	 * to be externally configurable. Currently schemaVersion is hardcoded
-	 * in the AWArticleStore::AW_STORAGE_SCHEMA_VERSION constant.
-	 *
-	 * @return int
+	 * @param int $sectionIndex
+	 * @param ?string $sectionTitle
+	 * @return HtmlArmor
 	 */
-	public function getSchemaVersion(): int {
-		return $this->schemaVersion;
+	public function asWikiSection( int $sectionIndex, ?string $sectionTitle ): HtmlArmor {
+		$heading = self::buildSectionHeading( $sectionTitle );
+
+		$section = Html::rawElement( 'section', [
+			'data-mw-section-id' => (string)$sectionIndex,
+			'aria-labelledby' => $sectionTitle ?? $this->sectionQid,
+		], $heading . $this->payload );
+
+		// We know that AWSection->payload is built out of rendered and sanitized
+		// fragments that are concatenated, or error/pending fragments that are built
+		// with Html::rawElement, so it's safe for us to suppress SecurityCheck-XX
+		// @phan-suppress-next-line SecurityCheck-XSS
+		return new HtmlArmor( $section );
+	}
+
+	/**
+	 * Returns a placeholder HtmlArmor section indicating the section is not yet available.
+	 * Produces the same <section> structure as asWikiSection(), but with a warning box
+	 * in place of real content.
+	 *
+	 * @param int $sectionIndex
+	 * @param ?string $sectionTitle
+	 * @param string $sectionQid
+	 * @param string $time
+	 * @return HtmlArmor
+	 */
+	public static function emptyWikiSection(
+		int $sectionIndex,
+		?string $sectionTitle,
+		string $sectionQid,
+		string $time
+	): HtmlArmor {
+		$heading = self::buildSectionHeading( $sectionTitle );
+
+		$warningBox = Html::warningBox(
+			Html::rawElement( 'h3', [],
+				wfMessage( 'wikilambda-abstract-special-preview-empty-section-title' )->escaped() )
+				. Html::rawElement( 'p', [],
+						wfMessage( 'wikilambda-abstract-special-preview-empty-section-body', $time )->parse() )
+		);
+
+		$section = Html::rawElement( 'section', [
+			'data-mw-section-id' => (string)$sectionIndex,
+			'aria-labelledby' => $sectionTitle ?? $sectionQid,
+		], $heading . $warningBox );
+
+		return new HtmlArmor( $section );
+	}
+
+	/**
+	 * Returns the section heading block for a given section title
+	 *
+	 * @param ?string $sectionTitle
+	 * @return string
+	 */
+	private static function buildSectionHeading( ?string $sectionTitle ): string {
+		$heading = '';
+
+		if ( $sectionTitle ) {
+			$heading = Html::rawElement( 'div', [ 'class' => 'mw-heading mw-heading2' ],
+				Html::rawElement( 'h2', [ 'id' => $sectionTitle ],
+				Html::element( 'span', [ 'id' => $sectionTitle, 'typeof' => 'mw:FallbackId' ] )
+				. htmlspecialchars( $sectionTitle )
+				)
+			);
+		}
+
+		return $heading;
 	}
 }

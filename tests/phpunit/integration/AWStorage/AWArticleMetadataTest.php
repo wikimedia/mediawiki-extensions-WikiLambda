@@ -25,7 +25,7 @@ class AWArticleMetadataTest extends WikiLambdaAbstractClientIntegrationTestCase 
 	}
 
 	public function testConstructor(): void {
-		$payload = json_decode( '{ "sections": ["Q201", "Q202" ] }', true );
+		$payload = json_decode( '{ "sectionIndices": ["Q201", "Q202" ] }', true );
 		$timestamp = new ConvertibleTimestamp( '20260101010101' );
 
 		$metadata = new AWArticleMetadata( 'Q101', $payload, $timestamp, 2 );
@@ -37,7 +37,7 @@ class AWArticleMetadataTest extends WikiLambdaAbstractClientIntegrationTestCase 
 	}
 
 	public function testDefaultLastUpdatedNow(): void {
-		$payload = json_decode( '{ "sections": ["Q201", "Q202" ] }', true );
+		$payload = json_decode( '{ "sectionIndices": ["Q201", "Q202" ] }', true );
 
 		// Mock current time:
 		$mockNow = '20260101000000';
@@ -51,9 +51,21 @@ class AWArticleMetadataTest extends WikiLambdaAbstractClientIntegrationTestCase 
 	}
 
 	public function testDefaultSchemaVersion(): void {
-		$payload = json_decode( '{ "sections": ["Q201", "Q202" ] }', true );
+		$payload = json_decode( '{ "sectionIndices": ["Q201", "Q202" ] }', true );
 
 		$metadata = new AWArticleMetadata( 'Q101', $payload );
 		$this->assertSame( AWArticleStore::AW_STORAGE_SCHEMA_VERSION, $metadata->getSchemaVersion() );
+	}
+
+	public function testGetSectionQids(): void {
+		$payload = [
+			'sectionIndices' => [
+				'1' => 'Q202',
+				'0' => 'Q201'
+			]
+		];
+
+		$metadata = new AWArticleMetadata( 'Q101', $payload );
+		$this->assertEquals( [ 'Q201', 'Q202' ], $metadata->getSectionQids() );
 	}
 }

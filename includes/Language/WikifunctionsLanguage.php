@@ -47,4 +47,13 @@ class WikifunctionsLanguage {
 	public function getCode(): string {
 		return $this->language->getCode();
 	}
+
+	/**
+	 * Returns the language directionality of the wrapped MediaWiki Language object
+	 *
+	 * @return string
+	 */
+	public function getDir(): string {
+		return $this->language->getDir();
+	}
 }
