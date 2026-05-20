@@ -281,14 +281,25 @@ job. Otherwise it will just download the objects that have new versions availabl
 
 Make sure that your `zobjectcache` directory contains the following files:
 * The index file `Z0.json` which contains a map with the latest revision ID for every ZObject Id.
-* All the versioned ZObject files, with filenames `Zid.revision.json`.
+* All the versioned ZObject files, with filenames `Zid.revision.json` or `Zid.revision.done.json`.
 
 You are now ready to use the `loadJsonDump.php` maintenance script to load all the data into your
-local installation, using the argument `--dir` to specify the data directory:
+local installation, using the argument `--dir` to specify the data directory. The script tracks
+files that have already been inserted and renames them with `*.done.json`, so on a default run
+the script will only insert those files that have not been inserted before:
 
 ```
 docker compose exec mediawiki php maintenance/run.php \
    ./extensions/WikiLambda/maintenance/loadJsonDump.php --dir zobjectcache
+```
+
+To force the script to refresh all files, updating even those that have been loaded before,
+add the flag `--refresh`:
+
+```
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadJsonDump.php \
+   --dir zobjectcache --refresh
 ```
 
 To insert a given zid, use the argument `--zid`:
