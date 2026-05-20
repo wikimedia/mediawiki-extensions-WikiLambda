@@ -462,7 +462,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-latest": "Label for the 'latest' option in the 'order by' selector from the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Label for the 'name' option in the 'order by' selector from the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Label for the 'oldest' option in the 'order by' selector from the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
-	"wikilambda-special-objectsbytype-form-type": "Label for the type selector in the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
+	"wikilambda-special-objectsbytype-form-type": "Label for the Type selector in the Special:ObjectsByType header form.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-link": "Text of the link that takes to the Special:ObjectsByType page.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-listheader": "Header for list of matching ZObjects.\n\nParameters:\n* $1 - The ZObject type being listed.\n* $2 - The ZID of the type\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-summary": "Introductory summary for Special:ObjectsByType page.\n\n{{doc-wikilambda}}",
