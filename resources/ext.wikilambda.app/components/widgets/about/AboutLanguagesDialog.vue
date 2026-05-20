@@ -263,69 +263,97 @@ module.exports = exports = defineComponent( {
 
 		// Lookup results
 		/**
-		 * Triggers a lookup API to search for matches for the
-		 * given substring and formats the results to be shown
-		 * in the dialog list.
+		 * Abort any in-flight lookup request, create a new controller, and return its signal.
 		 *
-		 * @param {string} substring
+		 * @return {AbortSignal}
 		 */
-		function getLookupResults( substring ) {
-			const allZids = [];
-			// Cancel previous request if any
+		function resetAbortController() {
 			if ( lookupAbortController ) {
 				lookupAbortController.abort();
 			}
 			lookupAbortController = new AbortController();
+			return lookupAbortController.signal;
+		}
+
+		/**
+		 * Processes lookup response data and updates the results list.
+		 *
+		 * @param {Object} data
+		 * @param {string} substring
+		 */
+		function handleLookupResponse( data, substring ) {
+			// Discard responses from superseded searches.
+			if ( substring !== searchTerm.value ) {
+				return;
+			}
+			const allZids = [];
+			const { labels } = data;
+			// Compile information for every search result
+			lookupResults.value = labels
+				.map( ( result ) => {
+					const name = store.getZPersistentName( result.page_title );
+					allZids.push( result.page_title );
+					const labelData = new LabelData(
+						result.page_title,
+						result.label,
+						result.match_lang,
+						store.getLanguageIsoCodeOfZLang( result.match_lang )
+					);
+					return {
+						langZid: result.page_title,
+						langLabelData: labelData,
+						hasMultilingualData: hasMultilingualData( result.page_title ),
+						hasName: !!name,
+						name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
+					};
+				} )
+				.sort( ( a, b ) => {
+					// Sorts the results so that the items with an available name
+					// come first, then the items with any available metadata,
+					// and finally the items that don't have any metadata yet.
+					if ( a.hasName ) {
+						return -2;
+					}
+					if ( b.hasName ) {
+						return 2;
+					}
+					if ( a.hasMultilingualData ) {
+						return -1;
+					}
+					if ( b.hasMultilingualData ) {
+						return 1;
+					}
+					return 0;
+				} );
+			// Fetch the result zid information (labels)
+			store.fetchZids( { zids: allZids } );
+		}
+
+		/**
+		 * Handle lookup error.
+		 *
+		 * @param {Error} error
+		 */
+		function handleLookupError( error ) {
+			if ( error.code === 'abort' ) {
+				return;
+			}
+		}
+
+		/**
+		 * Triggers a lookup API to search for matches for the given substring.
+		 *
+		 * @param {string} substring
+		 */
+		function getLookupResults( substring ) {
+			const signal = resetAbortController();
 			store.lookupZObjectLabels( {
 				input: substring,
 				types: [ Constants.Z_NATURAL_LANGUAGE ],
-				signal: lookupAbortController.signal
-			} ).then( ( data ) => {
-				const { labels } = data;
-				// Compile information for every search result
-				lookupResults.value = labels
-					.map( ( result ) => {
-						const name = store.getZPersistentName( result.page_title );
-						allZids.push( result.page_title );
-						const labelData = new LabelData(
-							result.page_title,
-							result.label,
-							result.match_lang,
-							store.getLanguageIsoCodeOfZLang( result.match_lang )
-						);
-						return {
-							langZid: result.page_title,
-							langLabelData: labelData,
-							hasMultilingualData: hasMultilingualData( result.page_title ),
-							hasName: !!name,
-							name: name ? name.value : i18n( 'wikilambda-editor-default-name' ).text()
-						};
-					} )
-					.sort( ( a, b ) => {
-						// Sorts the results so that the items with an available name
-						// come first, then the items with any available metadata,
-						// and finally the items that don't have any metadata yet.
-						if ( a.hasName ) {
-							return -2;
-						}
-						if ( b.hasName ) {
-							return 2;
-						}
-						if ( a.hasMultilingualData ) {
-							return -1;
-						}
-						if ( b.hasMultilingualData ) {
-							return 1;
-						}
-						return 0;
-					} );
-				// Fetch the result zid information (labels)
-				store.fetchZids( { zids: allZids } );
-			} ).catch( ( error ) => {
-				if ( error.code === 'abort' ) {
-					return;
-				}
-			} );
+				signal
+			} )
+				.then( ( data ) => handleLookupResponse( data, substring ) )
+				.catch( ( error ) => handleLookupError( error ) );
 		}
 
 		// Display items

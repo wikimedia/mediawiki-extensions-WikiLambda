@@ -144,91 +144,119 @@ module.exports = exports = defineComponent( {
 		const isMainObject = computed( () => props.keyPath.startsWith( Constants.STORED_OBJECTS.MAIN ) );
 
 		// Lookup
+		const searchTerm = ref( '' );
 		const lookupResults = ref( [] );
 		let lookupAbortController = null;
 
 		/**
-		 * Performs a language lookup search and formats the results.
-		 * Searches for natural language ZObjects that match the given substring.
-		 * Cancels any previous search request and formats results for display.
-		 * Results are sorted with new languages first, then existing ones.
+		 * Abort any in-flight lookup request, create a new controller, and return its signal.
 		 *
-		 * @param {string} substring - The search term to look up
+		 * @return {AbortSignal}
 		 */
-		function getLookupResults( substring ) {
-			const allZids = [];
-			// Cancel previous request if any
+		function resetAbortController() {
 			if ( lookupAbortController ) {
 				lookupAbortController.abort();
 			}
 			lookupAbortController = new AbortController();
+			return lookupAbortController.signal;
+		}
+
+		/**
+		 * Processes lookup response data and updates the results list.
+		 * Results are sorted with new languages first, then existing ones.
+		 *
+		 * @param {Object} data
+		 * @param {string} substring
+		 */
+		function handleLookupResponse( data, substring ) {
+			// Discard responses from superseded searches.
+			if ( substring !== searchTerm.value ) {
+				return;
+			}
+			const allZids = [];
+			const { labels } = data;
+			// Compile information for every search result
+			lookupResults.value = labels
+				.map( ( result ) => {
+					const langZid = result.page_title;
+					const listItem = props.items.find(
+						( itemData ) => itemData.langZid === langZid
+					);
+					const value = listItem ? listItem.value : '';
+					const isInList = !!listItem;
+					const isInVisibleList = listItem ? listItem.isInVisibleList : false;
+
+					allZids.push( result.page_title );
+					const langLabelData = new LabelData(
+						result.page_title,
+						result.label,
+						result.match_lang,
+						store.getLanguageIsoCodeOfZLang( result.match_lang )
+					);
+					return {
+						langZid,
+						langLabelData,
+						isInList,
+						isInVisibleList,
+						value,
+						hasValue: !!value
+					};
+				} )
+				.filter( ( item ) => {
+					if ( !isMainObject.value && !item.isInList ) {
+						return false;
+					}
+					return true;
+				} )
+				.sort( ( a, b ) => {
+					// Sort so that not-already-added languages come first
+					if ( !a.isInList && b.isInList ) {
+						return -1;
+					}
+					if ( a.isInList && !b.isInList ) {
+						return 1;
+					}
+					// Then sort by whether they have values
+					if ( a.hasValue && !b.hasValue ) {
+						return -1;
+					}
+					if ( !a.hasValue && b.hasValue ) {
+						return 1;
+					}
+					return 0;
+				} );
+			// Fetch the result zid information (labels)
+			store.fetchZids( { zids: allZids } );
+		}
+
+		/**
+		 * Handle lookup error.
+		 *
+		 * @param {Error} error
+		 */
+		function handleLookupError( error ) {
+			if ( error.code === 'abort' ) {
+				return;
+			}
+		}
+
+		/**
+		 * Searches for natural language ZObjects that match the given substring.
+		 *
+		 * @param {string} substring - The search term to look up
+		 */
+		function getLookupResults( substring ) {
+			const signal = resetAbortController();
 			store.lookupZObjectLabels( {
 				input: substring,
 				types: [ Constants.Z_NATURAL_LANGUAGE ],
-				signal: lookupAbortController.signal
-			} ).then( ( data ) => {
-				const { labels } = data;
-				// Compile information for every search result
-				lookupResults.value = labels
-					.map( ( result ) => {
-						const langZid = result.page_title;
-						const listItem = props.items.find(
-							( itemData ) => itemData.langZid === langZid
-						);
-						const value = listItem ? listItem.value : '';
-						const isInList = !!listItem;
-						const isInVisibleList = listItem ? listItem.isInVisibleList : false;
-
-						allZids.push( result.page_title );
-						const langLabelData = new LabelData(
-							result.page_title,
-							result.label,
-							result.match_lang,
-							store.getLanguageIsoCodeOfZLang( result.match_lang )
-						);
-						return {
-							langZid,
-							langLabelData,
-							isInList,
-							isInVisibleList,
-							value,
-							hasValue: !!value
-						};
-					} )
-					.filter( ( item ) => {
-						if ( !isMainObject.value && !item.isInList ) {
-							return false;
-						}
-						return true;
-					} )
-					.sort( ( a, b ) => {
-						// Sort so that not-already-added languages come first
-						if ( !a.isInList && b.isInList ) {
-							return -1;
-						}
-						if ( a.isInList && !b.isInList ) {
-							return 1;
-						}
-						// Then sort by whether they have values
-						if ( a.hasValue && !b.hasValue ) {
-							return -1;
-						}
-						if ( !a.hasValue && b.hasValue ) {
-							return 1;
-						}
-						return 0;
-					} );
-				// Fetch the result zid information (labels)
-				store.fetchZids( { zids: allZids } );
-			} ).catch( ( error ) => {
-				if ( error.code === 'abort' ) {
-					return;
-				}
-			} );
+				signal
+			} )
+				.then( ( data ) => handleLookupResponse( data, substring ) )
+				.catch( ( error ) => handleLookupError( error ) );
 		}
 
 		// Search
-		const searchTerm = ref( '' );
 		const showSearchCancel = ref( false );
 
 		/**

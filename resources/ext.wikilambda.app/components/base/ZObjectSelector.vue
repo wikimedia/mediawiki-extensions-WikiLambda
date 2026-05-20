@@ -465,6 +465,11 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input - The original search input
 		 */
 		function handleLookupResponse( data, input ) {
+			// Discard responses from superseded searches.
+			if ( input !== inputValue.value ) {
+				return;
+			}
+
 			const { labels, searchContinue } = data;
 
 			// Clear results if this is a new search (not a continuation)
@@ -513,12 +518,18 @@ module.exports = exports = defineComponent( {
 		 * @param {string} searchTerm
 		 */
 		function handleLookupError( error, searchTerm ) {
-			if ( error.code === 'abort' ) {
+			if ( error.code === 'abort' || searchTerm !== inputValue.value ) {
 				return;
 			}
 			lookupConfig.value.searchQuery = searchTerm;
 			if ( !lookupConfig.value.searchContinue ) {
 				lookupResults.value = [];
+			}
+		}
+
+		function abortLookup() {
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
 			}
 		}
 
@@ -528,9 +539,7 @@ module.exports = exports = defineComponent( {
 		 * @return {AbortSignal}
 		 */
 		function resetAbortController() {
-			if ( lookupAbortController ) {
-				lookupAbortController.abort();
-			}
+			abortLookup();
 			lookupAbortController = new AbortController();
 			return lookupAbortController.signal;
 		}
@@ -585,6 +594,7 @@ module.exports = exports = defineComponent( {
 
 			// If input is empty, reset lookupResults
 			if ( !input ) {
+				abortLookup();
 				lookupResults.value = [];
 				return;
 			}

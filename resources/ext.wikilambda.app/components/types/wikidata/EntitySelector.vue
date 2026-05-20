@@ -95,15 +95,19 @@ module.exports = exports = defineComponent( {
 			return i18n( msg || 'wikilambda-wikidata-entity-selector-placeholder' ).text();
 		} );
 
+		function abortLookup() {
+			if ( lookupAbortController ) {
+				lookupAbortController.abort();
+			}
+		}
+
 		/**
 		 * Reset the abort controller and return the signal.
 		 *
 		 * @return {AbortSignal}
 		 */
 		function resetAbortController() {
-			if ( lookupAbortController ) {
-				lookupAbortController.abort();
-			}
+			abortLookup();
 			lookupAbortController = new AbortController();
 			return lookupAbortController.signal;
 		}
@@ -144,6 +148,11 @@ module.exports = exports = defineComponent( {
 		 * @param {string} searchTerm - The original search term
 		 */
 		function handleLookupResponse( data, searchTerm ) {
+			// Discard responses from superseded searches.
+			if ( searchTerm !== inputValue.value ) {
+				return;
+			}
+
 			const { searchContinue, search } = data;
 
 			// Clear results if this is a new search (not a continuation)
@@ -170,7 +179,8 @@ module.exports = exports = defineComponent( {
 		 * @param {string} searchTerm
 		 */
 		function handleLookupError( error, searchTerm ) {
-			if ( error.code === 'abort' ) {
+			// Discard errors from superseded searches or aborted requests.
+			if ( error.code === 'abort' || searchTerm !== inputValue.value ) {
 				return;
 			}
 			lookupConfig.value.searchQuery = searchTerm;
@@ -213,6 +223,7 @@ module.exports = exports = defineComponent( {
 
 			// If empty input, do nothing
 			if ( !input ) {
+				abortLookup();
 				lookupResults.value = [];
 				return;
 			}

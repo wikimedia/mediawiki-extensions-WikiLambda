@@ -242,7 +242,8 @@ module.exports = exports = defineComponent( {
 		 */
 		fetchLookupResults: function ( input ) {
 			this.fetchLanguageInfo( { uselang: this.selectedLanguageCode } ).then( ( languageinfo ) => {
-				if ( !languageinfo ) {
+				// Discard responses from superseded searches or no languageinfo.
+				if ( !languageinfo || input !== this.inputValue ) {
 					return;
 				}
 				// Filter items that match the input substring
