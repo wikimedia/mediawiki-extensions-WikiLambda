@@ -664,7 +664,7 @@ class PageRenderingHandler implements
 			// If we don't have a label, we can't link to it, so just show the 'Unlabelled' ZID
 			$label = $parser->msg( 'wikilambda-repoparserfunction-unlabelled' )->text();
 		}
-		$output .= $label;
+		$output .= wfEscapeWikiText( $label );
 
 		$output .= $parser->msg( 'word-separator' )->text()
 			. $parser->msg( 'parentheses' )->params(

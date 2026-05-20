@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
@@ -950,6 +951,54 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$z61EnglishLabel,
 			$z61EnglishLabelDesc,
 		];
+	}
+
+	public function testLabelParserFunction_labelWithWikitextPunctuation_isEscaped() {
+		// Labels can contain characters that have wikitext meaning, such as
+		// brackets or pipes. The {{#wikifunctionlabel:…}} parser function
+		// should render them as literal text inside the link, not as
+		// wikitext markup.
+		$customZid = 'Z99001';
+		$content = json_encode( (object)[
+			'Z1K1' => 'Z2',
+			'Z2K1' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => $customZid ],
+			'Z2K2' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'placeholder' ],
+			'Z2K3' => (object)[
+				'Z1K1' => 'Z12',
+				'Z12K1' => [
+					'Z11',
+					(object)[
+						'Z1K1' => 'Z11',
+						'Z11K1' => 'Z1002',
+						'Z11K2' => 'Function [v2] | variant',
+					],
+				],
+			],
+			'Z2K4' => (object)[
+				'Z1K1' => 'Z32',
+				'Z32K1' => [ 'Z31' ],
+			],
+			'Z2K5' => (object)[
+				'Z1K1' => 'Z12',
+				'Z12K1' => [ 'Z11' ],
+			],
+		] );
+		$this->editPage( $customZid, $content, 'fixture', NS_MAIN );
+		DeferredUpdates::doUpdates();
+
+		$result = $this->parseWikitextToHtml(
+			'{{#wikifunctionlabel:' . $customZid . '|en}}',
+			'en'
+		);
+		$html = $result->getContentHolderText();
+
+		// The label is escaped into the rendered link …
+		$this->assertStringContainsString( 'Function &#91;v2&#93; &#124; variant', $html );
+		// …and the wikilink target is preserved as $customZid.
+		$this->assertMatchesRegularExpression(
+			'#<a href="[^"]*' . $customZid . '"#',
+			$html
+		);
 	}
 
 	private function parseWikitextToHtml( string $wikiText, ?string $language ): ParserOutput {

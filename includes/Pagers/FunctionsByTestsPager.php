@@ -120,7 +120,7 @@ class FunctionsByTestsPager extends AbstractZObjectPager {
 	 */
 	public function formatRow( $row ) {
 		$zid = $row->wlzl_zobject_zid;
-		$label = $row->wlzl_label;
+		$label = wfEscapeWikiText( $row->wlzl_label );
 
 		$functionInfo = "# [[$zid|$label]] ($zid)";
 

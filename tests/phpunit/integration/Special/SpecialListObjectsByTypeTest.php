@@ -326,4 +326,29 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 			$body
 		);
 	}
+
+	public function testPager_formatRow_labelWithWikitextPunctuation_isEscaped() {
+		// Labels can legitimately contain characters that have wikitext
+		// meaning (e.g. "Function [v2] | variant"). formatRow should
+		// round-trip them through the pager output as literal text so the
+		// surrounding wikilink syntax is preserved.
+		$row = (object)[
+			'wlzl_zobject_zid' => 'Z10001',
+			'wlzl_label' => 'Function [v2] | variant',
+		];
+
+		$wikitext = $this->newPager( [] )->formatRow( $row );
+
+		$this->assertStringStartsWith( '# [[Z10001|', $wikitext );
+		$this->assertStringEndsWith( "]] (Z10001)\n", $wikitext );
+		$this->assertStringContainsString(
+			wfEscapeWikiText( 'Function [v2] | variant' ),
+			$wikitext
+		);
+		// Sanity: the escape actually transforms the label.
+		$this->assertNotSame(
+			'Function [v2] | variant',
+			wfEscapeWikiText( 'Function [v2] | variant' )
+		);
+	}
 }

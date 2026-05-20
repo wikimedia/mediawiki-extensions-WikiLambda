@@ -9,7 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Special;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Extension\WikiLambda\Pagers\FunctionsByTestsPager;
 use MediaWiki\Extension\WikiLambda\Special\SpecialListFunctionsByTests;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -167,5 +169,46 @@ class SpecialListFunctionsByTestsTest extends SpecialPageTestBase {
 		$this->assertMatchesRegularExpression( $regexA, $html );
 		$this->assertMatchesRegularExpression( $regexB, $html );
 		$this->assertMatchesRegularExpression( $regexC, $html );
+	}
+
+	public function testPager_formatRow_labelWithWikitextPunctuation_isEscaped() {
+		// Labels can legitimately contain characters that have wikitext
+		// meaning (e.g. "Function [v2] | variant"). formatRow interpolates
+		// labels into wikitext alongside test-count info, so punctuation
+		// must round-trip as literal text without breaking the surrounding
+		// wikilink syntax.
+		$row = (object)[
+			'wlzl_zobject_zid' => 'Z10000',
+			'wlzl_label' => 'Function [v2] | variant',
+			'all_tests' => 3,
+			'matching_tests' => 3,
+			'connected_tests' => 1,
+			'failing_tests' => 0,
+		];
+		$pager = new FunctionsByTestsPager(
+			RequestContext::getMain(),
+			$this->zObjectStore,
+			[ 'Z1002' ],
+			false,
+			[
+				'min' => 0,
+				'max' => -1,
+				'connected' => false,
+				'pending' => false,
+				'pass' => false,
+				'fail' => false,
+			]
+		);
+
+		$wikitext = $pager->formatRow( $row );
+
+		$this->assertStringContainsString(
+			wfEscapeWikiText( 'Function [v2] | variant' ),
+			$wikitext
+		);
+		$this->assertNotSame(
+			'Function [v2] | variant',
+			wfEscapeWikiText( 'Function [v2] | variant' )
+		);
 	}
 }
