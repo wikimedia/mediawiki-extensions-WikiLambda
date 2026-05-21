@@ -6,8 +6,12 @@ use MediaWiki\Exception\PermissionsError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Special\SpecialCreateAbstract;
 use MediaWiki\Permissions\Authority;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Tests\Specials\SpecialPageTestBase;
 use MediaWiki\Title\Title;
+use Wikibase\DataModel\Entity\EntityIdParser;
+use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Services\Lookup\EntityLookup;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Special\SpecialCreateAbstract
@@ -27,6 +31,22 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
+
+		// When WikibaseClient is loaded, mock entity lookups to always succeed so that
+		// validateSave() does not block test page saves or special-page renders.
+		// Individual tests that need a missing-entity scenario override these mocks.
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
+			$mockEntityIdParser = $this->createMock( EntityIdParser::class );
+			$mockEntityIdParser->method( 'parse' )
+				->willReturnCallback( static fn ( $qid ) => new ItemId( $qid ) );
+
+			$mockEntityLookup = $this->createMock( EntityLookup::class );
+			$mockEntityLookup->method( 'getEntity' )
+				->willReturn( $this->createMock( \Wikibase\DataModel\Entity\Item::class ) );
+
+			$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
+			$this->setService( 'WikibaseClient.EntityLookup', $mockEntityLookup );
+		}
 	}
 
 	/**
@@ -161,5 +181,35 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 			'Create a New Abstract Article',
 			$pageTitle
 		);
+	}
+
+	public function testRedirectsWhenQidNotOnWikidata(): void {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
+			$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
+		}
+
+		$qid = 'Q999999';
+		$itemId = new ItemId( $qid );
+
+		$mockEntityIdParser = $this->createMock( EntityIdParser::class );
+		$mockEntityIdParser->method( 'parse' )->with( $qid )->willReturn( $itemId );
+
+		$mockEntityLookup = $this->createMock( EntityLookup::class );
+		$mockEntityLookup->method( 'getEntity' )->with( $itemId )->willReturn( null );
+
+		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
+		$this->setService( 'WikibaseClient.EntityLookup', $mockEntityLookup );
+
+		[ , $response ] = $this->executeSpecialPage(
+			/* subpage */ $qid,
+			/* request */ null,
+			/* language */ null,
+			/* performer */ $this->performer
+		);
+
+		$location = $response->getHeader( 'Location' );
+		$this->assertNotNull( $location );
+		$this->assertStringContainsString( 'Special:CreateAbstract', $location );
+		$this->assertStringNotContainsString( $qid, $location );
 	}
 }

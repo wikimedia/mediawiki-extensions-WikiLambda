@@ -23,6 +23,7 @@
 	"wikilambda-abstract-edit-title": "Edit Abstract Article for $1",
 	"wikilambda-abstract-error-bad-fragments-type": "The section with key '$1' has a badly typed fragment list.",
 	"wikilambda-abstract-error-bad-qid": "The value of the 'qid' property ('$1') is not a valid Wikidata Item Qid.",
+	"wikilambda-abstract-error-nonexistent-qid": "The Wikidata item $1 does not exist. Please select a valid Wikidata item before publishing.",
 	"wikilambda-abstract-error-bad-section-content": "The section with key '$1' has invalid content.",
 	"wikilambda-abstract-error-bad-section-index": "The section with key '$1' has an invalid index number ('$2').",
 	"wikilambda-abstract-error-bad-section-qid": "The section key '$1' is not a valid Wikidata Item Qid.",

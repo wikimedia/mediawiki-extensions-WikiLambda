@@ -74,6 +74,30 @@ class AbstractContentUtils {
 	}
 
 	/**
+	 * Check whether a Wikidata item exists via WikibaseClient.
+	 *
+	 * Returns true if the item exists, false if it definitively does not exist,
+	 * or null if WikibaseClient is unavailable (so callers can choose to skip validation).
+	 *
+	 * @param string $qid The Wikidata QID (e.g. Q42)
+	 * @return ?bool
+	 */
+	public static function wikidataItemExists( string $qid ): ?bool {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
+			return null;
+		}
+		try {
+			$wbEntityParser = \Wikibase\Client\WikibaseClient::getEntityIdParser();
+			$itemId = $wbEntityParser->parse( $qid );
+		} catch ( \Wikibase\DataModel\Entity\EntityIdParsingException ) {
+			return false;
+		}
+
+		$wbEntityLookup = \Wikibase\Client\WikibaseClient::getEntityLookup();
+		return $wbEntityLookup->getEntity( $itemId ) !== null;
+	}
+
+	/**
 	 * Resolve the label for a Wikidata entity via WikibaseClient.
 	 *
 	 * @param string $qid The Wikidata QID (e.g. Q715040)

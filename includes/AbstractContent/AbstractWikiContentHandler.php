@@ -138,10 +138,22 @@ class AbstractWikiContentHandler extends ContentHandler {
 
 		$title = Title::newFromPageIdentity( $validationParams->getPageIdentity() );
 
-		if ( $content->isValidForTitle( $title ) ) {
-			return StatusValue::newGood();
+		if ( !$content->isValidForTitle( $title ) ) {
+			return $content->getStatus();
 		}
-		return $content->getStatus();
+
+		$qid = $content->getTopicQid();
+		// Check if the QID is null or a null Wikidata item reference (Q0)
+		if ( $qid === null || AbstractContentUtils::isNullWikidataItemReference( $qid ) ) {
+			return StatusValue::newFatal( 'wikilambda-abstract-error-bad-qid', $qid ?? '' );
+		}
+		// Check if the QID exists on Wikidata
+		// If WikibaseClient is not loaded, we skip this check and let the save proceed.
+		if ( AbstractContentUtils::wikidataItemExists( $qid ) === false ) {
+			return StatusValue::newFatal( 'wikilambda-abstract-error-nonexistent-qid', $qid );
+		}
+
+		return StatusValue::newGood();
 	}
 
 	/**

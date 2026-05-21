@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 use MediaWiki\Content\ContentHandlerFactory;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditPageTrait;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\SpecialPage\SpecialPage;
@@ -155,6 +156,14 @@ class SpecialCreateAbstract extends SpecialPage {
 			return;
 		}
 
+		// If a QID was supplied but it doesn't exist on Wikidata, redirect to a clean create page
+		// If WikibaseClient is not loaded, we skip this check and let the create page proceed.
+		$qid = $title->getText();
+		if ( $qid !== '' && AbstractContentUtils::wikidataItemExists( $qid ) === false ) {
+			$output->redirect( SpecialPage::getTitleFor( 'CreateAbstract' )->getFullURL() );
+			return;
+		}
+
 		// If title doesn't exist, start building the page:
 		$this->setHeaders();
 
@@ -170,7 +179,7 @@ class SpecialCreateAbstract extends SpecialPage {
 		// Always set the editpage-header wrapper structure so JS can later update
 		// the title span and add the copyable QID chip once a Wikidata entity is chosen.
 		$lang = $context->getLanguage();
-		$qid = $title->getText() !== '' ? $title->getText() : null;
+		$qid = $qid !== '' ? $qid : null;
 		$titleMsg = $qid
 			? $this->msg( 'wikilambda-abstract-special-create-qid' )->params( $qid )->text()
 			: $this->msg( 'wikilambda-abstract-special-create' )->text();
