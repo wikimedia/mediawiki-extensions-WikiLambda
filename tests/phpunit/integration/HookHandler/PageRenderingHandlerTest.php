@@ -539,6 +539,62 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
+	/**
+	 * T426241 / T426296 regression: another extension or skin may set a navigation
+	 * entry (or its href) to null to disable a tab in place. We must not pass that
+	 * null through to appendOrReplaceQueryParams() (which is typed string).
+	 */
+	public function testOnSkinTemplateNavigation_nullEntriesAreSkipped() {
+		$this->insertZids( [ 'Z1' ] );
+		$title = Title::newFromText( 'Z1' );
+
+		$mockSkinTemplate = $this->createMock( SkinTemplate::class );
+		$mockSkinTemplate->method( 'getRelevantTitle' )->willReturn( $title );
+		$mockSkinTemplate->method( 'getLanguage' )->willReturn( $this->makeLanguage( 'en' ) );
+
+		// Three independently-broken shapes that all used to crash:
+		// * 'history' entry is null (some hooks disable a tab this way)
+		// * 'edit' entry is an array but its href is null
+		// * 'talk' associated-pages entry is null
+		$links = [
+			'user-interface-preferences' => [],
+			'views' => [
+				'view' => [ 'href' => '/wiki/Z1' ],
+				'history' => null,
+				'edit' => [ 'href' => null ],
+			],
+			'associated-pages' => [
+				'main' => [ 'href' => '/wiki/Z1' ],
+				'talk' => null,
+			],
+		];
+
+		$linksBefore = $links;
+
+		// Must not throw.
+		$this->pageRenderingHandler->onSkinTemplateNavigation__Universal( $mockSkinTemplate, $links );
+
+		// The broken entries are passed through untouched.
+		$this->assertNull(
+			$links['views']['history'],
+			'A null history entry must be left alone rather than rewritten or crashed on'
+		);
+		$this->assertSame(
+			$linksBefore['views']['edit'], $links['views']['edit'],
+			'An edit entry with a null href must be left alone'
+		);
+		$this->assertNull(
+			$links['associated-pages']['talk'],
+			'A null talk entry must be left alone'
+		);
+
+		// The good entries we do own should still be rewritten as normal.
+		$this->assertSame(
+			'/view/en/Z1', $links['views']['view']['href'],
+			'A well-formed view entry should still be rewritten to the canonical /view/<lang>/<title> form'
+		);
+	}
+
 	public function testOnHtmlPageLinkRendererEnd_notOnAWikitextPage() {
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
 

@@ -146,22 +146,11 @@ class PageRenderingHandler implements
 		// `wfArrayToCgi` rather than hacking inline
 		$langParams = [ 'uselang' => $lang ];
 
-		// (T426241) Don't do this if the page somehow doesn't have a history tab, as it will error
-		if ( array_key_exists( 'history', $links['views'] ) ) {
-			// Append uselang to the 'history' link:
-			$links['views']['history']['href'] = $this->appendOrReplaceQueryParams(
-				$links['views']['history']['href'],
-				$langParams
-			);
-		}
-
-		// Append uselang to the 'edit' link (if it exists):
-		if ( array_key_exists( 'edit', $links['views'] ) ) {
-			$links['views']['edit']['href'] = $this->appendOrReplaceQueryParams(
-				$links['views']['edit']['href'],
-				$langParams
-			);
-		}
+		// (T426241/T426296) Other hooks and skins may set an entry — or its href —
+		// to null to disable a tab without removing it; rewriteHrefIfPresent() skips
+		// those so we never pass null into appendOrReplaceQueryParams().
+		$this->rewriteHrefIfPresent( $links, 'views', 'history', $langParams );
+		$this->rewriteHrefIfPresent( $links, 'views', 'edit', $langParams );
 
 		$isMain = $targetTitle->inNamespace( NS_MAIN );
 		$pageKey = mb_strtolower( $prefixedTitle );
@@ -171,19 +160,51 @@ class PageRenderingHandler implements
 		// * View link in the associated pages navigaton bar (if any)
 		$viewPageKey = $isMain ? 'main' : explode( ':', $pageKey, 2 )[0];
 		$canonicalViewLink = '/view/' . $lang . '/' . $prefixedTitle;
+
+		// Note: 'view' is assumed always present; if a skin ever nulls it out, this can use
+		// rewriteHrefIfPresent() check as we do for the other tabs.
 		$links['views']['view']['href'] = $canonicalViewLink;
 		if ( isset( $links['associated-pages' ] ) && isset( $links['associated-pages'][$viewPageKey] ) ) {
 			$links['associated-pages'][$viewPageKey]['href'] = $canonicalViewLink;
 		}
 
-		// Append uselang to the 'talk' link
+		// Append uselang to the 'talk' link (if its shape is sane; see comment above).
 		$talkPageKey = $isMain ? 'talk' : $viewPageKey . '_talk';
-		if ( isset( $links[ 'associated-pages'] ) && isset( $links['associated-pages'][$talkPageKey] ) ) {
-			$links['associated-pages'][$talkPageKey]['href'] = $this->appendOrReplaceQueryParams(
-				$links['associated-pages'][$talkPageKey]['href'],
-				$langParams
-			);
+		$this->rewriteHrefIfPresent( $links, 'associated-pages', $talkPageKey, $langParams );
+	}
+
+	/**
+	 * Rewrite a navigation entry's href via appendOrReplaceQueryParams(), but only
+	 * if the entry is a well-formed array containing a string href.
+	 *
+	 * Skins and other hooks can leave $links[$bucket][$key] (or its href) as null
+	 * to disable a tab in place. Drilling into that without checking caused the
+	 * production errors in T426241 / T426296.
+	 *
+	 * @param array &$links Mutated in place
+	 * @param string $bucket Top-level bucket name, e.g. 'views' or 'associated-pages'
+	 * @param string $key Entry key within the bucket, e.g. 'history', 'edit', 'talk'
+	 * @param array $queryParams Query parameters to append/replace
+	 */
+	private function rewriteHrefIfPresent(
+		array &$links, string $bucket, string $key, array $queryParams
+	): void {
+		if ( !isset( $links[$bucket] ) || !is_array( $links[$bucket] ) ) {
+			return;
 		}
+		$bucketArr = $links[$bucket];
+		if ( !isset( $bucketArr[$key] ) || !is_array( $bucketArr[$key] ) ) {
+			return;
+		}
+		$entry = $bucketArr[$key];
+		if ( !isset( $entry['href'] ) || !is_string( $entry['href'] ) ) {
+			return;
+		}
+
+		$links[$bucket][$key]['href'] = $this->appendOrReplaceQueryParams(
+			$entry['href'],
+			$queryParams
+		);
 	}
 
 	/**
