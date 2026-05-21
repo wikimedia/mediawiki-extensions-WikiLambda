@@ -228,6 +228,67 @@ class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $htmlContent, $result[ 'Z89K1' ] );
 	}
 
+	public function testCallRenderFunctionCall_successWithNormalFormZ6() {
+		// T426297 regression: the orchestrator may emit Z89K1 in Z6 normal form
+		// ({ Z1K1: "Z6", Z6K1: "<html>" }) rather than as a plain string. Both
+		// shapes must canonicalise down to the plain string downstream.
+		$htmlContent = '<b>Hello World</b>';
+		$responseBody = json_encode( [
+			'wikilambda_function_call' => [
+				'data' => json_encode( [
+					'Z22K1' => (object)[
+						'Z1K1' => 'Z89',
+						'Z89K1' => (object)[
+							'Z1K1' => 'Z6',
+							'Z6K1' => $htmlContent,
+						],
+					],
+					'Z22K2' => (object)[],
+				] ),
+			],
+		] );
+		$factory = $this->getMockHttpFactory(
+			StatusValue::newGood(),
+			$responseBody,
+			200
+		);
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		$result = $request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
+
+		$this->assertArrayHasKey( 'Z89K1', $result );
+		$this->assertSame( $htmlContent, $result[ 'Z89K1' ] );
+	}
+
+	public function testCallRenderFunctionCall_z89k1NotStringLike() {
+		// T426297: if Z89K1 doesn't canonicalise to a string (e.g. it's a list),
+		// we surface a 400 rather than letting a non-string reach the sanitiser.
+		$responseBody = json_encode( [
+			'wikilambda_function_call' => [
+				'data' => json_encode( [
+					'Z22K1' => (object)[
+						'Z1K1' => 'Z89',
+						'Z89K1' => [ 'Z6', 'not', 'a', 'string' ],
+					],
+					'Z22K2' => (object)[],
+				] ),
+			],
+		] );
+		$factory = $this->getMockHttpFactory(
+			StatusValue::newGood(),
+			$responseBody,
+			200
+		);
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		try {
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
+			$this->fail( 'Expected WikifunctionCallException for non-string Z89K1' );
+		} catch ( WikifunctionCallException $e ) {
+			$this->assertSame( HttpStatus::BAD_REQUEST, $e->getHttpStatusCode() );
+		}
+	}
+
 	// fetchRenderedAWFragment
 	// =======================
 

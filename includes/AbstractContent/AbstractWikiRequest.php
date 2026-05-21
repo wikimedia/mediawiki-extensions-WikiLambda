@@ -409,6 +409,19 @@ class AbstractWikiRequest {
 			);
 		}
 
+		// The orchestrator may emit Z89K1 in canonical form ("foo") or normal form
+		// ({ Z1K1: "Z6", Z6K1: "foo" }); canonicalise so downstream always sees a string (T426297).
+		$htmlFragment->{ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE } = ZObjectUtils::canonicalize(
+			$htmlFragment->{ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE }
+		);
+
+		if ( !is_string( $htmlFragment->{ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE } ) ) {
+			throw new WikifunctionCallException(
+				'apierror-abstractwiki_run_fragment-bad-response',
+				HttpStatus::BAD_REQUEST
+			);
+		}
+
 		return (array)$htmlFragment;
 	}
 }
