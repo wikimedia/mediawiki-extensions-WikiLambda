@@ -132,7 +132,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsEditCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsEditCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
@@ -147,9 +147,8 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Z400', NS_MAIN );
 
 		$mockZObjectStore = $this->createMock( ZObjectStore::class );
-		$mockZObjectStore->method( 'fetchZObjectByTitle' )->willReturn(
-			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
-		);
+		$mockZObjectStore->method( 'fetchZObjectByTitle' )
+			->willReturnCallback( __CLASS__ . '::mockFetchZObjectByTitle' );
 
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
@@ -162,7 +161,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsCreationCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsCreationCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
@@ -177,9 +176,8 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Z400', NS_MAIN );
 
 		$mockZObjectStore = $this->createMock( ZObjectStore::class );
-		$mockZObjectStore->method( 'fetchZObjectByTitle' )->willReturn(
-			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
-		);
+		$mockZObjectStore->method( 'fetchZObjectByTitle' )
+			->willReturnCallback( __CLASS__ . '::mockFetchZObjectByTitle' );
 
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
@@ -192,7 +190,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-		->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsUndeletionCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsUndeletionCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
@@ -209,9 +207,8 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Z400', NS_MAIN );
 
 		$mockZObjectStore = $this->createMock( ZObjectStore::class );
-		$mockZObjectStore->method( 'fetchZObjectByTitle' )->willReturn(
-			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
-		);
+		$mockZObjectStore->method( 'fetchZObjectByTitle' )
+			->willReturnCallback( __CLASS__ . '::mockFetchZObjectByTitle' );
 
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
@@ -224,7 +221,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-		->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsRevDeletionCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsRevDeletionCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
@@ -239,9 +236,8 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Z400', NS_MAIN );
 
 		$mockZObjectStore = $this->createMock( ZObjectStore::class );
-		$mockZObjectStore->method( 'fetchZObjectByTitle' )->willReturn(
-			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
-		);
+		$mockZObjectStore->method( 'fetchZObjectByTitle' )
+			->willReturnCallback( __CLASS__ . '::mockFetchZObjectByTitle' );
 
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
@@ -254,7 +250,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsLabelsOnlyEditCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsLabelsOnlyEditCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
@@ -269,9 +265,8 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Z400', NS_MAIN );
 
 		$mockZObjectStore = $this->createMock( ZObjectStore::class );
-		$mockZObjectStore->method( 'fetchZObjectByTitle' )->willReturn(
-			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
-		);
+		$mockZObjectStore->method( 'fetchZObjectByTitle' )
+			->willReturnCallback( __CLASS__ . '::mockFetchZObjectByTitle' );
 
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
@@ -284,7 +279,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsEditCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsEditCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
@@ -299,9 +294,8 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Z400', NS_MAIN );
 
 		$mockZObjectStore = $this->createMock( ZObjectStore::class );
-		$mockZObjectStore->method( 'fetchZObjectByTitle' )->willReturn(
-			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
-		);
+		$mockZObjectStore->method( 'fetchZObjectByTitle' )
+			->willReturnCallback( __CLASS__ . '::mockFetchZObjectByTitle' );
 
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
@@ -314,7 +308,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsDropImplementationEditCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsDropImplementationEditCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
@@ -329,9 +323,8 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( 'Z400', NS_MAIN );
 
 		$mockZObjectStore = $this->createMock( ZObjectStore::class );
-		$mockZObjectStore->method( 'fetchZObjectByTitle' )->willReturn(
-			$this->returnCallback( __CLASS__ . '::mockFetchZObjectByTitle' )
-		);
+		$mockZObjectStore->method( 'fetchZObjectByTitle' )
+			->willReturnCallback( __CLASS__ . '::mockFetchZObjectByTitle' );
 
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
@@ -344,7 +337,7 @@ class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockRecentChange = $this->createMock( RecentChange::class );
 		$mockRecentChange->method( 'getPage' )->willReturn( $title );
 		$mockRecentChange->method( 'getAttribute' )
-			->willReturn( $this->returnCallback( __CLASS__ . '::mockRCAttribsSwapTesterEditCallback' ) );
+			->willReturnCallback( __CLASS__ . '::mockRCAttribsSwapTesterEditCallback' );
 
 		$response = $pagePostSaveHandler->onRecentChange_save( $mockRecentChange );
 
