@@ -39,13 +39,27 @@ class RepoHooks implements
 		require_once __DIR__ . '/../defines.php';
 
 		// Can't use MediaWikiServices or config objects yet, so use globals
-		global $wgWikiLambdaEnableRepoMode;
+		global $wgWikiLambdaEnableRepoMode, $wgWikiLambdaEnableAbstractMode;
 
-		if ( !$wgWikiLambdaEnableRepoMode ) {
-			// Nothing for us to do.
-			return;
+		if ( $wgWikiLambdaEnableRepoMode ) {
+			self::registerRepoModeConfig();
 		}
 
+		if ( $wgWikiLambdaEnableAbstractMode ) {
+			self::registerAbstractModeConfig();
+		}
+	}
+
+	/**
+	 * Configure namespaces, user rights, groups, and rate limits that exist only on a
+	 * Wikifunctions-style repo wiki. Doing this from the registerExtension callback
+	 * (rather than statically in extension.json) keeps them off Special:ListGroupRights
+	 * on client-only wikis such as Wikipedia. (T407066)
+	 *
+	 * Safe to call repeatedly: the merges are duplicate-free so tests that re-fire
+	 * the callback via setUpAsRepoMode() converge on the same state.
+	 */
+	private static function registerRepoModeConfig(): void {
 		// Register the namespace as using content our content model
 		global $wgNamespaceContentModels;
 		$wgNamespaceContentModels[ NS_MAIN ] = CONTENT_MODEL_ZOBJECT;
@@ -57,7 +71,233 @@ class RepoHooks implements
 		// (T267232) Prevent ZObject pages from being transcluded; sadly this isn't available as
 		// an extension.json attribute as of yet.
 		global $wgNonincludableNamespaces;
-		$wgNonincludableNamespaces[] = NS_MAIN;
+		if ( !in_array( NS_MAIN, $wgNonincludableNamespaces, true ) ) {
+			$wgNonincludableNamespaces[] = NS_MAIN;
+		}
+
+		$availableRights = [
+			'wikilambda-bypass-cache',
+			'wikilambda-connect-implementation',
+			'wikilambda-connect-tester',
+			'wikilambda-create',
+			'wikilambda-create-arbitrary-zid',
+			'wikilambda-create-boolean',
+			'wikilambda-create-converter',
+			'wikilambda-create-enum-value',
+			'wikilambda-create-function',
+			'wikilambda-create-function-call',
+			'wikilambda-create-generic-enum',
+			'wikilambda-create-implementation',
+			'wikilambda-create-language',
+			'wikilambda-create-predefined',
+			'wikilambda-create-programming',
+			'wikilambda-create-tester',
+			'wikilambda-create-type',
+			'wikilambda-create-unit',
+			'wikilambda-disconnect-implementation',
+			'wikilambda-disconnect-tester',
+			'wikilambda-edit',
+			'wikilambda-edit-argument-label',
+			'wikilambda-edit-attached-implementation',
+			'wikilambda-edit-attached-tester',
+			'wikilambda-edit-boolean',
+			'wikilambda-edit-function-attached-implementation',
+			'wikilambda-edit-function-attached-tester',
+			'wikilambda-edit-builtin-function',
+			'wikilambda-edit-connected-converter',
+			'wikilambda-edit-converter',
+			'wikilambda-edit-enum-value',
+			'wikilambda-edit-error-key-label',
+			'wikilambda-edit-function-call',
+			'wikilambda-edit-generic-enum-type',
+			'wikilambda-edit-generic-enum-item',
+			'wikilambda-edit-generic-enum-id',
+			'wikilambda-edit-implementation',
+			'wikilambda-edit-key-label',
+			'wikilambda-edit-language',
+			'wikilambda-edit-object-alias',
+			'wikilambda-edit-object-description',
+			'wikilambda-edit-object-label',
+			'wikilambda-edit-object-type',
+			'wikilambda-edit-predefined',
+			'wikilambda-edit-programming',
+			'wikilambda-edit-running-function',
+			'wikilambda-edit-running-function-definition',
+			'wikilambda-edit-tester',
+			'wikilambda-edit-type',
+			'wikilambda-edit-unit',
+			'wikilambda-edit-user-function',
+			'wikilambda-execute',
+			'wikilambda-execute-unsaved-code',
+			'wikifunctions-run',
+		];
+
+		// '*'-group entries set to false are explicit denials we keep recorded so a
+		// downstream wiki adding the right to '*' doesn't accidentally re-grant it.
+		// 'functioneer' and 'functionmaintainer' inherit 'user' rights via the implicit
+		// 'user' group membership in User::getEffectiveGroups(), so they only list deltas.
+		$groupPermissions = [
+			'*' => [
+				'wikilambda-bypass-cache' => false,
+				'wikilambda-create-function-call' => false,
+				'wikilambda-edit-function-call' => false,
+				'wikilambda-execute' => true,
+				'wikifunctions-run' => true,
+			],
+			'user' => [
+				'wikilambda-execute-unsaved-code' => true,
+				'wikilambda-create' => true,
+				'wikilambda-create-converter' => true,
+				'wikilambda-create-function' => true,
+				'wikilambda-create-implementation' => true,
+				'wikilambda-create-tester' => true,
+				'wikilambda-edit' => true,
+				'wikilambda-edit-argument-label' => true,
+				'wikilambda-edit-converter' => true,
+				'wikilambda-edit-error-key-label' => true,
+				'wikilambda-edit-implementation' => true,
+				'wikilambda-edit-key-label' => true,
+				'wikilambda-edit-object-alias' => true,
+				'wikilambda-edit-object-description' => true,
+				'wikilambda-edit-object-label' => true,
+				'wikilambda-edit-tester' => true,
+				'wikilambda-edit-user-function' => true,
+			],
+			'functioneer' => [
+				'wikilambda-connect-implementation' => true,
+				'wikilambda-connect-tester' => true,
+				'wikilambda-create-generic-enum' => true,
+				'wikilambda-create-type' => true,
+				'wikilambda-disconnect-implementation' => true,
+				'wikilambda-disconnect-tester' => true,
+				'wikilambda-edit-attached-implementation' => true,
+				'wikilambda-edit-attached-tester' => true,
+				'wikilambda-edit-generic-enum-item' => true,
+				'wikilambda-edit-running-function' => true,
+			],
+			'functionmaintainer' => [
+				'wikilambda-create-arbitrary-zid' => true,
+				'wikilambda-create-boolean' => true,
+				'wikilambda-create-enum-value' => true,
+				'wikilambda-create-language' => true,
+				'wikilambda-create-predefined' => true,
+				'wikilambda-create-programming' => true,
+				'wikilambda-create-unit' => true,
+				'wikilambda-edit-boolean' => true,
+				'wikilambda-edit-builtin-function' => true,
+				'wikilambda-edit-connected-converter' => true,
+				'wikilambda-edit-enum-value' => true,
+				'wikilambda-edit-generic-enum-id' => true,
+				'wikilambda-edit-generic-enum-type' => true,
+				'wikilambda-edit-language' => true,
+				'wikilambda-edit-object-type' => true,
+				'wikilambda-edit-predefined' => true,
+				'wikilambda-edit-programming' => true,
+				'wikilambda-edit-running-function-definition' => true,
+				'wikilambda-edit-type' => true,
+				'wikilambda-edit-unit' => true,
+				'wikilambda-edit-function-attached-implementation' => true,
+				'wikilambda-edit-function-attached-tester' => true,
+			],
+		];
+
+		$rateLimits = [
+			// Functioneers can make 20 calls per minute
+			'functioneer' => [ 20, 60 ],
+			// Regular (logged-in) users can make 5 calls per minute
+			'user' => [ 5, 60 ],
+			// Brand new users (and temporary accounts and logged-out users) can only make 1 call per minute
+			'newbie' => [ 1, 60 ],
+		];
+
+		// 'sysop' can promote/demote 'functioneer'; 'bureaucrat' the same for 'functionmaintainer'.
+		$groupChangeRights = [
+			'sysop' => 'functioneer',
+			'bureaucrat' => 'functionmaintainer',
+		];
+
+		self::applyRegisteredConfig(
+			$availableRights, $groupPermissions, $rateLimits, $groupChangeRights
+		);
+	}
+
+	/**
+	 * Configure the user rights and group permissions needed for Abstract Wikipedia
+	 * content authoring. Gated separately from repo-mode rights so an abstract-mode
+	 * wiki that is not a Wikifunctions repo still gets these. (T407066)
+	 *
+	 * Safe to call repeatedly.
+	 */
+	private static function registerAbstractModeConfig(): void {
+		$availableRights = [
+			'wikilambda-abstract-create',
+			'wikilambda-abstract-edit',
+		];
+
+		$groupPermissions = [
+			'*' => [
+				'wikilambda-abstract-create' => false,
+				'wikilambda-abstract-edit' => false,
+			],
+			'user' => [
+				'wikilambda-abstract-create' => true,
+				'wikilambda-abstract-edit' => true,
+			],
+		];
+
+		self::applyRegisteredConfig( $availableRights, $groupPermissions, [], [] );
+	}
+
+	/**
+	 * Idempotent merge of WikiLambda's permission-shaped globals.
+	 *
+	 * Indexed arrays ($wgAvailableRights, $wgPrivilegedGroups, $wgAddGroups[<admin>],
+	 * $wgRemoveGroups[<admin>]) are appended only with entries not already present.
+	 * Associative permission maps ($wgGroupPermissions[<group>], $wgRateLimits[<right>])
+	 * are merged using the '+' operator so values from LocalSettings.php (or any earlier
+	 * registration pass) win over our defaults — matching the merge semantics that
+	 * MediaWiki's ExtensionProcessor applies when these are declared in extension.json.
+	 *
+	 * @param string[] $availableRights
+	 * @param array<string,array<string,bool>> $groupPermissions
+	 * @param array<string,int[]> $rateLimits Per-group [count, period] entries for 'wikilambda-execute'
+	 * @param array<string,string> $groupChangeRights Map of administrator group => target group
+	 */
+	private static function applyRegisteredConfig(
+		array $availableRights,
+		array $groupPermissions,
+		array $rateLimits,
+		array $groupChangeRights
+	): void {
+		global $wgAvailableRights, $wgGroupPermissions, $wgRateLimits,
+			$wgAddGroups, $wgRemoveGroups, $wgPrivilegedGroups;
+
+		$wgAvailableRights = array_values( array_unique(
+			array_merge( $wgAvailableRights, $availableRights )
+		) );
+
+		foreach ( $groupPermissions as $group => $perms ) {
+			$wgGroupPermissions[$group] = ( $wgGroupPermissions[$group] ?? [] ) + $perms;
+		}
+
+		if ( $rateLimits ) {
+			$wgRateLimits['wikilambda-execute'] =
+				( $wgRateLimits['wikilambda-execute'] ?? [] ) + $rateLimits;
+		}
+
+		foreach ( $groupChangeRights as $admin => $target ) {
+			foreach ( [ &$wgAddGroups, &$wgRemoveGroups ] as &$bucket ) {
+				$bucket[$admin] ??= [];
+				if ( !in_array( $target, $bucket[$admin], true ) ) {
+					$bucket[$admin][] = $target;
+				}
+			}
+			unset( $bucket );
+
+			if ( !in_array( $target, $wgPrivilegedGroups, true ) ) {
+				$wgPrivilegedGroups[] = $target;
+			}
+		}
 	}
 
 	/**
