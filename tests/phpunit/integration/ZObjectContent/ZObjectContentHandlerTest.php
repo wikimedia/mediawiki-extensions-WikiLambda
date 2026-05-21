@@ -41,7 +41,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataRemoval
  * @group Database
  */
-class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
+class ZObjectContentHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * @param string|null $modelId

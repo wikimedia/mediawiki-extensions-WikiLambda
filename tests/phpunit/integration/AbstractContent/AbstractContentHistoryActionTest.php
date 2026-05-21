@@ -14,7 +14,6 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Page\Article;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
 
 /**
@@ -28,10 +27,6 @@ class AbstractContentHistoryActionTest extends WikiLambdaClientIntegrationTestCa
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setUpAsClientMode();
-
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient not available' );
-		}
 	}
 
 	public function testGetName() {

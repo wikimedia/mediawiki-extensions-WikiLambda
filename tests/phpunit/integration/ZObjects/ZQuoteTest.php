@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Json\FormatJson;
 
@@ -18,11 +18,10 @@ use MediaWiki\Json\FormatJson;
  *
  * @group Database
  */
-class ZQuoteTest extends WikiLambdaIntegrationTestCase {
+class ZQuoteTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testConstructor() {

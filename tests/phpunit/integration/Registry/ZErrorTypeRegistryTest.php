@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Registry;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Title\Title;
 use Wikimedia\TestingAccessWrapper;
 
@@ -19,11 +19,10 @@ use Wikimedia\TestingAccessWrapper;
  * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry
  * @group Database
  */
-class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
+class ZErrorTypeRegistryTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testSingleton() {

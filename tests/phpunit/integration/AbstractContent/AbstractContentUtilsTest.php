@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils
  * @group Database
  */
-class AbstractContentUtilsTest extends WikiLambdaIntegrationTestCase {
+class AbstractContentUtilsTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	/**
 	 * @dataProvider provideIsValidWikidataItemReference
 	 */

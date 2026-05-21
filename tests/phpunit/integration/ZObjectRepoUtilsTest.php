@@ -15,13 +15,12 @@ use MediaWiki\Extension\WikiLambda\ZObjectRepoUtils;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectRepoUtils
  * @group Database
  */
-class ZObjectRepoUtilsTest extends WikiLambdaIntegrationTestCase {
+class ZObjectRepoUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideGetLanguageCodeFromString
 	 */
 	public function testGetLanguageCodeFromString( $input, $expected ) {
-		$this->setUpAsRepoMode();
 		$this->registerLangs( [ 'en', 'es', 'fr' ] );
 		$this->insertZids( [ 'Z1002', 'Z1003', 'Z1004' ] );
 		$this->assertSame( $expected, ZObjectRepoUtils::getLanguageFromString( ...$input )->getCode() );

@@ -19,7 +19,7 @@ use MediaWiki\JobQueue\JobQueueGroup;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore
  */
-class AWFragmentStoreTest extends WikiLambdaIntegrationTestCase {
+class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	/**
 	 * makeKey returns fresh and stale cache keys

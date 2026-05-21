@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Title\Title;
 
 /**
@@ -18,10 +18,9 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageEditingHandler
  * @group Database
  */
-class HooksTest extends WikiLambdaIntegrationTestCase {
+class HooksTest extends WikiLambdaRepoModeIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testRegisterExtension() {

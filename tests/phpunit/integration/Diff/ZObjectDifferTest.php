@@ -19,7 +19,7 @@ use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
  *
  * @group Database
  */
-class ZObjectDifferTest extends WikiLambdaIntegrationTestCase {
+class ZObjectDifferTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideDiffData

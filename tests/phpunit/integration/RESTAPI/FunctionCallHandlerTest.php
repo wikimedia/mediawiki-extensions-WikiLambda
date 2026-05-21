@@ -27,7 +27,7 @@ use Wikimedia\TestingAccessWrapper;
  * @group Standalone
  * @group Database
  */
-class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
+class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	use HandlerTestTrait;
 
 	/** @var array */

@@ -15,7 +15,7 @@ use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Tests\HooksDataPathMock;
 use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
@@ -40,10 +40,9 @@ use Wikimedia\TestingAccessWrapper;
  * @group Database
  * @group Standalone
  */
-class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
+class StandaloneHooksTest extends WikiLambdaRepoModeIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	/**

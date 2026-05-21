@@ -19,7 +19,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\RESTAPI;
 
 use MediaWiki\Extension\WikiLambda\RESTAPI\WikiLambdaRESTHandler;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Rest\LocalizedHttpException;
@@ -29,7 +29,7 @@ use Wikimedia\TestingAccessWrapper;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\RESTAPI\WikiLambdaRESTHandler
  */
-class WikiLambdaRESTHandlerTest extends WikiLambdaIntegrationTestCase {
+class WikiLambdaRESTHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * Build an anonymous concrete subclass of the abstract base, with $logger injected

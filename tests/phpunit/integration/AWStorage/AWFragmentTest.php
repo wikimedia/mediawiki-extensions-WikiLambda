@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragment
  */
-class AWFragmentTest extends WikiLambdaIntegrationTestCase {
+class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	public function testConstructor() {
 		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en', '2026-05-15' );

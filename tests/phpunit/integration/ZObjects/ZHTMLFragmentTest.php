@@ -16,7 +16,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZHTMLFragment;
 
 /**
@@ -24,7 +24,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZHTMLFragment;
  *
  * @group Database
  */
-class ZHTMLFragmentTest extends WikiLambdaIntegrationTestCase {
+class ZHTMLFragmentTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	public function testConstructor_default() {
 		$testObject = new ZHTMLFragment();

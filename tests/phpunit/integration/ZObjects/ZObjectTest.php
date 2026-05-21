@@ -11,7 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -31,11 +31,10 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  * @group Database
  */
-class ZObjectTest extends WikiLambdaIntegrationTestCase {
+class ZObjectTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testGetValueByKey_stringValue() {

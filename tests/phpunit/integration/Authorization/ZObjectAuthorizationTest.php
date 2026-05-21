@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Authorization;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectPage;
@@ -31,7 +31,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @group Database
  */
-class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
+class ZObjectAuthorizationTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	private ZObjectStore $zobjectStore;
 	private ZObjectAuthorization $zobjectAuthorization;

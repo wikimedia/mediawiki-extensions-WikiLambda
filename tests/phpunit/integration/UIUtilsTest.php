@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\UIUtils;
  * @covers \MediaWiki\Extension\WikiLambda\UIUtils
  * @group Database
  */
-class UIUtilsTest extends WikiLambdaIntegrationTestCase {
+class UIUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	public function testCreateCodexProgressIndicator() {
 		$ariaLabel = 'Loading data';

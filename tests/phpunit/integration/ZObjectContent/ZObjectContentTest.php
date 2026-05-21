@@ -24,7 +24,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @group Database
  */
-class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
+class ZObjectContentTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	public function testCreation_invalidJson() {
 		$this->hideDeprecated( '::create' );

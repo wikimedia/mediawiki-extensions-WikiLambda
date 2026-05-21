@@ -27,7 +27,7 @@ use Wikimedia\TestingAccessWrapper;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  * @group Database
  */
-class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
+class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	private const EN = 'Z1002';
 	private const ES = 'Z1003';

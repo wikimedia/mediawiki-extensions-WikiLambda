@@ -18,7 +18,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentDifferenceEngine
  * @group Database
  */
-class AbstractContentDifferenceEngineTest extends WikiLambdaIntegrationTestCase {
+class AbstractContentDifferenceEngineTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	public function testGenerateContentDiffBody_validDiff() {
 		$oldContent = new AbstractWikiContent(

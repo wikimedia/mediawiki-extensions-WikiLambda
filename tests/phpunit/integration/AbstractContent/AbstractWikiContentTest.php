@@ -18,7 +18,7 @@ use TypeError;
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent
  * @group Database
  */
-class AbstractWikiContentTest extends WikiLambdaIntegrationTestCase {
+class AbstractWikiContentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	private const TEST_ABSTRACT_NS = 2300;
 

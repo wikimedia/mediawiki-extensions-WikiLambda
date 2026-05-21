@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
@@ -22,11 +22,10 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @group Database
  */
-class ZReferenceTest extends WikiLambdaIntegrationTestCase {
+class ZReferenceTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testPersistentCreation_disallowed() {

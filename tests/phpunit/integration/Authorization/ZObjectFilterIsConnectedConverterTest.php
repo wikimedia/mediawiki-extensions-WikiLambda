@@ -18,16 +18,16 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Authorization;
 
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsConnectedConverter;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
+use MediaWikiIntegrationTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsConnectedConverter
  */
-class ZObjectFilterIsConnectedConverterTest extends WikiLambdaIntegrationTestCase {
+class ZObjectFilterIsConnectedConverterTest extends MediaWikiIntegrationTestCase {
 
 	/**
 	 * Build a mock ZObjectContent whose getZType() returns $type and whose

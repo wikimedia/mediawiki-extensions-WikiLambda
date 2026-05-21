@@ -15,7 +15,6 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Page\Article;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 
@@ -33,10 +32,6 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setUpAsClientMode();
-
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient not available' );
-		}
 
 		// Mock Wikidata lookup entities so:
 		// * Q42 exists, has label in 'en'

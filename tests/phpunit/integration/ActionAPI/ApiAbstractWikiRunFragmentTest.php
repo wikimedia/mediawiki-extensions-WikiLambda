@@ -28,6 +28,10 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		parent::setUp();
 
 		$this->overrideConfigValue( 'WikiLambdaClientTargetAPI', 'test.wikifunctions.org' );
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
+
+		$this->setMwGlobals( 'wgWikiLambdaEnableAbstractMode', true );
+		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
 
 		// Mock language service and wire up
 		$this->langFactory = $this->createWikifunctionsLanguageFactoryMock();

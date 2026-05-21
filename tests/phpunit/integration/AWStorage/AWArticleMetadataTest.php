@@ -17,7 +17,7 @@ use Wikimedia\Timestamp\TimestampFormat as TS;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata
  */
-class AWArticleMetadataTest extends AbstractClientIntegrationTestCase {
+class AWArticleMetadataTest extends WikiLambdaAbstractClientIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();

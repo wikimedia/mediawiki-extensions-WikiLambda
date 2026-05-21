@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
@@ -19,7 +19,7 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\StoreTestResultTrait
  * @group Database
  */
-class CacheTesterResultsJobTest extends WikiLambdaIntegrationTestCase {
+class CacheTesterResultsJobTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	private const DEFAULT_PARAMS = [
 		'functionZid' => 'Z10000',

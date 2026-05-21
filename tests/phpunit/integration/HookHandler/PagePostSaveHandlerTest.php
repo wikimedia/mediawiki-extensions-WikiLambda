@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\WikiLambda\HookHandler\PagePostSaveHandler;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -27,7 +27,7 @@ use Wikimedia\Rdbms\SelectQueryBuilder;
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PagePostSaveHandler
  * @group Database
  */
-class PagePostSaveHandlerTest extends WikiLambdaIntegrationTestCase {
+class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * Mock HashConfig saying that WikiLambdaEnableRepoMode is true

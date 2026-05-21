@@ -23,7 +23,7 @@ use StatusValue;
  * @covers \MediaWiki\Extension\WikiLambda\WikifunctionCallException
  * @group Database
  */
-class AbstractWikiRequestTest extends WikiLambdaIntegrationTestCase {
+class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	private const TEST_TARGET_API = 'test.wikifunctions.org';
 

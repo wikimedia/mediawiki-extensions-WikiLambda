@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
@@ -24,11 +24,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
-class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
+class ZTypedMapTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testCreate_emptyMap_constructor() {

@@ -16,13 +16,19 @@ use MediaWiki\Tests\Api\ApiTestCase;
  */
 class WikiLambdaApiTestCase extends ApiTestCase {
 
-	/** @inheritDoc */
-	public function __construct( $name = null, array $data = [], $dataName = '' ) {
-		parent::__construct( $name, $data, $dataName );
-
-		// All our ActionAPIs are specific to repo-mode
-		$this->overrideMwServices();
+	/**
+	 * Most ActionAPIs in this extension are repo-mode-only. With the extension
+	 * now defaulting to client-only (I337b83112), enable repo mode explicitly
+	 * in setUp() so RepoHooks::registerExtension fires for each test. (Doing
+	 * this in __construct, as we used to, doesn't survive
+	 * MediaWikiIntegrationTestCase::setUp resetting service overrides.)
+	 *
+	 * Exception: ApiAbstractWikiRunFragment, which runs in Abstract mode
+	 */
+	protected function setUp(): void {
+		parent::setUp();
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', true );
+		$this->setMwGlobals( 'wgWikiLambdaEnableRepoMode', true );
 		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
 	}
 

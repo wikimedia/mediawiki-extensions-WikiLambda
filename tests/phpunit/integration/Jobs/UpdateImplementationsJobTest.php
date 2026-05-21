@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
@@ -25,7 +25,7 @@ use MediaWiki\Title\Title;
  * @group API
  * @group Database
  */
-class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
+class UpdateImplementationsJobTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	private ZObjectStore $store;
 

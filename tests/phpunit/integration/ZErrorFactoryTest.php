@@ -26,11 +26,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
  *
  * @group Database
  */
-class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
+class ZErrorFactoryTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	/**

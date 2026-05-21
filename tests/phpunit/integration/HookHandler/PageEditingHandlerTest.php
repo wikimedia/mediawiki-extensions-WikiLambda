@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageEditingHandler;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
@@ -32,7 +32,7 @@ use Wikimedia\Rdbms\SelectQueryBuilder;
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageEditingHandler
  * @group Database
  */
-class PageEditingHandlerTest extends WikiLambdaIntegrationTestCase {
+class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * Mock HashConfig saying that WikiLambdaEnableRepoMode is true

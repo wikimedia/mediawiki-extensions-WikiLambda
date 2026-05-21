@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
@@ -20,11 +20,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
-class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
+class ZTypedPairTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testCreate_emptyPair_constructor() {

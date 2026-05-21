@@ -11,13 +11,13 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaAbstractModeIntegrationTestCase;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob
  * @group Database
  */
-class CacheAbstractContentFragmentJobTest extends WikiLambdaIntegrationTestCase {
+class CacheAbstractContentFragmentJobTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	private function buildJob( array $overrides = [] ): CacheAbstractContentFragmentJob {
 		return new CacheAbstractContentFragmentJob( array_merge( [

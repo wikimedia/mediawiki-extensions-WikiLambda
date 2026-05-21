@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -25,11 +25,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @group Database
  */
-class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
+class ZMonoLingualStringTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testCreation() {

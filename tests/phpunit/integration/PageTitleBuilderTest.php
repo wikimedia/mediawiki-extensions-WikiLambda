@@ -11,7 +11,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder
  * @group Database
  */
-class PageTitleBuilderTest extends WikiLambdaIntegrationTestCase {
+class PageTitleBuilderTest extends WikiLambdaRepoModeIntegrationTestCase {
 	private function newZObjectContentFixture(): ZObjectContent {
 		$content = new ZObjectContent(
 			'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z401"},"Z2K2":"",' .

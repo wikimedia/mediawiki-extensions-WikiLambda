@@ -29,7 +29,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent
  * @group Database
  */
-class AbstractWikiContentHandlerTest extends WikiLambdaClientIntegrationTestCase {
+class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	private const TEST_ABSTRACT_NS = 2300;
 

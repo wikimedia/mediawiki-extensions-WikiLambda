@@ -18,7 +18,7 @@ use MediaWiki\Tests\Rest\Handler\HandlerTestTrait;
  * @group Standalone
  * @group Database
  */
-class FetchHandlerTest extends WikiLambdaIntegrationTestCase {
+class FetchHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	use HandlerTestTrait;
 
 	/** @var array */

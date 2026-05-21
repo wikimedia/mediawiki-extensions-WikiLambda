@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Registry;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
@@ -23,13 +23,12 @@ use Wikimedia\TestingAccessWrapper;
  * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry
  * @group Database
  */
-class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
+class ZLangRegistryTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	private ZLangRegistry $registry;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 		$this->registry = ZLangRegistry::singleton();
 	}
 

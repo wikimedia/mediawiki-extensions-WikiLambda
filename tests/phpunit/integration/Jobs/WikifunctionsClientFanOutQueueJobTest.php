@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\JobQueue\JobQueueGroupFactory;
 use MediaWiki\JobQueue\JobSpecification;
@@ -21,11 +21,10 @@ use Wikimedia\TestingAccessWrapper;
  *
  * @group Database
  */
-class WikifunctionsClientFanOutQueueJobTest extends WikiLambdaIntegrationTestCase {
+class WikifunctionsClientFanOutQueueJobTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	private function buildParams(): array {

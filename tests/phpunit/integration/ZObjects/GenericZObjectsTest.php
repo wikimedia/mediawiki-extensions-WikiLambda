@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
@@ -24,11 +24,10 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
-class GenericZObjectsTest extends WikiLambdaIntegrationTestCase {
+class GenericZObjectsTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	/**

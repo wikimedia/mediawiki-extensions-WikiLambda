@@ -18,7 +18,7 @@ use MediaWiki\Language\Language;
  * @covers \MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage
  * @covers \MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory
  */
-class WikifunctionsLanguageTest extends WikiLambdaIntegrationTestCase {
+class WikifunctionsLanguageTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	private WikifunctionsLanguageFactory $factory;
 

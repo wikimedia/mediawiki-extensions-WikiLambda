@@ -22,7 +22,7 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
  * @covers \MediaWiki\Extension\WikiLambda\AWStorage\DBAWArticleStore
  * @group Database
  */
-class DBAWArticleStoreTest extends AbstractClientIntegrationTestCase {
+class DBAWArticleStoreTest extends WikiLambdaAbstractClientIntegrationTestCase {
 
 	private DBAWArticleStore $store;
 

@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -24,11 +24,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
  *
  * @group Database
  */
-class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
+class ZResponseEnvelopeTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testCreation_constructor_working() {

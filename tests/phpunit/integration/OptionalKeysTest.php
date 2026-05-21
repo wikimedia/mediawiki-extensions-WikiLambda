@@ -16,7 +16,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
-class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
+class OptionalKeysTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * This test proves that an on-wiki implementation can be made of a PHP-backed but non-built-in ZType.

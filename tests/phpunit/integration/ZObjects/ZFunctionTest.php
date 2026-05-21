@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -24,11 +24,10 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
-class ZFunctionTest extends WikiLambdaIntegrationTestCase {
+class ZFunctionTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 	}
 
 	public function testCreation() {

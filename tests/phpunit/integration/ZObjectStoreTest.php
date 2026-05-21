@@ -32,14 +32,13 @@ use Wikimedia\Rdbms\IResultWrapper;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @group Database
  */
-class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
+class ZObjectStoreTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	private static string $testResponse = '{ "Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": "Z24" }';
 	private ZObjectStore $zobjectStore;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 	}
 

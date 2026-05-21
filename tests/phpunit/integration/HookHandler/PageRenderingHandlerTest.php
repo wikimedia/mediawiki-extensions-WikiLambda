@@ -15,7 +15,7 @@ use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\LanguageFactory;
@@ -38,7 +38,7 @@ use MediaWiki\User\User;
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler
  * @group Database
  */
-class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
+class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	use MockWikidataEntityLookupTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
@@ -48,7 +48,6 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsRepoMode();
 		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/test_definitions' );
 
 		$mockHashConfigRepoMode = $this->createMock( HashConfig::class );

@@ -26,7 +26,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  * @group Database
  */
-class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
+class ZObjectFactoryTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideCreateValidInput

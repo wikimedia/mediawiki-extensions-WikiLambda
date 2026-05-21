@@ -1,7 +1,18 @@
 <?php
 
 /**
- * WikiLambda integration test abstract class
+ * WikiLambda integration test base class. Helper-only — exposes the ZObject /
+ * language / error fixtures used by every WikiLambda integration test, with no
+ * mode-specific setup of its own.
+ *
+ * Tests do not extend this class directly; they pick one of the four
+ * mode-specific subclasses according to the wiki configuration their
+ * subject-under-test runs in:
+ *
+ *   - WikiLambdaRepoModeIntegrationTestCase       — Wikifunctions repo wiki
+ *   - WikiLambdaClientIntegrationTestCase         — Wikifunctions client wiki
+ *   - WikiLambdaAbstractModeIntegrationTestCase   — Abstract Wikipedia repo wiki
+ *   - WikiLambdaAbstractClientIntegrationTestCase — Abstract Wikipedia client wiki
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -21,6 +32,9 @@ use MediaWiki\Permissions\Authority;
 use MediaWikiIntegrationTestCase;
 
 abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCase {
+	// Use this trait in the base class, as it will be needed from both
+	// WikiLambdaClientIntegrationTestCase and WikiLambdaAbstractModeIntegrationTestCase
+	use MockWikidataEntityLookupTrait;
 
 	private string $mainDataPath;
 
@@ -42,17 +56,6 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		parent::__construct( $name, $data, $dataName );
 
 		$this->mainDataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
-	}
-
-	/**
-	 * Set configuration flag WikiLambdaEnableRepoMode to true
-	 */
-	protected function setUpAsRepoMode(): void {
-		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', true );
-		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
-
-		// Always register Z504, as otherwise we get an infinite recursion of not finding Z504
-		$this->insertZids( [ 'Z504' ] );
 	}
 
 	/**
