@@ -559,6 +559,8 @@
 	"wikilambda-unknown-test-error-message": "테스트를 실행할 수 없습니다. 페이지를 새로 고침해 주세요.",
 	"wikilambda-validation-error-description-toolong": "$1의 설명은 {{PLURAL:$2|$2자}} 이하여야 합니다.",
 	"wikilambda-validation-error-name-toolong": "$1의 이름은 {{PLURAL:$2|$2자}} 이하여야 합니다.",
+	"wikilambda-commons-media-selector-placeholder": "공용 이미지 검색",
+	"wikilambda-commons-media-empty-value-placeholder": "선택된 이미지 없음",
 	"wikilambda-wikidata-entity-selector-placeholder": "위키데이터 독립체 선택",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "값 없음",
 	"wikilambda-wikidata-item-selector-placeholder": "위키데이터 항목 선택",

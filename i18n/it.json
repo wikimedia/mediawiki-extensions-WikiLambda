@@ -521,6 +521,7 @@
 	"wikilambda-unknown-test-error-message": "Non è stato possibile eseguire i test. Ricarica.",
 	"wikilambda-validation-error-description-toolong": "La descrizione in $1 deve contenere {{PLURAL:$2|$2 carattere|$2 caratteri}} o meno.",
 	"wikilambda-validation-error-name-toolong": "Il nome in $1 deve contenere {{PLURAL:$2|$2 carattere|$2 caratteri}} o meno.",
+	"wikilambda-commons-media-empty-value-placeholder": "Nessuna immagine selezionata",
 	"wikilambda-wikidata-entity-selector-placeholder": "Seleziona l'entità Wikidata",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Nessun valore",
 	"wikilambda-wikidata-item-selector-placeholder": "Seleziona l'elemento Wikidata",

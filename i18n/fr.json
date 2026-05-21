@@ -534,6 +534,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-latest": "Plus récents d’abord",
 	"wikilambda-special-objectsbytype-form-orderby-name": "Nom",
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Plus anciens d’abord",
+	"wikilambda-special-objectsbytype-form-returntype": "Type de retour",
 	"wikilambda-special-objectsbytype-form-type": "Type",
 	"wikilambda-special-objectsbytype-link": "Liste de tous les Types avec des exemples",
 	"wikilambda-special-objectsbytype-listheader": "Tous les objets de type $1 ($2)",
