@@ -351,7 +351,7 @@ class PageRenderingHandler implements
 		}
 
 		if ( $targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT ) ) {
-			$label = AbstractContentUtils::resolveAbstractLabel( $entityId, $currentPageContentLanguageCode );
+			$label = $this->fetchAbstractModeLabel( $entityId, $currentPageContentLanguageCode );
 		} elseif ( $targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
 			$label = $this->fetchRepoModeLabel( $targetTitle, $context->getLanguage() );
 		} else {
