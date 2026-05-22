@@ -17,7 +17,7 @@
 			>
 				{{ langIso.toUpperCase() }}
 			</cdx-info-chip>
-			{{ text }}
+			<span :lang="langIso" :dir="langDir">{{ text }}</span>
 		</div>
 		<!-- Monolingual string on edit mode -->
 		<div
@@ -54,6 +54,8 @@
 				:model-value="text"
 				class="ext-wikilambda-app-monolingual-string__input"
 				:placeholder="i18n( 'wikilambda-edit-monolingual-text-placeholder' ).text()"
+				:lang="langIso"
+				:dir="langDir"
 				@update:model-value="setText"
 			>
 			</cdx-text-input>
@@ -147,6 +149,19 @@ module.exports = exports = defineComponent( {
 		const langIso = computed( () => store.getLanguageIsoCodeOfZLang( lang.value ) || '' );
 
 		/**
+		 * Return the directionality ('ltr' or 'rtl') of the declared language of
+		 * this Monolingual String, so the text renders consistently with its own
+		 * language rather than with the surrounding UI direction. Falls back to
+		 * 'auto' (browser first-strong-character heuristic) when the language is
+		 * not yet set and the true directionality is therefore unknown.
+		 *
+		 * @return {string}
+		 */
+		const langDir = computed(
+			() => store.getLabelDataForLangCode( lang.value ).langDir || 'auto'
+		);
+
+		/**
 		 * Whether the language is still not defined, so langIso is an empty string
 		 *
 		 * @return {boolean}
@@ -201,6 +216,7 @@ module.exports = exports = defineComponent( {
 			handleChipClick,
 			hasEmptyLang,
 			inputCssVariablesStyle,
+			langDir,
 			langIso,
 			setText,
 			text,

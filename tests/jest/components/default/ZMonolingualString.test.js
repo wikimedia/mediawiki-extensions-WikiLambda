@@ -66,6 +66,7 @@ describe( 'ZMonolingualString', () => {
 	beforeEach( () => {
 		store = useMainStore();
 		store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'EN' );
+		store.getLabelDataForLangCode = jest.fn().mockReturnValue( { langCode: 'EN', langDir: 'ltr' } );
 	} );
 
 	describe( 'in view mode', () => {
@@ -86,6 +87,36 @@ describe( 'ZMonolingualString', () => {
 			const wrapper = renderZMonolingualString();
 
 			expect( wrapper.get( '.ext-wikilambda-app-monolingual-string__view-mode' ).text() ).toContain( 'my label' );
+		} );
+
+		it( 'wraps the text value in a span tagged with the language code and its declared direction', () => {
+			const wrapper = renderZMonolingualString();
+
+			const textSpan = wrapper.find( '.ext-wikilambda-app-monolingual-string__view-mode > span' );
+			expect( textSpan.exists() ).toBe( true );
+			expect( textSpan.text() ).toBe( 'my label' );
+			expect( textSpan.attributes( 'lang' ) ).toBe( 'EN' );
+			expect( textSpan.attributes( 'dir' ) ).toBe( 'ltr' );
+		} );
+
+		it( 'sets dir from the declared language, not from the text content', () => {
+			// An RTL language's label keeps dir=rtl regardless of the glyphs it contains.
+			store.getLabelDataForLangCode = jest.fn().mockReturnValue( { langCode: 'ar', langDir: 'rtl' } );
+			const wrapper = renderZMonolingualString();
+
+			const textSpan = wrapper.find( '.ext-wikilambda-app-monolingual-string__view-mode > span' );
+			expect( textSpan.attributes( 'dir' ) ).toBe( 'rtl' );
+		} );
+
+		it( 'falls back to dir=auto on the wrapping span when the language is empty', () => {
+			store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( '' );
+			store.getLabelDataForLangCode = jest.fn().mockReturnValue( { langCode: '', langDir: '' } );
+			const wrapper = renderZMonolingualString( { objectValue: emptyObjectValue } );
+
+			const textSpan = wrapper.find( '.ext-wikilambda-app-monolingual-string__view-mode > span' );
+			expect( textSpan.exists() ).toBe( true );
+			expect( textSpan.attributes( 'lang' ) ).toBe( '' );
+			expect( textSpan.attributes( 'dir' ) ).toBe( 'auto' );
 		} );
 	} );
 
@@ -115,9 +146,18 @@ describe( 'ZMonolingualString', () => {
 				Constants.Z_STRING_VALUE ], value: 'my new label' } ] ] );
 		} );
 
+		it( 'forwards the language code and its declared direction to the text input', () => {
+			const wrapper = renderZMonolingualString( { edit: true } );
+
+			const textInput = wrapper.getComponent( { name: 'cdx-text-input' } );
+			expect( textInput.attributes( 'lang' ) ).toBe( 'EN' );
+			expect( textInput.attributes( 'dir' ) ).toBe( 'ltr' );
+		} );
+
 		describe( 'with empty language', () => {
 			beforeEach( () => {
 				store.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( '' );
+				store.getLabelDataForLangCode = jest.fn().mockReturnValue( { langCode: '', langDir: '' } );
 			} );
 
 			it( 'wraps chip in button when language is empty and in edit mode', () => {
@@ -183,6 +223,17 @@ describe( 'ZMonolingualString', () => {
 				await chip.trigger( 'click' );
 
 				expect( wrapper.emitted( 'expand' ) ).toBeFalsy();
+			} );
+
+			it( 'leaves the text input lang attribute empty but falls back to dir=auto when no language is set', () => {
+				const wrapper = renderZMonolingualString( {
+					edit: true,
+					objectValue: emptyObjectValue
+				} );
+
+				const textInput = wrapper.getComponent( { name: 'cdx-text-input' } );
+				expect( textInput.attributes( 'lang' ) ).toBe( '' );
+				expect( textInput.attributes( 'dir' ) ).toBe( 'auto' );
 			} );
 		} );
 	} );
