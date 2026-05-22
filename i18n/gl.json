@@ -551,6 +551,8 @@
 	"wikilambda-unknown-test-error-message": "Non se poden executar as probas. Recarga.",
 	"wikilambda-validation-error-description-toolong": "A descrición en $1 debe ter {{PLURAL:$2|$2 carácter|$2 caracteres}} ou menos.",
 	"wikilambda-validation-error-name-toolong": "O nome en $1 debe ter {{PLURAL:$2|$2 carácter|$2 caracteres}} ou menos.",
+	"wikilambda-commons-media-selector-placeholder": "Procurar imaxes en Commons",
+	"wikilambda-commons-media-empty-value-placeholder": "Non se seleccionou ningunha imaxe",
 	"wikilambda-wikidata-entity-selector-placeholder": "Seleccionar a entidade de Wikidata",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Sen valor",
 	"wikilambda-wikidata-item-selector-placeholder": "Seleccionar o elemento de Wikidata",

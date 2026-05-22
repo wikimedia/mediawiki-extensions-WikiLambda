@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jérémy-Günther-Heinz Jähnick"
+			"Jérémy-Günther-Heinz Jähnick",
+			"VIGNERON"
 		]
 	},
 	"action-wikilambda-abstract-create": "créer de nouveaux articles résumés",
@@ -11,7 +12,7 @@
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Wikifonctions suggérées",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "Jusqu'à dix Wikifunctions renvoyant du HTML par leur Zid (par exemple <code>Z20756</code>) peuvent être présentées dans le menu de fragments d'article résumé.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "Wikifonction suggérée $1",
-	"content-model-abstractwiki": "Article résumé",
+	"content-model-abstractwiki": "Article abstrait",
 	"right-wikilambda-abstract-create": "Créer de nouveaux articles résumés",
 	"right-wikilambda-abstract-edit": "Modifier des articles résumés existants",
 	"specialpages-group-abstractwiki": "pages d'Abstract Wikipedia",

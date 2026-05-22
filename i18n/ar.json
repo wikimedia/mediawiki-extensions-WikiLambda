@@ -509,7 +509,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "الأقدم أولاً",
 	"wikilambda-special-objectsbytype-form-type": "النوع",
 	"wikilambda-special-objectsbytype-link": "قائمة بجميع الأنواع التي لها مُثُل",
-	"wikilambda-special-objectsbytype-listheader": "جميع الكائنات من نوع $1 ($2)",
+	"wikilambda-special-objectsbytype-listheader": "جميع الأشياء من نوع \"$1\" ($2)",
 	"wikilambda-special-objectsbytype-summary": "انقر على أحد الأنواع في القائمة أدناه لرؤية جميع الكائنات من هذا النوع.",
 	"wikilambda-special-runfunction": "تشغيل دالة",
 	"wikilambda-special-runfunction-intro": "تأكد من اتباعك [[$1|لسياسات المجتمع]]، قواعد حقوق النشر وبراءات الاختراع.",

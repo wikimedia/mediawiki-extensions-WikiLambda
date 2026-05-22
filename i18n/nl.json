@@ -561,6 +561,8 @@
 	"wikilambda-unknown-test-error-message": "Kan de tests niet uitvoeren. Laad ze opnieuw.",
 	"wikilambda-validation-error-description-toolong": "De beschrijving in $1 mag maximaal $2 teken{{PLURAL:$2||s}} lang zijn.",
 	"wikilambda-validation-error-name-toolong": "De naam in $1 mag maximaal $2 teken{{PLURAL:$2||s}} lang zijn.",
+	"wikilambda-commons-media-selector-placeholder": "Afbeeldingen op Commons zoeken",
+	"wikilambda-commons-media-empty-value-placeholder": "Geen afbeelding geselecteerd",
 	"wikilambda-wikidata-entity-selector-placeholder": "Selecteer Wikidata-entiteit",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Geen waarde",
 	"wikilambda-wikidata-item-selector-placeholder": "Selecteer Wikidata-item",

@@ -6,5 +6,7 @@
 	},
 	"wikilambda-delete-local-key-from-function-call": "Tirtir dood",
 	"wikilambda-loggedout-error-message": "Ma aadan soo gelin. Fadlan soo gal si aad u daabacdo.",
-	"wikilambda-mode-selector-local-key-group-label": "Furayaasha wicitaanka shaqada ee maxalliga ah"
+	"wikilambda-mode-selector-local-key-group-label": "Furayaasha wicitaanka shaqada ee maxalliga ah",
+	"wikilambda-commons-media-selector-placeholder": "Raadi sawirrada Commons",
+	"wikilambda-commons-media-empty-value-placeholder": "Sawir lama dooran"
 }
