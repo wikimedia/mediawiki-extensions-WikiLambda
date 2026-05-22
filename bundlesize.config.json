@@ -6,10 +6,10 @@
 		"maxSize": "10.0 kB"
 	},
 	{
-		"@note": "WikiLamba loads Vue on page load unlike other projects.",
+		"@note": "Vanilla JS init bundle for references and image broken-image recovery.",
 		"ignoreDependencies": true,
-		"resourceModule": "ext.wikilambda.references",
-		"maxSize": "3.0 kB"
+		"resourceModule": "ext.wikilambda.content",
+		"maxSize": "5.0 kB"
 	},
 	{
 		"@note": "CSS-only module for Wikilambda content styles (references + image figure), loaded early to prevent FOUC.",

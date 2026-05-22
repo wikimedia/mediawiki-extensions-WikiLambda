@@ -181,10 +181,10 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'Usage of the target function should be tracked'
 		);
 
-		// Assert that the reference RL modules are set on the page by the fragment handler
+		// Assert that the content RL modules are set on the page by the fragment handler
 		$this->assertArrayContains(
-			[ 'ext.wikilambda.references' ], $extApi->getMetadata()->getModules(),
-			'We register ext.wikilambda.references for pages with our fragment; make sure that\'s set'
+			[ 'ext.wikilambda.content' ], $extApi->getMetadata()->getModules(),
+			'We register ext.wikilambda.content for pages with our fragment; make sure that\'s set'
 		);
 		$this->assertArrayContains(
 			[ 'ext.wikilambda.content.styles' ], $extApi->getMetadata()->getModuleStyles(),

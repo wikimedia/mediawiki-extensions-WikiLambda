@@ -68,7 +68,9 @@ module.exports = {
 		'resources/ext.wikilambda.references/init.js',
 		'resources/ext.wikilambda.references/vue.js',
 		// Ignore search module index
-		'resources/ext.wikilambda.search/index.js'
+		'resources/ext.wikilambda.search/index.js',
+		// Ignore image initialization scripts
+		'resources/ext.wikilambda.image/init.js'
 	],
 
 	coverageThreshold: {

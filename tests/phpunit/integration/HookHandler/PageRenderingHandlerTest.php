@@ -169,8 +169,8 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			'We register ext.wikilambda.languageselector; make sure that\'s set'
 		);
 		$this->assertArrayContains(
-			[ 'ext.wikilambda.references' ], $outputPage->getModules(),
-			'We register ext.wikilambda.references; make sure that\'s set'
+			[ 'ext.wikilambda.content' ], $outputPage->getModules(),
+			'We register ext.wikilambda.content; make sure that\'s set'
 		);
 		$this->assertArrayContains(
 			[ 'ext.wikilambda.content.styles' ], $outputPage->getModuleStyles(),

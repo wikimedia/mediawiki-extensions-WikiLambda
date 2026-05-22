@@ -268,12 +268,15 @@
 				"ext.wikilambda.image/ext.wikilambda.image.less"
 			]
 		},
-		"ext.wikilambda.references": {
+		"ext.wikilambda.content": {
 			"messages": [
-				"wikilambda-reference"
+				"wikilambda-reference",
+				"wikilambda-commons-image-error-not-found"
 			],
 			"packageFiles": [
-				"ext.wikilambda.references/init.js"
+				"ext.wikilambda.content/init.js",
+				"ext.wikilambda.references/init.js",
+				"ext.wikilambda.image/init.js"
 			]
 		},
 		"ext.wikilambda.references.vue": {
@@ -382,7 +385,7 @@
 				"mediawiki.util",
 				"oojs",
 				"ext.wikilambda.content.styles",
-				"ext.wikilambda.references"
+				"ext.wikilambda.content"
 			],
 			"codexComponents": [
 				"CdxImage",
@@ -452,6 +455,7 @@
 				"ext.wikilambda.app/composables/useLeaveEditorDialog.js",
 				"ext.wikilambda.app/composables/useFragmentHighlightRegistry.js",
 				"ext.wikilambda.app/composables/useFragmentHighlightRects.js",
+				"ext.wikilambda.app/composables/useInitImages.js",
 				"ext.wikilambda.app/composables/useInitReferences.js",
 				"ext.wikilambda.app/composables/useMenuAction.js",
 				"ext.wikilambda.app/composables/useDarkMode.js",

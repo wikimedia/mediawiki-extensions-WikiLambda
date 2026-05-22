@@ -165,8 +165,8 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		 ) + 1 );
 		$extApi->getMetadata()->setNumericPageProperty( $targetFunctionPageProp, $newTargetUseCount );
 
-		// Add our special reference code and style modules to the page, we know they're likely to be used somewhere
-		$extApi->getMetadata()->addModules( [ 'ext.wikilambda.references' ] );
+		// Add content and style modules to the page, we know they're likely to be used somewhere
+		$extApi->getMetadata()->addModules( [ 'ext.wikilambda.content' ] );
 		$extApi->getMetadata()->addModuleStyles( [ 'ext.wikilambda.content.styles' ] );
 
 		$cachedValue = $this->wikifunctionsClientStore->fetchFromFunctionCallCache( $clientCacheKey );

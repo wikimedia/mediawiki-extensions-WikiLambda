@@ -56,6 +56,7 @@ const { computed, defineComponent, inject, onUnmounted, ref, watch } = require( 
 
 const Constants = require( '../../Constants.js' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
+const useInitImages = require( '../../composables/useInitImages.js' );
 const useMainStore = require( '../../store/index.js' );
 
 // Codex components
@@ -87,7 +88,9 @@ module.exports = exports = defineComponent( {
 		// See: https://www.wikifunctions.org/view/en/Z23997
 		const dateForToday = computed( () => new Date().toISOString().slice( 0, 10 ) );
 
-		const { contentRef, initReferences } = useInitReferences();
+		const contentRef = ref( null );
+		const { initReferences } = useInitReferences( contentRef );
+		const { initImages } = useInitImages( contentRef );
 		const errorRef = ref( null );
 
 		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
@@ -197,6 +200,7 @@ module.exports = exports = defineComponent( {
 			( state ) => {
 				if ( state && state.html && !state.hasError ) {
 					initReferences();
+					initImages();
 				}
 				// Register nodes for highlight after references are initialized
 				registerNodesForHighlight();

@@ -44,6 +44,7 @@
 const { defineComponent, inject, nextTick, ref, watch } = require( 'vue' );
 const CodeEditor = require( './CodeEditor.vue' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
+const useInitImages = require( '../../composables/useInitImages.js' );
 const useMainStore = require( '../../store/index.js' );
 const { CdxToggleSwitch, CdxProgressIndicator } = require( '../../../codex.js' );
 
@@ -81,7 +82,9 @@ module.exports = exports = defineComponent( {
 		const showRendered = ref( true );
 		const sanitisedHtml = ref( '' );
 		const isSanitising = ref( false );
-		const { contentRef, initReferences } = useInitReferences();
+		const contentRef = ref( null );
+		const { initReferences } = useInitReferences( contentRef );
+		const { initImages } = useInitImages( contentRef );
 
 		/**
 		 * Sanitises the HTML fragment value for safe rendering.
@@ -95,7 +98,10 @@ module.exports = exports = defineComponent( {
 				sanitisedHtml.value = sanitised;
 				isSanitising.value = false;
 				// Initialize references after HTML is rendered
-				nextTick( initReferences );
+				nextTick( () => {
+					initReferences();
+					initImages();
+				} );
 			} ).catch( () => {
 				sanitisedHtml.value = '';
 				isSanitising.value = false;
