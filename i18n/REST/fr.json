@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jérémy-Günther-Heinz Jähnick"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "API Wikifonctions",
+	"wikifunctions-rest-module-v0-desc": "API pour interagir avec les Wikifonctions",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "Aller chercher des ZObjets",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Aller chercher des versions historiques de ZObjets",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Appeler une fonction",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appeler une fonction, avec des langues de partage et de rendu personnalisés"
+}

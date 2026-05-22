@@ -13,7 +13,8 @@
 			"Scratcheur-2020Send",
 			"Urhixidur",
 			"Verdy p",
-			"Wladek92"
+			"Wladek92",
+			"Jérémy-Günther-Heinz Jähnick"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON des Z-Objets.",
@@ -85,6 +86,11 @@
 	"apierror-query+wikilambdaload_zobjects-notzobject": "Le Z-StockageObjet a chargé un objet autre qu’un Z-Objet pour « $1 ».",
 	"apihelp-wikilambda_edit-example-create": "Créer un nouveau Z-Objet de type Z6, avec la valeur « value » et le libellé « label ».",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Tentative de mettre à jour le Z-Objet Z010 avec une donnée incorrecte",
+	"apihelp-query+wikilambdaload_zlanguages-summary": "Associer les codes de langue à leurs Zid ZLangues correspondants.",
+	"apihelp-query+wikilambdaload_zlanguages-param-codes": "Les codes de langue pour cartographier les Zid de ZLangues.",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "Des étiquettes de langue préférées sont incluses pour chaque Zid de ZLangue résolu.",
+	"apihelp-query+wikilambdaload_zlanguages-example-single": "Mettre un code de langue unique (en) dans son Zid de ZLangue.",
+	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "Associer plusieurs codes de langue (en, es, fr) à leurs ZID ZLangues dans une seule requête.",
 	"apihelp-wikilambda_edit-summary": "Créer ou modifier un Z-Objet.",
 	"apihelp-wikilambda_edit-param-summary": "Modifier le message de résumé",
 	"apihelp-wikilambda_edit-param-zid": "Z-ID du Z-Objet à modifier. Si nul, un nouveau Z-Objet sera créé.",
@@ -110,6 +116,11 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "La liste des identifiants de Z-MiseEnŒuvre (ou objets) à tester",
 	"apihelp-wikilambda_perform_test-param-ztesters": "La liste des identifiants des Z-Testeurs (ou objets) à tester",
 	"apihelp-wikilambda_perform_test-param-nocache": "S’il faut ou non utiliser le cache",
+	"apihelp-wikifunctions_html_sanitiser-summary": "API pour sanitifier une chaîne de HTML pour l'affichage face à l'utilisateur sur Wikifunctions.org et les wikis client Wikimédia.",
+	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "Vous avez actuellement trop d’appels de fonctions en cours d’exécution.",
+	"apihelp-wikifunctions_html_sanitiser-param-html": "La chaîne HTML sanitaire adaptée à l'affichage face à l'utilisateur.",
+	"apihelp-wikifunctions_html_sanitiser-example-untouched": "Exemple d'appel sans opération.",
+	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Exemple d'appel avec du code HTML interdit.",
 	"wikilambda-restapi-disabled-repo-mode-only": "Cette API n'est disponible que sur le wiki “repo” principal, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "Vous avez demandé $1 Objets, ce qui est trop en une seule fois ($2 au maximum)",
 	"wikilambda-restapi-revision-mismatch": "Vous avez demandé la révision $1 de l'objet « $2 », elle n'a pas été trouvée"
