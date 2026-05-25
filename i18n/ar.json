@@ -284,7 +284,7 @@
 	"wikilambda-function-evaluator-title-implementation": "جرّب هذا التنفيذ",
 	"wikilambda-function-explorer-accessible-label": "إعادة تعيين مربع استعراض الدالة للسياق الرئيسي لهذه الصفحة",
 	"wikilambda-function-explorer-copied-text": "نُسخت!",
-	"wikilambda-function-explorer-copied-aria-text": "تم نسخ $1 إلى الحافظة",
+	"wikilambda-function-explorer-copied-aria-text": "نُسخ $1 إلى الحافظة",
 	"wikilambda-function-explorer-copy-zid": "انسخ الدالة ZID $1 إلى الحافظة",
 	"wikilambda-function-explorer-copy-key": "انسخ مفتاح الإدخال $1 إلى الحافظة",
 	"wikilambda-function-explorer-name-title": "الاسم",

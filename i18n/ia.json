@@ -551,6 +551,8 @@
 	"wikilambda-unknown-test-error-message": "Non poteva executar le tests. Per favor reproba.",
 	"wikilambda-validation-error-description-toolong": "Le description in $1 debe consister de $2 character{{PLURAL:$2||es}} o minus.",
 	"wikilambda-validation-error-name-toolong": "Le nomine in $1 debe consister de $2 character{{PLURAL:$2||es}} o minus.",
+	"wikilambda-commons-media-selector-placeholder": "Cercar imagines de Commons",
+	"wikilambda-commons-media-empty-value-placeholder": "Necun imagine seligite",
 	"wikilambda-wikidata-entity-selector-placeholder": "Selige un entitate Wikidata",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Sin valor",
 	"wikilambda-wikidata-item-selector-placeholder": "Selige un elemento Wikidata",
