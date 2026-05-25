@@ -37,6 +37,10 @@ class WikifunctionsClientStore {
 	/**
 	 * Track in wikifunctionsclient_usage the usage of a function on a page.
 	 *
+	 * This method is idempotent: calling it multiple times with the same arguments
+	 * has the same effect as calling it once, since duplicate rows are silently
+	 * ignored via INSERT IGNORE.
+	 *
 	 * NOTE: wfcu_targetPage is stored as getPrefixedText() (e.g. "Template:Foo bar").
 	 * All readers and writers of this column must use the same representation:
 	 * deleteWikifunctionsUsage() below, and WikifunctionsRecentChangesInsertJob
@@ -44,7 +48,7 @@ class WikifunctionsClientStore {
 	 *
 	 * @param string $targetFunction
 	 * @param Title $targetPage
-	 * @return bool
+	 * @return bool Always true; the row is either newly inserted or already present.
 	 */
 	public function insertWikifunctionsUsage( string $targetFunction, Title $targetPage ): bool {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
@@ -55,19 +59,11 @@ class WikifunctionsClientStore {
 				'wfcu_targetPage' => $targetPage->getPrefixedText(),
 				'wfcu_targetFunction' => $targetFunction,
 			] )
-			->set( [
-				'wfcu_targetFunction' => $targetFunction,
-			] )
-			->onDuplicateKeyUpdate()
-			->uniqueIndexFields( [
-				'wfcu_targetPage',
-				'wfcu_targetFunction',
-			] )
 			// We don't mind duplicates (i.e., the same Function is used twice on the same page)
 			->ignore()
 			->caller( __METHOD__ )->execute();
 
-		return (bool)$dbw->affectedRows();
+		return true;
 	}
 
 	/**

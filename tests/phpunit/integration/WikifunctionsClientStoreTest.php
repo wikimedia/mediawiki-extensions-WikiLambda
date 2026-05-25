@@ -59,8 +59,9 @@ class WikifunctionsClientStoreTest extends WikiLambdaClientIntegrationTestCase {
 		$title = Title::newFromText( 'User:Example' );
 
 		$this->store->insertWikifunctionsUsage( 'Z10002', $title );
-		$this->store->insertWikifunctionsUsage( 'Z10002', $title );
+		$result = $this->store->insertWikifunctionsUsage( 'Z10002', $title );
 
+		$this->assertTrue( $result, 'Duplicate insert should still return true' );
 		$this->assertSame(
 			[ 'User:Example' ],
 			$this->store->fetchWikifunctionsUsage( 'Z10002' ),
