@@ -29,6 +29,7 @@ class DBAWArticleStoreTest extends AbstractClientIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setUpAsAbstractClientMode();
+		$this->overrideConfigValue( 'WikiLambdaAWArticleStoreBackend', 'db' );
 		$this->store = WikiLambdaServices::getAWArticleStore();
 	}
 
