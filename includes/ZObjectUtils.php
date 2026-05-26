@@ -1130,13 +1130,20 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Given the content of a Z22/Response Envelope object, decoded as an array,
-	 * returns the value of the 'errors' key if it exists and null if it doesn't.
+	 * Given a Z22/Response Envelope object serialized as a stdClass,
+	 * and a string key, returns the value if set in the metadata, or
+	 * null if unset.
 	 *
-	 * @param stdClass $metadata
+	 * @param stdClass $response
+	 * @param string $key
 	 * @return stdClass|null
 	 */
-	public static function getErrorsFromMetadata( $metadata ) {
+	public static function getMetadataValue( $response, $key ) {
+		if ( !$response || !property_exists( $response, 'Z22K2' ) ) {
+			return null;
+		}
+
+		$metadata = $response->Z22K2;
 		if ( !property_exists( $metadata, 'K1' ) ) {
 			return null;
 		}
@@ -1148,12 +1155,60 @@ class ZObjectUtils {
 
 		$mapItems = array_slice( $typedList, 1 );
 		foreach ( $mapItems as $item ) {
-			if ( $item->K1 === 'errors' ) {
+			if ( $item->K1 === $key ) {
 				return $item->K2;
 			}
 		}
 
 		return null;
+	}
+
+	/**
+	 * Given a Z22/Response Envelope object serialized as a stdClass,
+	 * sets or updates a key-value pair in its Z22K2 metadata map.
+	 *
+	 * @param stdClass $response
+	 * @param string $key
+	 * @param stdClass|string|array $value
+	 * @return stdClass|null
+	 */
+	public static function setMetadataValue( $response, string $key, $value ) {
+		if ( !$response || !property_exists( $response, 'Z22K2' ) ) {
+			return null;
+		}
+
+		$metadata = $response->Z22K2;
+		if ( !property_exists( $metadata, 'K1' ) ) {
+			return null;
+		}
+
+		$typedList = $metadata->K1;
+		if ( !is_array( $typedList ) || count( $typedList ) < 1 ) {
+			return null;
+		}
+
+		// if key already exists, we update it
+		$mapItems = array_slice( $typedList, 1 );
+		foreach ( $mapItems as $item ) {
+			if ( $item->K1 === $key ) {
+				$item->K2 = $value;
+				return $response;
+			}
+		}
+
+		// ... or add new one
+		$response->Z22K2->K1[] = (object)[
+			'Z1K1' => (object)[
+				'Z1K1' => 'Z7',
+				'Z7K1' => 'Z882',
+				'Z882K1' => 'Z6',
+				'Z882K2' => 'Z1'
+			],
+			'K1' => $key,
+			'K2' => $value
+		];
+
+		return $response;
 	}
 
 	/**
@@ -1189,5 +1244,49 @@ class ZObjectUtils {
 		}
 
 		return $label;
+	}
+
+	/**
+	 * Whether the object passed as input is a ZObject representing a False/Z42 state
+	 *
+	 * @param ZObject|stdClass|string $object
+	 * @return bool
+	 */
+	public static function isFalse( $object ): bool {
+		if ( $object instanceof ZObject ) {
+			if ( $object instanceof ZReference ) {
+				return self::isFalse( $object->getZValue() );
+			} elseif ( $object->getZType() === ZTypeRegistry::Z_BOOLEAN ) {
+				return self::isFalse( $object->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE ) );
+			}
+		} elseif ( $object instanceof stdClass ) {
+			if ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE ) {
+				return self::isFalse( $object->{ ZTypeRegistry::Z_REFERENCE_VALUE } );
+			} elseif ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_BOOLEAN ) {
+				return self::isFalse( $object->{ ZTypeRegistry::Z_BOOLEAN_VALUE } );
+			}
+		}
+		return $object === ZTypeRegistry::Z_BOOLEAN_FALSE;
+	}
+
+	/**
+	 * Whether a canonical zobject (serialized as a stdClass) is a Function call
+	 *
+	 * @param stdClass $zobject
+	 * @return bool
+	 */
+	public static function isFunctionCall( $zobject ): bool {
+		// No type key is bad news; exit
+		if ( !is_object( $zobject ) || !isset( $zobject->Z1K1 ) ) {
+			return false;
+		}
+
+		$type = $zobject->Z1K1;
+
+		if ( is_string( $type ) ) {
+			return $type === ZTypeRegistry::Z_FUNCTIONCALL;
+		}
+
+		return is_object( $type ) && $type->Z9K1 === ZTypeRegistry::Z_FUNCTIONCALL;
 	}
 }

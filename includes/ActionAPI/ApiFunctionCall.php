@@ -14,6 +14,7 @@ use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -23,10 +24,14 @@ use Wikimedia\Telemetry\SpanInterface;
 
 class ApiFunctionCall extends WikiLambdaApiBase {
 
-	public function __construct( ApiMain $mainModule, string $moduleName ) {
+	public function __construct(
+		ApiMain $mainModule,
+		string $moduleName,
+		OrchestratorRequest $orchestrator
+	) {
 		parent::__construct( $mainModule, $moduleName, 'wikilambda_function_call_' );
 
-		$this->setUp();
+		$this->setUp( $orchestrator );
 	}
 
 	/**

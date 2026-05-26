@@ -47,17 +47,6 @@ describe( 'testResults Pinia store', () => {
 				const result = store.getZTesterResult( 'Z10000', 'Z10001', 'Z10002' );
 				expect( result ).toBe( false );
 			} );
-
-			it( 'should return false when the state is in an error state', () => {
-				Object.defineProperty( store, 'getErrors', {
-					value: jest.fn().mockReturnValue( [ {
-						message: 'Some HTTP error on perform_tests',
-						type: 'error'
-					} ] )
-				} );
-				const result = store.getZTesterResult( 'Z10000', 'Z10001', 'Z10002' );
-				expect( result ).toBe( false );
-			} );
 		} );
 
 		describe( 'getZTesterMetadata', () => {
@@ -154,6 +143,68 @@ describe( 'testResults Pinia store', () => {
 				] );
 			} );
 		} );
+		describe( 'hasFlyingPromise', () => {
+			const functionZid = 'Z10000';
+			const testZid = 'Z10002';
+			const implementationZid = 'Z10001';
+
+			it( 'returns false when there are no promises', () => {
+				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
+				expect( result ).toBe( false );
+			} );
+
+			it( 'returns true when there is a flying promise for all tests of a function', () => {
+				store.testResultsPromises[ `${ functionZid }:*:*` ] = { flying: true, promise: Promise.resolve() };
+
+				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns true when there is a flying promise for a test against all implementations', () => {
+				store.testResultsPromises[ `${ functionZid }:${ testZid }:*` ] = { flying: true, promise: Promise.resolve() };
+
+				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns true when there is a flying promise for an implementation against all tests', () => {
+				store.testResultsPromises[ `${ functionZid }:*:${ implementationZid }` ] = { flying: true, promise: Promise.resolve() };
+
+				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns true when there is a flying promise for a specific test and implementation', () => {
+				store.testResultsPromises[ `${ functionZid }:${ testZid }:${ implementationZid }` ] = { flying: true, promise: Promise.resolve() };
+
+				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns false when the matching promise is done', () => {
+				store.testResultsPromises[ `${ functionZid }:*:*` ] = { flying: false, promise: Promise.resolve() };
+
+				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
+				expect( result ).toBe( false );
+			} );
+
+			it( 'returns false when the promise key does not match the given zids', () => {
+				store.testResultsPromises[ 'Z99999:*:*' ] = { flying: true, promise: Promise.resolve() };
+
+				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
+				expect( result ).toBe( false );
+			} );
+
+			it( 'returns false when testZid and implementationZid are absent and no wildcard key matches', () => {
+				store.testResultsPromises[ `${ functionZid }:${ testZid }:${ implementationZid }` ] = {
+					flying: true,
+					promise: Promise.resolve()
+				};
+
+				const result = store.hasFlyingPromise( functionZid, undefined, undefined );
+				expect( result ).toBe( false );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -212,39 +263,80 @@ describe( 'testResults Pinia store', () => {
 		} );
 
 		describe( 'setTestResultsPromise', () => {
-			it( 'should set the tester result promise', async () => {
+			const promiseKey = 'Z10000:*:*';
+
+			it( 'should set a flying promise with the given key', async () => {
 				store.setTestResultsPromise( {
-					functionZid: 'Z10000',
+					promiseKey,
 					promise: Promise.resolve( 'done' )
 				} );
-				await store.testResultsPromises.Z10000.then( ( result ) => {
+
+				expect( store.testResultsPromises[ promiseKey ].flying ).toBe( true );
+				await store.testResultsPromises[ promiseKey ].promise.then( ( result ) => {
 					expect( result ).toBe( 'done' );
 				} );
 			} );
 
-			it( 'should set the tester result as a resolving promise', async () => {
+			it( 'should set a resolved promise when no promise is provided', async () => {
 				store.setTestResultsPromise( {
-					functionZid: 'Z10000'
+					promiseKey
 				} );
-				await store.testResultsPromises.Z10000.then( ( result ) => {
+
+				expect( store.testResultsPromises[ promiseKey ].flying ).toBe( false );
+				await store.testResultsPromises[ promiseKey ].promise.then( ( result ) => {
 					expect( result ).toBe( undefined );
 				} );
 			} );
 		} );
 
 		describe( 'clearZTesterResults', () => {
-			it( 'should clear the test results', () => {
-				const key = 'Z10000:Z10001:Z10002';
-				store.zTesterResults[ key ] = 'Z41';
-				store.zTesterMetadata[ key ] = metadata.metadataEmpty;
-				store.testResultsPromises.Z10000 = new Promise( ( resolve ) => {
-					resolve();
-				} );
+			const functionZid = 'Z10000';
+			const implementationZid = 'Z10001';
+			const testerZid = 'Z10002';
 
-				store.clearZTesterResults( 'Z10000' );
-				expect( Object.keys( store.zTesterResults ).length ).toEqual( 0 );
-				expect( Object.keys( store.zTesterMetadata ).length ).toEqual( 0 );
-				expect( 'Z10000' in store.testResultsPromises ).toBe( false );
+			it( 'should clear all results for a function when using wildcard key', () => {
+				const key1 = `${ functionZid }:${ testerZid }:${ implementationZid }`;
+				const key2 = `${ functionZid }:Z10003:Z10004`;
+				const key3 = `${ functionZid }:Z10005:Z10006`;
+				const otherKey = `Z99999:${ testerZid }:${ implementationZid }`;
+				const promiseKey = `${ functionZid }:*:*`;
+
+				store.zTesterResults[ key1 ] = 'Z41';
+				store.zTesterResults[ key2 ] = 'Z41';
+				store.zTesterResults[ key3 ] = 'Z42';
+				store.zTesterResults[ otherKey ] = 'Z41';
+				store.zTesterMetadata[ key1 ] = metadata.metadataEmpty;
+				store.zTesterMetadata[ key2 ] = metadata.metadataEmpty;
+				store.zTesterMetadata[ key3 ] = metadata.metadataEmpty;
+				store.testResultsPromises[ promiseKey ] = { flying: false, promise: Promise.resolve() };
+
+				store.clearZTesterResults( promiseKey );
+
+				expect( store.zTesterResults[ key1 ] ).toBeUndefined();
+				expect( store.zTesterResults[ key2 ] ).toBeUndefined();
+				expect( store.zTesterResults[ key3 ] ).toBeUndefined();
+				expect( store.zTesterResults[ otherKey ] ).toBe( 'Z41' );
+				expect( promiseKey in store.testResultsPromises ).toBe( false );
+			} );
+
+			it( 'should only clear results matching a specific tester wildcard key', () => {
+				const matchingKey = `${ functionZid }:${ testerZid }:Z10004`;
+				const nonMatchingKey = `${ functionZid }:Z10003:${ implementationZid }`;
+				const promiseKey = `${ functionZid }:${ testerZid }:*`;
+
+				store.zTesterResults[ matchingKey ] = 'Z41';
+				store.zTesterResults[ nonMatchingKey ] = 'Z41';
+				store.zTesterMetadata[ matchingKey ] = metadata.metadataEmpty;
+				store.zTesterMetadata[ nonMatchingKey ] = metadata.metadataEmpty;
+				store.testResultsPromises[ promiseKey ] = { flying: false, promise: Promise.resolve() };
+
+				store.clearZTesterResults( promiseKey );
+
+				expect( store.zTesterResults[ matchingKey ] ).toBeUndefined();
+				expect( store.zTesterMetadata[ matchingKey ] ).toBeUndefined();
+				expect( store.zTesterResults[ nonMatchingKey ] ).toBe( 'Z41' );
+				expect( store.zTesterMetadata[ nonMatchingKey ] ).toEqual( metadata.metadataEmpty );
+				expect( promiseKey in store.testResultsPromises ).toBe( false );
 			} );
 		} );
 
@@ -293,8 +385,7 @@ describe( 'testResults Pinia store', () => {
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-					wikilambda_perform_test_nocache: false
+					wikilambda_perform_test_ztesters: zTesters.join( '|' )
 				}, { signal: undefined } );
 
 				expect( store.clearErrors ).toHaveBeenCalled();
@@ -327,8 +418,7 @@ describe( 'testResults Pinia store', () => {
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-					wikilambda_perform_test_nocache: false
+					wikilambda_perform_test_ztesters: zTesters.join( '|' )
 				}, { signal: undefined } );
 
 				expect( store.clearErrors ).toHaveBeenCalled();
@@ -371,7 +461,7 @@ describe( 'testResults Pinia store', () => {
 					clearPreviousResults: true
 				} );
 
-				expect( store.clearZTesterResults ).toHaveBeenCalledWith( 'Z10000' );
+				expect( store.clearZTesterResults ).toHaveBeenCalledWith( 'Z10000:*:*' );
 			} );
 
 			it( 'should perform the provided tests (API error)', async () => {
@@ -395,8 +485,7 @@ describe( 'testResults Pinia store', () => {
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-					wikilambda_perform_test_nocache: false
+					wikilambda_perform_test_ztesters: zTesters.join( '|' )
 				}, { signal: undefined } );
 
 				expect( store.clearErrors ).toHaveBeenCalled();
@@ -414,8 +503,10 @@ describe( 'testResults Pinia store', () => {
 
 			it( 'should not perform the tests if already fetching for that functionZid', () => {
 				const zFunctionId = 'Z10000';
+				const promiseKey = 'Z10000:*:*';
+
 				store.testResultsPromises = {
-					[ zFunctionId ]: Promise.resolve()
+					[ promiseKey ]: { flying: true, promise: Promise.resolve() }
 				};
 				store.clearZTesterResults = jest.fn();
 
@@ -424,7 +515,6 @@ describe( 'testResults Pinia store', () => {
 				expect( store.clearErrors ).not.toHaveBeenCalled();
 				expect( store.clearZTesterResults ).not.toHaveBeenCalled();
 				expect( store.fetchZids ).not.toHaveBeenCalled();
-
 			} );
 
 			it( 'should pass JSON for the current object to the API, if implementation ID matches current ' +
@@ -458,8 +548,7 @@ describe( 'testResults Pinia store', () => {
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: [ JSON.stringify( currentObject ), 'Z10002' ].join( '|' ),
-					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-					wikilambda_perform_test_nocache: false
+					wikilambda_perform_test_ztesters: zTesters.join( '|' )
 				}, { signal: undefined } );
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
@@ -503,13 +592,11 @@ describe( 'testResults Pinia store', () => {
 					uselang: 'en',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: [ expectedEncodedObject, 'Z10002' ].join( '|' ),
-					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-					wikilambda_perform_test_nocache: false
+					wikilambda_perform_test_ztesters: zTesters.join( '|' )
 				}, { signal: undefined } );
 				expect( store.clearErrors ).toHaveBeenCalled();
 				expect( store.fetchZids ).toHaveBeenCalled();
 			} );
-
 		} );
 	} );
 } );

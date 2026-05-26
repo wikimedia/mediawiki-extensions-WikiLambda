@@ -19,8 +19,8 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ActionAPI\ApiFunctionCall;
 use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -38,7 +38,8 @@ class WikiLambdaApiBaseTest extends WikiLambdaApiTestCase {
 	private function getWrappedModule(): TestingAccessWrapper {
 		$context = RequestContext::getMain();
 		$main = new ApiMain( $context );
-		$module = new ApiFunctionCall( $main, 'wikilambda_function_call' );
+		$orchestrator = new MockOrchestratorRequest();
+		$module = new ApiFunctionCall( $main, 'wikilambda_function_call', $orchestrator );
 		$wrapper = TestingAccessWrapper::newFromObject( $module );
 		$wrapper->setUp();
 		return $wrapper;
@@ -84,84 +85,6 @@ class WikiLambdaApiBaseTest extends WikiLambdaApiTestCase {
 			'wikilambda_function_call_zobject' =>
 				'{"Z1K1":"Z7","Z7K1":"Z801","Z801K1":"hello"}'
 		] );
-	}
-
-	// ------------------------------------------------------------------
-	// getResponseEnvelope (protected)
-	// ------------------------------------------------------------------
-
-	public function testGetResponseEnvelope_parsesValidZ22() {
-		$wrapper = $this->getWrappedModule();
-
-		$response = json_encode( [
-			'Z1K1' => 'Z22',
-			'Z22K1' => 'hello',
-			'Z22K2' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'no errors' ],
-		] );
-
-		$envelope = $wrapper->getResponseEnvelope( $response, '{}' );
-		$this->assertInstanceOf( ZResponseEnvelope::class, $envelope );
-	}
-
-	public function testGetResponseEnvelope_returnsFailureForInvalidJson() {
-		$wrapper = $this->getWrappedModule();
-
-		$envelope = $wrapper->getResponseEnvelope( '{not json!!!', '{}' );
-		$this->assertInstanceOf( ZResponseEnvelope::class, $envelope );
-		$this->assertFailureEnvelopeContainsErrorType( $envelope, ZErrorTypeRegistry::Z_ERROR_EVALUATION );
-	}
-
-	public function testGetResponseEnvelope_returnsFailureWhenZ1K1Missing() {
-		$wrapper = $this->getWrappedModule();
-
-		$response = json_encode( [ 'error' => 'Payload too large' ] );
-		$envelope = $wrapper->getResponseEnvelope( $response, '{}' );
-		$this->assertInstanceOf( ZResponseEnvelope::class, $envelope );
-		$this->assertFailureEnvelopeContainsErrorType( $envelope, ZErrorTypeRegistry::Z_ERROR_EVALUATION );
-	}
-
-	public function testGetResponseEnvelope_returnsFailureWhenNotZ22() {
-		$wrapper = $this->getWrappedModule();
-
-		$response = json_encode( [
-			'Z1K1' => 'Z6',
-			'Z6K1' => 'I am a string, not a response envelope',
-		] );
-		$envelope = $wrapper->getResponseEnvelope( $response, '{}' );
-		$this->assertInstanceOf( ZResponseEnvelope::class, $envelope );
-		$this->assertFailureEnvelopeContainsErrorType( $envelope, ZErrorTypeRegistry::Z_ERROR_EVALUATION );
-	}
-
-	public function testGetResponseEnvelope_returnsFailureWhenZObjectFactoryFails() {
-		$wrapper = $this->getWrappedModule();
-
-		// Valid JSON with Z1K1 present on the top-level object, but the inner Z22K1
-		// value has Z1K1 set to an integer (not a valid type reference), which makes
-		// ZObjectFactory::create throw a ZErrorException.
-		$response = json_encode( [
-			'Z1K1' => 'Z22',
-			'Z22K1' => (object)[ 'Z1K1' => 42 ],
-			'Z22K2' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'meta' ],
-		] );
-		$envelope = $wrapper->getResponseEnvelope( $response, '{}' );
-		$this->assertInstanceOf( ZResponseEnvelope::class, $envelope );
-		$this->assertFailureEnvelopeContainsErrorType( $envelope, ZErrorTypeRegistry::Z_ERROR_EVALUATION );
-	}
-
-	/**
-	 * Assert that a failure ZResponseEnvelope's metadata contains the given
-	 * error type somewhere in its serialized output.
-	 */
-	private function assertFailureEnvelopeContainsErrorType(
-		ZResponseEnvelope $envelope,
-		string $expectedErrorType
-	): void {
-		$serialized = json_encode( $envelope->getSerialized() );
-		$this->assertStringContainsString(
-			$expectedErrorType,
-			$serialized,
-			"Expected failure envelope to reference error type $expectedErrorType"
-		);
 	}
 
 	// ------------------------------------------------------------------
@@ -292,7 +215,41 @@ class WikiLambdaApiBaseTest extends WikiLambdaApiTestCase {
 		$this->doApiRequest( [
 			'action' => 'wikilambda_function_call',
 			'wikilambda_function_call_zobject' =>
-				'{"Z1K1":"Z6","Z6K1":"I am a string, not a function call"}'
+			'{"Z1K1":"Z6","Z6K1":"I am a string, not a function call"}'
 		] );
+	}
+
+	// ------------------------------------------------------------------
+	// failWithTypeMismatch
+	// ------------------------------------------------------------------
+
+	public function testFailWithTypeMismatchDiesWithBadRequest(): void {
+		$zobject = (object)[ 'Z1K1' => 'Z6' ];
+
+		$wrapper = $this->getWrappedModule();
+
+		try {
+			$wrapper->failWithTypeMismatch( $zobject );
+			$this->fail( "Expected ApiUsageException but none was thrown" );
+		} catch ( ApiUsageException $e ) {
+			$this->assertSame( 'Error of type Z518', $e->getMessage() );
+		}
+	}
+
+	// ------------------------------------------------------------------
+	// failWithPermissionDenied
+	// ------------------------------------------------------------------
+
+	public function testFailWithPermissionDeniedDiesWithForbidden(): void {
+		$zobject = (object)[ 'Z1K1' => 'Z7' ];
+
+		$wrapper = $this->getWrappedModule();
+
+		try {
+			$wrapper->failWithPermissionDenied( 'some-privilege', $zobject );
+			$this->fail( "Expected ApiUsageException but none was thrown" );
+		} catch ( ApiUsageException $e ) {
+			$this->assertSame( 'Error of type Z559', $e->getMessage() );
+		}
 	}
 }

@@ -458,6 +458,7 @@
 				"ext.wikilambda.app/composables/usePageTitle.js",
 				"ext.wikilambda.app/composables/useScroll.js",
 				"ext.wikilambda.app/composables/useShareUrl.js",
+				"ext.wikilambda.app/composables/useTestResults.js",
 				"ext.wikilambda.app/composables/useType.js",
 				"ext.wikilambda.app/composables/useZObject.js",
 				"ext.wikilambda.app/utils/apiUtils.js",
@@ -716,14 +717,17 @@
 				"wikilambda-implementation-none-found",
 				"wikilambda-implementation-create-new",
 				"wikilambda-editor-tester-list-label",
+				"wikilambda-tester-refresh",
 				"wikilambda-tester-selector",
 				"wikilambda-tester-none-found",
 				"wikilambda-tester-create-new",
+				"wikilambda-tester-status-apierror",
 				"wikilambda-tester-status-ready",
 				"wikilambda-tester-status-running",
 				"wikilambda-tester-status-run",
 				"wikilambda-tester-status-cancel",
 				"wikilambda-tester-status-passed",
+				"wikilambda-tester-status-pending",
 				"wikilambda-tester-status-failed",
 				"wikilambda-tester-results-title",
 				"wikilambda-tester-results-caption",
@@ -819,6 +823,13 @@
 				"wikilambda-function-are-you-sure-dialog-header",
 				"wikilambda-function-are-you-sure-dialog-description",
 				"wikilambda-functioncall-metadata-accessible-title",
+				"wikilambda-functioncall-metadata-cached",
+				"wikilambda-functioncall-metadata-cache-stored",
+				"wikilambda-functioncall-metadata-cache-test-call-stored",
+				"wikilambda-functioncall-metadata-cache-test-result-key",
+				"wikilambda-functioncall-metadata-cache-test-result-stored",
+				"wikilambda-functioncall-metadata-cache-test-validation-stored",
+				"wikilambda-functioncall-metadata-caching",
 				"wikilambda-functioncall-metadata-errors",
 				"wikilambda-functioncall-metadata-errors-summary",
 				"wikilambda-functioncall-metadata-errors-args",
@@ -1019,16 +1030,33 @@
 	"APIModules": {
 		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectFetcher",
 		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectEditor",
-		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiFunctionCall",
-		"wikifunctions_run": "MediaWiki\\Extension\\WikiLambda\\PublicAPI\\PublicApiRun",
+		"wikilambda_function_call": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiFunctionCall",
+			"services": [
+				"WikiLambdaOrchestratorRequest"
+			]
+		},
+		"wikifunctions_run": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\PublicAPI\\PublicApiRun",
+			"services": [
+				"WikiLambdaOrchestratorRequest"
+			]
+		},
 		"wikifunctions_html_sanitiser": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiWikifunctionsHTMLSanitiser",
 		"wikilambda_perform_test": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiPerformTest",
 			"services": [
-				"WikiLambdaZObjectStore"
+				"WikiLambdaOrchestratorRequest",
+				"WikiLambdaZObjectStore",
+				"JobQueueGroup"
 			]
 		},
-		"wikilambda_supported_programming_languages": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiSupportedProgrammingLanguages",
+		"wikilambda_supported_programming_languages": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiSupportedProgrammingLanguages",
+			"services": [
+				"WikiLambdaOrchestratorRequest"
+			]
+		},
 		"abstractwiki_run_fragment": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiAbstractWikiRunFragment",
 			"services": [
@@ -1215,7 +1243,8 @@
 		"wikifunctionsClientFanOutQueue": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientFanOutQueueJob",
 		"wikifunctionsClientUsageUpdate": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientUsageUpdateJob",
 		"wikifunctionsClientRequest": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsClientRequestJob",
-		"wikifunctionsRecentChangesInsert": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsRecentChangesInsertJob"
+		"wikifunctionsRecentChangesInsert": "MediaWiki\\Extension\\WikiLambda\\Jobs\\WikifunctionsRecentChangesInsertJob",
+		"executeTestAndCache": "MediaWiki\\Extension\\WikiLambda\\Jobs\\ExecuteTestAndCacheJob"
 	},
 	"RecentChangeSources": {
 		"wf": {

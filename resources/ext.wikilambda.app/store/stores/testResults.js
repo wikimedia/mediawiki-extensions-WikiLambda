@@ -10,6 +10,10 @@ const Constants = require( '../../Constants.js' );
 const { performTests } = require( '../../utils/apiUtils.js' );
 const { isTruthyOrEqual } = require( '../../utils/typeUtils.js' );
 const { extractZIDs, hybridToCanonical } = require( '../../utils/schemata.js' );
+const { hasPendingMetadata } = require( '../../utils/zobjectUtils.js' );
+
+const MAX_PENDING_RETRIES = 2;
+const PENDING_RETRY_DELAY_MS = 1000;
 
 module.exports = {
 	state: {
@@ -20,9 +24,11 @@ module.exports = {
 
 	getters: {
 		/**
-		 * Retrieves the result of running a specific set of Function, Test
-		 * and Implementation. These results are stored in the state with keys
-		 * with the format "<function id>:<test id>:<implementation id>".
+		 * Retrieves the result of running a given test for an implementation.
+		 * The individual test results are stored under keys with the format:
+		 * "<function id>:<test id>:<implementation id>"
+		 * If the test has not been executed (and hence no result is stored),
+		 * it returns undefined.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -33,19 +39,19 @@ module.exports = {
 			 * @param {string} zTesterId
 			 * @param {string} zImplementationId
 			 *
-			 * @return {boolean}
+			 * @return {boolean|undefined}
 			 */
 			const findZTesterResults = ( zFunctionId, zTesterId, zImplementationId ) => {
 				const key = `${ zFunctionId }:${ zTesterId }:${ zImplementationId }`;
+				const result = state.zTesterResults[ key ];
 
-				const testResultErrors = this.getErrors( Constants.ERROR_IDS.TEST_RESULTS );
-				if ( testResultErrors.length > 0 ) {
-					return false;
+				// Test wasn't run, return undefined
+				if ( !result ) {
+					return undefined;
 				}
 
-				const result = state.zTesterResults[ key ];
-				return result && (
-					result === Constants.Z_BOOLEAN_TRUE ||
+				// Test was run, it willbe be true/Z14 or false/Z42
+				return ( result === Constants.Z_BOOLEAN_TRUE ||
 					( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE )
 				);
 			};
@@ -173,6 +179,33 @@ module.exports = {
 					], rendererZid ) );
 			};
 			return findValidRendererTests;
+		},
+
+		/**
+		 * Whether any of the flying promises would resolve the given test-implementation pair. For
+		 * example, when initializing the function page, the request is made for all tests for
+		 * `functionzid:*:*` so every cell in the table would catch this as its flying promise.
+		 *
+		 * @return {Function}
+		 */
+		hasFlyingPromise: function () {
+			const catchFlyingPromise = ( functionZid, testerZid, implementationZid ) => {
+				// Build the keys that would match the requirements
+				const implementation = implementationZid || '*';
+				const tester = testerZid || '*';
+				const keysToCheck = [ ...new Set( [
+					`${ functionZid }:*:*`,
+					`${ functionZid }:${ tester }:*`,
+					`${ functionZid }:*:${ implementation }`,
+					`${ functionZid }:${ tester }:${ implementation }`
+				] ) ];
+				// If the key has a promise, return it's flying property
+				return keysToCheck.some( ( key ) => {
+					const promise = this.testResultsPromises[ key ];
+					return promise && promise.flying;
+				} );
+			};
+			return catchFlyingPromise;
 		}
 	},
 
@@ -183,80 +216,123 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.zFunctionId The ZID of the Function we're for which running these
-		 * @param {string[]} payload.zTesters The ZIDs (or if unsaved the full ZObjects) of the Testers to run
-		 * @param {string[]} payload.zImplementations The ZIDs (or if unsaved the full ZObjects) of the
+		 * @param {string[]} payload.zTesters The ZIDs (or if unsaved the full ZObject) of the Testers to run
+		 * @param {string[]} payload.zImplementations The ZIDs (or if unsaved the full ZObject) of the
 		 *   Implementations to run
-		 * @param {boolean} payload.nocache Whether to tell the Orchestrator to cache these results
 		 * @param {boolean} payload.clearPreviousResults Whether to clear the previous results from the Pinia store
 		 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+		 * @param {number} retryCount
 		 *
 		 * @return {Promise}
 		 */
-		getTestResults: function ( payload ) {
+		getTestResults: function ( payload, retryCount = 0 ) {
 			/**
-			 * Loop through the given array of ZIDs and if a ZID is for the object currently being edited, or for a new
-			 * object, replace it with a JSON representation of the full persistent object (if editing existing object)
-			 * or inner object (if new object). This is required to be able to see proper test results while changing
-			 * implementations and testers.
+			 * Filter out empty or falsy items
 			 *
-			 * @param {Array} items - List of implementations or testers
+			 * @param {string[]} arr
+			 * @return {string[]}
+			 */
+			const removeEmpty = ( arr ) => ( arr || [] ).filter( ( i ) => !!i );
+
+			/**
+			 * Loop through the given array of ZIDs and if a ZID is for the object currently being edited
+			 * or created, replace it with its literal inner object.
+			 *
+			 * @param {Array} items - List of implementation or tester zids
 			 * @return {Array}
 			 */
-			function replaceCurrentObjectWithFullJSONObject( items ) {
-				return ( items || [] ).map( ( item ) => {
-					// if the item is the current object replace it
-					if ( !this.getViewMode && item === this.getCurrentZObjectId ) {
-						let zobject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
-						if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
-							// If this object is not yet persisted, pass only the inner object to the API, as otherwise
-							// the API will complain about the placeholder ID Z0 not existing.
-							zobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-						}
-						return JSON.stringify( hybridToCanonical( JSON.parse( JSON.stringify( zobject ) ) ) );
-					}
+			const replaceCurrentZidWithLiteral = ( items ) => ( items || [] ).map( ( item ) => {
+				if ( item === this.getCurrentZObjectId ) {
+					const zobject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
+					// const inner = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+					// const serialized = JSON.stringify( inner );
+					// If new item, send inner object;
+					// else send whole persistent object, so that the API can know the zid
+					const serialized = JSON.stringify( item === Constants.NEW_ZID_PLACEHOLDER ?
+						zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : zobject );
+						// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
+					return serialized.replace( /\|/g, '🪈' );
+				}
+				return item;
+			} );
 
-					return item;
-				} ).filter( ( item ) => !!item );
-			}
+			/**
+			 * Make a key to store the promise with:
+			 * * for all tests for a function `functionzid:*:*`
+			 * * for all tests for an implementation `functionzid:*:implementationzid`
+			 * * for a test for all its implementations `functionzid:testzid:*`
+			 *
+			 * NOTE: when creating a new implementation or test, it will have Z0
+			 *
+			 * @param {string} f
+			 * @param {Array} impList
+			 * @param {Array} testList
+			 * @return {string}
+			 */
+			const makePromiseKey = ( f, impList, testList ) => {
+				const implementationKey = ( impList && impList.length === 1 ) ? impList[ 0 ] : '*';
+				const testKey = ( testList && testList.length === 1 ) ? testList[ 0 ] : '*';
+				return `${ f }:${ testKey }:${ implementationKey }`;
+			};
 
 			// If function ZID is empty, exit
 			if ( !payload.zFunctionId ) {
 				return Promise.resolve();
 			}
 
-			// Clear previous results and make sure that the call is triggered
+			// Clear out possible empty or null items
+			let implementations = removeEmpty( payload.zImplementations || [] );
+			let testers = removeEmpty( payload.zTesters || [] );
+
+			// Make promise key
+			const promiseKey = makePromiseKey( payload.zFunctionId, implementations, testers );
+
+			// Clear previous results and make sure that the call is triggered.
+			// True for those user-initiated actions, but false for the tests
+			// run in bg (E.g. for renderer component placeholder and examples)
 			if ( payload.clearPreviousResults ) {
-				this.clearZTesterResults( payload.zFunctionId );
+				this.clearZTesterResults( promiseKey );
 			}
 
 			// If this API for this functionZid is already running, return promise
-			if ( payload.zFunctionId in this.testResultsPromises ) {
-				return this.testResultsPromises[ payload.zFunctionId ];
+			// Important for renderer-triggered test results, as multiple fields
+			// could fire N calls to the same perform_tests api request.
+			if ( promiseKey in this.testResultsPromises ) {
+				return this.testResultsPromises[ promiseKey ].promise;
 			}
 
 			this.clearErrors( Constants.ERROR_IDS.TEST_RESULTS );
 
-			// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
-			const implementations = replaceCurrentObjectWithFullJSONObject.call( this, payload.zImplementations )
-				.map( ( a ) => a.replace( /\|/g, '🪈' ) );
-			const testers = replaceCurrentObjectWithFullJSONObject.call( this, payload.zTesters )
-				.map( ( a ) => a.replace( /\|/g, '🪈' ) );
+			// Only for edit page, replace current zid with its encoded literal
+			if ( !this.getViewMode ) {
+				implementations = replaceCurrentZidWithLiteral( implementations );
+				testers = replaceCurrentZidWithLiteral( testers );
+			}
 
 			const testResultsPromise = performTests( {
 				functionZid: payload.zFunctionId,
-				nocache: payload.nocache,
 				language: this.getUserLangCode,
 				implementations,
 				testers,
 				signal: payload.signal
 			} ).then( ( results ) => {
 				const zids = [];
+				let hasPending = false;
+
 				results.forEach( ( testResult ) => {
+					const currentZid = this.getCurrentZObjectId;
+					// When the response id is null, is because we sent a literal.
+					// In that case, just replace with the current page Zid, which
+					// might be a stored Zid or a the null Z0:
+					const testKey = `${ testResult.zTesterId || currentZid }`;
+					const implementationKey = `${ testResult.zImplementationId || currentZid }`;
+					const key = `${ testResult.zFunctionId }:${ testKey }:${ implementationKey }`;
+
 					const result = hybridToCanonical( JSON.parse( testResult.validateStatus ) );
 					const metadata = hybridToCanonical( JSON.parse( testResult.testMetadata ) );
-					const key = `${ testResult.zFunctionId || Constants.NEW_ZID_PLACEHOLDER }:` +
-					`${ testResult.zTesterId || Constants.NEW_ZID_PLACEHOLDER }:` +
-					`${ testResult.zImplementationId || Constants.NEW_ZID_PLACEHOLDER }`;
+
+					const isPending = hasPendingMetadata( metadata );
+					hasPending = hasPending || isPending;
 
 					// Collect zids
 					zids.push( testResult.zTesterId );
@@ -270,40 +346,67 @@ module.exports = {
 
 				// Make sure that all returned Zids are in library.js
 				this.fetchZids( { zids: [ ...new Set( zids ) ] } );
-				this.setTestResultsPromise( { functionZid: payload.zFunctionId } );
+
+				// We done;
+				if ( !this.getViewMode && hasPending && retryCount < MAX_PENDING_RETRIES ) {
+					// If we are in an edit page (testing an inline object),
+					// retry again if there are values still pending
+					const retryPromise = new Promise( ( resolve ) => {
+						setTimeout( () => {
+							resolve( this.getTestResults( payload, retryCount + 1 ) );
+						}, PENDING_RETRY_DELAY_MS );
+					} );
+					this.setTestResultsPromise( { promiseKey, promise: retryPromise } );
+				} else {
+					// Else resolve the promise with whatever we have
+					this.setTestResultsPromise( { promiseKey } );
+				}
+
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
-					this.clearZTesterResults( payload.zFunctionId );
+					this.clearZTesterResults( promiseKey );
 					return;
 				}
+
 				this.setError( {
 					errorId: Constants.ERROR_IDS.TEST_RESULTS,
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: error.messageOrFallback( 'wikilambda-unknown-test-error-message' )
 				} );
-				this.setTestResultsPromise( { functionZid: payload.zFunctionId } );
+
+				// We also done; resolve stored promise
+				this.setTestResultsPromise( { promiseKey } );
 			} );
 
+			// Initialize promise with key
 			this.setTestResultsPromise( {
-				functionZid: payload.zFunctionId,
+				promiseKey,
 				promise: testResultsPromise
 			} );
+
 			return testResultsPromise;
 		},
 
 		/**
-		 * Set or unset the unresolved promise to the testResults API call for a given functionZid.
+		 * Set or unset the promise to the testResults API call for a given functionZid.
 		 *
 		 * @param {Object} payload
-		 * @param {string} payload.functionZid
+		 * @param {string} payload.promiseKey
 		 * @param {Promise} payload.promise
 		 */
 		setTestResultsPromise: function ( payload ) {
 			if ( 'promise' in payload ) {
-				this.testResultsPromises[ payload.functionZid ] = payload.promise;
+				// Set as a flying Promise while the request is ongoing
+				this.testResultsPromises[ payload.promiseKey ] = {
+					flying: true,
+					promise: payload.promise
+				};
 			} else {
 				// Set as a resolved Promise if the tests for this function have been fetched
-				this.testResultsPromises[ payload.functionZid ] = Promise.resolve();
+				this.testResultsPromises[ payload.promiseKey ] = {
+					flying: false,
+					promise: Promise.resolve()
+				};
 			}
 		},
 
@@ -321,15 +424,30 @@ module.exports = {
 		},
 
 		/**
-		 * Clear all the test results and metadata
+		 * Clear all the test results and metadata given
+		 * the key used for re-generating results.
 		 *
-		 * @param {string} functionZid
+		 * @param {string} promiseKey
 		 */
-		clearZTesterResults: function ( functionZid ) {
-			this.zTesterResults = {};
-			this.zTesterMetadata = {};
-			// Clear Promise
-			delete this.testResultsPromises[ functionZid ];
+		clearZTesterResults: function ( promiseKey ) {
+			const parts = promiseKey.split( ':' );
+			const functionZid = parts[ 0 ];
+			const testerZid = parts[ 1 ];
+			const implementationZid = parts[ 2 ];
+
+			Object.keys( this.zTesterResults ).forEach( ( key ) => {
+				const keyParts = key.split( ':' );
+				const matchesFunction = keyParts[ 0 ] === functionZid;
+				const matchesTester = testerZid === '*' || keyParts[ 1 ] === testerZid;
+				const matchesImplementation = implementationZid === '*' || keyParts[ 2 ] === implementationZid;
+
+				if ( matchesFunction && matchesTester && matchesImplementation ) {
+					delete this.zTesterResults[ key ];
+					delete this.zTesterMetadata[ key ];
+				}
+			} );
+
+			delete this.testResultsPromises[ promiseKey ];
 		}
 	}
 };

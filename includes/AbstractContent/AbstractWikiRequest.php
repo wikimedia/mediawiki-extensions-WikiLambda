@@ -386,11 +386,10 @@ class AbstractWikiRequest {
 
 		$htmlFragment = $responseEnvelope->{ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE };
 
-		// If the response value is Void, there is an error in the metadata.
+		// If the response value is Void, there is an error in the response metadata.
 		// We can capture it and show some stuff.
 		if ( $htmlFragment === ZTypeRegistry::Z_VOID ) {
-			$metadata = $responseEnvelope->{ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA };
-			$zerror = ZObjectUtils::getErrorsFromMetadata( $metadata );
+			$zerror = ZObjectUtils::getMetadataValue( $responseEnvelope, 'errors' );
 
 			throw new WikifunctionCallException(
 				'apierror-abstractwiki_run_fragment-returned-zerror',

@@ -36,6 +36,13 @@ class WikiLambdaServices {
 	}
 
 	/**
+	 * @return OrchestratorRequest
+	 */
+	public static function getOrchestratorRequest(): OrchestratorRequest {
+		return MediaWikiServices::getInstance()->getService( 'WikiLambdaOrchestratorRequest' );
+	}
+
+	/**
 	 * Note: Not explicitly typed, as this service is mocked in tests
 	 *
 	 * @return WikifunctionsClientStore

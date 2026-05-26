@@ -52,7 +52,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				'page_title' => $page[2],
 				'page_random' => mt_rand() / mt_getrandmax(),
 				'page_touched' => '20251123214400',
-				'page_latest' => 1,
+				'page_latest' => $page[3] ?? 1,
 				'page_len' => 0,
 			];
 		}
@@ -2901,5 +2901,64 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			$testerList->getAsArray()
 		);
 		$this->assertNotContains( $testerZid, $testerZids );
+	}
+
+	public function testGetTestStatusForLatestRevisions_withResults() {
+		// Insert page data: [ page_id, page_namespace, page_title, page_latest ]
+		$this->addPageData( [
+			[ 200, 0, 'Z10000', 1 ],
+			[ 201, 0, 'Z10001', 11 ],
+			[ 202, 0, 'Z10002', 12 ],
+			[ 203, 0, 'Z10003', 13 ],
+		] );
+
+		// Insert relations between function-implementation and function-tester
+		$relatedZObjects = [
+			(object)[
+				'zid' => 'Z10000',
+				'type' => 'Z8',
+				'key' => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
+				'related_zid' => 'Z10001',
+				'related_type' => 'Z14'
+			],
+			(object)[
+				'zid' => 'Z10000',
+				'type' => 'Z8',
+				'key' => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
+				'related_zid' => 'Z10002',
+				'related_type' => 'Z14'
+			],
+			(object)[
+				'zid' => 'Z10000',
+				'type' => 'Z8',
+				'key' => ZTypeRegistry::Z_FUNCTION_TESTERS,
+				'related_zid' => 'Z10003',
+				'related_type' => 'Z20'
+			],
+		];
+		$this->zobjectStore->insertRelatedZObjects( $relatedZObjects );
+
+		// Insert successful test results for latest revisions
+		$this->zobjectStore->insertZTesterResult(
+			'Z10000', 1, 'Z10001', 11, 'Z10003', 13, true, self::$testResponse
+		);
+
+		$results = $this->zobjectStore->getTestStatusForLatestRevisions( 'Z10000', 1 );
+
+		// Assert that there are two results
+		$this->assertCount( 2, $results );
+
+		$byImpl = [];
+		foreach ( $results as $row ) {
+			$byImpl[ $row['implementationZid'] ] = $row;
+		}
+
+		// Assert that results for Z10001 are present
+		$this->assertTrue( $byImpl['Z10001']['hasResult'] );
+		$this->assertTrue( $byImpl['Z10001']['passed'] );
+
+		// Assert that results for Z10002 are not present
+		$this->assertFalse( $byImpl['Z10002']['hasResult'] );
+		$this->assertFalse( $byImpl['Z10002']['passed'] );
 	}
 }

@@ -35,7 +35,11 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 	/**
 	 * @inheritDoc
 	 */
-	public function orchestrate( $query, $bypassCache = false ): array {
+	public function orchestrate(
+		array $query,
+		$bypassCache = false,
+		$evaluateOnMiss = true
+	): array {
 		$key = ZObjectUtils::makeCacheKeyFromZObject( $query );
 
 		// Strip out revision counts for referenced Objects, as local dev machines may differ from fresh CI installs

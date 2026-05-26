@@ -52,6 +52,7 @@ describe( 'FunctionReport', () => {
 		store.getZTesterResult = createGettersWithFunctionsMock();
 		store.fetchZids.mockResolvedValue();
 		store.getTestResults.mockResolvedValue();
+		store.hasFlyingPromise = createGettersWithFunctionsMock( false );
 	} );
 
 	afterEach( () => {
@@ -136,6 +137,26 @@ describe( 'FunctionReport', () => {
 	} );
 
 	describe( 'trigger button', () => {
+		it( 'displays a run button when tests are not running', () => {
+			store.hasFlyingPromise = createGettersWithFunctionsMock( false );
+			const wrapper = renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_TESTER
+			} );
+			const button = wrapper.find( 'button' );
+			expect( button.attributes( 'aria-label' ) ).toBe( 'Run' );
+		} );
+
+		it( 'displays a cancel button when tests are running', () => {
+			store.hasFlyingPromise = createGettersWithFunctionsMock( true );
+			const wrapper = renderFunctionReport( {
+				functionZid: 'Z10000',
+				contentType: Constants.Z_TESTER
+			} );
+			const button = wrapper.find( 'button' );
+			expect( button.attributes( 'aria-label' ) ).toBe( 'Cancel' );
+		} );
+
 		it( 'tests all the implementations for a tester page', async () => {
 			store.getCurrentZObjectId = 'Z10002';
 			const wrapper = renderFunctionReport( {
@@ -177,26 +198,30 @@ describe( 'FunctionReport', () => {
 		} );
 
 		it( 'cancels the current request when button is clicked while fetching', async () => {
-			store.getCurrentZObjectId = 'Z10002';
+			const mockAbort = jest.fn();
+			global.AbortController = jest.fn( () => ( {
+				abort: mockAbort,
+				signal: {}
+			} ) );
+
+			store.hasFlyingPromise = createGettersWithFunctionsMock( false );
 			const wrapper = renderFunctionReport( {
 				functionZid: 'Z10000',
 				contentType: Constants.Z_TESTER
 			} );
 
-			// Mock getTestResults to not resolve immediately
-			store.getTestResults.mockReturnValue( new Promise( () => {} ) );
+			// First click: runs the tests and instantiates the AbortController
+			const button = wrapper.find( 'button' );
+			await button.trigger( 'click' );
 
-			// Start a request
-			wrapper.get( 'button' ).trigger( 'click' );
+			// Simulate a flying promise after the run started
+			store.hasFlyingPromise = createGettersWithFunctionsMock( true );
+			await wrapper.vm.$nextTick();
 
-			// Verify we're in fetching state
-			await waitFor( () => expect( wrapper.get( '.ext-wikilambda-app-function-report-item' ).text() ).toContain( 'Running…' ) );
+			// Second click: cancels the request
+			await button.trigger( 'click' );
 
-			// Click cancel (same button, different behavior when fetching)
-			wrapper.get( 'button' ).trigger( 'click' );
-
-			// Verify we're no longer fetching
-			await waitFor( () => expect( wrapper.get( '.ext-wikilambda-app-function-report-item' ).text() ).toContain( 'Test Implementation 1' ) );
+			expect( mockAbort ).toHaveBeenCalled();
 		} );
 	} );
 

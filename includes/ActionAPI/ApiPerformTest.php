@@ -11,69 +11,117 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiMain;
-use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
-use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
+use MediaWiki\Extension\WikiLambda\Jobs\ExecuteTestAndCacheJob;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZBoolean;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Json\FormatJson;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiPerformTest extends WikiLambdaApiBase {
 
-	private JobQueueGroup $jobQueueGroup;
+	// Function variables
+	private ZFunction $function;
+	private string $functionZid;
+	private int $functionRevision;
+
+	private array $connectedImplementations = [];
+	private array $connectedTests = [];
+	private array $memoizedObjectData = [];
 
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
-		private readonly ZObjectStore $zObjectStore
+		OrchestratorRequest $orchestrator,
+		private readonly ZObjectStore $zObjectStore,
+		private readonly JobQueueGroup $jobQueueGroup
 	) {
 		parent::__construct( $mainModule, $moduleName, 'wikilambda_perform_test_' );
 
-		$this->setUp();
-
-		// Non-injected items
-		// TODO (T330033): Consider injecting this service rather than just fetching from main
-		$services = MediaWikiServices::getInstance();
-		$this->jobQueueGroup = $services->getJobQueueGroup();
+		$this->setUp( $orchestrator );
 	}
 
 	/**
+	 * Runs a matrix of Testers against Implementations for a given Function and returns the results
+	 * of each test/implementation pair.
+	 *
+	 * Request parameters:
+	 * ===================
+	 * * zfunction (required): Zid of the Z8/Function to test. When called alone (no values for the
+	 *   implementations or the tests array), it will test the matrix of all the connected tests and
+	 *   implementations.
+	 * * zimplementations (optional): List of implementations to test. Every item can be a Zid or a
+	 *   literal implementation. However, when passed a literal, that is normally considered the only
+	 *   implementation to test.
+	 * * ztesters (optional): List of tests to perform. Every item can be a zid or a literal test object.
+	 *   When passed as a literal, it is normally the only item.
+	 *
+	 * Response:
+	 * =========
+	 * For each implementation/tester pair, returns an item with the following info for each test:
+	 * * zFunctionId
+	 * * zImplementationId
+	 * * zTesterId
+	 * * validateStatus: Z40/Boolean indicating whether the test passed
+	 * * testMetadata: Z22K2 metadata map from the orchestrator response. Contains the response of
+	 *   the initial test call, enriched with new keys containing different circumstances encountered
+	 *   by the test execution (e.g. actual result vs. expected result, cache-related keys, etc.)
+	 *
+	 * This API has no synchronous execution, so it should return the matrix of values
+	 * immediately. The matrix of values contains all the items requested, it will not
+	 * remove expected results from the response.
+	 *
+	 * Internal logic:
+	 * ===============
+	 * For each implementation-test pair to run:
+	 * 1. We try to getch the test result from the test result cache (DB table wikilambda_ztester_results)
+	 * 2. If not stored, we orchestrate the test execution:
+	 *    2.a. We resolve the test call/Z20K2
+	 *    2.b. We use the response from the test call to build the validation call.
+	 *    2.c. We resolve the validation call.
+	 *    These two calls are fetched from the function call cache. At any point, if any call
+	 *    is missing from the cache, then the test cannot be resolved immediately, so a "pending"
+	 *    response is added to the response matrix.
+	 * 3. For every test response in a pending state and needs to be fully executed, queue an
+	 *    executeTestAndCache job
+	 * 4. For every test response that is ready but not stored in the test results table: queue
+	 *    a cacheTesterResults job.
+	 *
 	 * @inheritDoc
 	 */
 	protected function run() {
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
-		$functionZid = $params[ 'zfunction' ];
-		$requestedImplementations = $params[ 'zimplementations' ] ?: [];
+
+		$this->functionZid = $params[ 'zfunction' ];
+
+		$requestedImps = $params[ 'zimplementations' ] ?: [];
 		$requestedTesters = $params[ 'ztesters' ] ?: [];
 
 		// 1. Work out the matrix of implementations/testers that we want to run
-		// TODO (T362190): Consider handling an inline ZFunction (for when it's not been created yet)?
 
 		// 1.a. Check that Function exists
-		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
+		$targetTitle = Title::newFromText( $this->functionZid, NS_MAIN );
 		if ( !$targetTitle || !( $targetTitle->exists() ) ) {
 			$this->dieWithError(
-				[ "wikilambda-performtest-error-unknown-zid", $functionZid ],
+				[ "wikilambda-performtest-error-unknown-zid", $this->functionZid ],
 				null,
 				null,
 				HttpStatus::NOT_FOUND
@@ -84,366 +132,94 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			$this->dieWithError(
-				[ "wikilambda-performtest-error-nonfunction", $functionZid ],
+				[ "wikilambda-performtest-error-nonfunction", $this->functionZid ],
 				null,
 				null,
 				HttpStatus::BAD_REQUEST
 			);
 		}
 
-		// Get function latest revision Id for caching
-		$functionRevision = $targetTitle->getLatestRevID();
-		$targetFunction = $targetObject->getInnerZObject();
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
+		// Initialize the function globals
+		$this->functionRevision = $targetTitle->getLatestRevID();
+		$functionObject = $targetObject->getInnerZObject();
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $functionObject';
+
+		// Set globally function object, connected implementations and connected tests
+		$this->function = $functionObject;
+		$this->connectedImplementations = $functionObject->getImplementationZids();
+		$this->connectedTests = $functionObject->getTesterZids();
 
 		// 1.c. If no specific implementation Zids are passed in the request, test all of them (connected ones)
-		if ( !count( $requestedImplementations ) ) {
-			$targetFunctionImplementions = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
-			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionImplementions';
-			$requestedImplementations = $targetFunctionImplementions->getAsArray();
+		if ( !count( $requestedImps ) ) {
+			$implementationsTemp = $functionObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
+			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $implementationsTemp';
+			$requestedImps = $implementationsTemp->getAsArray();
 		}
 
 		// 1.d. If no specific tester Zids are passed in the request, run all of them (connected ones)
 		if ( !count( $requestedTesters ) ) {
-			$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
-			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
-			$requestedTesters = $targetFunctionTesters->getAsArray();
+			$testsTemp = $functionObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
+			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $testsTemp';
+			$requestedTesters = $testsTemp->getAsArray();
 		}
-
-		// We only update the implementation ranking for connected implementations and testers,
-		// and only if all connected implementations and testers are included in the results,
-		// and at least one result is live (not from cache).
-		// These vars are used to track those conditions.
-		$attachedImplementationZids = $targetFunction->getImplementationZids();
-		$attachedTesterZids = $targetFunction->getTesterZids();
-		$canUpdateImplementationRanking = false;
 
 		// 2. For each selected implementation, run each selected tester
 
-		// Exit early flags
-		$exitEarly = false;
-		$exitEarlyResponse = null;
 		// Array of test results for each implementation:tester combination
 		$responseArray = [];
-		// Map of $implementationZid:$testerMap; used for implementation ranking
-		$implementationMap = [];
 
-		foreach ( $requestedImplementations as $implementation ) {
+		foreach ( $requestedImps as $requestedImp ) {
 			// 2.a. Validate the implementation passed in the request, and if all goes well,
 			// get all the details needed (zid, revision, inner object and whether its passed inline)
-			[ $inlineImplementation,
-				$implementationZid,
-				$implementationObject,
-				$implementationRevision,
-				$implementationZError
-			] = $this->validateRequestedObject( $implementation, ZTypeRegistry::Z_IMPLEMENTATION );
-
-			// Initial validation of implementation went well! We prepare to iterate through the testers
+			$implementation = $this->validateRequestedObject( $requestedImp, ZTypeRegistry::Z_IMPLEMENTATION );
 
 			// 2.b. Re-use our copy of the target function, setting the implementations
 			// to a list with just the one we're testing now
-			$targetFunction->setValueByKey(
+			$functionObject->setValueByKey(
 				ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
 				new ZTypedList(
 					ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_IMPLEMENTATION ) ),
-					$implementationObject
+					$implementation[ 'object' ]
 				)
 			);
 
 			// 3. For each tester passed in the request, perform function call
 			// against the current implementation.
-
-			// Map of $testerZid:$testResult for a particular implementation
-			$testerMap = [];
-
 			foreach ( $requestedTesters as $requestedTester ) {
 				// 3.a. Validate the tester passed in the request, and if all goes well,
 				// get all the details needed (zid, revision, inner object and whether its passed inline)
-				[ $inlineTester,
-					$testerZid,
-					$testerObject,
-					$testerRevision,
-					$testerZError
-				] = $this->validateRequestedObject( $requestedTester, ZTypeRegistry::Z_TESTER );
+				$test = $this->validateRequestedObject( $requestedTester, ZTypeRegistry::Z_TESTER );
 
-				// Initial validation of tester went well! We prepare to run the calls
-
-				// 3.b. Initialize test result object
-				$passed = true;
+				// 3.b. Initialize test result item
 				$testResult = [
-					'zFunctionId' => $functionZid,
-					'zImplementationId' => $implementationZid,
-					'zTesterId' => $testerZid
+					'zFunctionId' => $this->functionZid,
+					'zImplementationId' => $implementation['zid'],
+					'zTesterId' => $test['zid'],
 				];
 
 				// 3.c. If there was any validation error, set test result as false and create error metadata
-				if ( $implementationZError || $testerZError ) {
-					$testResult[ 'validateStatus' ] = new ZBoolean( false );
-					$testResult[ 'testMetadata' ] = ZResponseEnvelope::wrapInResponseMap(
-						'validateErrors',
-						$implementationZError ?: $testerZError
+				if ( $implementation['zError'] || $test['zError'] ) {
+					$testResult['validateStatus'] = new ZBoolean( false );
+					$testResult['testMetadata'] = ZResponseEnvelope::wrapInResponseMap(
+						'validateErrors', $implementation['zError'] ?: $test['zError']
 					);
 
-					// Next implementation:test iteration
+					// Continue to next implementation:test iteration
 					$responseArray[] = $testResult;
 					continue;
 				}
 
-				// 3.d. (T297707): Work out if this has been cached before (checking revisions of objects),
-				// and if so reply with that instead of executing.
-				if ( !$inlineImplementation && !$inlineTester ) {
-					$possiblyCachedResult = $this->zObjectStore->findZTesterResult(
-						$functionZid,
-						$functionRevision,
-						$implementationZid,
-						$implementationRevision,
-						$testerZid,
-						$testerRevision,
-					);
+				// Initial validation of implementation and tester went well!
+				$testResult = array_merge( $testResult,
+					$this->getTestResultForImplementation( $implementation, $test ) );
 
-					if ( $possiblyCachedResult ) {
-						$possiblyCachedResult->setMetaDataValue(
-							"loadedFromMediaWikiCache",
-							new ZString( date( 'Y-m-d\TH:i:s\Z' ) )
-						);
-
-						$this->getLogger()->debug( 'Cache result hit: ' . $possiblyCachedResult->getZValue() );
-						$testResult[ 'validateStatus' ] = $possiblyCachedResult->getZValue();
-						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
-
-						// Update bookkeeping for the call to maybeUpdateImplementationRanking, if needed.
-						// Implementation ranking only involves attached implementations and testers.
-						if ( in_array( $testerZid, $attachedTesterZids ) &&
-							in_array( $implementationZid, $attachedImplementationZids ) ) {
-							$testerMap[$testerZid] = $testResult;
-						}
-
-						// Next implementation:test iteration
-						$responseArray[] = $testResult;
-						continue;
-					}
-				}
-
-				// 3.e. If there was an exitEarly error, avoid execution and set result to exitEarlyRespone
-				if ( $exitEarly ) {
-					$testResult[ 'validateStatus' ] = new ZBoolean( false );
-					$testResult[ 'testMetadata' ] = $exitEarlyResponse;
-
-					// Next implementation:test iteration
-					$responseArray[] = $testResult;
-					continue;
-				}
-
-				// 3.f. Use tester to create a function call of the test case inputs
-				$testFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_CALL );
-				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $testFunctionCall';
-
-				// 3.g. Set the target function of the call to our modified copy of the
-				// target function with only the current implementation.
-				// It might not be the top level Z7K1, so descend down the nested function
-				// call to find the position of the target before setting the new value.
-				$testFunctionCall = ZObjectUtils::dereferenceZFunction(
-					$testFunctionCall,
-					$functionZid,
-					$targetFunction
-				);
-
-				// 3.h. Execute the test case function call
-				try {
-					$flags = [ 'isUnsavedCode' => $inlineImplementation ];
-					$response = $this->executeFunctionCall( $testFunctionCall, $flags );
-				} catch ( ApiUsageException $e ) {
-					// If reached concurrency limit, add failed response and stop further executions
-					if ( $e->getCode() === HttpStatus::TOO_MANY_REQUESTS ) {
-						$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
-							'message' => $e->getMessage()
-						] );
-
-						// We set $exitEarly flag and failed response for all following executions from the matrix
-						$exitEarly = true;
-						$exitEarlyResponse = ZResponseEnvelope::wrapInResponseMap( 'errors', $zError );
-
-						$testResult[ 'validateStatus' ] = new ZBoolean( false );
-						$testResult[ 'testMetadata' ] = $exitEarlyResponse;
-
-						// Next implementation:test iteration
-						$responseArray[] = $testResult;
-						continue;
-					}
-
-					throw $e;
-				}
-
-				// 3.i. Get a valid Response Envelope/Z22 object by passing it through ZObjectFactory::create
-				// If the orchestrator response is not valid, it will build and return a Response Envelope/Z22
-				// with the error information in its 'errors' key.
-				$testResultObject = $this->getResponseEnvelope(
-					$response[ 'result' ],
-					json_encode( $testFunctionCall )
-				);
-				$testMetadata = $testResultObject->getValueByKey( ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA );
-				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $testMetadata';
-
-				// 3.i. Validate test result.
-				// (T394107) Don't let a type error from this being invalid result in a server-side error
-				$validateTestValue = $testResultObject->getZValue();
-				if ( !( $validateTestValue instanceof ZObject ) ) {
-					$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
-						'message' => wfMessage( 'wikilambda-performtest-error-invalidtester', $testerZid )->text()
-					] );
-					$testResult[ 'validateStatus' ] = new ZBoolean( false );
-					$testResult[ 'testMetadata' ] = ZResponseEnvelope::wrapInResponseMap( 'validateErrors', $zError );
-
-					// Next implementation:test iteration
-					$responseArray[] = $testResult;
-					continue;
-				}
-
-				// 3.j. Use tester to create a function call validating the output
-				$validateFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_VALIDATION );
-				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $validateFunctionCall';
-
-				$targetValidationFunctionZID = $validateFunctionCall->getZValue();
-				$validateFunctionCall->setValueByKey( $targetValidationFunctionZID . 'K1', $validateTestValue );
-
-				// 3.k. Execute the validation function call
-				try {
-					$flags = [ 'validate' => false ];
-					$response = $this->executeFunctionCall( $validateFunctionCall, $flags );
-				} catch ( ApiUsageException $e ) {
-					// If reached concurrency limit, add failed response and stop further executions
-					if ( $e->getCode() === HttpStatus::TOO_MANY_REQUESTS ) {
-						$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
-							'message' => $e->getMessage()
-						] );
-
-						// We set $exitEarly flag and failed response for all following executions from the matrix
-						$exitEarly = true;
-						$exitEarlyResponse = ZResponseEnvelope::wrapInResponseMap( 'errors', $zError );
-
-						$testResult[ 'validateStatus' ] = new ZBoolean( false );
-						$testResult[ 'testMetadata' ] = $exitEarlyResponse;
-
-						// Next implementation:test iteration
-						$responseArray[] = $testResult;
-						continue;
-					}
-
-					throw $e;
-				}
-
-				// 3.i. Get a valid Response Envelope/Z22 object by passing it through ZObjectFactory::create
-				// If the orchestrator response is not valid, it will build and return a Response Envelope/Z22
-				// with the error information in its 'errors' key.
-				$validateResult = $this->getResponseEnvelope(
-					$response[ 'result' ],
-					json_encode( $validateFunctionCall )
-				);
-
-				// 3.l. If the test result doesn't match the expected result, set test failure and metadata
-				if ( $validateResult->hasErrors() ) {
-					$validateResult->setValueByKey(
-						ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE,
-						new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE )
-					);
-					// Add the validator errors to the metadata map
-					$testMetadata->setValueForKey(
-						new ZString( "validateErrors" ),
-						$validateResult->getErrors() );
-				}
-
-				$validateResultItem = $validateResult->getZValue();
-				if ( self::isFalse( $validateResultItem ) ) {
-					$passed = false;
-					// Add the expected and actual values to the metadata map
-					$testMetadata->setValueForKey(
-						new ZString( "actualTestResult" ),
-						$validateTestValue
-					);
-					$testMetadata->setValueForKey(
-						new ZString( "expectedTestResult" ),
-						$validateFunctionCall->getValueByKey( $targetValidationFunctionZID . 'K2' )
-					);
-				}
-
-				// 3.m. (T297707): Store this response in a DB table for faster future responses.
-				// We can only do this for persisted revisions, not inline items, as we can't
-				// version them otherwise, so use truthiness (neither null nor 0, non-extant).
-				// We also only do this if the validation step didn't have an error itself.
-				if (
-					!$inlineImplementation && !$inlineTester &&
-					!$validateResult->hasErrors()
-				) {
-					// Store a fake ZResponseEnvelope of the validation result and the real meta-data run
-					// via an asynchronous job so that we don't trigger a "DB write on API GET" performance
-					// error.
-					$this->getLogger()->debug(
-						'Tester result cache job triggered',
-						[
-							'functionZid' => $functionZid,
-							'functionRevision' => $functionRevision
-						]
-					);
-
-					$stashedResult = new ZResponseEnvelope( $validateResultItem, $testMetadata );
-
-					$cacheTesterResultsJob = new CacheTesterResultsJob(
-						[
-							'functionZid' => $functionZid,
-							'functionRevision' => $functionRevision,
-							'implementationZid' => $implementationZid,
-							'implementationRevision' => $implementationRevision,
-							'testerZid' => $testerZid,
-							'testerRevision' => $testerRevision,
-							'passed' => $passed,
-							'stashedResult' => $stashedResult->__toString()
-						]
-					);
-
-					$this->jobQueueGroup->push( $cacheTesterResultsJob );
-				}
+				// Serialize and encode the responses; validateStatus and testMetadata are ZObjects
+				$testResult[ 'validateStatus' ] = json_encode( $testResult[ 'validateStatus' ]->getSerialized() );
+				$testResult[ 'testMetadata' ] = json_encode( $testResult[ 'testMetadata' ]->getSerialized() );
 
 				// Stash the response
-				$testResult[ 'validateStatus' ] = $validateResultItem;
-				$testResult[ 'testMetadata' ] = $testMetadata;
 				$responseArray[] = $testResult;
-
-				// Update bookkeeping for the call to maybeUpdateImplementationRanking, if needed.
-				// Implementation ranking only involves attached implementations and testers.
-				if ( in_array( $testerZid, $attachedTesterZids ) &&
-					in_array( $implementationZid, $attachedImplementationZids ) ) {
-					$testerMap[$testerZid] = $testResult;
-					// Since this $testResult is "live" (not from cache), indicating that the
-					// function, implementation, or tester has changed, we should check
-					// if there is an improved implementation ranking
-					// TODO (T330370): Revisit this strategy when we have more experience with it
-					$canUpdateImplementationRanking = true;
-				}
 			}
-
-			// Update bookkeeping for the call to maybeUpdateImplementationRanking, if needed.
-			if ( in_array( $implementationZid, $attachedImplementationZids ) ) {
-				$implementationMap[ $implementationZid ] = $testerMap;
-			}
-		}
-
-		// 4. Maybe update implementation ranking (in persistent storage)
-		if ( $canUpdateImplementationRanking ) {
-			$this->maybeUpdateImplementationRanking(
-				$functionZid,
-				$functionRevision,
-				$implementationMap,
-				$attachedImplementationZids,
-				$attachedTesterZids
-			);
-		} else {
-			$this->getLogger()->info(
-				__METHOD__ . ' Not updating {functionZid} implementation ranking; no live results',
-				[
-					'functionZid' => $functionZid,
-					'canUpdateImplementationRanking' => $canUpdateImplementationRanking
-				]
-			);
 		}
 
 		// 5. Return the response.
@@ -451,31 +227,204 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * Given an item passed as an input in the zimplementations or the ztesters
-	 * arrays, it validates the input value and returns the broken down data
-	 * needed to perform the execution of each test vs each implementation.
+	 * Returns the result of running a test against an implementation:
+	 * * See if the execution response is stored in the test result cache
+	 * * Run orchestrateTestExecution with evaluateOnMiss=false
+	 * * If both calls are available, return the response and persist it in the test results cache.
+	 * * If one call is not available, return pending and execute the test via an async job.
 	 *
-	 * In the case of any validation errors, if the object is inline, we will
-	 * directly die with error. In the case of validation errors for references
-	 * we will return the error, which will be attached to the result matrix in
-	 * the request. This is because inline errors occur on edit/create pages of
-	 * test/implementation, and the inline object will be the only one for that type.
+	 * @param array $implementation
+	 * @param array $test
+	 * @return array
+	 */
+	private function getTestResultForImplementation( array $implementation, array $test ): array {
+		$passed = true;
+		$testResult = [];
+		$logContext = [
+			'functionZid' => $this->functionZid,
+			'functionRevision' => $this->functionRevision,
+			'implementationZid' => $implementation['zid'],
+			'implementationRevision' => $implementation['revision'],
+			'testZid' => $test['zid'],
+			'testRevision' => $test['revision']
+		];
+
+		// 1. If test and implementation have revision Ids (aren't inline literals), check test result table
+		$inlineTest = $test['revision'] === null;
+		$inlineImplementation = $implementation['revision'] === null;
+
+		if ( !$inlineTest && !$inlineImplementation ) {
+			$cachedResult = $this->zObjectStore->findZTesterResult(
+				$this->functionZid,
+				$this->functionRevision,
+				$implementation['zid'],
+				$implementation['revision'],
+				$test['zid'],
+				$test['revision'],
+			);
+
+			// 1.a. Cache hit on the first level! We return the stored value,
+			// which should already have info about where and when it was cached
+			if ( $cachedResult !== null ) {
+				$this->getLogger()->debug( __CLASS__ . ' Test results are cached', $logContext + [
+					'cached' => $cachedResult->getZValue()->getSerialized()
+				] );
+
+				$testResult['validateStatus'] = $cachedResult->getZValue();
+				$testResult['testMetadata'] = $cachedResult->getZMetadata();
+
+				return $testResult;
+			}
+		}
+
+		// 2. Orchestrate the test execution
+		// =================================
+
+		// 2.a. Use tester to create a function call of the test case inputs
+		$testObject = $test['object'];
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZObject $testObject';
+
+		$testFunctionCall = $testObject->getValueByKey( ZTypeRegistry::Z_TESTER_CALL );
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $testFunctionCall';
+
+		$validationCall = $testObject->getValueByKey( ZTypeRegistry::Z_TESTER_VALIDATION );
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $validationCall';
+
+		// 2.b. Set the target function of the call to our modified copy of the
+		// target function with only the current implementation.
+		// It might not be the top level Z7K1, so descend down the nested function
+		// call to find the position of the target before setting the new value.
+		$testDereferencedCall = ZObjectUtils::dereferenceZFunction(
+			$testFunctionCall,
+			$this->functionZid,
+			$this->function
+		);
+
+		// 2.c. execute without evaluation on miss
+		// * can return false,
+		// * won't ever throw OrchestratorException or TimeoutException
+		$result = $this->orchestrator->orchestrateTestExecution(
+			$testDereferencedCall,
+			$validationCall->getSerialized(),
+			/* evaluateOnMiss= */ false
+		);
+
+		// 2.d. at least one of the necessary function calls is not cached :(
+		if ( $result === false ) {
+			$this->getLogger()->debug(
+				__CLASS__ . ' Test calls are not cached: creating new ExecuteTestAndCacheJob',
+				$logContext
+			);
+
+			// Before queuing an execution job, make sure the user has the right permission
+			if ( !$this->getContext()->getAuthority()->isAllowed( 'wikilambda-execute' ) ) {
+				$this->failWithPermissionDenied( 'wikilambda-execute', $testDereferencedCall );
+			}
+
+			// This job should be able to execute the whole test
+			// no matter which call miss has caused the re-execution.
+			$executeTestJob = new ExecuteTestAndCacheJob( [
+				// Initial test call already dereferenced with the literal function
+				'testCall' => $testDereferencedCall,
+				// Validation call without K1 (which will be replaced with test call result)
+				'validationCall' => $validationCall->getSerialized(),
+				// Function, implementation and test data
+				'functionZid' => $this->functionZid,
+				'functionRevision' => $this->functionRevision,
+				'firstImplementation' => $this->connectedImplementations[0] ?? null,
+				'implementationZid' => $implementation['zid'],
+				'implementationRevision' => $implementation['revision'],
+				'testZid' => $test['zid'],
+				'testRevision' => $test['revision'],
+			] );
+			$this->jobQueueGroup->push( $executeTestJob );
+
+			// Return a pending response
+			$failedResponse = ZResponseEnvelope::wrapInResponseMap( 'pending', new ZBoolean( true ) );
+			$testResult['validateStatus'] = new ZBoolean( false );
+			$testResult['testMetadata'] = $failedResponse;
+
+			return $testResult;
+		}
+
+		// 3. Cache through an asynchronous job
+		// ====================================
+		$testMetadata = $result['metadata'];
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $testMetadata';
+
+		// We can only do this for persisted revisions, not inline items, as we can't
+		// version them otherwise, so use truthiness (neither null nor 0, non-extant).
+		// We also only do this if the validation step didn't have an error itself.
+		if ( !$inlineImplementation && !$inlineTest && !$result['hasErrors'] ) {
+			// Store a fake ZResponseEnvelope of the validation result and the real metadata
+			// via an asynchronous job so that we don't trigger a "DB write on API GET" error
+			$this->getLogger()->debug(
+				__CLASS__ . ' Test calls are cached: creating new CacheTesterResultsJob',
+				$logContext
+			);
+
+			$stashedResult = new ZResponseEnvelope( $result['value'], $testMetadata );
+
+			// Create and push job to update the stored result
+			$cacheTesterResultsJob = new CacheTesterResultsJob( [
+				'functionZid' => $this->functionZid,
+				'functionRevision' => $this->functionRevision,
+				'implementationZid' => $implementation['zid'],
+				'implementationRevision' => $implementation['revision'],
+				'testZid' => $test['zid'],
+				'testRevision' => $test['revision'],
+				'passed' => $result['passed'],
+				'stashedResult' => $stashedResult->getSerialized()
+			] );
+			$this->jobQueueGroup->push( $cacheTesterResultsJob );
+		}
+
+		$testResult['validateStatus'] = $result['value'];
+		$testResult['testMetadata'] = $testMetadata;
+		return $testResult;
+	}
+
+	/**
+	 * Validates an implementation or test object before adding it to the
+	 * test result matrix and proceeding to its test evaluation.
+	 *
+	 * The input object could be:
+	 * * If received through the API parameters, it will be a string,
+	 *   which can contain a zid, or a literal test or implementation.
+	 * * Else, it will be a ZObject (most likely a ZReference), stored
+	 *   in the ZFunction object.
+	 *
+	 * Permission errors will be thrown immediately and will cause the API to die.
+	 * Validation errors will be added to the result matrix.
 	 *
 	 * The data returned is an array containing:
-	 * * isInline: whether the object passed is an inline object instead of a reference
-	 * * objectZid: the zid of the implementation or test
-	 * * innerObject: the value of the object, which can be the zid or literal Z14
+	 * * zid: the zid of the implementation or test
+	 * * object: the value of the object, which can be the zid or literal Z14
 	 *   in the case of implementations, and will be the literal Z20 in case of testers.
 	 * * revision: the latest revision ID, which will be used for caching
-	 * * zError: error to attach to the result matrix (if anything went wrong and the
-	 *   input object is not an inline literal)
+	 * * inline: boolean flag that indicates whether the object was passed
+	 *   as an inline literal object rather than a reference
+	 *   to the function or disconnected
+	 * * zError: error to attach to the result matrix
 	 *
-	 * @param ZObject|\stdClass|string $object - requested object (implementation or tester)
+	 * @param ZObject|string $object - object to validate for the given type
 	 * @param string $type - either 'Z14' or 'Z20'
 	 * @return array
 	 */
-	private function validateRequestedObject( $object, $type ) {
-		$isInline = false;
+	protected function validateRequestedObject( $object, $type ): array {
+		// If this was validated in a previous iteration, don't do it again
+		$memoized = $this->getMemoizedObjectData( $object );
+		if ( is_array( $memoized ) ) {
+			return $memoized;
+		}
+
+		// Prepare response array:
+		$response = [
+			'zid' => null,
+			'object' => null,
+			'revision' => null,
+			'zError' => null
+		];
 
 		$isImplementation = $type === ZTypeRegistry::Z_IMPLEMENTATION;
 		$createPermission = $isImplementation ?
@@ -491,200 +440,137 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// If object is a string, it was passed as a parameter in the request;
 		// decode it to see if it's a zid (persisted) or an inline object (not persisted)
 		if ( is_string( $object ) ) {
+
 			// (T358089) Decode any '|' characters of ZObjects that were escaped for the API transit
 			$object = str_replace( '🪈', '|', $object );
 			$decodedJson = FormatJson::decode( $object );
+
+			// Validate literal input
+			// ======================
 			if ( $decodedJson ) {
 				// If the input is a JSON, we have received an inline implementation.
-
-				// NOTE on errors:
-				// In the case of inline object, we know there will only be one, so any failure
-				// while validating it will be a non-recoverable error, and we will die without
-				// iterating to other items in the list. This will happen only in the FunctionReport
-				// widget in create/edit implementation/tester pages.
-				$isInline = true;
-
-				// If we are received an inline implementation, check that user has the necessary special rights
-				if ( !$this->getContext()->getAuthority()->isAllowed( $createPermission ) ) {
-					// Non-recoverable Failure: if implementation creation is not authorized, we end the request.
-					$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-					WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
+				$userAuthority = $this->getContext()->getAuthority();
+				// Non-recoverable Failure: if creation is not authorized, we end the request.
+				if ( !$userAuthority->isAllowed( $createPermission ) ) {
+					$this->failWithPermissionDenied( $createPermission, $decodedJson );
+				}
+				// Non-recoverable Failure: user is not authorized to run inline implementation
+				if ( $isImplementation && !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) {
+					$this->failWithPermissionDenied( 'wikilambda-execute-unsaved-code', $decodedJson );
 				}
 
 				try {
-					// For an inline implementation, check that the ZObject is valid
+					// For an inline object, create the ZObject instance with the factory
 					$object = ZObjectFactory::create( $decodedJson );
-				} catch ( ZErrorException $e ) {
-					// Non-recoverable Failure: if this implementation is not valid, we end the request.
-					$this->dieWithError(
-						[ $invalidObjectMessge, $e->getZErrorMessage() ],
-						null, null, HttpStatus::BAD_REQUEST
-					);
+				} catch ( ZErrorException ) {
+					// ZObjectFactory::create threw a ZErrorException because the object
+					// wasn't valid: set response zError and return immediately
+					$response['zError'] = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
+						'message' => wfMessage( $invalidObjectMessge )->text()
+					] );
+					return $response;
 				}
 
-				// For an inline implementation, check that the ZObject is an implementation/Z14
-				// or a persisted object/Z2 containing an implementation/Z14
-				if ( (
-					( $object instanceof ZPersistentObject ) &&
-					( $object->getInternalZType() !== $type )
-				) || (
-					!( $object instanceof ZPersistentObject ) &&
-					( $object->getZType() !== $type )
-				) ) {
-					// Non-recoverable Failure: if this is not an implementation, we end the request.
-					$this->dieWithError(
-						[ $nonObjectMessge, $object ],
-						null, null, HttpStatus::BAD_REQUEST
-					);
-				}
+				// The inline object is a valid object: check that it contains the right type
+				// (it can be wrapped in a persistent object or be directly a literal implementation or test)
+				$isPersistentObj = $object instanceof ZPersistentObject;
+				$objectType = $isPersistentObj ? $object->getInternalZType() : $object->getZType();
 
-			} else {
-				// If the input is not a JSON, we assume that we have received a Zid
-				$object = new ZReference( $object );
-			}
-		}
-
-		// Get the object zid (value if it's a reference, or identity if persistent object)
-		$objectZid = ZObjectUtils::getZid( $object );
-
-		// If the object is a reference (not inline):
-		// * get its revision ID, and
-		// * check that it exists and belongs to the right type
-		$revision = null;
-		$innerObject = null;
-		$zError = null;
-		$fetchedObject = null;
-		if ( !$isInline ) {
-			$title = Title::newFromText( $objectZid, NS_MAIN );
-
-			if ( !$title || !( $title instanceof Title ) || !$title->exists() ) {
-				$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
-					'message' => wfMessage( $nonObjectMessge, (string)$object )->text()
-				] );
-			} else {
-				$revision = $title->getLatestRevID();
-			}
-
-			if ( !$zError ) {
-				$fetchedObject = $this->zObjectStore->fetchZObjectByTitle( $title )->getInnerZObject();
-				if ( $fetchedObject->getZType() !== $type ) {
-					$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
+				if ( $objectType !== $type ) {
+					// The type is something else: set response zError and return immediately
+					$response['zError'] = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
 						'message' => wfMessage( $nonObjectMessge, (string)$object )->text()
 					] );
+					return $response;
 				}
+
+				// object must have a ZObject; eiter a ZTest or ZImplementation or a ZReference
+				$response['object'] = $isPersistentObj ? $object->getInnerZObject() : $object;
+				return $response;
 			}
+
+			// object was a Zid, convert into a ZReference and continue
+			$object = new ZReference( $object );
 		}
 
-		if ( !$zError ) {
-			$innerObject = $isImplementation ?
-				$this->getImplementationObject( $object ) :
-				$this->getTesterObject( $object, $fetchedObject );
+		// Validate reference
+		// ==================
+
+		if ( !( $object instanceof ZReference ) ) {
+			// At this point this should not happen, as no literal tests or implementations
+			// should be stored inside Z8K3 or Z8K4, but let's make sure nonetheless:
+			$response['zError'] = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
+				'message' => wfMessage( $nonObjectMessge, (string)$object )->text()
+			] );
 		}
 
-		return [
-			$isInline,
-			$objectZid,
-			$innerObject,
-			$revision,
-			$zError
-		];
+		// At this point, $object is a ZReference for sure:
+		$response['zid'] = $object->getZValue();
+
+		// Check the zid is a valid title
+		$title = Title::newFromText( $response['zid'], NS_MAIN );
+		if ( !$title || !( $title instanceof Title ) || !$title->exists() ) {
+			$response['zError'] = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
+				'message' => wfMessage( $nonObjectMessge, $response['zid'] )->text()
+			] );
+			return $response;
+		}
+
+		// Check the zid belongs to an object of the right type
+		$fetchedObject = $this->zObjectStore->fetchZObjectByTitle( $title )->getInnerZObject();
+		if ( $fetchedObject->getZType() !== $type ) {
+			$response['zError'] = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
+				'message' => wfMessage( $nonObjectMessge, $response['zid'] )->text()
+			] );
+			return $response;
+		}
+
+		// IMPORTANT!
+		// If the type is test, we need to resolve it and get the literal object
+		// as well, because the caller is ALWAYS gonna need the test object in order
+		// to run separately the call and validation call.
+		$response['object'] = $isImplementation ? $object : $fetchedObject;
+		$response['revision'] = $title->getLatestRevID();
+
+		$this->setMemoizedObjectData( $response );
+
+		return $response;
 	}
 
 	/**
-	 * Return a ZObject with a reference or a literal implementation.
-	 * If the input ZObject has a persisted object containing a non-implementation,
-	 * die with ApiUsageException.
+	 * Keeps the already validated object data for future iterations
+	 * to retrieve. When requesting a matrix of implementations and
+	 * testers (e.g. for a function page), the inner loop (tests)
+	 * walks the list of tests for each of the outer implementation.
+	 * We memoize these validated objects to avoid running the same
+	 * validation operation N*M times, as it contains some expensive
+	 * logic (deserialization using ZObjectFactory and DB fetches)
 	 *
-	 * @param ZObject $zobject - either a reference, or a literal implementation or persistent object
-	 * @return ZObject
-	 * @throws ApiUsageException
+	 * Only stores when the validated object was given as a zid.
+	 *
+	 * @param array $response
 	 */
-	private function getImplementationObject( $zobject ) {
-		// Input implementation was passed inline (as a literal persistent object):
-		if ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-			return $zobject->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE );
+	private function setMemoizedObjectData( array $response ): void {
+		if ( is_string( $response[ 'zid' ] ) ) {
+			$this->memoizedObjectData[ $response[ 'zid' ] ] = $response;
 		}
-
-		// Input implementation was passed inline (as a literal implementation), or
-		// input implementation was passed as a reference:
-		if (
-			$zobject->getZType() === ZTypeRegistry::Z_IMPLEMENTATION ||
-			$zobject->getZType() === ZTypeRegistry::Z_REFERENCE
-		) {
-			return $zobject;
-		}
-
-		// This should never happen, as validation should have taken care of this.
-		// log an error and die:
-		$this->getLogger()->error(
-			__METHOD__ . ' expected implementation but found something else',
-			[ 'zobject' => $zobject ]
-		);
-
-		$this->dieWithError(
-			[ "wikilambda-performtest-error-nonimplementation", $zobject ],
-			null,
-			null,
-			HttpStatus::BAD_REQUEST
-		);
 	}
 
 	/**
-	 * Return a ZObject with a literal tester.
-	 * * If the tester object was passed inline, return that
-	 * * If the tester object was passed as a reference, return the fetched
+	 * Returns the memoized resulg of validating an input object and
+	 * creating its array of object data. Returns false if nothing
+	 * was stored yet.
 	 *
-	 * @param ZObject $zobject
-	 * @param ZObject|null $fetched
-	 * @return ZObject
-	 * @throws ApiUsageException
+	 * Only retrieves when the object to validate is given as a zid.
+	 *
+	 * @param ZObject|string $object
+	 * @return array|false
 	 */
-	private function getTesterObject( $zobject, $fetched ) {
-		// Input tester was passed inline (as a literal persistent object):
-		if ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-			return $zobject->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE );
+	private function getMemoizedObjectData( ZObject|string $object ): array|false {
+		if ( is_string( $object ) && array_key_exists( $object, $this->memoizedObjectData ) ) {
+			return $this->memoizedObjectData[ $object ];
 		}
-
-		// Input tester was passed inline (as a literal tester):
-		if ( $zobject->getZType() === ZTypeRegistry::Z_TESTER ) {
-			return $zobject;
-		}
-
-		// Input tester was passed as a reference: we want the literal tester, which should be fetched:
-		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE && ( $fetched !== null ) ) {
-			return $fetched;
-		}
-
-		// This should never happen, as validation should have taken care of this.
-		// log an error and die:
-		$this->getLogger()->error(
-			__METHOD__ . ' expected tester but found something else',
-			[ 'zobject' => $zobject ]
-		);
-
-		$this->dieWithError(
-			[ "wikilambda-performtest-error-nontester", $zobject ],
-			null,
-			null,
-			HttpStatus::BAD_REQUEST
-		);
-	}
-
-	private static function isFalse( $object ) {
-		if ( $object instanceof ZObject ) {
-			if ( $object instanceof ZReference ) {
-				return self::isFalse( $object->getZValue() );
-			} elseif ( $object->getZType() === ZTypeRegistry::Z_BOOLEAN ) {
-				return self::isFalse( $object->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE ) );
-			}
-		} elseif ( $object instanceof \stdClass ) {
-			if ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE ) {
-				return self::isFalse( $object->{ ZTypeRegistry::Z_REFERENCE_VALUE } );
-			} elseif ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_BOOLEAN ) {
-				return self::isFalse( $object->{ ZTypeRegistry::Z_BOOLEAN_VALUE } );
-			}
-		}
-		return $object === ZTypeRegistry::Z_BOOLEAN_FALSE;
+		return false;
 	}
 
 	/**
@@ -710,7 +596,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 	/**
 	 * @see ApiBase::getExamplesMessages()
-	 * @return array
+	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
@@ -742,198 +628,5 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	 */
 	public function isInternal() {
 		return true;
-	}
-
-	/**
-	 * Retrieves the $metadataMap value for ZString($keyString) and converts it to a float.  It must
-	 * be a value of type ZString, whose underlying string begins with a float, e.g. '320.815 ms'.
-	 * If ZString($keyString) isn't used in $metadataMap, returns zero.
-	 *
-	 * N.B. We do not check the units here; we assume that they are always the same (i.e.,
-	 * milliseconds) for the values retrieved by this function.  This consistency is primarily
-	 * the responsibility of the backend services that generate the metadata elements.
-	 *
-	 * @param ZTypedMap $metadataMap
-	 * @param string $keyString
-	 * @return float
-	 */
-	private static function getNumericMetadataValue( $metadataMap, $keyString ) {
-		$key = new ZString( $keyString );
-		$value = $metadataMap->getValueGivenKey( $key );
-		if ( !$value ) {
-			return 0;
-		}
-		$value = $value->getZValue();
-		return floatval( $value );
-	}
-
-	/**
-	 * Callback for uasort() to order the implementations for a function that's been tested
-	 * @param array $a Implementation stats
-	 * @param array $b Implementation stats
-	 * @return int Result of comparison
-	 */
-	private static function compareImplementationStats( $a, $b ) {
-		if ( $a[ 'numFailed' ] < $b[ 'numFailed' ] ) {
-			return -1;
-		}
-		if ( $b[ 'numFailed' ] < $a[ 'numFailed' ] ) {
-			return 1;
-		}
-		if ( $a[ 'averageTime' ] < $b[ 'averageTime' ] ) {
-			return -1;
-		}
-		if ( $b[ 'averageTime' ] < $a[ 'averageTime' ] ) {
-			return 1;
-		}
-		return 0;
-	}
-
-	/**
-	 * Based on tester results contained in $implementationMap, order the implementations of the
-	 * given function from best-performing to worst-performing (in terms of speed).  If the
-	 * ordering is significantly different than the previous ordering for this function, instantiate
-	 * an asynchronous job to update Z8K4/implementations in the function's persistent storage.
-	 *
-	 * TODO (T329138): Consider possible refinements to the ranking strategy.
-	 *
-	 * @param string $functionZid
-	 * @param int $functionRevision
-	 * @param array $implementationMap contains $implementationZid => $testerMap, for each tested
-	 * implementation.  $testerMap contains $testerZid => $testResult for each tester. See
-	 * ApiPerformTest::run for the structure of $testResult.
-	 * @param array $attachedImplementationZids
-	 * @param array $attachedTesterZids
-	 */
-	public static function maybeUpdateImplementationRanking(
-		$functionZid, $functionRevision, $implementationMap, $attachedImplementationZids, $attachedTesterZids
-	) {
-		// NOTE: As this code is static for testing purposes, we can't use $this->getLogger() here
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
-
-		// We don't currently support updates involving a Z0, and we don't expect to get any here.
-		// (However, it maybe could happen if the value of Z8K4 has been manually edited.)
-		unset( $implementationMap[ ZTypeRegistry::Z_NULL_REFERENCE ] );
-
-		if ( count( $attachedImplementationZids ) <= 1 ) {
-			// No point in updating.
-			$logger->debug(
-				__METHOD__ . ' Not updating {functionZid}: Implementation count <= 1',
-				[
-					'functionZid' => $functionZid,
-					'functionRevision' => $functionRevision,
-					'implementationMap' => $implementationMap
-				]
-			);
-			return;
-		}
-
-		// We only update if we have results for all currently attached implementations,
-		// and all currently attached testers.  We already know that the implementations and
-		// testers in the maps are attached; now we check whether all attached ones are present.
-		$implementationZids = array_keys( $implementationMap );
-		$testerZids = array_keys( reset( $implementationMap ) );
-		if ( array_diff( $attachedImplementationZids, $implementationZids ) ||
-			array_diff( $attachedTesterZids, $testerZids ) ) {
-			$logger->debug(
-				__METHOD__ . ' Not updating {functionZid}: Missing results for attached implementations or testers',
-				[
-					'functionZid' => $functionZid,
-					'functionRevision' => $functionRevision,
-					'attachedImplementationZids' => $attachedImplementationZids,
-					'implementationZids' => $implementationZids,
-					'attachedTesterZids' => $attachedTesterZids,
-					'testerZids' => $testerZids,
-					'implementationMap' => $implementationMap
-				]
-			);
-			return;
-		}
-
-		// Record which implementation is first in Z8K4 before this update happens
-		$previousFirst = $attachedImplementationZids[ 0 ];
-
-		// For each implementation, get (count of tests-failed) and (average runtime of tests)
-		// and add them into $implementationMap.
-		// TODO (T314539): Revisit Use of (count of tests-failed) after failing implementations are
-		//   routinely deactivated
-		foreach ( $implementationMap as $implementationZid => $testerMap ) {
-			$numFailed = 0;
-			$averageTime = 0.0;
-			foreach ( $testerMap as $testerId => $testResult ) {
-				if ( self::isFalse( $testResult[ 'validateStatus' ] ) ) {
-					$numFailed++;
-				}
-				$metadataMap = $testResult[ 'testMetadata' ];
-				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $metadataMap';
-				$averageTime += self::getNumericMetadataValue( $metadataMap, 'orchestrationDuration' );
-			}
-			$averageTime /= count( $testerMap );
-			$implementationMap[ $implementationZid ][ 'numFailed' ] = $numFailed;
-			$implementationMap[ $implementationZid ][ 'averageTime' ] = $averageTime;
-		}
-
-		uasort( $implementationMap, [ self::class, 'compareImplementationStats' ] );
-		// Get the ranked Zids
-
-		// Bail out if the new first element is the same as the previous
-		$newFirst = array_key_first( $implementationMap );
-		if ( $newFirst === $previousFirst ) {
-			$logger->debug(
-				__METHOD__ . ' Not updating {functionZid}: Same first element',
-				[
-					'functionZid' => $functionZid,
-					'functionRevision' => $functionRevision,
-					'previousFirst' => $previousFirst,
-					'implementationMap' => $implementationMap
-				]
-			);
-			return;
-		}
-
-		// Bail out if the performance of $newFirst is only marginally better than the
-		// performance of $previousFirst.  Note: if numFailed of $newFirst is less than
-		// numFailed of $previousFirst, then we should *not* bail out.
-		// TODO (T329138): Also consider:
-		//   Check if all of the average times are roughly indistinguishable.
-		$previousFirstStats = $implementationMap[ $previousFirst ];
-		$newFirstStats = $implementationMap[ $newFirst ];
-		$relativeThreshold = 0.8;
-		if ( $newFirstStats[ 'averageTime' ] >= $relativeThreshold * $previousFirstStats[ 'averageTime' ] &&
-			$newFirstStats[ 'numFailed' ] >= $previousFirstStats[ 'numFailed' ] ) {
-			$logger->debug(
-				__METHOD__ . ' Not updating {functionZid}: New first element only marginally better than previous',
-				[
-					'functionZid' => $functionZid,
-					'functionRevision' => $functionRevision,
-					'previousFirst' => $previousFirst,
-					'newFirst' => $newFirst,
-					'implementationMap' => $implementationMap
-				]
-			);
-			return;
-		}
-
-		$implementationRankingZids = array_keys( $implementationMap );
-		$logger->info(
-			__METHOD__ . ' Creating UpdateImplementationsJob for {functionZid}',
-			[
-				'functionZid' => $functionZid,
-				'functionRevision' => $functionRevision,
-				'implementationRankingZids' => $implementationRankingZids,
-				'implementationMap' => $implementationMap
-			]
-		);
-
-		$updateImplementationsJob = new UpdateImplementationsJob(
-			[ 'functionZid' => $functionZid,
-				'functionRevision' => $functionRevision,
-				'implementationRankingZids' => $implementationRankingZids
-			] );
-		// NOTE: As this code is static for testing purposes, we can't use $this->jobQueueGroup here
-		// TODO (T330033): Consider using an injected service for the following
-		$services = MediaWikiServices::getInstance();
-		$jobQueueGroup = $services->getJobQueueGroup();
-		$jobQueueGroup->push( $updateImplementationsJob );
 	}
 }

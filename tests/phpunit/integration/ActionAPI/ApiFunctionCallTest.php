@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
@@ -19,6 +20,12 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
  * @group Database
  */
 class ApiFunctionCallTest extends WikiLambdaApiTestCase {
+
+	protected function setUp(): void {
+		parent::setUp();
+		$mock = new MockOrchestratorRequest();
+		$this->setService( 'WikiLambdaOrchestratorRequest', $mock );
+	}
 
 	/**
 	 * Reads file contents from test data directory as JSON array.

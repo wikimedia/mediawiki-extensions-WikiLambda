@@ -627,7 +627,9 @@ Constants.TESTER_STATUS = {
 	PASSED: 'passed',
 	FAILED: 'failed',
 	RUNNING: 'running',
-	CANCELED: 'canceled'
+	CANCELED: 'canceled',
+	PENDING: 'pending',
+	API_ERROR: 'apierror'
 };
 
 Constants.VIEWS = {

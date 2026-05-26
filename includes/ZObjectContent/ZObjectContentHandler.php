@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
-use GuzzleHttp\Client;
 use InvalidArgumentException;
 use MediaWiki\Config\Config;
 use MediaWiki\Content\Content;
@@ -23,7 +22,6 @@ use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
-use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -239,9 +237,7 @@ class ZObjectContentHandler extends ContentHandler {
 		$orchestrator = null;
 
 		if ( $this->config->get( 'WikiLambdaPersistBackendCache' ) ) {
-			$orchestratorHost = $this->config->get( 'WikiLambdaOrchestratorLocation' );
-			$client = new Client( [ "base_uri" => $orchestratorHost ] );
-			$orchestrator = new OrchestratorRequest( $client );
+			$orchestrator = WikiLambdaServices::getOrchestratorRequest();
 		}
 
 		$ourUpdate = [];

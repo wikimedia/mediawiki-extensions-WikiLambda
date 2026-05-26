@@ -35,6 +35,17 @@ const metadataUtils = {
 				{ key: 'implementationType', title: 'wikilambda-functioncall-metadata-implementation-type' }
 			]
 		},
+		caching: {
+			title: 'wikilambda-functioncall-metadata-caching',
+			description: 'getCachingSummary',
+			keys: [
+				{ key: 'functionCallCachedOn', title: 'wikilambda-functioncall-metadata-cache-stored', transform: 'toRelativeTime' },
+				{ key: 'testCallCachedOn', title: 'wikilambda-functioncall-metadata-cache-test-call-stored', transform: 'toRelativeTime' },
+				{ key: 'validationCallCachedOn', title: 'wikilambda-functioncall-metadata-cache-test-validation-stored', transform: 'toRelativeTime' },
+				{ key: 'testResultCachedOn', title: 'wikilambda-functioncall-metadata-cache-test-result-stored', transform: 'toRelativeTime' },
+				{ key: 'testResultCacheKey', title: 'wikilambda-functioncall-metadata-cache-test-result-key', transform: 'getLinksOfTestKey' }
+			]
+		},
 		duration: {
 			title: 'wikilambda-functioncall-metadata-duration',
 			description: 'getDurationSummary',

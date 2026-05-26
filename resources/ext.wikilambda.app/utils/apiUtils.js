@@ -278,7 +278,6 @@ const apiUtils = {
 	 *
 	 * @param {Object} payload
 	 * @param {string} payload.functionZid Zid of the function to test
-	 * @param {boolean} payload.nocache Request the orchestrator to not cache the results
 	 * @param {Array} payload.implementations List of implementations to test
 	 * @param {Array} payload.testers List of tests to run
 	 * @param {string} payload.language The user language code
@@ -296,7 +295,6 @@ const apiUtils = {
 				wikilambda_perform_test_zfunction: payload.functionZid,
 				wikilambda_perform_test_zimplementations: payload.implementations.join( '|' ),
 				wikilambda_perform_test_ztesters: payload.testers.join( '|' ),
-				wikilambda_perform_test_nocache: payload.nocache || false,
 				uselang: payload.language
 			}, {
 				signal: payload.signal

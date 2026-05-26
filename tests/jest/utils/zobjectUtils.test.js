@@ -2381,4 +2381,41 @@ describe( 'zobjectUtils', () => {
 		} );
 	} );
 
+	describe( 'hasPendingMetadata', () => {
+		it( 'returns false when no metadata', () => {
+			expect( zobjectUtils.hasPendingMetadata( undefined ) ).toBe( false );
+		} );
+
+		it( 'returns false when bad metadata', () => {
+			expect( zobjectUtils.hasPendingMetadata( 'Z24' ) ).toBe( false );
+		} );
+
+		it( 'returns false when metadata map is empty', () => {
+			const emptyMetadata = { Z1K1: 'Z883', K1: [ { Z1K1: 'Z882' } ] };
+			expect( zobjectUtils.hasPendingMetadata( emptyMetadata ) ).toBe( false );
+		} );
+
+		it( 'returns false when metadata map has no pending key', () => {
+			const someMetadata = { Z1K1: 'Z883', K1: [ { Z1K1: 'Z882' },
+				{ Z1K2: 'Z882', K1: 'someData', K2: 'woho!' }
+			] };
+			expect( zobjectUtils.hasPendingMetadata( someMetadata ) ).toBe( false );
+		} );
+
+		it( 'returns true when metadata map has a pending key', () => {
+			const pendingMetadata = { Z1K1: 'Z883', K1: [ { Z1K1: 'Z882' },
+				{ Z1K2: 'Z882', K1: 'pending', K2: 'Z41' }
+			] };
+			expect( zobjectUtils.hasPendingMetadata( pendingMetadata ) ).toBe( true );
+		} );
+
+		it( 'returns true when metadata map has a pending key among others', () => {
+			const pendingMetadata = { Z1K1: 'Z883', K1: [ { Z1K1: 'Z882' },
+				{ Z1K2: 'Z882', K1: 'someKey', K2: { Z1K1: 'Z6', Z6K1: 'some value' } },
+				{ Z1K2: 'Z882', K1: 'pending', K2: 'Z41' },
+				{ Z1K2: 'Z882', K1: 'anotherKey', K2: 'another value' }
+			] };
+			expect( zobjectUtils.hasPendingMetadata( pendingMetadata ) ).toBe( true );
+		} );
+	} );
 } );

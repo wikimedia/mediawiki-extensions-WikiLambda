@@ -547,6 +547,15 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Returns the summary for the caching info section
+		 *
+		 * @return {string}
+		 */
+		function getCachingSummary() {
+			return i18n( 'wikilambda-functioncall-metadata-cached' ).text();
+		}
+
+		/**
 		 * Returns the duration section summary
 		 *
 		 * @return {string}
@@ -798,15 +807,36 @@ module.exports = exports = defineComponent( {
 			};
 		}
 
+		/**
+		 * Transform method.
+		 * Returns an HTML span with the function, implementation and test zids
+		 * and the revision IDs used to generate the given test response.
+		 *
+		 * @param {string} key
+		 * @return {Object}
+		 */
+		function getLinksOfTestKey( key ) {
+			const links = key.split( ':' ).map( ( part ) => {
+				const [ zid, revision ] = part.split( '#' );
+				const href = `${ getUrl( zid ) }?oldid=${ revision }`;
+				return `<a href="${ href }" target="_blank">${ zid } (revision ${ revision })</a>`;
+			} );
+			return {
+				type: Constants.METADATA_CONTENT_TYPE.HTML,
+				value: `<span>${ links.join( ', ' ) }</span>`
+			};
+		}
+
 		const transforms = {
-			getErrorType,
-			getErrorStringArgs,
-			getErrorChildren,
-			getImplementationLink,
-			getStringValue,
-			toRelativeTime,
 			getDebugLogs,
-			getTestResultValue
+			getErrorChildren,
+			getErrorStringArgs,
+			getErrorType,
+			getImplementationLink,
+			getLinksOfTestKey,
+			getStringValue,
+			getTestResultValue,
+			toRelativeTime
 		};
 
 		/**
@@ -833,6 +863,15 @@ module.exports = exports = defineComponent( {
 		}
 
 		// Section compilation
+		const descriptionMethods = {
+			getErrorSummary,
+			getImplementationSummary,
+			getCachingSummary,
+			getDurationSummary,
+			getCpuUsageSummary,
+			getMemoryUsageSummary
+		};
+
 		/**
 		 * Returns the compiled metadata sections. Each item in the
 		 * array contains the following properties:
@@ -874,17 +913,9 @@ module.exports = exports = defineComponent( {
 				if ( section.content.length > 0 ) {
 					// Compute description if needed and description function is available
 					if ( ( 'description' in value ) ) {
-						const descMethod = value.description;
-						if ( descMethod === 'getErrorSummary' ) {
-							section.description = getErrorSummary();
-						} else if ( descMethod === 'getImplementationSummary' ) {
-							section.description = getImplementationSummary();
-						} else if ( descMethod === 'getDurationSummary' ) {
-							section.description = getDurationSummary();
-						} else if ( descMethod === 'getCpuUsageSummary' ) {
-							section.description = getCpuUsageSummary();
-						} else if ( descMethod === 'getMemoryUsageSummary' ) {
-							section.description = getMemoryUsageSummary();
+						const descriptionMethod = descriptionMethods[ value.description ];
+						if ( descriptionMethod ) {
+							section.description = descriptionMethod();
 						}
 					}
 					metadata.push( section );

@@ -2,31 +2,26 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\TooManyRedirectsException;
-use JsonException;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\OrchestratorException;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Status\Status;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use stdClass;
 use Wikimedia\RequestTimeout\TimeoutException;
 
 /**
@@ -43,9 +38,8 @@ use Wikimedia\RequestTimeout\TimeoutException;
  */
 abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface {
 
-	protected OrchestratorRequest $orchestrator;
-	protected string $orchestratorHost;
 	protected LoggerInterface $logger;
+	protected ?OrchestratorRequest $orchestrator;
 
 	public const FUNCTIONCALL_POOL_COUNTER_TYPE = 'WikiLambdaFunctionCall';
 	public const INSTRUMENT_NAME = 'WikiLambdaApi';
@@ -60,22 +54,12 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
 	}
 
-	protected function setUp() {
+	/**
+	 * @param ?OrchestratorRequest $orchestrator
+	 */
+	protected function setUp( ?OrchestratorRequest $orchestrator = null ): void {
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
-
-		// TODO (T330033): Consider injecting this service rather than just fetching from main
-		$services = MediaWikiServices::getInstance();
-
-		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
-			// Phan is unhappy because, altough it's a sub-class, this is not loaded in prod code.
-			// @phan-suppress-next-line PhanTypeMismatchPropertyReal, PhanUndeclaredClassMethod
-			$this->orchestrator = new MockOrchestratorRequest();
-		} else {
-			$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
-			$this->orchestrator = new OrchestratorRequest( $client );
-		}
+		$this->orchestrator = $orchestrator;
 	}
 
 	/**
@@ -167,7 +151,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 *   * the service is not implemented or disabled (e.g. client mode),
 	 *   it will directly die with error.
 	 *
-	 * @param ZFunctionCall|\stdClass $zObject - Function call, either canonical or normal form.
+	 * @param ZFunctionCall|stdClass $zObject - Function call, either canonical or normal form.
 	 * @param array $flags - Array with the boolean flags 'validate', 'bypassCache' and 'isUnsavedCode'
 	 * @return array - Response from the orchestrator, with the keys 'result' and 'httpStatusCode'
 	 * @throws ApiUsageException
@@ -185,97 +169,37 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$userAuthority = $this->getContext()->getAuthority();
 		$userName = $userAuthority->getUser()->getName();
 
+		// Initial LOG: request and flags
+		$this->getLogger()->debug( __METHOD__ . ' called', [
+			'request' => $zObjectAsString,
+			'validate' => $validate,
+			'bypassCache' => $bypassCache,
+		] );
+
 		// 1. Check that input ZObject is a (normal or canonical) Z7/Function Call
 		// Exit with failed response if zObject is:
 		// * null, a string, not an object, doesn't have Z1K1 or Z1K1 is not Z7
-		if (
-			!is_object( $zObjectAsStdClass ) ||
-			!isset( $zObjectAsStdClass->Z1K1 ) ||
-			(
-				$zObjectAsStdClass->Z1K1 !== 'Z7' &&
-				(
-					!is_object( $zObjectAsStdClass->Z1K1 ) ||
-					$zObjectAsStdClass->Z1K1->Z9K1 !== 'Z7'
-				)
-			)
-		) {
-			// Failure Level #1: Bad Request, return Z22/Response Envalope with error
-			$this->getLogger()->info(
-				__METHOD__ . ' prevented from executing request "{request}" for user "{user}", not a valid Z7',
-				[
-					'request' => $zObjectAsString,
-					'user' => $userName,
-				]
-			);
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_OBJECT_TYPE_MISMATCH, [
-				'expected' => ZTypeRegistry::Z_FUNCTION,
-				'actual' => $zObjectAsStdClass
-			] );
-			self::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
+		if ( !ZObjectUtils::isFunctionCall( $zObjectAsStdClass ) ) {
+			$this->failWithTypeMismatch( $zObjectAsStdClass );
 		}
-
-		// LOG: request and flags
-		$this->getLogger()->debug(
-			__METHOD__ . ' called',
-			[
-				'request' => $zObjectAsString,
-				'validate' => $validate,
-				'bypassCache' => $bypassCache
-			]
-		);
 
 		// 2. Check that the user has the appropriate permissions to run the function call
 		// 2.a. User can execute functions from public or internal API
 		$executionRight = $this->isPublicApi ? 'wikifunctions-run' : 'wikilambda-execute';
 		if ( !$userAuthority->isAllowed( $executionRight ) ) {
-			$this->getLogger()->info(
-				__METHOD__ . ' prevented from executing for user "{user}", user not allowed',
-				[
-					'request' => $zObjectAsString,
-					'user' => $userName,
-				]
-			);
-
-			// Failure Level #3: Execution is forbidden, die with error
-			// (throws ApiUsageException)
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			self::dieWithZError( $zError, HttpStatus::FORBIDDEN );
+			$this->failWithPermissionDenied( $executionRight, $zObjectAsStdClass );
 		}
 
 		// 2.b. If user is trying to run unsaved code (a literal function with a literal implementation)
 		// from the internal API, check for special right. From public API, always deny.
-		if (
-			$isUnsavedCode &&
-			( $this->isPublicApi || !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) )
-		) {
-			$this->getLogger()->info(
-				__METHOD__ . ' prevented from executing unsaved code for user "{user}", user not allowed',
-				[
-					'request' => $zObjectAsString,
-					'user' => $userName,
-				]
-			);
-
-			// Failure Level #3: Execution is forbidden, die with error
-			// (throws ApiUsageException)
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			self::dieWithZError( $zError, HttpStatus::FORBIDDEN );
+		if ( $isUnsavedCode &&
+			( $this->isPublicApi || !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) ) {
+			$this->failWithPermissionDenied( 'wikilambda-execute-unsaved-code', $zObjectAsStdClass );
 		}
 
-		// 2.b. User can bypass the cache if flag bypassCache is true
+		// 2.c. User can bypass the cache if flag bypassCache is true
 		if ( $bypassCache && !$userAuthority->isAllowed( 'wikilambda-bypass-cache' ) ) {
-			$this->getLogger()->info(
-				__METHOD__ . ' prevented from executing with cache bypass for user "{user}", user not allowed',
-				[
-					'request' => $zObjectAsString,
-					'user' => $userName,
-				]
-			);
-
-			// Failure Level #3: Execution is forbidden, die with error
-			// (throws ApiUsageException)
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
-			self::dieWithZError( $zError, HttpStatus::FORBIDDEN );
+			$this->failWithPermissionDenied( 'wikilambda-bypass-cache', $zObjectAsStdClass );
 		}
 
 		// 3. Call OrchestratorRequest::orchestrate if there are not too many requests
@@ -284,6 +208,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			'zobject' => $zObjectAsStdClass,
 			'doValidate' => $validate
 		];
+
 		try {
 			$method = __METHOD__;
 			$work = new PoolCounterWorkViaCallback( self::FUNCTIONCALL_POOL_COUNTER_TYPE, $userName, [
@@ -336,60 +261,24 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			// http status and return the result string without validating it)
 			return $response;
 
-		} catch ( ConnectException $exception ) {
-			// ConnectException exception is thrown in the event of a networking error.
+		} catch ( OrchestratorException $exception ) {
+			// OrchestratorException can contain:
+			// * ConnectException: thrown when networking error
+			// * TooManyRedirectsException: in case of too many redirects are followed.
 			// See: https://docs.guzzlephp.org/en/stable/quickstart.html#exceptions
-
-			// Failure Level #3: Service is not available, die with error
-			// (throws ApiUsageException)
 			$this->getLogger()->error(
-				__METHOD__ . ' failed to execute, server connection error: {exception}',
+				__METHOD__ . ' failed to execute. {reason}: {exception}',
 				[
+					'reason' => $exception->getPrevious()->getMessage(),
 					'request' => $zObjectAsString,
 					'exception' => $exception,
 				]
 			);
 
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_CONNECTION_FAILURE,
-				[ 'host' => $this->orchestratorHost ]
-			);
-			self::dieWithZError( $zError, HttpStatus::SERVICE_UNAVAILABLE );
-
-		} catch ( TooManyRedirectsException $exception ) {
-			// TooManyRedirectsException is thrown when too many redirects are followed.
-			// See: https://docs.guzzlephp.org/en/stable/quickstart.html#exceptions
-
-			// Failure Level #3: Service is not available, die with error
-			// (throws ApiUsageException)
-			$this->getLogger()->error(
-				__METHOD__ . ' failed to execute, too many redirects error: {exception}',
-				[
-					'request' => $zObjectAsString,
-					'exception' => $exception,
-				]
-			);
-
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_CONNECTION_FAILURE,
-				[ 'host' => $this->orchestratorHost ]
-			);
-			self::dieWithZError( $zError, HttpStatus::SERVICE_UNAVAILABLE );
-
-		} catch ( GuzzleException $exception ) {
-			// This should not happen, but just in case we ever change http_errors => false to something else
-			// See: https://docs.guzzlephp.org/en/stable/quickstart.html#exceptions
-
-			// Failure Level #3: Service is not available as it returned Not Found, die with error
-			// (throws ApiUsageException)
-			$this->getLogger()->error(
-				__METHOD__ . ' failed to execute with an uncaught GuzzleException: {exception}',
-				[
-					'request' => $zObjectAsString,
-					'exception' => $exception,
-				]
-			);
-
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_CONNECTION_FAILURE,
-				[ 'host' => $this->orchestratorHost ]
+			// One ZError to rule them all: Connection Failure
+			$zError = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_CONNECTION_FAILURE,
+				[ 'host' => $this->orchestrator->getHost() ]
 			);
 			self::dieWithZError( $zError, HttpStatus::SERVICE_UNAVAILABLE );
 
@@ -412,131 +301,6 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				null, null, HttpStatus::SERVICE_UNAVAILABLE
 			);
 		}
-	}
-
-	/**
-	 * Converts a response string into a valid ZResponseEnvelope and
-	 * handles all possible errors from the conversion.
-	 *
-	 * If the response cannot be validated or the response type is
-	 * not correct, it builds a new failure Response Envelope/Z22
-	 * with the error details in its "errors" key.
-	 *
-	 * All errors captured and returned in this method will be wrapped
-	 * in a Z507/Evaluator error, as they are errors carried by the
-	 * response from the orchestrator service.
-	 *
-	 * This method will NOT throw any exception nor cause the API
-	 * to die with error.
-	 *
-	 * @param string $response The JSON string being decoded
-	 * @param string $call The JSON string of the function call
-	 * @return ZResponseEnvelope
-	 */
-	protected function getResponseEnvelope( string $response, string $call ): ZResponseEnvelope {
-		// Decode string JSON into stdClass
-		try {
-			$responseContents = json_decode( $response, false, 512, JSON_THROW_ON_ERROR );
-		} catch ( JsonException $e ) {
-			$this->getLogger()->error(
-				__METHOD__ . ' failed to execute, server response not valid Json: {exception}',
-				[
-					'request' => $call,
-					'response' => $response,
-					'exception' => $e,
-				]
-			);
-			// ZError: Invalid JSON returned by the evaluator
-			$zErrorJson = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_INVALID_JSON, [
-				'message' => $e->getMessage(),
-				'data' => $response
-			] );
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
-				'functionCall' => $call,
-				'error' => $zErrorJson
-			] );
-			return $this->getFailedResponseEnvelope( $zError );
-		}
-
-		// (T414752) Trivial check if server hasn't responded with a ZObject, rather than loading all of ZObjectFactory
-		// e.g. "{"error":"Payload too large"}"
-		if ( !property_exists( $responseContents, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
-			$this->getLogger()->warning(
-				__METHOD__ . ' failed to execute, server response was not a ZObject: {response}',
-				[
-					'request' => $call,
-					'response' => $response
-				]
-			);
-			// ZError: Invalid ZObject returned by the evaluator
-			$zErrorType = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_OBJECT_TYPE_MISMATCH, [
-				'expected' => ZTypeRegistry::Z_RESPONSEENVELOPE,
-				// If it's not a ZObject at all, just say it's a string
-				'actual' => ZTypeRegistry::Z_STRING
-			] );
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
-				'functionCall' => $call,
-				'error' => $zErrorType
-			] );
-			return $this->getFailedResponseEnvelope( $zError );
-		}
-
-		// Convert stdClass into ZObject by passing it through ZObjectFactory::create
-		try {
-			$responseObject = ZObjectFactory::create( $responseContents );
-		} catch ( ZErrorException $e ) {
-			$this->getLogger()->error(
-				__METHOD__ . ' failed to execute, server response not wellformed: {exception}',
-				[
-					'request' => $call,
-					'response' => $response,
-					'exception' => $e,
-				]
-			);
-			// ZError: Invalid ZObject returned by the evaluator
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
-				'functionCall' => $call,
-				'error' => $e->getZError()
-			] );
-			return $this->getFailedResponseEnvelope( $zError );
-		}
-
-		// Check that returned object is of the right type
-		if ( !( $responseObject instanceof ZResponseEnvelope ) ) {
-			$this->getLogger()->error(
-				__METHOD__ . ' failed to execute, server response was not a Response Envelope',
-				[
-					'request' => $call,
-					'response' => $response
-				]
-			);
-			// ZError: Invalid ZObject returned by the evaluator
-			$zErrorType = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_OBJECT_TYPE_MISMATCH, [
-				'expected' => ZTypeRegistry::Z_RESPONSEENVELOPE,
-				'actual' => $responseObject->getZType()
-			] );
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_EVALUATION, [
-				'functionCall' => $call,
-				'error' => $zErrorType
-			] );
-			return $this->getFailedResponseEnvelope( $zError );
-		}
-
-		// Response Envelope returned by the orchestrator is valid!
-		return $responseObject;
-	}
-
-	/**
-	 * Builds and returns a Z22/ResponseEnvelope object wrapping a failure, so:
-	 * * Z22K1 is Void/Z24, and
-	 * * Z22K2 contains a Map with an "error" key with the given zError object
-	 *
-	 * @param ZError $zErrorObject
-	 * @return ZResponseEnvelope
-	 */
-	private function getFailedResponseEnvelope( $zErrorObject ): ZResponseEnvelope {
-		$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
-		return new ZResponseEnvelope( null, $zResponseMap );
 	}
 
 	/** @inheritDoc */
@@ -619,7 +383,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 * * E.g. if the literal implementation implements Z825, but does it by
 	 *   a code implementation, we should mark it as unsaved code.
 	 *
-	 * @param \stdClass $functionCall
+	 * @param stdClass $functionCall
 	 * @return bool
 	 */
 	protected function hasUnsavedCode( $functionCall ): bool {
@@ -665,5 +429,52 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 		// All checks passed, no danger
 		return false;
+	}
+
+	/**
+	 * @param stdClass $zobject
+	 * @throws ApiUsageException
+	 */
+	protected function failWithTypeMismatch( $zobject ): never {
+		// Failure Level #1: Bad Request, return Z22/Response Envalope with error
+		$this->getLogger()->info(
+			__METHOD__ . ' prevented from executing request "{request}" for user "{user}", not a valid Z7',
+			[
+				'request' => json_encode( $zobject ),
+				'user' => $this->getUser()->getName(),
+			]
+		);
+
+		$zError = ZErrorFactory::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_OBJECT_TYPE_MISMATCH,
+			[
+				'expected' => ZTypeRegistry::Z_FUNCTIONCALL,
+				'actual' => $zobject
+			]
+		);
+		self::dieWithZError( $zError, HttpStatus::BAD_REQUEST );
+	}
+
+	/**
+	 * @param string $right
+	 * @param stdClass $zobject
+	 * @throws ApiUsageException
+	 */
+	protected function failWithPermissionDenied( $right, $zobject ): never {
+		$action = $this->msg( "action-$right" )->text();
+
+		// Failure Level #3: Execution is forbidden, die with error
+		$this->getLogger()->info(
+			__METHOD__ . ' prevented from executing, user "{user}" is not allowed to {action}',
+			[
+				'request' => $zobject,
+				'right' => $right,
+				'action' => $action,
+				'user' => $this->getUser()->getName(),
+			]
+		);
+
+		$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+		self::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 	}
 }

@@ -35,14 +35,6 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 	private const EN = 'Z1002';
 	private const FR = 'Z1004';
 
-	private function insertBuiltinObjects( $zids ): void {
-		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';
-		foreach ( $zids as $zid ) {
-			$data = file_get_contents( "$dataPath/$zid.json" );
-			$this->editPage( $zid, $data, '', NS_MAIN );
-		}
-	}
-
 	private static function getTestFileContents( $fileName ): string {
 		$path = dirname( __DIR__, 2 ) . '/test_data/' . $fileName;
 		return file_get_contents( $path );

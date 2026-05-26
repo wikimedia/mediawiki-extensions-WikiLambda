@@ -1449,6 +1449,77 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Given a function zid and its latest revision id returns a table
+	 * with the status of all the tests of its connected tests against
+	 * its connected implementations, and a flag reflecting whether the
+	 * test result is already stored in the tests results table.
+	 *
+	 * @return array
+	 */
+	public function getTestStatusForLatestRevisions( string $functionZid, int $functionRevision ): array {
+		$dbr = $this->dbProvider->getPrimaryDatabase();
+
+		$queryBuilder = $dbr->newSelectQueryBuilder()
+			->select( [
+				'implementation_zid' => 'imp.wlzo_related_zobject',
+				'implementation_revision' => 'imp_page.page_latest',
+				'tester_zid' => 'tst.wlzo_related_zobject',
+				'tester_revision' => 'tst_page.page_latest',
+				'has_result' => 'wlztr_id IS NOT NULL',
+				'passed' => 'wlztr_pass',
+				'result' => 'wlztr_returnobject'
+			] )
+			// get connected implementations for function zid
+			->from( 'wikilambda_zobject_join', 'imp' )
+			// pair each connected implementation fo every connected test
+			->join( 'wikilambda_zobject_join', 'tst', [
+				'tst.wlzo_main_zid = imp.wlzo_main_zid',
+				'tst.wlzo_key' => ZTypeRegistry::Z_FUNCTION_TESTERS,
+			] )
+			// get the latest revision for each implementation from page table
+			->join( 'page', 'imp_page', [
+				'imp_page.page_title = imp.wlzo_related_zobject',
+				'imp_page.page_namespace' => 0,
+			] )
+			// get the latst revision for each test from page table
+			->join( 'page', 'tst_page', [
+				'tst_page.page_title = tst.wlzo_related_zobject',
+				'tst_page.page_namespace' => 0,
+			] )
+			// check the test results for the pairs in their latest revisions
+			->leftJoin( 'wikilambda_ztester_results', null, [
+				'wlztr_zfunction_zid' => $functionZid,
+				'wlztr_zfunction_revision' => $functionRevision,
+				'wlztr_zimplementation_zid = imp.wlzo_related_zobject',
+				'wlztr_zimplementation_revision = imp_page.page_latest',
+				'wlztr_ztester_zid = tst.wlzo_related_zobject',
+				'wlztr_ztester_revision = tst_page.page_latest',
+			] )
+			->where( [
+				'imp.wlzo_main_zid' => $functionZid,
+				'imp.wlzo_key' => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
+			] );
+
+		$rows = $queryBuilder
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$results = [];
+		foreach ( $rows as $row ) {
+			$results[] = [
+				'implementationZid' => $row->implementation_zid,
+				'implementationRevision' => (int)$row->implementation_revision,
+				'testZid' => $row->tester_zid,
+				'testRevision' => (int)$row->tester_revision,
+				'hasResult' => (bool)$row->has_result,
+				'passed' => (bool)$row->passed,
+				'result' => $row->result
+			];
+		}
+		return $results;
+	}
+
+	/**
 	 * Gets from the secondary database the ZID of a given BCP47 (or MediaWiki) language code
 	 *
 	 * @param string $code The BCP47 (or MediaWiki) language code for which to search
@@ -2547,7 +2618,9 @@ class ZObjectStore {
 		?string $testerZID,
 		?int $testerRevision
 	) {
-		$dbr = $this->dbProvider->getReplicaDatabase();
+		// Use primary database to avoid replication lag, as results may have
+		// just been written by ExecuteTestAndCacheJob or CacheTesterResultsJob
+		$dbr = $this->dbProvider->getPrimaryDatabase();
 
 		$purgeableResults = [];
 		$conditions = [];

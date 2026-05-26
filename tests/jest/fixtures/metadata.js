@@ -201,6 +201,14 @@ const metadataDebugLogs = convertSetToMap( {
 	]
 } );
 
+const metadataCaching = convertSetToMap( {
+	functionCallCachedOn: '2026-06-01T00:00:00Z',
+	testCallCachedOn: '2026-06-02T00:00:00Z',
+	validationCallCachedOn: '2026-06-03T00:00:00Z',
+	testResultCachedOn: '2026-06-04T00:00:00Z',
+	testResultCacheKey: 'Z10000#10:Z10001#11:Z10002#12'
+} );
+
 module.exports = {
 	metadataBasic,
 	metadataErrors,
@@ -209,5 +217,6 @@ module.exports = {
 	metadataNested,
 	metadataDifferButNoErrors,
 	metadataDebugLogs,
+	metadataCaching,
 	convertSetToMap
 };

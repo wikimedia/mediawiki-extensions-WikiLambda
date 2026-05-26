@@ -39,6 +39,9 @@ class FunctionCallHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 
+		$mock = new MockOrchestratorRequest();
+		$this->setService( 'WikiLambdaOrchestratorRequest', $mock );
+
 		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/embedded_calls' );
 		$this->registerLangs( [ 'en', 'fr' ] );
 		$this->registerErrors( [ 'Z504' ] );

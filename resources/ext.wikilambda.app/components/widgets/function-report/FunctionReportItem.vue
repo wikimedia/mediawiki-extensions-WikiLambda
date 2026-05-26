@@ -12,7 +12,7 @@
 			<wl-status-icon
 				class="ext-wikilambda-app-function-report-item__icon"
 				size="small"
-				:status="status"
+				:status="statusFlag"
 				:status-icon="statusIcon"
 			></wl-status-icon>
 			<div class="ext-wikilambda-app-function-report-item__text">
@@ -28,12 +28,20 @@
 						{{ statusMessage }}
 					</span>
 					<button
-						v-if="!isRunning && status !== 'ready'"
+						v-if="( hasMetadata || hasApiErrors ) && !isRunning"
 						type="button"
 						class="ext-wikilambda-app-button-reset ext-wikilambda-app-function-report-item__footer-button"
 						@click="emitTesterKeys"
 					>
 						{{ i18n( 'wikilambda-tester-details' ).text() }}
+					</button>
+					<button
+						v-if="isPending && !isRunning"
+						type="button"
+						class="ext-wikilambda-app-button-reset ext-wikilambda-app-function-report-item__footer-button"
+						@click="refreshTest"
+					>
+						{{ i18n( 'wikilambda-tester-refresh' ).text() }}
 					</button>
 				</div>
 			</div>
@@ -48,6 +56,7 @@ const Constants = require( '../../../Constants.js' );
 const icons = require( '../../../../lib/icons.json' );
 const useMainStore = require( '../../../store/index.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+const useTestResults = require( '../../../composables/useTestResults.js' );
 
 // Base components
 const StatusIcon = require( '../../base/StatusIcon.vue' );
@@ -73,16 +82,45 @@ module.exports = exports = defineComponent( {
 		contentType: {
 			type: String,
 			default: Constants.Z_TESTER
-		},
-		fetching: {
-			type: Boolean,
-			default: false
 		}
 	},
 	emits: [ 'set-keys' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
+
+		// Test results and status
+		/**
+		 * Whether the test for this function,
+		 * tester and implementation is in flight.
+		 *
+		 * @return {boolean}
+		 */
+		const isRunning = computed( () => store.hasFlyingPromise(
+			props.functionZid,
+			props.testerZid,
+			props.implementationZid
+		) );
+
+		// useTestResults composable:
+		const {
+			hasApiErrors,
+			hasMetadata,
+			isPending,
+			statusFlag,
+			statusMessage,
+			statusIcon
+		} = useTestResults( {
+			functionZid: computed( () => props.functionZid ),
+			testerZid: computed( () => props.testerZid ),
+			implementationZid: computed( () => props.implementationZid ),
+			fetching: isRunning,
+			icons: {
+				passed: icons.cdxIconSuccess,
+				failed: icons.cdxIconClear,
+				pending: icons.cdxIconClock
+			}
+		} );
 
 		// Title
 		/**
@@ -104,80 +142,6 @@ module.exports = exports = defineComponent( {
 			return urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid } );
 		} );
 
-		// Tester status
-		/**
-		 * Returns whether the tester passed
-		 *
-		 * @return {boolean}
-		 */
-		const testerStatus = computed( () => store.getZTesterResult(
-			props.functionZid,
-			props.testerZid,
-			props.implementationZid
-		) );
-
-		/**
-		 * Returns the status of the test
-		 *
-		 * @return {string}
-		 */
-		const status = computed( () => {
-			if ( props.fetching ) {
-				return Constants.TESTER_STATUS.RUNNING;
-			}
-			if ( !( props.implementationZid ) || !( props.testerZid ) ) {
-				return Constants.TESTER_STATUS.READY;
-			}
-			if ( testerStatus.value === true ) {
-				return Constants.TESTER_STATUS.PASSED;
-			}
-			if ( testerStatus.value === false ) {
-				return Constants.TESTER_STATUS.FAILED;
-			}
-			return Constants.TESTER_STATUS.READY;
-		} );
-
-		/**
-		 * Returns whether the tester is currently running
-		 *
-		 * @return {boolean}
-		 */
-		const isRunning = computed( () => status.value === Constants.TESTER_STATUS.RUNNING );
-
-		/**
-		 * Returns the status message
-		 *
-		 * @return {string}
-		 */
-		const statusMessage = computed( () => {
-			switch ( status.value ) {
-				case Constants.TESTER_STATUS.READY:
-					return i18n( 'wikilambda-tester-status-ready' ).text();
-				case Constants.TESTER_STATUS.PASSED:
-					return i18n( 'wikilambda-tester-status-passed' ).text();
-				case Constants.TESTER_STATUS.FAILED:
-					return i18n( 'wikilambda-tester-status-failed' ).text();
-				default:
-					return i18n( 'wikilambda-tester-status-running' ).text();
-			}
-		} );
-
-		/**
-		 * Returns the icon depending on the status
-		 *
-		 * @return {Object}
-		 */
-		const statusIcon = computed( () => {
-			if ( status.value === Constants.TESTER_STATUS.PASSED ) {
-				return icons.cdxIconSuccess;
-			}
-			if ( status.value === Constants.TESTER_STATUS.FAILED ) {
-				return icons.cdxIconClear;
-			}
-			// This will be used both for ready and running statuses
-			return icons.cdxIconClock;
-		} );
-
 		// Actions
 		/**
 		 * Emits set-keys event with implementation and tester zids
@@ -189,10 +153,28 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		/**
+		 * Refreshes test execution by calling the perform test
+		 * api with the exact combination of function, test and
+		 * implementation Zids
+		 */
+		function refreshTest() {
+			store.getTestResults( {
+				zFunctionId: props.functionZid,
+				zTesters: [ props.testerZid ],
+				zImplementations: [ props.implementationZid ],
+				clearPreviousResults: true
+			} );
+		}
+
 		return {
 			emitTesterKeys,
+			isPending,
 			isRunning,
-			status,
+			hasApiErrors,
+			hasMetadata,
+			refreshTest,
+			statusFlag,
 			statusIcon,
 			statusMessage,
 			titleLabelData,

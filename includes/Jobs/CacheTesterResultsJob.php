@@ -21,20 +21,15 @@ use Psr\Log\LoggerInterface;
  * which allows us to avoid a database write on an API GET.
  */
 class CacheTesterResultsJob extends Job implements GenericParameterJob {
+	use StoreTestResultTrait;
 
 	private LoggerInterface $logger;
 	private ZObjectStore $zObjectStore;
 
-	/**
-	 * @param array $params
-	 */
 	public function __construct( array $params ) {
 		parent::__construct( 'cacheTesterResults', $params );
 
-		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
-
-		// TODO (T330030): Consider accessing the ZObjectStore as an injected service
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
 
 		$this->logger->debug(
@@ -47,56 +42,21 @@ class CacheTesterResultsJob extends Job implements GenericParameterJob {
 	}
 
 	/**
-	 * @return bool
+	 * @inheritDoc
 	 */
 	public function run() {
-		$outcome = $this->zObjectStore->insertZTesterResult(
+		$this->storeTestResult(
+			$this->logger,
+			$this->zObjectStore,
 			$this->params['functionZid'],
 			$this->params['functionRevision'],
 			$this->params['implementationZid'],
 			$this->params['implementationRevision'],
-			$this->params['testerZid'],
-			$this->params['testerRevision'],
+			$this->params['testZid'],
+			$this->params['testRevision'],
 			$this->params['passed'],
 			$this->params['stashedResult']
 		);
-
-		if ( $outcome === ZObjectStore::TESTER_RESULT_CACHE_WRITE_INSERTED ) {
-			$this->logger->debug(
-				__CLASS__ . ' Updated cache for tester result',
-				[
-					'functionZid' => $this->params['functionZid'],
-					'functionRevision' => $this->params['functionRevision']
-				]
-			);
-		} elseif ( $outcome === ZObjectStore::TESTER_RESULT_CACHE_WRITE_STALE ) {
-			$this->logger->info(
-				__CLASS__ . ' Skipped stale tester result cache write',
-				[
-					'functionZid' => $this->params['functionZid'],
-					'functionRevision' => $this->params['functionRevision'],
-					'implementationZid' => $this->params['implementationZid'],
-					'implementationRevision' => $this->params['implementationRevision'],
-					'testerZid' => $this->params['testerZid'],
-					'testerRevision' => $this->params['testerRevision']
-				]
-			);
-		} else {
-			$this->logger->info(
-				__CLASS__ . ' Failed to update cache for tester result',
-				[
-					'functionZid' => $this->params['functionZid'],
-					'functionRevision' => $this->params['functionRevision'],
-					'implementationZid' => $this->params['implementationZid'],
-					'implementationRevision' => $this->params['implementationRevision'],
-					'testerZid' => $this->params['testerZid'],
-					'testerRevision' => $this->params['testerRevision'],
-					'passed' => $this->params['passed'],
-					'stashedResult' => $this->params['stashedResult']
-				]
-			);
-
-		}
 
 		return true;
 	}

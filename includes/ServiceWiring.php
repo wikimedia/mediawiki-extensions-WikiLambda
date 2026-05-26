@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use GuzzleHttp\Client;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
@@ -35,6 +36,13 @@ return [
 		return new ZObjectAuthorization(
 			LoggerFactory::getInstance( 'WikiLambda' )
 		);
+	},
+
+	'WikiLambdaOrchestratorRequest' => static function ( MediaWikiServices $services ): OrchestratorRequest {
+			$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
+			$host = $config->get( 'WikiLambdaOrchestratorLocation' );
+			$client = new Client( [ 'base_uri' => $host ] );
+			return new OrchestratorRequest( $client );
 	},
 
 	// For both repo and client wikis

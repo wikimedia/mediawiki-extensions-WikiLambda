@@ -41,6 +41,7 @@ describe( 'FunctionReportItem', () => {
 		store.getZTesterResult = createGettersWithFunctionsMock( false );
 		store.getLabelData = createLabelDataMock();
 		store.getUserLangCode = 'en';
+		store.hasFlyingPromise = createGettersWithFunctionsMock( false );
 	} );
 
 	it( 'renders without errors', () => {
@@ -54,7 +55,9 @@ describe( 'FunctionReportItem', () => {
 	} );
 
 	it( 'displays running status when ongoing call', () => {
-		const wrapper = renderFunctionReportItem( { fetching: true } );
+		store.hasFlyingPromise = createGettersWithFunctionsMock( true );
+
+		const wrapper = renderFunctionReportItem();
 		expect( wrapper.get( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Running…' );
 	} );
 
@@ -88,5 +91,27 @@ describe( 'FunctionReportItem', () => {
 		const wrapper = renderFunctionReportItem( { testerZid: '' } );
 		expect( wrapper.get( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
 		expect( wrapper.vm.statusIcon ).toBe( '<path data-testid="mock-icon-cdxIconClock"/>' );
+	} );
+
+	it( 'displays the details button when there is metadata to show', () => {
+		store.getZTesterResult = createGettersWithFunctionsMock( true );
+		store.hasFlyingPromise = createGettersWithFunctionsMock( false );
+
+		const wrapper = renderFunctionReportItem();
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-button' )
+			.text() ).toBe( 'Details' );
+	} );
+
+	it( 'displays the refresh button when test returned in a pending state', () => {
+		store.getZTesterResult = createGettersWithFunctionsMock( false );
+		store.hasFlyingPromise = createGettersWithFunctionsMock( false );
+		store.getZTesterMetadata = createGettersWithFunctionsMock( {
+			// NOTE: minimal and not strictly valid metadata, just to test the pending key exists
+			K1: [ { Z1K1: 'Z882' }, { Z1K2: 'Z882', K1: 'pending', K2: 'Z41' } ]
+		} );
+
+		const wrapper = renderFunctionReportItem();
+		expect( wrapper.find( '.ext-wikilambda-app-function-report-item__footer-button' )
+			.text() ).toBe( 'Refresh' );
 	} );
 } );

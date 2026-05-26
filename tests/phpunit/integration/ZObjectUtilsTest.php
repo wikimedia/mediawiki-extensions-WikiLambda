@@ -10,9 +10,11 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZBoolean;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -1786,8 +1788,8 @@ EOT;
 	/**
 	 * @dataProvider provideGetErrorsFromMetadata
 	 */
-	public function testGetErrorsFromMetadata( $metadata, $expected ) {
-		$actual = ZObjectUtils::getErrorsFromMetadata( $metadata );
+	public function testGetMetadataValue( $metadata, $expected ) {
+		$actual = ZObjectUtils::getMetadataValue( $metadata, 'errors' );
 		$this->assertEquals( $expected, $actual );
 	}
 
@@ -1800,20 +1802,211 @@ EOT;
 			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
 			. '"K1":"some-key","K2":"some-value"}'
 			. ']}';
-		yield 'metadata with error key' => [ json_decode( $metadata ), json_decode( $error ) ];
+		$response = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": ' . $metadata . '}';
+		yield 'metadata with error key' => [ json_decode( $response ), json_decode( $error ) ];
 
 		$metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
 			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
 			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
 			. '"K1":"some-key","K2":"some-value"}'
 			. ']}';
-		yield 'metadata with no error key' => [ json_decode( $metadata ), null ];
+		$response = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": ' . $metadata . '}';
+		yield 'metadata with no error key' => [ json_decode( $response ), null ];
 
 		$metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
 			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"}]}';
-		yield 'metadata with empty list' => [ json_decode( $metadata ), null ];
+		$response = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": ' . $metadata . '}';
+		yield 'metadata with empty list' => [ json_decode( $response ), null ];
 
 		$metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"}}';
-		yield 'empty metadata' => [ json_decode( $metadata ), null ];
+		$response = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": ' . $metadata . '}';
+		yield 'empty metadata' => [ json_decode( $response ), null ];
+	}
+
+	/**
+	 * @dataProvider provideSetMetadataValue
+	 */
+	public function testSetMetadataValue( $response, string $key, $value, $expected ): void {
+		$actual = ZObjectUtils::setMetadataValue( $response, $key, $value );
+		$this->assertEquals( $expected, $actual );
+	}
+
+	public static function provideSetMetadataValue(): iterable {
+		$error = '{ "Z1K1": "Z5", "Z5K1": "Z555" }';
+		$newError = '{ "Z1K1": "Z5", "Z5K1": "Z999" }';
+
+		// Base metadata with one existing key
+		$metadataWithErrors = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '"K1":"errors","K2":' . $error . '}]}';
+
+		// Base metadata with no keys
+		$emptyMetadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"}]}';
+
+		// adds a new key to metadata that has no keys
+		$responseWithEmpty = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": ' . $emptyMetadata . '}';
+		$expectedAfterAdd = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": '
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '"K1":"errors","K2":' . $error . '}]}}';
+		yield 'adds new key to metadata' => [
+			json_decode( $responseWithEmpty ),
+			'errors',
+			json_decode( $error ),
+			json_decode( $expectedAfterAdd ),
+		];
+
+		// updates an existing key
+		$responseWithErrors = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": ' . $metadataWithErrors . '}';
+		$expectedAfterUpdate = '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": '
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+			. '"K1":"errors","K2":' . $newError . '}]}}';
+		yield 'updates existing key in metadata' => [
+			json_decode( $responseWithErrors ),
+			'errors',
+			json_decode( $newError ),
+			json_decode( $expectedAfterUpdate ),
+		];
+
+		// --- returns null when response has no Z22K2 ---
+		yield 'returns null when response has no Z22K2' => [
+			json_decode( '{"Z1K1": "Z22", "Z22K1": "Z24"}' ),
+			'errors',
+			json_decode( $error ),
+			null,
+		];
+
+		// --- returns null when metadata has no K1 ---
+		$noK1Metadata = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"}}';
+		yield 'returns null when metadata has no K1' => [
+			json_decode( '{"Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": ' . $noK1Metadata . '}' ),
+			'errors',
+			json_decode( $error ),
+			null,
+		];
+
+		// --- returns null when response is null ---
+		yield 'returns null when response is null' => [
+			null,
+			'errors',
+			json_decode( $error ),
+			null,
+		];
+	}
+
+	/**
+	 * @dataProvider provideIsFalse
+	 */
+	public function testIsFalse( $input, bool $expected, string $description ) {
+		$this->assertSame( $expected, ZObjectUtils::isFalse( $input ), $description );
+	}
+
+	public static function provideIsFalse() {
+		yield 'Raw string Z42 (false)' => [
+			ZTypeRegistry::Z_BOOLEAN_FALSE,
+			true,
+			'Z42 string should be false',
+		];
+
+		yield 'Raw string Z41 (true)' => [
+			ZTypeRegistry::Z_BOOLEAN_TRUE,
+			false,
+			'Z41 string should not be false',
+		];
+
+		yield 'ZReference to Z42' => [
+			new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE ),
+			true,
+			'Reference to Z42 should be false',
+		];
+
+		yield 'ZReference to Z41' => [
+			new ZReference( ZTypeRegistry::Z_BOOLEAN_TRUE ),
+			false,
+			'Reference to Z41 should not be false',
+		];
+
+		yield 'ZBoolean with false identity' => [
+			new ZBoolean( new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE ) ),
+			true,
+			'ZBoolean(Z42) should be false',
+		];
+
+		yield 'ZBoolean with true identity' => [
+			new ZBoolean( new ZReference( ZTypeRegistry::Z_BOOLEAN_TRUE ) ),
+			false,
+			'ZBoolean(Z41) should not be false',
+		];
+
+		yield 'stdClass Z9/Z42 reference' => [
+			(object)[
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
+				ZTypeRegistry::Z_REFERENCE_VALUE => ZTypeRegistry::Z_BOOLEAN_FALSE,
+			],
+			true,
+			'stdClass reference to Z42 should be false',
+		];
+
+		yield 'stdClass Z40 boolean with Z42 value' => [
+			(object)[
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_BOOLEAN,
+				ZTypeRegistry::Z_BOOLEAN_VALUE => ZTypeRegistry::Z_BOOLEAN_FALSE,
+			],
+			true,
+			'stdClass boolean with Z42 value should be false',
+		];
+
+		yield 'Arbitrary string' => [
+			'not-a-boolean',
+			false,
+			'Arbitrary string should not be false',
+		];
+	}
+
+	/**
+	 * @dataProvider provideIsFunctionCall
+	 */
+	public function testIsFunctionCall( $zobject, bool $expected ): void {
+		$actual = ZObjectUtils::isFunctionCall( $zobject );
+		$this->assertSame( $expected, $actual );
+	}
+
+	public static function provideIsFunctionCall(): iterable {
+		yield 'returns false when input is null' => [ null, false ];
+		yield 'returns false when input is a string' => [ 'Z7', false ];
+		yield 'returns false when input is an array' => [ [], false ];
+
+		yield 'returns true with canonical function call' => [
+			json_decode( '{"Z1K1":"Z7","Z7K1":"Z801"}' ),
+			true,
+		];
+
+		yield 'returns true with normal form function call' => [
+			json_decode(
+				'{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z7"},'
+				. '"Z7K1":{"Z1K1":"Z9", "Z9K1":"Z801"}}'
+			),
+			true,
+		];
+
+		yield 'returns false when type is not function call' => [
+			json_decode( '{"Z1K1":"Z40","Z40K1":"Z41"}' ),
+			false,
+		];
+
+		yield 'returns false when type (normal) is not function call' => [
+			json_decode( '{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z40"}}' ),
+			false,
+		];
+
+		yield 'returns false when Z1K1 is absent' => [
+			json_decode( '{"Z7K1":"Z801"}' ),
+			false,
+		];
 	}
 }

@@ -64,7 +64,15 @@ module.exports = exports = defineComponent( {
 		cursor: pointer;
 	}
 
+	&.ext-wikilambda-app-status-icon--refresh {
+		cursor: pointer;
+	}
+
 	&.ext-wikilambda-app-status-icon--ready {
+		color: @color-disabled;
+	}
+
+	&.ext-wikilambda-app-status-icon--pending {
 		color: @color-disabled;
 	}
 
@@ -76,7 +84,8 @@ module.exports = exports = defineComponent( {
 		color: @color-success;
 	}
 
-	&.ext-wikilambda-app-status-icon--failed {
+	&.ext-wikilambda-app-status-icon--failed,
+	&.ext-wikilambda-app-status-icon--apierror {
 		color: @color-error;
 	}
 

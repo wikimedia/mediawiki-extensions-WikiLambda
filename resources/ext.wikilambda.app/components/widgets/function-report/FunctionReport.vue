@@ -36,7 +36,6 @@
 						:function-zid="functionZid"
 						:implementation-zid="isImplementationReport ? implementationZid : item"
 						:tester-zid="isTesterReport ? testerZid : item"
-						:fetching="fetching"
 						:content-type="contentType"
 						@set-keys="openMetricsDialog"
 					></wl-function-report-item>
@@ -248,7 +247,20 @@ module.exports = exports = defineComponent( {
 		}
 
 		// Test execution
-		const fetching = ref( false );
+
+		/**
+		 * Whether the test for the test or implementation page has
+		 * a pending request. This will determine the state of the
+		 * box button and its ability to cancel the flying request
+		 *
+		 * @return {boolean}
+		 */
+		const testsAreRunning = computed( () => store.hasFlyingPromise(
+			props.functionZid,
+			testerZid.value,
+			implementationZid.value
+		) );
+
 		let abortController = null;
 
 		/**
@@ -259,7 +271,6 @@ module.exports = exports = defineComponent( {
 				abortController.abort();
 				abortController = null;
 			}
-			fetching.value = false;
 		}
 
 		/**
@@ -267,7 +278,7 @@ module.exports = exports = defineComponent( {
 		 */
 		function runTesters() {
 			// If already fetching, cancel the current request
-			if ( fetching.value ) {
+			if ( testsAreRunning.value ) {
 				cancelTesters();
 				return;
 			}
@@ -278,7 +289,6 @@ module.exports = exports = defineComponent( {
 			}
 			abortController = new AbortController();
 
-			fetching.value = true;
 			store.getTestResults( {
 				zFunctionId: props.functionZid,
 				zImplementations: implementations.value,
@@ -286,11 +296,9 @@ module.exports = exports = defineComponent( {
 				clearPreviousResults: true,
 				signal: abortController.signal
 			} ).then( () => {
-				fetching.value = false;
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
 					// Request was cancelled, reset fetching state
-					fetching.value = false;
 					return;
 				}
 				// Re-throw other errors
@@ -330,8 +338,8 @@ module.exports = exports = defineComponent( {
 		 * @return {Object}
 		 */
 		const reloadButton = computed( () => ( {
-			icon: fetching.value ? icons.cdxIconCancel : icons.cdxIconReload,
-			label: fetching.value ?
+			icon: testsAreRunning.value ? icons.cdxIconCancel : icons.cdxIconReload,
+			label: testsAreRunning.value ?
 				i18n( 'wikilambda-tester-status-cancel' ).text() :
 				i18n( 'wikilambda-tester-status-run' ).text()
 		} ) );
@@ -380,7 +388,6 @@ module.exports = exports = defineComponent( {
 			activeImplementationLabelData,
 			closeMetricsDialog,
 			errorId,
-			fetching,
 			hasItems,
 			implementationZid,
 			isImplementationReport,

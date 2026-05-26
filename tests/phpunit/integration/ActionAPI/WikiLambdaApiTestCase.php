@@ -26,4 +26,14 @@ class WikiLambdaApiTestCase extends ApiTestCase {
 		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
 	}
 
+	/**
+	 * @param array $zids
+	 */
+	protected function insertBuiltinObjects( $zids ): void {
+		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';
+		foreach ( $zids as $zid ) {
+			$data = file_get_contents( "$dataPath/$zid.json" );
+			$this->editPage( $zid, $data, '', NS_MAIN );
+		}
+	}
 }

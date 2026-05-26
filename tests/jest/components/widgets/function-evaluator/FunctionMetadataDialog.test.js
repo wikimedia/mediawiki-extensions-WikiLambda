@@ -234,6 +234,47 @@ describe( 'dialog', () => {
 			expect( keys[ 0 ].text() ).toContain( 'Version:' );
 			expect( keys[ 0 ].text() ).toContain( 'QuickJS v0.5.0-alpha' );
 		} );
+
+		it( 'renders the caching section', () => {
+			// Set fake timer
+			jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
+
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCaching } );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			const section = sections[ 0 ];
+
+			// Check header
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() )
+				.toBe( 'This response was retrieved from the cache' );
+
+			// Check content
+			const content = section.find( '.cdx-accordion__content' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+
+			expect( keys[ 0 ].text() ).toContain( 'Cached function call:' );
+			expect( keys[ 0 ].text() ).toContain( '4 minutes ago' );
+
+			expect( keys[ 1 ].text() ).toContain( 'Cached test call:' );
+			expect( keys[ 1 ].text() ).toContain( '4 minutes ago' );
+
+			expect( keys[ 2 ].text() ).toContain( 'Cached validation call:' );
+			expect( keys[ 2 ].text() ).toContain( '4 minutes ago' );
+
+			expect( keys[ 3 ].text() ).toContain( 'Cached test result:' );
+			expect( keys[ 3 ].text() ).toContain( '4 minutes ago' );
+
+			expect( keys[ 4 ].text() ).toContain( 'Tested for (zids and revisions):' );
+			const links = keys[ 4 ].findAll( 'a' );
+			expect( links.length ).toBe( 3 );
+
+			expect( links[ 0 ].text() ).toBe( 'Z10000 (revision 10)' );
+			expect( links[ 0 ].attributes( 'href' ) ).toBe( '/view/en/Z10000?oldid=10' );
+			expect( links[ 1 ].text() ).toBe( 'Z10001 (revision 11)' );
+			expect( links[ 1 ].attributes( 'href' ) ).toBe( '/view/en/Z10001?oldid=11' );
+			expect( links[ 2 ].text() ).toBe( 'Z10002 (revision 12)' );
+			expect( links[ 2 ].attributes( 'href' ) ).toBe( '/view/en/Z10002?oldid=12' );
+		} );
 	} );
 
 	describe( 'with incomplete metadata', () => {

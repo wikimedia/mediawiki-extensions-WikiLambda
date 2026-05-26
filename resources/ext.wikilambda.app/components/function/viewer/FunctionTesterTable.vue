@@ -7,14 +7,15 @@
 <template>
 	<div class="ext-wikilambda-app-function-tester-table">
 		<wl-status-icon
-			:status="status"
+			:status="statusFlag"
 			:status-icon="statusIcon"
 		></wl-status-icon>
 		<span class="ext-wikilambda-app-function-tester-table__status-message">
 			{{ statusMessage }}
 		</span>
+		<!-- Details button to see metadata -->
 		<button
-			v-if="testerStatus !== undefined"
+			v-if="( hasMetadata || hasApiErrors ) && !isRunning"
 			type="button"
 			class="ext-wikilambda-app-button-reset ext-wikilambda-app-function-tester-table__info-button"
 			:aria-label="detailsButtonLabel"
@@ -24,10 +25,25 @@
 				status="info"
 			></wl-status-icon>
 		</button>
+		<!-- Refresh button if pending -->
+		<button
+			v-if="isPending && !isRunning"
+			type="button"
+			class="ext-wikilambda-app-button-reset ext-wikilambda-app-function-tester-table__info-button"
+			:aria-label="i18n( 'wikilambda-tester-refresh' ).text()"
+			@click.stop="refreshTest"
+		>
+			<wl-status-icon
+				status="refresh"
+				:status-icon="iconReload"
+			></wl-status-icon>
+		</button>
+		<!-- Metdata dialog -->
 		<wl-function-metadata-dialog
+			:v-if="hasMetadata"
 			:open="showMetadata"
 			:header-text="implementationLabelData"
-			:metadata="metadata"
+			:metadata="testMetadata"
 			:error-id="errorId"
 			@close-dialog="showMetadata = false"
 		></wl-function-metadata-dialog>
@@ -42,6 +58,7 @@ const FunctionMetadataDialog = require( '../../widgets/function-evaluator/Functi
 const icons = require( '../../../../lib/icons.json' );
 const StatusIcon = require( '../../base/StatusIcon.vue' );
 const useMainStore = require( '../../../store/index.js' );
+const useTestResults = require( '../../../composables/useTestResults.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-tester-table',
@@ -69,83 +86,58 @@ module.exports = exports = defineComponent( {
 
 		// Constants
 		const errorId = Constants.ERROR_IDS.TEST_RESULTS;
+		const iconReload = icons.cdxIconReload;
 
-		// Tester status
+		// Test results and status
 		/**
-		 * Returns whether the tester passed
+		 * Whether the test for this function,
+		 * tester and implementation is in flight.
 		 *
 		 * @return {boolean}
 		 */
-		const testerStatus = computed( () => store.getZTesterResult(
+		const isRunning = computed( () => store.hasFlyingPromise(
 			props.zFunctionId,
 			props.zTesterId,
 			props.zImplementationId
 		) );
 
-		/**
-		 * Returns the status of the test
-		 *
-		 * @return {string}
-		 */
-		const status = computed( () => {
-			if ( !( props.zImplementationId ) || !( props.zTesterId ) ) {
-				return Constants.TESTER_STATUS.READY;
-			}
-			if ( testerStatus.value === true ) {
-				return Constants.TESTER_STATUS.PASSED;
-			}
-			if ( testerStatus.value === false ) {
-				return Constants.TESTER_STATUS.FAILED;
-			}
-			return Constants.TESTER_STATUS.RUNNING;
-		} );
-		/**
-		 * Returns the status message
-		 *
-		 * @return {string}
-		 */
-		const statusMessage = computed( () => {
-			switch ( status.value ) {
-				case Constants.TESTER_STATUS.READY:
-					return i18n( 'wikilambda-tester-status-ready' ).text();
-				case Constants.TESTER_STATUS.PASSED:
-					return i18n( 'wikilambda-tester-status-passed' ).text();
-				case Constants.TESTER_STATUS.FAILED:
-					return i18n( 'wikilambda-tester-status-failed' ).text();
-				default:
-					return i18n( 'wikilambda-tester-status-running' ).text();
+		// useTestResults composable:
+		const {
+			testMetadata,
+			hasApiErrors,
+			hasMetadata,
+			isPending,
+			statusFlag,
+			statusMessage,
+			statusIcon
+		} = useTestResults( {
+			functionZid: computed( () => props.zFunctionId ),
+			testerZid: computed( () => props.zTesterId ),
+			implementationZid: computed( () => props.zImplementationId ),
+			fetching: isRunning,
+			icons: {
+				passed: icons.cdxIconCheck,
+				failed: icons.cdxIconClose,
+				pending: icons.cdxIconAlert
 			}
 		} );
 
 		/**
-		 * Returns the icon depending on the status
-		 *
-		 * @return {Object}
+		 * Refreshes test execution by calling the perform test
+		 * api with the exact combination of function, test and
+		 * implementation Zids
 		 */
-		const statusIcon = computed( () => {
-			if ( testerStatus.value === true ) {
-				return icons.cdxIconCheck;
-			}
-			if ( testerStatus.value === false ) {
-				return icons.cdxIconClose;
-			}
-			// This will be used both for ready and running statuses
-			return icons.cdxIconAlert;
-		} );
+		function refreshTest() {
+			store.getTestResults( {
+				zFunctionId: props.zFunctionId,
+				zTesters: [ props.zTesterId ],
+				zImplementations: [ props.zImplementationId ],
+				clearPreviousResults: true
+			} );
+		}
 
 		// Metadata dialog
 		const showMetadata = ref( false );
-
-		/**
-		 * Returns the tester metadata if stored, else returns undefined
-		 *
-		 * @return {Object|undefined}
-		 */
-		const metadata = computed( () => store.getZTesterMetadata(
-			props.zFunctionId,
-			props.zTesterId,
-			props.zImplementationId
-		) );
 
 		/**
 		 * Returns the LabelData object of the implementation Zid
@@ -179,13 +171,19 @@ module.exports = exports = defineComponent( {
 			detailsButtonLabel,
 			errorId,
 			handleMessageIconClick,
+			hasApiErrors,
+			hasMetadata,
+			iconReload,
 			implementationLabelData,
-			metadata,
+			isPending,
+			isRunning,
+			refreshTest,
 			showMetadata,
-			status,
+			statusFlag,
 			statusIcon,
 			statusMessage,
-			testerStatus
+			testMetadata,
+			i18n
 		};
 	}
 } );

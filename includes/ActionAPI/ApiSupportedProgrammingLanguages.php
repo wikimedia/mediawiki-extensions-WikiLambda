@@ -15,6 +15,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
@@ -23,10 +24,14 @@ use MediaWiki\Status\Status;
 
 class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 
-	public function __construct( ApiMain $mainModule, string $moduleName ) {
+	public function __construct(
+		ApiMain $mainModule,
+		string $moduleName,
+		OrchestratorRequest $orchestrator,
+	) {
 		parent::__construct( $mainModule, $moduleName, 'wikilambda_supported_programming_languages_' );
 
-		$this->setUp();
+		$this->setUp( $orchestrator );
 	}
 
 	/**
@@ -70,7 +75,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 			$this->dieWithError(
 				[
 					"apierror-wikilambda_supported_programming_languages-not-connected",
-					$this->orchestratorHost
+					$this->orchestrator->getHost()
 				],
 				null, null, HttpStatus::INTERNAL_SERVER_ERROR
 			);

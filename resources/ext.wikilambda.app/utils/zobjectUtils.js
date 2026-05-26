@@ -836,8 +836,28 @@ const zobjectUtils = {
 		}
 
 		return results;
-	}
+	},
 
+	/**
+	 * Returns whether the given test metadata is in a pending state,
+	 * i.e. the given metadata map contains a 'pending' key
+	 *
+	 * @param {Object} metadata
+	 * @return {boolean}
+	 */
+	hasPendingMetadata: function ( metadata ) {
+		// No metadata yet, test has not run, return false
+		if ( !metadata || !metadata.K1 ) {
+			return false;
+		}
+
+		const keys = metadata.K1;
+		if ( !Array.isArray( keys ) || keys.length <= 1 ) {
+			return false;
+		}
+
+		return keys.slice( 1 ).some( ( entry ) => entry.K1 === 'pending' );
+	}
 };
 
 module.exports = zobjectUtils;

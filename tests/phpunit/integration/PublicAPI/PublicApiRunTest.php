@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\PublicApi;
 
 use MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI\WikiLambdaApiTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
@@ -20,6 +21,12 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
  * @group Database
  */
 class PublicApiRunTest extends WikiLambdaApiTestCase {
+
+	protected function setUp(): void {
+		parent::setUp();
+		$mock = new MockOrchestratorRequest();
+		$this->setService( 'WikiLambdaOrchestratorRequest', $mock );
+	}
 
 	/**
 	 * @dataProvider provideExecuteSuccessfulViaMock
