@@ -247,12 +247,15 @@ EOT;
 		DeferredUpdates::doUpdates();
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
-		// Check the alias have been inserted in the secondary table
+		// Check the alias have been inserted in the secondary table. Order rows
+		// explicitly: SecondaryDataUpdate may now reuse wlzl_id values across saves,
+		// so an unordered SELECT is not guaranteed to return rows in insertion order.
 		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
 			 ->from( 'wikilambda_zobject_labels' )
 			 ->where( [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ] )
+			 ->orderBy( [ 'wlzl_language', 'wlzl_label' ], SelectQueryBuilder::SORT_ASC )
 			 ->fetchResultSet();
 
 		$this->assertEquals( 6, $res->numRows() );
@@ -304,6 +307,7 @@ EOT;
 			 ->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
 			 ->from( 'wikilambda_zobject_labels' )
 			 ->where( [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ] )
+			 ->orderBy( [ 'wlzl_language', 'wlzl_label' ], SelectQueryBuilder::SORT_ASC )
 			 ->fetchResultSet();
 
 		$this->assertEquals( 6, $res->numRows() );

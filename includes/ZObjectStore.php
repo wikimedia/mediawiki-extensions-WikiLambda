@@ -748,6 +748,256 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Reconcile the rows in wikilambda_zobject_labels for a given ZID with the desired
+	 * set of primary labels and aliases, writing only the differences.
+	 *
+	 * Existing rows whose content tuple matches a desired row are preserved (their
+	 * wlzl_id is re-used); unmatched existing rows are deleted by id; desired rows
+	 * with no match are inserted. When the desired set is identical to the existing
+	 * set, no writes are issued at all. (T300522)
+	 *
+	 * Eventually we could replace this with a simpler upsert(), but that would need a
+	 * DB schema change.
+	 *
+	 * @param string $zid
+	 * @param string $ztype
+	 * @param array<string,string> $primaryLabels Labels keyed by language code
+	 * @param array<string,string[]> $aliases Aliases keyed by language code, with a list of strings each
+	 * @param string|null $returnType
+	 */
+	public function synchroniseZObjectLabels(
+		string $zid,
+		string $ztype,
+		array $primaryLabels,
+		array $aliases,
+		?string $returnType = null
+	): void {
+		$dbw = $this->dbProvider->getPrimaryDatabase();
+
+		// Build the desired row payloads from primary labels and aliases.
+		$desiredRows = [];
+		foreach ( $primaryLabels as $language => $value ) {
+			$desiredRows[] = [
+				'wlzl_zobject_zid' => $zid,
+				'wlzl_language' => $language,
+				'wlzl_type' => $ztype,
+				'wlzl_label' => $value,
+				'wlzl_label_normalised' => ZObjectUtils::comparableString( $value ),
+				'wlzl_label_primary' => true,
+				'wlzl_return_type' => $returnType,
+			];
+		}
+		foreach ( $aliases as $language => $stringset ) {
+			foreach ( $stringset as $value ) {
+				$desiredRows[] = [
+					'wlzl_zobject_zid' => $zid,
+					'wlzl_language' => $language,
+					'wlzl_type' => $ztype,
+					'wlzl_label' => $value,
+					'wlzl_label_normalised' => ZObjectUtils::comparableString( $value ),
+					'wlzl_label_primary' => false,
+					'wlzl_return_type' => $returnType,
+				];
+			}
+		}
+
+		// Read existing rows from the primary DB: replica lag could otherwise
+		// produce spurious inserts (existing row not yet visible) or deletes.
+		$existingRows = $dbw->newSelectQueryBuilder()
+			->select( [
+				'wlzl_id',
+				'wlzl_language',
+				'wlzl_type',
+				'wlzl_label',
+				'wlzl_label_primary',
+				'wlzl_return_type',
+			] )
+			->from( 'wikilambda_zobject_labels' )
+			->where( [ 'wlzl_zobject_zid' => $zid ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		// Bucket existing rows by their content tuple so each desired row can
+		// claim one matching existing row (preserving its wlzl_id).
+		$existingByKey = [];
+		foreach ( $existingRows as $row ) {
+			$key = self::makeLabelRowKey(
+				$row->wlzl_language,
+				$row->wlzl_type,
+				$row->wlzl_label,
+				(bool)$row->wlzl_label_primary,
+				$row->wlzl_return_type
+			);
+			$existingByKey[$key][] = (int)$row->wlzl_id;
+		}
+
+		$toInsert = [];
+		foreach ( $desiredRows as $row ) {
+			$key = self::makeLabelRowKey(
+				$row['wlzl_language'],
+				$row['wlzl_type'],
+				$row['wlzl_label'],
+				$row['wlzl_label_primary'],
+				$row['wlzl_return_type']
+			);
+			if ( !empty( $existingByKey[$key] ) ) {
+				array_shift( $existingByKey[$key] );
+			} else {
+				$toInsert[] = $row;
+			}
+		}
+
+		$toDeleteIds = [];
+		foreach ( $existingByKey as $ids ) {
+			foreach ( $ids as $id ) {
+				$toDeleteIds[] = $id;
+			}
+		}
+
+		if ( $toDeleteIds !== [] ) {
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'wikilambda_zobject_labels' )
+				->where( [ 'wlzl_id' => $toDeleteIds ] )
+				->caller( __METHOD__ )->execute();
+		}
+
+		if ( $toInsert !== [] ) {
+			$dbw->newInsertQueryBuilder()
+				->insertInto( 'wikilambda_zobject_labels' )
+				->rows( $toInsert )
+				->caller( __METHOD__ )->execute();
+		}
+	}
+
+	/**
+	 * Reconcile the rows in wikilambda_zobject_label_conflicts touching the given ZID
+	 * with the desired set of conflicts, writing only the differences. (T300522)
+	 *
+	 * The scope mirrors deleteZObjectLabelConflictsByZid: rows where the ZID appears
+	 * as either side of the conflict. Desired rows are those where this ZID is the
+	 * conflicting (incoming) side.
+	 *
+	 * @param string $zid
+	 * @param array<string,string> $conflicts Map of language code to existing ZID that owns the label
+	 */
+	public function synchroniseZObjectLabelConflicts( string $zid, array $conflicts ): void {
+		$dbw = $this->dbProvider->getPrimaryDatabase();
+
+		$desiredRows = [];
+		foreach ( $conflicts as $language => $existingZid ) {
+			$desiredRows[] = [
+				'wlzlc_existing_zid' => $existingZid,
+				'wlzlc_conflicting_zid' => $zid,
+				'wlzlc_language' => $language,
+			];
+		}
+
+		$existingRows = $dbw->newSelectQueryBuilder()
+			->select( [
+				'wlzlc_id',
+				'wlzlc_existing_zid',
+				'wlzlc_conflicting_zid',
+				'wlzlc_language',
+			] )
+			->from( 'wikilambda_zobject_label_conflicts' )
+			->where(
+				$dbw->expr( 'wlzlc_existing_zid', '=', $zid )
+					->or( 'wlzlc_conflicting_zid', '=', $zid )
+			)
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$existingByKey = [];
+		foreach ( $existingRows as $row ) {
+			$key = self::makeConflictRowKey(
+				$row->wlzlc_existing_zid,
+				$row->wlzlc_conflicting_zid,
+				$row->wlzlc_language
+			);
+			$existingByKey[$key][] = (int)$row->wlzlc_id;
+		}
+
+		$toInsert = [];
+		foreach ( $desiredRows as $row ) {
+			$key = self::makeConflictRowKey(
+				$row['wlzlc_existing_zid'],
+				$row['wlzlc_conflicting_zid'],
+				$row['wlzlc_language']
+			);
+			if ( !empty( $existingByKey[$key] ) ) {
+				array_shift( $existingByKey[$key] );
+			} else {
+				$toInsert[] = $row;
+			}
+		}
+
+		$toDeleteIds = [];
+		foreach ( $existingByKey as $ids ) {
+			foreach ( $ids as $id ) {
+				$toDeleteIds[] = $id;
+			}
+		}
+
+		if ( $toDeleteIds !== [] ) {
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'wikilambda_zobject_label_conflicts' )
+				->where( [ 'wlzlc_id' => $toDeleteIds ] )
+				->caller( __METHOD__ )->execute();
+		}
+
+		if ( $toInsert !== [] ) {
+			$dbw->newInsertQueryBuilder()
+				->insertInto( 'wikilambda_zobject_label_conflicts' )
+				->rows( $toInsert )
+				->caller( __METHOD__ )->execute();
+		}
+	}
+
+	/**
+	 * Build a content-tuple key for a wikilambda_zobject_labels row, used to
+	 * detect rows that should be preserved across a label update.
+	 *
+	 * @param string $language
+	 * @param string $type
+	 * @param string $label
+	 * @param bool $isPrimary
+	 * @param string|null $returnType
+	 * @return string
+	 */
+	private static function makeLabelRowKey(
+		string $language,
+		string $type,
+		string $label,
+		bool $isPrimary,
+		?string $returnType
+	): string {
+		// \x1f (Unit Separator) is non-printable and cannot occur in any of these columns.
+		return implode( "\x1f", [
+			$language,
+			$type,
+			$label,
+			$isPrimary ? '1' : '0',
+			$returnType ?? '',
+		] );
+	}
+
+	/**
+	 * Build a content-tuple key for a wikilambda_zobject_label_conflicts row.
+	 *
+	 * @param string $existingZid
+	 * @param string $conflictingZid
+	 * @param string $language
+	 * @return string
+	 */
+	private static function makeConflictRowKey(
+		string $existingZid,
+		string $conflictingZid,
+		string $language
+	): string {
+		return implode( "\x1f", [ $existingZid, $conflictingZid, $language ] );
+	}
+
+	/**
 	 * Gets from the secondary database a list of all Zids belonging to a given type
 	 *
 	 * @param string $ztype

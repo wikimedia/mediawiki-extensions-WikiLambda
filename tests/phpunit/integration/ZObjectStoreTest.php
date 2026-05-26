@@ -796,6 +796,214 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
+	/**
+	 * Fetch label rows for a ZID indexed by (language, label_primary, label) so
+	 * tests can assert which rows kept their wlzl_id across a synchronise call.
+	 */
+	private function fetchLabelRowIdsByContent( string $zid ): array {
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_id', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->where( [ 'wlzl_zobject_zid' => $zid ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$byContent = [];
+		foreach ( $res as $row ) {
+			$key = $row->wlzl_language . '|' . $row->wlzl_label_primary . '|' . $row->wlzl_label;
+			$byContent[$key] = (int)$row->wlzl_id;
+		}
+		return $byContent;
+	}
+
+	public function testSynchroniseZObjectLabels_noopPreservesIds() {
+		$labels = [
+			self::ZLANG['en'] => 'label',
+			self::ZLANG['es'] => 'etiqueta',
+			self::ZLANG['fr'] => 'marque'
+		];
+		$aliases = [
+			self::ZLANG['en'] => [ 'tag', 'name' ],
+			self::ZLANG['de'] => [ 'Marke' ],
+		];
+
+		$this->zobjectStore->synchroniseZObjectLabels( 'Z222', 'Z4', $labels, $aliases );
+		$idsBefore = $this->fetchLabelRowIdsByContent( 'Z222' );
+		$this->assertCount( 6, $idsBefore );
+
+		// Identical sync — every wlzl_id must survive.
+		$this->zobjectStore->synchroniseZObjectLabels( 'Z222', 'Z4', $labels, $aliases );
+		$idsAfter = $this->fetchLabelRowIdsByContent( 'Z222' );
+		$this->assertSame( $idsBefore, $idsAfter );
+	}
+
+	public function testSynchroniseZObjectLabels_changeOneLabelOnly() {
+		$labels = [
+			self::ZLANG['en'] => 'label',
+			self::ZLANG['es'] => 'etiqueta',
+			self::ZLANG['fr'] => 'marque'
+		];
+
+		$this->zobjectStore->synchroniseZObjectLabels( 'Z222', 'Z4', $labels, [] );
+		$idsBefore = $this->fetchLabelRowIdsByContent( 'Z222' );
+
+		// Change just the French label; English and Spanish rows must keep their wlzl_id.
+		$labels[ self::ZLANG['fr'] ] = 'étiquette';
+		$this->zobjectStore->synchroniseZObjectLabels( 'Z222', 'Z4', $labels, [] );
+		$idsAfter = $this->fetchLabelRowIdsByContent( 'Z222' );
+
+		$this->assertCount( 3, $idsAfter );
+		$this->assertSame(
+			$idsBefore[ self::ZLANG['en'] . '|1|label' ],
+			$idsAfter[ self::ZLANG['en'] . '|1|label' ]
+		);
+		$this->assertSame(
+			$idsBefore[ self::ZLANG['es'] . '|1|etiqueta' ],
+			$idsAfter[ self::ZLANG['es'] . '|1|etiqueta' ]
+		);
+		// The old French row is gone and a new one exists; their ids differ.
+		$this->assertArrayHasKey( self::ZLANG['fr'] . '|1|étiquette', $idsAfter );
+		$this->assertArrayNotHasKey( self::ZLANG['fr'] . '|1|marque', $idsAfter );
+	}
+
+	public function testSynchroniseZObjectLabels_addAndRemove() {
+		$this->zobjectStore->synchroniseZObjectLabels(
+			'Z222', 'Z4',
+			[ self::ZLANG['en'] => 'one', self::ZLANG['es'] => 'two' ],
+			[]
+		);
+		$idsBefore = $this->fetchLabelRowIdsByContent( 'Z222' );
+
+		// Drop 'es', add 'fr'; 'en' should keep its wlzl_id.
+		$this->zobjectStore->synchroniseZObjectLabels(
+			'Z222', 'Z4',
+			[ self::ZLANG['en'] => 'one', self::ZLANG['fr'] => 'three' ],
+			[]
+		);
+		$idsAfter = $this->fetchLabelRowIdsByContent( 'Z222' );
+
+		$this->assertCount( 2, $idsAfter );
+		$this->assertSame(
+			$idsBefore[ self::ZLANG['en'] . '|1|one' ],
+			$idsAfter[ self::ZLANG['en'] . '|1|one' ]
+		);
+		$this->assertArrayNotHasKey( self::ZLANG['es'] . '|1|two', $idsAfter );
+		$this->assertArrayHasKey( self::ZLANG['fr'] . '|1|three', $idsAfter );
+	}
+
+	public function testSynchroniseZObjectLabels_aliasesPreserveIdsOnNoop() {
+		$labels = [ self::ZLANG['en'] => 'label' ];
+		$aliases = [
+			self::ZLANG['en'] => [ 'alpha', 'beta', 'gamma' ],
+		];
+
+		$this->zobjectStore->synchroniseZObjectLabels( 'Z222', 'Z4', $labels, $aliases );
+		$idsBefore = $this->fetchLabelRowIdsByContent( 'Z222' );
+		$this->assertCount( 4, $idsBefore );
+
+		// Same primary label, drop one alias, keep the others — only the dropped one churns.
+		$this->zobjectStore->synchroniseZObjectLabels(
+			'Z222', 'Z4', $labels,
+			[ self::ZLANG['en'] => [ 'alpha', 'gamma' ] ]
+		);
+		$idsAfter = $this->fetchLabelRowIdsByContent( 'Z222' );
+		$this->assertCount( 3, $idsAfter );
+		$this->assertSame(
+			$idsBefore[ self::ZLANG['en'] . '|1|label' ],
+			$idsAfter[ self::ZLANG['en'] . '|1|label' ]
+		);
+		$this->assertSame(
+			$idsBefore[ self::ZLANG['en'] . '|0|alpha' ],
+			$idsAfter[ self::ZLANG['en'] . '|0|alpha' ]
+		);
+		$this->assertSame(
+			$idsBefore[ self::ZLANG['en'] . '|0|gamma' ],
+			$idsAfter[ self::ZLANG['en'] . '|0|gamma' ]
+		);
+		$this->assertArrayNotHasKey( self::ZLANG['en'] . '|0|beta', $idsAfter );
+	}
+
+	public function testSynchroniseZObjectLabels_emptyToEmptyDoesNothing() {
+		$this->zobjectStore->synchroniseZObjectLabels( 'Z222', 'Z4', [], [] );
+		$this->assertSame( [], $this->fetchLabelRowIdsByContent( 'Z222' ) );
+	}
+
+	public function testSynchroniseZObjectLabels_clearsAllWhenDesiredEmpty() {
+		$this->zobjectStore->synchroniseZObjectLabels(
+			'Z222', 'Z4', [ self::ZLANG['en'] => 'label' ], []
+		);
+		$this->assertCount( 1, $this->fetchLabelRowIdsByContent( 'Z222' ) );
+
+		$this->zobjectStore->synchroniseZObjectLabels( 'Z222', 'Z4', [], [] );
+		$this->assertSame( [], $this->fetchLabelRowIdsByContent( 'Z222' ) );
+	}
+
+	public function testSynchroniseZObjectLabelConflicts_noopPreservesIds() {
+		$conflicts = [
+			self::ZLANG['en'] => 'Z222',
+			self::ZLANG['es'] => 'Z222',
+		];
+		$this->zobjectStore->synchroniseZObjectLabelConflicts( 'Z333', $conflicts );
+
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		$readIds = static function () use ( $dbr ) {
+			$res = $dbr->newSelectQueryBuilder()
+				->select( [ 'wlzlc_id', 'wlzlc_language' ] )
+				->from( 'wikilambda_zobject_label_conflicts' )
+				->where( [ 'wlzlc_conflicting_zid' => 'Z333' ] )
+				->fetchResultSet();
+			$ids = [];
+			foreach ( $res as $row ) {
+				$ids[ $row->wlzlc_language ] = (int)$row->wlzlc_id;
+			}
+			return $ids;
+		};
+
+		$idsBefore = $readIds();
+		$this->assertCount( 2, $idsBefore );
+
+		// Identical sync — wlzlc_id values must survive.
+		$this->zobjectStore->synchroniseZObjectLabelConflicts( 'Z333', $conflicts );
+		$this->assertSame( $idsBefore, $readIds() );
+	}
+
+	public function testSynchroniseZObjectLabelConflicts_replaceOne() {
+		$this->zobjectStore->synchroniseZObjectLabelConflicts( 'Z333', [
+			self::ZLANG['en'] => 'Z222',
+			self::ZLANG['es'] => 'Z222',
+		] );
+
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		$readIds = static function () use ( $dbr ) {
+			$res = $dbr->newSelectQueryBuilder()
+				->select( [ 'wlzlc_id', 'wlzlc_language', 'wlzlc_existing_zid' ] )
+				->from( 'wikilambda_zobject_label_conflicts' )
+				->where( [ 'wlzlc_conflicting_zid' => 'Z333' ] )
+				->fetchResultSet();
+			$ids = [];
+			foreach ( $res as $row ) {
+				$ids[ $row->wlzlc_language . '|' . $row->wlzlc_existing_zid ] = (int)$row->wlzlc_id;
+			}
+			return $ids;
+		};
+		$idsBefore = $readIds();
+
+		// Drop the 'es' conflict, add a 'fr' conflict; 'en' row must keep its id.
+		$this->zobjectStore->synchroniseZObjectLabelConflicts( 'Z333', [
+			self::ZLANG['en'] => 'Z222',
+			self::ZLANG['fr'] => 'Z444',
+		] );
+		$idsAfter = $readIds();
+
+		$this->assertCount( 2, $idsAfter );
+		$this->assertSame(
+			$idsBefore[ self::ZLANG['en'] . '|Z222' ],
+			$idsAfter[ self::ZLANG['en'] . '|Z222' ]
+		);
+		$this->assertArrayHasKey( self::ZLANG['fr'] . '|Z444', $idsAfter );
+		$this->assertArrayNotHasKey( self::ZLANG['es'] . '|Z222', $idsAfter );
+	}
+
 	public function testFetchZidsOfType() {
 		$this->zobjectStore->insertZObjectLabels(
 			'Z444', 'Z7', [ self::ZLANG['en'] => 'label for Z7' ]

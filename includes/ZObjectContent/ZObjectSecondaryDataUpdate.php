@@ -55,18 +55,11 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	public function doUpdate() {
 		// Given this title, gets ZID
 		// Given this zObject, gets ZType
-		// 1. Delete labels from wikilambda_zobject_labels for this ZID
-		// 2. Delete labels from wikilambda_zobject_label_conflicts for this ZID
-		// 3. Gets labels from this zObject (Z2K3 of the ZObjectContent)
-		// 4. Finds conflicting labels, e.g. existing labels from other ZIDs that have same language-value
-		// 5. Saves conflicting labels in wikilambda_zobject_label_conflicts and
-		// 6. Saves non-conflicting labels in wikilambda_zobject_labels
-		// 7. If appropriate, clear wikilambda_ztester_results for this ZID
-		// 8. If appropriate, add entry to wikilambda_zlanguages for this ZID
-		// 9. Add related zobjects, if any, to wikilambda_zobject_join for this ZID
-
-		// TODO (T300522): Only re-write the labels if they've changed.
-		// TODO (T300522): Use a single fancy upsert to remove/update/insert instead?
+		// 1. Update as needed labels and aliases in wikilambda_zobject_labels for this ZID
+		// 2. Update as needed conflicting labels in wikilambda_zobject_label_conflicts for this ZID
+		// 3. If appropriate, clear wikilambda_ztester_results for this ZID
+		// 4. If appropriate, add entry to wikilambda_zlanguages for this ZID
+		// 5. Add related zobjects, if any, to wikilambda_zobject_join for this ZID
 
 		$zid = $this->title->getDBkey();
 
@@ -85,11 +78,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		// Object is valid, we go on!
 
-		// Delete all labels: primary ones and aliases
-		$this->zObjectStore->deleteZObjectLabelsByZid( $zid );
-		$this->zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
-
-		// Delete language entries, if appropriate
+		// Delete language entries, if appropriate; the Z_LANGUAGE switch branch below repopulates.
 		$this->zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
 
 		$labels = $this->zObject->getLabels()->getValueAsList();
@@ -132,21 +121,39 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			}
 		}
 
+		// Compute language codes once for Z_LANGUAGE so they can be folded into the
+		// MUL alias set up-front, and re-used by the Z_LANGUAGE switch branch below.
+		$languageCodes = [];
+		if ( $ztype === ZTypeRegistry::Z_LANGUAGE ) {
+			$languageCodes[] = $innerZObject
+				->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
+			$secondaryLanguagesObject = $innerZObject
+				->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
+			if ( $secondaryLanguagesObject !== null ) {
+				'@phan-var ZTypedList $secondaryLanguagesObject';
+				foreach ( $secondaryLanguagesObject->getAsArray() as $secondaryLanguage ) {
+					// $secondaryLanguage is a ZString but we want the actual string
+					$languageCodes[] = $secondaryLanguage->getZValue();
+				}
+			}
+		}
+
 		$conflicts = $this->zObjectStore->findZObjectLabelConflicts( $zid, $ztype, $labels );
 		$newLabels = array_filter( $labels, static function ( $value, $lang ) use ( $conflicts ) {
 			return !isset( $conflicts[$lang] );
 		}, ARRAY_FILTER_USE_BOTH );
 
-		$this->zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels, $returnType );
-		$this->zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
-
-		// (T285368) Write aliases in the labels table
+		// (T285368) Write aliases in the labels table.
+		// (T358737) Add the zid as a fake alias under Z1360/MUL (multi-lingual value).
+		// (T343465) For Z_LANGUAGE, also add the language codes as MUL aliases.
 		$aliases = $this->zObject->getAliases()->getValueAsList();
-		// (T358737) Add the zid as fake aliases under Z1360/MUL (multi-lingual value)
-		$aliases[ ZLangRegistry::MULTILINGUAL_VALUE ] = [ $zid ];
-		if ( count( $aliases ) > 0 ) {
-			$this->zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
-		}
+		$aliases[ ZLangRegistry::MULTILINGUAL_VALUE ] = array_merge( [ $zid ], $languageCodes );
+
+		// (T300522) Update as needed labels, aliases, and conflicts in place: preserve
+		// wlzl_id / wlzlc_id across saves and write only the actual delta. The dominant
+		// "no labels changed" case issues zero writes to these tables.
+		$this->zObjectStore->synchroniseZObjectLabels( $zid, $ztype, $newLabels, $aliases, $returnType );
+		$this->zObjectStore->synchroniseZObjectLabelConflicts( $zid, $conflicts );
 
 		// ========================================================
 		// General delete actions:
@@ -172,9 +179,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// * Type:
 		//   - remove all instanceofenum from wikilambda_zobject_join table
 		// * Language:
-		//   - remove old language codes from wikilambda_zlanguage
-		//   - add new language codes
-		//   - add as fake aliases under Z1360/MUL (multi-lingual value)
+		//   - add new language codes to wikilambda_zlanguages
+		//     (the MUL aliases for these codes are handled by the up-front labels sync)
 		switch ( $ztype ) {
 			case ZTypeRegistry::Z_FUNCTION:
 				// TODO (T338247): Only clear test results cache for the old revision, not the new one
@@ -205,35 +211,11 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				break;
 
 			case ZTypeRegistry::Z_LANGUAGE:
-				// Clear old values, if any
-				$this->zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
-
-				// Set primary language code
-				$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
-				$languageCodes = [ $targetLanguage ];
-				$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
-
-				// Set secondary language codes, if any
-				$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
-				if ( $secondaryLanguagesObject !== null ) {
-					'@phan-var ZTypedList $secondaryLanguagesObject';
-					$secondaryLanguages = $secondaryLanguagesObject->getAsArray();
-
-					foreach ( $secondaryLanguages as $key => $secondaryLanguage ) {
-						// $secondaryLanguage is a ZString but we want the actual string
-						$secondaryLanguageString = $secondaryLanguage->getZValue();
-						$languageCodes[] = $secondaryLanguageString;
-						$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguageString );
-					}
+				// Repopulate wikilambda_zlanguages from the codes computed up front.
+				// (The MUL aliases for these codes were folded into the labels sync above.)
+				foreach ( $languageCodes as $code ) {
+					$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $code );
 				}
-
-				// (T343465) Add the language codes as fake aliases under Z1360/MUL (multi-lingual value)
-				$this->zObjectStore->insertZObjectAliases(
-					$zid,
-					$ztype,
-					[ ZLangRegistry::MULTILINGUAL_VALUE => $languageCodes ],
-					$returnType
-				);
 				break;
 
 			default:
