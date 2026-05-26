@@ -1884,6 +1884,90 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Reconcile the wikilambda_zobject_function_join row for a given referring ZID
+	 * with the desired function reference, writing only the actual difference.
+	 *
+	 * The table holds at most one row per wlzf_ref_zid by application invariant:
+	 * implementations and testers each point to a single parent function. When
+	 * $expectedFunctionZid is null the ZObject no longer references a function
+	 * (e.g. its type changed away from Z14/Z20) and any existing row is removed.
+	 * When the existing row already matches the desired tuple, no writes are
+	 * issued and the wlzf_id is preserved. (T362248)
+	 *
+	 * @param string $refId Referring ZObject's ZID
+	 * @param string|null $expectedFunctionZid Target function ZID, or null if no reference is wanted
+	 * @param string|null $expectedType Referring ZObject's type (Z14 or Z20), or null with $expectedFunctionZid
+	 */
+	public function synchroniseZFunctionReference(
+		string $refId,
+		?string $expectedFunctionZid,
+		?string $expectedType
+	): void {
+		$dbw = $this->dbProvider->getPrimaryDatabase();
+
+		$existingRows = $dbw->newSelectQueryBuilder()
+			->select( [ 'wlzf_id', 'wlzf_zfunction_zid', 'wlzf_type' ] )
+			->from( 'wikilambda_zobject_function_join' )
+			->where( [ 'wlzf_ref_zid' => $refId ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$existing = [];
+		foreach ( $existingRows as $row ) {
+			$existing[] = $row;
+		}
+
+		$hasDesired = ( $expectedFunctionZid !== null && $expectedType !== null );
+
+		// Defensive: if a prior bug left multiple rows for this refId, fall back
+		// to delete-then-insert to restore the one-row invariant.
+		if ( count( $existing ) > 1 ) {
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'wikilambda_zobject_function_join' )
+				->where( [ 'wlzf_ref_zid' => $refId ] )
+				->caller( __METHOD__ )->execute();
+			if ( $hasDesired ) {
+				$this->insertZFunctionReference( $refId, $expectedFunctionZid, $expectedType );
+			}
+			return;
+		}
+
+		if ( $existing === [] ) {
+			if ( $hasDesired ) {
+				$this->insertZFunctionReference( $refId, $expectedFunctionZid, $expectedType );
+			}
+			return;
+		}
+
+		$row = $existing[0];
+
+		if ( !$hasDesired ) {
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'wikilambda_zobject_function_join' )
+				->where( [ 'wlzf_id' => (int)$row->wlzf_id ] )
+				->caller( __METHOD__ )->execute();
+			return;
+		}
+
+		if (
+			$row->wlzf_zfunction_zid === $expectedFunctionZid
+			&& $row->wlzf_type === $expectedType
+		) {
+			// No change — preserve wlzf_id.
+			return;
+		}
+
+		$dbw->newUpdateQueryBuilder()
+			->update( 'wikilambda_zobject_function_join' )
+			->set( [
+				'wlzf_zfunction_zid' => $expectedFunctionZid,
+				'wlzf_type' => $expectedType,
+			] )
+			->where( [ 'wlzf_id' => (int)$row->wlzf_id ] )
+			->caller( __METHOD__ )->execute();
+	}
+
+	/**
 	 * For the given main ZObject and key, return the related ZObjects.
 	 *
 	 * Related ZObjects may be ZIDs or string encodings of

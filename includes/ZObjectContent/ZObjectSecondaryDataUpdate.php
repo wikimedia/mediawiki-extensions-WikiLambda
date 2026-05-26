@@ -138,6 +138,21 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			}
 		}
 
+		// Compute the desired wikilambda_zobject_function_join row, if any.
+		// Implementations and testers each point to their parent function; other
+		// types have no row in this table.
+		$expectedFunctionZid = null;
+		$expectedFunctionRefType = null;
+		if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
+			$expectedFunctionZid = $innerZObject
+				->getValueByKey( ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION )->getZValue();
+			$expectedFunctionRefType = $ztype;
+		} elseif ( $ztype === ZTypeRegistry::Z_TESTER ) {
+			$expectedFunctionZid = $innerZObject
+				->getValueByKey( ZTypeRegistry::Z_TESTER_FUNCTION )->getZValue();
+			$expectedFunctionRefType = $ztype;
+		}
+
 		$conflicts = $this->zObjectStore->findZObjectLabelConflicts( $zid, $ztype, $labels );
 		$newLabels = array_filter( $labels, static function ( $value, $lang ) use ( $conflicts ) {
 			return !isset( $conflicts[$lang] );
@@ -156,11 +171,13 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$this->zObjectStore->synchroniseZObjectLabelConflicts( $zid, $conflicts );
 
 		// ========================================================
-		// General delete actions:
+		// General delete / reconcile actions:
 		// ========================================================
-		// * Delete old function reference from wikilambda_zobject_function_join table
+		// * (T362248) Reconcile function reference in wikilambda_zobject_function_join in place
 		// * Delete related ZObjects from wikilambda_zobject_join table
-		$this->zObjectStore->deleteZFunctionReference( $zid );
+		$this->zObjectStore->synchroniseZFunctionReference(
+			$zid, $expectedFunctionZid, $expectedFunctionRefType
+		);
 		$this->zObjectStore->deleteRelatedZObjects( $zid );
 
 		// ========================================================
@@ -169,13 +186,9 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// * Function:
 		//   - clear test results cache
 		// * Implementation:
-		//   - delete old function→implementation relations
 		//   - clear test results cache
-		//   - insert new function→implementation relation
 		// * Tester:
-		//   - delete old function→tester relations
 		//   - clear test results cache
-		//   - insert new function→tester relation
 		// * Type:
 		//   - remove all instanceofenum from wikilambda_zobject_join table
 		// * Language:
@@ -188,21 +201,13 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				break;
 
 			case ZTypeRegistry::Z_IMPLEMENTATION:
-				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION );
 				// TODO (T338247): Only clear test results cache for the old revision, not the new one
 				$this->zObjectStore->deleteZImplementationFromZTesterResultsCache( $zid );
-				// TODO (T362248): Have insertZFunctionReference do an update,
-				// and only delete if changing the type/target?
-				$this->zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 				break;
 
 			case ZTypeRegistry::Z_TESTER:
-				$zFunction = $innerZObject->getValueByKey( ZTypeRegistry::Z_TESTER_FUNCTION );
 				// TODO (T338247): Only clear test results cache for the old revision, not the new one
 				$this->zObjectStore->deleteZTesterFromZTesterResultsCache( $zid );
-				// TODO (T362248): Have insertZFunctionReference do an update,
-				// and only delete if changing the type/target?
-				$this->zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 				break;
 
 			case ZTypeRegistry::Z_TYPE:

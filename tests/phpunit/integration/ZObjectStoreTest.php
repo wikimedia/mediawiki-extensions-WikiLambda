@@ -1342,6 +1342,120 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
+	/**
+	 * Fetch the (single) wikilambda_zobject_function_join row for a refId, or
+	 * null if absent. Used by the synchronise tests to assert wlzf_id stability.
+	 */
+	private function fetchFunctionReferenceRow( string $refId ): ?array {
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		$row = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzf_id', 'wlzf_zfunction_zid', 'wlzf_type' ] )
+			->from( 'wikilambda_zobject_function_join' )
+			->where( [ 'wlzf_ref_zid' => $refId ] )
+			->caller( __METHOD__ )
+			->fetchRow();
+		if ( $row === false ) {
+			return null;
+		}
+		return [
+			'wlzf_id' => (int)$row->wlzf_id,
+			'wlzf_zfunction_zid' => $row->wlzf_zfunction_zid,
+			'wlzf_type' => $row->wlzf_type,
+		];
+	}
+
+	public function testSynchroniseZFunctionReference_insertWhenMissing() {
+		$this->assertNull( $this->fetchFunctionReferenceRow( 'Z10030' ) );
+
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$row = $this->fetchFunctionReferenceRow( 'Z10030' );
+		$this->assertNotNull( $row );
+		$this->assertSame( 'Z10029', $row['wlzf_zfunction_zid'] );
+		$this->assertSame( 'Z14', $row['wlzf_type'] );
+	}
+
+	public function testSynchroniseZFunctionReference_noopPreservesId() {
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$before = $this->fetchFunctionReferenceRow( 'Z10030' );
+
+		// Identical reconcile — wlzf_id must survive.
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$after = $this->fetchFunctionReferenceRow( 'Z10030' );
+
+		$this->assertSame( $before, $after );
+	}
+
+	public function testSynchroniseZFunctionReference_changeFunctionUpdatesInPlace() {
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$before = $this->fetchFunctionReferenceRow( 'Z10030' );
+
+		// Point at a different parent function; the row must be UPDATEd, not delete-then-insert,
+		// so wlzf_id stays put.
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10040', 'Z14' );
+		$after = $this->fetchFunctionReferenceRow( 'Z10030' );
+
+		$this->assertNotNull( $after );
+		$this->assertSame( $before['wlzf_id'], $after['wlzf_id'] );
+		$this->assertSame( 'Z10040', $after['wlzf_zfunction_zid'] );
+		$this->assertSame( 'Z14', $after['wlzf_type'] );
+	}
+
+	public function testSynchroniseZFunctionReference_changeTypeUpdatesInPlace() {
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$before = $this->fetchFunctionReferenceRow( 'Z10030' );
+
+		// Same parent function, different role (Implementation → Tester) — still an UPDATE.
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z20' );
+		$after = $this->fetchFunctionReferenceRow( 'Z10030' );
+
+		$this->assertNotNull( $after );
+		$this->assertSame( $before['wlzf_id'], $after['wlzf_id'] );
+		$this->assertSame( 'Z20', $after['wlzf_type'] );
+	}
+
+	public function testSynchroniseZFunctionReference_dropWhenNoLongerWanted() {
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->assertNotNull( $this->fetchFunctionReferenceRow( 'Z10030' ) );
+
+		// ZObject type changed away from Impl/Tester — row should be removed.
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', null, null );
+		$this->assertNull( $this->fetchFunctionReferenceRow( 'Z10030' ) );
+	}
+
+	public function testSynchroniseZFunctionReference_emptyToEmptyDoesNothing() {
+		$this->assertNull( $this->fetchFunctionReferenceRow( 'Z10030' ) );
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', null, null );
+		$this->assertNull( $this->fetchFunctionReferenceRow( 'Z10030' ) );
+	}
+
+	public function testSynchroniseZFunctionReference_recoversFromDuplicateRows() {
+		// Manually create the broken state: two rows for the same refId.
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10041', 'Z20' );
+
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		$count = $dbr->newSelectQueryBuilder()
+			->select( '*' )
+			->from( 'wikilambda_zobject_function_join' )
+			->where( [ 'wlzf_ref_zid' => 'Z10030' ] )
+			->fetchResultSet()->numRows();
+		$this->assertSame( 2, $count );
+
+		// Reconcile to a single desired row: defensive path deletes all and re-inserts one.
+		$this->zobjectStore->synchroniseZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$row = $this->fetchFunctionReferenceRow( 'Z10030' );
+		$this->assertNotNull( $row );
+		$this->assertSame( 'Z10029', $row['wlzf_zfunction_zid'] );
+		$this->assertSame( 'Z14', $row['wlzf_type'] );
+
+		$count = $dbr->newSelectQueryBuilder()
+			->select( '*' )
+			->from( 'wikilambda_zobject_function_join' )
+			->where( [ 'wlzf_ref_zid' => 'Z10030' ] )
+			->fetchResultSet()->numRows();
+		$this->assertSame( 1, $count );
+	}
+
 	private function injectZ401RelatedZObjects(): void {
 		// Function Z401:
 		// * has 3 arguments of types Z6, Z40, Z6
