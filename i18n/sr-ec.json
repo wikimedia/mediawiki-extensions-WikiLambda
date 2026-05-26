@@ -168,6 +168,7 @@
 	"wikilambda-toast-close": "Затвори",
 	"wikilambda-typeselector-label": "Одабери тип",
 	"wikilambda-typeunavailable": "Непрепознат тип",
+	"wikilambda-commons-media-empty-value-placeholder": "Слика није изабрана",
 	"wikilambda-wikidata-entity-selector-placeholder": "Изаберите ставку Википодатака",
 	"wikilambda-wikidata-item-selector-placeholder": "Изаберите ставку Википодатака",
 	"wikilambda-wikifunctionswiki-sidebar-projectstatus": "Тренутан статус",
