@@ -58,8 +58,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// 1. Update as needed labels and aliases in wikilambda_zobject_labels for this ZID
 		// 2. Update as needed conflicting labels in wikilambda_zobject_label_conflicts for this ZID
 		// 3. If appropriate, clear wikilambda_ztester_results for this ZID
-		// 4. If appropriate, add entry to wikilambda_zlanguages for this ZID
-		// 5. Add related zobjects, if any, to wikilambda_zobject_join for this ZID
+		// 4. Update as needed entries in wikilambda_zlanguages for this ZID
+		// 5. Update as needed related zobjects in wikilambda_zobject_join for this ZID
 
 		$zid = $this->title->getDBkey();
 
@@ -77,9 +77,6 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		}
 
 		// Object is valid, we go on!
-
-		// Delete language entries, if appropriate; the Z_LANGUAGE switch branch below repopulates.
-		$this->zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
 
 		$labels = $this->zObject->getLabels()->getValueAsList();
 
@@ -122,7 +119,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		}
 
 		// Compute language codes once for Z_LANGUAGE so they can be folded into the
-		// MUL alias set up-front, and re-used by the Z_LANGUAGE switch branch below.
+		// MUL alias set up-front, and used by the wikilambda_zlanguages reconcile below.
 		$languageCodes = [];
 		if ( $ztype === ZTypeRegistry::Z_LANGUAGE ) {
 			$languageCodes[] = $innerZObject
@@ -175,9 +172,13 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// ========================================================
 		// * (T362248) Reconcile function reference in wikilambda_zobject_function_join in place
 		// * Reconcile related ZObjects in wikilambda_zobject_join in place
+		// * Reconcile language-code rows in wikilambda_zlanguages in place
 		$this->zObjectStore->synchroniseZFunctionReference(
 			$zid, $expectedFunctionZid, $expectedFunctionRefType
 		);
+		// Pass [] for non-Z_LANGUAGE saves so any stale rows from a prior Z60 incarnation
+		// (or test setup) get cleared; the no-row case is a cheap SELECT and zero writes.
+		$this->zObjectStore->synchroniseZLanguageCodes( $zid, $languageCodes );
 
 		// Compute the desired related-ZObject rows up front; split into two
 		// ownership scopes that the synchronise calls below honour separately:
@@ -208,9 +209,6 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		//   - clear test results cache
 		// * Type:
 		//   - reconcile instanceofenum rows in wikilambda_zobject_join in place
-		// * Language:
-		//   - add new language codes to wikilambda_zlanguages
-		//     (the MUL aliases for these codes are handled by the up-front labels sync)
 		switch ( $ztype ) {
 			case ZTypeRegistry::Z_FUNCTION:
 				// TODO (T338247): Only clear test results cache for the old revision, not the new one
@@ -238,14 +236,6 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 					],
 					$instanceOfEnumRelatedRows
 				);
-				break;
-
-			case ZTypeRegistry::Z_LANGUAGE:
-				// Repopulate wikilambda_zlanguages from the codes computed up front.
-				// (The MUL aliases for these codes were folded into the labels sync above.)
-				foreach ( $languageCodes as $code ) {
-					$this->zObjectStore->insertZLanguageToLanguagesCache( $zid, $code );
-				}
 				break;
 
 			default:

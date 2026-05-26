@@ -2813,6 +2813,70 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Reconcile the wikilambda_zlanguages rows for a given ZID with the desired
+	 * set of BCP47 language codes, writing only the actual difference.
+	 *
+	 * Existing rows whose language code matches a desired code are preserved
+	 * (their wlzlangs_id is reused); unmatched existing rows are deleted by id;
+	 * desired codes with no match are inserted. When the desired set is identical
+	 * to the existing set, no writes are issued at all.
+	 *
+	 * Callers can pass an empty $languageCodes to assert that no row should exist
+	 * for the ZID — useful for the every-save path where non-Z60 ZObjects pass [].
+	 *
+	 * @param string $zid
+	 * @param string[] $languageCodes BCP47 language codes the ZID should map to
+	 */
+	public function synchroniseZLanguageCodes( string $zid, array $languageCodes ): void {
+		$dbw = $this->dbProvider->getPrimaryDatabase();
+
+		$existingRows = $dbw->newSelectQueryBuilder()
+			->select( [ 'wlzlangs_id', 'wlzlangs_language' ] )
+			->from( 'wikilambda_zlanguages' )
+			->where( [ 'wlzlangs_zid' => $zid ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$existingByCode = [];
+		foreach ( $existingRows as $row ) {
+			$existingByCode[ $row->wlzlangs_language ][] = (int)$row->wlzlangs_id;
+		}
+
+		$toInsert = [];
+		foreach ( $languageCodes as $code ) {
+			if ( !empty( $existingByCode[ $code ] ) ) {
+				array_shift( $existingByCode[ $code ] );
+			} else {
+				$toInsert[] = [
+					'wlzlangs_zid' => $zid,
+					'wlzlangs_language' => $code,
+				];
+			}
+		}
+
+		$toDeleteIds = [];
+		foreach ( $existingByCode as $ids ) {
+			foreach ( $ids as $id ) {
+				$toDeleteIds[] = $id;
+			}
+		}
+
+		if ( $toDeleteIds !== [] ) {
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'wikilambda_zlanguages' )
+				->where( [ 'wlzlangs_id' => $toDeleteIds ] )
+				->caller( __METHOD__ )->execute();
+		}
+
+		if ( $toInsert !== [] ) {
+			$dbw->newInsertQueryBuilder()
+				->insertInto( 'wikilambda_zlanguages' )
+				->rows( $toInsert )
+				->caller( __METHOD__ )->execute();
+		}
+	}
+
+	/**
 	 * Remove a reference to an implementation or tester from a function, if needed.
 	 *
 	 * If the ZObject with $zid is an implementation or tester, this will find the function(s)

@@ -2559,6 +2559,83 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $foundLanguage );
 	}
 
+	/**
+	 * Fetch wikilambda_zlanguages rows for a ZID indexed by language code, so
+	 * tests can assert wlzlangs_id stability across a synchronise.
+	 */
+	private function fetchLanguageRowIdsByCode( string $zid ): array {
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlangs_id', 'wlzlangs_language' ] )
+			->from( 'wikilambda_zlanguages' )
+			->where( [ 'wlzlangs_zid' => $zid ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$ids = [];
+		foreach ( $res as $row ) {
+			$ids[ $row->wlzlangs_language ] = (int)$row->wlzlangs_id;
+		}
+		return $ids;
+	}
+
+	public function testSynchroniseZLanguageCodes_insertWhenMissing() {
+		$this->assertSame( [], $this->fetchLanguageRowIdsByCode( 'Z1001' ) );
+
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [ 'bar', 'bar-old' ] );
+		$ids = $this->fetchLanguageRowIdsByCode( 'Z1001' );
+		$this->assertCount( 2, $ids );
+		$this->assertArrayHasKey( 'bar', $ids );
+		$this->assertArrayHasKey( 'bar-old', $ids );
+	}
+
+	public function testSynchroniseZLanguageCodes_noopPreservesIds() {
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [ 'bar', 'bar-old' ] );
+		$idsBefore = $this->fetchLanguageRowIdsByCode( 'Z1001' );
+
+		// Identical sync — every wlzlangs_id must survive.
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [ 'bar', 'bar-old' ] );
+		$this->assertSame( $idsBefore, $this->fetchLanguageRowIdsByCode( 'Z1001' ) );
+	}
+
+	public function testSynchroniseZLanguageCodes_addAndRemove() {
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [ 'bar', 'bar-old' ] );
+		$idsBefore = $this->fetchLanguageRowIdsByCode( 'Z1001' );
+
+		// Drop 'bar-old', add 'bar-new'; 'bar' should keep its wlzlangs_id.
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [ 'bar', 'bar-new' ] );
+		$idsAfter = $this->fetchLanguageRowIdsByCode( 'Z1001' );
+
+		$this->assertCount( 2, $idsAfter );
+		$this->assertSame( $idsBefore['bar'], $idsAfter['bar'] );
+		$this->assertArrayHasKey( 'bar-new', $idsAfter );
+		$this->assertArrayNotHasKey( 'bar-old', $idsAfter );
+	}
+
+	public function testSynchroniseZLanguageCodes_emptyDesiredClearsScope() {
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [ 'bar', 'bar-old' ] );
+		$this->assertCount( 2, $this->fetchLanguageRowIdsByCode( 'Z1001' ) );
+
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [] );
+		$this->assertSame( [], $this->fetchLanguageRowIdsByCode( 'Z1001' ) );
+	}
+
+	public function testSynchroniseZLanguageCodes_emptyToEmptyDoesNothing() {
+		$this->assertSame( [], $this->fetchLanguageRowIdsByCode( 'Z1001' ) );
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [] );
+		$this->assertSame( [], $this->fetchLanguageRowIdsByCode( 'Z1001' ) );
+	}
+
+	public function testSynchroniseZLanguageCodes_scopeIsolatesOtherZids() {
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [ 'bar' ] );
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1002', [ 'foo' ] );
+		$z1002IdsBefore = $this->fetchLanguageRowIdsByCode( 'Z1002' );
+
+		// Wipe Z1001's scope; Z1002 rows are out of scope and must be untouched.
+		$this->zobjectStore->synchroniseZLanguageCodes( 'Z1001', [] );
+		$this->assertSame( [], $this->fetchLanguageRowIdsByCode( 'Z1001' ) );
+		$this->assertSame( $z1002IdsBefore, $this->fetchLanguageRowIdsByCode( 'Z1002' ) );
+	}
+
 	public function testDeleteZFunctionFromZTesterResultsCache() {
 		$this->injectZTesterResults();
 
