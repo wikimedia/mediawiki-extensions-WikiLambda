@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\UnlistedSpecialPage;
@@ -195,6 +196,13 @@ class SpecialViewObject extends UnlistedSpecialPage {
 			throw new ConfigException( 'No valid URL could be constructed for the canonical path' );
 		}
 		$outputPage->setCanonicalUrl( $viewURL );
+
+		// Allow anonymous /view/ responses to be edge-cached, rather than recomputed per request like
+		// a normal Special page. Re-rendering embeds the ZObject source and a per-language label into the
+		// page, so each /view/<lang>/<Zid> URL is its own cache entry; ViewUrlCacheHandler purges them on
+		// edit/delete. OutputPage::sendCacheControl() keeps logged-in (session-bearing) responses private
+		// regardless, so only anonymous reads are cached.
+		$outputPage->setCdnMaxage( $this->getConfig()->get( MainConfigNames::CdnMaxAge ) );
 
 		// (T345457) Tell OutputPage that our content is article-related, so we get Special:WhatLinksHere etc.
 		// (T343594) The Special:WhatLinksHere weren't shown on view/en/ZXXXX pages,

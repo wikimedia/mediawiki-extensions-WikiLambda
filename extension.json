@@ -170,10 +170,23 @@
 			"services": [
 				"MainConfig"
 			]
+		},
+		"ViewUrlCacheHandler": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ViewUrlCacheHandler",
+			"services": [
+				"MainConfig",
+				"HTMLCacheUpdater",
+				"LanguageNameUtils",
+				"UrlUtils"
+			]
 		}
 	},
 	"Hooks": {
-		"PageSaveComplete": "WikiLambdaClientHooks",
+		"PageSaveComplete": [
+			"WikiLambdaClientHooks",
+			"ViewUrlCacheHandler"
+		],
+		"PageDeleteComplete": "ViewUrlCacheHandler",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
 		"EnhancedChangesListModifyLineData": "WikiLambdaClientChangeHooks",

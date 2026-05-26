@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
@@ -218,6 +219,13 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 			throw new ConfigException( 'No valid URL could be constructed for the canonical path' );
 		}
 		$output->setCanonicalUrl( $viewURL );
+
+		// Allow anonymous /view/ responses to be edge-cached, rather than recomputed per request like
+		// a normal Special page. Re-rendering embeds the abstract source and per-language label into the
+		// page, so each /view/<lang>/<page> URL is its own cache entry; ViewUrlCacheHandler purges
+		// them on edit/delete. OutputPage::sendCacheControl() keeps logged-in (session-bearing) responses
+		// private regardless, so only anonymous reads are cached.
+		$output->setCdnMaxage( $this->getConfig()->get( MainConfigNames::CdnMaxAge ) );
 
 		// (T345457) Tell OutputPage that our content is article-related, so we get Special:WhatLinksHere etc.
 		// (T343594) The Special:WhatLinksHere weren't shown on view/en/ZXXXX pages,
