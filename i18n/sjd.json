@@ -4,5 +4,11 @@
 			"Merrahtar"
 		]
 	},
-	"wikilambda-about-widget-search-language-placeholder": "О̄дзэ кӣл"
+	"wikilambda-about-widget-search-language-placeholder": "О̄дзэ кӣл",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Вэ̄цксэ тэнн элемент тэнн Нэ̄ммлыстэсьт",
+	"wikilambda-function-definition-inputs-item-input-placeholder": "Пый нэ̄ммдэг",
+	"wikilambda-function-viewer-aliases-hide-language-button": "Вӯзьхэ ва̄нӓмп кӣллэ",
+	"wikilambda-metadata-aka-column": "Объект лӣ ныдтҍшэ нэ̄ммяй гу",
+	"wikilambda-metadata-all-languages": "Вӯзьхэ пугк пыййма кӣлэтҍ",
+	"wikilambda-metadata-fewer-languages": "Вӯзьхэ ва̄нӓмп кӣллэ"
 }
