@@ -1133,13 +1133,24 @@ const zobjectStore = {
 		initializeRootZObject: function ( zid ) {
 			// Set current Zid
 			this.setCurrentZid( zid );
-			const revision = getParameterByName( 'oldid' );
+
+			// Use the revision MediaWiki has resolved for this request rather than
+			// reading 'oldid' from the URL: on diff pages the URL carries both
+			// 'oldid' (the left/older revision) and 'diff' (the right/newer one),
+			// and the content block under the diff must reflect the newer side.
+			// OutputPage::setRevisionId() is the authoritative source for the
+			// displayed revision in all of view, ?oldid=X, and diff contexts.
+			const displayedRevision = mw.config.get( 'wgRevisionId' );
+			const currentRevision = mw.config.get( 'wgCurRevisionId' );
+			const revision = ( displayedRevision && displayedRevision !== currentRevision ) ?
+				displayedRevision :
+				undefined;
 
 			// Calling the API without language parameter so that we get
 			// the unfiltered multilingual object
 			return fetchZObjects( {
 				zids: zid,
-				revisions: revision || undefined
+				revisions: revision
 			} ).then( ( response ) => {
 				const zobject = response[ zid ].data;
 

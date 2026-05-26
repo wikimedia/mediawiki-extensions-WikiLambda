@@ -237,6 +237,73 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		$this->assertSame( $firstRevId, $output->getRevisionId() );
 	}
 
+	public function testShow_existingPageWithDiffPrefersNewerRevision() {
+		// Regression: on a diff URL like ?diff=Y&oldid=X the right-hand (newer)
+		// revision is what's displayed below the diff. The trait used to read
+		// 'oldid' unconditionally, which would have silently loaded the older
+		// (left-side) revision if a diff URL ever reached this code path.
+		$title = Title::newFromText( 'Q46', self::TEST_ABSTRACT_NS );
+		$contentHandler = $this->getAbstractContentHandler();
+
+		$firstContent = '{"qid":"Q46","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$firstStatus = $this->editPage(
+			$title,
+			$contentHandler->makeContent( $firstContent, $title, CONTENT_MODEL_ABSTRACT )
+		);
+		$firstRevId = $firstStatus->getNewRevision()->getId();
+
+		$secondContent = '{"qid":"Q46","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$secondStatus = $this->editPage(
+			$title,
+			$contentHandler->makeContent( $secondContent, $title, CONTENT_MODEL_ABSTRACT )
+		);
+		$secondRevId = $secondStatus->getNewRevision()->getId();
+
+		// ?diff=<newer>&oldid=<older>: should load the newer (right-side) revision
+		$action = $this->buildAction(
+			$title,
+			new FauxRequest( [ 'diff' => (string)$secondRevId, 'oldid' => $firstRevId ] )
+		);
+
+		$action->show();
+
+		$jsVars = $action->getOutput()->getJsConfigVars();
+		$this->assertSame( $secondContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertSame( $secondRevId, $action->getOutput()->getRevisionId() );
+	}
+
+	public function testShow_existingPageWithSymbolicDiffFallsBackToLatest() {
+		// 'diff=0' resolves to the current revision in core; we represent that
+		// as "no explicit revision" so getKnownCurrentRevision serves the load.
+		$title = Title::newFromText( 'Q47', self::TEST_ABSTRACT_NS );
+		$contentHandler = $this->getAbstractContentHandler();
+
+		$firstContent = '{"qid":"Q47","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$this->editPage(
+			$title,
+			$contentHandler->makeContent( $firstContent, $title, CONTENT_MODEL_ABSTRACT )
+		);
+
+		$secondContent = '{"qid":"Q47","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$this->editPage(
+			$title,
+			$contentHandler->makeContent( $secondContent, $title, CONTENT_MODEL_ABSTRACT )
+		);
+
+		$action = $this->buildAction(
+			$title,
+			new FauxRequest( [ 'diff' => '0', 'oldid' => '12345' ] )
+		);
+
+		$action->show();
+
+		$jsVars = $action->getOutput()->getJsConfigVars();
+		// Latest revision content, not the bogus oldid
+		$this->assertSame( $secondContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+		// No oldid subtitle set, since we're effectively on the current revision
+		$this->assertSame( 0, $action->getOutput()->getRevisionId() );
+	}
+
 	public function testShow_existingPageWithOldidFromAnotherTitle() {
 		// Create the target page (Q44) and a second page (Q45) with its own revision
 		$contentHandler = $this->getAbstractContentHandler();

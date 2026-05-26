@@ -50,8 +50,27 @@ trait AbstractContentEditPageTrait {
 		$createNewPage = true;
 		$jsonContent = false;
 
-		// Get oldid, if any, from the url parameter 'oldid'
-		$targetRevisionId = $context->getRequest()->getInt( 'oldid' ) ?: null;
+		// Resolve which revision MediaWiki is asking us to display.
+		//
+		// On a diff URL (?diff=Y&oldid=X) 'oldid' is the older/left side and
+		// 'diff' is the newer/right side; MediaWiki renders the right side
+		// below the diff. The ZObject SPA used to pick the wrong revision in
+		// the parallel view path by reading 'oldid' directly (T426297-ish);
+		// today this trait only fires on edit/create actions, but mirror the
+		// resolution so a stray ?action=edit&diff=…&oldid=… URL doesn't
+		// silently load the pre-diff content. Only numeric 'diff' values are
+		// honoured here: the symbolic forms (cur/0/prev/next) only make sense
+		// in DifferenceEngine and collapse to "the latest revision", which
+		// we represent as no explicit revision request.
+		$request = $context->getRequest();
+		$diffParam = $request->getRawVal( 'diff' );
+		if ( $diffParam !== null ) {
+			$targetRevisionId = ( ctype_digit( $diffParam ) && $diffParam !== '0' )
+				? (int)$diffParam
+				: null;
+		} else {
+			$targetRevisionId = $request->getInt( 'oldid' ) ?: null;
+		}
 
 		if ( $title->exists() ) {
 			// Content exists: retrieve given or latest revision

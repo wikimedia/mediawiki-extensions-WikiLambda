@@ -1022,6 +1022,20 @@ describe( 'zobject Pinia store', () => {
 			} );
 
 			describe( 'initializeRootZObject', () => {
+				const mockRevisionConfig = ( displayed, current ) => {
+					mw.config = {
+						get: jest.fn( ( varName ) => {
+							if ( varName === 'wgRevisionId' ) {
+								return displayed;
+							}
+							if ( varName === 'wgCurRevisionId' ) {
+								return current;
+							}
+							return null;
+						} )
+					};
+				};
+
 				it( 'requests initial ZObject for an old revision', async () => {
 					store.fetchZids = jest.fn().mockResolvedValue();
 					const response = { query: { wikilambdaload_zobjects: {
@@ -1030,12 +1044,8 @@ describe( 'zobject Pinia store', () => {
 					const getMock = jest.fn().mockResolvedValueOnce( response );
 					mw.Api = jest.fn( () => ( { get: getMock } ) );
 
-					const queryParams = {
-						title: 'Z10001',
-						oldid: '10002'
-					};
-					const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
-					mockWindowLocation( buildUrl( baseUrl, queryParams ) );
+					// ?oldid=10002 on a page whose current revision is 10003
+					mockRevisionConfig( 10002, 10003 );
 
 					const expectedPayload = {
 						action: 'query',
@@ -1045,7 +1055,7 @@ describe( 'zobject Pinia store', () => {
 						wikilambdaload_get_dependencies: 'false',
 						wikilambdaload_language: undefined,
 						wikilambdaload_zids: 'Z10001',
-						wikilambdaload_revisions: '10002'
+						wikilambdaload_revisions: 10002
 					};
 
 					await store.initializeRootZObject( 'Z10001' );
@@ -1060,11 +1070,10 @@ describe( 'zobject Pinia store', () => {
 					} } };
 					const getMock = jest.fn().mockResolvedValueOnce( response );
 					mw.Api = jest.fn( () => ( { get: getMock } ) );
-					const queryParams = {
-						title: 'Z10001'
-					};
-					const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
-					mockWindowLocation( buildUrl( baseUrl, queryParams ) );
+
+					// Plain view of the current revision: displayed == current.
+					mockRevisionConfig( 10003, 10003 );
+
 					const expectedPayload = {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
@@ -1079,6 +1088,38 @@ describe( 'zobject Pinia store', () => {
 					await store.initializeRootZObject( 'Z10001' );
 
 					expect( getMock ).toHaveBeenCalledWith( expectedPayload, { signal: undefined } );
+				} );
+
+				it( 'fetches the new revision on a diff page rather than the old (left-side) revision', async () => {
+					// Regression: on a diff URL like ?diff=0&oldid=270551 the content block
+					// under the diff must reflect the new (right-side) revision. MediaWiki
+					// sets wgRevisionId to the right-side revision; previously the store
+					// read 'oldid' directly and so rendered the pre-diff content.
+					store.fetchZids = jest.fn().mockResolvedValue();
+					const response = { query: { wikilambdaload_zobjects: {
+						Z10001: { data: {} }
+					} } };
+					const getMock = jest.fn().mockResolvedValueOnce( response );
+					mw.Api = jest.fn( () => ( { get: getMock } ) );
+
+					// URL includes oldid=270551 but the diff resolves to the current revision.
+					// MediaWiki therefore sets wgRevisionId to wgCurRevisionId; we must pass
+					// no revision so the API serves the current content, not oldid.
+					const queryParams = {
+						title: 'Z10001',
+						diff: '0',
+						oldid: '270551'
+					};
+					const baseUrl = `${ Constants.PATHS.ROUTE_FORMAT_TWO }${ queryParams.title }`;
+					mockWindowLocation( buildUrl( baseUrl, queryParams ) );
+					mockRevisionConfig( 270552, 270552 );
+
+					await store.initializeRootZObject( 'Z10001' );
+
+					expect( getMock ).toHaveBeenCalledWith( expect.objectContaining( {
+						wikilambdaload_zids: 'Z10001',
+						wikilambdaload_revisions: undefined
+					} ), { signal: undefined } );
 				} );
 
 				it( 'initializes empty description and alias fields', async () => {
