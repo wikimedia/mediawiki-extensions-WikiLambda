@@ -157,6 +157,36 @@ describe( 'ZObjectSelector', () => {
 			} );
 		} );
 
+		it( 'on input change, shows function/instance icons when no type restriction', async () => {
+			const mixedResults = {
+				labels: [ {
+					page_title: 'Z10001',
+					page_type: Constants.Z_FUNCTION,
+					label: 'Some function',
+					match_label: 'Some function',
+					type_label: 'Function'
+				}, {
+					page_title: 'Z10002',
+					page_type: Constants.Z_TYPE,
+					label: 'Some type',
+					match_label: 'Some type',
+					type_label: 'Type'
+				} ]
+			};
+			store.lookupZObjectLabels.mockResolvedValue( mixedResults );
+
+			const wrapper = renderZObjectSelector( { type: undefined } );
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:input-value', 'some' );
+
+			await waitFor( () => {
+				const items = lookup.props( 'menuItems' );
+				expect( items.length ).toBe( 2 );
+				expect( items[ 0 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconFunction"/>' );
+				expect( items[ 1 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconInstance"/>' );
+			} );
+		} );
+
 		it( 'on initialization, sets suggested objects', async () => {
 			const wrapper = renderZObjectSelector( {
 				type: Constants.Z_TYPE

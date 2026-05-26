@@ -401,6 +401,10 @@ describe( 'dialog', () => {
 			expect( menuItems[ 0 ].state ).toBe( 'pass' );
 			expect( menuItems[ 1 ].state ).toBe( 'pass' );
 			expect( menuItems[ 2 ].state ).toBe( 'fail' );
+			// Check icon
+			expect( menuItems[ 0 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconSuccess"/>' );
+			expect( menuItems[ 1 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconSuccess"/>' );
+			expect( menuItems[ 2 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconError"/>' );
 			// Check style
 			expect( menuItems[ 0 ].style ).toBe( '--menuItemLevel: 1;' );
 			expect( menuItems[ 1 ].style ).toBe( '--menuItemLevel: 2;' );

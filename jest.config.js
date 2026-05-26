@@ -24,7 +24,7 @@ module.exports = {
 
 	moduleNameMapper: {
 		'codex.js': '<rootDir>/tests/jest/helpers/loadCodexComponents.js',
-		'icons.json': '<rootDir>/tests/jest/fixtures/icons.json',
+		'icons.json': '<rootDir>/tests/jest/fixtures/icons.js',
 		'mediawiki.DateFormatter': '<rootDir>/tests/jest/helpers/mockDateFormatter.js'
 	},
 

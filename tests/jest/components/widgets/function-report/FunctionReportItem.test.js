@@ -63,6 +63,7 @@ describe( 'FunctionReportItem', () => {
 
 		const wrapper = renderFunctionReportItem();
 		expect( wrapper.get( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Passed' );
+		expect( wrapper.vm.statusIcon ).toBe( '<path data-testid="mock-icon-cdxIconSuccess"/>' );
 	} );
 
 	it( 'displays failed status when result is failed', () => {
@@ -70,6 +71,7 @@ describe( 'FunctionReportItem', () => {
 
 		const wrapper = renderFunctionReportItem();
 		expect( wrapper.get( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Failed' );
+		expect( wrapper.vm.statusIcon ).toBe( '<path data-testid="mock-icon-cdxIconClear"/>' );
 	} );
 
 	it( 'displays pending status when implementation missing', () => {
@@ -77,6 +79,7 @@ describe( 'FunctionReportItem', () => {
 
 		const wrapper = renderFunctionReportItem( { implementationZid: '' } );
 		expect( wrapper.get( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
+		expect( wrapper.vm.statusIcon ).toBe( '<path data-testid="mock-icon-cdxIconClock"/>' );
 	} );
 
 	it( 'displays pending status when tester missing', () => {
@@ -84,5 +87,6 @@ describe( 'FunctionReportItem', () => {
 
 		const wrapper = renderFunctionReportItem( { testerZid: '' } );
 		expect( wrapper.get( '.ext-wikilambda-app-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
+		expect( wrapper.vm.statusIcon ).toBe( '<path data-testid="mock-icon-cdxIconClock"/>' );
 	} );
 } );

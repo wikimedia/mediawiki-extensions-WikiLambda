@@ -136,6 +136,11 @@ describe( 'ZObjectToString', () => {
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z89' );
 				expect( referenceLink.text() ).toBe( 'HTML Fragment' );
 			} );
+
+			it( 'renders the markup icon', () => {
+				const wrapper = renderZObjectToString();
+				expect( wrapper.vm.icon ).toBe( '<path data-testid="mock-icon-cdxIconMarkup"/>' );
+			} );
 		} );
 
 		describe( 'for a function call with zero arguments', () => {
@@ -357,6 +362,7 @@ describe( 'ZObjectToString', () => {
 				const wrapper = renderZObjectToString();
 				const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
 				expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+				expect( wrapper.vm.icon ).toBe( '<path data-testid="mock-icon-cdxIconFunctionArgument"/>' );
 				expect( stringElement.text() ).toBe( 'argument label' );
 			} );
 		} );

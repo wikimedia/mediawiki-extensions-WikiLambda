@@ -542,12 +542,12 @@ describe( 'ModeSelector', () => {
 
 			expect( clipboadGroup.items.length ).toBe( 2 );
 			expect( clipboadGroup.items[ 0 ] ).toEqual( {
-				icon: "<path data-testid='mock-cdx-copy'/>",
+				icon: '<path data-testid="mock-icon-cdxIconCopy"/>',
 				label: 'Copy to clipboard',
 				value: 'copy'
 			} );
 			expect( clipboadGroup.items[ 1 ] ).toEqual( {
-				icon: "<path data-testid='mock-cdx-paste'/>",
+				icon: '<path data-testid="mock-icon-cdxIconPaste"/>',
 				label: 'Paste from clipboard',
 				value: 'paste'
 			} );
