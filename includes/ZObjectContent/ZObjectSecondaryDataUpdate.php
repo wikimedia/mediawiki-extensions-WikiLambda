@@ -171,26 +171,43 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$this->zObjectStore->synchroniseZObjectLabelConflicts( $zid, $conflicts );
 
 		// ========================================================
-		// General delete / reconcile actions:
+		// General reconcile actions:
 		// ========================================================
 		// * (T362248) Reconcile function reference in wikilambda_zobject_function_join in place
-		// * Delete related ZObjects from wikilambda_zobject_join table
+		// * Reconcile related ZObjects in wikilambda_zobject_join in place
 		$this->zObjectStore->synchroniseZFunctionReference(
 			$zid, $expectedFunctionZid, $expectedFunctionRefType
 		);
-		$this->zObjectStore->deleteRelatedZObjects( $zid );
+
+		// Compute the desired related-ZObject rows up front; split into two
+		// ownership scopes that the synchronise calls below honour separately:
+		//  - "own" rows where wlzo_main_zid = $zid (the usual case)
+		//  - "instance-of-enum" rows where wlzo_main_zid is *another* ZID but
+		//    wlzo_main_type = $zid and wlzo_key = instanceofenum (only Z_TYPE
+		//    saves on an enum type produce these, via getRelatedZObjectsOfType)
+		$relatedZObjects = $this->getRelatedZObjects( $zid, $ztype, $innerZObject );
+		$ownRelatedRows = [];
+		$instanceOfEnumRelatedRows = [];
+		foreach ( $relatedZObjects as $rel ) {
+			if ( $rel->zid === $zid ) {
+				$ownRelatedRows[] = $rel;
+			} else {
+				$instanceOfEnumRelatedRows[] = $rel;
+			}
+		}
+
+		$this->zObjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_zid' => $zid ],
+			$ownRelatedRows
+		);
 
 		// ========================================================
 		// Type specific actions:
 		// ========================================================
-		// * Function:
-		//   - clear test results cache
-		// * Implementation:
-		//   - clear test results cache
-		// * Tester:
+		// * Function / Implementation / Tester:
 		//   - clear test results cache
 		// * Type:
-		//   - remove all instanceofenum from wikilambda_zobject_join table
+		//   - reconcile instanceofenum rows in wikilambda_zobject_join in place
 		// * Language:
 		//   - add new language codes to wikilambda_zlanguages
 		//     (the MUL aliases for these codes are handled by the up-front labels sync)
@@ -211,8 +228,16 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				break;
 
 			case ZTypeRegistry::Z_TYPE:
-				// Remove all instanceofenum from wikilambda_zobject_join table
-				$this->zObjectStore->deleteRelatedZObjects( null, $zid, self::INSTANCEOFENUM_DB_KEY );
+				// Reconcile instanceofenum rows for this type. Non-enum types pass
+				// an empty desired set, so any stale rows from a prior enum status
+				// get cleared.
+				$this->zObjectStore->synchroniseRelatedZObjects(
+					[
+						'wlzo_main_type' => $zid,
+						'wlzo_key' => self::INSTANCEOFENUM_DB_KEY,
+					],
+					$instanceOfEnumRelatedRows
+				);
 				break;
 
 			case ZTypeRegistry::Z_LANGUAGE:
@@ -225,15 +250,6 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 			default:
 				// No action.
-		}
-
-		// ========================================================
-		// General insert actions:
-		// ========================================================
-		// * Add related ZObjects to wikilambda_zobject_join table
-		$relatedZObjects = $this->getRelatedZObjects( $zid, $ztype, $innerZObject );
-		if ( count( $relatedZObjects ) > 0 ) {
-			$this->zObjectStore->insertRelatedZObjects( $relatedZObjects );
 		}
 	}
 

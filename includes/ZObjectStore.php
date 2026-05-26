@@ -2403,6 +2403,131 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Reconcile the rows in wikilambda_zobject_join that match a given scope filter
+	 * with the desired set of relations, writing only the actual difference.
+	 *
+	 * Existing rows whose content tuple matches a desired row are preserved (their
+	 * wlzo_id is reused); unmatched existing rows are deleted by id; desired rows
+	 * with no match are inserted. When the desired set is identical to the
+	 * existing-in-scope set, no writes are issued at all.
+	 *
+	 * The $existingFilter constrains "which existing rows count as in-scope" — the
+	 * same shape of column => value pair that deleteRelatedZObjects() accepts.
+	 * Typical scopes are ['wlzo_main_zid' => $zid] (the standard case for almost
+	 * every ZObject save) and ['wlzo_main_type' => $typeZid, 'wlzo_key' => …]
+	 * (used by Z_TYPE saves to manage the rows for their enum instances).
+	 *
+	 * @param array<string,string> $existingFilter Column => value pairs constraining the existing rows considered
+	 * @param iterable<\stdClass> $desiredRows Iterable of objects with zid/type/key/related_zid/related_type
+	 */
+	public function synchroniseRelatedZObjects( array $existingFilter, iterable $desiredRows ): void {
+		$dbw = $this->dbProvider->getPrimaryDatabase();
+
+		$desiredPayloads = [];
+		foreach ( $desiredRows as $row ) {
+			$desiredPayloads[] = [
+				'wlzo_main_zid' => $row->zid,
+				'wlzo_main_type' => $row->type,
+				'wlzo_key' => $row->key,
+				'wlzo_related_zobject' => $row->related_zid,
+				'wlzo_related_type' => $row->related_type,
+			];
+		}
+
+		// If the filter is empty we'd treat the entire table as in-scope, which
+		// is never what a caller wants here and could corrupt unrelated rows.
+		if ( $existingFilter === [] ) {
+			throw new \InvalidArgumentException(
+				'synchroniseRelatedZObjects requires a non-empty $existingFilter'
+			);
+		}
+
+		$existingRows = $dbw->newSelectQueryBuilder()
+			->select( [
+				'wlzo_id',
+				'wlzo_main_zid',
+				'wlzo_main_type',
+				'wlzo_key',
+				'wlzo_related_zobject',
+				'wlzo_related_type',
+			] )
+			->from( 'wikilambda_zobject_join' )
+			->where( $existingFilter )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$existingByKey = [];
+		foreach ( $existingRows as $row ) {
+			$key = self::makeRelatedRowKey(
+				$row->wlzo_main_zid,
+				$row->wlzo_main_type,
+				$row->wlzo_key,
+				$row->wlzo_related_zobject,
+				$row->wlzo_related_type
+			);
+			$existingByKey[$key][] = (int)$row->wlzo_id;
+		}
+
+		$toInsert = [];
+		foreach ( $desiredPayloads as $payload ) {
+			$key = self::makeRelatedRowKey(
+				$payload['wlzo_main_zid'],
+				$payload['wlzo_main_type'],
+				$payload['wlzo_key'],
+				$payload['wlzo_related_zobject'],
+				$payload['wlzo_related_type']
+			);
+			if ( !empty( $existingByKey[$key] ) ) {
+				array_shift( $existingByKey[$key] );
+			} else {
+				$toInsert[] = $payload;
+			}
+		}
+
+		$toDeleteIds = [];
+		foreach ( $existingByKey as $ids ) {
+			foreach ( $ids as $id ) {
+				$toDeleteIds[] = $id;
+			}
+		}
+
+		if ( $toDeleteIds !== [] ) {
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'wikilambda_zobject_join' )
+				->where( [ 'wlzo_id' => $toDeleteIds ] )
+				->caller( __METHOD__ )->execute();
+		}
+
+		if ( $toInsert !== [] ) {
+			$dbw->newInsertQueryBuilder()
+				->insertInto( 'wikilambda_zobject_join' )
+				->rows( $toInsert )
+				->caller( __METHOD__ )->execute();
+		}
+	}
+
+	/**
+	 * Build a content-tuple key for a wikilambda_zobject_join row, used to
+	 * detect rows that should be preserved across a related-objects sync.
+	 *
+	 * @param string $mainZid
+	 * @param string $mainType
+	 * @param string $key
+	 * @param string $relatedZObject
+	 * @param string $relatedType
+	 * @return string
+	 */
+	private static function makeRelatedRowKey(
+		string $mainZid,
+		string $mainType,
+		string $key,
+		string $relatedZObject,
+		string $relatedType
+	): string {
+		return implode( "\x1f", [ $mainZid, $mainType, $key, $relatedZObject, $relatedType ] );
+	}
+
+	/**
 	 * Search test run results in the secondary tester results table; the latest result (highest
 	 * database ID) will be used.
 	 *

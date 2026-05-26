@@ -1837,6 +1837,218 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
+	/**
+	 * Build the canonical Z401 desired-row set (matches injectZ401RelatedZObjects)
+	 * so sync tests can pass it directly to synchroniseRelatedZObjects.
+	 */
+	private function makeZ401DesiredRows(): array {
+		return [
+			(object)[
+				'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K1',
+				'related_zid' => 'Z6', 'related_type' => 'Z4',
+			],
+			(object)[
+				'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K1',
+				'related_zid' => 'Z40', 'related_type' => 'Z4',
+			],
+			(object)[
+				'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K1',
+				'related_zid' => 'Z6', 'related_type' => 'Z4',
+			],
+			(object)[
+				'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K2',
+				'related_zid' => 'Z881(Z6)', 'related_type' => 'Z4',
+			],
+			(object)[
+				'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K3',
+				'related_zid' => 'Z10001', 'related_type' => 'Z20',
+			],
+			(object)[
+				'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K3',
+				'related_zid' => 'Z10002', 'related_type' => 'Z20',
+			],
+			(object)[
+				'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K4',
+				'related_zid' => 'Z10003', 'related_type' => 'Z14',
+			],
+		];
+	}
+
+	/**
+	 * Fetch related-object rows for a main_zid indexed by content tuple, so
+	 * tests can assert wlzo_id stability across a synchronise.
+	 */
+	private function fetchRelatedRowIdsByContent( string $mainZid ): array {
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [
+				'wlzo_id', 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key',
+				'wlzo_related_zobject', 'wlzo_related_type',
+			] )
+			->from( 'wikilambda_zobject_join' )
+			->where( [ 'wlzo_main_zid' => $mainZid ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+		$byContent = [];
+		foreach ( $res as $row ) {
+			$key = implode( '|', [
+				$row->wlzo_main_zid, $row->wlzo_main_type, $row->wlzo_key,
+				$row->wlzo_related_zobject, $row->wlzo_related_type,
+			] );
+			$byContent[$key][] = (int)$row->wlzo_id;
+		}
+		return $byContent;
+	}
+
+	public function testSynchroniseRelatedZObjects_noopPreservesIds() {
+		$this->injectZ401RelatedZObjects();
+		$idsBefore = $this->fetchRelatedRowIdsByContent( 'Z401' );
+		$this->assertNotEmpty( $idsBefore );
+
+		// Identical sync — every wlzo_id must survive.
+		$this->zobjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_zid' => 'Z401' ],
+			$this->makeZ401DesiredRows()
+		);
+		$this->assertSame( $idsBefore, $this->fetchRelatedRowIdsByContent( 'Z401' ) );
+	}
+
+	public function testSynchroniseRelatedZObjects_addRelationKeepsOthers() {
+		$this->injectZ401RelatedZObjects();
+		$idsBefore = $this->fetchRelatedRowIdsByContent( 'Z401' );
+
+		// Add one extra implementation; pre-existing rows must keep their wlzo_id.
+		$desired = $this->makeZ401DesiredRows();
+		$desired[] = (object)[
+			'zid' => 'Z401', 'type' => 'Z8', 'key' => 'Z8K4',
+			'related_zid' => 'Z10004', 'related_type' => 'Z14',
+		];
+		$this->zobjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_zid' => 'Z401' ],
+			$desired
+		);
+		$idsAfter = $this->fetchRelatedRowIdsByContent( 'Z401' );
+
+		foreach ( $idsBefore as $contentKey => $ids ) {
+			$this->assertArrayHasKey( $contentKey, $idsAfter );
+			$this->assertSame( $ids, $idsAfter[$contentKey] );
+		}
+		$this->assertArrayHasKey( 'Z401|Z8|Z8K4|Z10004|Z14', $idsAfter );
+	}
+
+	public function testSynchroniseRelatedZObjects_removeRelationKeepsOthers() {
+		$this->injectZ401RelatedZObjects();
+		$idsBefore = $this->fetchRelatedRowIdsByContent( 'Z401' );
+
+		// Drop the output-type row (Z8K2); other rows must keep their wlzo_id.
+		$desired = array_filter(
+			$this->makeZ401DesiredRows(),
+			static fn ( $row ) => $row->key !== 'Z8K2'
+		);
+		$this->zobjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_zid' => 'Z401' ],
+			$desired
+		);
+		$idsAfter = $this->fetchRelatedRowIdsByContent( 'Z401' );
+
+		$this->assertArrayNotHasKey( 'Z401|Z8|Z8K2|Z881(Z6)|Z4', $idsAfter );
+		foreach ( $idsBefore as $contentKey => $ids ) {
+			if ( $contentKey === 'Z401|Z8|Z8K2|Z881(Z6)|Z4' ) {
+				continue;
+			}
+			$this->assertArrayHasKey( $contentKey, $idsAfter );
+			$this->assertSame( $ids, $idsAfter[$contentKey] );
+		}
+	}
+
+	public function testSynchroniseRelatedZObjects_emptyDesiredClearsScope() {
+		$this->injectZ401RelatedZObjects();
+		$this->assertNotEmpty( $this->fetchRelatedRowIdsByContent( 'Z401' ) );
+
+		$this->zobjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_zid' => 'Z401' ],
+			[]
+		);
+		$this->assertSame( [], $this->fetchRelatedRowIdsByContent( 'Z401' ) );
+	}
+
+	public function testSynchroniseRelatedZObjects_scopeIsolatesOtherZids() {
+		$this->injectZ401RelatedZObjects();
+		$this->injectZ402RelatedZObjects();
+		$z402IdsBefore = $this->fetchRelatedRowIdsByContent( 'Z402' );
+
+		// Wipe Z401's scope; Z402 rows are out of scope and must be untouched.
+		$this->zobjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_zid' => 'Z401' ],
+			[]
+		);
+		$this->assertSame( [], $this->fetchRelatedRowIdsByContent( 'Z401' ) );
+		$this->assertSame( $z402IdsBefore, $this->fetchRelatedRowIdsByContent( 'Z402' ) );
+	}
+
+	public function testSynchroniseRelatedZObjects_keyScopeForInstanceOfEnum() {
+		// Simulate an enum type Z40000 with two instances (Z10001, Z10002), each
+		// of which has an instanceofenum row keyed by main_type+key.
+		$this->zobjectStore->insertRelatedZObjects( [
+			(object)[
+				'zid' => 'Z10001', 'type' => 'Z40000', 'key' => 'instanceofenum',
+				'related_zid' => 'Z40000', 'related_type' => 'Z4',
+			],
+			(object)[
+				'zid' => 'Z10002', 'type' => 'Z40000', 'key' => 'instanceofenum',
+				'related_zid' => 'Z40000', 'related_type' => 'Z4',
+			],
+		] );
+
+		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
+		// Capture __METHOD__ outside the closure: inside, it would resolve to the closure's
+		// own scope rather than to the calling test method (MediaWiki.Usage.MagicConstantClosure).
+		$caller = __METHOD__;
+		$readIds = static function () use ( $dbr, $caller ) {
+			$res = $dbr->newSelectQueryBuilder()
+				->select( [ 'wlzo_id', 'wlzo_main_zid' ] )
+				->from( 'wikilambda_zobject_join' )
+				->where( [ 'wlzo_main_type' => 'Z40000', 'wlzo_key' => 'instanceofenum' ] )
+				->caller( $caller )
+				->fetchResultSet();
+			$ids = [];
+			foreach ( $res as $row ) {
+				$ids[ $row->wlzo_main_zid ] = (int)$row->wlzo_id;
+			}
+			return $ids;
+		};
+		$idsBefore = $readIds();
+		$this->assertCount( 2, $idsBefore );
+
+		// Re-sync with the same desired set (e.g. the type was re-saved unchanged).
+		$this->zobjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_type' => 'Z40000', 'wlzo_key' => 'instanceofenum' ],
+			[
+				(object)[
+					'zid' => 'Z10001', 'type' => 'Z40000', 'key' => 'instanceofenum',
+					'related_zid' => 'Z40000', 'related_type' => 'Z4',
+				],
+				(object)[
+					'zid' => 'Z10002', 'type' => 'Z40000', 'key' => 'instanceofenum',
+					'related_zid' => 'Z40000', 'related_type' => 'Z4',
+				],
+			]
+		);
+		$this->assertSame( $idsBefore, $readIds() );
+
+		// And sync with empty desired set (e.g. the type stopped being an enum).
+		$this->zobjectStore->synchroniseRelatedZObjects(
+			[ 'wlzo_main_type' => 'Z40000', 'wlzo_key' => 'instanceofenum' ],
+			[]
+		);
+		$this->assertSame( [], $readIds() );
+	}
+
+	public function testSynchroniseRelatedZObjects_rejectsEmptyFilter() {
+		$this->expectException( \InvalidArgumentException::class );
+		$this->zobjectStore->synchroniseRelatedZObjects( [], [] );
+	}
+
 	public function testFindRelatedZObjectsByKey() {
 		$this->injectZ401RelatedZObjects();
 
