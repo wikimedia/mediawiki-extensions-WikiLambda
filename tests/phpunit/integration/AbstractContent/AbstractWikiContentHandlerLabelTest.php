@@ -75,6 +75,16 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$this->assertStringContainsString( 'Justin Bieber', $displayTitle );
 		$this->assertStringContainsString( 'Q34086', $displayTitle );
 		$this->assertStringContainsString( 'ext-wikilambda-viewpage-header', $displayTitle );
+
+		// Regression guard for the argument order passed to
+		// createAbstractViewPageTitle( $titleText, $lang, $dir, $qid ): the QID must
+		// render as the copyable qid chip text and the language attribute must be the
+		// user language. The previous, stale call order put the QID into lang="…" and
+		// the text direction into the qid chip.
+		$this->assertStringContainsString( 'ext-wikilambda-viewpage-header__qid', $displayTitle );
+		$this->assertStringContainsString( '>Q34086</span>', $displayTitle );
+		$this->assertStringContainsString( 'lang="en"', $displayTitle );
+		$this->assertStringNotContainsString( 'lang="Q34086"', $displayTitle );
 	}
 
 	public function testFillParserOutputNoDisplayTitleWhenLabelMissing(): void {

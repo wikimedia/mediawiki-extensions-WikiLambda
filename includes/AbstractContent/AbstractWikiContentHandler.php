@@ -245,9 +245,9 @@ class AbstractWikiContentHandler extends ContentHandler {
 			$parserOutput->setDisplayTitle(
 				PageTitleBuilder::createAbstractViewPageTitle(
 					$label,
-					$qid,
 					$langCode,
 					$userLang->getDir(),
+					$qid,
 				)
 			);
 		}
