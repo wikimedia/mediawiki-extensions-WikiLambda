@@ -33,7 +33,8 @@
 			"Raveloaritiana Mamisoa",
 			"Momo50WM",
 			"EmDashUser002",
-			"Pa2chant.bis"
+			"Pa2chant.bis",
+			"Jérémy-Günther-Heinz Jähnick"
 		]
 	},
 	"wikilambda-desc": "Fournir des fonctions à écrire, gérer et évaluer sur un wiki central.",
@@ -329,6 +330,8 @@
 	"wikilambda-functioncall-error-disabled-category-desc": "Pages avec des appels à Wikifunctions qui ont échoué en raison de la désactivation de Wikifunctions",
 	"wikilambda-functioncall-error-evaluation-category": "Pages avec des appels de fonctions Wiki erronés en raison d'une évaluation ratée",
 	"wikilambda-functioncall-error-evaluation-category-desc": "Pages avec des appels à Wikifunctions qui ont renvoyé des erreurs d'évaluation",
+	"wikilambda-functioncall-error-unclear-category": "Pages contenant des appels Wikifonctions erronés sans erreur claire",
+	"wikilambda-functioncall-error-unclear-category-desc": "Pages contenant des appels de Wikifonctions ayant échoué en raison d'une erreur d'API non gérée",
 	"wikilambda-functioncall-error-unknown-zid-category": "Pages avec des appels de Wikifonctions vers des objets inconnus",
 	"wikilambda-functioncall-error-unknown-zid-category-desc": "Pages avec des tentatives d’appels à des Wikifonctions qui demandent un objet inconnu",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Pages avec des appels de Wikifonctions vers des objets non valides",
