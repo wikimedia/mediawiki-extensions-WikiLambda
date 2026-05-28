@@ -16,7 +16,6 @@ use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Page\Article;
 use MediaWiki\Revision\RevisionStore;
-use MediaWiki\Title\Title;
 
 class AbstractContentEditAction extends Action {
 	use AbstractContentEditPageTrait;
@@ -65,7 +64,7 @@ class AbstractContentEditAction extends Action {
 		// Set page header (edit or create, depending on the returned config vars)
 		$lang = $this->getContext()->getLanguage();
 		$qid = $pageTitle->getBaseText();
-		$editPageTitle = $this->getPageTitleMsg( $pageTitle );
+		$editPageTitle = PageTitleBuilder::createAbstractEditPageHTMLTitleText( $pageTitle, $lang->getCode() );
 
 		// Rich HTML for the H1 display
 		$output->setPageTitle(
@@ -76,39 +75,12 @@ class AbstractContentEditAction extends Action {
 				$qid
 			)
 		);
-		// Plain-text override for the browser <title> tag
-		$output->setHTMLTitle( $editPageTitle . ' (' . $qid . ')' );
-	}
-
-	/**
-	 * Get page header title for an edit page:
-	 * * when content is new: show create title
-	 * * when content exists: show edit tile
-	 *
-	 * @param Title $title
-	 * @return string
-	 */
-	protected function getPageTitleMsg( Title $title ): string {
-		$pageExists = $title->exists();
-
-		if ( !$pageExists ) {
-			return $this->msg( 'wikilambda-abstract-special-create-qid' )
-				->params( $title->getText() )->text();
-		}
-
-		$label = AbstractContentUtils::resolveAbstractLabel(
-			$title->getText(),
-			$this->getLanguage()->getCode()
+		// Plain-text override for the browser <title> tag: the same text (which already
+		// embeds the QID) plus the " - {{SITENAME}}" suffix, matching the view and history
+		// variants. (T426833) Previously appended " ($qid)" a second time.
+		$output->setHTMLTitle(
+			PageTitleBuilder::createAbstractEditPageHtmlTitle( $editPageTitle, $lang->getCode() )
 		);
-
-		if ( $label === null ) {
-			return $this->msg( 'wikilambda-abstract-edit-title' )
-				->params( $title->getText() )->text();
-		}
-
-		// fallback when no label found
-		return $this->msg( 'wikilambda-abstract-edit-title-with-label' )
-			->params( $label, $title->getText() )->text();
 	}
 
 	/**

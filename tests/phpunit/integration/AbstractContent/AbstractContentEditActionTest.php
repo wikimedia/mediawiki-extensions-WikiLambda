@@ -14,6 +14,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
+use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Page\Article;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\FauxRequest;
@@ -22,6 +23,8 @@ use MediaWiki\Title\Title;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditPageTrait
+ * @covers \MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder::createAbstractEditPageHTMLTitleText
+ * @covers \MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder::createAbstractEditPageHtmlTitle
  * @group Database
  */
 class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase {
@@ -138,6 +141,31 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		$jsVars = $output->getJsConfigVars();
 		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'createNewPage' ] );
 		$this->assertSame( $jsonContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+
+		// (T426833) Browser <title> uses the edit message and must not duplicate the QID
+		// (the bug appended " (Q42)" to a title that, when labelled, already ends in "(Q42)").
+		$htmlTitle = $output->getHTMLTitle();
+		$this->assertStringContainsString( 'Edit Abstract Article for Q42', $htmlTitle );
+		$this->assertStringNotContainsString( '(Q42)', $htmlTitle );
+	}
+
+	public function testShow_existingPageHtmlTitleWithLabel() {
+		// Q8776414 is the lede section QID; required by AbstractWikiContent.php validation
+		$content = new AbstractWikiContent(
+			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
+		);
+		$this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
+		$this->mockWikibaseClientServicesForAbstractMode( 'Q34086', 'en', 'Justin Bieber' );
+
+		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
+		$action = $this->buildAction( $title );
+		$action->show();
+
+		// (T426833) "Edit Abstract Article for "Justin Bieber" (Q34086) - <sitename>",
+		// with the QID appearing exactly once (the bug produced "(Q34086) (Q34086)").
+		$htmlTitle = $action->getOutput()->getHTMLTitle();
+		$this->assertStringContainsString( 'Edit Abstract Article for "Justin Bieber" (Q34086)', $htmlTitle );
+		$this->assertStringNotContainsString( '(Q34086) (Q34086)', $htmlTitle );
 	}
 
 	public function testGetPageTitleMsgExistingPageWithLabel() {
@@ -196,11 +224,12 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 	}
 
 	private function invokeGetPageTitle( AbstractContentEditAction $action, Title $title ) {
-		$reflection = new \ReflectionClass( AbstractContentEditAction::class );
-		$method = $reflection->getMethod( 'getPageTitleMsg' );
-		$method->setAccessible( true );
-
-		return $method->invoke( $action, $title );
+		// (T426833) The edit/create page-title text is now built by PageTitleBuilder,
+		// localised in the action's language.
+		return PageTitleBuilder::createAbstractEditPageHTMLTitleText(
+			$title,
+			$action->getContext()->getLanguage()->getCode()
+		);
 	}
 
 	public function testShow_existingPageWithOldid() {

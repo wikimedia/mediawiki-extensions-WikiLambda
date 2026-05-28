@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Content\Renderer\ContentParseParams;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Parser\ParserOutput;
@@ -85,6 +86,11 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$this->assertStringContainsString( '>Q34086</span>', $displayTitle );
 		$this->assertStringContainsString( 'lang="en"', $displayTitle );
 		$this->assertStringNotContainsString( 'lang="Q34086"', $displayTitle );
+
+		// (T426833) The browser <title> is set directly on the OutputPage as
+		// "Justin Bieber (Q34086) - <sitename>".
+		$htmlTitle = RequestContext::getMain()->getOutput()->getHTMLTitle();
+		$this->assertStringContainsString( 'Justin Bieber (Q34086)', $htmlTitle );
 	}
 
 	public function testFillParserOutputNoDisplayTitleWhenLabelMissing(): void {
@@ -97,5 +103,11 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$output = $this->runFillParserOutput( $this->buildHandler(), $content, $title );
 
 		$this->assertFalse( $output->getDisplayTitle() );
+
+		// (T426833) Even without a label the browser <title> is set to "Q34086 - <sitename>"
+		// — no namespace prefix, no empty parens.
+		$htmlTitle = RequestContext::getMain()->getOutput()->getHTMLTitle();
+		$this->assertStringContainsString( 'Q34086', $htmlTitle );
+		$this->assertStringNotContainsString( '(Q34086)', $htmlTitle );
 	}
 }

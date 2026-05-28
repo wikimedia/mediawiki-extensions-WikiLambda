@@ -105,9 +105,11 @@ class AbstractContentHistoryActionTest extends WikiLambdaClientIntegrationTestCa
 		$action = $this->makeAction( 'Q34086' );
 		$result = $this->invokeGetPageTitle( $action )->text();
 
-		// Our formatted title contains 'of "' (e.g. 'Revision history of "Justin Bieber" (Q34086)'),
-		// while the parent fallback does not (e.g. 'Abstract Wikipedia:Q34086: Revision history').
-		// So absence of 'of "' confirms we got the fallback.
+		// (T426833) With no Wikibase label, we still render an Abstract-Article-shaped title
+		// ("Revision history of Q34086"), not the MediaWiki default
+		// ("Abstract Wikipedia:Q34086: Revision history") nor the labelled form
+		// ("Revision history of "…" (Q34086)").
+		$this->assertStringContainsString( 'Revision history of Q34086', $result );
 		$this->assertStringNotContainsString( 'of "', $result );
 	}
 

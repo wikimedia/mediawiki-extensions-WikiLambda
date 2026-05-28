@@ -264,6 +264,14 @@ class AbstractWikiContentHandler extends ContentHandler {
 			);
 		}
 
+		// (T426833) Set the browser <title> directly on the OutputPage ("Label (QID) -
+		// {{SITENAME}}" or "QID - {{SITENAME}}"), mirroring ZObjectContentHandler (T360169),
+		// so the "/wiki/Q42" and "?title=…" views match the Special:ViewAbstract, edit and
+		// history variants. Set unconditionally so the no-label case drops the namespace too.
+		RequestContext::getMain()->getOutput()->setHTMLTitle(
+			PageTitleBuilder::createAbstractViewPageHtmlTitle( $label, $qid, $langCode )
+		);
+
 		// Set config variables
 		$wikilambdaConfig = [
 			'abstractContent' => true,

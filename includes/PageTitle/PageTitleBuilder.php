@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\PageTitle;
 
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\Language;
@@ -516,6 +517,78 @@ class PageTitleBuilder {
 			$dir,
 			$qid
 		);
+	}
+
+	/**
+	 * Build the plain-text browser `<title>` for an Abstract Article *view* page
+	 * (`OutputPage::setHTMLTitle()`): "Label (QID) - {{SITENAME}}" when a Wikibase label
+	 * is available, or "QID - {{SITENAME}}" otherwise — keeping the "/wiki/Q42",
+	 * "?title=…" and Special:ViewAbstract views consistent with each other (and with the
+	 * edit and history `<title>` formats).
+	 *
+	 * @param string|null $label Resolved Wikibase label, or null when none is available
+	 * @param string $qid The Wikidata Item Id (e.g. 'Q42')
+	 * @param string $langCode Language to localise the sitename suffix in
+	 * @return string
+	 */
+	public static function createAbstractViewPageHtmlTitle( ?string $label, string $qid, string $langCode ): string {
+		$titleText = ( $label !== null && $label !== '' ) ? "$label ($qid)" : $qid;
+		return self::applyPageTitleSuffix( $titleText, $langCode );
+	}
+
+	/**
+	 * Build the inner page-title text for an Abstract Article *edit/create* page, used
+	 * both for the rich H1 (createAbstractEditPageTitle()) and the browser `<title>`
+	 * (createAbstractEditPageHtmlTitle()). Picks the create, edit, or edit-with-label
+	 * message depending on whether the page exists and a Wikibase label is available.
+	 *
+	 * @param Title $title
+	 * @param string $langCode
+	 * @return string
+	 */
+	public static function createAbstractEditPageHTMLTitleText( Title $title, string $langCode ): string {
+		$qid = $title->getText();
+
+		if ( !$title->exists() ) {
+			return wfMessage( 'wikilambda-abstract-special-create-qid' )
+				->inLanguage( $langCode )->params( $qid )->text();
+		}
+
+		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode );
+
+		if ( $label === null ) {
+			return wfMessage( 'wikilambda-abstract-edit-title' )
+				->inLanguage( $langCode )->params( $qid )->text();
+		}
+
+		return wfMessage( 'wikilambda-abstract-edit-title-with-label' )
+			->inLanguage( $langCode )->params( $label, $qid )->text();
+	}
+
+	/**
+	 * Build the plain-text browser `<title>` for an Abstract Article *edit/create* page
+	 * (`OutputPage::setHTMLTitle()`): the createAbstractEditPageHTMLTitleText() message plus
+	 * the standard " - {{SITENAME}}" suffix, e.g.
+	 * "Edit Abstract Article for "Jupiter" (Q319) - Abstract Wikipedia".
+	 *
+	 * @param string $editPageTitleText Inner text from createAbstractEditPageHTMLTitleText()
+	 * @param string $langCode Language to localise the sitename suffix in
+	 * @return string
+	 */
+	public static function createAbstractEditPageHtmlTitle( string $editPageTitleText, string $langCode ): string {
+		return self::applyPageTitleSuffix( $editPageTitleText, $langCode );
+	}
+
+	/**
+	 * Wrap a plain-text page title in the core 'pagetitle' message to append the
+	 * standard " - {{SITENAME}}" suffix used across MediaWiki browser `<title>` tags.
+	 *
+	 * @param string $titleText
+	 * @param string $langCode
+	 * @return string
+	 */
+	private static function applyPageTitleSuffix( string $titleText, string $langCode ): string {
+		return wfMessage( 'pagetitle' )->inLanguage( $langCode )->plaintextParams( $titleText )->text();
 	}
 
 	/**

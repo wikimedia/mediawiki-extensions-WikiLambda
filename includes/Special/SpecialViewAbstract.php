@@ -183,19 +183,23 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// Set page title to the object being viewed.
 		$qid = $targetTitle->getText();
 		$langCode = $targetLanguageObject->getCode();
-		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode ) ?? $targetTitle->getPrefixedText();
+		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode );
 
-		// Rich HTML for the H1 display
+		// Rich HTML for the H1 display: fall back to the QID as the title text when no
+		// Wikibase label is available (the QID chip still renders alongside it).
 		$output->setPageTitle(
 			PageTitleBuilder::createAbstractViewPageTitle(
-				$label,
+				$label ?? $targetTitle->getPrefixedText(),
 				$langCode,
 				$targetLanguageObject->getDir(),
 				$qid,
 			)
 		);
-		// Plain-text override for the browser <title> tag
-		$output->setHTMLTitle( $label . ' (' . $qid . ')' );
+		// Plain-text override for the browser <title> tag: "Label (QID)" or just "QID",
+		// plus the " - {{SITENAME}}" suffix, matching the /wiki/, edit and history views.
+		$output->setHTMLTitle(
+			PageTitleBuilder::createAbstractViewPageHtmlTitle( $label, $qid, $langCode )
+		);
 
 		// Runs AbstractWikiContentHandler::fillParserOutput
 		$parserOptions = ParserOptions::newFromUserAndLang( $this->getUser(), $targetLanguageObject );

@@ -15,8 +15,9 @@ use MediaWiki\Actions\HistoryAction;
 class AbstractContentHistoryAction extends HistoryAction {
 	/**
 	 * Returns a formatted page title for the history view, using the Wikibase label
-	 * for the entity if available. Falls back to the default MediaWiki history title
-	 * if the page doesn't exist, the label can't be fetched, or anything goes wrong.
+	 * for the entity if available. Falls back to the Abstract Article history title format
+	 * ("Revision history of QID") if the page doesn't exist, the label can't be fetched,
+	 * or anything goes wrong.
 	 *
 	 * @inheritDoc
 	 */
@@ -30,7 +31,11 @@ class AbstractContentHistoryAction extends HistoryAction {
 		$label = AbstractContentUtils::resolveAbstractLabel( $entityId, $languageCode );
 
 		if ( $label === null ) {
-			return parent::getPageTitle();
+			// (T426833) When no Wikibase label is available, still render the Abstract Article
+			// history title format ("Revision history of QID"), so that /wiki/, edit, history and
+			// Special:ViewAbstract stay consistent.
+			return $this->msg( 'wikilambda-abstract-content-history-title-no-label' )
+				->params( $entityId );
 		}
 
 		return $this->msg( 'wikilambda-abstract-content-history-title' )
