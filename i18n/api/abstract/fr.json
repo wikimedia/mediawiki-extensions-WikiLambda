@@ -2,10 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Urhixidur",
-			"Jérémy-Günther-Heinz Jähnick"
+			"Jérémy-Günther-Heinz Jähnick",
+			"VIGNERON"
 		]
 	},
-	"apihelp-abstractwiki_run_fragment-summary": "Générer un extrait de contenu de Wikipédia résumée pour l'identifiant d'élément Wikidata, le Zid de langue et la date donnés.",
+	"apihelp-abstractwiki_run_fragment-summary": "Générer un extrait de contenu de la Wikipédia abstraite selon l'identifiant d'élément Wikidata, le Zid de la langue et la date.",
 	"apihelp-abstractwiki_run_fragment-param-async": "Indique si cet appel doit être exécuté de manière asynchrone ou synchrone. En cas d'exécution asynchrone, la fonction renverra « pending=true » si la valeur n'est pas disponible. En cas d'exécution synchrone, elle attendra que le fragment soit rendu par Wikifonctions avant de renvoyer la valeur résultante.",
 	"apihelp-abstractwiki_run_fragment-param-qid": "Identifiant de l'élément Wikidata utilisé pour afficher le fragment. Il doit s'agir d'un Qid valide.",
 	"apihelp-abstractwiki_run_fragment-param-language": "Identifiant ZObjet de la langue utilisé pour le rendu du fragment. Il doit s'agir d'un identifiant ZObjet valide.",
@@ -16,7 +17,7 @@
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Le fragment n'est pas un appel de fonction valide.",
 	"apierror-abstractwiki_run_fragment-bad-response": "Le fragment a rendu le mauvais type.",
 	"apierror-abstractwiki_run_fragment-forbidden": "Vous n'avez pas les autorisations nécessaires pour rendre ce fragment.",
-	"apierror-abstractwiki_run_fragment-not-enabled": "Impossible de rendre les fragments de contenu de Wikipédia résumée : cette fonctionnalité n'est pas activée.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Impossible de rendre les fragments de contenu de Wikipédia abstraite : cette fonctionnalité n'est pas activée.",
 	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifonctions a renvoyé un message d'erreur : $1",
 	"apierror-abstractwiki_run_fragment-service-unavailable": "Le service d'affichage est temporairement inaccessible. S'il vous plaît, réessayez plus tard.",
 	"apierror-abstractwiki_run_fragment-unknown-error": "Impossible d'afficher ce fragment en raison d'une erreur inconnue."

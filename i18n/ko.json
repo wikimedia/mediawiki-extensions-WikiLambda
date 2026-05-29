@@ -486,7 +486,7 @@
 	"wikilambda-special-functionsbytests-form-result-pass": "모두 통과",
 	"wikilambda-special-functionsbytests-form-status": "테스트 연결 상태:",
 	"wikilambda-special-functionsbytests-form-status-connected": "연결됨",
-	"wikilambda-special-functionsbytests-form-status-pending": "연결 보류 중",
+	"wikilambda-special-functionsbytests-form-status-pending": "연결 대기 중",
 	"wikilambda-special-functionsbytests-row-connected": "$1개 연결됨",
 	"wikilambda-special-functionsbytests-row-failing": "{{PLURAL:$1|$1개 실패}}",
 	"wikilambda-special-functionsbytests-row-tests": "{{PLURAL:$1|$1 테스트}}",
