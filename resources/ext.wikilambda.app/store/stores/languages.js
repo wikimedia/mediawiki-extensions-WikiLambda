@@ -31,7 +31,6 @@ module.exports = {
 		/**
 		 * Returns the language zid given a language ISO code if the
 		 * object has been fetched and is stored in the state.
-		 * Falls back to server-side language mapping (wgWikiLambdaLangs) when available.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -41,18 +40,7 @@ module.exports = {
 			 * @param {string} code
 			 * @return {string|undefined}
 			 */
-			const findLanguageZid = ( code ) => {
-				// Check state first
-				if ( state.languages[ code ] ) {
-					return state.languages[ code ];
-				}
-				// Fallback to server-side mapping when available
-				const wgLangs = mw.config.get( 'wgWikiLambdaLangs' );
-				if ( wgLangs && wgLangs[ code ] ) {
-					return wgLangs[ code ];
-				}
-				return undefined;
-			};
+			const findLanguageZid = ( code ) => state.languages[ code ];
 			return findLanguageZid;
 		},
 
