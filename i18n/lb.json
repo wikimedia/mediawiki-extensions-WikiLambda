@@ -408,6 +408,8 @@
 	"wikilambda-zobject-missing-attached-function": "D'Funktioun ass eidel. Wielt wgl. eng eraus.",
 	"wikilambda-zobject-to-string-enter-string": "Zeecheketten aginn",
 	"wikilambda-zobject-to-string-select-object": "$1 eraussichen",
+	"wikilambda-commons-image-error-blocked": "Dëst Bild ass op dëser Wiki net erlaabt. [[MediaWiki:Bad image list|Méi gewuer ginn]].",
+	"wikilambda-commons-image-error-not-found": "Bild net fonnt.",
 	"wikilambda-zobjectselector-label": "Objet",
 	"wikilambda-zobjectselector-no-results": "Keng Resultater fonnt.",
 	"wikilambda-ztester-missing-call-function": "Den Opruff ass eidel. Sicht wgl. eng Funktioun eraus.",

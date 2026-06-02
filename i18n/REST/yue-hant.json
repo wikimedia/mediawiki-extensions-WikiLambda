@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"JeffreyKim"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "Wikifunctions API",
+	"wikifunctions-rest-module-v0-desc": "用嚟同Wikifunctions互動嘅 API",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "擷取ZObject",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "擷取ZObject嘅歷史版本",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "呼叫函式",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "呼叫函式（自訂解析同埋渲染所用嘅語言）"
+}

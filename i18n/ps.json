@@ -5,5 +5,10 @@
 		]
 	},
 	"wikilambda-add-local-key-to-function-call": "دليل ورگډول",
-	"wikilambda-delete-local-key-from-function-call": "دليل ړنگول"
+	"wikilambda-delete-local-key-from-function-call": "دليل ړنگول",
+	"wikilambda-commons-image-error-no-image": "هېڅ انځور غوره‌شوی نه دی.",
+	"wikilambda-commons-image-error-invalid-size": "انځور کچه باوري نه ده.",
+	"wikilambda-commons-image-error-not-commons": "انځور يو باوري ټلگړی انځور نه دی.",
+	"wikilambda-commons-image-error-not-found": "انځور ونه موندل شو.",
+	"wikilambda-commons-image-error-unavailable": "په لنډمهاله توگه انځور شتون نه لري."
 }
