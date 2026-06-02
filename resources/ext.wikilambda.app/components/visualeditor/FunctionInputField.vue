@@ -50,7 +50,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, ref, onMounted } = require( 'vue' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -189,7 +189,16 @@ module.exports = exports = defineComponent( {
 
 		// Default value feature
 		// State
-		const shouldUseDefaultValue = ref( false );
+		// Initialised synchronously so the child input components see the correct value
+		// on their first mount — otherwise the parent's onMounted would fire after the
+		// child's, and the child would briefly validate an empty value and emit a
+		// spurious "Please enter a value" error before the default-value flag flipped.
+		// Only auto-check when editing an existing function, not when creating a new one.
+		const shouldUseDefaultValue = ref(
+			!props.modelValue &&
+			store.hasDefaultValueForType( props.inputType ) &&
+			!store.isNewParameterSetup
+		);
 
 		// Data
 		/**
@@ -222,22 +231,6 @@ module.exports = exports = defineComponent( {
 			emit( 'update:modelValue', '' );
 			emit( 'update', '' );
 		}
-
-		/**
-		 * Initialize shouldUseDefaultValue if field is empty and has a default value.
-		 * Only auto-check the default value when editing an existing function, not when creating a new one.
-		 * This only sets the internal state without emitting events - validation happens naturally through mounted.
-		 */
-		function initializeDefaultValue() {
-			if ( !props.modelValue && store.hasDefaultValueForType( props.inputType ) && !store.isNewParameterSetup ) {
-				shouldUseDefaultValue.value = true;
-			}
-		}
-
-		// Lifecycle
-		onMounted( () => {
-			initializeDefaultValue();
-		} );
 
 		return {
 			checkDefaultValue,
