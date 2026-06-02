@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Renderer;
 
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWikiIntegrationTestCase;
@@ -104,5 +105,72 @@ class WikifunctionsSanitiserTokenHandlerTest extends MediaWikiIntegrationTestCas
 		$result = $this->sanitise( $html, [] );
 		$this->assertStringNotContainsString( '<a href=', $result );
 		$this->assertStringContainsString( '&lt;a', $result );
+	}
+
+	// ------------------------------------------------------------------
+	// Red-link (class="new") for local AW article links
+	// ------------------------------------------------------------------
+
+	private function localWikiUrl( string $titleText ): string {
+		$config = $this->getServiceContainer()->getMainConfig();
+		$server = $config->get( 'Server' );
+		$articlePath = $config->get( 'ArticlePath' );
+		$path = str_replace( '$1', wfUrlencode( str_replace( ' ', '_', $titleText ) ), $articlePath );
+		return $server . $path;
+	}
+
+	private function localViewUrl( string $lang, string $titleText ): string {
+		$server = $this->getServiceContainer()->getMainConfig()->get( 'Server' );
+		return $server . '/view/' . $lang . '/' . wfUrlencode( str_replace( ' ', '_', $titleText ) );
+	}
+
+	public function testLocalAWLinkToNonExistentPageIsRedLink() {
+		$url = $this->localWikiUrl( 'Abstract_Wikipedia:Q00000' );
+		$result = $this->sanitise( '<a href="' . $url . '">Link</a>' );
+
+		$this->assertStringContainsString( 'class="new"', $result,
+			'A link to a non-existent AW article should have class="new"' );
+	}
+
+	public function testLocalNonAWLinkHasNoRedLinkClass() {
+		// A link to a regular (non-AW) local page should pass through without class="new"
+		$url = $this->localWikiUrl( 'Main_Page' );
+		$result = $this->sanitise( '<a href="' . $url . '">Home</a>' );
+
+		$this->assertStringNotContainsString( 'class="new"', $result );
+		$this->assertStringContainsString( '<a href=', $result );
+	}
+
+	public function testLocalAWLinkToNonExistentPageIsRedLinkViaViewPath() {
+		$url = $this->localViewUrl( 'en', 'Abstract_Wikipedia:Q00000' );
+		$result = $this->sanitise( '<a href="' . $url . '">Link</a>' );
+
+		$this->assertStringContainsString( 'class="new"', $result,
+			'A link to a non-existent AW article via /view/ path should have class="new"' );
+	}
+
+	public function testLocalNonAWLinkHasNoRedLinkClassViaViewPath() {
+		$url = $this->localViewUrl( 'en', 'Main_Page' );
+		$result = $this->sanitise( '<a href="' . $url . '">Home</a>' );
+
+		$this->assertStringNotContainsString( 'class="new"', $result );
+		$this->assertStringContainsString( '<a href=', $result );
+	}
+
+	public function testLocalAWLinkIsBlueWhenNotInAbstractMode() {
+		// When not abstract mode, isEmptyAbstractArticle always return false
+		$emptyContent = new AbstractWikiContent(
+			'{ "qid": "Q88886", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89" ] } } }'
+		);
+		$this->editPage( 'Q88886', $emptyContent, 'empty AW page', 2300 );
+
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', false );
+
+		$url = $this->localWikiUrl( 'Abstract_Wikipedia:Q88886' );
+		$result = $this->sanitise( '<a href="' . $url . '">Link</a>' );
+
+		$this->assertStringNotContainsString( 'class="new"', $result,
+			'When abstract mode is disabled, no red-link class should be added' );
+		$this->assertStringContainsString( '<a href=', $result );
 	}
 }

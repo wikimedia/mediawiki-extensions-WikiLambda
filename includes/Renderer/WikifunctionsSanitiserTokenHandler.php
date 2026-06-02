@@ -327,7 +327,11 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 					'targetDomain' => $targetDomain,
 				]
 			);
-			return [ true, [ 'href' => $href ] ];
+			$attrs = [ 'href' => $href ];
+			if ( $this->isEmptyAbstractArticle( $parsedLink ) ) {
+				$attrs['class'] = 'new';
+			}
+			return [ true, $attrs ];
 		}
 
 		$this->logger->info(
@@ -340,6 +344,72 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 			]
 		);
 		return [ false, [] ];
+	}
+
+	/**
+	 * Returns true if the parsed local URL points to an AW article that does not exist,
+	 * false otherwise (including if URL does not point to an AW article).
+	 *
+	 * @param array $parsedLink Parsed URL
+	 * @return bool
+	 */
+	private function isEmptyAbstractArticle( array $parsedLink ): bool {
+		$services = MediaWikiServices::getInstance();
+		$config = $services->getMainConfig();
+
+		if ( !$config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			return false;
+		}
+
+		// Per-request cache to avoid redundant DB loads if the same QID is linked
+		// multiple times within same rendered fragment
+		static $emptyAbstractPageCache = [];
+
+		// Only apply red-link logic if the URL points to the current (local) wiki server
+		$localHost = preg_replace( '#^https?://#i', '', $config->get( 'Server' ) );
+		$parsedHost = $parsedLink['host'] ?? '';
+		if ( isset( $parsedLink['port'] ) ) {
+			$parsedHost .= ':' . $parsedLink['port'];
+		}
+		if ( $parsedHost !== $localHost ) {
+			return false;
+		}
+
+		$path = $parsedLink['path'] ?? '';
+
+		// Only support /wiki/$1 article-path form (e.g. /wiki/Abstract_Wikipedia:Q42)
+		$titleText = null;
+		$articlePath = $config->get( 'ArticlePath' );
+		$dollarPos = strpos( $articlePath, '$1' );
+		if ( $dollarPos !== false ) {
+			$pathPrefix = substr( $articlePath, 0, $dollarPos );
+			if ( $pathPrefix !== '' && str_starts_with( $path, $pathPrefix ) ) {
+				$titleText = urldecode( substr( $path, strlen( $pathPrefix ) ) );
+			}
+		}
+
+		// Also support /view/<lang>/<title> canonical form (e.g. /view/en/Abstract_Wikipedia:Q42)
+		if ( $titleText === null && preg_match( '#^/view/[^/]+/(.+)$#', $path, $matches ) ) {
+			$titleText = urldecode( $matches[1] );
+		}
+
+		if ( $titleText === null || $titleText === '' ) {
+			return false;
+		}
+
+		$title = $services->getTitleFactory()->newFromText( $titleText );
+		if ( $title === null || !$title->hasContentModel( CONTENT_MODEL_ABSTRACT ) ) {
+			return false;
+		}
+
+		$cacheKey = $title->getPrefixedDBkey();
+		if ( isset( $emptyAbstractPageCache[$cacheKey] ) ) {
+			return $emptyAbstractPageCache[$cacheKey];
+		}
+
+		$isEmpty = !$title->exists();
+		$emptyAbstractPageCache[$cacheKey] = $isEmpty;
+		return $isEmpty;
 	}
 
 	/**
