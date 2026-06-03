@@ -103,7 +103,9 @@ describe( 'Publish Dialog', () => {
 		expect( messages[ 1 ].text() ).toBe( 'Unable to complete request. Please try again.' );
 	} );
 
-	it( 'renders unsafe messages as text and not as html', () => {
+	it( 'sanitises unsafe messages before rendering them as html', async () => {
+		// Simulate the sanitiser stripping the unsafe markup
+		store.sanitiseHtml.mockResolvedValue( '' );
 		const errors = [
 			new ErrorData( null, [], "<button onmouseover=\"window.location = '//www.example.com'\">", Constants.ERROR_TYPES.ERROR )
 		];
@@ -115,10 +117,14 @@ describe( 'Publish Dialog', () => {
 		expect( messages.length ).toBe( 1 );
 		expect( messages[ 0 ].props( 'type' ) ).toBe( 'error' );
 
-		// Check that it was rendered as text and not as html elements
+		// The message contains HTML, so it must be sent to the sanitiser
+		expect( store.sanitiseHtml ).toHaveBeenCalledWith( "<button onmouseover=\"window.location = '//www.example.com'\">" );
+
+		// Check that no unsafe element was rendered; on empty sanitiser output
+		// it falls back to escaped text
 		const element = messages[ 0 ].element;
 		expect( element.querySelector( 'button' ) ).toBeNull();
-		expect( element.textContent ).toContain( '<button onmouseover="window.location = \'//www.example.com\'">' );
+		await waitFor( () => expect( element.textContent ).toContain( '<button onmouseover="window.location = \'//www.example.com\'">' ) );
 	} );
 
 	it( 'closes the dialog when click cancel button', () => {
