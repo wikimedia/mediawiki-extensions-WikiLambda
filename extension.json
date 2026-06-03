@@ -113,7 +113,7 @@
 		},
 		"WikiLambdaAWArticleStoreBackend": {
 			"description": "Storage backend for the Abstract Wikipedia article store. Either 'db' (RDBMS-backed; aw_article_sections on the virtual-awstorage domain) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T426873).",
-			"value": "db"
+			"value": "mainstash"
 		}
 	},
 	"ConfigRegistry": {
