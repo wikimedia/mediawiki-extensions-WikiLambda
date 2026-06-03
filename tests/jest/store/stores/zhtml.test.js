@@ -122,19 +122,24 @@ describe( 'zhtml store', () => {
 			expect( result ).toBe( '' );
 		} );
 
-		it( 'caches error fallback result (empty string) for failed requests', async () => {
+		it( 'does not cache failed requests so subsequent calls retry the API', async () => {
 			const rawHtml = '<p>Test</p>';
-			mockPostWithEditToken.mockRejectedValueOnce( new Error( 'API error' ) );
+			const sanitizedHtml = '<p>Test</p>';
+			mockPostWithEditToken
+				.mockRejectedValueOnce( new Error( 'API error' ) )
+				.mockResolvedValueOnce( {
+					wikifunctions_html_sanitiser: { value: sanitizedHtml }
+				} );
 
-			// First call - should error and cache empty string
+			// First call - errors and returns empty string, but must NOT poison the cache.
 			const result1 = await store.sanitiseHtml( rawHtml );
 			expect( result1 ).toBe( '' );
 			expect( mockPostWithEditToken ).toHaveBeenCalledTimes( 1 );
 
-			// Second call - should return cached empty string
+			// Second call - should retry the API (not return cached '').
 			const result2 = await store.sanitiseHtml( rawHtml );
-			expect( result2 ).toBe( '' );
-			expect( mockPostWithEditToken ).toHaveBeenCalledTimes( 1 ); // Still 1, not 2
+			expect( result2 ).toBe( sanitizedHtml );
+			expect( mockPostWithEditToken ).toHaveBeenCalledTimes( 2 );
 		} );
 
 		it( 'passes AbortSignal if provided', async () => {

@@ -83,12 +83,11 @@ module.exports = {
 						return sanitised;
 					} )
 					.catch( () => {
-						// On error, cache empty string as fallback
-						const fallback = '';
-						this.sanitizationCache.set( hash, '' );
-						// Remove from pending promises
+						// Do not cache failures: Map.has() is key-existence, so a cached ''
+						// would short-circuit every subsequent call for the same hash and
+						// turn any transient failure into a permanent session failure.
 						this.pendingPromises.delete( hash );
-						return fallback;
+						return '';
 					} );
 
 				// Store the pending promise
