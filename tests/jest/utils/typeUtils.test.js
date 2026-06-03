@@ -63,6 +63,12 @@ describe( 'typeUtils', () => {
 			const result = isValidZidFormat( 'fakeValue' );
 			expect( result ).toBeFalsy();
 		} );
+		it( 'return false for Z0 and other zero-prefixed Zids (not valid zid format)', () => {
+			expect( isValidZidFormat( 'Z0' ) ).toBeFalsy();
+			expect( isValidZidFormat( 'Z00' ) ).toBeFalsy();
+			expect( isValidZidFormat( 'Z01234' ) ).toBeFalsy();
+			expect( isValidZidFormat( 'Z012' ) ).toBeFalsy();
+		} );
 	} );
 
 	describe( 'typeToString', () => {

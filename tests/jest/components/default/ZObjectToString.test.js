@@ -93,6 +93,16 @@ describe( 'ZObjectToString', () => {
 				const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
 				expect( stringElement.text() ).toBe( '"Z10001"' );
 			} );
+
+			it( 'renders invalid-zid-shaped strings (e.g. Z0, Z01234) as strings, not links', () => {
+				for ( const invalidZid of [ 'Z0', 'Z01234' ] ) {
+					const stringId = { Z1K1: 'Z6', Z6K1: invalidZid };
+					const wrapper = renderZObjectToString( { objectValue: stringId } );
+					expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( false );
+					const stringElement = wrapper.find( 'span[data-testid=object-to-string-text]' );
+					expect( stringElement.text() ).toBe( `"${ invalidZid }"` );
+				}
+			} );
 		} );
 
 		describe( 'for a terminal reference', () => {

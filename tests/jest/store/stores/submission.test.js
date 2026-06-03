@@ -802,6 +802,11 @@ describe( 'zobject submission Pinia store', () => {
 				).clean;
 
 				store.jsonObject.main = canonicalToHybrid( zobject );
+				// The function identity (Z8K5) is a self-reference: the editor builds it
+				// as a Z9 reference to the placeholder, not a string. Mirror that here,
+				// since Z0 is not a valid zid format and canonicalToHybrid treats a bare
+				// "Z0" as a string.
+				store.jsonObject.main.Z2K2.Z8K5 = { Z1K1: 'Z9', Z9K1: 'Z0' };
 				store.getCurrentZObjectId = 'Z0';
 				store.isCreateNewPage = false;
 
@@ -829,6 +834,11 @@ describe( 'zobject submission Pinia store', () => {
 				);
 
 				store.jsonObject.main = canonicalToHybrid( zobject.dirty );
+				// The function identity (Z8K5) is a self-reference: the editor builds it
+				// as a Z9 reference to the placeholder, not a string. Mirror that here,
+				// since Z0 is not a valid zid format and canonicalToHybrid treats a bare
+				// "Z0" as a string.
+				store.jsonObject.main.Z2K2.Z8K5 = { Z1K1: 'Z9', Z9K1: 'Z0' };
 				store.getCurrentZObjectId = 'Z0';
 				store.isCreateNewPage = false;
 

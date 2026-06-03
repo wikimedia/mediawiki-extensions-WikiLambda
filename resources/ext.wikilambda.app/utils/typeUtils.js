@@ -30,7 +30,11 @@ const typeUtils = {
 	 * @return {boolean}
 	 */
 	isValidZidFormat: function ( zid ) {
-		return /^Z\d+$/.test( zid );
+		// A valid zid is "Z" followed by a non-zero-prefixed positive integer, as
+		// per the canonical schemata. Note that Z0 is NOT a valid zid: it is only
+		// used in code as the NEW_ZID_PLACEHOLDER for an unsaved object, and is
+		// handled explicitly where a placeholder reference is needed.
+		return /^Z[1-9]\d*$/.test( zid );
 	},
 
 	/**

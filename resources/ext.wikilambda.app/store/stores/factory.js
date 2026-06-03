@@ -12,7 +12,8 @@ const {
 	getScaffolding,
 	initializePayloadForType,
 	isGenericType,
-	isTruthyOrEqual
+	isTruthyOrEqual,
+	isValidZidFormat
 } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
@@ -406,7 +407,7 @@ module.exports = {
 			 * @return {Object}
 			 */
 			const generateZString = ( payload ) => {
-				if ( payload.value && payload.value.match( /^Z\d+$/ ) ) {
+				if ( payload.value && isValidZidFormat( payload.value ) ) {
 					const normalString = getScaffolding( Constants.Z_STRING );
 					normalString[ Constants.Z_STRING_VALUE ] = payload.value;
 					return normalString;

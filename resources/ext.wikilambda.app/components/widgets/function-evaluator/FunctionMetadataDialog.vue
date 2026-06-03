@@ -113,6 +113,7 @@ const { metadataKeys } = require( '../../../utils/metadataUtils.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { extractErrorData, escapeHtml } = require( '../../../utils/errorUtils.js' );
+const { isValidZidFormat } = require( '../../../utils/typeUtils.js' );
 const { extractZIDs } = require( '../../../utils/schemata.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const icons = require( '../../../../lib/icons.json' );
@@ -470,16 +471,6 @@ module.exports = exports = defineComponent( {
 		 */
 		function getUrl( zid ) {
 			return urlUtils.generateViewUrl( { langCode: store.getUserLangCode, zid } );
-		}
-
-		/**
-		 * Checks if a string is a valid ZID format
-		 *
-		 * @param {string} zid
-		 * @return {boolean}
-		 */
-		function isValidZidFormat( zid ) {
-			return /^Z\d+$/.test( zid );
 		}
 
 		/**
