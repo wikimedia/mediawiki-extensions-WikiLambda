@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 
 use MediaWiki\Extension\WikiLambda\Maintenance\LoadAbstractDump;
-use MediaWiki\Maintenance\MaintenanceFatalError;
 use MediaWiki\Title\Title;
 
 require_once dirname( __DIR__, 3 ) . '/maintenance/loadAbstractDump.php';
@@ -84,14 +83,14 @@ class LoadAbstractDumpTest extends WikiLambdaMaintenanceTestCase {
 	}
 
 	public function testNoDir_fatalErrors(): void {
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 
 	public function testMissingQ0Json_fatalErrors(): void {
 		$this->maintenance->loadWithArgv( [ '--dir', $this->dumpDirName ] );
 
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 
@@ -102,7 +101,7 @@ class LoadAbstractDumpTest extends WikiLambdaMaintenanceTestCase {
 			'--from', 'Q40010',
 		] );
 
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 
@@ -113,7 +112,7 @@ class LoadAbstractDumpTest extends WikiLambdaMaintenanceTestCase {
 			'--to', 'Q40020',
 		] );
 
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 
@@ -171,7 +170,7 @@ class LoadAbstractDumpTest extends WikiLambdaMaintenanceTestCase {
 			'--title', 'Q99999',
 		] );
 
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 

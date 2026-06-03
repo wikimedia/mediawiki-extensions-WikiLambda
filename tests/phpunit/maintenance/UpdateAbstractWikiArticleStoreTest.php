@@ -18,7 +18,6 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWSection;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Maintenance\UpdateAbstractWikiArticleStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Maintenance\MaintenanceFatalError;
 use MediaWiki\Title\Title;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
@@ -64,7 +63,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 	 */
 	public function testInvalidOptions( array $argv ): void {
 		$this->maintenance->loadWithArgv( $argv );
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 

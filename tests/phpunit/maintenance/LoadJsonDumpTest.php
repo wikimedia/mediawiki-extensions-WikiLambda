@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 
 use MediaWiki\Extension\WikiLambda\Maintenance\LoadJsonDump;
-use MediaWiki\Maintenance\MaintenanceFatalError;
 use MediaWiki\Title\Title;
 
 require_once dirname( __DIR__, 3 ) . '/maintenance/loadJsonDump.php';
@@ -87,7 +86,7 @@ class LoadJsonDumpTest extends WikiLambdaMaintenanceTestCase {
 	}
 
 	public function testNoDir_fatalErrors(): void {
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 
@@ -95,7 +94,7 @@ class LoadJsonDumpTest extends WikiLambdaMaintenanceTestCase {
 		// Tmp dir exists but contains no Z0.json
 		$this->maintenance->loadWithArgv( [ '--dir', $this->dumpDirName ] );
 
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 
@@ -156,7 +155,7 @@ class LoadJsonDumpTest extends WikiLambdaMaintenanceTestCase {
 		$this->writeDump( [ 'Z40050' => 1 ] );
 		$this->maintenance->loadWithArgv( [ '--dir', $this->dumpDirName, '--zid', 'Z99999' ] );
 
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 

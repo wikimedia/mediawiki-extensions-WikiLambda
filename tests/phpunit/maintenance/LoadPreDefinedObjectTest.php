@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 
 use MediaWiki\Extension\WikiLambda\Maintenance\LoadPreDefinedObject;
-use MediaWiki\Maintenance\MaintenanceFatalError;
 use MediaWiki\Title\Title;
 
 require_once dirname( __DIR__, 3 ) . '/maintenance/loadPreDefinedObject.php';
@@ -55,7 +54,7 @@ class LoadPreDefinedObjectTest extends WikiLambdaMaintenanceTestCase {
 	 */
 	public function testInvalidOptions_fatalError( array $argv ): void {
 		$this->maintenance->loadWithArgv( $argv );
-		$this->expectException( MaintenanceFatalError::class );
+		$this->expectCallToFatalError();
 		$this->maintenance->execute();
 	}
 
