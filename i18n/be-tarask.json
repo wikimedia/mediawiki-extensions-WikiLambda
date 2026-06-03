@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Renessaince",
-			"Ucukor"
+			"Ucukor",
+			"Red Winged Duck"
 		]
 	},
 	"group-functioneer": "Функцыянэры",
@@ -41,10 +42,10 @@
 	"right-wikilambda-edit-tester": "Рэдагаваньне існых аб’ектаў тэставых прыкладаў",
 	"right-wikilambda-edit-user-function": "Рэдагаваньне існай прадстаўленай карыстальнікам функцыі",
 	"wikilambda-about-widget-edit-button": "Рэдагаваць",
-	"wikilambda-argument-reference-selector-placeholder": "Выбраць арґумэнт",
+	"wikilambda-argument-reference-selector-placeholder": "Выбраць аргумэнт",
 	"wikilambda-cancel": "Скасаваць",
 	"wikilambda-edit": "Рэдагаваць",
-	"wikilambda-editor-argument-list-label": "Сьпіс арґумэнтаў",
+	"wikilambda-editor-argument-list-label": "Сьпіс аргумэнтаў",
 	"wikilambda-function-implementation-state-label": "Статус",
 	"wikilambda-functioncall-metadata-select-label": "Выклікі функцыяў",
 	"wikilambda-loading": "Загрузка зьвестак",
