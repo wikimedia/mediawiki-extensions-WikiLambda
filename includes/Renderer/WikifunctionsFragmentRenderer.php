@@ -100,7 +100,7 @@ class WikifunctionsFragmentRenderer {
 	private function sanitiseFragment( string $html ): string {
 		$blockedDomains = $this->loadBlockedDomains();
 		$spamCheckUser = null;
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'yesSpamBlacklist' ) ) {
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'SpamBlacklist' ) ) {
 			$spamCheckUser = $this->userFactory->newAnonymous();
 		}
 
