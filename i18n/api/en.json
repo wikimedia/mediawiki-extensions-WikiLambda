@@ -113,5 +113,6 @@
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Example call with prohibited HTML.",
 	"wikilambda-restapi-disabled-repo-mode-only": "This API is not available except on the main 'repo' wiki, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "You have requested $1, which is too many Objects at once (maximum of $2 allowed)",
-	"wikilambda-restapi-revision-mismatch": "You have requested revision $1 of Object '$2', which not found"
+	"wikilambda-restapi-revision-mismatch": "You have requested revision $1 of Object '$2', which not found",
+	"wikilambda-api-disabled-repo-mode-only": "This API is not available except on the main 'repo' wiki, Wikifunctions.org."
 }

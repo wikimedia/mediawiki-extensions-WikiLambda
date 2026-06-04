@@ -31,17 +31,7 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 	 * @inheritDoc
 	 */
 	public function execute() {
-		// Exit if we're running in non-repo mode (e.g. on a client wiki)
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			WikiLambdaApiBase::dieWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
-					[]
-				),
-				HttpStatus::BAD_REQUEST
-			);
-		}
-
+		$this->dieIfNotRepoMode();
 		$this->run( null );
 	}
 
@@ -49,18 +39,26 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 	 * @inheritDoc
 	 */
 	public function executeGenerator( $resultPageSet ) {
-		// Exit if we're running in non-repo mode (e.g. on a client wiki)
+		$this->dieIfNotRepoMode();
+		$this->run( $resultPageSet );
+	}
+
+	/**
+	 * Exit with an ApiUsageException if we're not running in repo mode (e.g. on a client
+	 * wiki). We respond 403/FORBIDDEN because the whole API surface — not this particular
+	 * request — is unavailable here, so the caller cannot fix it by re-shaping the request.
+	 * We can't use dieWithZError because ZErrorFactory may reach into ZObjectFactory, which
+	 * relies on stored ZObjects that don't exist in non-repo mode (T423873).
+	 */
+	private function dieIfNotRepoMode(): void {
 		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			WikiLambdaApiBase::dieWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
-					[]
-				),
-				HttpStatus::BAD_REQUEST
+			$this->dieWithError(
+				'wikilambda-api-disabled-repo-mode-only',
+				null,
+				null,
+				HttpStatus::FORBIDDEN
 			);
 		}
-
-		$this->run( $resultPageSet );
 	}
 
 	/**

@@ -66,22 +66,26 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 * @inheritDoc
 	 */
 	public function execute() {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			// Failure Level #3: Service is not available in a non-repo mode (e.g. client wiki),
-			// die with error (throws ApiUsageException)
+		$this->dieIfNotRepoMode();
+		$this->run();
+	}
 
-			// FIXME: shouldn't we return FORBIDDEN or even NOT_IMPLEMENTED instead of BAD_REQUEST?
-			// Train of thought, on multiple-request APIs like perform test, a BAD_REQUEST response
-			// means we'll abandon that one and go for the next. but WikiLambdaEnableRepoMode means
-			// that's not only a problem of the request, but that this particular service (client api)
-			// doesn't allow that kind of request. This feels more like a 403 than a 400
-			self::dieWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] ),
-				HttpStatus::BAD_REQUEST
+	/**
+	 * Exit with an ApiUsageException if we're not running in repo mode (e.g. on a client
+	 * wiki). We respond 403/FORBIDDEN because the whole API surface — not this particular
+	 * request — is unavailable here, so the caller cannot fix it by re-shaping the request.
+	 * We can't use dieWithZError because ZErrorFactory may reach into ZObjectFactory, which
+	 * relies on stored ZObjects that don't exist in non-repo mode (T423873).
+	 */
+	protected function dieIfNotRepoMode(): void {
+		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+			$this->dieWithError(
+				'wikilambda-api-disabled-repo-mode-only',
+				null,
+				null,
+				HttpStatus::FORBIDDEN
 			);
 		}
-
-		$this->run();
 	}
 
 	/**

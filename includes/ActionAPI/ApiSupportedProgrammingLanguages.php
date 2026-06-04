@@ -16,7 +16,6 @@ use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
-use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
@@ -41,17 +40,6 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 	 * @inheritDoc
 	 */
 	protected function run() {
-		// Exit if we're running in non-repo mode (e.g. on a client wiki)
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			WikiLambdaApiBase::dieWithZError(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
-					[]
-				),
-				HttpStatus::BAD_REQUEST
-			);
-		}
-
 		$pageResult = $this->getResult();
 
 		$work = new PoolCounterWorkViaCallback(
