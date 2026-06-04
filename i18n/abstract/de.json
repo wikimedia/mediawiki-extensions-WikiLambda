@@ -21,6 +21,7 @@
 	"wikilambda-abstract-edit-title": "Abstrakten Artikel für $1 bearbeiten",
 	"wikilambda-abstract-error-bad-fragments-type": "Der Abschnitt mit dem Schlüssel „$1“ enthält eine fehlerhaft typisierte Fragmentliste.",
 	"wikilambda-abstract-error-bad-qid": "Der Wert der Eigenschaft „qid“ („$1“) ist keine gültige Wikidata-Item-QID.",
+	"wikilambda-abstract-error-nonexistent-qid": "Das Wikidata-Objekt $1 existiert nicht. Bitte wähle vor der Veröffentlichung einen gültigen Wikidata-Eintrag aus.",
 	"wikilambda-abstract-error-bad-section-content": "Der Abschnitt mit dem Schlüssel „$1“ enthält ungültigen Inhalt.",
 	"wikilambda-abstract-error-bad-section-index": "Der Abschnitt mit dem Schlüssel „$1“ hat eine ungültige Indexnummer („$2“).",
 	"wikilambda-abstract-error-bad-section-qid": "Der Abschnittsschlüssel „$1“ ist keine gültige Wikidata-Objekt-Qid.",

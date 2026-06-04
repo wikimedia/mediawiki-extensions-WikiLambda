@@ -21,6 +21,7 @@
 	"wikilambda-abstract-edit-title": "Modificar articulo abstracte pro $1",
 	"wikilambda-abstract-error-bad-fragments-type": "Le section con le clave ‘$1’ ha un lista de fragmentos de typo erronee.",
 	"wikilambda-abstract-error-bad-qid": "Le valor del proprietate ‘qid’ (‘$1’) non es un Qid de elemento Wikidata valide.",
+	"wikilambda-abstract-error-nonexistent-qid": "Le elemento Wikidata $1 non existe. Per favor selige un elemento Wikidata valide ante de publicar.",
 	"wikilambda-abstract-error-bad-section-content": "Le section con clave ‘$1’ ha contento non valide.",
 	"wikilambda-abstract-error-bad-section-index": "Le section con clave ‘$1’ ha un numero de indice non valide (‘$2’).",
 	"wikilambda-abstract-error-bad-section-qid": "Le clave de section ‘$1‘ non es un Qid de elemento Wikidata valide.",
