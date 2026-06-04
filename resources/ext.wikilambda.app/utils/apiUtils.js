@@ -499,7 +499,10 @@ const apiUtils = {
 	 * @return {Promise<string>} Promise resolving to the sanitised HTML string
 	 */
 	sanitiseHtmlFragment: function ( payload ) {
-		const api = apiUtils.newApi();
+		// Always local, never the foreign API: postWithEditToken's CSRF-token fetch is
+		// refused cross-origin (T426024). The sanitiser endpoint is registered on every
+		// wiki where WikiLambda loads, so this works in both repo and client modes.
+		const api = new mw.Api();
 
 		return new Promise( ( resolve, reject ) => {
 			api.postWithEditToken( {

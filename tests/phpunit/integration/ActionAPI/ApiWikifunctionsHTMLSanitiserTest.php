@@ -38,6 +38,29 @@ class ApiWikifunctionsHTMLSanitiserTest extends WikiLambdaApiTestCase {
 		$this->assertEquals( $expected, $actual, 'Sanitised HTML does not match expected output' );
 	}
 
+	/**
+	 * The sanitiser must work on client wikis (T426024). Other WikiLambda action APIs
+	 * extend WikiLambdaApiBase, which dies with Z_ERROR_USER_CANNOT_RUN when
+	 * WikiLambdaEnableRepoMode is off. This endpoint extends ApiBase directly, so it
+	 * has no repo-mode gate — the JS client can call it same-origin from a client
+	 * wiki and pass CSRF.
+	 */
+	public function testSanitiseOnClientWiki() {
+		$this->overrideConfigValue( 'Server', 'http://this.wikifunctions.mock' );
+		$this->overrideConfigValue( 'CanonicalServer', 'https://canonical.wikifunctions.mock' );
+		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+
+		$response = $this->doApiRequestWithToken( [
+			'action' => 'wikifunctions_html_sanitiser',
+			'html' => '<p><b>Hello</b>, <em>world</em>!</p>'
+		] )[0]['wikifunctions_html_sanitiser'];
+
+		$this->assertArrayHasKey( 'success', $response );
+		$this->assertTrue( $response['success'], 'Sanitiser must run on client wikis' );
+		$this->assertEquals( '<p><b>Hello</b>, <em>world</em>!</p>', $response['value'] );
+	}
+
 	public static function provideHTML() {
 		yield 'Allowed content is a no-op' => [
 			'<p><b>Hello</b>, <em>world</em>!</p>',

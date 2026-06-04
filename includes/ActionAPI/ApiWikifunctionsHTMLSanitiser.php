@@ -10,24 +10,24 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiBase;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiWikifunctionsHTMLSanitiser extends WikiLambdaApiBase {
-
-	public function __construct( ApiMain $mainModule, string $moduleName ) {
-		parent::__construct( $mainModule, $moduleName );
-
-		$this->setUp();
-	}
+/**
+ * Stateless HTML sanitisation endpoint. Intentionally extends ApiBase directly rather
+ * than WikiLambdaApiBase so it has no orchestrator, no logger, and no repo-mode gate —
+ * the JS client must be able to call it same-origin on a client wiki, otherwise
+ * postWithEditToken's CSRF-token fetch is refused cross-origin (T426024).
+ */
+class ApiWikifunctionsHTMLSanitiser extends ApiBase {
 
 	/**
 	 * @inheritDoc
 	 */
-	protected function run(): void {
+	public function execute(): void {
 		$userHTMLToClean = $this->getParameter( 'html' );
 		$renderer = WikiLambdaServices::getPFragmentRenderer();
 
