@@ -328,7 +328,7 @@
 	"wikilambda-special-objectsbytype-form-orderby-name": "Nimi",
 	"wikilambda-special-objectsbytype-form-orderby-oldest": "Vanhimmat ensin",
 	"wikilambda-special-objectsbytype-form-type": "Tyyppi",
-	"wikilambda-special-objectsbytype-listheader": "Kaikki objektit, jotka ovat tyyppiä $1 ($2)",
+	"wikilambda-special-objectsbytype-listheader": "Kaikki objektit, jotka ovat tyyppiä ”$1” ($2)",
 	"wikilambda-special-objectsbytype-summary": "Valitse yksi alla listatuista tyypeistä nähdäksesi kaikki objektit, jotka ovat kyseistä tyyppiä.",
 	"wikilambda-special-runfunction": "Suorita funktio",
 	"wikilambda-special-runfunction-intro": "Varmista, että noudatat [[$1|yhteisön käytäntöjä]] sekä tekijänoikeus- ja patenttisääntöjä.",

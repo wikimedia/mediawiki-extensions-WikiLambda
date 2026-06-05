@@ -11,5 +11,6 @@
 	"wikilambda-metadata-aka-column": "Объект лӣ ныдтҍшэ нэ̄ммяй гу",
 	"wikilambda-metadata-all-languages": "Вӯзьхэ пугк пыййма кӣлэтҍ",
 	"wikilambda-metadata-fewer-languages": "Вӯзьхэ ва̄нӓмп кӣллэ",
-	"wikilambda-mode-selector-delete-group-label": "Вэ̄цксэ элемент нэ̄ммлыстэсьт"
+	"wikilambda-mode-selector-delete-group-label": "Вэ̄цксэ элемент нэ̄ммлыстэсьт",
+	"wikilambda-wikidata-entity-empty-value-placeholder": "А̄ррв элля"
 }
