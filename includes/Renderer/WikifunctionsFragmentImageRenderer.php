@@ -58,29 +58,29 @@ class WikifunctionsFragmentImageRenderer {
 	public function render( ?string $mid, string $size, ?string $alt ): string {
 		if ( $mid === null ) {
 			$this->logger->warning( __METHOD__ . ': No image selected', [ 'mid' => $mid ] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-no-image', 'warning' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-no-image', 'warning', $alt );
 		}
 
 		if ( !preg_match( '/^M\d+$/', $mid ) ) {
 			$this->logger->warning( __METHOD__ . ': Invalid M-ID format', [ 'mid' => $mid ] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-mid', 'error' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-mid', 'error', $alt );
 		}
 
 		if ( !in_array( $size, self::SUPPORTED_SIZES, true ) ) {
 			$this->logger->warning( __METHOD__ . ': Unsupported size value', [ 'mid' => $mid, 'size' => $size ] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-size', 'error' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-size', 'error', $alt );
 		}
 
 		$fetchResult = $this->fetchCommonsImageData( $mid, $size );
 
 		if ( $fetchResult === null ) {
 			$this->logger->warning( __METHOD__ . ': Commons API request failed', [ 'mid' => $mid ] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-unavailable', 'error' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-unavailable', 'error', $alt );
 		}
 
 		if ( $fetchResult === self::FETCH_NOT_FOUND ) {
 			$this->logger->warning( __METHOD__ . ': Commons page not found', [ 'mid' => $mid ] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-not-found', 'error' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-not-found', 'error', $alt );
 		}
 
 		$mime = $fetchResult['mime'] ?? '';
@@ -89,7 +89,7 @@ class WikifunctionsFragmentImageRenderer {
 				'mid' => $mid,
 				'mime' => $mime,
 			] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-mime', 'error' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-mime', 'error', $alt );
 		}
 
 		$thumbUrl = $fetchResult['thumbUrl'] ?? '';
@@ -99,7 +99,7 @@ class WikifunctionsFragmentImageRenderer {
 				'mid' => $mid,
 				'thumbUrl' => $thumbUrl,
 			] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-not-commons', 'error' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-not-commons', 'error', $alt );
 		}
 
 		$title = $fetchResult['title'] ?? '';
@@ -109,7 +109,7 @@ class WikifunctionsFragmentImageRenderer {
 				'mid' => $mid,
 				'title' => $title,
 			] );
-			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-blocked', 'error' );
+			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-blocked', 'error', $alt );
 		}
 
 		return $this->createImageFigure( $fetchResult, $alt );
@@ -266,6 +266,8 @@ class WikifunctionsFragmentImageRenderer {
 	 *
 	 * @param string $errorKey i18n message key for the figcaption error text
 	 * @param string $severity 'warning' for authoring problems, 'error' for system/policy failures
+	 * @param string|null $altText Alt text from the source element; surfaced as aria-label on
+	 *   the placeholder so assistive tech still knows what the missing image was meant to be
 	 * @param int $width Placeholder width in pixels
 	 * @param int $height Placeholder height in pixels
 	 * @return string HTML string
@@ -273,6 +275,7 @@ class WikifunctionsFragmentImageRenderer {
 	private function createImageErrorFigure(
 		string $errorKey,
 		string $severity = 'error',
+		?string $altText = null,
 		int $width = 250,
 		int $height = 188
 	): string {
@@ -281,12 +284,16 @@ class WikifunctionsFragmentImageRenderer {
 		// min-content and breaks its max-width:50% cap. Here we only carry the aspect
 		// ratio via padding-bottom %, which resolves against the cell width.
 		$paddingBottom = round( ( $height / $width ) * 100, 4 );
+		$placeholderAttrs = [
+			'class' => 'ext-wikilambda-image__placeholder',
+			'style' => "padding-bottom:{$paddingBottom}%;",
+		];
+		if ( $altText !== null && $altText !== '' ) {
+			$placeholderAttrs['aria-label'] = $altText;
+		}
 		$placeholder = Html::rawElement(
 			'div',
-			[
-				'class' => 'ext-wikilambda-image__placeholder',
-				'style' => "padding-bottom:{$paddingBottom}%;",
-			],
+			$placeholderAttrs,
 			Html::element( 'span', [ 'class' => 'ext-wikilambda-image__placeholder-icon' ] )
 		);
 		$icon = Html::element( 'span', [

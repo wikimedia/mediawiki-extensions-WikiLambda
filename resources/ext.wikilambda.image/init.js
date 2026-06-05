@@ -33,6 +33,13 @@ function replaceBrokenImage( img ) {
 	const placeholder = document.createElement( 'div' );
 	placeholder.className = 'ext-wikilambda-image__placeholder';
 	placeholder.style.cssText = `padding-bottom:${ ratio }%;`;
+	// Carry the original alt text onto the placeholder as aria-label so screen
+	// readers still know what the broken image was meant to be. Mirrors the
+	// PHP renderer's behaviour for server-side render failures.
+	const alt = img.getAttribute( 'alt' );
+	if ( alt ) {
+		placeholder.setAttribute( 'aria-label', alt );
+	}
 
 	const placeholderIcon = document.createElement( 'span' );
 	placeholderIcon.className = 'ext-wikilambda-image__placeholder-icon';

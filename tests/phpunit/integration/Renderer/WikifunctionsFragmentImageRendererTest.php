@@ -262,6 +262,25 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		$this->assertStringContainsString( 'alt="A nice cat"', $result );
 	}
 
+	public function testRender_errorFigure_includesAltTextAsAriaLabel() {
+		// When rendering fails (any error path), the user-supplied alt text should
+		// still travel with the placeholder as aria-label so assistive tech can
+		// announce what the missing image was meant to be.
+		$result = $this->buildRenderer()->render( 'not-an-mid', 'thumb', 'A snowy mountain' );
+
+		$this->assertStringContainsString( 'ext-wikilambda-image__placeholder', $result );
+		$this->assertStringContainsString( 'aria-label="A snowy mountain"', $result );
+	}
+
+	public function testRender_errorFigure_omitsAriaLabelWhenAltIsEmpty() {
+		// An empty alt must not produce a stray aria-label="" — screen readers can
+		// announce that as empty content, which is worse than no label at all.
+		$result = $this->buildRenderer()->render( 'not-an-mid', 'thumb', '' );
+
+		$this->assertStringContainsString( 'ext-wikilambda-image__placeholder', $result );
+		$this->assertStringNotContainsString( 'aria-label', $result );
+	}
+
 	public function testRender_validImage_linksToDescriptionPage() {
 		$renderer = $this->buildRenderer( $this->makeHttpFactory( self::VALID_API_RESPONSE ) );
 		$result = $renderer->render( 'M68960758', 'thumb', null );
