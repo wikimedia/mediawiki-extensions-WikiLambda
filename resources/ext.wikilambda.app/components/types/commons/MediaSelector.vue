@@ -385,7 +385,7 @@ module.exports = exports = defineComponent( {
 		// body.skin--responsive figure vector image styles.
 		/* stylelint-disable-next-line declaration-no-important */
 		margin: @spacing-50 0 0 0 !important;
-		width: @size-1200;
+		max-width: @size-1200;
 	}
 }
 </style>

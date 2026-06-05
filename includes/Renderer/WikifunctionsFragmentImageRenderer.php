@@ -258,7 +258,7 @@ class WikifunctionsFragmentImageRenderer {
 			$inner = $img;
 		}
 
-		return Html::rawElement( 'figure', [ 'class' => 'ext-wikilambda-image ext-wikilambda-image-thumb' ], $inner );
+		return Html::rawElement( 'figure', [ 'class' => 'ext-wikilambda-image ext-wikilambda-image--thumb' ], $inner );
 	}
 
 	/**
@@ -276,11 +276,16 @@ class WikifunctionsFragmentImageRenderer {
 		int $width = 250,
 		int $height = 188
 	): string {
+		// The dimensional contract sits on the figure (see the figure element below),
+		// not on this div: a <div> with explicit width pins the display:table figure's
+		// min-content and breaks its max-width:50% cap. Here we only carry the aspect
+		// ratio via padding-bottom %, which resolves against the cell width.
+		$paddingBottom = round( ( $height / $width ) * 100, 4 );
 		$placeholder = Html::rawElement(
 			'div',
 			[
 				'class' => 'ext-wikilambda-image__placeholder',
-				'style' => "width:{$width}px;height:{$height}px;",
+				'style' => "padding-bottom:{$paddingBottom}%;",
 			],
 			Html::element( 'span', [ 'class' => 'ext-wikilambda-image__placeholder-icon' ] )
 		);
@@ -301,7 +306,13 @@ class WikifunctionsFragmentImageRenderer {
 		], $icon . $captionHtml );
 		return Html::rawElement(
 			'figure',
-			[ 'class' => 'ext-wikilambda-image ext-wikilambda-image-thumb ext-wikilambda-image--' . $severity ],
+			[
+				'class' => 'ext-wikilambda-image ext-wikilambda-image--thumb ext-wikilambda-image--' . $severity,
+				// Anchor the display:table figure to a definite width so its max-width:50%
+				// can actually constrain it. Without this, the figure shrinkwraps and the
+				// placeholder div's own dimensions become the min-content floor.
+				'style' => "width:{$width}px;",
+			],
 			$placeholder . $caption
 		);
 	}

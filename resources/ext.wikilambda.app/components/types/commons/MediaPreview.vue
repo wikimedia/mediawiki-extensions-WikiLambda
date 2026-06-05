@@ -8,27 +8,30 @@
 	@license MIT
 -->
 <template>
-	<figure class="ext-wikilambda-image ext-wikilambda-app-commons-media-preview">
+	<figure
+		ref="figureRef"
+		class="ext-wikilambda-image ext-wikilambda-app-commons-media-preview"
+	>
 		<a
 			v-if="descriptionUrl"
 			:href="descriptionUrl"
 			target="_blank"
 			rel="noopener noreferrer"
 		>
-			<cdx-image
+			<img
 				:src="url"
 				:alt="title"
 				:width="thumbWidth"
 				:height="thumbHeight"
-			></cdx-image>
+			>
 		</a>
-		<cdx-image
+		<img
 			v-else
 			:src="url"
 			:alt="title"
 			:width="thumbWidth"
 			:height="thumbHeight"
-		></cdx-image>
+		>
 		<figcaption class="ext-wikilambda-app-commons-media-preview__title">
 			{{ title }}
 		</figcaption>
@@ -36,14 +39,12 @@
 </template>
 
 <script>
-const { defineComponent } = require( 'vue' );
-const { CdxImage } = require( '../../../../codex.js' );
+const { defineComponent, nextTick, ref, watch } = require( 'vue' );
+
+const useInitImages = require( '../../../composables/useInitImages.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-commons-media-preview',
-	components: {
-		CdxImage
-	},
 	props: {
 		url: {
 			type: String,
@@ -65,6 +66,22 @@ module.exports = exports = defineComponent( {
 			type: Number,
 			default: undefined
 		}
+	},
+	setup( props ) {
+		const figureRef = ref( null );
+		const { initImages } = useInitImages( figureRef );
+
+		// Bind the broken-image error handler whenever a new src is rendered.
+		// The ext.wikilambda.image init.js guards re-binding via data-wl-img-init,
+		// so re-firing on every url change is idempotent. Also covers the
+		// descriptionUrl toggle, which swaps which <img> sits in the DOM.
+		watch( () => [ props.url, props.descriptionUrl ], () => {
+			nextTick( () => initImages() );
+		}, { immediate: true } );
+
+		return {
+			figureRef
+		};
 	}
 } );
 </script>

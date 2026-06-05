@@ -13,11 +13,17 @@
 figure.ext-wikilambda-image {
 	// Shrink-wrap to image width, matching MediaWiki's thumbnail figure behaviour
 	display: table;
+	// Keep padding inside the declared width so an explicit width (used by
+	// placeholder figures) plus padding still respects max-width: 50%.
+	box-sizing: border-box;
 	padding: @spacing-25;
 	border: @border-subtle;
 	background-color: @background-color-interactive-subtle;
+	max-width: 80%;
 	// Prevent the float from consuming more than half the column on narrow screens
-	max-width: 50%;
+	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+		max-width: 50%;
+	}
 
 	a {
 		display: block;
@@ -25,13 +31,13 @@ figure.ext-wikilambda-image {
 
 	// The image sits on a white background with its own border, matching
 	// the MediaWiki thumbnail image element style.
-	> img,
-	> a > img {
+	img {
 		display: block;
 		height: auto;
 		max-width: 100%;
-		background-color: @background-color-base;
+		background-color: @background-color-interactive-subtle;
 		border: @border-subtle;
+		box-sizing: border-box;
 	}
 
 	// figcaption is optional. When present it renders below the table box via
@@ -63,19 +69,22 @@ figure.ext-wikilambda-image {
 	}
 
 	// Placeholder figure:
-	// Mirrors the cdx-image__placeholder pattern from the Codex Image component but
-	// uses a CSS-only icon so no Vue runtime is required in the renderer context.
+	// Uses a CSS-only icon so no Vue runtime is required in the renderer context.
 	.ext-wikilambda-image__placeholder {
 		background-color: @background-color-interactive-subtle;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		box-sizing: border-box;
+		position: relative;
+		// Fill the figure's cell — the figure carries the actual width contract.
+		width: 100%;
 		border: @border-subtle;
-		border-radius: @border-radius-base;
 	}
 
 	.ext-wikilambda-image__placeholder-icon {
 		.cdx-mixin-css-icon( @cdx-icon-image, @color-placeholder, @size-200 );
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate( -50%, -50% );
 	}
 
 	// Warning variant: alert icon in figcaption, normal image icon in placeholder
@@ -105,8 +114,12 @@ figure.ext-wikilambda-image {
 // Use @noflip so the RTL stylesheet does not auto-flip these physical properties.
 // The content direction is set by the preview body (or the article), not the UI language,
 // so we handle RTL content explicitly with the [dir="rtl"] block below.
+// `ext-wikilambda-image-thumb` (non-BEM) is kept for backwards compatibility with
+// parser-cached HTML that still carries the old class name. It can be removed once
+// the cache has fully turned over.
 /* @noflip */
-figure.ext-wikilambda-image-thumb {
+figure.ext-wikilambda-image-thumb,
+figure.ext-wikilambda-image--thumb {
 	float: right;
 	clear: right;
 	// Left and bottom margin separate the image from surrounding text
@@ -115,7 +128,8 @@ figure.ext-wikilambda-image-thumb {
 
 // RTL content: mirror float and margins for right-to-left reading direction
 /* @noflip */
-[ dir='rtl' ] figure.ext-wikilambda-image-thumb {
+[ dir='rtl' ] figure.ext-wikilambda-image-thumb,
+[ dir='rtl' ] figure.ext-wikilambda-image--thumb {
 	float: left;
 	clear: left;
 	margin: 0 @spacing-100 @spacing-75 0;

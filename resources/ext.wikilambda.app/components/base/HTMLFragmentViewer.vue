@@ -141,8 +141,12 @@ module.exports = exports = defineComponent( {
 		margin-top: @spacing-50;
 	}
 
-	// Prevent images from floating in the rendered view of HTML fragments
-	.ext-wikilambda-app-html-fragment-viewer__rendered figure.ext-wikilambda-image-thumb {
+	// Prevent images from floating in the rendered view of HTML fragments.
+	// The non-BEM `-thumb` selector is kept alongside `--thumb` for parser-cached
+	// HTML that still carries the old class name; can be dropped once the cache
+	// has fully turned over.
+	.ext-wikilambda-app-html-fragment-viewer__rendered figure.ext-wikilambda-image-thumb,
+	.ext-wikilambda-app-html-fragment-viewer__rendered figure.ext-wikilambda-image--thumb {
 		/* stylelint-disable-next-line declaration-no-important */
 		float: none !important;
 		/* stylelint-disable-next-line declaration-no-important */

@@ -22,10 +22,17 @@ function replaceBrokenImage( img ) {
 
 	const width = img.getAttribute( 'width' ) || '250';
 	const height = img.getAttribute( 'height' ) || '188';
+	// Anchor the figure to the original image's width so its display:table layout
+	// has something definite to apply max-width:50% against once the <img> (a
+	// replaced element that could shrink on its own) is gone.
+	figure.style.width = `${ width }px`;
+	// Padding-bottom % carries the aspect ratio; resolved against the cell width
+	// so it scales when max-width:50% clamps the figure on narrow parents.
+	const ratio = ( ( parseFloat( height ) / parseFloat( width ) ) * 100 ).toFixed( 4 );
 
 	const placeholder = document.createElement( 'div' );
 	placeholder.className = 'ext-wikilambda-image__placeholder';
-	placeholder.style.cssText = `width:${ width }px;height:${ height }px;`;
+	placeholder.style.cssText = `padding-bottom:${ ratio }%;`;
 
 	const placeholderIcon = document.createElement( 'span' );
 	placeholderIcon.className = 'ext-wikilambda-image__placeholder-icon';
@@ -44,7 +51,8 @@ function replaceBrokenImage( img ) {
 	captionIcon.className = 'ext-wikilambda-image__caption-icon';
 	captionIcon.setAttribute( 'aria-hidden', 'true' );
 
-	figcaption.prepend( captionIcon, mw.message( 'wikilambda-commons-image-error-not-found' ).text() );
+	// Add a space after the message text in case the figcaption already has content.
+	figcaption.prepend( captionIcon, `${ mw.message( 'wikilambda-commons-image-error-not-found' ).text() } ` );
 }
 
 /**
