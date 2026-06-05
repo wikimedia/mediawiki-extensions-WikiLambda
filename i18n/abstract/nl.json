@@ -18,6 +18,7 @@
 	"specialpages-group-abstractwiki": "Abstracte Wikipedia-pagina's",
 	"wikilambda-abstract-content-object": "Abstract Artikel",
 	"wikilambda-abstract-content-history-title": "Versiegeschiedenis van “$1” ($2)",
+	"wikilambda-abstract-content-history-title-no-label": "Versiegeschiedenis van $1",
 	"wikilambda-abstract-edit-title-with-label": "Abstract Article bewerken voor \"$1\" ($2)",
 	"wikilambda-abstract-edit-title": "Bewerk Abstract Artikel voor $1",
 	"wikilambda-abstract-error-bad-fragments-type": "Het gedeelte met de sleutel ‘$1’ bevat een foutief getypte fragmentenlijst.",

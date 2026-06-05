@@ -421,6 +421,7 @@
 	"wikilambda-tester-status-cancel": "Скасувати",
 	"wikilambda-tester-status-failed": "Невдача",
 	"wikilambda-tester-status-passed": "Пройдено",
+	"wikilambda-tester-status-pending": "В ОЧІКУВАННІ...",
 	"wikilambda-tester-status-ready": "Готово",
 	"wikilambda-tester-status-run": "Виконати",
 	"wikilambda-tester-status-running": "Виконується...",

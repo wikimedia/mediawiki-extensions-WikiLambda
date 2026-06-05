@@ -8,6 +8,12 @@
 	"wikifunctions-rest-module-v0-desc": "API's voor interactie met Wikifunctions",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "ZObjects ophalen",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Historische versies van ZObjects ophalen",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "Een lijst met ZID's die moeten worden opgehaald, gescheiden door verticale strepen (|), met een maximum van 50 per verzoek",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Een lijst met versie-ID's, gescheiden door verticale strepen (|), één per aangevraagde ZID, om historische versies op te halen; indien weggelaten, wordt de meest recente versie van elke ZID geretourneerd.",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "De BCP-47-taalcode die moet worden gebruikt bij het oplossen van meertalige labels in de geretourneerde ZObjects; indien weggelaten, worden alle talen geretourneerd.",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "Of de ZObjects waarnaar wordt verwezen als typen in de sleutels of argumenten van de gevraagde ZObjects ook moeten worden geretourneerd",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "Een map van elke aangevraagde (en, indien getDependencies is ingesteld, afhankelijkheids) ZID naar het bijbehorende ZObject, geserialiseerd als een JSON-string",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "Een ZOBject geserialiseerd als een JSON-string, zoals geretourneerd door het pagina-inhoudsrepresentatie-eindpunt",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Een functie aanroepen",
 	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Een functie aanroepen met aangepaste verwerkings- en weergavetalen."
 }

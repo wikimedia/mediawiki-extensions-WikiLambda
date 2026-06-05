@@ -88,6 +88,7 @@
 	"wikilambda-tester-status-cancel": "لغو",
 	"wikilambda-tester-status-failed": "ناموفق",
 	"wikilambda-tester-status-passed": "موفق",
+	"wikilambda-tester-status-pending": "در انتظار...",
 	"wikilambda-tester-status-running": "در حال اجرا...",
 	"wikilambda-typeselector-label": "یک نوع را انتخاب کنید",
 	"wikilambda-unknown-error-message": "ناتوان از تکمیل درخواست. لطفاً دوباره تلاش کنید.",

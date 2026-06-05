@@ -8,6 +8,10 @@
 	"wikifunctions-rest-module-v0-desc": "APIs pro interager con Wikifunctiones",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "Obtener ZObjects",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Obtener versiones historic de ZObjects",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "Lista de ZIDs a obtener, separate per barras vertical, con un maximo de 50 per requesta",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Lista de IDs de version separate per barras vertical, un per ZID requestate, pro obtener versiones historic; si omittite, es restituite le ultime version de cata ZID.",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "Codice de lingua BCP-47 a usar pro resolver etiquettas multilingue in le ZObjectos restituite; si omittite, se restitue tote le linguas.",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "Si se debe restituer additionalmente le ZObjectos referentiate como typos in le claves o argumentos del ZObjectos requestate.",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Appellar un function",
 	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appellar un function, con linguas personalisate de analyse syntactic e de rendition"
 }

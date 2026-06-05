@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"شاه زمان پټان"
+		]
+	},
+	"wikilambda-abstract-menu-option-add-named-fragment": "$1 ورگډول",
+	"wikilambda-abstract-menu-option-add-section": "برخه ورگډول",
+	"wikilambda-abstract-menu-option-delete-fragment": "ټوټه ړنگول",
+	"wikilambda-abstract-menu-option-insert-after": "وروسته ټوټه وروټومبئ",
+	"wikilambda-abstract-menu-option-insert-before": "مخکې ټوټه وروټومبئ"
+}

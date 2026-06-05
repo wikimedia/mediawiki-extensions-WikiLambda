@@ -9,6 +9,19 @@
 	"wikifunctions-rest-module-v0-desc": "Wikifunctions와 상호작용하기 위한 API들입니다",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "Z객체를 가져옵니다",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Z객체의 이전 버전을 가져옵니다",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "파이프로 구분된 가져올 ZID의 목록입니다. 요청당 최대 50개까지 가능합니다",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "파이프로 구분된 판 ID를 요청된 ZID별로 가져옵니다. 과거 판을 가져오기 위합입니다. 생략하면 각 ZID의 최신 판이 반환됩니다",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "반환된 Z객체에서 다국어 레이블을 해석할 때 사용할 BCP-47 언어 코드입니다. 생략하면 모든 언어가 반환됩니다",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "요청된 Z객체의 키 또는 인수에 유형으로 참조된 Z객체를 추가로 반환할지 여부",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "JSON 문자열로 직렬화된, 요청된 각 ZID(및 getDependencies가 설정된 경우 종속성)를 해당 Z객체의 매핑",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "페이지 콘텐츠 표현 종단점에서 반환된, JSON 문자열로 직렬화된 Z객체",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "함수를 호출합니다",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "사용자 지정 구문 분석 및 렌더링 언어를 이용해 함수를 호출합니다"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "사용자 지정 구문 분석 및 렌더링 언어를 이용해 함수를 호출합니다",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "호출할 함수의 ZID",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "파이프로 구분된, 함수에 전달할 인수의 목록. 인수는 선언된 순서대로 나열되며, 각 인수는 URL 인코딩됨",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "파서 함수가 있는 문자열 값 인수를 구문 분석하는 데 사용되는 BCP-47 언어 코드입니다. 기본값은 'en'입니다.",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "함수의 출력 및 오류 메시지를 렌더링 하는 데 사용되는 BCP-47 언어 코드입니다. 기본값은 'en'입니다.",
+	"wikifunctions-rest-module-v0-call-response-desc": "함수 호출 평가 결과",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "문자열 형식의 평가된 출력으로, 평문 (Z6의 경우) 또는 HTML 프래그먼트 (Z89의 경우)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "평가된 출력 유형의 ZID: 일반 문자열의 경우 'Z6', HTML 프래그먼트의 경우 'Z89'"
 }

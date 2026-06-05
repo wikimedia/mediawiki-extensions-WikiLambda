@@ -335,6 +335,7 @@
 	"wikilambda-tester-status-cancel": "İptal",
 	"wikilambda-tester-status-failed": "Başarısız",
 	"wikilambda-tester-status-passed": "Geçti",
+	"wikilambda-tester-status-pending": "Bekliyor...",
 	"wikilambda-tester-status-ready": "Hazır",
 	"wikilambda-tester-status-run": "Çalıştır",
 	"wikilambda-tester-status-running": "Çalışıyor…",

@@ -360,6 +360,7 @@
 	"wikilambda-tester-status-cancel": "Peruuta",
 	"wikilambda-tester-status-failed": "Epäonnistui",
 	"wikilambda-tester-status-passed": "Läpäisty",
+	"wikilambda-tester-status-pending": "Odottaa...",
 	"wikilambda-tester-status-ready": "Valmis",
 	"wikilambda-tester-status-run": "Suorita",
 	"wikilambda-tester-status-running": "Suoritetaan…",

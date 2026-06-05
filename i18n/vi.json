@@ -345,6 +345,7 @@
 	"wikilambda-tester-status-cancel": "Hủy bỏ",
 	"wikilambda-tester-status-failed": "Không đạt",
 	"wikilambda-tester-status-passed": "Đạt",
+	"wikilambda-tester-status-pending": "ĐANG CHỜ…",
 	"wikilambda-tester-status-ready": "Sẵn sàng",
 	"wikilambda-tester-status-run": "Chạy",
 	"wikilambda-tester-status-running": "Đang chạy…",

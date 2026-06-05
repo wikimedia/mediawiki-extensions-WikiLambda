@@ -130,6 +130,7 @@
 	"wikilambda-tester-run-testers": "Executar todos os testes",
 	"wikilambda-tester-status-cancel": "Cancelar",
 	"wikilambda-tester-status-failed": "Falhou",
+	"wikilambda-tester-status-pending": "Pendente...",
 	"wikilambda-tester-status-run": "Executar",
 	"wikilambda-tester-status-running": "Executando...",
 	"wikilambda-typeselector-label": "Selecione um tipo",

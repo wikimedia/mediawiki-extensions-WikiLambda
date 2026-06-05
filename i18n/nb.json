@@ -380,6 +380,7 @@
 	"wikilambda-tester-status-cancel": "Avbryt",
 	"wikilambda-tester-status-failed": "Ikke godkjent",
 	"wikilambda-tester-status-passed": "Godkjent",
+	"wikilambda-tester-status-pending": "Venter …",
 	"wikilambda-tester-status-ready": "Klar",
 	"wikilambda-tester-status-run": "Kjør",
 	"wikilambda-tester-status-running": "Kjører …",

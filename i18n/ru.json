@@ -548,6 +548,7 @@
 	"wikilambda-tester-status-cancel": "Отмена",
 	"wikilambda-tester-status-failed": "Не прошёл",
 	"wikilambda-tester-status-passed": "Прошёл",
+	"wikilambda-tester-status-pending": "В ожидании...",
 	"wikilambda-tester-status-ready": "Готов",
 	"wikilambda-tester-status-run": "Запустить",
 	"wikilambda-tester-status-running": "Выполняется…",

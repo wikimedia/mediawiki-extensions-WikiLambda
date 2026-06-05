@@ -17,6 +17,7 @@
 	"specialpages-group-abstractwiki": "Paginas de Abstract Wikipedia",
 	"wikilambda-abstract-content-object": "Articulo abstracte",
 	"wikilambda-abstract-content-history-title": "Historia de versiones de “$1” ($2)",
+	"wikilambda-abstract-content-history-title-no-label": "Historia de versiones de $1",
 	"wikilambda-abstract-edit-title-with-label": "Modificar articulo abstracte pro “$1” ($2)",
 	"wikilambda-abstract-edit-title": "Modificar articulo abstracte pro $1",
 	"wikilambda-abstract-error-bad-fragments-type": "Le section con le clave ‘$1’ ha un lista de fragmentos de typo erronee.",

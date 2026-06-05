@@ -488,6 +488,7 @@
 	"wikilambda-tester-status-cancel": "Avbryt",
 	"wikilambda-tester-status-failed": "Underkänd",
 	"wikilambda-tester-status-passed": "Godkänd",
+	"wikilambda-tester-status-pending": "VÄNTAR …",
 	"wikilambda-tester-status-ready": "Redo",
 	"wikilambda-tester-status-run": "Kör",
 	"wikilambda-tester-status-running": "Körs…",

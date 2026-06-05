@@ -18,6 +18,7 @@
 	"specialpages-group-abstractwiki": "추상 위키백과 문서",
 	"wikilambda-abstract-content-object": "추상 문서",
 	"wikilambda-abstract-content-history-title": "\"$2\"($1)의 판 역사",
+	"wikilambda-abstract-content-history-title-no-label": "$1의 판 역사",
 	"wikilambda-abstract-edit-title-with-label": "\"$2\"($1)에 대한 추상 문서를 편집",
 	"wikilambda-abstract-edit-title": "$1에 대한 추상 문서를 편집",
 	"wikilambda-abstract-error-bad-fragments-type": "'$1' 키를 가진 문단에 잘못된 조각 형식을 가진 목록이 있습니다.",

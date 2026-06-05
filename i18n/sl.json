@@ -345,6 +345,7 @@
 	"wikilambda-tester-status-cancel": "Prekliči",
 	"wikilambda-tester-status-failed": "Neuspešno",
 	"wikilambda-tester-status-passed": "Opravljeno",
+	"wikilambda-tester-status-pending": "V teku ...",
 	"wikilambda-tester-status-ready": "Pripravljen",
 	"wikilambda-tester-status-run": "Izvedi",
 	"wikilambda-tester-status-running": "Teče ...",

@@ -78,6 +78,7 @@
 	"wikilambda-tester-status-cancel": "منسوخ",
 	"wikilambda-tester-status-failed": "ناکام تھیا",
 	"wikilambda-tester-status-passed": "پاس تھیا",
+	"wikilambda-tester-status-pending": "وچار ہیٹھ",
 	"wikilambda-tester-status-ready": "تیار",
 	"wikilambda-tester-status-run": "دوڑ",
 	"wikilambda-zobject-missing-attached-function": "ہک عمل ضروری ہے",

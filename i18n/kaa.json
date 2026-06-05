@@ -33,6 +33,7 @@
 	"wikilambda-publish-output-changed-impact-prompt": "Siz bul funkciyanıń shıǵıw túrin ózgerttińiz. <strong>Hámme bar qosımshalar hám testler ámeldegi funkciyadan ajıratıladı.</strong> Dawam etiwdi qáleysizbe?",
 	"wikilambda-tester-status-failed": "Áwmetsizlik",
 	"wikilambda-tester-status-passed": "Ótiw",
+	"wikilambda-tester-status-pending": "Kútilmekte...",
 	"wikilambda-tester-status-running": "Islep atır...",
 	"wikilambda-zimplememntation-composition-missing": "Quramı anıqlanıwı kerek",
 	"wikilambda-zimplementation-code-missing": "Kodı anıqlanıwı kerek",

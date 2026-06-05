@@ -26,5 +26,6 @@
 	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)",
 	"wikilambda-metadata-language-column": "భాష",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "ప్రత్యేక అనుమతులున్న వాడుకరులు మాత్రమే",
-	"wikilambda-tester-results-title": "పరీక్ష ఫలితాలు"
+	"wikilambda-tester-results-title": "పరీక్ష ఫలితాలు",
+	"wikilambda-tester-status-pending": "పెండింగ్‌లో ఉంది..."
 }

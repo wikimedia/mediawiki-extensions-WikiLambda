@@ -386,6 +386,7 @@
 	"wikilambda-tester-status-cancel": "Batalkan",
 	"wikilambda-tester-status-failed": "Gagal",
 	"wikilambda-tester-status-passed": "Lulus",
+	"wikilambda-tester-status-pending": "Tertunda...",
 	"wikilambda-tester-status-ready": "Siap",
 	"wikilambda-tester-status-run": "Jalankan",
 	"wikilambda-tester-status-running": "Menjalankan...",

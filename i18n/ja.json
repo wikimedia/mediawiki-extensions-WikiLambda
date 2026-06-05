@@ -347,6 +347,7 @@
 	"wikilambda-tester-status-cancel": "キャンセル",
 	"wikilambda-tester-status-failed": "失敗",
 	"wikilambda-tester-status-passed": "合格",
+	"wikilambda-tester-status-pending": "保留中...",
 	"wikilambda-tester-status-ready": "完了",
 	"wikilambda-tester-status-run": "実行",
 	"wikilambda-tester-status-running": "実行中...",

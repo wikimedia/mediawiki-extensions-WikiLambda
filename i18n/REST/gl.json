@@ -8,6 +8,12 @@
 	"wikifunctions-rest-module-v0-desc": "API para interactuar con Wikifuncións",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "Consultar ZObjects",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Consultar versións históricas de ZObjects",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "Lista de ZID a obter, separados por barras verticais e cun máximo de 50 por solicitude",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Lista de identificadores de revisión para obter versións históricas, separados por barras verticais e un por cada ZID solicitado; se se omite, devólvese a última revisión de cada ZID",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "Código de lingua BCP-47 para usar ao resolver etiquetas multilingües nos ZObjects devoltos; se se omite, devólvense todas as linguas",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "Indica se se deben devolver adicionalmente os ZObjects aos que se fai referencia como tipos nas claves ou argumentos dos ZObjects solicitados",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "Unha correspondencia entre cada ZID solicitado (e, se «getDependencies» está definido, as súas dependencias) e mais o seu ZObject serializado como unha cadea JSON",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "Un ZObject serializado como unha cadea JSON, tal e como se devolve polo punto final da representación do contido da páxina",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Chamar unha función",
 	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Chamar unha función con linguaxes de análise e renderización personalizadas"
 }

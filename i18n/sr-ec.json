@@ -162,6 +162,7 @@
 	"wikilambda-tester-status-cancel": "Откажи",
 	"wikilambda-tester-status-failed": "Није успело",
 	"wikilambda-tester-status-passed": "Успело",
+	"wikilambda-tester-status-pending": "На чекању…",
 	"wikilambda-tester-status-ready": "Спремно",
 	"wikilambda-tester-status-run": "Покрени",
 	"wikilambda-tester-status-running": "Извршава се…",

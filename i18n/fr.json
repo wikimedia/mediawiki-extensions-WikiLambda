@@ -570,6 +570,7 @@
 	"wikilambda-tester-status-cancel": "Annuler",
 	"wikilambda-tester-status-failed": "En échec",
 	"wikilambda-tester-status-passed": "Passé",
+	"wikilambda-tester-status-pending": "En attente...",
 	"wikilambda-tester-status-ready": "Prêt",
 	"wikilambda-tester-status-run": "Lancer",
 	"wikilambda-tester-status-running": "Exécution en cours...",
