@@ -21,6 +21,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Json\FormatJson;
+use MediaWiki\MediaWikiServices;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -2008,5 +2009,14 @@ EOT;
 			json_decode( '{"Z7K1":"Z801"}' ),
 			false,
 		];
+	}
+
+	public function testGetFallbackLanguageCodes_includesRequestedLanguageFallbacksAndMul(): void {
+		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$codes = ZObjectUtils::getFallbackLanguageCodes( $languageFallback, 'fr' );
+
+		$this->assertSame( 'fr', $codes[0], 'First code should be the requested language' );
+		$this->assertContains( 'en', $codes, 'English should be included as a fallback' );
+		$this->assertSame( 'mul', end( $codes ), "'mul' should be the final fallback" );
 	}
 }

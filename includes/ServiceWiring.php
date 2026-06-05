@@ -104,6 +104,6 @@ return [
 	},
 
 	'WikiLambdaWikidataEntityLookup' => static function ( MediaWikiServices $services ): WikidataEntityLookup {
-		return new WikidataEntityLookup();
+		return new WikidataEntityLookup( $services->getLanguageFallback() );
 	}
 ];

@@ -17,6 +17,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWikiIntegrationTestCase;
 
@@ -27,7 +28,7 @@ use MediaWikiIntegrationTestCase;
 class WikidataEntityLookupTest extends MediaWikiIntegrationTestCase {
 
 	private function getService(): WikidataEntityLookup {
-		return new WikidataEntityLookup();
+		return new WikidataEntityLookup( MediaWikiServices::getInstance()->getLanguageFallback() );
 	}
 
 	private function skipIfNoWikibaseClient(): void {
@@ -150,15 +151,40 @@ class WikidataEntityLookupTest extends MediaWikiIntegrationTestCase {
 		$this->assertSame( 'Jupiter', $this->getService()->resolveAbstractLabel( 'Q319', 'en' ) );
 	}
 
-	public function testResolveAbstractLabel_returnsNullForMissingLanguage(): void {
+	public function testResolveAbstractLabel_returnsFallbackChainLabel(): void {
 		$this->skipIfNoWikibaseClient();
 
 		$itemId = new \Wikibase\DataModel\Entity\ItemId( 'Q319' );
+		// Requesting Asturian falls back to English bc of fallback chain which doesn't have Asturian
 		$mockItem = $this->mockItemWithLabel( 'en', 'Jupiter' );
 		$this->setUpEntityIdParser( 'Q319', $itemId );
 		$this->setUpEntityLookup( $itemId, $mockItem );
 
-		$this->assertNull( $this->getService()->resolveAbstractLabel( 'Q319', 'ast' ) );
+		$this->assertSame( 'Jupiter', $this->getService()->resolveAbstractLabel( 'Q319', 'ast' ) );
+	}
+
+	public function testResolveAbstractLabel_returnsMulLabelAsFinalFallback(): void {
+		$this->skipIfNoWikibaseClient();
+
+		$itemId = new \Wikibase\DataModel\Entity\ItemId( 'Q319' );
+		// No lang label so resolves to final fallback, mul
+		$mockItem = $this->mockItemWithLabel( 'mul', 'Jupiter' );
+		$this->setUpEntityIdParser( 'Q319', $itemId );
+		$this->setUpEntityLookup( $itemId, $mockItem );
+
+		$this->assertSame( 'Jupiter', $this->getService()->resolveAbstractLabel( 'Q319', 'fr' ) );
+	}
+
+	public function testResolveAbstractLabel_returnsNullWhenNoLabelInFallbackChain(): void {
+		$this->skipIfNoWikibaseClient();
+
+		$itemId = new \Wikibase\DataModel\Entity\ItemId( 'Q319' );
+		// Only has a Chinese label so requesting French will return null bc it's not in the fallback chain
+		$mockItem = $this->mockItemWithLabel( 'zh', '木星' );
+		$this->setUpEntityIdParser( 'Q319', $itemId );
+		$this->setUpEntityLookup( $itemId, $mockItem );
+
+		$this->assertNull( $this->getService()->resolveAbstractLabel( 'Q319', 'fr' ) );
 	}
 
 	public function testResolveAbstractLabel_returnsNullForMissingEntity(): void {

@@ -14,6 +14,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Language\LanguageFallback;
 use MediaWiki\Registration\ExtensionRegistry;
 use OutOfBoundsException;
 
@@ -22,6 +23,9 @@ use OutOfBoundsException;
  * Injectable alternative to static WikibaseClient calls, enabling testability.
  */
 class WikidataEntityLookup {
+
+	public function __construct( private readonly LanguageFallback $languageFallback ) {
+	}
 
 	/**
 	 * @return bool
@@ -90,11 +94,15 @@ class WikidataEntityLookup {
 			return null;
 		}
 
-		try {
-			return $wbEntity->getLabels()->getByLanguage( $langCode )->getText();
-		} catch ( OutOfBoundsException ) {
-			return null;
+		$labels = $wbEntity->getLabels();
+		foreach ( ZObjectUtils::getFallbackLanguageCodes( $this->languageFallback, $langCode ) as $code ) {
+			try {
+				return $labels->getByLanguage( $code )->getText();
+			} catch ( OutOfBoundsException ) {
+				// Try next fallback
+			}
 		}
+		return null;
 	}
 
 	/**

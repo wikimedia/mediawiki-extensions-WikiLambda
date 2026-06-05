@@ -22,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Language\Language;
+use MediaWiki\Language\LanguageFallback;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Normalizer;
@@ -1209,6 +1210,23 @@ class ZObjectUtils {
 		];
 
 		return $response;
+	}
+
+	/**
+	 * Returns ordered list of language codes for label resolution:
+	 * the requested language, MediaWiki fallback chain, 'mul' as the final language-agnostic fallback
+	 *
+	 * @param LanguageFallback $languageFallback
+	 * @param string $langCode Language BCP47 code
+	 * @return string[]
+	 */
+	public static function getFallbackLanguageCodes( LanguageFallback $languageFallback, string $langCode ): array {
+		$codes = array_unique( array_merge(
+			[ $langCode ],
+			$languageFallback->getAll( $langCode, LanguageFallback::MESSAGES )
+		) );
+		$codes[] = 'mul';
+		return $codes;
 	}
 
 	/**
