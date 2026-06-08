@@ -5,7 +5,7 @@
 			"Siebrand"
 		]
 	},
-	"action-wikilambda-abstract-create": "maak nieuwe Abstracte artikelen aan",
+	"action-wikilambda-abstract-create": "Nieuwe Abstract Articles aanmaken",
 	"action-wikilambda-abstract-edit": "bewerk bestaande Abstracte Artikelen",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Voorgestelde Wikifuncties voor Abstract Wiki",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "De lijst met Wikifuncties (op basis van ZID) die HTML teruggeven en die worden aangeboden in het menu \"Fragment toevoegen\" van het abstractartikel. Maximaal tien vermeldingen.",
@@ -35,6 +35,11 @@
 	"wikilambda-abstract-error-missing-sections": "Het Abstract Article moet minstens één gedeelte bevatten.",
 	"wikilambda-abstract-error-unmatching-qid": "De waarde van de eigenschap 'qid' ('$1') komt niet overeen met de paginatitel '$2'",
 	"wikilambda-abstract-fragment-actions-menu": "Handelingenmenu van het fragment",
+	"wikilambda-abstract-fragment-function-selector-helper-text": "Alleen functies die $2 ($1) retourneren, worden weergegeven.",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Help:How_to_create_an_article|Hoe een functie te gebruiken met een ander retourtype]]",
+	"wikilambda-abstract-fragment-function-selector-placeholder": "Selecteer een functie die een $2 ($1) uitvoert.",
+	"wikilambda-abstract-fragment-function-selector-popover-body": "Dit veld verwacht een functie die een $2 ($1) retourneert. Alleen functies met dat retourtype worden in de zoekresultaten weergegeven.",
+	"wikilambda-abstract-fragment-function-selector-popover-title": "Waarom sommige functies niet worden vermeld",
 	"wikilambda-abstract-menu-fragments-accessible-label": "Menu voor het selecteren en toevoegen van een nieuw fragment",
 	"wikilambda-abstract-menu-group-basic-fragments": "Basisfragmenthandelingen",
 	"wikilambda-abstract-menu-group-insert-fragments": "Fragmenten invoegen",

@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"HakanIST"
+		]
+	},
+	"action-wikilambda-abstract-create": "yeni Soyut Maddeler oluşturma",
+	"action-wikilambda-abstract-edit": "mevcut Soyut Maddeleri düzenleme",
+	"right-wikilambda-abstract-create": "Yeni Soyut Maddeler oluştur",
+	"right-wikilambda-abstract-edit": "Mevcut Soyut Maddeleri düzenle",
+	"wikilambda-abstract-preview-fragment-retry": "Tekrar dene",
+	"wikilambda-abstract-special-create-createbutton-label": "Oluştur"
+}

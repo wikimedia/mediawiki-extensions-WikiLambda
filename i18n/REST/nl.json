@@ -15,5 +15,12 @@
 	"wikifunctions-rest-module-v0-fetch-response-desc": "Een map van elke aangevraagde (en, indien getDependencies is ingesteld, afhankelijkheids) ZID naar het bijbehorende ZObject, geserialiseerd als een JSON-string",
 	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "Een ZOBject geserialiseerd als een JSON-string, zoals geretourneerd door het pagina-inhoudsrepresentatie-eindpunt",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Een functie aanroepen",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Een functie aanroepen met aangepaste verwerkings- en weergavetalen."
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Een functie aanroepen met aangepaste verwerkings- en weergavetalen.",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID van de aan te roepen functie",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "Een lijst met argumenten, gescheiden door verticale strepen, die aan de functie moeten worden doorgegeven in de volgorde waarin de argumenten zijn gedeclareerd, waarbij elk argument url-gecodeerd is",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "De BCP-47-taalcode die wordt gebruikt om argumenten van het type string te verwerken die een parseerfunctie hebben; de standaardwaarde is 'en'",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "De BCP-47-taalcode die wordt gebruikt om de uitvoer van de functie en eventuele foutmeldingen weer te geven; de standaardwaarde is 'en'",
+	"wikifunctions-rest-module-v0-call-response-desc": "Het resultaat van de evaluatie van de functieaanroep",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "De geëvalueerde uitvoer als een tekenreeks; ofwel een gewone tekenreeks (voor Z6) of een HTML-fragment (voor Z89)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "De ZID van het type van de geëvalueerde uitvoer: 'Z6' voor een gewone tekenreeks, 'Z89' voor een HTML-fragment"
 }

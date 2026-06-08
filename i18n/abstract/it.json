@@ -14,6 +14,7 @@
 	"wikilambda-abstract-content-history-title-no-label": "Cronologia di $1",
 	"wikilambda-abstract-error-bad-section-content": "La sezione con chiave '$1' ha contenuti non validi.",
 	"wikilambda-abstract-error-missing-sections": "L'articolo astratto deve avere almeno una sezione.",
+	"wikilambda-abstract-fragment-function-selector-helper-text": "Sono elencate solo le funzioni che restituiscono un $2 ($1).",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Seleziona una funzione che restituisce un $2 ($1)",
 	"wikilambda-abstract-menu-option-add-section": "Aggiungi sezione",
 	"wikilambda-abstract-preview-fragment-max-retries": "Raggiunto il numero massimo di tentativi. Riprova più tardi.",

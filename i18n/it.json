@@ -328,6 +328,7 @@
 	"wikilambda-functioncall-error-unknown-zid-category-desc": "Pagine con tentativi di chiamate a Wikifuzioni che richiedono un oggetto sconosciuto",
 	"wikilambda-functioncall-metadata-accessible-title": "Finestra che consente di visualizzare i metadati del risultato della funzione chiamata",
 	"wikilambda-functioncall-metadata-actual-result": "Risultato effettivo",
+	"wikilambda-functioncall-metadata-cached": "Questa risposta è stata recuperata dalla cache",
 	"wikilambda-functioncall-metadata-cpu-usage": "Uso della CPU",
 	"wikilambda-functioncall-metadata-duration": "Durata",
 	"wikilambda-functioncall-metadata-end-time": "Ora di fine",

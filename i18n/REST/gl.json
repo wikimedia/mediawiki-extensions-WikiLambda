@@ -15,5 +15,12 @@
 	"wikifunctions-rest-module-v0-fetch-response-desc": "Unha correspondencia entre cada ZID solicitado (e, se «getDependencies» está definido, as súas dependencias) e mais o seu ZObject serializado como unha cadea JSON",
 	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "Un ZObject serializado como unha cadea JSON, tal e como se devolve polo punto final da representación do contido da páxina",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Chamar unha función",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Chamar unha función con linguaxes de análise e renderización personalizadas"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Chamar unha función con linguaxes de análise e renderización personalizadas",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID da función a chamar",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "Lista de argumentos separados por barras verticais para pasar á función, na orde na que se declaran os seus argumentos, con cada argumento codificado para enderezos URL",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "Código de lingua BCP-47 usado para analizar argumentos con valores de cadea que teñen unha función de analizador; o valor predeterminado é «en»",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "Código de lingua BCP-47 usado para renderizar a saída da función e calquera mensaxe de erro; o valor predeterminado é «en»",
+	"wikifunctions-rest-module-v0-call-response-desc": "O resultado da avaliación da chamada á función",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "A saída avaliada como unha cadea de texto; unha cadea de texto simple (para Z6) ou un fragmento HTML (para Z89)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "O ZID do tipo da saída avaliada: «Z6» para unha cadea de texto simple, «Z89» para un fragmento HTML"
 }
