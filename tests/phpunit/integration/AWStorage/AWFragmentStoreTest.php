@@ -313,7 +313,10 @@ class AWFragmentStoreTest extends WikiLambdaIntegrationTestCase {
 		$value = [ 'success' => false, 'value' => [ 'httpStatusCode' => 500 ] ];
 
 		// Mock for MemcachedWrapper; set failure value for minute (only fresh)
-		$expectCalls = [ 'fresh-cache-key' => MemcachedWrapper::TTL_MINUTE ];
+		$expectCalls = [
+			'fresh-cache-key' => MemcachedWrapper::TTL_MINUTE,
+			'stale-cache-key' => MemcachedWrapper::TTL_MONTH
+		];
 		$objectCache = $this->createMockMemcachedSetter( $value, $expectCalls );
 
 		// Mock for JobQueueGroup; no job is ever queued

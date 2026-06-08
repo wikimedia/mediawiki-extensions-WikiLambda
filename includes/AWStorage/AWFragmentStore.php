@@ -198,22 +198,24 @@ class AWFragmentStore {
 
 		// Prepare the value
 		$encodedValue = json_encode( $value );
+		$freshTTL = $this->objectCache::TTL_WEEK;
+		$staleTTL = $this->objectCache::TTL_MONTH;
 
 		// If fragment failed due to a transient error (anything but a BAD_REQUEST), we set
-		// the fresh value with a TTL_MINUTE, and we don't update the stale value at all.
+		// the fresh value with a TTL_MINUTE, to force re-renders in the future, but we keep
+		// the stale value as is so that we don't mark the fragment as infinitely pending
 		if ( $value['success'] === false ) {
 			$httpErrorCode = $value['value']['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
 			if ( (int)$httpErrorCode !== HttpStatus::BAD_REQUEST ) {
-				$this->objectCache->set( $cacheKeyFresh, $encodedValue, $this->objectCache::TTL_MINUTE );
-				return true;
+				$freshTTL = $this->objectCache::TTL_MINUTE;
 			}
 		}
 
 		// For successful renders or non-transient errors (BAD_REQUEST)
 		// * cache fresh value for WEEK (at least 48 hours to ensure availability through timezones)
 		// * cache stale value for MONTH
-		$this->objectCache->set( $cacheKeyFresh, $encodedValue, $this->objectCache::TTL_WEEK );
-		$this->objectCache->set( $cacheKeyStale, $encodedValue, $this->objectCache::TTL_MONTH );
+		$this->objectCache->set( $cacheKeyFresh, $encodedValue, $freshTTL );
+		$this->objectCache->set( $cacheKeyStale, $encodedValue, $staleTTL );
 
 		return true;
 	}
