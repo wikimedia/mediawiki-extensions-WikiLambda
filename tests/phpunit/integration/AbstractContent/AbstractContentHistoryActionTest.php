@@ -97,7 +97,6 @@ class AbstractContentHistoryActionTest extends WikiLambdaClientIntegrationTestCa
 
 	private function invokeGetPageTitle( AbstractContentHistoryAction $action ): \MediaWiki\Message\Message {
 		$method = new \ReflectionMethod( AbstractContentHistoryAction::class, 'getPageTitle' );
-		$method->setAccessible( true );
 		return $method->invoke( $action );
 	}
 
