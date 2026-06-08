@@ -10,12 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
-use MediaWiki\Registration\ExtensionRegistry;
-use Wikibase\DataModel\Entity\EntityIdParser;
-use Wikibase\DataModel\Entity\EntityIdParsingException;
-use Wikibase\DataModel\Entity\Item;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Services\Lookup\EntityLookup;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils
@@ -65,48 +59,6 @@ class AbstractContentUtilsTest extends WikiLambdaIntegrationTestCase {
 			'Vimple QID' => [ 'Q12345', true ],
 			'Valid Namespace:QID' => [ 'Abstract Wikipedia:Q12345', true ]
 		];
-	}
-
-	private function setUpWikibaseClientMocks( string $qid, bool $itemExists ): void {
-		$itemId = new ItemId( $qid );
-
-		$mockEntityIdParser = $this->createMock( EntityIdParser::class );
-		$mockEntityIdParser->method( 'parse' )->with( $qid )->willReturn( $itemId );
-
-		$mockEntityLookup = $this->createMock( EntityLookup::class );
-		$mockEntityLookup->method( 'getEntity' )->with( $itemId )
-			->willReturn( $itemExists ? $this->createMock( Item::class ) : null );
-
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
-		$this->setService( 'WikibaseClient.EntityLookup', $mockEntityLookup );
-	}
-
-	public function testWikidataItemExists_returnsTrueForExistingItem(): void {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
-		}
-		$this->setUpWikibaseClientMocks( 'Q42', true );
-		$this->assertTrue( AbstractContentUtils::wikidataItemExists( 'Q42' ) );
-	}
-
-	public function testWikidataItemExists_returnsFalseForMissingItem(): void {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
-		}
-		$this->setUpWikibaseClientMocks( 'Q6', false );
-		$this->assertFalse( AbstractContentUtils::wikidataItemExists( 'Q6' ) );
-	}
-
-	public function testWikidataItemExists_returnsFalseForInvalidQid(): void {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
-		}
-		$mockEntityIdParser = $this->createMock( EntityIdParser::class );
-		$mockEntityIdParser->method( 'parse' )
-			->willThrowException( new EntityIdParsingException() );
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
-
-		$this->assertFalse( AbstractContentUtils::wikidataItemExists( 'not-a-qid' ) );
 	}
 
 	/**

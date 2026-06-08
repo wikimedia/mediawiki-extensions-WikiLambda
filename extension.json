@@ -48,7 +48,8 @@
 		"abstractwiki": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\AbstractContent\\AbstractWikiContentHandler",
 			"services": [
-				"MainConfig"
+				"MainConfig",
+				"WikiLambdaWikidataEntityLookup"
 			]
 		}
 	},
@@ -162,7 +163,8 @@
 				"UserOptionsLookup",
 				"LanguageNameUtils",
 				"LanguageFactory",
-				"WikiLambdaZObjectStore"
+				"WikiLambdaZObjectStore",
+				"WikiLambdaWikidataEntityLookup"
 			]
 		},
 		"WikiLambdaCommunityConfigurationHooks": {
@@ -1105,7 +1107,8 @@
 				"ContentRenderer",
 				"LanguageFactory",
 				"LanguageNameUtils",
-				"UrlUtils"
+				"UrlUtils",
+				"WikiLambdaWikidataEntityLookup"
 			]
 		},
 		"ViewObject": {
@@ -1121,7 +1124,8 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateAbstract",
 			"services": [
 				"RevisionStore",
-				"ContentHandlerFactory"
+				"ContentHandlerFactory",
+				"WikiLambdaWikidataEntityLookup"
 			]
 		},
 		"CreateObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateObject",

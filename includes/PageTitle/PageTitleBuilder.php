@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\PageTitle;
 
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\Language;
@@ -554,7 +554,8 @@ class PageTitleBuilder {
 				->inLanguage( $langCode )->params( $qid )->text();
 		}
 
-		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode );
+		$entityLookup = WikiLambdaServices::getWikidataEntityLookup();
+		$label = $entityLookup->resolveAbstractLabel( $qid, $langCode );
 
 		if ( $label === null ) {
 			return wfMessage( 'wikilambda-abstract-edit-title' )

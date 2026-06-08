@@ -13,7 +13,6 @@ use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Page\Article;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -38,6 +37,18 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
 			$this->markTestSkipped( 'WikibaseClient not available' );
 		}
+
+		// Mock Wikidata lookup entities so:
+		// * Q42 exists, has label in 'en'
+		// * Q34086 exists, has label in 'en'
+		// * Q43 exists, has no label in 'en'
+		// * Q999999 does not exist
+		// For any other behavior, individual tests can override this mock
+		$this->mockWikidataEntityLookup( [
+			'Q42' => [ 'en' => 'Douglas Adams' ],
+			'Q34086' => [ 'en' => 'Justin Bieber' ],
+			'Q43' => []
+		] );
 	}
 
 	/**
@@ -69,16 +80,6 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 			$context->setRequest( $request );
 		}
 		return $context;
-	}
-
-	/**
-	 * @return AbstractWikiContentHandler
-	 */
-	private function getAbstractContentHandler(): AbstractWikiContentHandler {
-		return new AbstractWikiContentHandler(
-			CONTENT_MODEL_ABSTRACT,
-			$this->getServiceContainer()->getMainConfig()
-		);
 	}
 
 	public function testGetName() {
@@ -124,12 +125,11 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 
 	public function testShow_existingPage() {
 		// First, create a page with abstract content
-		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
-		$jsonContent = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$title = Title::newFromText( 'Q43', self::TEST_ABSTRACT_NS );
+		$jsonContent = '{"qid":"Q43","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$content = new AbstractWikiContent( $jsonContent );
 
-		$contentHandler = $this->getAbstractContentHandler();
-		$content = $contentHandler->makeContent( $jsonContent, $title, CONTENT_MODEL_ABSTRACT );
-		$this->editPage( $title, $content );
+		$this->editPage( $title, $content, 'test abstract page', self::TEST_ABSTRACT_NS );
 
 		$action = $this->buildAction( $title );
 
@@ -145,8 +145,8 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		// (T426833) Browser <title> uses the edit message and must not duplicate the QID
 		// (the bug appended " (Q42)" to a title that, when labelled, already ends in "(Q42)").
 		$htmlTitle = $output->getHTMLTitle();
-		$this->assertStringContainsString( 'Edit Abstract Article for Q42', $htmlTitle );
-		$this->assertStringNotContainsString( '(Q42)', $htmlTitle );
+		$this->assertStringContainsString( 'Edit Abstract Article for Q43', $htmlTitle );
+		$this->assertStringNotContainsString( '(Q43)', $htmlTitle );
 	}
 
 	public function testShow_existingPageHtmlTitleWithLabel() {
@@ -154,8 +154,7 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		$content = new AbstractWikiContent(
 			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
 		);
-		$this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
-		$this->mockWikibaseClientServicesForAbstractMode( 'Q34086', 'en', 'Justin Bieber' );
+		$status = $this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
 
 		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
 		$action = $this->buildAction( $title );
@@ -173,9 +172,7 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		$content = new \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent(
 			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
 		);
-		$status = $this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
-
-		$this->mockWikibaseClientServicesForAbstractMode( 'Q34086', 'en', 'Justin Bieber' );
+		$this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
 
 		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
 		$action = $this->buildAction( $title );
@@ -188,31 +185,12 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 	}
 
 	public function testGetPageTitleMsgExistingPageWithoutLabel() {
+		$mockEntityLookup = $this->mockWikidataEntityLookup( [ 'Q34086' => [] ] );
 		// Q8776414 is the lede section QID; required by AbstractWikiContent.php validation
 		$content = new AbstractWikiContent(
 			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
 		);
 		$this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
-
-		$mockTermList = $this->createMock( \Wikibase\DataModel\Term\TermList::class );
-		$mockTermList->method( 'getByLanguage' )
-			->willThrowException( new \OutOfBoundsException( 'Term with languageCode "en" not found' ) );
-
-		$mockItem = $this->createMock( \Wikibase\DataModel\Entity\Item::class );
-		$mockItem->method( 'getLabels' )->willReturn( $mockTermList );
-
-		$mockEntityLookup = $this->createMock( \Wikibase\DataModel\Services\Lookup\EntityLookup::class );
-		$mockEntityLookup->method( 'getEntity' )->willReturn( $mockItem );
-
-		$mockClientStore = $this->createMock( \Wikibase\Client\Store\ClientStore::class );
-		$mockClientStore->method( 'getEntityLookup' )->willReturn( $mockEntityLookup );
-
-		$mockItemId = $this->createMock( \Wikibase\DataModel\Entity\ItemId::class );
-		$mockEntityIdParser = $this->createMock( \Wikibase\DataModel\Entity\EntityIdParser::class );
-		$mockEntityIdParser->method( 'parse' )->willReturnMap( [ [ 'Q34086', $mockItemId ] ] );
-
-		$this->setService( 'WikibaseClient.Store', $mockClientStore );
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
 
 		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
 		$action = $this->buildAction( $title );
@@ -234,21 +212,16 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 
 	public function testShow_existingPageWithOldid() {
 		// Create initial revision, then make a second revision
-		$title = Title::newFromText( 'Q43', self::TEST_ABSTRACT_NS );
-		$contentHandler = $this->getAbstractContentHandler();
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
 
-		$firstContent = '{"qid":"Q43","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
-		$firstStatus = $this->editPage(
-			$title,
-			$contentHandler->makeContent( $firstContent, $title, CONTENT_MODEL_ABSTRACT )
-		);
+		$firstJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$firstContent = new AbstractWikiContent( $firstJson );
+		$firstStatus = $this->editPage( $title, $firstContent, 'test abstract page', self::TEST_ABSTRACT_NS );
 		$firstRevId = $firstStatus->getNewRevision()->getId();
 
-		$secondContent = '{"qid":"Q43","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
-		$this->editPage(
-			$title,
-			$contentHandler->makeContent( $secondContent, $title, CONTENT_MODEL_ABSTRACT )
-		);
+		$secondJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$secondContent = new AbstractWikiContent( $secondJson );
+		$this->editPage( $title, $secondContent, 'test abstract page', self::TEST_ABSTRACT_NS );
 
 		// Build an action whose request points at the older revision
 		$action = $this->buildAction( $title, new FauxRequest( [ 'oldid' => $firstRevId ] ) );
@@ -260,7 +233,7 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 
 		// Content should be the first revision's content, not the latest
 		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'createNewPage' ] );
-		$this->assertSame( $firstContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertSame( $firstJson, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
 
 		// Revision id should be set on the output page (T364318)
 		$this->assertSame( $firstRevId, $output->getRevisionId() );
@@ -271,21 +244,16 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		// revision is what's displayed below the diff. The trait used to read
 		// 'oldid' unconditionally, which would have silently loaded the older
 		// (left-side) revision if a diff URL ever reached this code path.
-		$title = Title::newFromText( 'Q46', self::TEST_ABSTRACT_NS );
-		$contentHandler = $this->getAbstractContentHandler();
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
 
-		$firstContent = '{"qid":"Q46","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
-		$firstStatus = $this->editPage(
-			$title,
-			$contentHandler->makeContent( $firstContent, $title, CONTENT_MODEL_ABSTRACT )
-		);
+		$firstJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$firstContent = new AbstractWikiContent( $firstJson );
+		$firstStatus = $this->editPage( $title, $firstContent, 'test abstract page', self::TEST_ABSTRACT_NS );
 		$firstRevId = $firstStatus->getNewRevision()->getId();
 
-		$secondContent = '{"qid":"Q46","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
-		$secondStatus = $this->editPage(
-			$title,
-			$contentHandler->makeContent( $secondContent, $title, CONTENT_MODEL_ABSTRACT )
-		);
+		$secondJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$secondContent = new AbstractWikiContent( $secondJson );
+		$secondStatus = $this->editPage( $title, $secondContent, 'test abstract page', self::TEST_ABSTRACT_NS );
 		$secondRevId = $secondStatus->getNewRevision()->getId();
 
 		// ?diff=<newer>&oldid=<older>: should load the newer (right-side) revision
@@ -297,27 +265,22 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 		$action->show();
 
 		$jsVars = $action->getOutput()->getJsConfigVars();
-		$this->assertSame( $secondContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertSame( $secondJson, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
 		$this->assertSame( $secondRevId, $action->getOutput()->getRevisionId() );
 	}
 
 	public function testShow_existingPageWithSymbolicDiffFallsBackToLatest() {
 		// 'diff=0' resolves to the current revision in core; we represent that
 		// as "no explicit revision" so getKnownCurrentRevision serves the load.
-		$title = Title::newFromText( 'Q47', self::TEST_ABSTRACT_NS );
-		$contentHandler = $this->getAbstractContentHandler();
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
 
-		$firstContent = '{"qid":"Q47","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
-		$this->editPage(
-			$title,
-			$contentHandler->makeContent( $firstContent, $title, CONTENT_MODEL_ABSTRACT )
-		);
+		$firstJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$firstContent = new AbstractWikiContent( $firstJson );
+		$status = $this->editPage( $title, $firstContent, 'test abstract page', self::TEST_ABSTRACT_NS );
 
-		$secondContent = '{"qid":"Q47","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
-		$this->editPage(
-			$title,
-			$contentHandler->makeContent( $secondContent, $title, CONTENT_MODEL_ABSTRACT )
-		);
+		$secondJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$secondContent = new AbstractWikiContent( $secondJson );
+		$status = $this->editPage( $title, $secondContent, 'test abstract page', self::TEST_ABSTRACT_NS );
 
 		$action = $this->buildAction(
 			$title,
@@ -328,28 +291,21 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 
 		$jsVars = $action->getOutput()->getJsConfigVars();
 		// Latest revision content, not the bogus oldid
-		$this->assertSame( $secondContent, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertSame( $secondJson, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
 		// No oldid subtitle set, since we're effectively on the current revision
-		$this->assertSame( 0, $action->getOutput()->getRevisionId() );
+		$this->assertNull( $action->getOutput()->getRevisionId() );
 	}
 
 	public function testShow_existingPageWithOldidFromAnotherTitle() {
-		// Create the target page (Q44) and a second page (Q45) with its own revision
-		$contentHandler = $this->getAbstractContentHandler();
+		$targetTitle = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		$targetJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$targetContent = new AbstractWikiContent( $targetJson );
+		$this->editPage( $targetTitle, $targetContent, 'test abstract page', self::TEST_ABSTRACT_NS );
 
-		$targetTitle = Title::newFromText( 'Q44', self::TEST_ABSTRACT_NS );
-		$targetContent = '{"qid":"Q44","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
-		$this->editPage(
-			$targetTitle,
-			$contentHandler->makeContent( $targetContent, $targetTitle, CONTENT_MODEL_ABSTRACT )
-		);
-
-		$otherTitle = Title::newFromText( 'Q45', self::TEST_ABSTRACT_NS );
-		$otherContent = '{"qid":"Q45","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
-		$otherStatus = $this->editPage(
-			$otherTitle,
-			$contentHandler->makeContent( $otherContent, $otherTitle, CONTENT_MODEL_ABSTRACT )
-		);
+		$otherTitle = Title::newFromText( 'Q43', self::TEST_ABSTRACT_NS );
+		$otherJson = '{"qid":"Q43","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$otherContent = new AbstractWikiContent( $otherJson );
+		$otherStatus = $this->editPage( $otherTitle, $otherContent, 'other', self::TEST_ABSTRACT_NS );
 		$otherRevId = $otherStatus->getNewRevision()->getId();
 
 		// Visit edit for Q44 with oldid pointing at Q45's revision

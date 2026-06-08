@@ -1,9 +1,19 @@
 <?php
 
+/**
+ * WikiLambda integration test suite for the ViewAbstract special page
+ *
+ * @copyright 2020– WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Special;
+
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Special\SpecialViewAbstract;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Storage\PageUpdateStatus;
@@ -15,6 +25,7 @@ use MediaWiki\Title\Title;
  * @group Database
  */
 class SpecialViewAbstractTest extends SpecialPageTestBase {
+	use MockWikidataEntityLookupTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
 
@@ -28,6 +39,8 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
+
+		$this->mockWikidataEntityLookup( [ 'Q42' => [] ] );
 	}
 
 	/**
@@ -259,5 +272,58 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 		$this->assertSame( 'en', $wikiLambdaVars['zlang'] );
 		$this->assertTrue( $wikiLambdaVars['viewmode'] );
 		$this->assertArrayHasKey( 'content', $wikiLambdaVars );
+	}
+
+	public function testViewPageTitleShowsLabel(): void {
+		$this->mockWikidataEntityLookup( [
+			'Q34086' => [ 'en' => 'Justin Bieber' ]
+		] );
+
+		$this->createAbstractPageForQid( 'Q34086' );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html, $response ] = $this->executeSpecialPage(
+			/* subpage */ 'en/Abstract Wikipedia:Q34086',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		// Ensure output has the appropriate config vars
+		$output = $context->getOutput();
+		$this->assertStringContainsString( 'Justin Bieber', $output->getPageTitle() );
+		$this->assertStringContainsString( 'Q34086', $output->getPageTitle() );
+	}
+
+	public function testViewPageTitleShowsFallbackWhenNoLabel(): void {
+		$this->mockWikidataEntityLookup( [
+			'Q34086' => [ 'es' => 'Justino Castor' ]
+		] );
+
+		$this->createAbstractPageForQid( 'Q34086' );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html, $response ] = $this->executeSpecialPage(
+			/* subpage */ 'en/Abstract Wikipedia:Q34086',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		// Ensure output has the appropriate config vars
+		$output = $context->getOutput();
+		$this->assertStringContainsString( 'Q34086', $output->getPageTitle() );
+		$this->assertStringNotContainsString( 'Justin', $output->getPageTitle() );
+		$this->assertStringNotContainsString( 'Justin', $output->getPageTitle() );
 	}
 }

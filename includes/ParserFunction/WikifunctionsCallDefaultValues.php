@@ -12,8 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
 use DateTime;
 use DateTimeZone;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Parser\ParserOutput;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
 use Wikimedia\Parsoid\Core\LinkTarget;
 
@@ -114,24 +114,11 @@ class WikifunctionsCallDefaultValues {
 			return '';
 		}
 
-		// The extension doesn't have WikibaseClient loaded; return empty string
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			return '';
-		}
-
 		$prefixedTitle = Title::newFromLinkTarget( $context['linkTarget'] )->getPrefixedText();
-		$wbSiteLinkLookup = \Wikibase\Client\WikibaseClient::getStore()->getSiteLinkLookup();
-		$wbClientSettings = \Wikibase\Client\WikibaseClient::getSettings();
 
-		$clientSiteGlobalID = $wbClientSettings->getSetting( 'siteGlobalID' );
-		$entityId = $wbSiteLinkLookup->getItemIdForLink( $clientSiteGlobalID, $prefixedTitle );
+		$entityLookup = WikiLambdaServices::getWikidataEntityLookup();
+		$entityId = $entityLookup->getWikidataItemForTitle( $prefixedTitle );
 
-		// No linked wikidata item; return empty string
-		if ( !$entityId ) {
-			return '';
-		}
-
-		// Success, return default value wikidata item ID; E.g. Q42
-		return $entityId->getSerialization();
+		return $entityId === null ? '' : $entityId;
 	}
 }

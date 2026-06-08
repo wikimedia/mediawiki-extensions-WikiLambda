@@ -15,16 +15,10 @@ use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPendingFragment;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
-use MediaWiki\Registration\ExtensionRegistry;
-use Wikibase\Client\Store\ClientStore;
-use Wikibase\Client\Usage\UsageAccumulator;
-use Wikibase\Client\Usage\UsageAccumulatorFactory;
-use Wikibase\DataModel\Entity\EntityIdParser;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\Lib\Store\SiteLinkLookup;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\LiteralStringPFragment;
@@ -67,38 +61,15 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 	}
 
 	/**
-	 * @param string $item
+	 * @param ?string $itemQid
 	 */
-	protected function mockWikibaseClientServices( $item ) {
-		$itemId = new ItemId( $item );
+	protected function mockWikidataSiteLinkLookup( $itemQid = null ) {
+		$mockLookup = $this->createMock( WikidataEntityLookup::class );
+		$mockLookup
+			->method( 'getWikidataItemForTitle' )
+			->willReturn( $itemQid );
 
-		$mockSiteLinkLookup = $this->createMock( SiteLinkLookup::class );
-		$mockSiteLinkLookup
-			->method( 'getItemIdForLink' )
-			->willReturn( $itemId );
-
-		$mockWikibaseClientStore = $this->createMock( ClientStore::class );
-		$mockWikibaseClientStore
-			->method( 'getSiteLinkLookup' )
-			->willReturn( $mockSiteLinkLookup );
-
-		$mockUsageAccumulator = $this->createMock( UsageAccumulator::class );
-		$mockUsageAccumulator->method( 'addAllUsage' );
-
-		$mockUsageAccumulatorFactory = $this->createMock( UsageAccumulatorFactory::class );
-		$mockUsageAccumulatorFactory
-			->method( 'newFromParserOutputProvider' )
-			->willReturn( $mockUsageAccumulator );
-
-		$mockEntityIdParser = $this->createMock( EntityIdParser::class );
-		$mockEntityIdParser
-			->method( 'parse' )
-			->willReturnMap( [ [ $item, $itemId ] ] );
-
-		// Wire mock services
-		$this->setService( 'WikibaseClient.Store', $mockWikibaseClientStore );
-		$this->setService( 'WikibaseClient.UsageAccumulatorFactory', $mockUsageAccumulatorFactory );
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
+		$this->setService( 'WikiLambdaWikidataEntityLookup', $mockLookup );
 	}
 
 	/**
@@ -118,13 +89,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$mockClientStore->method( 'fetchFromZObjectCache' )->with( 'Z10000' )->willReturn( $cachedFunction );
 		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
 
-		if ( $linkedItem ) {
-			if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-				$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
-			}
-
-			$this->mockWikibaseClientServices( $linkedItem );
-		}
+		$this->mockWikidataSiteLinkLookup( $linkedItem );
 
 		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
 

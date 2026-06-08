@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WikiLambda integration test suite for the ZFunction class
+ * WikiLambda integration test suite for the ListFunctionsByTest special page
  *
  * @copyright 2020– WikiLambda team; see AUTHORS.txt
  * @license MIT

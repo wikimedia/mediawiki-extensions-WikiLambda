@@ -16,6 +16,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -52,7 +53,8 @@ class PageRenderingHandler implements
 		private readonly UserOptionsLookup $userOptionsLookup,
 		private readonly LanguageNameUtils $languageNameUtils,
 		private readonly LanguageFactory $languageFactory,
-		private readonly ZObjectStore $zObjectStore
+		private readonly ZObjectStore $zObjectStore,
+		private readonly WikidataEntityLookup $entityLookup
 	) {
 	}
 
@@ -715,7 +717,7 @@ class PageRenderingHandler implements
 			return null;
 		}
 
-		return AbstractContentUtils::resolveAbstractLabel( $entityId, $currentPageContentLanguageCode );
+		return $this->entityLookup->resolveAbstractLabel( $entityId, $currentPageContentLanguageCode );
 	}
 
 	/**

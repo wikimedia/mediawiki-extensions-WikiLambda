@@ -15,3 +15,8 @@
 .env
 CLAUDE.md
 .claude
+# Allow lede, and two sample items, ignore the rest
+fixtures/wikidata/*
+!fixtures/wikidata/Q319.json
+!fixtures/wikidata/Q42.json
+!fixtures/wikidata/Q8776414.json

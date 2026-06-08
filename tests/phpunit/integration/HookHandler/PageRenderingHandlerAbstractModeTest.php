@@ -10,7 +10,6 @@ use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegration
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\UserOptionsLookup;
@@ -28,11 +27,6 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 		parent::setUp();
 		$this->setUpAsClientMode();
 
-		// Ensure Wikibase classes are loaded
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient not available' );
-		}
-
 		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
 		$mockHashConfigAbstractMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
@@ -48,12 +42,18 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 
 		$mockLanguageFactory = $this->createMock( LanguageFactory::class );
 
+		// Mock item Japchae/Q715040, with only label in English
+		$mockWikidataEntityLookup = $this->mockWikidataEntityLookup( [
+			'Q715040' => [ 'en' => 'japchae' ]
+		] );
+
 		$this->pageRenderingHandlerAbstractMode = new PageRenderingHandler(
 			$mockHashConfigAbstractMode,
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			$mockWikidataEntityLookup
 		);
 	}
 
@@ -64,11 +64,10 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 		);
 		$this->editPage( 'Q715040', $content, 'test abstract page', 2300 );
 
-		// Mock Wikibase services to return a fake entity with a label
-		$this->mockWikibaseClientServicesForAbstractMode( 'Q715040', 'en', 'japchae' );
-
 		// Set up a RequestContext to simulate being on a special page
 		$context = RequestContext::getMain();
+
+		// Set language 'en' to simulate label existing use case
 		$context->setLanguage( 'en' );
 		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
 		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
@@ -98,32 +97,13 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 	}
 
 	public function testOnHtmlPageLinkRendererEnd_abstractMode_missingLabel() {
-		// Mock Wikibase services to return an entity with no label for the requested language
-		$mockTermList = $this->createMock( \Wikibase\DataModel\Term\TermList::class );
-		$mockTermList->method( 'getByLanguage' )
-			->willThrowException( new \OutOfBoundsException( 'Term with languageCode "en" not found' ) );
-
-		$mockItem = $this->createMock( \Wikibase\DataModel\Entity\Item::class );
-		$mockItem->method( 'getLabels' )->willReturn( $mockTermList );
-
-		$mockEntityLookup = $this->createMock( \Wikibase\DataModel\Services\Lookup\EntityLookup::class );
-		$mockEntityLookup->method( 'getEntity' )->willReturn( $mockItem );
-
-		$mockClientStore = $this->createMock( \Wikibase\Client\Store\ClientStore::class );
-		$mockClientStore->method( 'getEntityLookup' )->willReturn( $mockEntityLookup );
-
-		$mockItemId = $this->createMock( \Wikibase\DataModel\Entity\ItemId::class );
-		$mockEntityIdParser = $this->createMock( \Wikibase\DataModel\Entity\EntityIdParser::class );
-		$mockEntityIdParser->method( 'parse' )->willReturnMap( [ [ 'Q715040', $mockItemId ] ] );
-
-		$this->setService( 'WikibaseClient.Store', $mockClientStore );
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
-
 		// Set up a RequestContext to simulate being on a special page
 		$context = RequestContext::getMain();
-		$context->setLanguage( 'en' );
+
+		// Set language 'es' to simulate label missing use case
+		$context->setLanguage( 'es' );
 		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
-		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
+		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'es' ] ) );
 
 		// Create the abstract page in the test DB
 		$content = new AbstractWikiContent( '{ "qid": "Q715040", "sections": {} }' );

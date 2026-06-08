@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Actions\HistoryAction;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 
 class AbstractContentHistoryAction extends HistoryAction {
 	/**
@@ -28,7 +29,9 @@ class AbstractContentHistoryAction extends HistoryAction {
 
 		$entityId = $this->getTitle()->getText();
 		$languageCode = $this->getLanguage()->getCode();
-		$label = AbstractContentUtils::resolveAbstractLabel( $entityId, $languageCode );
+
+		$entityLookup = WikiLambdaServices::getWikidataEntityLookup();
+		$label = $entityLookup->resolveAbstractLabel( $entityId, $languageCode );
 
 		if ( $label === null ) {
 			// (T426833) When no Wikibase label is available, still render the Abstract Article

@@ -14,7 +14,6 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Parser\ParserOutput;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
 
 /**
@@ -29,16 +28,19 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		parent::setUp();
 		$this->setUpAsClientMode();
 
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient not available' );
-		}
+		$mockEntityLookup = $this->mockWikidataEntityLookup( [
+			// With label
+			'Q34086' => [ 'en' => 'Justin Bieber' ],
+			// Without label
+			'Q42' => [],
+		] );
 	}
 
 	private function buildHandler(): AbstractWikiContentHandler {
 		return new AbstractWikiContentHandler(
 			CONTENT_MODEL_ABSTRACT,
 			$this->getServiceContainer()->getMainConfig(),
-			$this->getServiceContainer()->getContentHandlerFactory()
+			$this->getServiceContainer()->get( 'WikiLambdaWikidataEntityLookup' )
 		);
 	}
 
@@ -65,8 +67,6 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$content = new AbstractWikiContent(
 			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
 		);
-
-		$this->mockWikibaseClientServicesForAbstractMode( 'Q34086', 'en', 'Justin Bieber' );
 
 		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
 		$output = $this->runFillParserOutput( $this->buildHandler(), $content, $title );
@@ -96,10 +96,10 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 	public function testFillParserOutputNoDisplayTitleWhenLabelMissing(): void {
 		// Q8776414 is the lede section QID; required by AbstractWikiContent.php validation
 		$content = new AbstractWikiContent(
-			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
 		);
 
-		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
 		$output = $this->runFillParserOutput( $this->buildHandler(), $content, $title );
 
 		$this->assertFalse( $output->getDisplayTitle() );
@@ -107,7 +107,7 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		// (T426833) Even without a label the browser <title> is set to "Q34086 - <sitename>"
 		// — no namespace prefix, no empty parens.
 		$htmlTitle = RequestContext::getMain()->getOutput()->getHTMLTitle();
-		$this->assertStringContainsString( 'Q34086', $htmlTitle );
-		$this->assertStringNotContainsString( '(Q34086)', $htmlTitle );
+		$this->assertStringContainsString( 'Q42', $htmlTitle );
+		$this->assertStringNotContainsString( '(Q42)', $htmlTitle );
 	}
 }

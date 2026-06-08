@@ -1,23 +1,30 @@
 <?php
 
+/**
+ * WikiLambda integration test suite for the ViewAbstract special page
+ *
+ * @copyright 2020– WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Special;
+
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Exception\PermissionsError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Special\SpecialCreateAbstract;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Permissions\Authority;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Tests\Specials\SpecialPageTestBase;
 use MediaWiki\Title\Title;
-use Wikibase\DataModel\Entity\EntityIdParser;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Services\Lookup\EntityLookup;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Special\SpecialCreateAbstract
  * @group Database
  */
 class SpecialCreateAbstractTest extends SpecialPageTestBase {
+	use MockWikidataEntityLookupTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
 
@@ -32,21 +39,11 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
 
-		// When WikibaseClient is loaded, mock entity lookups to always succeed so that
-		// validateSave() does not block test page saves or special-page renders.
-		// Individual tests that need a missing-entity scenario override these mocks.
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$mockEntityIdParser = $this->createMock( EntityIdParser::class );
-			$mockEntityIdParser->method( 'parse' )
-				->willReturnCallback( static fn ( $qid ) => new ItemId( $qid ) );
-
-			$mockEntityLookup = $this->createMock( EntityLookup::class );
-			$mockEntityLookup->method( 'getEntity' )
-				->willReturn( $this->createMock( \Wikibase\DataModel\Entity\Item::class ) );
-
-			$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
-			$this->setService( 'WikibaseClient.EntityLookup', $mockEntityLookup );
-		}
+		// Mock for all test suite: Q42 and Q319 exist, Q999999 doesn't
+		$this->mockWikidataEntityLookup( [
+			'Q42' => [ 'en' => 'Douglas Adams' ],
+			'Q319' => [ 'en' => 'Jupiter' ]
+		] );
 	}
 
 	/**
@@ -114,7 +111,7 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 
 	public function testCreateAbstractContent(): void {
 		// Ensure page does not exist
-		$title = Title::newFromText( 'Q999999', self::TEST_ABSTRACT_NS );
+		$title = Title::newFromText( 'Q319', self::TEST_ABSTRACT_NS );
 		$this->assertFalse( $title->exists() );
 
 		$context = RequestContext::getMain();
@@ -122,7 +119,7 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 		$context->setLanguage( 'en' );
 
 		[ $html, $response ] = $this->executeSpecialPage(
-			/* subpage */ 'Q999999',
+			/* subpage */ 'Q319',
 			/* request */ $context->getRequest(),
 			/* language */ null,
 			/* performer */ null,
@@ -143,7 +140,7 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 
 		$this->assertTrue( $wikiLambdaVars['abstractContent'] );
 		$this->assertTrue( $wikiLambdaVars['createNewPage'] );
-		$this->assertSame( 'Q999999', $wikiLambdaVars['title'] );
+		$this->assertSame( 'Q319', $wikiLambdaVars['title'] );
 		$this->assertSame( 'en', $wikiLambdaVars['zlang'] );
 		$this->assertFalse( $wikiLambdaVars['viewmode'] );
 		$this->assertArrayHasKey( 'content', $wikiLambdaVars );
@@ -151,11 +148,37 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 		$pageTitle = (string)$output->getPageTitle();
 		$this->assertStringContainsString( 'ext-wikilambda-editpage-header', $pageTitle );
 		$this->assertStringContainsString( 'ext-wikilambda-editpage-header__qid', $pageTitle );
-		$this->assertStringContainsString( '>Q999999<', $pageTitle );
+		$this->assertStringContainsString( '>Q319<', $pageTitle );
 		$this->assertStringContainsString(
-			'Create a New Abstract Article for Q999999',
+			'Create a New Abstract Article for Q319',
 			$pageTitle
 		);
+	}
+
+	public function testCreateAbstractContent_failsWithNonExistingItemId(): void {
+		// Ensure page does not exist
+		$title = Title::newFromText( 'Q999999', self::TEST_ABSTRACT_NS );
+		$this->assertFalse( $title->exists() );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html, $response ] = $this->executeSpecialPage(
+			/* subpage */ 'Q999999',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		// Redirects to main CreateAbstract page
+		$location = $response->getHeader( 'Location' );
+		$expectedUrl = 'Special:CreateAbstract';
+
+		$this->assertStringContainsString( $expectedUrl, $location );
+		$this->assertStringNotContainsString( 'Q999999', $location );
 	}
 
 	public function testCreateAbstractSetsPageTitleWithoutQid(): void {
@@ -184,21 +207,7 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 	}
 
 	public function testRedirectsWhenQidNotOnWikidata(): void {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
-		}
-
 		$qid = 'Q999999';
-		$itemId = new ItemId( $qid );
-
-		$mockEntityIdParser = $this->createMock( EntityIdParser::class );
-		$mockEntityIdParser->method( 'parse' )->with( $qid )->willReturn( $itemId );
-
-		$mockEntityLookup = $this->createMock( EntityLookup::class );
-		$mockEntityLookup->method( 'getEntity' )->with( $itemId )->willReturn( null );
-
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
-		$this->setService( 'WikibaseClient.EntityLookup', $mockEntityLookup );
 
 		[ , $response ] = $this->executeSpecialPage(
 			/* subpage */ $qid,

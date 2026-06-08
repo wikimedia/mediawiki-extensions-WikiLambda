@@ -1,0 +1,10 @@
+{
+	"type": "item",
+	"id": "Q8776414",
+	"labels": {
+		"en": { "language": "en", "value": "lead paragraph" },
+		"es": { "language": "es", "value": "entradilla" }
+	},
+	"descriptions": {
+	}
+}

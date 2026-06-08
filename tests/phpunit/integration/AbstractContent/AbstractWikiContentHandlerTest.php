@@ -22,49 +22,32 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOutput;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
-use Wikibase\DataModel\Entity\EntityIdParser;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Services\Lookup\EntityLookup;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent
  * @group Database
  */
-class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
+class AbstractWikiContentHandlerTest extends WikiLambdaClientIntegrationTestCase {
 
 	private const TEST_ABSTRACT_NS = 2300;
 
 	protected function setUp(): void {
 		parent::setUp();
-
-		// When WikibaseClient is loaded, mock entity lookups to always succeed so that
-		// validateSave() does not block test page saves.
-		// Individual tests that need a missing-entity scenario override these mocks.
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$mockEntityIdParser = $this->createMock( EntityIdParser::class );
-			$mockEntityIdParser->method( 'parse' )
-				->willReturnCallback( static fn ( $qid ) => new ItemId( $qid ) );
-
-			$mockEntityLookup = $this->createMock( EntityLookup::class );
-			$mockEntityLookup->method( 'getEntity' )
-				->willReturn( $this->createMock( \Wikibase\DataModel\Entity\Item::class ) );
-
-			$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
-			$this->setService( 'WikibaseClient.EntityLookup', $mockEntityLookup );
-		}
 	}
 
 	/**
 	 * @param string|null $modelId
 	 */
 	private function buildAbstractWikiContentHandler( ?string $modelId = null ): AbstractWikiContentHandler {
+		$mockWikidataEntityLookup = $this->mockWikidataEntityLookup( [
+			'Q42' => [ 'en' => 'Douglas Adams' ],
+		] );
 		return new AbstractWikiContentHandler(
 			$modelId ?? CONTENT_MODEL_ABSTRACT,
 			$this->getServiceContainer()->getMainConfig(),
-			$this->getServiceContainer()->getContentHandlerFactory()
+			$mockWikidataEntityLookup
 		);
 	}
 
@@ -208,24 +191,8 @@ class AbstractWikiContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testValidateSave_nonexistentQid(): void {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'WikibaseClient' ) ) {
-			$this->markTestSkipped( 'WikibaseClient extension is not loaded' );
-		}
-
-		$qid = 'Q999999';
-		$itemId = new ItemId( $qid );
-
-		$mockEntityIdParser = $this->createMock( EntityIdParser::class );
-		$mockEntityIdParser->method( 'parse' )->with( $qid )->willReturn( $itemId );
-
-		$mockEntityLookup = $this->createMock( EntityLookup::class );
-		$mockEntityLookup->method( 'getEntity' )->with( $itemId )->willReturn( null );
-
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
-		$this->setService( 'WikibaseClient.EntityLookup', $mockEntityLookup );
-
 		$handler = $this->buildAbstractWikiContentHandler();
-		$title = Title::newFromText( $qid, self::TEST_ABSTRACT_NS );
+		$title = Title::newFromText( 'Q999999', self::TEST_ABSTRACT_NS );
 
 		$content = new AbstractWikiContent(
 			'{"qid":"Q999999","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'

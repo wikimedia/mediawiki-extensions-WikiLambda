@@ -101,6 +101,13 @@ class WikiLambdaServices {
 	}
 
 	/**
+	 * @return WikidataEntityLookup
+	 */
+	public static function getWikidataEntityLookup(): WikidataEntityLookup {
+		return MediaWikiServices::getInstance()->getService( 'WikiLambdaWikidataEntityLookup' );
+	}
+
+	/**
 	 * Constructs a new instance of ZObjectStore.
 	 * Reused by service wiring and installer bootstrapping.
 	 *

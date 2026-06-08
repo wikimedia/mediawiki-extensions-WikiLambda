@@ -14,6 +14,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -38,6 +39,7 @@ use MediaWiki\User\User;
  * @group Database
  */
 class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
+	use MockWikidataEntityLookupTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
 	private PageRenderingHandler $pageRenderingHandler;
@@ -62,14 +64,15 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 		$mockLanguageNameUtils->method( 'getLanguageName' )->willReturn( '' );
 
 		$mockLanguageFactory = $this->createMock( LanguageFactory::class );
+		$mockWikidataEntityLookup = $this->mockWikidataEntityLookup( [ 'Q1234' => [] ] );
 
 		$this->pageRenderingHandler = new PageRenderingHandler(
 			$mockHashConfigRepoMode,
-			// $mockHashConfigNotRepoMode,
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			$mockWikidataEntityLookup
 		);
 
 		$mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
@@ -83,7 +86,8 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			$mockWikidataEntityLookup
 		);
 
 		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
@@ -97,7 +101,8 @@ class PageRenderingHandlerTest extends WikiLambdaIntegrationTestCase {
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			$mockWikidataEntityLookup
 		);
 	}
 

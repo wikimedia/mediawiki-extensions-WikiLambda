@@ -101,5 +101,9 @@ return [
 		return new WikifunctionsLanguageFactory(
 			$services->getLanguageFactory()
 		);
+	},
+
+	'WikiLambdaWikidataEntityLookup' => static function ( MediaWikiServices $services ): WikidataEntityLookup {
+		return new WikidataEntityLookup();
 	}
 ];

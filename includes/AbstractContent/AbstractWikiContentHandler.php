@@ -22,6 +22,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\UIUtils;
+use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -41,10 +42,12 @@ class AbstractWikiContentHandler extends ContentHandler {
 	/**
 	 * @param string $modelId
 	 * @param Config $config
+	 * @param WikidataEntityLookup $entityLookup
 	 */
 	public function __construct(
 		$modelId,
 		private readonly Config $config,
+		private readonly WikidataEntityLookup $entityLookup
 	) {
 		if ( $modelId !== CONTENT_MODEL_ABSTRACT ) {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
@@ -149,7 +152,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 		}
 		// Check if the QID exists on Wikidata
 		// If WikibaseClient is not loaded, we skip this check and let the save proceed.
-		if ( AbstractContentUtils::wikidataItemExists( $qid ) === false ) {
+		if ( $this->entityLookup->wikidataItemExists( $qid ) === false ) {
 			return StatusValue::newFatal( 'wikilambda-abstract-error-nonexistent-qid', $qid );
 		}
 
@@ -252,7 +255,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 		// Set display title to show Wikibase label if available
 		$qid = $title->getBaseText();
 		$langCode = $userLang->getCode();
-		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode );
+		$label = $this->entityLookup->resolveAbstractLabel( $qid, $langCode );
 		if ( $label !== null ) {
 			$parserOutput->setDisplayTitle(
 				PageTitleBuilder::createAbstractViewPageTitle(

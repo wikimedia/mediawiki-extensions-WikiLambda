@@ -47,13 +47,13 @@ class AbstractContentHistoryActionTest extends WikiLambdaClientIntegrationTestCa
 	}
 
 	public function testGetPageTitleReturnsLabelForValidEntity() {
+		$this->mockWikidataEntityLookup( [ 'Q34086' => [ 'en' => 'Justin Bieber' ] ] );
+
 		$content = new AbstractWikiContent(
 			// Q8776414 is the lede section QID; required by AbstractWikiContent.php validation
 			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
 		);
 		$this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
-
-		$this->mockWikibaseClientServicesForAbstractMode( 'Q34086', 'en', 'Justin Bieber' );
 
 		$action = $this->makeAction( 'Q34086' );
 		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
@@ -76,31 +76,13 @@ class AbstractContentHistoryActionTest extends WikiLambdaClientIntegrationTestCa
 	}
 
 	public function testGetPageTitleFallsBackWhenLabelMissing() {
+		$this->mockWikidataEntityLookup( [ 'Q34086' => [ 'es' => 'Justino Castor' ] ] );
+
 		// Q8776414 is the lede section QID; required by AbstractWikiContent.php validation
 		$content = new AbstractWikiContent(
 			'{"qid":"Q34086","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
 		);
 		$this->editPage( 'Q34086', $content, 'test abstract page', self::TEST_ABSTRACT_NS );
-
-		$mockTermList = $this->createMock( \Wikibase\DataModel\Term\TermList::class );
-		$mockTermList->method( 'getByLanguage' )
-			->willThrowException( new \OutOfBoundsException( 'Term with languageCode "en" not found' ) );
-
-		$mockItem = $this->createMock( \Wikibase\DataModel\Entity\Item::class );
-		$mockItem->method( 'getLabels' )->willReturn( $mockTermList );
-
-		$mockEntityLookup = $this->createMock( \Wikibase\DataModel\Services\Lookup\EntityLookup::class );
-		$mockEntityLookup->method( 'getEntity' )->willReturn( $mockItem );
-
-		$mockClientStore = $this->createMock( \Wikibase\Client\Store\ClientStore::class );
-		$mockClientStore->method( 'getEntityLookup' )->willReturn( $mockEntityLookup );
-
-		$mockItemId = $this->createMock( \Wikibase\DataModel\Entity\ItemId::class );
-		$mockEntityIdParser = $this->createMock( \Wikibase\DataModel\Entity\EntityIdParser::class );
-		$mockEntityIdParser->method( 'parse' )->willReturnMap( [ [ 'Q34086', $mockItemId ] ] );
-
-		$this->setService( 'WikibaseClient.Store', $mockClientStore );
-		$this->setService( 'WikibaseClient.EntityIdParser', $mockEntityIdParser );
 
 		$action = $this->makeAction( 'Q34086' );
 		$result = $this->invokeGetPageTitle( $action )->text();
@@ -127,5 +109,4 @@ class AbstractContentHistoryActionTest extends WikiLambdaClientIntegrationTestCa
 		$article = Article::newFromTitle( $title, $context );
 		return new AbstractContentHistoryAction( $article, $context );
 	}
-
 }

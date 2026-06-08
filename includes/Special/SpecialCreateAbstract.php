@@ -13,8 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 use MediaWiki\Content\ContentHandlerFactory;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditPageTrait;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
@@ -25,7 +25,8 @@ class SpecialCreateAbstract extends SpecialPage {
 
 	public function __construct(
 		private readonly RevisionStore $revisionStore,
-		private readonly ContentHandlerFactory $contentHandlerFactory
+		private readonly ContentHandlerFactory $contentHandlerFactory,
+		private readonly WikidataEntityLookup $entityLookup
 	) {
 		parent::__construct( 'CreateAbstract' );
 	}
@@ -159,7 +160,7 @@ class SpecialCreateAbstract extends SpecialPage {
 		// If a QID was supplied but it doesn't exist on Wikidata, redirect to a clean create page
 		// If WikibaseClient is not loaded, we skip this check and let the create page proceed.
 		$qid = $title->getText();
-		if ( $qid !== '' && AbstractContentUtils::wikidataItemExists( $qid ) === false ) {
+		if ( $qid !== '' && $this->entityLookup->wikidataItemExists( $qid ) === false ) {
 			$output->redirect( SpecialPage::getTitleFor( 'CreateAbstract' )->getFullURL() );
 			return;
 		}

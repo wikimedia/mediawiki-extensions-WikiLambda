@@ -13,8 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
@@ -34,6 +34,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		private readonly LanguageFactory $languageFactory,
 		private readonly LanguageNameUtils $languageNameUtils,
 		private readonly UrlUtils $urlUtils,
+		private readonly WikidataEntityLookup $entityLookup
 	) {
 		parent::__construct( 'ViewAbstract' );
 	}
@@ -184,7 +185,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// Set page title to the object being viewed.
 		$qid = $targetTitle->getText();
 		$langCode = $targetLanguageObject->getCode();
-		$label = AbstractContentUtils::resolveAbstractLabel( $qid, $langCode );
+		$label = $this->entityLookup->resolveAbstractLabel( $qid, $langCode );
 
 		// Rich HTML for the H1 display: fall back to the QID as the title text when no
 		// Wikibase label is available (the QID chip still renders alongside it).
