@@ -37,62 +37,7 @@ class WikifunctionsClientUsageUpdateJobTest extends WikiLambdaClientIntegrationT
 		] );
 	}
 
-	public function testRun_insertsUsageRow() {
-		$job = $this->buildJob( 'Z10070', 'TestUsageJobPage' );
-
-		$result = $job->run();
-
-		$this->assertTrue( $result );
-		$this->assertSame(
-			[ 'TestUsageJobPage' ],
-			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( 'Z10070' )
-		);
-	}
-
-	public function testRun_handlesNamespacedTitle() {
-		$job = $this->buildJob( 'Z10071', 'Namespaced target', NS_TEMPLATE );
-
-		$result = $job->run();
-
-		$this->assertTrue( $result );
-		$pages = WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( 'Z10071' );
-		$this->assertCount( 1, $pages );
-		$this->assertSame( 'Template:Namespaced target', $pages[0] );
-	}
-
-	public function testRun_duplicateInsertStillReturnsTrue() {
-		$job = $this->buildJob( 'Z10072', 'TestDuplicatePage' );
-
-		$job->run();
-		$result = $job->run();
-
-		$this->assertTrue( $result, 'Job should return true even when the row already exists' );
-		$this->assertSame(
-			[ 'TestDuplicatePage' ],
-			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( 'Z10072' )
-		);
-	}
-
-	public function testRun_earlyReturnWhenClientModeDisabled() {
-		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
-
-		$job = $this->buildJob( 'Z10073', 'TestNoClientModePage' );
-
-		$result = $job->run();
-
-		$this->assertTrue( $result, 'Job should return true (silently skip) when client mode is off' );
-		$this->assertSame(
-			[],
-			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( 'Z10073' ),
-			'No usage row should be inserted when client mode is disabled'
-		);
-	}
-
-	// ------------------------------------------------------------------
-	// Dual-write to the shared cross-wiki usage table on x1 (T390557)
-	// ------------------------------------------------------------------
-
-	public function testRun_dualWritesToSharedUsageTableForExistingPage() {
+	public function testRun_recordsUsageForExistingPage() {
 		// A wikitext namespace is needed for a real page here, as NS_MAIN is the ZObject
 		// content model under repo mode. The null-namespace-text (main namespace) case is
 		// covered by WikifunctionsUsageStoreTest.
@@ -109,7 +54,7 @@ class WikifunctionsClientUsageUpdateJobTest extends WikiLambdaClientIntegrationT
 		$this->assertSame( $page->getTitle()->getDBkey(), $usage[0]['title'] );
 	}
 
-	public function testRun_dualWriteRecordsNamespaceTextForNamespacedPage() {
+	public function testRun_recordsNamespaceTextForNamespacedPage() {
 		$page = $this->getExistingTestPage( 'Template:Shared usage tpl' );
 
 		$job = $this->buildJob( 'Z10081', $page->getTitle()->getDBkey(), NS_TEMPLATE );
@@ -121,21 +66,30 @@ class WikifunctionsClientUsageUpdateJobTest extends WikiLambdaClientIntegrationT
 		$this->assertSame( 'Template', $usage[0]['namespaceText'] );
 	}
 
-	public function testRun_skipsSharedUsageForNonexistentPage() {
-		// No page is created, so Title::getId() is 0 and the shared (x1) write is skipped:
-		// this is how a render of a not-yet-saved page (e.g. a preview) avoids polluting
-		// the cross-wiki table. The legacy local table still records it, unchanged.
+	public function testRun_skipsUsageForNonexistentPage() {
+		// No page is created, so Title::getId() is 0 and the write is skipped: this is how a
+		// render of a not-yet-saved page (e.g. a preview) avoids polluting the cross-wiki table.
 		$job = $this->buildJob( 'Z10082', 'No such page here', NS_MAIN );
 		$this->assertTrue( $job->run() );
 
 		$this->assertSame(
 			[],
 			WikiLambdaServices::getWikifunctionsUsageStore()->fetchUsage( 'Z10082' ),
-			'A non-existent page must not create a shared-usage row'
+			'A non-existent page must not create a usage row'
 		);
+	}
+
+	public function testRun_earlyReturnWhenClientModeDisabled() {
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
+		$page = $this->getExistingTestPage( 'Help:Client mode off' );
+
+		$job = $this->buildJob( 'Z10083', $page->getTitle()->getDBkey(), NS_HELP );
+
+		$this->assertTrue( $job->run(), 'Job should return true (silently skip) when client mode is off' );
 		$this->assertSame(
-			[ 'No such page here' ],
-			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( 'Z10082' )
+			[],
+			WikiLambdaServices::getWikifunctionsUsageStore()->fetchUsage( 'Z10083' ),
+			'No usage row should be recorded when client mode is disabled'
 		);
 	}
 
@@ -156,11 +110,6 @@ class WikifunctionsClientUsageUpdateJobTest extends WikiLambdaClientIntegrationT
 
 		$this->assertTrue( $job->run(), 'The job must succeed, and must not throw' );
 
-		$this->assertSame(
-			[],
-			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( $target ),
-			'A target that is not a ZID must not reach the local usage table'
-		);
 		// fetchUsage() would itself reject the target, so count the rows directly.
 		$this->assertSame(
 			0,

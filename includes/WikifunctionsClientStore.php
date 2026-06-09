@@ -12,9 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\Rdbms\IConnectionProvider;
 
 class WikifunctionsClientStore {
 
@@ -23,81 +21,12 @@ class WikifunctionsClientStore {
 
 	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
 
-	/**
-	 * @param IConnectionProvider $dbProvider
-	 */
-	public function __construct( private readonly IConnectionProvider $dbProvider ) {
+	public function __construct() {
 		// Non-injected items
 		// This can't be injected, as the service container runs before the extension is loaded
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
-	}
-
-	/**
-	 * Track in wikifunctionsclient_usage the usage of a function on a page.
-	 *
-	 * This method is idempotent: calling it multiple times with the same arguments
-	 * has the same effect as calling it once, since duplicate rows are silently
-	 * ignored via INSERT IGNORE.
-	 *
-	 * NOTE: wfcu_targetPage is stored as getPrefixedText() (e.g. "Template:Foo bar").
-	 * All readers and writers of this column must use the same representation:
-	 * deleteWikifunctionsUsage() below, and WikifunctionsRecentChangesInsertJob
-	 * which reconstructs a Title via Title::newFromText().
-	 *
-	 * @param string $targetFunction
-	 * @param Title $targetPage
-	 * @return bool Always true; the row is either newly inserted or already present.
-	 */
-	public function insertWikifunctionsUsage( string $targetFunction, Title $targetPage ): bool {
-		$dbw = $this->dbProvider->getPrimaryDatabase();
-
-		$dbw->newInsertQueryBuilder()
-			->insertInto( 'wikifunctionsclient_usage' )
-			->row( [
-				'wfcu_targetPage' => $targetPage->getPrefixedText(),
-				'wfcu_targetFunction' => $targetFunction,
-			] )
-			// We don't mind duplicates (i.e., the same Function is used twice on the same page)
-			->ignore()
-			->caller( __METHOD__ )->execute();
-
-		return true;
-	}
-
-	/**
-	 * Check in wikifunctionsclient_usage the pages on which a function is used.
-	 *
-	 * @param string $targetFunction
-	 * @return array
-	 */
-	public function fetchWikifunctionsUsage( string $targetFunction ): array {
-		$dbr = $this->dbProvider->getReplicaDatabase();
-		return $dbr->newSelectQueryBuilder()
-			->select( 'wfcu_targetPage' )
-			->from( 'wikifunctionsclient_usage' )
-			->where( [ 'wfcu_targetFunction' => $targetFunction ] )
-			->caller( __METHOD__ )
-			->fetchFieldValues();
-	}
-
-	/**
-	 * Drop tracking in wikifunctionsclient_usage of a page.
-	 *
-	 * NOTE: Must match the representation used by insertWikifunctionsUsage() — see the
-	 * note on that method for the full list of readers/writers of wfcu_targetPage.
-	 *
-	 * @param Title $targetPage
-	 * @return void
-	 */
-	public function deleteWikifunctionsUsage( Title $targetPage ): void {
-		$dbw = $this->dbProvider->getPrimaryDatabase();
-
-		$dbw->newDeleteQueryBuilder()
-			->deleteFrom( 'wikifunctionsclient_usage' )
-			->where( [ 'wfcu_targetPage' => $targetPage->getPrefixedText() ] )
-			->caller( __METHOD__ )->execute();
 	}
 
 	/**

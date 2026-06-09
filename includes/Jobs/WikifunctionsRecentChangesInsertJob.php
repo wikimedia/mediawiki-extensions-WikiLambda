@@ -299,10 +299,10 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 			$changeAttributes = $generalAttributes + $titleSpecificAttribs;
 
 			$this->logger->debug(
-				__CLASS__ . ': Inserting a RecentChange for {targetZObject} on page {target}',
+				__CLASS__ . ': Inserting a RecentChange for {targetZObject} on page ID {target}',
 				[
 					'targetZObject' => $this->params['target'],
-					'target' => $title->getPrefixedText()
+					'target' => $pageId
 				]
 			);
 

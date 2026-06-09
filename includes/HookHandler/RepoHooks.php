@@ -509,14 +509,11 @@ class RepoHooks implements
 
 		$config = MediaWikiServices::getInstance()->getMainConfig();
 
-		// Insert the tables for client-mode, if needed (most production wikis, and development machines)
+		// Drop the legacy per-wiki client usage table; usage is now tracked in the shared
+		// cross-wiki wikifunctions_usage table (T390557). (::has() first, as we'll likely be
+		// in pre-extension registry mode.)
 		if ( $config->has( 'WikiLambdaEnableClientMode' ) && $config->get( 'WikiLambdaEnableClientMode' ) ) {
-			// Note that we're calling ::has() first, as we'll likely be in pre-extension registry mode
-			$clientTables = [ 'usage' ];
-
-			foreach ( $clientTables as $table ) {
-				$updater->addExtensionTable( 'wikifunctionsclient_' . $table, "$dir/$type/table-$table.sql" );
-			}
+			$updater->dropExtensionTable( 'wikifunctionsclient_usage' );
 		}
 
 		// Insert the tables for abstract-client-mode, if needed.

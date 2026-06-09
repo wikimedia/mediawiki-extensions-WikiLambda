@@ -83,28 +83,17 @@ class ClientHooks implements
 			return;
 		}
 
-		// We use this hook to clear out cached tracking of Wikifunctions calls, if any.
-		// Any new entries are added by WikifunctionsClientUsageUpdateJob, which runs later.
-		$wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
-		$this->logger->debug( __METHOD__ . ': Clearing usage tracking for {page}', [
-			'page' => $wikiPage->getTitle()->getFullText(),
-		] );
-		$wikifunctionsClientStore->deleteWikifunctionsUsage( $wikiPage->getTitle() );
-
-		// Also clear the shared cross-wiki usage table on x1 (T390557); like the legacy
-		// delete above, entries for any Functions still in use are re-added afterwards by
-		// WikifunctionsClientUsageUpdateJob.
 		// Clear this page's rows from the shared cross-wiki usage table (T390557); any
 		// Functions still in use are re-recorded afterwards by WikifunctionsClientUsageUpdateJob.
 		//
 		// NOTE: This fires on every page save and deletes by (wiki, page_id) even for the
 		// vast majority of pages that never use a Function, so it is usually a no-op delete
-		// against the shared x1 cluster. We accept that for now. The cheap alternative —
-		// only deleting when the local delete above actually affected rows — would couple
-		// us to the legacy wikifunctionsclient_usage table, which is removed later in this
-		// series; revisit the cost then.
+		// against the shared x1 cluster. We accept that for now.
 		$pageId = $wikiPage->getId();
 		if ( $pageId > 0 ) {
+			$this->logger->debug( __METHOD__ . ': Clearing usage tracking for {page}', [
+				'page' => $wikiPage->getTitle()->getFullText(),
+			] );
 			WikiLambdaServices::getWikifunctionsUsageStore()->deleteUsageForPage(
 				WikiMap::getCurrentWikiId(),
 				$pageId
@@ -141,8 +130,6 @@ class ClientHooks implements
 		// A deleted page no longer uses any Function, so drop its rows from the shared
 		// cross-wiki usage table. Unlike an edit, deletion fires no re-render to reconcile
 		// the rows, so without this they would leak permanently (page_ids are not reused).
-		// The legacy local table is intentionally left alone here, matching its
-		// pre-existing behaviour; it is removed later in this series.
 		$wikifunctionsUsageStore = WikiLambdaServices::getWikifunctionsUsageStore();
 		$this->logger->debug( __METHOD__ . ': Clearing usage tracking for deleted page {pageId}', [
 			'pageId' => $pageID,

@@ -70,9 +70,7 @@ return [
 	// For client wikis
 
 	'WikifunctionsClientStore' => static function ( MediaWikiServices $services ): WikifunctionsClientStore {
-		return new WikifunctionsClientStore(
-			$services->getConnectionProvider()
-		);
+		return new WikifunctionsClientStore();
 	},
 
 	// For cross-wiki Function-usage tracking (written by client wikis, read by the repo);

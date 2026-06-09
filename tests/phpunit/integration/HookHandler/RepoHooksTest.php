@@ -68,14 +68,8 @@ class RepoHooksTest extends WikiLambdaIntegrationTestCase {
 		$hooks = new RepoHooks();
 		$mockUpdater = $this->newMockUpdater( 'mysql' );
 
-		// Client mode should add the usage table
-		$mockUpdater->expects( $this->once() )
-			->method( 'addExtensionTable' )
-			->with(
-				'wikifunctionsclient_usage',
-				$this->stringContains( 'mysql/table-usage.sql' )
-			);
-
+		// (T390557) Client mode should not add the usage table any more, it's central
+		$mockUpdater->expects( $this->never() )->method( 'addExtensionTable' );
 		// No repo-mode fields or updates
 		$mockUpdater->expects( $this->never() )->method( 'addExtensionField' );
 		$mockUpdater->expects( $this->never() )->method( 'addExtensionUpdate' );
@@ -108,8 +102,8 @@ class RepoHooksTest extends WikiLambdaIntegrationTestCase {
 		$hooks = new RepoHooks();
 		$mockUpdater = $this->newMockUpdater( 'sqlite' );
 
-		// 1 client table + 6 repo tables = 7
-		$mockUpdater->expects( $this->exactly( 7 ) )->method( 'addExtensionTable' );
+		// 6 repo tables (same as testOnLoadExtensionSchemaUpdates_repoModeOnly)
+		$mockUpdater->expects( $this->exactly( 6 ) )->method( 'addExtensionTable' );
 
 		$hooks->onLoadExtensionSchemaUpdates( $mockUpdater );
 	}

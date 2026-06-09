@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -27,6 +28,7 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 
 	private LoggerInterface $logger;
 	private WikifunctionsClientStore $wikifunctionsClientStore;
+	private Config $config;
 
 	private string $targetFunction;
 	private string $targetPageText;
@@ -42,7 +44,6 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
-		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 
 		$this->logger->debug(
 			__CLASS__ . ' created for {targetFunction} on {targetPageNS}:{targetPage}',
@@ -112,49 +113,34 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 			return true;
 		}
 
-		$success = $this->wikifunctionsClientStore->insertWikifunctionsUsage(
-			$this->targetFunction,
-			$title
-		);
-
-		// Dual-write to the shared cross-wiki usage table on x1 (T390557). We resolve the
+		// Record usage in the shared cross-wiki usage table on x1 (T390557). We resolve the
 		// page_id here, in the job, rather than at parse time: by the time the job runs the
 		// page row exists for a real save, whereas a preview of a not-yet-created page
-		// resolves to id 0 and is skipped below — so unsaved previews can't pollute the
-		// shared table. Cleanup of removed usage is handled by ClientHooks::onPageSaveComplete.
+		// resolves to id 0 and is skipped — so unsaved previews can't pollute the shared
+		// table. Cleanup of removed usage is handled by ClientHooks::onPageSaveComplete.
 		$pageId = $title->getId();
-		if ( $pageId > 0 ) {
-			WikiLambdaServices::getWikifunctionsUsageStore()->insertUsage(
-				$this->targetFunction,
-				WikiMap::getCurrentWikiId(),
-				$pageId,
-				$title->getNamespace(),
-				// Store null rather than the empty string for the main namespace.
-				$title->getNsText() ?: null,
-				$title->getDBkey()
-			);
+		if ( $pageId <= 0 ) {
+			return true;
 		}
 
-		if ( $success ) {
-			$this->logger->debug(
-				__CLASS__ . ' Updated usage table for {targetFunction} on {targetPageNS}:{targetPage}',
-				[
-					'targetFunction' => $this->targetFunction,
-					'targetPage' => $this->targetPageText,
-					'targetPageNS' => $this->targetPageNamespace,
-				]
-			);
-		} else {
-			$this->logger->info(
-				__CLASS__ . ' Didn\'t update usage for {targetFunction} on {targetPageNS}:{targetPage}; already there?',
-				[
-					'targetFunction' => $this->targetFunction,
-					'targetPage' => $this->targetPageText,
-					'targetPageNS' => $this->targetPageNamespace,
-				]
-			);
+		WikiLambdaServices::getWikifunctionsUsageStore()->insertUsage(
+			$this->targetFunction,
+			WikiMap::getCurrentWikiId(),
+			$pageId,
+			$title->getNamespace(),
+			// Store null rather than the empty string for the main namespace.
+			$title->getNsText() ?: null,
+			$title->getDBkey()
+		);
 
-		}
+		$this->logger->debug(
+			__CLASS__ . ' Recorded usage for {targetFunction} on {targetPageNS}:{targetPage}',
+			[
+				'targetFunction' => $this->targetFunction,
+				'targetPage' => $this->targetPageText,
+				'targetPageNS' => $this->targetPageNamespace,
+			]
+		);
 
 		return true;
 	}

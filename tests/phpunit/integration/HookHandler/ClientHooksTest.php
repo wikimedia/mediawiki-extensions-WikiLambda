@@ -11,7 +11,6 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
-use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Permissions\Authority;
@@ -30,12 +29,9 @@ use MediaWiki\WikiMap\WikiMap;
  */
 class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 
-	private WikifunctionsClientStore $store;
-
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setUpAsClientMode();
-		$this->store = WikiLambdaServices::getWikifunctionsClientStore();
 	}
 
 	private function newClientHooks(): ClientHooks {
@@ -45,40 +41,9 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * Build a minimal WikiPage-like mock that returns the given Title.
-	 *
-	 * @return \MediaWiki\Page\WikiPage A mock WikiPage object
-	 */
-	private function mockWikiPage( Title $title ) {
-		$wikiPage = $this->createMock( \MediaWiki\Page\WikiPage::class );
-		$wikiPage->method( 'getTitle' )->willReturn( $title );
-		return $wikiPage;
-	}
-
 	// ------------------------------------------------------------------
 	// onPageSaveComplete
 	// ------------------------------------------------------------------
-
-	public function testOnPageSaveComplete_clearsUsageTrackingForPage() {
-		$title = Title::newFromText( 'Template:ClientHookTarget' );
-		$this->store->insertWikifunctionsUsage( 'Z10050', $title );
-		$this->store->insertWikifunctionsUsage( 'Z10051', $title );
-		$this->assertNotEmpty( $this->store->fetchWikifunctionsUsage( 'Z10050' ) );
-
-		$hooks = $this->newClientHooks();
-		$hooks->onPageSaveComplete(
-			$this->mockWikiPage( $title ),
-			$this->createMock( UserIdentity::class ),
-			'test summary',
-			EDIT_UPDATE,
-			$this->createMock( RevisionRecord::class ),
-			$this->createMock( EditResult::class )
-		);
-
-		$this->assertSame( [], $this->store->fetchWikifunctionsUsage( 'Z10050' ) );
-		$this->assertSame( [], $this->store->fetchWikifunctionsUsage( 'Z10051' ) );
-	}
 
 	public function testOnPageSaveComplete_clearsSharedUsageForExistingPage() {
 		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
@@ -187,12 +152,15 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 	public function testOnPageSaveComplete_noOpWhenClientModeDisabled() {
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
 
-		$title = Title::newFromText( 'Template:ClientHookSurvivor' );
-		$this->store->insertWikifunctionsUsage( 'Z10060', $title );
+		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$page = $this->getExistingTestPage( 'Template:ClientHookSurvivor' );
+		$usageStore->insertUsage(
+			'Z10060', WikiMap::getCurrentWikiId(), $page->getId(), NS_TEMPLATE, 'Template', 'ClientHookSurvivor'
+		);
 
 		$hooks = $this->newClientHooks();
 		$hooks->onPageSaveComplete(
-			$this->mockWikiPage( $title ),
+			$page,
 			$this->createMock( UserIdentity::class ),
 			'test summary',
 			EDIT_UPDATE,
@@ -200,9 +168,8 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 			$this->createMock( EditResult::class )
 		);
 
-		$this->assertSame(
-			[ 'Template:ClientHookSurvivor' ],
-			$this->store->fetchWikifunctionsUsage( 'Z10060' ),
+		$this->assertNotEmpty(
+			$usageStore->fetchUsage( 'Z10060' ),
 			'Usage should not be cleared when client mode is disabled'
 		);
 	}

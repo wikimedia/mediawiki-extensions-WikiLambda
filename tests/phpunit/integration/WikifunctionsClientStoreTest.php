@@ -1,14 +1,8 @@
 <?php
 
 /**
- * WikiLambda integration test suite for WikifunctionsClientStore.
- *
- * Covers both the DB-side (wikifunctionsclient_usage table) and the cache-side
- * (MemcachedWrapper) surfaces of the store. The DB half requires the client-mode
- * schema to have been installed during PHPUnit bootstrap — which in CI/docker
- * happens because LocalSettings.php sets `$wgWikiLambdaEnableClientMode = true`
- * before `onLoadExtensionSchemaUpdates` runs. If you see "no such table
- * wikifunctionsclient_usage" locally, enable client mode in your dev config.
+ * WikiLambda integration test suite for WikifunctionsClientStore's function-call
+ * and ZObject cache surface (MemcachedWrapper).
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -20,7 +14,6 @@ use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\Title\Title;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
@@ -37,84 +30,6 @@ class WikifunctionsClientStoreTest extends WikiLambdaClientIntegrationTestCase {
 		$this->setUpAsClientMode();
 		$this->store = WikiLambdaServices::getWikifunctionsClientStore();
 		$this->cache = WikiLambdaServices::getMemcachedWrapper();
-	}
-
-	// ------------------------------------------------------------------
-	// DB side: insertWikifunctionsUsage / fetchWikifunctionsUsage / deleteWikifunctionsUsage
-	// ------------------------------------------------------------------
-
-	public function testInsertWikifunctionsUsage_insertsNewRowAndReturnsTrue() {
-		$title = Title::newFromText( 'Template:Test function page', NS_MAIN );
-
-		$result = $this->store->insertWikifunctionsUsage( 'Z10001', $title );
-
-		$this->assertTrue( $result );
-		$this->assertSame(
-			[ 'Template:Test function page' ],
-			$this->store->fetchWikifunctionsUsage( 'Z10001' )
-		);
-	}
-
-	public function testInsertWikifunctionsUsage_duplicateInsertIsIdempotent() {
-		$title = Title::newFromText( 'User:Example' );
-
-		$this->store->insertWikifunctionsUsage( 'Z10002', $title );
-		$result = $this->store->insertWikifunctionsUsage( 'Z10002', $title );
-
-		$this->assertTrue( $result, 'Duplicate insert should still return true' );
-		$this->assertSame(
-			[ 'User:Example' ],
-			$this->store->fetchWikifunctionsUsage( 'Z10002' ),
-			'Duplicate inserts must not produce duplicate rows'
-		);
-	}
-
-	public function testFetchWikifunctionsUsage_returnsAllPagesForFunction() {
-		$titleOne = Title::newFromText( 'Template:Alpha function' );
-		$titleTwo = Title::newFromText( 'Help:Beta guide' );
-
-		$this->store->insertWikifunctionsUsage( 'Z10003', $titleOne );
-		$this->store->insertWikifunctionsUsage( 'Z10003', $titleTwo );
-
-		$pages = $this->store->fetchWikifunctionsUsage( 'Z10003' );
-
-		sort( $pages );
-		$this->assertSame(
-			[ 'Help:Beta guide', 'Template:Alpha function' ],
-			$pages
-		);
-	}
-
-	public function testFetchWikifunctionsUsage_returnsEmptyArrayWhenNoRows() {
-		$this->assertSame(
-			[],
-			$this->store->fetchWikifunctionsUsage( 'Z99999' )
-		);
-	}
-
-	public function testDeleteWikifunctionsUsage_removesAllRowsForPage() {
-		$title = Title::newFromText( 'User:Cleanup target' );
-		$this->store->insertWikifunctionsUsage( 'Z10010', $title );
-		$this->store->insertWikifunctionsUsage( 'Z10011', $title );
-
-		$this->store->deleteWikifunctionsUsage( $title );
-
-		$this->assertSame( [], $this->store->fetchWikifunctionsUsage( 'Z10010' ) );
-		$this->assertSame( [], $this->store->fetchWikifunctionsUsage( 'Z10011' ) );
-	}
-
-	public function testDeleteWikifunctionsUsage_leavesOtherPagesUntouched() {
-		$titleToDelete = Title::newFromText( 'Template:Remove me' );
-		$titleToKeep = Title::newFromText( 'Help:Keep me' );
-		$this->store->insertWikifunctionsUsage( 'Z10020', $titleToDelete );
-		$this->store->insertWikifunctionsUsage( 'Z10020', $titleToKeep );
-
-		$this->store->deleteWikifunctionsUsage( $titleToDelete );
-
-		$this->assertSame(
-			[ 'Help:Keep me' ],
-			$this->store->fetchWikifunctionsUsage( 'Z10020' )
-		);
 	}
 
 	// ------------------------------------------------------------------
