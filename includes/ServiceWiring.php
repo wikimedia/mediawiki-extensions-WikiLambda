@@ -75,6 +75,15 @@ return [
 		);
 	},
 
+	// For cross-wiki Function-usage tracking (written by client wikis, read by the repo);
+	// lives on the shared x1 cluster via the 'virtual-wikifunctions-usage' virtual domain.
+
+	'WikifunctionsUsageStore' => static function ( MediaWikiServices $services ): WikifunctionsUsageStore {
+		return new WikifunctionsUsageStore(
+			$services->getConnectionProvider()
+		);
+	},
+
 	// For abstract mode
 
 	'AbstractWikiRequest' => static function ( MediaWikiServices $services ): AbstractWikiRequest {

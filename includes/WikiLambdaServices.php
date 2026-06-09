@@ -53,6 +53,13 @@ class WikiLambdaServices {
 	}
 
 	/**
+	 * @return WikifunctionsUsageStore
+	 */
+	public static function getWikifunctionsUsageStore(): WikifunctionsUsageStore {
+		return MediaWikiServices::getInstance()->getService( 'WikifunctionsUsageStore' );
+	}
+
+	/**
 	 * @return ZObjectAuthorization
 	 */
 	public static function getZObjectAuthorization(): ZObjectAuthorization {
