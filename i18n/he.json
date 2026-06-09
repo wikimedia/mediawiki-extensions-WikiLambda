@@ -4,6 +4,7 @@
 			"Amire80",
 			"Freddy9",
 			"Guycn2",
+			"Neriah",
 			"Xnet1234",
 			"YaronSh"
 		]
@@ -534,7 +535,7 @@
 	"wikilambda-tester-status-cancel": "ביטול",
 	"wikilambda-tester-status-failed": "נכשלה",
 	"wikilambda-tester-status-passed": "עברה",
-	"wikilambda-tester-status-pending": "בהמתנה...",
+	"wikilambda-tester-status-pending": "בהמתנה",
 	"wikilambda-tester-status-ready": "מוכן",
 	"wikilambda-tester-status-run": "הרצה",
 	"wikilambda-tester-status-running": "בהרצה...",

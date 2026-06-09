@@ -111,5 +111,6 @@
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "금지된 HTML이 포함된 예시 호출입니다.",
 	"wikilambda-restapi-disabled-repo-mode-only": "이 API는 메인 'repo' 위키인 Wikifunctions.org를 제외하고는 사용할 수 없습니다.",
 	"wikilambda-restapi-fetch-too-many": "한 번에 개체를 너무 많이 요청했습니다 ($1개 요청함, 최대 허용 개수는 $2개)",
-	"wikilambda-restapi-revision-mismatch": "'$2' 개체의 $1 판을 요청했지만, 해당 개체를 찾을 수 없습니다"
+	"wikilambda-restapi-revision-mismatch": "'$2' 개체의 $1 판을 요청했지만, 해당 개체를 찾을 수 없습니다",
+	"wikilambda-api-disabled-repo-mode-only": "이 API는 메인 'repo' 위키인 Wikifunctions.org를 제외하고는 사용할 수 없습니다."
 }

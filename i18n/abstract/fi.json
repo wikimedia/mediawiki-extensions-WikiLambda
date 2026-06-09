@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Wikipeedikko"
+		]
+	},
+	"wikilambda-abstract-content-history-title-no-label": "Artikkelin $1 versiohistoria",
+	"wikilambda-abstract-error-nonexistent-qid": "Wikidatakohdetta $1 ei ole olemassa. Valitse kelvollinen wikidatakohde ennen julkaisemista.",
+	"wikilambda-abstract-fragment-function-selector-placeholder": "Valitse funktio, jonka tuotoksena on $2 ($1)",
+	"wikilambda-abstract-fragment-function-selector-popover-body": "Tähän kenttään odotetaan funktiota, jonka arvoksi tulee $2 ($1). Vain tämäntyyppisiä arvoja tuottavat funktiot näytetään haussa.",
+	"wikilambda-abstract-fragment-function-selector-popover-title": "Miksi joitakin funktioita ei ole luettelossa"
+}

@@ -113,5 +113,6 @@
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Voorbeeld van een oproep met niet toegelaten HTML.",
 	"wikilambda-restapi-disabled-repo-mode-only": "Deze API is alleen beschikbaar op de hoofdwiki van de ‘repo’, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "U hebt $1 objecten aangevraagd, wat er te veel tegelijk zijn (maximaal $2 toegestaan)",
-	"wikilambda-restapi-revision-mismatch": "U heeft versie $1 van object ‘$2’ aangevraagd, maar deze is niet gevonden"
+	"wikilambda-restapi-revision-mismatch": "U heeft versie $1 van object ‘$2’ aangevraagd, maar deze is niet gevonden",
+	"wikilambda-api-disabled-repo-mode-only": "Deze API is alleen beschikbaar op de hoofdwiki van de ‘repo’, Wikifunctions.org."
 }
