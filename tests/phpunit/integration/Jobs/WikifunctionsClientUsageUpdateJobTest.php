@@ -87,4 +87,55 @@ class WikifunctionsClientUsageUpdateJobTest extends WikiLambdaClientIntegrationT
 			'No usage row should be inserted when client mode is disabled'
 		);
 	}
+
+	// ------------------------------------------------------------------
+	// Dual-write to the shared cross-wiki usage table on x1 (T390557)
+	// ------------------------------------------------------------------
+
+	public function testRun_dualWritesToSharedUsageTableForExistingPage() {
+		// A wikitext namespace is needed for a real page here, as NS_MAIN is the ZObject
+		// content model under repo mode. The null-namespace-text (main namespace) case is
+		// covered by WikifunctionsUsageStoreTest.
+		$page = $this->getExistingTestPage( 'Help:Shared usage target' );
+
+		$job = $this->buildJob( 'Z10080', $page->getTitle()->getDBkey(), NS_HELP );
+		$this->assertTrue( $job->run() );
+
+		$usage = WikiLambdaServices::getWikifunctionsUsageStore()->fetchUsage( 'Z10080' );
+		$this->assertCount( 1, $usage );
+		$this->assertSame( $page->getId(), $usage[0]['pageId'] );
+		$this->assertSame( NS_HELP, $usage[0]['namespaceId'] );
+		$this->assertSame( 'Help', $usage[0]['namespaceText'] );
+		$this->assertSame( $page->getTitle()->getDBkey(), $usage[0]['title'] );
+	}
+
+	public function testRun_dualWriteRecordsNamespaceTextForNamespacedPage() {
+		$page = $this->getExistingTestPage( 'Template:Shared usage tpl' );
+
+		$job = $this->buildJob( 'Z10081', $page->getTitle()->getDBkey(), NS_TEMPLATE );
+		$this->assertTrue( $job->run() );
+
+		$usage = WikiLambdaServices::getWikifunctionsUsageStore()->fetchUsage( 'Z10081' );
+		$this->assertCount( 1, $usage );
+		$this->assertSame( NS_TEMPLATE, $usage[0]['namespaceId'] );
+		$this->assertSame( 'Template', $usage[0]['namespaceText'] );
+	}
+
+	public function testRun_skipsSharedUsageForNonexistentPage() {
+		// No page is created, so Title::getId() is 0 and the shared (x1) write is skipped:
+		// this is how a render of a not-yet-saved page (e.g. a preview) avoids polluting
+		// the cross-wiki table. The legacy local table still records it, unchanged.
+		$job = $this->buildJob( 'Z10082', 'No such page here', NS_MAIN );
+		$this->assertTrue( $job->run() );
+
+		$this->assertSame(
+			[],
+			WikiLambdaServices::getWikifunctionsUsageStore()->fetchUsage( 'Z10082' ),
+			'A non-existent page must not create a shared-usage row'
+		);
+		$this->assertSame(
+			[ 'No such page here' ],
+			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( 'Z10082' )
+		);
+	}
 }

@@ -17,6 +17,7 @@ use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
+use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -93,10 +94,42 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 		// FIXME: Don't proceed but evict from page if cache job finds that parser object doesn't have our flag? We
 		// have set it (on the PC, not Title) via $extApi->getMetadata()->setExtensionData( 'wikilambda', 'present' );
 
+		$title = Title::newFromText( $this->targetPageText, $this->targetPageNamespace );
+
+		if ( !$title ) {
+			$this->logger->warning(
+				__CLASS__ . ' got an unparseable title for {targetFunction} on {targetPageNS}:{targetPage}',
+				[
+					'targetFunction' => $this->targetFunction,
+					'targetPage' => $this->targetPageText,
+					'targetPageNS' => $this->targetPageNamespace,
+				]
+			);
+			return true;
+		}
+
 		$success = $this->wikifunctionsClientStore->insertWikifunctionsUsage(
 			$this->targetFunction,
-			Title::newFromText( $this->targetPageText, $this->targetPageNamespace )
+			$title
 		);
+
+		// Dual-write to the shared cross-wiki usage table on x1 (T390557). We resolve the
+		// page_id here, in the job, rather than at parse time: by the time the job runs the
+		// page row exists for a real save, whereas a preview of a not-yet-created page
+		// resolves to id 0 and is skipped below — so unsaved previews can't pollute the
+		// shared table. Cleanup of removed usage is handled by ClientHooks::onPageSaveComplete.
+		$pageId = $title->getId();
+		if ( $pageId > 0 ) {
+			WikiLambdaServices::getWikifunctionsUsageStore()->insertUsage(
+				$this->targetFunction,
+				WikiMap::getCurrentWikiId(),
+				$pageId,
+				$title->getNamespace(),
+				// Store null rather than the empty string for the main namespace.
+				$title->getNsText() ?: null,
+				$title->getDBkey()
+			);
+		}
 
 		if ( $success ) {
 			$this->logger->debug(

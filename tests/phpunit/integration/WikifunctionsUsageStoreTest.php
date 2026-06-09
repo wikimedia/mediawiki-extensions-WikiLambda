@@ -162,4 +162,40 @@ class WikifunctionsUsageStoreTest extends WikiLambdaClientIntegrationTestCase {
 		$this->assertCount( 1, $remaining );
 		$this->assertSame( 'dewiki', $remaining[0]['wiki'] );
 	}
+
+	public function testUpdatePageTitle_refreshesEveryRowForThePage() {
+		// Two Functions used on the same page; an in-namespace rename changes only the title.
+		$this->store->insertUsage( 'Z10030', 'enwiki', 77, NS_USER, 'User', 'Sandbox' );
+		$this->store->insertUsage( 'Z10031', 'enwiki', 77, NS_USER, 'User', 'Sandbox' );
+
+		$this->store->updatePageTitle( 'enwiki', 77, 'Renamed sandbox' );
+
+		foreach ( [ 'Z10030', 'Z10031' ] as $function ) {
+			$usage = $this->store->fetchUsage( $function );
+			$this->assertCount( 1, $usage );
+			$this->assertSame( 77, $usage[0]['pageId'], 'The page_id is unchanged by a rename' );
+			$this->assertSame( 'Renamed sandbox', $usage[0]['title'] );
+			$this->assertSame( NS_USER, $usage[0]['namespaceId'], 'The namespace is untouched' );
+			$this->assertSame( 'User', $usage[0]['namespaceText'] );
+		}
+	}
+
+	public function testUpdatePageTitle_isScopedToWikiAndPage() {
+		$this->store->insertUsage( 'Z10032', 'enwiki', 88, NS_MAIN, null, 'Target' );
+		$this->store->insertUsage( 'Z10032', 'dewiki', 88, NS_MAIN, null, 'Ziel' );
+
+		$this->store->updatePageTitle( 'enwiki', 88, 'Renamed target' );
+
+		$byWiki = [];
+		foreach ( $this->store->fetchUsage( 'Z10032' ) as $row ) {
+			$byWiki[ $row['wiki'] ] = $row;
+		}
+
+		$this->assertSame( 'Renamed target', $byWiki['enwiki']['title'] );
+		$this->assertSame(
+			'Ziel',
+			$byWiki['dewiki']['title'],
+			'The same page_id on another wiki must be untouched'
+		);
+	}
 }

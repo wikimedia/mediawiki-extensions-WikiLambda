@@ -13,22 +13,29 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\WikiPage;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\CodexModule;
 use MediaWiki\ResourceLoader\ImageModule;
 use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
+use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
 class ClientHooks implements
 	\MediaWiki\Storage\Hook\PageSaveCompleteHook,
+	\MediaWiki\Page\Hook\PageDeleteCompleteHook,
+	\MediaWiki\Hook\PageMoveCompleteHook,
 	\MediaWiki\ResourceLoader\Hook\ResourceLoaderRegisterModulesHook,
 	\MediaWiki\Output\Hook\MakeGlobalVariablesScriptHook
 {
@@ -65,6 +72,15 @@ class ClientHooks implements
 			return;
 		}
 
+		if ( defined( 'MW_UPDATER' ) || defined( 'MEDIAWIKI_INSTALL' ) ) {
+			// During an install or schema upgrade the wiki's pages are being (re)created by
+			// the bootstrap before the cross-wiki usage table exists (it lives on a virtual
+			// domain, so its schema update runs in a later pass than the page creation). A
+			// freshly bootstrapped page has no prior usage to clear anyway, so skip the write.
+			// Mirrors Echo's PageSaveComplete guard against the same install-time problem.
+			return;
+		}
+
 		// We use this hook to clear out cached tracking of Wikifunctions calls, if any.
 		// Any new entries are added by WikifunctionsClientUsageUpdateJob, which runs later.
 		$wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
@@ -72,9 +88,119 @@ class ClientHooks implements
 			'page' => $wikiPage->getTitle()->getFullText(),
 		] );
 		$wikifunctionsClientStore->deleteWikifunctionsUsage( $wikiPage->getTitle() );
+
+		// Also clear the shared cross-wiki usage table on x1 (T390557); like the legacy
+		// delete above, entries for any Functions still in use are re-added afterwards by
+		// WikifunctionsClientUsageUpdateJob.
+		// Clear this page's rows from the shared cross-wiki usage table (T390557); any
+		// Functions still in use are re-recorded afterwards by WikifunctionsClientUsageUpdateJob.
+		//
+		// NOTE: This fires on every page save and deletes by (wiki, page_id) even for the
+		// vast majority of pages that never use a Function, so it is usually a no-op delete
+		// against the shared x1 cluster. We accept that for now. The cheap alternative —
+		// only deleting when the local delete above actually affected rows — would couple
+		// us to the legacy wikifunctionsclient_usage table, which is removed later in this
+		// series; revisit the cost then.
+		$pageId = $wikiPage->getId();
+		if ( $pageId > 0 ) {
+			WikiLambdaServices::getWikifunctionsUsageStore()->deleteUsageForPage(
+				WikiMap::getCurrentWikiId(),
+				$pageId
+			);
+		}
 	}
 
 	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/PageDeleteComplete
+	 *
+	 * @param ProperPageIdentity $page
+	 * @param Authority $deleter
+	 * @param string $reason
+	 * @param int $pageID
+	 * @param RevisionRecord $deletedRev
+	 * @param \ManualLogEntry $logEntry
+	 * @param int $archivedRevisionCount
+	 * @return bool|void
+	 */
+	public function onPageDeleteComplete(
+		$page, $deleter, $reason, $pageID, $deletedRev, $logEntry, $archivedRevisionCount
+	) {
+		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
+		if ( defined( 'MW_UPDATER' ) || defined( 'MEDIAWIKI_INSTALL' ) ) {
+			// Skip during install/upgrade: the cross-wiki usage table may not exist yet, and
+			// the bootstrap does not delete pages. See onPageSaveComplete() for the full note.
+			return;
+		}
+
+		// A deleted page no longer uses any Function, so drop its rows from the shared
+		// cross-wiki usage table. Unlike an edit, deletion fires no re-render to reconcile
+		// the rows, so without this they would leak permanently (page_ids are not reused).
+		// The legacy local table is intentionally left alone here, matching its
+		// pre-existing behaviour; it is removed later in this series.
+		$wikifunctionsUsageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$this->logger->debug( __METHOD__ . ': Clearing usage tracking for deleted page {pageId}', [
+			'pageId' => $pageID,
+		] );
+		$wikifunctionsUsageStore->deleteUsageForPage( WikiMap::getCurrentWikiId(), $pageID );
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/PageMoveComplete
+	 *
+	 * @param LinkTarget $old
+	 * @param LinkTarget $new
+	 * @param UserIdentity $userIdentity
+	 * @param int $pageid
+	 * @param int $redirid
+	 * @param string $reason
+	 * @param RevisionRecord $revision
+	 * @return bool|void
+	 */
+	public function onPageMoveComplete(
+		$old, $new, $userIdentity, $pageid, $redirid, $reason, $revision
+	) {
+		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+			// Nothing for us to do.
+			return;
+		}
+
+		if ( defined( 'MW_UPDATER' ) || defined( 'MEDIAWIKI_INSTALL' ) ) {
+			// Skip during install/upgrade: the cross-wiki usage table may not exist yet, and
+			// the bootstrap does not move pages. See onPageSaveComplete() for the full note.
+			return;
+		}
+
+		// A move keeps the page_id but may change the namespace and/or the title.
+		$oldTitle = Title::newFromLinkTarget( $old );
+		$newTitle = Title::newFromLinkTarget( $new );
+		$wiki = WikiMap::getCurrentWikiId();
+		$wikifunctionsUsageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$this->logger->debug( __METHOD__ . ': Updating usage tracking for moved page {pageId}', [
+			'pageId' => $pageid,
+		] );
+
+		if ( $oldTitle->getNamespace() === $newTitle->getNamespace() ) {
+			// In-namespace rename: the row's identity (wfu_wiki_id, encoding the namespace) is
+			// unchanged, so only the denormalised title is stale. Refresh it in place so the
+			// repo shows the new name immediately, rather than only after the moved page is
+			// next re-rendered.
+			$wikifunctionsUsageStore->updatePageTitle( $wiki, $pageid, $newTitle->getDBkey() );
+		} else {
+			// A namespace change moves the row to a different wfu_wiki_id, which is part of its
+			// identity, so it can't be updated in place; and we don't know the Functions the
+			// page uses here to re-insert under the new id. Clear the stale rows — the page's
+			// next re-render re-records them with the correct namespace via the usage job.
+			$wikifunctionsUsageStore->deleteUsageForPage( $wiki, $pageid );
+		}
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/MakeGlobalVariablesScript
+	 *
 	 * @param array &$vars
 	 * @param OutputPage $out
 	 */

@@ -217,7 +217,11 @@
 			"ViewUrlCacheHandler",
 			"WikiLambdaCommunityConfigurationHooks"
 		],
-		"PageDeleteComplete": "ViewUrlCacheHandler",
+		"PageDeleteComplete": [
+			"ViewUrlCacheHandler",
+			"WikiLambdaClientHooks"
+		],
+		"PageMoveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
 		"EnhancedChangesListModifyLineData": "WikiLambdaClientChangeHooks",

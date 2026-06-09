@@ -14,12 +14,14 @@ use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegration
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
+use MediaWiki\WikiMap\WikiMap;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks
@@ -75,6 +77,110 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 
 		$this->assertSame( [], $this->store->fetchWikifunctionsUsage( 'Z10050' ) );
 		$this->assertSame( [], $this->store->fetchWikifunctionsUsage( 'Z10051' ) );
+	}
+
+	public function testOnPageSaveComplete_clearsSharedUsageForExistingPage() {
+		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$page = $this->getExistingTestPage( 'Template:Shared usage clear' );
+		$pageId = $page->getId();
+		$wiki = WikiMap::getCurrentWikiId();
+
+		// Seed shared (x1) usage rows for this page on two Functions.
+		$usageStore->insertUsage( 'Z10052', $wiki, $pageId, NS_TEMPLATE, 'Template', 'Shared usage clear' );
+		$usageStore->insertUsage( 'Z10053', $wiki, $pageId, NS_TEMPLATE, 'Template', 'Shared usage clear' );
+		$this->assertNotEmpty( $usageStore->fetchUsage( 'Z10052' ) );
+
+		$hooks = $this->newClientHooks();
+		$hooks->onPageSaveComplete(
+			$page,
+			$this->createMock( UserIdentity::class ),
+			'test summary',
+			EDIT_UPDATE,
+			$this->createMock( RevisionRecord::class ),
+			$this->createMock( EditResult::class )
+		);
+
+		$this->assertSame( [], $usageStore->fetchUsage( 'Z10052' ) );
+		$this->assertSame( [], $usageStore->fetchUsage( 'Z10053' ) );
+	}
+
+	public function testOnPageDeleteComplete_clearsSharedUsageForDeletedPage() {
+		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$page = $this->getExistingTestPage( 'Template:Shared usage delete' );
+		$pageId = $page->getId();
+		$wiki = WikiMap::getCurrentWikiId();
+
+		$usageStore->insertUsage( 'Z10054', $wiki, $pageId, NS_TEMPLATE, 'Template', 'Shared usage delete' );
+		$this->assertNotEmpty( $usageStore->fetchUsage( 'Z10054' ) );
+
+		$hooks = $this->newClientHooks();
+		$hooks->onPageDeleteComplete(
+			$page->getTitle(),
+			$this->createMock( Authority::class ),
+			'test reason',
+			$pageId,
+			$this->createMock( RevisionRecord::class ),
+			// $logEntry is unused by the handler, so a ManualLogEntry mock isn't needed.
+			null,
+			1
+		);
+
+		$this->assertSame( [], $usageStore->fetchUsage( 'Z10054' ) );
+	}
+
+	public function testOnPageMoveComplete_refreshesTitleForInNamespaceRename() {
+		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$page = $this->getExistingTestPage( 'User:Movable sandbox' );
+		$pageId = $page->getId();
+		$wiki = WikiMap::getCurrentWikiId();
+
+		// Recorded while at User:Movable sandbox …
+		$usageStore->insertUsage( 'Z10055', $wiki, $pageId, NS_USER, 'User', 'Movable sandbox' );
+
+		// … then renamed within the User namespace: the row's identity is unchanged, so the
+		// title is refreshed in place.
+		$hooks = $this->newClientHooks();
+		$hooks->onPageMoveComplete(
+			$page->getTitle(),
+			Title::newFromText( 'User:Renamed sandbox' ),
+			$this->createMock( UserIdentity::class ),
+			$pageId,
+			0,
+			'moved',
+			$this->createMock( RevisionRecord::class )
+		);
+
+		$usage = $usageStore->fetchUsage( 'Z10055' );
+		$this->assertCount( 1, $usage );
+		$this->assertSame( $pageId, $usage[0]['pageId'] );
+		$this->assertSame( NS_USER, $usage[0]['namespaceId'], 'The namespace is unchanged' );
+		$this->assertSame( 'User', $usage[0]['namespaceText'] );
+		$this->assertSame( 'Renamed_sandbox', $usage[0]['title'] );
+	}
+
+	public function testOnPageMoveComplete_clearsUsageForCrossNamespaceMove() {
+		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$page = $this->getExistingTestPage( 'User:Movable sandbox' );
+		$pageId = $page->getId();
+		$wiki = WikiMap::getCurrentWikiId();
+
+		// Recorded while at User:Movable sandbox …
+		$usageStore->insertUsage( 'Z10055', $wiki, $pageId, NS_USER, 'User', 'Movable sandbox' );
+
+		// … then moved to a different namespace: the row's identity (wfu_wiki_id) changes, so
+		// the stale rows are cleared and the page's next re-render re-records them.
+		$hooks = $this->newClientHooks();
+		$hooks->onPageMoveComplete(
+			$page->getTitle(),
+			Title::newFromText( 'Template:Now a template' ),
+			$this->createMock( UserIdentity::class ),
+			$pageId,
+			0,
+			'moved',
+			$this->createMock( RevisionRecord::class )
+		);
+
+		$this->assertSame( [], $usageStore->fetchUsage( 'Z10055' ) );
 	}
 
 	public function testOnPageSaveComplete_noOpWhenClientModeDisabled() {

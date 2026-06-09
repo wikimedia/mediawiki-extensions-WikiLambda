@@ -189,6 +189,48 @@ class WikifunctionsUsageStore {
 	}
 
 	/**
+	 * Refresh the denormalised title for every usage row of a page — e.g. after an
+	 * in-namespace rename.
+	 *
+	 * Only the title can be refreshed in place: the namespace is part of the row's identity
+	 * via wfu_wiki_id, so a move that changes namespace resolves to a different wiki_id and
+	 * must instead be cleared with deleteUsageForPage() (the page's next re-parse re-records
+	 * it under the new id). The page_id is the stable identity and does not change on a move,
+	 * so the rows are found by (wiki, page_id), resolving the wiki's wfuw_id set exactly as
+	 * deleteUsageForPage() does. The shared wikifunctions_usage_wikis dimension rows are left
+	 * in place.
+	 *
+	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
+	 * @param int $pageId The page_id of the using page on the using wiki
+	 * @param string $title The page's new title (DBkey, without the namespace)
+	 */
+	public function updatePageTitle(
+		string $wiki,
+		int $pageId,
+		string $title
+	): void {
+		$dbw = $this->getPrimaryDB();
+
+		$wikiIds = $dbw->newSelectQueryBuilder()
+			->select( 'wfuw_id' )
+			->from( 'wikifunctions_usage_wikis' )
+			->where( [ 'wfuw_wiki' => $wiki ] )
+			->caller( __METHOD__ )->fetchFieldValues();
+		if ( !$wikiIds ) {
+			return;
+		}
+
+		$dbw->newUpdateQueryBuilder()
+			->update( 'wikifunctions_usage' )
+			->set( [ 'wfu_title' => $title ] )
+			->where( [
+				'wfu_wiki_id' => $wikiIds,
+				'wfu_page_id' => $pageId,
+			] )
+			->caller( __METHOD__ )->execute();
+	}
+
+	/**
 	 * List the pages, across all wikis, on which a Function is used.
 	 *
 	 * The rows for a Function are clustered under the leading primary-key column, joined
