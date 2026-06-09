@@ -503,6 +503,45 @@ class RepoHooks implements
 			}
 		}
 
+		// Insert the shared cross-wiki Function-usage table, if needed.
+		// Written by client wikis (to record which pages use which Functions) and read by
+		// the repo (to display that usage), so it is created whenever either mode is on.
+		// Virtual domain must be defined for the 'virtual-wikifunctions-usage' key:
+		//
+		// Locally, use the same DB with:
+		// $wgVirtualDomainsMapping['virtual-wikifunctions-usage'] = [
+		// 	'db' => false
+		// ];
+		//
+		// In production, use the x1 shared DB with:
+		// $wgVirtualDomainsMapping['virtual-wikifunctions-usage'] = [
+		//   'cluster' => 'extension1',
+		//   'db' => 'wikishared'
+		// ];
+		if (
+			( $config->has( 'WikiLambdaEnableClientMode' ) && $config->get( 'WikiLambdaEnableClientMode' ) ) ||
+			( $config->has( 'WikiLambdaEnableRepoMode' ) && $config->get( 'WikiLambdaEnableRepoMode' ) )
+		) {
+			// Domain name is kept canonical in WikifunctionsUsageStore::USAGE_VIRTUAL_DOMAIN;
+			// inlined here as a literal so this schema-installation step stands alone.
+			// Create the normalised (wiki, namespace) dimension table first, as
+			// wikifunctions_usage references it by wfu_wiki_id.
+			$updater->addExtensionUpdateOnVirtualDomain( [
+				'virtual-wikifunctions-usage',
+				'addTable',
+				'wikifunctions_usage_wikis',
+				"$dir/$type/table-wikifunctions_usage_wikis.sql",
+				true
+			] );
+			$updater->addExtensionUpdateOnVirtualDomain( [
+				'virtual-wikifunctions-usage',
+				'addTable',
+				'wikifunctions_usage',
+				"$dir/$type/table-wikifunctions_usage.sql",
+				true
+			] );
+		}
+
 		// Insert the tables for repo-mode, if needed (Wikifunctions.org and development machines only)
 		if ( $config->has( 'WikiLambdaEnableRepoMode' ) && $config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			$repoTables = [

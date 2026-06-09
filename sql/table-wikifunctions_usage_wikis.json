@@ -1,0 +1,44 @@
+[
+	{
+		"name": "wikifunctions_usage_wikis",
+		"comment": "Normalised (using wiki, namespace) dimension for wikifunctions_usage, so the using wiki's ID and namespace name aren't repeated on every usage row. One row per distinct (using wiki, namespace) pair, referenced from wikifunctions_usage by wfu_wiki_id. Lives on the shared x1 cluster via the 'virtual-wikifunctions-usage' virtual domain. Modelled on JsonConfig's globaljsonlinks_wiki table.",
+		"columns": [
+			{
+				"name": "wfuw_id",
+				"comment": "Surrogate key, referenced by wikifunctions_usage.wfu_wiki_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wfuw_wiki",
+				"comment": "The using wiki's ID (e.g. 'enwiki')",
+				"type": "binary",
+				"options": { "length": 64, "notnull": true }
+			},
+			{
+				"name": "wfuw_namespace_id",
+				"comment": "The using page's namespace ID on the using wiki, for filtering",
+				"type": "integer",
+				"options": { "notnull": true }
+			},
+			{
+				"name": "wfuw_namespace_text",
+				"comment": "The using page's namespace name on the using wiki, for display (the foreign namespaces may not match the local ones); null for the main namespace. Functionally dependent on (wfuw_wiki, wfuw_namespace_id), so kept out of the unique key.",
+				"type": "binary",
+				"options": { "length": 255, "notnull": false }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wfuw_wiki_namespace",
+				"comment": "Resolve and dedupe the (wiki, namespace) dimension to its surrogate id",
+				"columns": [
+					"wfuw_wiki",
+					"wfuw_namespace_id"
+				],
+				"unique": true
+			}
+		],
+		"pk": [ "wfuw_id" ]
+	}
+]

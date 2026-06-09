@@ -1279,7 +1279,8 @@
 		}
 	},
 	"DatabaseVirtualDomains": [
-		"virtual-awstorage"
+		"virtual-awstorage",
+		"virtual-wikifunctions-usage"
 	],
 	"manifest_version": 2
 }

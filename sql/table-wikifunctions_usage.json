@@ -1,0 +1,44 @@
+[
+	{
+		"name": "wikifunctions_usage",
+		"comment": "Cross-wiki tracking table for which pages on which wikis use which Functions. Stored on the shared x1 cluster via the 'virtual-wikifunctions-usage' virtual domain, so the repo (Wikifunctions.org) can read the full picture across all client wikis, and client wikis can check their usage for RecentChanges job insertion. Modelled on GlobalUsage's globalimagelinks table and JsonConfig's globaljsonlinks_wiki / globaljsonlinks tables. The (using wiki, namespace) dimension is normalised into wikifunctions_usage_wikis and referenced here by wfu_wiki_id, so a heavily-using page doesn't repeat its wiki ID and namespace name on every row.",
+		"columns": [
+			{
+				"name": "wfu_function",
+				"comment": "The target Function's numeric ZID on Wikifunctions.org — the ZID with its 'Z' prefix stripped, e.g. 12345 for Z12345. The DAO (WikifunctionsUsageStore) strips/restores the prefix; storing the integer keeps the leading PK column to 4 bytes.",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "wfu_wiki_id",
+				"comment": "Reference to wikifunctions_usage_wikis.wfuw_id, identifying the using wiki and the using page's namespace on it",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "wfu_page_id",
+				"comment": "The page_id of the using page on the using wiki; stable across page moves",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "wfu_title",
+				"comment": "The using page's title (DBkey, without the namespace) on the using wiki",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wfu_wiki_page",
+				"comment": "Refresh/delete a page's usage rows by (wiki_id, page_id) on edit, move or delete",
+				"columns": [
+					"wfu_wiki_id",
+					"wfu_page_id"
+				],
+				"unique": false
+			}
+		],
+		"pk": [ "wfu_function", "wfu_wiki_id", "wfu_page_id" ]
+	}
+]
