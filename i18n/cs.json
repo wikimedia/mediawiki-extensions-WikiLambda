@@ -294,6 +294,7 @@
 	"wikilambda-zobject-to-string-select-object": "Vyberte $1",
 	"wikilambda-zobjectselector-label": "Objekt",
 	"wikilambda-zobjectselector-no-results": "Nenalezeny žádné výsledky.",
+	"wikilambda-ztester-missing-call-function": "Volání je prázdné. Vyberte prosím funkci.",
 	"wikilambda-ztyped-pair-key-label": "Klíč",
 	"wikilambda-ztyped-pair-placeholder": "Vyberte typ",
 	"wikilambda-ztyped-pair-value-label": "Hodnota"
