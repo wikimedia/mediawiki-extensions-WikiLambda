@@ -32,6 +32,7 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
+use MediaWiki\WikiMap\WikiMap;
 use StatusValue;
 
 class AbstractWikiContentHandler extends ContentHandler {
@@ -175,7 +176,10 @@ class AbstractWikiContentHandler extends ContentHandler {
 		$updates = parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput );
 		if ( $content instanceof AbstractWikiContent ) {
 			$updates[] = new AbstractContentDataUpdate( $title, $content, $this->articleStore );
+			// (T390557) Record which Functions this Abstract article calls into the shared cross-wiki usage table.
+			$updates[] = new AbstractWikiUsageUpdate( $title, $content );
 		}
+
 		return $updates;
 	}
 
@@ -183,10 +187,14 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * @inheritDoc
 	 */
 	public function getDeletionUpdates( Title $title, $role ) {
-		return array_merge(
-			parent::getDeletionUpdates( $title, $role ),
-			[ new AbstractContentDataRemoval( $title, $this->articleStore ) ]
-		);
+		$updates = parent::getDeletionUpdates( $title, $role );
+
+		$updates[] = new AbstractContentDataRemoval( $title, $this->articleStore );
+
+		// (T390557) Clear this article's rows from the shared usage table.
+		$updates[] = new AbstractWikiUsageRemoval( WikiMap::getCurrentWikiId(), $title->getArticleID() );
+
+		return $updates;
 	}
 
 	/**

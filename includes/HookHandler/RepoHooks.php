@@ -549,8 +549,9 @@ class RepoHooks implements
 		}
 
 		// Insert the shared cross-wiki Function-usage table, if needed.
-		// Written by client wikis (to record which pages use which Functions) and read by
-		// the repo (to display that usage), so it is created whenever either mode is on.
+		// Written by client wikis (pages using {{#function:}}) and by the abstract wiki
+		// (Abstract articles calling Functions), and read by the repo (to display that
+		// usage), so it is created whenever any of those modes is on.
 		// Virtual domain must be defined for the 'virtual-wikifunctions-usage' key:
 		//
 		// Locally, use the same DB with:
@@ -565,7 +566,8 @@ class RepoHooks implements
 		// ];
 		if (
 			( $config->has( 'WikiLambdaEnableClientMode' ) && $config->get( 'WikiLambdaEnableClientMode' ) ) ||
-			( $config->has( 'WikiLambdaEnableRepoMode' ) && $config->get( 'WikiLambdaEnableRepoMode' ) )
+			( $config->has( 'WikiLambdaEnableRepoMode' ) && $config->get( 'WikiLambdaEnableRepoMode' ) ) ||
+			( $config->has( 'WikiLambdaEnableAbstractMode' ) && $config->get( 'WikiLambdaEnableAbstractMode' ) )
 		) {
 			// Domain name is kept canonical in WikifunctionsUsageStore::USAGE_VIRTUAL_DOMAIN;
 			// inlined here as a literal so this schema-installation step stands alone.
