@@ -209,7 +209,7 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 	public function testSuccessHasMetadata(): void {
 		$metadata = new AWArticleMetadata(
 			/* topicQid= */ 'Z42',
-			/* payload= */ [ 'sectionIndices' => [ self::LEDE_SECTION ] ],
+			/* payload= */ [ 'sections' => [ self::LEDE_SECTION ] ],
 			/* lastUpdated= */ new ConvertibleTimestamp( '2026-05-31T04:05:00Z' )
 		);
 
@@ -240,7 +240,7 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 			->with( $topic )
 			->willReturn( new AWArticleMetadata(
 				/* topicQid= */ $topic,
-				/* payload= */ [ 'sectionIndices' => array_keys( $sections ) ],
+				/* payload= */ [ 'sections' => array_keys( $sections ) ],
 				/* lastUpdated= */ new ConvertibleTimestamp( '2026-05-31T04:05:00Z' )
 			) );
 

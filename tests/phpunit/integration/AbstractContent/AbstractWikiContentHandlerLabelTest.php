@@ -13,6 +13,7 @@ use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Title\Title;
 
@@ -28,7 +29,7 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		parent::setUp();
 		$this->setUpAsClientMode();
 
-		$mockEntityLookup = $this->mockWikidataEntityLookup( [
+		$this->mockWikidataEntityLookup( [
 			// With label
 			'Q34086' => [ 'en' => 'Justin Bieber' ],
 			// Without label
@@ -40,6 +41,7 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		return new AbstractWikiContentHandler(
 			CONTENT_MODEL_ABSTRACT,
 			$this->getServiceContainer()->getMainConfig(),
+			$this->createNoOpMock( AWArticleStore::class ),
 			$this->getServiceContainer()->get( 'WikiLambdaWikidataEntityLookup' )
 		);
 	}

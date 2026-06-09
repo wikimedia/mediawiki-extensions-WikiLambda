@@ -49,6 +49,7 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\AbstractContent\\AbstractWikiContentHandler",
 			"services": [
 				"MainConfig",
+				"AbstractWikiArticleStore",
 				"WikiLambdaWikidataEntityLookup"
 			]
 		}

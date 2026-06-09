@@ -173,17 +173,26 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 				continue;
 			}
 
+			$metadata = $this->articleStore->getArticleMetadata( $topicQid );
+			$payload = $metadata === null ? [] : $metadata->getPayload();
+
+			// Initialize pendingSections map, we don't wanna step on any
+			// metadata if the update script was called with a subset of the
+			// available languages, so we will compile the pending sections for
+			// this iteration and merge them with the existing ones later on.
+			$pendingSections = array_fill_keys( $langs, [] );
+
 			// Now we know that sections has valid (non-empty) content
 			$sections = $awContent->getSections() ?? [];
-			$sectionIndices = [];
+			$sectionIds = [];
 
 			// For each section...
 			foreach ( $sections as $sectionQid => $section ) {
-				$this->output( "> Generating section $sectionQid\n" );
+				$this->output( "\n> Generating section $sectionQid for all languages:\n" );
 
 				// We compile all the section indices and qids for the metadata object
 				$sectionIndex = intval( $section['index'] ?? 0 );
-				$sectionIndices[ $sectionIndex ] = $sectionQid;
+				$sectionIds[ $sectionIndex ] = $sectionQid;
 				// Get the section fragment function calls; remove benjamin item
 				$sectionFragments = array_slice( $section['fragments'], 1 );
 
@@ -211,34 +220,43 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					// we can do different things. For pending sections,
 					// only update if there's no current section stored.
 					if ( $freshSection->isPending() ) {
+						$pendingSections[ $locale ][] = $sectionQid;
 						$oldSection = $this->articleStore->getSection( $topicQid, $sectionQid, $locale );
 						// There's already some section stored, so let's keep it
 						// instead of replacing it with a pending state one:
 						if ( $oldSection ) {
 							// TODO log that we are passing on an update: this log is IMPORTANT
-							$this->output( "> > NOT storing section $sectionQid - isPending and has old version\n" );
+							$this->output( "> > NOT storing section $sectionQid for $locale - "
+								. "section is pending but a stale version is already stored\n" );
 							continue;
 						}
 					}
 
 					// TODO: do we need to handle errors from this setter?
-					$this->output( "> > Storing section $sectionQid, payload: " . $freshSection->getPayload() . "\n" );
+					$this->output( "> > Storing section $sectionQid for $locale - payload: "
+						. $freshSection->getPayload() . "\n" );
 					$this->articleStore->setSection( $freshSection );
 				}
 			}
 
 			// 4. Before being done with this topicQid, we compile and store the AWArticleMetadata
-			// TODO: build payload in a schema-aware way (whatever that means), for example:
-			// $payload = AWArticleMetadata::createPayloadForSchema(
-			// 	[ 'sectionIndices' => $sectionIndices ],
-			// 	AWArticleStore::AW_STORAGE_SCHEMA_VERSION
-			// );
-			$payload = [ 'sectionIndices' => $sectionIndices ];
-			$metadata = new AWArticleMetadata( $topicQid, $payload );
+
+			// We update the indices here as well, to make sure they are up to date
+			$payload[ 'sections' ] = $sectionIds;
+			// Merge existing pendingSections with updated one, and filter out those languages with empty arrays
+			$payload[ 'pendingSections' ] = array_merge( $payload[ 'pendingSections' ] ?? [], $pendingSections );
+			$payload[ 'pendingSections' ] = array_filter( $payload[ 'pendingSections' ], static function ( $secs ) {
+				return count( $secs ) > 0;
+			} );
+			// Add information of the new render time and status
+			$payload[ 'lastRendered' ] = ConvertibleTimestamp::now();
 
 			$this->output( "> Metadata for topic $topicQid: " . json_encode( $payload ) . "\n" );
-			// TODO: do we need to handle errors from this setter?
-			$this->articleStore->setArticleMetadata( $metadata );
+
+			// Set updated metadata
+			// TODO: build payload in a schema-aware way (whatever that means),
+			// so that we can filter out or initialize necessary keys if we need to
+			$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $payload ) );
 		}
 	}
 

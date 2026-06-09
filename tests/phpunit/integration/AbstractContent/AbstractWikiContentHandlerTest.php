@@ -15,13 +15,18 @@ use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Content\WikitextContent;
 use MediaWiki\Context\IContextSource;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentDataRemoval;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentDataUpdate;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 
 /**
@@ -33,10 +38,6 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 
 	private const TEST_ABSTRACT_NS = 2300;
 
-	protected function setUp(): void {
-		parent::setUp();
-	}
-
 	/**
 	 * @param string|null $modelId
 	 */
@@ -47,6 +48,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 		return new AbstractWikiContentHandler(
 			$modelId ?? CONTENT_MODEL_ABSTRACT,
 			$this->getServiceContainer()->getMainConfig(),
+			$this->createNoOpMock( AWArticleStore::class ),
 			$mockWikidataEntityLookup
 		);
 	}
@@ -308,6 +310,36 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 		$this->assertSame( 'en', $wikiLambdaVars['zlang'] );
 		$this->assertTrue( $wikiLambdaVars['viewmode'] );
 		$this->assertArrayHasKey( 'content', $wikiLambdaVars );
+	}
+
+	public function testGetSecondaryDataUpdates() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		$jsonContent = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$content = $handler->makeContent( $jsonContent, null, CONTENT_MODEL_ABSTRACT );
+
+		$slotOutput = $this->createMock( SlotRenderingProvider::class );
+
+		$updates = $handler->getSecondaryDataUpdates( $title, $content, SlotRecord::MAIN, $slotOutput );
+		$ownUpdates = array_filter( $updates, static function ( $u ) {
+			return $u instanceof AbstractContentDataUpdate;
+		} );
+
+		$this->assertCount( 1, $ownUpdates );
+	}
+
+	public function testGetDeletionUpdates() {
+		$handler = $this->buildAbstractWikiContentHandler();
+
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+
+		$updates = $handler->getDeletionUpdates( $title, SlotRecord::MAIN );
+		$ownUpdates = array_filter( $updates, static function ( $u ) {
+			return $u instanceof AbstractContentDataRemoval;
+		} );
+
+		$this->assertCount( 1, $ownUpdates );
 	}
 
 	/**

@@ -20,6 +20,7 @@ use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
@@ -42,11 +43,13 @@ class AbstractWikiContentHandler extends ContentHandler {
 	/**
 	 * @param string $modelId
 	 * @param Config $config
+	 * @param AWArticleStore $articleStore
 	 * @param WikidataEntityLookup $entityLookup
 	 */
 	public function __construct(
 		$modelId,
 		private readonly Config $config,
+		private readonly AWArticleStore $articleStore,
 		private readonly WikidataEntityLookup $entityLookup
 	) {
 		if ( $modelId !== CONTENT_MODEL_ABSTRACT ) {
@@ -168,14 +171,21 @@ class AbstractWikiContentHandler extends ContentHandler {
 		$role,
 		SlotRenderingProvider $slotOutput
 	) {
-		return parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput );
+		$updates = parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput );
+		if ( $content instanceof AbstractWikiContent ) {
+			$updates[] = new AbstractContentDataUpdate( $title, $content, $this->articleStore );
+		}
+		return $updates;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getDeletionUpdates( Title $title, $role ) {
-		return parent::getDeletionUpdates( $title, $role );
+		return array_merge(
+			parent::getDeletionUpdates( $title, $role ),
+			[ new AbstractContentDataRemoval( $title, $this->articleStore ) ]
+		);
 	}
 
 	/**

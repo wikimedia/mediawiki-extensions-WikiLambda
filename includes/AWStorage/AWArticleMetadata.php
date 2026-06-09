@@ -49,8 +49,18 @@ class AWArticleMetadata {
 	 * Returns the payload stored for this AW Article Metadata, which
 	 * contains an encoded JSON with the necessary schema (version 1).
 	 *
-	 * TODO: Agree on metadata JSON schema, what keys are needed, method
-	 * of validation, serialization, granular getters and setters, etc.
+	 * Keys touched on AbstractWikiContent update:
+	 * * sections: [ sectionIndex => sectionQid ]
+	 * * awLastUpdated: time of latest revision
+	 * * awLatestRevID: ID of latest revision
+	 *
+	 * Keys touched on AbstractWikiContent delete:
+	 * * awDeleted: time of the content deletion
+	 *
+	 * Keys touched on updateAbstractWikiArticleStore:
+	 * * sections: [ sectionIndex => sectionQid ]
+	 * * pendingSections: [ locale => [ sectionQids ] ]
+	 * * lastRendered: time of the latest re-render
 	 *
 	 * @return array
 	 */
@@ -64,17 +74,17 @@ class AWArticleMetadata {
 	 * @return string[]
 	 */
 	public function getSectionQids(): array {
-		$sectionIndices = $this->payload['sectionIndices'] ?? [];
+		$sections = $this->payload[ 'sections' ] ?? [];
 
-		if ( !is_array( $sectionIndices ) ) {
+		if ( !is_array( $sections ) ) {
 			return [];
 		}
 
 		// Sort by numeric index keys
-		ksort( $sectionIndices, SORT_NUMERIC );
+		ksort( $sections, SORT_NUMERIC );
 
 		// Return ordered QIDs only
-		return array_values( $sectionIndices );
+		return array_values( $sections );
 	}
 
 	/**
