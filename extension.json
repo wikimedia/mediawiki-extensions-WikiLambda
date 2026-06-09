@@ -1225,6 +1225,13 @@
 				"LanguageFallback"
 			]
 		},
+		"FunctionUsage": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialFunctionUsage",
+			"services": [
+				"WikifunctionsUsageStore",
+				"WikiLambdaZObjectStore"
+			]
+		},
 		"PreviewAbstract": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialPreviewAbstract",
 			"services": [
