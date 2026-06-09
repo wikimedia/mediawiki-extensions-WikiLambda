@@ -316,4 +316,33 @@ class WikifunctionsUsageStore {
 
 		return $queryBuilder->fetchRowCount();
 	}
+
+	/**
+	 * List the page IDs, on a single wiki, of the pages that use a Function.
+	 *
+	 * Unlike fetchUsage(), this is scoped to one wiki and is not paginated: it is for the
+	 * RecentChanges fan-out, which must visit every using page on the local wiki. The wiki
+	 * lives on the wikifunctions_usage_wikis dimension, so this joins to filter by it.
+	 *
+	 * @param string $function The target Function's ZID, e.g. 'Z12345'
+	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
+	 * @return int[] The using pages' IDs on that wiki
+	 */
+	public function fetchUsagePageIdsForWiki( string $function, string $wiki ): array {
+		$dbr = $this->getReplicaDB();
+
+		return array_map(
+			'intval',
+			$dbr->newSelectQueryBuilder()
+				->select( 'wfu_page_id' )
+				->from( 'wikifunctions_usage' )
+				->join( 'wikifunctions_usage_wikis', null, 'wfu_wiki_id = wfuw_id' )
+				->where( [
+					'wfu_function' => self::functionToId( $function ),
+					'wfuw_wiki' => $wiki,
+				] )
+				->caller( __METHOD__ )
+				->fetchFieldValues()
+		);
+	}
 }

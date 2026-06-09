@@ -19,6 +19,7 @@ use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Title\Title;
 use MediaWiki\User\CentralId\CentralIdLookup;
 use MediaWiki\User\ExternalUserNames;
+use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -56,9 +57,13 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 	}
 
 	public function run(): bool {
-		// What pages would the job be updating?
-		$wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
-		$pagesUsingFunction = $wikifunctionsClientStore->fetchWikifunctionsUsage( $this->params['target'] );
+		// Which local pages would the job be updating? Read from the shared cross-wiki
+		// usage table, scoped to this wiki.
+		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
+		$pageIdsUsingFunction = $usageStore->fetchUsagePageIdsForWiki(
+			$this->params['target'],
+			WikiMap::getCurrentWikiId()
+		);
 
 		$this->logger->debug(
 			__CLASS__ . ': Processing a change for {targetZObject}',
@@ -68,7 +73,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		);
 
 		// Work out whether the job is still needed
-		if ( count( $pagesUsingFunction ) === 0 ) {
+		if ( count( $pageIdsUsingFunction ) === 0 ) {
 			// We were triggered by the repo, but we aren't using that Function.
 			// Note: Until T385630 is done, this is acting-as-expected, and shouldn't be a source of concern.
 			$this->logger->debug(
@@ -264,11 +269,16 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		// We can't stuff non-strings into the rc_params field, so we need to JSON-ify it
 		$generalAttributes['rc_params'] = json_encode( $changeData );
 
-		// $pagesUsingFunction values are getPrefixedText() strings written by
-		// WikifunctionsClientStore::insertWikifunctionsUsage(); Title::newFromText()
-		// can parse that form back into namespace + title.
-		foreach ( $pagesUsingFunction as $titleString ) {
-			$title = Title::newFromText( $titleString );
+		// The usage table stores page IDs; resolve each to its current local Title. Using
+		// the ID (rather than a stored title string) is rename-safe and gives the page's
+		// live namespace, title, length and revision.
+		foreach ( $pageIdsUsingFunction as $pageId ) {
+			$title = Title::newFromID( $pageId );
+			if ( !$title ) {
+				// The page has since been deleted; skip it. Its usage row will be cleared
+				// by the page-deletion handler.
+				continue;
+			}
 
 			$titleSpecificAttribs = [
 				'rc_namespace' => $title->getNamespace(),
@@ -292,7 +302,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 				__CLASS__ . ': Inserting a RecentChange for {targetZObject} on page {target}',
 				[
 					'targetZObject' => $this->params['target'],
-					'target' => $titleString
+					'target' => $title->getPrefixedText()
 				]
 			);
 

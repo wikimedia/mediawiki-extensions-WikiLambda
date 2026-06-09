@@ -12,39 +12,52 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsRecentChangesInsertJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
-use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Site\Site;
 use MediaWiki\Site\SiteLookup;
 use MediaWiki\Title\Title;
 use MediaWiki\User\CentralId\CentralIdLookup;
+use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsRecentChangesInsertJob
+ * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsUsageStore
  *
  * @group Database
  */
 class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegrationTestCase {
 
-	private WikifunctionsClientStore $store;
+	private WikifunctionsUsageStore $usageStore;
 
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setUpAsClientMode();
-		$this->store = WikiLambdaServices::getWikifunctionsClientStore();
+		$this->usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
 	}
 
 	/**
-	 * Create a real wiki page and seed a usage row so the job has something to act on.
-	 * Returns the Title for assertion use.
+	 * Create a real wiki page and seed a shared (x1) usage row so the job has something to
+	 * act on. The page must really exist, as the job resolves each usage row's page ID back
+	 * to a Title. Returns the Title for assertion use.
 	 */
 	private function seedPageWithUsage( string $pageName, string $functionZid ): Title {
 		// Use Talk namespace so that repo mode doesn't try to parse the content as a ZObject.
 		$title = Title::newFromText( $pageName, NS_TALK );
 		$this->editPage( $title, 'Test content for RC job', 'seed page' );
-		$this->store->insertWikifunctionsUsage( $functionZid, $title );
+		// Resolve the page ID via a fresh WikiPage rather than the Title object, whose
+		// article-ID cache can predate the edit.
+		$pageId = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $title )->getId();
+		$this->usageStore->insertUsage(
+			$functionZid,
+			WikiMap::getCurrentWikiId(),
+			$pageId,
+			$title->getNamespace(),
+			$title->getNsText() ?: null,
+			$title->getDBkey()
+		);
 		return $title;
 	}
 
