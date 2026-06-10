@@ -12,6 +12,15 @@
 	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Lista de IDs de version separate per barras vertical, un per ZID requestate, pro obtener versiones historic; si omittite, es restituite le ultime version de cata ZID.",
 	"wikifunctions-rest-module-v0-fetch-param-language-desc": "Codice de lingua BCP-47 a usar pro resolver etiquettas multilingue in le ZObjectos restituite; si omittite, se restitue tote le linguas.",
 	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "Si se debe restituer additionalmente le ZObjectos referentiate como typos in le claves o argumentos del ZObjectos requestate.",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "Un mappa de cata ZID requestate (e, si getDependencies es definite, de dependentia) a su ZObjecto serialisate como un catena JSON",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "Un ZObjecto serialisate como catena JSON, como retornate per le puncto de accesso de representation del contento del pagina",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Appellar un function",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appellar un function, con linguas personalisate de analyse syntactic e de rendition"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appellar un function, con linguas personalisate de analyse syntactic e de rendition",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID del function a appellar",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "Lista de argumentos separate per barras vertical pro passar al function, in le ordine in le qual su argumentos es declarate, con cata argumento codificate in forma de URL",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "Codice de lingua BCP-47 usate pro analysar argumentos con valor de catena que ha un function del analysator syntactic; le valor predefinite es ‘en’",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "Codice de lingua BCP-47 usate pro visualisar le sortita del function e le possibile messages de error; le valor predefinite es ‘en’",
+	"wikifunctions-rest-module-v0-call-response-desc": "Le resultato del evalutation del appello de function",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "Le sortita evalutate como un catena; o un catena simple (pro Z6) o un fragmento HTML (pro Z89)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "Le ZID del typo del sortita evalutate: ‘Z6’ pro un catena simple, ‘Z89’ pro un fragmento HTML"
 }
