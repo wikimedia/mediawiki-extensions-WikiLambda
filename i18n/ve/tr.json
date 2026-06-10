@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"SaldırganSincap"
+			"SaldırganSincap",
+			"HakanIST"
 		]
 	},
-	"wikilambda-visualeditor-wikifunctionscall-title": "İşlev"
+	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Yükleniyor",
+	"wikilambda-visualeditor-wikifunctionscall-title": "İşlev",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "Önizleme",
+	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Sıfırla",
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "İptal"
 }
