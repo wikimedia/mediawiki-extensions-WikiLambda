@@ -434,7 +434,20 @@ class OrchestratorRequest {
 
 		try {
 			// (T414062) Check if the response body is a valid JSON string, and a Z22 as expected.
-			$responseBodyObject = json_decode( $responseBody, true, 512, JSON_THROW_ON_ERROR );
+			try {
+				$responseBodyObject = json_decode( $responseBody, true, 512, JSON_THROW_ON_ERROR );
+			} catch ( JsonException $e ) {
+				// The orchestrator runs on Node.js, whose UTF-16 strings (and thus JSON.stringify)
+				// tolerate lone surrogates; when it echoes back malformed user input it can emit
+				// escapes such as "\udff3" or "\ud83c" that PHP's json_decode rejects outright with
+				// JSON_ERROR_UTF16. Substitute any lone surrogate with U+FFFD and retry, so that we
+				// recover from this one tolerable case but still let genuinely malformed JSON throw.
+				if ( $e->getCode() !== JSON_ERROR_UTF16 ) {
+					throw $e;
+				}
+				$responseBody = self::substituteLoneSurrogates( $responseBody );
+				$responseBodyObject = json_decode( $responseBody, true, 512, JSON_THROW_ON_ERROR );
+			}
 			if (
 				!is_array( $responseBodyObject ) ||
 				!isset( $responseBodyObject['Z1K1'] ) ||
@@ -463,6 +476,31 @@ class OrchestratorRequest {
 		}
 
 		return [ 'result' => $responseBody, 'httpStatusCode' => $httpStatusCode ];
+	}
+
+	/**
+	 * Replace any lone UTF-16 surrogate escape in a JSON string with the U+FFFD replacement
+	 * character, leaving valid high+low surrogate pairs (and all other content) untouched.
+	 *
+	 * PHP's json_decode rejects lone surrogate escapes with JSON_ERROR_UTF16, whereas the
+	 * Node.js orchestrator can emit them when serialising mangled user input. This lets us
+	 * recover from that specific case without masking otherwise-malformed JSON.
+	 *
+	 * @param string $json A JSON string that failed to decode with JSON_ERROR_UTF16
+	 * @return string The same JSON with lone surrogate escapes replaced by "�"
+	 */
+	private static function substituteLoneSurrogates( string $json ): string {
+		return preg_replace_callback(
+			// Branch 1 consumes a complete high+low pair (kept as-is); anything left matching
+			// branch 2 is therefore a lone surrogate and is replaced.
+			'/\\\\u(d[89ab][0-9a-f]{2})\\\\u(d[c-f][0-9a-f]{2})|\\\\u(d[89a-f][0-9a-f]{2})/i',
+			static function ( array $matches ): string {
+				return isset( $matches[3] ) && $matches[3] !== '' ? '\\ufffd' : $matches[0];
+			},
+			$json
+		// On a PCRE engine failure preg_replace_callback returns null; fall back to the original
+		// string, which then re-throws JSON_ERROR_UTF16 and is wrapped as a Z577 error as before.
+		) ?? $json;
 	}
 
 	/**

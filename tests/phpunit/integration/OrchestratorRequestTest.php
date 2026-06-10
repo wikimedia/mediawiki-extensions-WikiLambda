@@ -110,6 +110,46 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$this->assertEquals( json_decode( $envelopeString ), json_decode( $response['result'] ) );
 	}
 
+	public function testExecuteWithLoneSurrogateInResponse() {
+		// The orchestrator runs on Node.js, which can serialise mangled user input as lone UTF-16
+		// surrogate escapes (here a lone low surrogate \udff3 and a lone high surrogate \ud83c).
+		// PHP's json_decode rejects these with JSON_ERROR_UTF16, but rather than wrapping the whole
+		// response as a Z577 error we substitute the lone surrogates with U+FFFD and carry on; only
+		// genuinely malformed JSON should fall through to the error-wrapping path.
+		// substituteLoneSurrogates() rewrites each lone-surrogate escape into a \ufffd *escape*, so
+		// the sanitised body stays pure ASCII: it decodes to U+FFFD (asserted below) but the raw
+		// string we return and cache still holds the six-character escape, not the decoded byte. So
+		// $cleanEnvelope here is the escape, not the glyph; the decode assertion proves the meaning.
+		$dirtyEnvelope = '{"Z1K1":"Z22","Z22K1":"\udff3text\ud83c","Z22K2":"Z24"}';
+		$cleanEnvelope = '{"Z1K1":"Z22","Z22K1":"\ufffdtext\ufffd","Z22K2":"Z24"}';
+
+		// On success we cache (and return) the sanitised body, not the orchestrator's raw one.
+		$expectCachedValue = [
+			'result' => $cleanEnvelope,
+			'httpStatusCode' => HttpStatus::OK
+		];
+		$this->mockMemcachedWrapper( false, [ $expectCachedValue, MemcachedWrapper::TTL_MONTH ] );
+
+		$guzzleResponse = new Response( HttpStatus::OK, [], $dirtyEnvelope );
+		$orchestrator = $this->getOrchestratorWithMockResponse( $guzzleResponse );
+
+		$inputFile = __DIR__ .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'test_data' .
+			DIRECTORY_SEPARATOR .
+			'Z902_false.json';
+		$Z902 = file_get_contents( $inputFile );
+		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
+
+		$response = $orchestrator->orchestrate( json_decode( $Z902, true ) );
+
+		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
+		$this->assertEquals( $cleanEnvelope, $response['result'] );
+		$this->assertEquals( "\u{FFFD}text\u{FFFD}", json_decode( $response['result'], true )['Z22K1'] );
+	}
+
 	public function testUnsuccessfulExecute() {
 		// Mock cache: miss on get, set failing response for a minute
 		$expectCachedValue = $this->callback( static function ( $actual ) {
