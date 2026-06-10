@@ -655,11 +655,12 @@ EOT;
 		// 1. We insert the type
 		$this->editPage( $type->zid, json_encode( $type->data ), 'Test type', NS_MAIN, $sysopUser );
 
-		// Expect renderer and parser function entries:
+		// Expect renderer and parser function entries (ordered by key so current()/next() are deterministic):
 		$rows = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
 			->from( 'wikilambda_zobject_join' )
 			->where( [ 'wlzo_main_zid' => $type->zid ] )
+			->orderBy( 'wlzo_key' )
 			->fetchResultSet();
 		$this->assertSame( 2, $rows->numRows() );
 		// Expect renderer:
@@ -690,11 +691,12 @@ EOT;
 		$type->data->Z2K2->Z4K5 = 'Z20040';
 		$this->editPage( $type->zid, json_encode( $type->data ), 'Test type', NS_MAIN, $sysopUser );
 
-		// Expect new renderer and same parser entries:
+		// Expect new renderer and same parser entries (ordered by key so current()/next() are deterministic):
 		$rows = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzo_main_zid', 'wlzo_main_type', 'wlzo_key', 'wlzo_related_zobject', 'wlzo_related_type' ] )
 			->from( 'wikilambda_zobject_join' )
 			->where( [ 'wlzo_main_zid' => $type->zid ] )
+			->orderBy( 'wlzo_key' )
 			->fetchResultSet();
 		$this->assertSame( 2, $rows->numRows() );
 		// Expect new renderer:
