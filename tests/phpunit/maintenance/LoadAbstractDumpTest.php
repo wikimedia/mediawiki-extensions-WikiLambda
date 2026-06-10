@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 
 use MediaWiki\Extension\WikiLambda\Maintenance\LoadAbstractDump;
+use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Title\Title;
 
 require_once dirname( __DIR__, 3 ) . '/maintenance/loadAbstractDump.php';
@@ -21,7 +22,6 @@ require_once dirname( __DIR__, 3 ) . '/maintenance/loadAbstractDump.php';
  * @covers \MediaWiki\Extension\WikiLambda\Maintenance\LoadAbstractDump
  */
 class LoadAbstractDumpTest extends WikiLambdaMaintenanceTestCase {
-
 	private const ABSTRACT_NS = 2300;
 
 	private string $dumpPath;
@@ -32,6 +32,12 @@ class LoadAbstractDumpTest extends WikiLambdaMaintenanceTestCase {
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
 		$this->dumpPath = $this->makeTempDumpDir();
 		$this->dumpDirName = basename( $this->dumpPath );
+
+		// Mock WikidataEntityLookup to simply not stop any write
+		// in case WikibaseClient extension is available.
+		$mockLookup = $this->createMock( WikidataEntityLookup::class );
+		$mockLookup->method( 'wikidataItemExists' )->willReturn( true );
+		$this->setService( 'WikiLambdaWikidataEntityLookup', $mockLookup );
 	}
 
 	protected function getMaintenanceClass(): string {
