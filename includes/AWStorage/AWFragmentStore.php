@@ -222,26 +222,26 @@ class AWFragmentStore {
 	}
 
 	/**
-	 * TODO decide how we are showing a failed framgent in an integrated AW article
+	 * TODO (T428784): decide how we are showing a failed framgent in an integrated AW article
 	 *
 	 * @param string $locale
 	 * @return string
 	 */
 	public static function createFailingFragmentBlock( string $locale ): string {
-		return Html::rawElement( 'span', [],
-			wfMessage( 'wikilambda-aw-fragment-error' )->inLanguage( $locale )->escaped()
+		return Html::rawElement( 'span', [ 'class' => 'ext-wikilambda-aw-fragment-failing' ],
+			wfMessage( 'wikilambda-abstract-fragment-failing' )->inLanguage( $locale )->escaped()
 		);
 	}
 
 	/**
-	 * TODO decide how we are showing a failed framgent in an integrated AW article
+	 * TODO (T428784): decide how we are showing a failed framgent in an integrated AW article
 	 *
 	 * @param string $locale
 	 * @return string
 	 */
 	public static function createPendingFragmentBlock( $locale ): string {
-		return Html::rawElement( 'span', [],
-			wfMessage( 'wikilambda-aw-fragment-pending' )->inLanguage( $locale )->escaped()
+		return Html::rawElement( 'span', [ 'class' => 'ext-wikilambda-aw-fragment-pending' ],
+			wfMessage( 'wikilambda-abstract-fragment-pending' )->inLanguage( $locale )->escaped()
 		);
 	}
 }

@@ -80,6 +80,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 
 		$request = $this->getRequest();
 		$output = $this->getOutput();
+		$output->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
 
 		// Start setting headers
 		$this->setHeaders();
