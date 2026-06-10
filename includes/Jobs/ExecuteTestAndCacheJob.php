@@ -89,8 +89,11 @@ class ExecuteTestAndCacheJob extends Job implements GenericParameterJob {
 		$implementationRevision = $this->params[ 'implementationRevision' ];
 		$testZid = $this->params[ 'testZid' ];
 		$testRevision = $this->params[ 'testRevision' ];
-		$testCall = $this->params[ 'testCall' ];
-		$validationCall = $this->params[ 'validationCall' ];
+		// (T428801) Re-hydrate the test and validation calls to stdClass.
+		// JobQueue serialisation decodes them from JSON as associative arrays, but
+		// orchestrateTestExecution() type-hints stdClass. See ZObjectUtils::objectify().
+		$testCall = ZObjectUtils::objectify( $this->params[ 'testCall' ] );
+		$validationCall = ZObjectUtils::objectify( $this->params[ 'validationCall' ] );
 
 		$logContext = [
 			'functionZid' => $functionZid,
