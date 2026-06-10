@@ -4,6 +4,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\HookHandler\AbstractPageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaAbstractClientIntegrationTestCase;
 use MediaWiki\Output\OutputPage;
@@ -41,6 +43,7 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 			$this->getServiceContainer()->getMainConfig(),
 			$this->getServiceContainer()->getSpecialPageFactory(),
 			$this->getServiceContainer()->getTitleFactory(),
+			$this->getServiceContainer()->get( 'AbstractWikiArticleStore' )
 		);
 	}
 
@@ -368,5 +371,97 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 
 		$result = $handler->onBeforeDisplayNoArticleText( $article );
 		$this->assertFalse( $result );
+	}
+
+	// onSkinAddFooterLinks
+	// ====================
+	// When rendering a Special:PreviewAbstract page or an opted-in Wikipedia page
+	// it displays the last rendered and provenance messages in the footer.
+
+	private function mockArticleStore() {
+		$mockArticleStore = $this->createMock( AWArticleStore::class );
+		$mockArticleStore
+			->method( 'getArticleMetadata' )
+			->willReturnCallback( static function ( $qid ) {
+				$metadata = new AWArticleMetadata( $qid, [ 'lastRendered' => '20260531040500' ] );
+				return $qid === 'Q42' ? $metadata : null;
+			} );
+
+		$this->setService( 'AbstractWikiArticleStore', $mockArticleStore );
+	}
+
+	public function testOnSkinAddFooterLinks_specialPage_fullMetadata() {
+		$this->mockArticleStore();
+		// Set up a RequestContext to simulate being on the PreviewAbstract special page
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::makeTitle( NS_SPECIAL, 'PreviewAbstract/en/Q42' ) );
+		$request = new FauxRequest( [ 'title' => 'Special:PreviewAbstract/en/Q42', 'uselang' => 'en' ] );
+		$context->setRequest( $request );
+
+		// Set up Skin
+		$skin = $this->getServiceContainer()->getSkinFactory()->makeSkin( 'fallback' );
+		$skin->setContext( $context );
+
+		$footerItems = [];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinAddFooterLinks( $skin, 'info', $footerItems );
+
+		$this->assertArrayHasKey( 'lastmod', $footerItems );
+		$this->assertArrayHasKey( 'renderedwith', $footerItems );
+
+		$this->assertStringContainsString( 'last updated on 04:05, at 31 May 2026.', $footerItems['lastmod'] );
+		$this->assertStringContainsString( 'Page was rendered from', $footerItems['renderedwith'] );
+		$this->assertStringContainsString( 'Abstract Wikipedia', $footerItems['renderedwith'] );
+	}
+
+	public function testOnSkinAddFooterLinks_specialPage_noMetadata() {
+		$this->mockArticleStore();
+		// Set up a RequestContext to simulate being on the PreviewAbstract special page
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::makeTitle( NS_SPECIAL, 'PreviewAbstract/en/Q999' ) );
+		$request = new FauxRequest( [ 'title' => 'Special:PreviewAbstract/en/Q999', 'uselang' => 'en' ] );
+		$context->setRequest( $request );
+
+		// Set up Skin
+		$skin = $this->getServiceContainer()->getSkinFactory()->makeSkin( 'fallback' );
+		$skin->setContext( $context );
+
+		$footerItems = [];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinAddFooterLinks( $skin, 'info', $footerItems );
+
+		$this->assertCount( 0, $footerItems );
+	}
+
+	public function testOnSkinAddFooterLinks_optedInArticle_fullMetadata(): void {
+		$this->mockArticleStore();
+		$this->mockOptedInArticles( [
+			(object)[ 'qid' => 'Q42', 'title' => [ 'Douglas Adams' ] ],
+		] );
+
+		// Set up a RequestContext to simulate being on an opted-in article page
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::makeTitle( NS_MAIN, 'Douglas Adams' ) );
+		$context->setRequest( new FauxRequest( [ 'title' => 'Douglas Adams', 'uselang' => 'en' ] ) );
+
+		// Set up Skin
+		$skin = $this->getServiceContainer()->getSkinFactory()->makeSkin( 'fallback' );
+		$skin->setContext( $context );
+
+		$footerItems = [];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinAddFooterLinks( $skin, 'info', $footerItems );
+
+		$this->assertArrayHasKey( 'lastmod', $footerItems );
+		$this->assertArrayHasKey( 'renderedwith', $footerItems );
+		$this->assertStringContainsString( 'last updated on 04:05, at 31 May 2026.', $footerItems['lastmod'] );
+		$this->assertStringContainsString( 'Page was rendered from', $footerItems['renderedwith'] );
+		$this->assertStringContainsString( 'Abstract Wikipedia', $footerItems['renderedwith'] );
 	}
 }

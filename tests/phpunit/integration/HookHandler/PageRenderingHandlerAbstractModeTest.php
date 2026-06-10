@@ -73,7 +73,7 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 
 		// Set language 'en' to simulate label existing use case
 		$context->setLanguage( 'en' );
-		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
+		$context->setTitle( Title::makeTitle( NS_SPECIAL, 'RecentChanges' ) );
 		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
 
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
@@ -109,7 +109,7 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 
 		$context = RequestContext::getMain();
 		$context->setLanguage( 'en' );
-		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
+		$context->setTitle( Title::makeTitle( NS_SPECIAL, 'RecentChanges' ) );
 		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
 
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
@@ -144,7 +144,7 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 
 		$context = RequestContext::getMain();
 		$context->setLanguage( 'en' );
-		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
+		$context->setTitle( Title::makeTitle( NS_SPECIAL, 'RecentChanges' ) );
 		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
 
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
@@ -171,7 +171,7 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 
 		// Set language 'es' to simulate label missing use case
 		$context->setLanguage( 'es' );
-		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
+		$context->setTitle( Title::makeTitle( NS_SPECIAL, 'RecentChanges' ) );
 		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'es' ] ) );
 
 		// Create the abstract page in the test DB

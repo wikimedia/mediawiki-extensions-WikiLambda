@@ -194,9 +194,8 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		$articleHtml = '';
 
 		$userdatetime = $contextLang->userTimeAndDate( $awMetadata->getLastUpdated(), $this->getUser() );
-		$this->showNoticeBox(
-			$this->msg( 'wikilambda-abstract-special-preview-provenance-banner', $userdatetime )->escaped()
-		);
+		$userdate = $contextLang->userDate( $awMetadata->getLastUpdated(), $this->getUser() );
+		$usertime = $contextLang->userTime( $awMetadata->getLastUpdated(), $this->getUser() );
 
 		$sectionQids = $awMetadata->getSectionQids();
 		foreach ( $sectionQids as $sectionIndex => $sectionQid ) {
@@ -221,15 +220,43 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 
 		// Set content html
 		$output->addHTML( $articleHtml );
+
+		// Finally show AW provenance banner at the bottom of the article
+		$this->showAbstractWikiBox(
+			$this->msg( 'wikilambda-abstract-special-preview-provenance-banner', $usertime, $userdate )->escaped()
+		);
 	}
 
 	/**
 	 * @param string $body
 	 */
-	private function showNoticeBox( $body ): void {
+	private function showAbstractWikiBox( $body ): void {
 		$output = $this->getOutput();
 		$output->addModuleStyles( 'mediawiki.codex.messagebox.styles' );
-		$output->addHTML( Html::noticeBox( $body ) );
+
+		$iconUrl = $this->getConfig()->get( 'WikiLambdaAbstractWikiIconUrl' );
+		$content = Html::rawElement( 'div', [ 'class' => 'cdx-message__content' ], $body );
+		$img = Html::rawElement( 'img', [
+			'src' => $iconUrl,
+			'width' => '20',
+			'height' => '20',
+			'aria-hidden' => 'true',
+		] );
+		$icon = Html::rawElement( 'span', [
+			'class' => [ 'cdx-icon', 'cdx-icon--medium', 'cdx-message__icon--vue' ],
+		], $img );
+
+		$html = Html::rawElement( 'div', [
+			'class' => [
+				'cdx-message',
+				'cdx-message--block',
+				'cdx-message--notice',
+				'ext-wikilambda-aw-provenance-banner'
+			],
+			'aria-live' => 'polite',
+		], $icon . $content );
+
+		$output->addHTML( $html );
 	}
 
 	/**

@@ -230,7 +230,9 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 
 		// Check provenance banner
 		$this->assertStringContainsString( 'cdx-message--notice', $html );
-		$this->assertStringContainsString( 'Last updated from Abstract Wikipedia as of 04:05, 31 May 2026', $html );
+		$this->assertStringContainsString( 'This article is based on Abstract Wikipedia '
+			. 'and was last updated at 04:05, 31 May 2026. '
+			. 'To edit this article, you will be taken to Abstract Wikipedia.', $html );
 	}
 
 	private function mockArticleStoreWithSections( $topic, $locale, $sections ) {
@@ -287,7 +289,9 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 
 		// Check provenance banner
 		$this->assertStringContainsString( 'cdx-message--notice', $html );
-		$this->assertStringContainsString( 'Last updated from Abstract Wikipedia as of 04:05, 31 May 2026', $html );
+		$this->assertStringContainsString( 'This article is based on Abstract Wikipedia '
+			. 'and was last updated at 04:05, 31 May 2026. '
+			. 'To edit this article, you will be taken to Abstract Wikipedia.', $html );
 
 		// Check sections
 		preg_match_all( '/<section[^>]*>.*?<\/section>/s', $html, $matches );
@@ -321,7 +325,9 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 
 		// Show provenance banner
 		$this->assertStringContainsString( 'cdx-message--notice', $html );
-		$this->assertStringContainsString( 'Last updated from Abstract Wikipedia as of 04:05, 31 May 2026', $html );
+		$this->assertStringContainsString( 'This article is based on Abstract Wikipedia '
+			. 'and was last updated at 04:05, 31 May 2026. '
+			. 'To edit this article, you will be taken to Abstract Wikipedia.', $html );
 
 		// Check sections
 		preg_match_all( '/<section[^>]*>.*?<\/section>/s', $html, $matches );
@@ -363,7 +369,9 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 
 		// Show provenance banner
 		$this->assertStringContainsString( 'cdx-message--notice', $html );
-		$this->assertStringContainsString( 'Last updated from Abstract Wikipedia as of 04:05, 31 May 2026', $html );
+		$this->assertStringContainsString( 'This article is based on Abstract Wikipedia '
+			. 'and was last updated at 04:05, 31 May 2026. '
+			. 'To edit this article, you will be taken to Abstract Wikipedia.', $html );
 
 		// Check sections
 		preg_match_all( '/<section[^>]*>.*?<\/section>/s', $html, $matches );

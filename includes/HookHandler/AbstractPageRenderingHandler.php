@@ -13,6 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -23,6 +25,8 @@ use MediaWiki\Page\Hook\BeforeDisplayNoArticleTextHook;
 use MediaWiki\Page\Hook\ShowMissingArticleHook;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\WebRequest;
+use MediaWiki\Skin\Hook\SkinAddFooterLinksHook;
+use MediaWiki\Skin\Skin;
 use MediaWiki\SpecialPage\SpecialPageFactory;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
@@ -33,7 +37,8 @@ class AbstractPageRenderingHandler implements
 	ShowMissingArticleHook,
 	Article__MissingArticleConditionsHook,
 	BeforeDisplayNoArticleTextHook,
-	InitializeArticleMaybeRedirectHook
+	InitializeArticleMaybeRedirectHook,
+	SkinAddFooterLinksHook
 {
 
 	private LoggerInterface $logger;
@@ -44,7 +49,8 @@ class AbstractPageRenderingHandler implements
 	public function __construct(
 		private readonly Config $config,
 		private readonly SpecialPageFactory $specialPageFactory,
-		private readonly TitleFactory $titleFactory
+		private readonly TitleFactory $titleFactory,
+		private readonly AWArticleStore $articleStore
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstractClient' );
@@ -180,6 +186,7 @@ class AbstractPageRenderingHandler implements
 		$specialPage->execute( $topicQid );
 
 		// Get the captured HTML and add it to the real output
+		$output->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
 		$output->addHTML( $specialOutput->getHTML() );
 	}
 
@@ -289,5 +296,67 @@ class AbstractPageRenderingHandler implements
 		}
 
 		return true;
+	}
+
+	/**
+	 * This hook is called when generating the code used to display the footer.
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SkinAddFooterLinks
+	 *
+	 * @param Skin $skin
+	 * @param string $key the current key for the current group (row) of footer links.
+	 *   e.g. `info` or `places`.
+	 * @param array &$footerItems an empty array that can be populated with new links.
+	 *   keys should be strings and will be used for generating the ID of the footer item
+	 *   and value should be an HTML string.
+	 * @return bool|void True or no return value to continue or false to abort
+	 */
+	public function onSkinAddFooterLinks( Skin $skin, string $key, array &$footerItems ) {
+		if ( $key === 'info' ) {
+			$title = $skin->getTitle();
+
+			// If not AbstractClient mode and not the Special:PreviewAbstract, exit early
+			if (
+				!$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) &&
+				!$title->isSpecial( 'PreviewAbstract' )
+			) {
+				// True or no return to continue
+				return;
+			}
+
+			$topicQid = '';
+
+			if ( $title->isSpecialPage() ) {
+				// For Special Page (Special:PreviewAbstract), extract the topicQid from the subpage
+				$parts = explode( '/', $title->getSubpageText() );
+				$topicQid = end( $parts );
+			} else {
+				// For Article, extract the topicQid from the optedIn list
+				$titleText = $title->getPrefixedText();
+				$optedIn = $this->provideOptedIn();
+				$topicQid = $optedIn[ $titleText ][ 'qid' ] ?? '';
+			}
+
+			if ( trim( $topicQid ) === '' || !AbstractContentUtils::isValidWikidataItemReference( $topicQid ) ) {
+				// No topic Qid; either missing from the url or this article isn't in the optedIn list
+				return;
+			}
+
+			$awMetadata = $this->articleStore->getArticleMetadata( $topicQid );
+			if ( $awMetadata === null ) {
+				// No available metadata, exit early
+				return;
+			}
+
+			// Use lastRendered metadata key to get the last time it passed through the render script
+			$lastRenderedTS = $awMetadata->getPayload()[ 'lastRendered' ] ?? null;
+			if ( $lastRenderedTS ) {
+				$language = $skin->getLanguage();
+				$d = $language->userDate( $lastRenderedTS, $skin->getUser() );
+				$t = $language->userTime( $lastRenderedTS, $skin->getUser() );
+				$footerItems[ 'lastmod' ] = $skin->msg( 'wikilambda-abstract-lastupdatedat', $t, $d )->parse();
+			}
+
+			$footerItems[ 'renderedwith' ] = $skin->msg( 'wikilambda-abstract-renderedwith' )->parse();
+		}
 	}
 }
