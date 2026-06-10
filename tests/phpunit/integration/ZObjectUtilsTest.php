@@ -21,6 +21,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Json\FormatJson;
+use stdClass;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -1664,6 +1665,37 @@ EOT;
 			'IGZ8bz0gIG8_',
 			ZObjectUtils::encodeStringParamForNetwork( ' f|o=  o?' )
 		);
+	}
+
+	public function testObjectify_convertsNestedArraysToStdClass() {
+		$input = [
+			'Z1K1' => 'Z7',
+			'Z7K1' => 'Z10000',
+			'Z10000K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'hello' ],
+		];
+
+		$result = ZObjectUtils::objectify( $input );
+
+		$this->assertInstanceOf( stdClass::class, $result );
+		$this->assertSame( 'Z7', $result->Z1K1 );
+		$this->assertInstanceOf( stdClass::class, $result->Z10000K1, 'Nested arrays are also reified' );
+		$this->assertSame( 'hello', $result->Z10000K1->Z6K1 );
+	}
+
+	public function testObjectify_isIdempotentForStdClass() {
+		$input = (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'foo' ];
+
+		$this->assertEquals( $input, ZObjectUtils::objectify( $input ) );
+	}
+
+	public function testObjectify_preservesListsAsArrays() {
+		// Benjamin (typed-list) arrays are sequential, not associative, so they
+		// must remain PHP arrays rather than becoming stdClass with "0"/"1" keys.
+		$result = ZObjectUtils::objectify( [ 'Z7', [ 'Z1K1' => 'Z6', 'Z6K1' => 'x' ] ] );
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 'Z7', $result[0] );
+		$this->assertInstanceOf( stdClass::class, $result[1] );
 	}
 
 	/**

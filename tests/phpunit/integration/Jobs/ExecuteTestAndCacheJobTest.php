@@ -18,10 +18,11 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\JobQueue\JobQueueGroup;
+use stdClass;
 use Wikimedia\TestingAccessWrapper;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob
+ * @covers \MediaWiki\Extension\WikiLambda\Jobs\ExecuteTestAndCacheJob
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\StoreTestResultTrait
  * @group Database
  */
@@ -291,6 +292,40 @@ class ExecuteTestAndCacheJobTest extends WikiLambdaIntegrationTestCase {
 		$this->mockJobQueueGroup( 1, UpdateImplementationsJob::class );
 
 		$job = $this->buildJob();
+		$this->assertTrue( $job->run() );
+	}
+
+	/**
+	 * Regression test: when this job runs out-of-process via EventBus, the
+	 * JobQueue round-trips its params through JSON, so the stdClass testCall
+	 * and validationCall that ApiPerformTest enqueued arrive here decoded as
+	 * associative arrays. The job must re-hydrate them to stdClass before
+	 * calling orchestrateTestExecution(), which type-hints stdClass; otherwise
+	 * the job throws a TypeError on every async execution.
+	 */
+	public function testRun_rehydratesArrayParamsToStdClass() {
+		$mock = $this->createMock( OrchestratorRequest::class );
+		$mock
+			->expects( $this->once() )
+			->method( 'orchestrateTestExecution' )
+			->with(
+				$this->isInstanceOf( stdClass::class ),
+				$this->isInstanceOf( stdClass::class ),
+				/* evaluateOnMiss= */ true
+			)
+			->willReturn( self::buildOrchestratorTestResponse( true ) );
+		$this->setService( 'WikiLambdaOrchestratorRequest', $mock );
+
+		$testStatusRows = [ array_merge( self::DEFAULT_PARAMS, [ 'hasResult' => 0 ] ) ];
+		$this->mockZObjectStore( [], $testStatusRows );
+		$this->mockJobQueueGroup();
+
+		// Mimic the associative-array shape that survives JobQueue serialisation,
+		// rather than the stdClass that buildJob() otherwise injects.
+		$job = $this->buildJob( [
+			'testCall' => [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z10000' ],
+			'validationCall' => [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z866' ],
+		] );
 		$this->assertTrue( $job->run() );
 	}
 

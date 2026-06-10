@@ -1130,6 +1130,24 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Deeply convert an arbitrarily-nested value into the stdClass-based shape
+	 * that ZObjects use, turning any associative arrays into stdClass objects.
+	 *
+	 * This is needed wherever a ZObject travels through a layer that JSON-decodes
+	 * into associative arrays rather than objects — most notably JobQueue params,
+	 * which MediaWiki serialises to JSON and EventBus's out-of-process runner
+	 * decodes with associative arrays, so an enqueued stdClass arrives as an array.
+	 * Round-tripping through json_encode()/json_decode() rebuilds the object shape
+	 * and is idempotent for values that are already stdClass.
+	 *
+	 * @param mixed $input
+	 * @return mixed The input with all associative arrays reified as stdClass
+	 */
+	public static function objectify( $input ) {
+		return json_decode( json_encode( $input ) );
+	}
+
+	/**
 	 * Given a Z22/Response Envelope object serialized as a stdClass,
 	 * and a string key, returns the value if set in the metadata, or
 	 * null if unset.
