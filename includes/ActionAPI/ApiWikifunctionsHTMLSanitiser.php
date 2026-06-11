@@ -111,8 +111,7 @@ class ApiWikifunctionsHTMLSanitiser extends ApiBase {
 	}
 
 	/**
-	 * @see ApiBase::getExamplesMessages()
-	 * @return array
+	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {

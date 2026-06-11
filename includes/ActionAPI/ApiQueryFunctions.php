@@ -168,8 +168,7 @@ class ApiQueryFunctions extends WikiLambdaApiQueryGeneratorBase {
 	}
 
 	/**
-	 * @see ApiBase::getExamplesMessages()
-	 * @return array
+	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {

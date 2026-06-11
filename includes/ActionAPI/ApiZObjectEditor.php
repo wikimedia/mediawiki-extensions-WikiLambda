@@ -95,8 +95,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @see ApiBase::needsToken
-	 * @return string
+	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	public function needsToken(): string {
@@ -135,8 +134,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @see ApiBase::getExamplesMessages()
-	 * @return array
+	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {

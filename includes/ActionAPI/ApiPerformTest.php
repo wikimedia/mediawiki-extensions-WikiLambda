@@ -595,7 +595,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * @see ApiBase::getExamplesMessages()
 	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */

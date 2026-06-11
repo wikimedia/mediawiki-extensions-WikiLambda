@@ -90,7 +90,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *   ]
 	 * ]
 	 *
-	 * @see ApiBase::execute()
 	 * @inheritDoc
 	 */
 	public function execute() {
@@ -199,7 +198,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	}
 
 	/**
-	 * @see ApiBase::isInternal()
 	 * @inheritDoc
 	 */
 	public function isInternal() {
@@ -207,7 +205,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	}
 
 	/**
-	 * @see ApiBase::getAllowedParams()
 	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
@@ -257,8 +254,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	}
 
 	/**
-	 * @see ApiBase::getExamplesMessages()
-	 * @return array
+	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages(): array {

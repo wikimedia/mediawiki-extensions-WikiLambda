@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -342,8 +341,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 	}
 
 	/**
-	 * @see ApiBase::getExamplesMessages()
-	 * @return array
+	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
