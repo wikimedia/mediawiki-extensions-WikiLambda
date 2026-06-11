@@ -234,9 +234,12 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 						}
 					}
 
-					// TODO: do we need to handle errors from this setter?
 					$this->output( "> > Storing section $sectionQid for $locale - payload: "
-						. $freshSection->getPayload() . "\n" );
+						. substr( $freshSection->getPayload(), 0, 100 )
+						. ( strlen( $freshSection->getPayload() ) > 100 ? '…' : '' )
+						. "\n"
+					);
+					// TODO: do we need to handle errors from this setter?
 					$this->articleStore->setSection( $freshSection );
 				}
 			}
