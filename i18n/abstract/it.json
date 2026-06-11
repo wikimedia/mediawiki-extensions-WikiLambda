@@ -21,5 +21,7 @@
 	"wikilambda-abstract-preview-fragment-retry": "Riprova",
 	"wikilambda-abstract-preview-in-language": "Testo generato",
 	"wikilambda-abstract-special-create-existing-redirected": "Sei stato reindirizzato perché esiste già un articolo astratto.",
-	"wikilambda-abstract-special-create-intro": "Assicurati di seguire le [[$1|politiche della comunità]], incluse le regole sul copyright."
+	"wikilambda-abstract-special-create-intro": "Assicurati di seguire le [[$1|politiche della comunità]], incluse le regole sul copyright.",
+	"wikilambda-abstract-special-preview-missing-params-title": "Parametri URL mancanti",
+	"wikilambda-abstract-special-preview-unsupported-qid-title": "Questo argomento non è ancora supportato."
 }

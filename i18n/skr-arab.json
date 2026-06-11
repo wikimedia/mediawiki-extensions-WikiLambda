@@ -75,6 +75,7 @@
 	"wikilambda-string-renderer-running": "چلدا پئے۔۔۔",
 	"wikilambda-tester-create-new": "ٹیسٹ شامل کرو",
 	"wikilambda-tester-details": "تفصیلاں",
+	"wikilambda-tester-status-apierror": "نقص",
 	"wikilambda-tester-status-cancel": "منسوخ",
 	"wikilambda-tester-status-failed": "ناکام تھیا",
 	"wikilambda-tester-status-passed": "پاس تھیا",
