@@ -86,6 +86,36 @@ class CacheTesterResultsJobTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertTrue( $job->run() );
 	}
 
+	/**
+	 * Regression test (T428954): when this job runs out-of-process via EventBus,
+	 * the JobQueue round-trips its params through JSON, so the stdClass
+	 * stashedResult that ApiPerformTest enqueued arrives here decoded as an
+	 * associative array. The job must re-hydrate it to stdClass before calling
+	 * storeTestResult(), which type-hints stdClass; otherwise the job throws a
+	 * TypeError on every async execution.
+	 */
+	public function testRun_rehydratesArrayStashedResultToStdClass() {
+		$mockStore = $this->createMock( ZObjectStore::class );
+		$mockStore
+			->expects( $this->once() )
+			->method( 'insertZTesterResult' )
+			->willReturn( ZObjectStore::TESTER_RESULT_CACHE_WRITE_INSERTED );
+		$this->setService( 'WikiLambdaZObjectStore', $mockStore );
+
+		// Mimic the associative-array shape that survives JobQueue serialisation,
+		// rather than the stdClass that buildResponseEnvelopeFor() otherwise injects.
+		$job = $this->buildJob( [
+			'stashedResult' => json_decode(
+				'{ "Z1K1": "Z22",'
+				. '"Z22K1": {"Z1K1": "Z40", "Z40K1": "Z41"}, '
+				. '"Z22K2": "Z24"}',
+				true
+			)
+		] );
+
+		$this->assertTrue( $job->run() );
+	}
+
 	public function testRun_staleInsert() {
 		$this->mockZObjectStore( [], ZObjectStore::TESTER_RESULT_CACHE_WRITE_STALE );
 

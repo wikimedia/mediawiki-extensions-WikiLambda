@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
@@ -55,7 +56,10 @@ class CacheTesterResultsJob extends Job implements GenericParameterJob {
 			$this->params['testZid'],
 			$this->params['testRevision'],
 			$this->params['passed'],
-			$this->params['stashedResult']
+			// (T428954) Re-hydrate the stashed result to stdClass. JobQueue
+			// serialisation decodes it from JSON as an associative array, but
+			// storeTestResult() type-hints stdClass. See ZObjectUtils::objectify().
+			ZObjectUtils::objectify( $this->params['stashedResult'] )
 		);
 
 		return true;
