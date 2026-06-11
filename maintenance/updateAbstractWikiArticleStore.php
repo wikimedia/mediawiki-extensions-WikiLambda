@@ -50,19 +50,21 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		$this->requireExtension( 'WikiLambda' );
 		$this->addDescription( 'Populate the durable Abstract Wiki Article Store for a list of topics and languages' );
 
-		// List of comma-separated qids; required, requires a following value
+		// List of comma-separated qids; optional (falls back to config), requires a following value
 		$this->addOption(
 			'topics',
-			'List of Abstract Wikipedia Topic QIDs to update, comma-separated',
-			true,
+			'List of Abstract Wikipedia Topic QIDs to update, comma-separated. '
+				. 'Defaults to $wgWikiLambdaAbstractWikiArticleStoreTopics if unset.',
+			false,
 			true
 		);
 
-		// List of comma-separated language codes; required, requires a following value
+		// List of comma-separated language codes; optional (falls back to config), requires a following value
 		$this->addOption(
 			'langs',
-			'List of MediaWiki\'s BCP-47 locale identifiers to update the Abstract Wiki Articles for, comma-separated.',
-			true,
+			'List of MediaWiki\'s BCP-47 locale identifiers to update the Abstract Wiki Articles for, '
+				. 'comma-separated. Defaults to $wgWikiLambdaAbstractWikiArticleStoreLangs if unset.',
+			false,
 			true
 		);
 	}
@@ -297,16 +299,19 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 	}
 
 	/**
-	 * Get validated and unique Wikidata qids from --topics.
+	 * Get validated and unique Wikidata qids from --topics, falling back to the
+	 * $wgWikiLambdaAbstractWikiArticleStoreTopics config when the option is unset.
 	 * E.g. --topics Q1,Q2,Q4
 	 *
 	 * @return array
 	 */
 	private function getOptionTopics(): array {
-		$raw = $this->getOption( 'topics' ) ?? '';
-
-		// Get array of trimmed qids
-		$qids = array_map( 'trim', explode( ',', $raw ) );
+		// The --topics option overrides config; otherwise fall back to the config default.
+		if ( $this->hasOption( 'topics' ) ) {
+			$qids = array_map( 'trim', explode( ',', $this->getOption( 'topics', '' ) ) );
+		} else {
+			$qids = (array)$this->getConfig()->get( 'WikiLambdaAbstractWikiArticleStoreTopics' );
+		}
 
 		// Filter by qid valid format
 		$qids = array_filter( $qids, static function ( string $qid ) {
@@ -317,7 +322,9 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		} );
 
 		if ( $qids === [] ) {
-			$this->fatalError( 'The --qids option must contain at least one QID.' );
+			$this->fatalError(
+				'No topics to update: pass --topics or set $wgWikiLambdaAbstractWikiArticleStoreTopics.'
+			);
 		}
 
 		// Return unique values
@@ -325,16 +332,19 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 	}
 
 	/**
-	 * Get unique language codes from --langs.
+	 * Get unique language codes from --langs, falling back to the
+	 * $wgWikiLambdaAbstractWikiArticleStoreLangs config when the option is unset.
 	 * E.g. --langs en,es,eu
 	 *
 	 * @return array
 	 */
 	private function getOptionLangs(): array {
-		$raw = $this->getOption( 'langs' ) ?? '';
-
-		// Get array of trimmed language codes
-		$langs = array_map( 'trim', explode( ',', $raw ) );
+		// The --langs option overrides config; otherwise fall back to the config default.
+		if ( $this->hasOption( 'langs' ) ) {
+			$langs = array_map( 'trim', explode( ',', $this->getOption( 'langs', '' ) ) );
+		} else {
+			$langs = (array)$this->getConfig()->get( 'WikiLambdaAbstractWikiArticleStoreLangs' );
+		}
 
 		// TODO: Is there a way that we can validate language codes?
 		$langs = array_filter( $langs, static function ( string $lang ): bool {
@@ -344,7 +354,9 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		} );
 
 		if ( $langs === [] ) {
-			$this->fatalError( 'The --langs option must contain at least one valid language code.' );
+			$this->fatalError(
+				'No languages to update: pass --langs or set $wgWikiLambdaAbstractWikiArticleStoreLangs.'
+			);
 		}
 
 		// Return unique values

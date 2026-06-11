@@ -116,6 +116,14 @@
 		"WikiLambdaAWArticleStoreBackend": {
 			"description": "Storage backend for the Abstract Wikipedia article store. Either 'db' (RDBMS-backed; aw_article_sections on the virtual-awstorage domain) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T426873).",
 			"value": "mainstash"
+		},
+		"WikiLambdaAbstractWikiArticleStoreTopics": {
+			"description": "Default list of Abstract Wikipedia Topic QIDs to update when the updateAbstractWikiArticleStore.php maintenance script is run without --topics. Overridden by --topics when that option is given.",
+			"value": []
+		},
+		"WikiLambdaAbstractWikiArticleStoreLangs": {
+			"description": "Default list of BCP-47 locale identifiers to update Abstract Wiki Articles for when the updateAbstractWikiArticleStore.php maintenance script is run without --langs. Overridden by --langs when that option is given.",
+			"value": []
 		}
 	},
 	"ConfigRegistry": {

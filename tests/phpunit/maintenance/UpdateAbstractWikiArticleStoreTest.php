@@ -281,6 +281,97 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->assertEquals( $expectedPendingSections, $newMetadata[ 'pendingSections' ] );
 	}
 
+	/**
+	 * Config fallback:
+	 * * no --topics/--langs flags are passed
+	 * * the topics and langs come from $wgWikiLambdaAbstractWikiArticleStore{Topics,Langs}
+	 */
+	public function testConfigDefaultsUsedWhenNoFlags(): void {
+		$topicQid = 'Q42';
+		$sectionQid = 'Q8776414';
+		$langZid = 'Z1002';
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+
+		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F1' ];
+		$value1 = [ 'success' => true, 'value' => '<h1>Fragment 1</h1>' ];
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $sectionQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment1 ) . ' ] } } }';
+
+		// SETUP:
+		// Provide the topics and langs through config rather than CLI flags.
+		// overrideConfigValues() resets the service container, so re-capture the
+		// cache/store handles afterwards (setUp's copies now point at stale services).
+		$this->overrideConfigValues( [
+			'WikiLambdaAbstractWikiArticleStoreTopics' => [ $topicQid ],
+			'WikiLambdaAbstractWikiArticleStoreLangs' => [ 'en' ],
+		] );
+		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
+		$this->articleStore = WikiLambdaServices::getAWArticleStore();
+		$this->loadAWContent( $topicQid, $awJson );
+		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $date, $value1 );
+
+		// EXECUTE:
+		// Run the script with no flags, so it relies on config defaults
+		$this->maintenance->loadWithArgv( [] );
+		$this->maintenance->execute();
+
+		// ASSERT POST:
+		// The config-driven topic/lang produced the expected section
+		$section = $this->articleStore->getSection( $topicQid, $sectionQid, 'en' );
+		$this->assertInstanceOf( AWSection::class, $section );
+		$this->assertSame( $topicQid, $section->getTopicQid() );
+		$this->assertSame( 'en', $section->getLocale() );
+		$this->assertSame( '<h1>Fragment 1</h1>', $section->getPayload() );
+	}
+
+	/**
+	 * CLI precedence:
+	 * * config sets decoy topics/langs (Q999/fr)
+	 * * --topics Q42 --langs en override them entirely (not merge)
+	 */
+	public function testCliOptionsOverrideConfig(): void {
+		$topicQid = 'Q42';
+		$sectionQid = 'Q8776414';
+		$langZid = 'Z1002';
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+
+		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F1' ];
+		$value1 = [ 'success' => true, 'value' => '<h1>Fragment 1</h1>' ];
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $sectionQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment1 ) . ' ] } } }';
+
+		// SETUP:
+		// Config points at a topic with no content and a different language;
+		// if the CLI flags didn't override config, no Q42/en section would be made.
+		// overrideConfigValues() resets the service container, so re-capture the
+		// cache/store handles afterwards (setUp's copies now point at stale services).
+		$this->overrideConfigValues( [
+			'WikiLambdaAbstractWikiArticleStoreTopics' => [ 'Q999' ],
+			'WikiLambdaAbstractWikiArticleStoreLangs' => [ 'fr' ],
+		] );
+		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
+		$this->articleStore = WikiLambdaServices::getAWArticleStore();
+		$this->loadAWContent( $topicQid, $awJson );
+		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $date, $value1 );
+
+		// EXECUTE:
+		// Run the script for --topics Q42 --langs en
+		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en' ] );
+		$this->maintenance->execute();
+
+		// ASSERT POST:
+		// The CLI topic+lang won: a Q42/en section exists...
+		$section = $this->articleStore->getSection( $topicQid, $sectionQid, 'en' );
+		$this->assertInstanceOf( AWSection::class, $section );
+		$this->assertSame( 'en', $section->getLocale() );
+		// ...and the config language 'fr' was not used.
+		$this->assertCount( 0, $this->articleStore->getSectionsForTopic( $topicQid, 'fr' ) );
+	}
+
 	// Helper functions
 	// ================
 
