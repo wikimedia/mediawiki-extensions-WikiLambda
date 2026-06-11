@@ -14,6 +14,7 @@ use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
@@ -339,17 +340,33 @@ class PageRenderingHandler implements
 		// (T342212) Wrap our ZID in an LTR-enforced <span> so it works OK in RTL environments
 		$bidiWrappedEntityId = '<span dir="ltr">' . $entityId . '</span>';
 
-		// Special handling for unknown (red) links; we want to add the wrapped ZID but don't want to try to fetch
-		// the label, which will fail
+		// We don't re-write the label if the label is already set
+		if ( $text !== null && $targetTitle->getFullText() !== HtmlArmor::getHtml( $text ) ) {
+			return;
+		}
+
+		// Special handling for unknown (red) links; core's makeBrokenLink() already sets class="new"
 		if ( !$isKnown && $text === $entityId ) {
 			$text = new HtmlArmor( $bidiWrappedEntityId );
 			return;
 		}
 
-		// We don't re-write the label if the label is already set (e.g. for "prev" and "cur" and revision links on
-		// history pages, or inline links like [[Z1|this]]); we do however continue for
-		if ( $text !== null && $targetTitle->getFullText() !== HtmlArmor::getHtml( $text ) ) {
-			return;
+		// An AW article can exist but have no content yet; treat it as a red link.
+		// Unlike makeBrokenLink(), makeKnownLink() does not set class="new", so we add it here.
+		$isEmptyAbstractPage = false;
+		if ( $isKnown && $targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT ) ) {
+			$wikiPage = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $targetTitle );
+			$content = $wikiPage->getContent();
+			if ( $content instanceof AbstractWikiContent ) {
+				$isEmptyAbstractPage = $content->isEmpty();
+			}
+		}
+		if ( $isEmptyAbstractPage && ( $text === $entityId ||
+				( $text !== null && HtmlArmor::getHtml( $text ) === $targetTitle->getPrefixedText() ) ) ) {
+			$text = new HtmlArmor( $bidiWrappedEntityId );
+			$attribs['class'] = isset( $attribs['class'] )
+				? $attribs['class'] . ' new'
+				: 'new';
 		}
 
 		if ( $targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT ) ) {

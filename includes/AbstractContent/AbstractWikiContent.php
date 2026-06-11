@@ -287,6 +287,30 @@ EOD;
 	}
 
 	/**
+	 * Whether this content has no substantive fragments in any section.
+	 *
+	 * An article is empty when no section contains substantive fragments — i.e. every
+	 * section's fragment list holds only the Z89 type indicator with nothing after it.
+	 * Content in any section, not just the lede, makes the article non-empty.
+	 *
+	 * @return bool
+	 */
+	public function isEmpty(): bool {
+		$sections = $this->getSections();
+		if ( !is_array( $sections ) ) {
+			return true;
+		}
+		foreach ( $sections as $section ) {
+			$fragments = $section['fragments'] ?? [];
+			// The first element is always the Z89 type indicator; count > 1 means real content exists
+			if ( count( $fragments ) > 1 ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * @return StatusValue|null
 	 */
 	public function getStatus() {

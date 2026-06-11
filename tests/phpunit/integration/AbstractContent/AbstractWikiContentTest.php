@@ -60,6 +60,50 @@ class AbstractWikiContentTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$this->assertTrue( $emptyObject->isValid() );
 	}
 
+	/**
+	 * @dataProvider provideIsEmpty
+	 */
+	public function testIsEmpty( string $jsonContent, bool $expectedEmpty ) {
+		$testObject = new AbstractWikiContent( $jsonContent );
+		$this->assertSame( $expectedEmpty, $testObject->isEmpty() );
+	}
+
+	public static function provideIsEmpty() {
+		yield 'makeEmptyContent structure is empty' => [
+			'{ "qid": "Q0", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89" ] } } }',
+			true
+		];
+
+		yield 'lede with only the type sentinel is empty' => [
+			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89" ] } } }',
+			true
+		];
+
+		yield 'lede with real content is not empty' => [
+			'{ "qid": "Q42", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89", "some fragment" ] } } }',
+			false
+		];
+
+		yield 'empty lede but another section has real content is not empty' => [
+			'{ "qid": "Q42", "sections": {'
+				. ' "Q8776414": { "index": 0, "fragments": [ "Z89" ] },'
+				. ' "Q1111111": { "index": 1, "fragments": [ "Z89", "some fragment" ] } } }',
+			false
+		];
+
+		yield 'no sections is empty' => [
+			'{ "qid": "Q42" }',
+			true
+		];
+
+		yield 'multiple sections all empty is empty' => [
+			'{ "qid": "Q42", "sections": {'
+				. ' "Q8776414": { "index": 0, "fragments": [ "Z89" ] },'
+				. ' "Q1111111": { "index": 1, "fragments": [ "Z89" ] } } }',
+			true
+		];
+	}
+
 	public function testAbstractContentIsValidForTitle() {
 		$titleQ29 = Title::newFromText( 'Q29', self::TEST_ABSTRACT_NS );
 

@@ -25,6 +25,8 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 
 	protected function setUp(): void {
 		parent::setUp();
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
+		$this->setMwGlobals( 'wgWikiLambdaEnableAbstractMode', true );
 		$this->setUpAsClientMode();
 
 		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
@@ -44,7 +46,9 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 
 		// Mock item Japchae/Q715040, with only label in English
 		$mockWikidataEntityLookup = $this->mockWikidataEntityLookup( [
-			'Q715040' => [ 'en' => 'japchae' ]
+			'Q715040' => [ 'en' => 'japchae' ],
+			'Q99999' => [],
+			'Q99998' => [],
 		] );
 
 		$this->pageRenderingHandlerAbstractMode = new PageRenderingHandler(
@@ -93,6 +97,71 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 			'/view/en/Abstract_Wikipedia:Q715040',
 			$attribs['href'],
 			'Abstract mode link should have the correct href with namespace prefix'
+		);
+	}
+
+	public function testOnHtmlPageLinkRendererEnd_emptyAbstractPageIsRedLink() {
+		// Create an abstract page with only the Z89 type sentinel (no real content)
+		$emptyContent = new AbstractWikiContent(
+			'{ "qid": "Q99999", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89" ] } } }'
+		);
+		$this->editPage( 'Q99999', $emptyContent, 'empty abstract page', 2300 );
+
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
+		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
+
+		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
+		$linkTarget = Title::makeTitle( 2300, 'Q99999' );
+		$isKnown = true;
+		$text = $linkTarget->getPrefixedText();
+		$attribs = [ 'href' => '/wiki/Abstract_Wikipedia:Q99999' ];
+		$ret = '';
+
+		$this->pageRenderingHandlerAbstractMode->onHtmlPageLinkRendererEnd(
+			$linkRenderer, $linkTarget, $isKnown, $text, $attribs, $ret
+		);
+
+		$this->assertStringContainsString(
+			'new',
+			$attribs['class'] ?? '',
+			'An Abstract article with only the Z89 sentinel should have class="new" (red link)'
+		);
+		$this->assertStringContainsString(
+			'<span dir="ltr">Q99999</span>',
+			HtmlArmor::getHtml( $text ),
+			'The QID should be bidi-wrapped'
+		);
+	}
+
+	public function testOnHtmlPageLinkRendererEnd_abstractPageWithContentIsBlueLink() {
+		// Create an abstract page with real content (more than just the Z89 sentinel)
+		$contentWithFragments = new AbstractWikiContent(
+			'{ "qid": "Q99998", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89", "some fragment" ] } } }'
+		);
+		$this->editPage( 'Q99998', $contentWithFragments, 'abstract page with content', 2300 );
+
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::newFromText( 'Special:RecentChanges', NS_SPECIAL ) );
+		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
+
+		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
+		$linkTarget = Title::makeTitle( 2300, 'Q99998' );
+		$isKnown = true;
+		$text = $linkTarget->getPrefixedText();
+		$attribs = [ 'href' => '/wiki/Abstract_Wikipedia:Q99998' ];
+		$ret = '';
+
+		$this->pageRenderingHandlerAbstractMode->onHtmlPageLinkRendererEnd(
+			$linkRenderer, $linkTarget, $isKnown, $text, $attribs, $ret
+		);
+
+		$this->assertStringNotContainsString(
+			'new',
+			$attribs['class'] ?? '',
+			'An Abstract article with real content should not have class="new"'
 		);
 	}
 
