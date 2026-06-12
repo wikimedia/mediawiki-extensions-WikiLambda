@@ -5,7 +5,7 @@
 			"Siebrand"
 		]
 	},
-	"action-wikilambda-abstract-create": "maak nieuwe Abstracte artikelen aan",
+	"action-wikilambda-abstract-create": "Nieuwe Abstract Articles aanmaken",
 	"action-wikilambda-abstract-edit": "bewerk bestaande Abstracte Artikelen",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Voorgestelde Wikifuncties voor Abstract Wiki",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "De lijst met Wikifuncties (op basis van ZID) die HTML teruggeven en die worden aangeboden in het menu \"Fragment toevoegen\" van het abstractartikel. Maximaal tien vermeldingen.",
