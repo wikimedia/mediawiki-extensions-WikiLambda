@@ -93,7 +93,7 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 
 		$this->assertStringContainsString( 'cdx-message--error', $html );
 		$this->assertStringContainsString( 'Missing URL parameters', $html );
-		$this->assertStringContainsString( 'The url should have language and topic Qid', $html );
+		$this->assertStringContainsString( 'The URL should have language and topic Qid', $html );
 	}
 
 	public function testShowsErrorWithBadLanguage(): void {
