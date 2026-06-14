@@ -941,22 +941,100 @@ in page titles and link text. Without it the code falls back gracefully to displ
 CommunityConfiguration provides the Abstract-mode suggested Wikifunctions list in the editor.
 See the [recommended extensions](#setup) section above for installation instructions.
 
-### Configuring your environment for abstract mode
+### Abstract Repo and Client
+
+An important distinction to make in Abstract Wikipedia related environments is the one between
+Repository and Client mode.
+
+We call Abstract Wikipedia Repository or **Abstract Repo** a MediaWiki instance that is set up to
+host `AbstractWikiContent`, or Abstract Wikipedia multilingual article definitions. The Abstract
+Articles hosted in Abstract Repo can be rendered into Wikipedia Articles in any language. In
+production, the Abstract Repo can be accessed at https://abstract.wikipedia.org.
+
+We call Abstract Wikipedia Client or **Abstract Client** a MediaWiki instance that is set up to use
+or display rendered Abstract Articles in a particular language. For example, any language Wikipedia
+which integrates articles generated from Abstract Repo source.
+
+
+### Configuring your environment for Abstract Repository mode
 
 On a mediawiki-docker environment for local development, there are two options for developing Abstract Wikipedia:
 * Local environment serving as Wikifunctions repo. In this environment, when accessing Abstract Wikipedia pages, the requests to fetch Wikifunctions zobjects and labels will be made to the local environment, and to avoid errors, the local environment should be able to respond as if it were Wikifunctions. However, as long as EnableAbstractMode is set to true, Wikifunctions will not work normally, only to respond to Abstract request as if it were a remote service. If you need to work with Wikifunctions locally, make sure to set again the EnableAbstractMode flag to false
 
-  $wgWikiLambdaClientTargetAPI = 'http://mediawiki-web:8080';
-  $wgWikiLambdaEnableRepoMode = true;
-  $wgWikiLambdaEnableClientMode = true;
-  $wgWikiLambdaEnableAbstractMode = true;
+```
+$wgWikiLambdaClientTargetAPI = 'http://mediawiki-web:8080';
+$wgWikiLambdaEnableRepoMode = true;
+$wgWikiLambdaEnableClientMode = true;
+$wgWikiLambdaEnableAbstractMode = true;
+$wgWikiLambdaEnableAbstractClientMode = false;
+```
 
 * Another possibility is to set the local environment only to work as Abstract Wikipedia and set production Wikifunctions as the repo. This should work, too, although means more load for production Wikifunctions
 
-  $wgWikiLambdaClientTargetAPI = 'https://www.wikifunctions.org';
-  $wgWikiLambdaEnableRepoMode = false;
-  $wgWikiLambdaEnableClientMode = true;
-  $wgWikiLambdaEnableAbstractMode = true;
+```
+$wgWikiLambdaClientTargetAPI = 'https://www.wikifunctions.org';
+$wgWikiLambdaEnableRepoMode = false;
+$wgWikiLambdaEnableClientMode = true;
+$wgWikiLambdaEnableAbstractMode = true;
+$wgWikiLambdaEnableAbstractClientMode = false;
+```
+
+### Update Abstract Article Store
+
+The rendering of Abstract Articles in specific languages is done using the
+`updateAbstractWikiArticleStore` maintenance script.
+
+This script can be called with:
+* `--topics` A list of topics (Wikidata Item qids) to render to the wanted languages. If no
+`--topics` is passed, then it uses the list of topics set for the config variable
+`WikiLambdaAbstractWikiArticleStoreTopics`
+* `--langs` A list of language codes (Wikifunctions accepted BCP-47 identifiers). If no
+`--langs` is passed, then it uses the list of languages set for the config variable
+`WikiLambdaAbstractWikiArticleStoreLangs`
+* `--pending` A boolean flag to determine whether we want to regenerate only the content marked as
+pending.
+
+This script does the following:
+1. For each one of the wanted set of topics:
+2. Get the AbstractWikiContent object in its latest revision, and for each of its existing sections:
+   1. Collect the latest fragments available for every requested language,
+   2. put these fragments together to generate the updated section for each language, and
+   3. if the section is fully rendered, update it in the AW Article Store
+3. Finally, for each topic, update its AW Article Store metadata record with the rendering date and
+   the completion status of any pending sections.
+
+As an exception to this behavior, if a section is not fully rendered for a language -- it contains
+one or more pending fragments:
+* if the AW Article Store already contains an outdated version of it, this outdated version will not
+  be overwritten with the pending version.
+* if the AW Article Store has no record of this section/language -- so, it is new and has never been
+  rendered before, or the record has been removed from the store for external/infrastructural
+  reasons --, then the incomplete/pending section will be persisted.
+
+This behavior highlights that we prefer showing an outdated version of an article rather than
+showing an *incomplete* one. But we prefer showing an incomplete or pending article than showing
+nothing.
+
+
+To run this script for the topics and languages set in the configuration variables, do:
+```
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/updateAbstractWikiArticleStore.php
+```
+
+To run this script for a given set of topics and languages, do:
+```
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/updateAbstractWikiArticleStore.php \
+   --topics Q42,Q319 --langs en,es,ru,zh
+```
+
+To only rewrite the sections flagged as pending, do:
+```
+$ docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/updateAbstractWikiArticleStore.php \
+   --topics Q42,Q319 --langs en,es,ru,zh --pending
+```
 
 
 ## See also

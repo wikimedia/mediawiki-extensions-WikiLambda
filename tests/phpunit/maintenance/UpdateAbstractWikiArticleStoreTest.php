@@ -36,6 +36,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 
 	private const TEST_ABSTRACT_NS = 2300;
 	private const NOW = '20260101081300';
+	private const PAST = '20200101081300';
 
 	private MemcachedWrapper $objectCache;
 	private AWArticleStore $articleStore;
@@ -370,6 +371,115 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->assertSame( 'en', $section->getLocale() );
 		// ...and the config language 'fr' was not used.
 		$this->assertCount( 0, $this->articleStore->getSectionsForTopic( $topicQid, 'fr' ) );
+	}
+
+	public function testUpdatePending() {
+		// We want to check that:
+		// * stuff not in the input --lang <langs> not re-rendered
+		// * stuff that is successfully updated is removed from the pending array
+		// * stuff that is not updated remains in the pending array
+		// * anything that was registered as pending will not be touched
+		//
+		// For this we need 4 languages:
+		// * en: was pending, now done
+		// * es: was pending, still pending
+		// * fr: was pending, could be resolved, but remains pending
+		// * ru: was ready, could be overwritten, but it's not
+		//
+		// Setup:
+		// * metadata has pending en, es, fr
+		// * metadata has non-pending russian, although section for ru has some outdated content
+		//
+		// Act:
+		// call script with --pending --langs en,es,ru
+		//
+		// Assert:
+		// * metadata still has pending for es (cause fragment wasn't ready)
+		// * metadata still has pending for fr (cause it wasn't requested)
+		// * metadata has no en nor ru
+		// * section for en has been overwritten
+		// * section for fr and ru have not been overwritten
+		$topicQid = 'Q42';
+		$sectionQid = 'Q8776414';
+
+		$fragment = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400' ];
+		$value = [ 'success' => true, 'value' => '<p>Updated</p>' ];
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $sectionQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment ) . ' ] } } }';
+
+		ConvertibleTimestamp::setFakeTime( self::PAST );
+
+		// SETUP:
+		$this->loadAWContent( $topicQid, $awJson );
+		// Fragments are ready for english, french and runssian
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', null, $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1004', null, $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1005', null, $value );
+		// Sections are stored for all objects, with outdated value
+		$oldValue = '<p>Outdated</p>';
+		$this->articleStore->setSection( new AWSection( $topicQid, $sectionQid, 'en', $oldValue ) );
+		$this->articleStore->setSection( new AWSection( $topicQid, $sectionQid, 'es', $oldValue ) );
+		$this->articleStore->setSection( new AWSection( $topicQid, $sectionQid, 'fr', $oldValue ) );
+		$this->articleStore->setSection( new AWSection( $topicQid, $sectionQid, 'ru', $oldValue ) );
+		// Metadata knows that en, es, and fr are pending, but not russian
+		$oldMetadata = json_decode( '{"sections":["Q8776414"],'
+			. '"pendingSections":{ "en":["Q8776414"], "es":["Q8776414"], "fr":["Q8776414"] },'
+			. '"lastRendered":"' . self::PAST . '"}', true );
+		$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $oldMetadata ) );
+
+		ConvertibleTimestamp::setFakeTime( self::NOW );
+
+		// EXECUTE:
+		// Run the script for --topics Q42 --langs en,es,ru --pending
+		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en,es,ru', '--pending' ] );
+		$this->maintenance->execute();
+
+		// ASSERT POST:
+		$metadata = $this->articleStore->getArticleMetadata( $topicQid );
+		$newPending = $metadata->getPayload()[ 'pendingSections' ] ?? [];
+		$expectedPending = [ 'es' => [ $sectionQid ], 'fr' => [ $sectionQid ] ];
+		$this->assertSame( self::NOW, $metadata->getLastUpdated()->getTimestamp( TS::MW ) );
+		$this->assertEquals( $expectedPending, $newPending );
+
+		// English section has been updated because:
+		// 1) metadata said pending, 2) called with --langs en --pending, 3) fragment was ready
+		$section = $this->articleStore->getSection( $topicQid, $sectionQid, 'en' );
+		$this->assertInstanceOf( AWSection::class, $section );
+		$this->assertSame( self::NOW, $section->getLastUpdated()->getTimestamp( TS::MW ) );
+		$this->assertSame( "<p>Updated</p>", $section->getPayload() );
+		// English is no longer pending section in metadata
+		$this->assertArrayNotHasKey( 'en', $newPending );
+
+		// Spanish section has not been updated because:
+		// 1) metadata said pending, 2) called with --langs es --pending, 3) fragment was NOT ready
+		$section = $this->articleStore->getSection( $topicQid, $sectionQid, 'es' );
+		$this->assertInstanceOf( AWSection::class, $section );
+		$this->assertSame( self::PAST, $section->getLastUpdated()->getTimestamp( TS::MW ) );
+		$this->assertSame( "<p>Outdated</p>", $section->getPayload() );
+		// Spanish is still pending section in metadata
+		$this->assertArrayHasKey( 'es', $newPending );
+		$this->assertEquals( [ $sectionQid ], $newPending['es'] );
+
+		// French section has not been updated because:
+		// 1) metadata said pending, but 2) script was not called with --lang fr
+		$section = $this->articleStore->getSection( $topicQid, $sectionQid, 'fr' );
+		$this->assertInstanceOf( AWSection::class, $section );
+		$this->assertSame( self::PAST, $section->getLastUpdated()->getTimestamp( TS::MW ) );
+		$this->assertSame( "<p>Outdated</p>", $section->getPayload() );
+		// French is still pending section in metadata
+		$this->assertArrayHasKey( 'fr', $newPending );
+		$this->assertEquals( [ $sectionQid ], $newPending['fr'] );
+
+		// Russian section has not been updated because:
+		// 1) script was called with --lang ru, but 2) metadata did not register russian as pending
+		$section = $this->articleStore->getSection( $topicQid, $sectionQid, 'ru' );
+		$this->assertInstanceOf( AWSection::class, $section );
+		$this->assertSame( self::PAST, $section->getLastUpdated()->getTimestamp( TS::MW ) );
+		$this->assertSame( "<p>Outdated</p>", $section->getPayload() );
+		// French is still pending section in metadata
+		$this->assertArrayNotHasKey( 'ru', $newPending );
 	}
 
 	// Helper functions

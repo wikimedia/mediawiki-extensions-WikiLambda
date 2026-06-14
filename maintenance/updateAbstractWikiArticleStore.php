@@ -67,6 +67,12 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 			false,
 			true
 		);
+
+		// Whether to only regenerate and store the pending sections of the given topics/languages
+		$this->addOption(
+			'pending',
+			'If present, only re-generates and stores the sections which are still marked as pending.'
+		);
 	}
 
 	/**
@@ -143,6 +149,9 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		$topics = $this->getOptionTopics();
 		$langs = $this->getOptionLangs();
 
+		// Whether to only re-generate and store pending sections
+		$doPending = $this->hasOption( 'pending' );
+
 		// Mark the time of maintenance script execution; we'll use the
 		// same time for the whole duration of the script, so that all
 		// the fragments are generated for a consistent date.
@@ -178,11 +187,26 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 			$metadata = $this->articleStore->getArticleMetadata( $topicQid );
 			$payload = $metadata === null ? [] : $metadata->getPayload();
 
-			// Initialize pendingSections map, we don't wanna step on any
-			// metadata if the update script was called with a subset of the
-			// available languages, so we will compile the pending sections for
-			// this iteration and merge them with the existing ones later on.
-			$pendingSections = array_fill_keys( $langs, [] );
+			// Initialize pending sections maps:
+			// * pendingByLang -- this is the way pending information is stored in the metadata.
+			// We don't wanna step on any metadata if the update script was called for a subset of
+			// the available languages, so we part from the existing pending sections map,
+			// initialize the missing languages, and remove/add values as we find or set them.
+			$pendingByLang = $payload['pendingSections'] ?? [];
+			$pendingByLang += array_fill_keys( $langs, [] );
+
+			// * pendingBySection -- If --pending flag was present, we only want to iterate through
+			// pending sections of the demanded languages. We create the current/pending metadata as
+			// [ sectionQid => [ locale, ... ] ]
+			// so that we can quickly check if the current section/language are pending or continue
+			$pendingBySection = [];
+			if ( $doPending ) {
+				foreach ( $pendingByLang as $pendingLang => $pendingSectionQids ) {
+					foreach ( $pendingSectionQids as $qid ) {
+						$pendingBySection[$qid][] = $pendingLang;
+					}
+				}
+			}
 
 			// Now we know that sections has valid (non-empty) content
 			$sections = $awContent->getSections() ?? [];
@@ -192,6 +216,13 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 			foreach ( $sections as $sectionQid => $section ) {
 				$this->output( "\n> Generating section $sectionQid for all languages:\n" );
 
+				// Skip if --pending is set and there are no pending languages for this section
+				if ( $doPending && !isset( $pendingBySection[ $sectionQid ] ) ) {
+					$this->output( "> Skipping topic $topicQid, section $sectionQid:"
+						. " --pending and the section is already rendered for all languages\n" );
+					continue;
+				}
+
 				// We compile all the section indices and qids for the metadata object
 				$sectionIndex = intval( $section['index'] ?? 0 );
 				$sectionIds[ $sectionIndex ] = $sectionQid;
@@ -200,6 +231,13 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 
 				// For each language, regenerate and store the AW Section HTML blob
 				foreach ( $langs as $locale ) {
+					// Skip if --pending is set and this language is not pending for the section
+					if ( $doPending && !in_array( $locale, $pendingBySection[ $sectionQid ] ?? [] ) ) {
+						$this->output( "> Skipping topic $topicQid, section $sectionQid for $locale:"
+							. " --pending and the section is already rendered for this language\n" );
+						continue;
+					}
+
 					// TODO: Currently we generate each section in all languages before passing
 					// onto the next section, because we store by section, so we complete, store
 					// and continue.
@@ -222,16 +260,23 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					// we can do different things. For pending sections,
 					// only update if there's no current section stored.
 					if ( $freshSection->isPending() ) {
-						$pendingSections[ $locale ][] = $sectionQid;
+						// Mark this section as pending for this language
+						if ( !in_array( $sectionQid, $pendingByLang[ $locale ] ) ) {
+							$pendingByLang[ $locale ][] = $sectionQid;
+						}
 						$oldSection = $this->articleStore->getSection( $topicQid, $sectionQid, $locale );
-						// There's already some section stored, so let's keep it
-						// instead of replacing it with a pending state one:
 						if ( $oldSection ) {
+							// There's already some section stored, so let's keep it
+							// instead of replacing it with a pending state one:
 							// TODO log that we are passing on an update: this log is IMPORTANT
 							$this->output( "> > NOT storing section $sectionQid for $locale - "
 								. "section is pending but a stale version is already stored\n" );
 							continue;
 						}
+					} else {
+						// Mark this section as NOT pending for this language
+						$pendingByLang[ $locale ] = array_values( array_diff(
+							$pendingByLang[ $locale ], [ $sectionQid ] ) );
 					}
 
 					$this->output( "> > Storing section $sectionQid for $locale - payload: "
@@ -241,20 +286,16 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					);
 					// TODO: do we need to handle errors from this setter?
 					$this->articleStore->setSection( $freshSection );
+					// Remove section $sectionQid, from language $locale and set metadata
 				}
 			}
 
 			// 4. Before being done with this topicQid, we compile and store the AWArticleMetadata
-
-			// We update the indices here as well, to make sure they are up to date
 			$payload[ 'sections' ] = $sectionIds;
-			// Merge existing pendingSections with updated one, and filter out those languages with empty arrays
-			$payload[ 'pendingSections' ] = array_merge( $payload[ 'pendingSections' ] ?? [], $pendingSections );
-			$payload[ 'pendingSections' ] = array_filter( $payload[ 'pendingSections' ], static function ( $secs ) {
+			$payload[ 'lastRendered' ] = ConvertibleTimestamp::now();
+			$payload[ 'pendingSections' ] = array_filter( $pendingByLang, static function ( $secs ) {
 				return count( $secs ) > 0;
 			} );
-			// Add information of the new render time and status
-			$payload[ 'lastRendered' ] = ConvertibleTimestamp::now();
 
 			$this->output( "> Metadata for topic $topicQid: " . json_encode( $payload ) . "\n" );
 
