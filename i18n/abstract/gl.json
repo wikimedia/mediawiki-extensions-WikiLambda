@@ -68,7 +68,7 @@
 	"wikilambda-abstract-special-preview-bad-lang-title": "Código de lingua incorrecto",
 	"wikilambda-abstract-special-preview-bad-qid-body": "O identificador «$1» non é un identificador de elemento de Wikidata (Qid) válido.",
 	"wikilambda-abstract-special-preview-bad-qid-title": "Qid de tema incorrecto",
-	"wikilambda-abstract-special-preview-empty-section-body": "A última actualización deste artigo foi o $1, pero esta sección aínda non se traduciu a esta lingua. Inténtao de novo. [[Why is this not immediate?|Por que non é inmediato?]]",
+	"wikilambda-abstract-special-preview-empty-section-body": "A última actualización deste artigo foi o $1, pero esta sección aínda non se traduciu a esta lingua. Inténtao de novo. [[abstract:Help:Abstract_articles#Abstract_article_rendering|Por que non é inmediato?]]",
 	"wikilambda-abstract-special-preview-empty-section-title": "Esta sección aínda non está traducida",
 	"wikilambda-abstract-special-preview-missing-params-body": "O enderezo URL debe ter a lingua e mais o Qid do tema. Por exemplo, «Special:PreviewAbstract/en/Q42»",
 	"wikilambda-abstract-special-preview-missing-params-title": "Faltan parámetros no enderezo URL",
@@ -77,9 +77,9 @@
 	"wikilambda-abstract-special-preview-not-ready-body": "Aínda non se xerou a vista previa do artigo para o tema «$1» en $2. Por favor, inténtao de novo nun anaco.",
 	"wikilambda-abstract-special-preview-not-ready-title": "A vista previa deste artigo aínda non está lista.",
 	"wikilambda-abstract-special-preview-provenance-banner": "Última actualización da Wikipedia abstracta o $1",
-	"wikilambda-abstract-special-preview-unsupported-lang-body": "A lingua «$1» aínda non está incluída na lista de linguas para as que se xeran artigos na Wikipedia abstracta. [[See list of enabled languages|Ver a lista de linguas habilitadas.]]",
+	"wikilambda-abstract-special-preview-unsupported-lang-body": "A lingua «$1» aínda non está incluída na lista de linguas para as que se xeran artigos na Wikipedia abstracta. [[abstract:Help:Abstract_articles#Language_coverage|Ver a lista de linguas habilitadas.]]",
 	"wikilambda-abstract-special-preview-unsupported-lang-title": "Esta lingua aínda non está admitida.",
-	"wikilambda-abstract-special-preview-unsupported-qid-body": "O tema «$1» aínda non ten un artigo abstracto ou aínda non está incluído na lista de temas para os que se xeran artigos na Wikipedia abstracta. [[See list of enabled topics|Ver a lista de temas habilitados.]]",
+	"wikilambda-abstract-special-preview-unsupported-qid-body": "O tema «$1» aínda non ten un artigo abstracto ou aínda non está incluído na lista de temas para os que se xeran artigos na Wikipedia abstracta. [[abstract:Help:Abstract_articles#Language_coverage|Ver a lista de temas habilitados.]]",
 	"wikilambda-abstract-special-preview-unsupported-qid-title": "Este tema aínda non está admitido.",
 	"wikilambda-abstract-special-view": "Ver un artigo abstracto"
 }

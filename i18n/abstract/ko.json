@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Tensama0415",
+			"YeBoy371",
 			"Ykhwong"
 		]
 	},
@@ -69,7 +70,7 @@
 	"wikilambda-abstract-special-preview-bad-lang-title": "잘못된 언어 코드",
 	"wikilambda-abstract-special-preview-bad-qid-body": "식별자 \"$1\"은(는) 유효한 위키데이터 항목 식별자(Qid)가 아닙니다.",
 	"wikilambda-abstract-special-preview-bad-qid-title": "잘못된 주제 Qid",
-	"wikilambda-abstract-special-preview-empty-section-body": "이 문서는 $1 시점에 마지막으로 업데이트되었지만, 해당 언어로는 아직 이 문단이 렌더링되지 않았습니다. 나중에 다시 시도해 주세요. [[Why is this not immediate?|왜 바로 표시되지 않나요?]]",
+	"wikilambda-abstract-special-preview-empty-section-body": "이 문서는 $1 시점에 마지막으로 업데이트되었지만, 해당 언어로는 아직 이 문단이 렌더링되지 않았습니다. 나중에 다시 시도해 주세요. [[abstract:Help:Abstract_articles#Abstract_article_rendering|왜 바로 표시되지 않나요?]]",
 	"wikilambda-abstract-special-preview-empty-section-title": "이 문단은 아직 아직 렌더링되지 않았음",
 	"wikilambda-abstract-special-preview-missing-params-body": "url에는 언어와 주제 Qid가 포함되어야 합니다. 예: \"Special:PreviewAbstract/en/Q42\"",
 	"wikilambda-abstract-special-preview-missing-params-title": "누락된 URL 매개변수",
@@ -78,9 +79,9 @@
 	"wikilambda-abstract-special-preview-not-ready-body": "$2 언어의 주제 $1에 대한 문서 미리 보기가 아직 생성되지 않았습니다. 나중에 다시 시도해 주세요.",
 	"wikilambda-abstract-special-preview-not-ready-title": "이 문서의 미리보기가 아직 준비되지 않았습니다.",
 	"wikilambda-abstract-special-preview-provenance-banner": "추상 위키백과에서 $1에 최종 업데이트됨",
-	"wikilambda-abstract-special-preview-unsupported-lang-body": "\"$1\" 언어는 아직 추상 위키백과 문서 생성을 지원하는 언어 목록에 포함되지 않았습니다. [[See list of enabled languages|활성화된 언어 목록 보기]]",
+	"wikilambda-abstract-special-preview-unsupported-lang-body": "\"$1\" 언어는 아직 추상 위키백과 문서 생성을 지원하는 언어 목록에 포함되지 않았습니다. [[abstract:Help:Abstract_articles#Language_coverage|활성화된 언어 목록 보기]]",
 	"wikilambda-abstract-special-preview-unsupported-lang-title": "이 언어는 아직 지원되지 않습니다.",
-	"wikilambda-abstract-special-preview-unsupported-qid-body": "주제 $1은(는) 추상 문서가 없거나, 추상 위키백과 문서 생성 대상 주제 목록에 아직 포함되지 않았습니다. [[See list of enabled topics|활성화된 주제 목록 보기]]",
+	"wikilambda-abstract-special-preview-unsupported-qid-body": "주제 $1은(는) 추상 문서가 없거나, 추상 위키백과 문서 생성 대상 주제 목록에 아직 포함되지 않았습니다. [[abstract:Help:Abstract_articles#Language_coverage|활성화된 주제 목록 보기]]",
 	"wikilambda-abstract-special-preview-unsupported-qid-title": "이 주제는 아직 지원되지 않습니다.",
 	"wikilambda-abstract-special-view": "추상 문서 보기"
 }

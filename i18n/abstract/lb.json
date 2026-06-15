@@ -63,5 +63,9 @@
 	"wikilambda-abstract-special-create-not-enabled": "D'Uleeë vun Abstrakten Artikelen ass aktuell net aktivéiert. Kommt wgl. méi spéit nach eng Kéier laanscht kucken.",
 	"wikilambda-abstract-special-create-not-enabled-title": "Uleeë vun Abstrakten Artikelen net aktivéiert",
 	"wikilambda-abstract-special-create-qid": "En neien Abstrakten Artikel fir $1 uleeën",
+	"wikilambda-abstract-special-preview-unsupported-lang-body": "D'Sprooch „$1“ gouf nach net an d'Lëscht vun de Sproochen opgeholl, fir déi Abstrakt-Wikipedia-Artikele generéiert ginn. [[abstract:Help:Abstract_articles#Language_coverage|Kuckt d'Lëscht vun disponibele Sproochen]]",
+	"wikilambda-abstract-special-preview-unsupported-lang-title": "Dës Sprooch gëtt nach net ënnerstëtzt.",
+	"wikilambda-abstract-special-preview-unsupported-qid-body": "Fir de Sujet $1 gëtt et nach keen Abstrakten Artikel oder e gouf nach net an d'Lëscht vun de Sujeten opgeholl, fir déi Abstrakt-Wikipedia-Artikele generéiert ginn. [[abstract:Help:Abstract_articles#Language_coverage|Kuckt d'Lëscht vun de fräigeschalte Sujeten]]",
+	"wikilambda-abstract-special-preview-unsupported-qid-title": "Dëse Sujet gëtt nach net ënnerstëtzt.",
 	"wikilambda-abstract-special-view": "En Abstrakten Artikel kucken"
 }
