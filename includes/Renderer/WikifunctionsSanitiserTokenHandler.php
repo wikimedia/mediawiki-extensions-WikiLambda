@@ -366,7 +366,8 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		static $emptyAbstractPageCache = [];
 
 		// Only apply red-link logic if the URL points to the current (local) wiki server
-		$localHost = preg_replace( '#^https?://#i', '', $config->get( 'Server' ) );
+		$localHost = preg_replace( '#^(https?:)?//#i', '', $config->get( 'Server' ) );
+
 		$parsedHost = $parsedLink['host'] ?? '';
 		if ( isset( $parsedLink['port'] ) ) {
 			$parsedHost .= ':' . $parsedLink['port'];
