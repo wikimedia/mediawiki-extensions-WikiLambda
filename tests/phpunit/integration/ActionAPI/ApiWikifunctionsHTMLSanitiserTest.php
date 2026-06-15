@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Registration\ExtensionRegistry;
 
 /**
@@ -149,4 +150,32 @@ class ApiWikifunctionsHTMLSanitiserTest extends WikiLambdaApiTestCase {
 			];
 		}
 	}
+
+	public function testSanitise_rejectedOverlong() {
+		$this->overrideConfigValue( 'Server', 'http://this.wikifunctions.mock' );
+		$this->overrideConfigValue( 'CanonicalServer', 'https://canonical.wikifunctions.mock' );
+
+		$input = str_repeat( 'A', 65535 );
+
+		$response = $this->doApiRequestWithToken( [
+			'action' => 'wikifunctions_html_sanitiser',
+			'html' => $input
+		] )[0]['wikifunctions_html_sanitiser'];
+
+		$this->assertArrayHasKey( 'success', $response );
+		$this->assertTrue( $response['success'], 'Expected success but got failure' );
+
+		$actual = $response[ 'value' ];
+		$this->assertEquals( $input, $actual, 'Sanitised non-HTML does not match expected output' );
+
+		// One extra character puts it over the limit:
+		$input .= 'A';
+
+		$this->expectException( ApiUsageException::class );
+		$response = $this->doApiRequestWithToken( [
+			'action' => 'wikifunctions_html_sanitiser',
+			'html' => $input
+		] )[0]['wikifunctions_html_sanitiser'];
+	}
+
 }

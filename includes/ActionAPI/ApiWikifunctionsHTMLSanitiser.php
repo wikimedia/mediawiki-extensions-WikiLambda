@@ -29,6 +29,14 @@ class ApiWikifunctionsHTMLSanitiser extends ApiBase {
 	 */
 	public function execute(): void {
 		$userHTMLToClean = $this->getParameter( 'html' );
+		if ( strlen( $userHTMLToClean ) > 65535 ) {
+			// (T428829) Arbitrary length limit to prevent DoS vectors.
+			$this->dieWithError(
+				[ "apierror-wikifunctions_html_sanitiser-length-limit" ],
+				null, null, HttpStatus::BAD_REQUEST
+			);
+		}
+
 		$renderer = WikiLambdaServices::getPFragmentRenderer();
 
 		// Use a pool counter to limit concurrency; this is probably over-kill for simple HTML sanitisation.

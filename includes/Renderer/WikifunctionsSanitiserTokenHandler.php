@@ -38,18 +38,40 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 	private array $openElements = [];
 
 	/**
+	 * The custom element produced by Wikifunctions image output. Recognised here and expanded
+	 * to trusted <figure> HTML; it is deliberately absent from ALLOWEDELEMENTS.
+	 */
+	private const IMAGE_ELEMENT = 'ext-wikilambda-image';
+
+	/**
+	 * Per-fragment ceiling on how many image elements are expanded. Bounds the number of
+	 * Commons API fetches a single function output can trigger (T428829); excess elements
+	 * are dropped.
+	 */
+	private const MAX_IMAGES = 5;
+
+	/** @var array<string, string> Sentinel → trusted figure HTML, substituted after serialisation */
+	private array $imagePlaceholders = [];
+	private int $imageCount = 0;
+	/** Per-instance random salt making image sentinels unforgeable by function output */
+	private string $placeholderSalt = '';
+
+	/**
 	 * @param LoggerInterface $logger
 	 * @param Serializer $serializer
 	 * @param string $source
 	 * @param array<string, true> $blockedDomains Domain map from AbuseFilter blocked domains
 	 * @param User|null $spamCheckUser Anonymous user for SpamBlacklist checks, or null if not loaded
+	 * @param WikifunctionsFragmentImageRenderer|null $imageRenderer Renderer for <ext-wikilambda-image>
+	 *   elements, or null to drop them (e.g. when image support is unavailable)
 	 */
 	public function __construct(
 		private readonly LoggerInterface $logger,
 		Serializer $serializer,
 		private readonly string $source,
 		private readonly array $blockedDomains = [],
-		private readonly ?User $spamCheckUser = null
+		private readonly ?User $spamCheckUser = null,
+		private readonly ?WikifunctionsFragmentImageRenderer $imageRenderer = null
 	) {
 		$this->nextHandler = new Dispatcher( new TreeBuilder( $serializer, [
 			'ignoreErrors' => true,
@@ -57,6 +79,10 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		] ) );
 
 		parent::__construct( $this->nextHandler );
+
+		// Random per-instance salt so the sentinel cannot be forged by attacker-authored
+		// function output that happens to contain a guessable placeholder string.
+		$this->placeholderSalt = bin2hex( random_bytes( 8 ) );
 
 		// The local server URL is always allowed, so we can link to the current wiki
 		$localServer = MediaWikiServices::getInstance()->getMainConfig()->get( 'Server' );
@@ -183,6 +209,14 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 	 */
 	public function startTag( $name, Attributes $attrs, $selfClose, $sourceStart, $sourceLength ) {
 		$tagName = strtolower( $name );
+
+		if ( $tagName === self::IMAGE_ELEMENT ) {
+			// Custom image element: only ever seen here when it is a genuine tag in element
+			// position, so it can never be smuggled in from inside an attribute value.
+			$this->handleImageElement( $attrs );
+			return;
+		}
+
 		$tagClasses = $this->normaliseClasses( $attrs->getValues()['class'] ?? '' );
 		$insideReferenceContext = $this->isInsideAllowedReferenceContext();
 
@@ -212,6 +246,39 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 
 		// Tag was rejected by link policy — escape it as literal text.
 		$this->nextHandler->characters( $this->source, $sourceStart, $sourceLength, $sourceStart, $sourceLength );
+	}
+
+	/**
+	 * Expand a single <ext-wikilambda-image> element to trusted <figure> HTML.
+	 *
+	 * The figure cannot be emitted as Remex tokens (its <figure>/<img> are off the allowlist),
+	 * so a unique text sentinel is emitted in its place and the real HTML is recorded for
+	 * substitution after serialisation (see restoreImagePlaceholders()). Emitting the sentinel
+	 * as a *text token* guarantees it lands in text-node position, never inside an attribute,
+	 * so the later string substitution cannot break out of an attribute and inject markup.
+	 *
+	 * Attribute values come straight from the parser, so no raw-string regex is involved; the
+	 * image renderer validates mid/size itself. Elements beyond MAX_IMAGES are dropped.
+	 *
+	 * @param Attributes $attrs
+	 * @return void
+	 */
+	private function handleImageElement( Attributes $attrs ): void {
+		if ( $this->imageRenderer === null || $this->imageCount >= self::MAX_IMAGES ) {
+			return;
+		}
+		$this->imageCount++;
+
+		$values = $attrs->getValues();
+		$figureHtml = $this->imageRenderer->render(
+			$values['mid'] ?? null,
+			$values['size'] ?? 'thumb',
+			$values['alt'] ?? null
+		);
+
+		$placeholder = 'WLIMG' . $this->placeholderSalt . $this->imageCount . 'WL';
+		$this->imagePlaceholders[$placeholder] = $figureHtml;
+		$this->nextHandler->characters( $placeholder, 0, strlen( $placeholder ), 0, strlen( $placeholder ) );
 	}
 
 	/**
@@ -457,6 +524,12 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 	 */
 	public function endTag( $name, $sourceStart, $sourceLength ) {
 		$tagName = strtolower( $name );
+
+		if ( $tagName === self::IMAGE_ELEMENT ) {
+			// Handled as a self-contained element in startTag(); drop any stray close tag.
+			return;
+		}
+
 		$this->popOpenElement( $tagName );
 
 		if ( in_array( $tagName, self::ALLOWEDELEMENTS ) ) {
@@ -486,20 +559,23 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 	 * @param string $text
 	 * @param array<string, true> $blockedDomains Domain map from AbuseFilter blocked domains
 	 * @param User|null $spamCheckUser Anonymous user for SpamBlacklist checks, or null if not loaded
+	 * @param WikifunctionsFragmentImageRenderer|null $imageRenderer Renderer for image elements,
+	 *   or null to drop <ext-wikilambda-image> elements
 	 * @return string
 	 */
 	public static function sanitiseHtmlFragment(
 		LoggerInterface $logger,
 		string $text,
 		array $blockedDomains = [],
-		?User $spamCheckUser = null
+		?User $spamCheckUser = null,
+		?WikifunctionsFragmentImageRenderer $imageRenderer = null
 	): string {
 		// Use RemexHtml to tokenize $text and remove the barred tags
 
 		$serializer = new RemexSerializer( new RemexCompatFormatter );
 
 		$handler = new WikifunctionsSanitiserTokenHandler(
-			$logger, $serializer, $text, $blockedDomains, $spamCheckUser
+			$logger, $serializer, $text, $blockedDomains, $spamCheckUser, $imageRenderer
 		);
 		$tokenizer = new RemexTokenizer(
 			$handler,
@@ -514,7 +590,24 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		);
 		$tokenizer->execute( [ 'fragmentNamespace' => HTMLData::NS_HTML, 'fragmentName' => 'body', ] );
 
-		return $serializer->getResult();
+		return $handler->restoreImagePlaceholders( $serializer->getResult() );
+	}
+
+	/**
+	 * Substitute each image sentinel emitted during tokenisation back to its trusted figure HTML.
+	 *
+	 * Safe by construction: every sentinel was emitted as a text token, so it can only appear in
+	 * text-node position in the serialised output. The random salt makes the sentinel impossible
+	 * for function output to forge, so no attacker-supplied text can trigger an unintended swap.
+	 *
+	 * @param string $html Serialised HTML containing image sentinels
+	 * @return string
+	 */
+	private function restoreImagePlaceholders( string $html ): string {
+		foreach ( $this->imagePlaceholders as $placeholder => $imageHtml ) {
+			$html = str_replace( $placeholder, $imageHtml, $html );
+		}
+		return $html;
 	}
 
 	/**

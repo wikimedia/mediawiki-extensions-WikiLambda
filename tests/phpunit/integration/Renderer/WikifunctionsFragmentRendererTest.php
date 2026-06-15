@@ -150,4 +150,25 @@ class WikifunctionsFragmentRendererTest extends MediaWikiIntegrationTestCase {
 		$this->assertLessThan( $figurePos, $beforePos, 'Before text must precede the figure' );
 		$this->assertLessThan( $afterPos, $figurePos, 'Figure must precede After text' );
 	}
+
+	// (T428829) We stop the user trying to XSS attack using inline string substitution.
+	public function testRender_malformedImageElement_returnsBrokenFigure_notXSS() {
+		$renderer = $this->buildRenderer();
+		$input = '<span class="<ext-wikilambda-image mid="M123" size="thumb" />">Test</span>';
+		$result = $renderer->render( $input );
+
+		$this->assertStringNotContainsString( 'class="<figure', $result );
+	}
+
+	// (T428829) We stop the user trying to DoS attack using many image elements, stopping after the first 5.
+	public function testRender_maliciousImageElement_returnsBrokenFigure_notDoS() {
+		$renderer = $this->buildRenderer();
+		$input = '';
+		for ( $i = 0; $i < 10; $i++ ) {
+			$input .= '<ext-wikilambda-image mid="M' . $i . '" size="thumb" />';
+		}
+		$result = $renderer->render( $input );
+
+		$this->assertStringNotContainsString( 'data-mid="M6"', $result );
+	}
 }
