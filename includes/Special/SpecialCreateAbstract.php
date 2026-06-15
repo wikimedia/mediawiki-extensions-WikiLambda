@@ -62,14 +62,14 @@ class SpecialCreateAbstract extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function userCanExecute( User $user ) {
-		// Does the user have the relevant right (wikilambda-abstract-create, as set above)?
-		$userCanExecute = parent::userCanExecute( $user );
-
-		// If they're blocked in some way, does it block page creations or is site-wide?
 		$block = $user->getBlock();
-		$userNotBlocked = ( !$block || !$block->appliesToRight( 'createpage' ) || !$block->isSitewide() );
 
-		return $userCanExecute && $userNotBlocked;
+		return (
+			// Does the user have the relevant right (wikilambda-abstract-create, as set above)?
+			parent::userCanExecute( $user ) &&
+			// If they're blocked in some way, is it 'site-wide' and so prohibits all editing?
+			( !$block || !$block->isSitewide() )
+		);
 	}
 
 	/**

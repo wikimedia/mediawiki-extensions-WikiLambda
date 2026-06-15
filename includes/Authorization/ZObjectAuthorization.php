@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerAwareInterface;
@@ -63,6 +64,36 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 				break;
 			}
 		}
+
+		// Finally, we check if the user is blocked in a way that prohibits editing
+		$block = MediaWikiServices::getInstance()
+				->getBlockManager()
+				->getBlock(
+					$authority->getUser(),
+					/* request; we don't care about IP blocks */ null,
+					/* fromReplica; we want the very latest block before allowing an edit */ false
+				);
+
+		if ( $block ) {
+			if (
+				// If the block is site-wide, it prohibits all editing, including editing/creating ZObjects
+				$block->isSitewide() ||
+				// If the block stops actions on the main namespace, that includes all ZObject edits/creations
+				$block->appliesToNamespace( NS_MAIN ) ||
+				// If the block applies to specific pages, check if it's the one being edited/created
+				$block->appliesToPage( $title->getArticleId() )
+			) {
+				$status->setUnauthorized(
+					// Fall-back to the simple 'edit' right, as that's always needed regardless
+					$requiredRights[0] ?? 'edit',
+					ZErrorFactory::createAuthorizationZError(
+						$requiredRights[0] ?? 'edit',
+						$creating ? EDIT_NEW : EDIT_UPDATE
+					)
+				);
+			}
+		}
+
 		return $status;
 	}
 

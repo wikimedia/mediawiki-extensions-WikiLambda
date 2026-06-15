@@ -72,8 +72,8 @@ class SpecialCreateObject extends SpecialPage {
 		return (
 			// Does the user have the relevant right (wikilambda-create, as set above)?
 			parent::userCanExecute( $user ) &&
-			// If they're blocked in some way, does it block page creations or is site-wide?
-			( !$block || !$block->appliesToRight( 'createpage' ) || !$block->isSitewide() )
+			// If they're blocked in some way, is it 'site-wide' and so prohibits all editing?
+			( !$block || !$block->isSitewide() )
 		);
 	}
 

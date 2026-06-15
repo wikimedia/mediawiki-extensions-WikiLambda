@@ -10,6 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Authorization;
 
+use MediaWiki\Block\Restriction\NamespaceRestriction;
+use MediaWiki\Block\Restriction\PageRestriction;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
@@ -1237,5 +1239,127 @@ class ZObjectAuthorizationTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$basic = $this->getTestUser()->getUser();
 		$status = $this->zobjectAuthorization->authorize( $oldContent, $newContent, $basic, $title );
 		$this->assertTrue( $status->isValid(), 'Basic user should be able to edit labels on a user-defined object' );
+	}
+
+	// ─── Block-based authorization ─────────────────────────────
+
+	/**
+	 * Build a label edit on the seeded predefined object Z801 that an unblocked
+	 * registered user is authorized to make. Used as the baseline for the block
+	 * tests below: an unblocked user passes, and a relevant block flips it to failure.
+	 *
+	 * @return array{0:Title,1:ZObjectContent,2:ZObjectContent} [ $title, $oldContent, $newContent ]
+	 */
+	private function makeAuthorizedLabelEdit(): array {
+		$this->insertCreationDependencies();
+
+		// Z801 (Echo) is seeded as a predefined function and has a real article ID,
+		// which the page-restriction case below relies on.
+		$title = Title::newFromText( 'Z801', NS_MAIN );
+		$existingContent = $this->zobjectStore->fetchZObjectByTitle( $title );
+		$this->assertNotFalse( $existingContent, 'Z801 should exist in the DB' );
+
+		$oldObject = FormatJson::decode( $existingContent->getText() );
+		$newObject = FormatJson::decode( $existingContent->getText() );
+		$newObject->Z2K3->Z12K1[] = (object)[
+			'Z1K1' => 'Z11',
+			'Z11K1' => 'Z1003',
+			'Z11K2' => 'Eco'
+		];
+
+		$oldContent = new ZObjectContent( FormatJson::encode( $oldObject ) );
+		$newContent = new ZObjectContent( FormatJson::encode( $newObject ) );
+		$this->assertTrue( $oldContent->isValid(), 'Old content should be valid' );
+		$this->assertTrue( $newContent->isValid(), 'New content should be valid' );
+
+		return [ $title, $oldContent, $newContent ];
+	}
+
+	/**
+	 * Block a user, either site-wide or with the given partial-block restrictions.
+	 *
+	 * @param \MediaWiki\User\User $user
+	 * @param bool $sitewide
+	 * @param \MediaWiki\Block\Restriction\Restriction[] $restrictions
+	 */
+	private function blockUser( $user, bool $sitewide, array $restrictions = [] ): void {
+		$params = [
+			'address' => $user,
+			'by' => $this->getTestSysop()->getUser(),
+			'reason' => 'WikiLambda authorization test',
+			'expiry' => 'infinity',
+			'sitewide' => $sitewide,
+		];
+		// Only pass 'restrictions' when there are some: an empty-but-present key
+		// marks the block partial (restricting nothing), which would silently
+		// defeat a 'sitewide' => true block.
+		if ( $restrictions ) {
+			$params['restrictions'] = $restrictions;
+		}
+		$this->getServiceContainer()->getDatabaseBlockStore()->insertBlockWithParams( $params );
+	}
+
+	/**
+	 * A site-wide block removes authorization even for an otherwise-permitted edit.
+	 */
+	public function testSitewideBlockPreventsEdit() {
+		[ $title, $oldContent, $newContent ] = $this->makeAuthorizedLabelEdit();
+		$user = $this->getMutableTestUser()->getUser();
+
+		// Block before the first authorize() call: the block lookup is primed per
+		// user on first resolution, so an unblocked baseline check here would mask
+		// the freshly-inserted block. The unblocked-authorized baseline is already
+		// covered by testEditLabelPredefined().
+		$this->blockUser( $user, true );
+		$status = $this->zobjectAuthorization->authorize( $oldContent, $newContent, $user, $title );
+		$this->assertFalse( $status->isValid(), 'Site-wide-blocked user is not authorized to edit a ZObject' );
+	}
+
+	/**
+	 * A partial block covering the main namespace removes authorization, as every
+	 * ZObject lives in NS_MAIN.
+	 */
+	public function testPartialBlockOnMainNamespacePreventsEdit() {
+		[ $title, $oldContent, $newContent ] = $this->makeAuthorizedLabelEdit();
+		$user = $this->getMutableTestUser()->getUser();
+
+		$this->blockUser( $user, false, [ new NamespaceRestriction( 0, NS_MAIN ) ] );
+		$status = $this->zobjectAuthorization->authorize( $oldContent, $newContent, $user, $title );
+		$this->assertFalse(
+			$status->isValid(),
+			'User partially blocked from the main namespace is not authorized to edit a ZObject'
+		);
+	}
+
+	/**
+	 * A partial block naming the specific page being edited removes authorization.
+	 */
+	public function testPartialBlockOnEditedPagePreventsEdit() {
+		[ $title, $oldContent, $newContent ] = $this->makeAuthorizedLabelEdit();
+		$user = $this->getMutableTestUser()->getUser();
+
+		$this->blockUser( $user, false, [ new PageRestriction( 0, $title->getArticleID() ) ] );
+		$status = $this->zobjectAuthorization->authorize( $oldContent, $newContent, $user, $title );
+		$this->assertFalse(
+			$status->isValid(),
+			'User partially blocked from this very page is not authorized to edit it'
+		);
+	}
+
+	/**
+	 * A partial block that touches neither the main namespace nor the edited page
+	 * leaves authorization intact: the block check is selective, not a blanket deny.
+	 */
+	public function testPartialBlockElsewhereStillAllowsEdit() {
+		[ $title, $oldContent, $newContent ] = $this->makeAuthorizedLabelEdit();
+		$user = $this->getMutableTestUser()->getUser();
+
+		// Block only the Talk namespace; the ZObject edit is in NS_MAIN, so it must still pass.
+		$this->blockUser( $user, false, [ new NamespaceRestriction( 0, NS_TALK ) ] );
+		$status = $this->zobjectAuthorization->authorize( $oldContent, $newContent, $user, $title );
+		$this->assertTrue(
+			$status->isValid(),
+			'A partial block on an unrelated namespace does not prevent editing a ZObject'
+		);
 	}
 }
