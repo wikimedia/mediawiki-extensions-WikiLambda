@@ -350,6 +350,16 @@ docker compose exec mediawiki php maintenance/run.php \
    ./extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --from Q1 --to Q500
 ```
 
+The script tracks files that have already been inserted and renames them with `*.done.json`, so on a
+default run the script will only insert those files that have not been inserted before. To force the
+script to refresh all files, updating even those that have been loaded before, add the flag
+`--refresh`:
+
+```
+docker compose exec mediawiki php maintenance/run.php \
+   ./extensions/WikiLambda/maintenance/loadAbstractDump.php --dir abstractcache --refresh
+```
+
 #### Loading Wikidata fixtures for EntityLookup testing
 
 To locally test the `WikibaseClient`'s `EntittyLookup` features that enrich Abstract Wikipedia, this
