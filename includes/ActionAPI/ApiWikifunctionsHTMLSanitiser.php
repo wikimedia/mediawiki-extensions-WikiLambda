@@ -45,7 +45,7 @@ class ApiWikifunctionsHTMLSanitiser extends ApiBase {
 				// @codeCoverageIgnoreStart
 				'error' => function ( \MediaWiki\Status\Status $status ): never {
 					$this->dieWithError(
-						[ "apierror-wikifunctions_sanitise_html_fragment-concurrency-limit" ],
+						[ "apierror-wikifunctions_html_sanitiser-concurrency-limit" ],
 						null, null, HttpStatus::TOO_MANY_REQUESTS
 					);
 				}
