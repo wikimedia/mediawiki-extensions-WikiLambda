@@ -675,6 +675,7 @@
 				}
 			],
 			"messages": [
+				"apierror-abstractwiki_fetch_section-bad-fragments",
 				"apierror-abstractwiki_run_fragment-returned-zerror",
 				"apierror-abstractwiki_run_fragment-unknown-error",
 				"comma-separator",
@@ -1110,6 +1111,16 @@
 				"WikifunctionsLanguageFactory",
 				"AbstractWikiFragmentStore",
 				"AbstractWikiRequest"
+			]
+		},
+		"abstractwiki_fetch_section": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiAbstractWikiFetchSection",
+			"services": [
+				"WikifunctionsLanguageFactory",
+				"AbstractWikiFragmentStore",
+				"ContentHandlerFactory",
+				"RevisionStore",
+				"TitleFactory"
 			]
 		}
 	},

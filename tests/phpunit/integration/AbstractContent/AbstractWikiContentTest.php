@@ -45,13 +45,17 @@ class AbstractWikiContentTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$emptyObject = AbstractWikiContent::makeEmptyContent();
 
 		$this->assertSame( 'Q0', $emptyObject->getTopicQid() );
-		$this->assertArrayHasKey( AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE,
-			$emptyObject->getSections() );
+		$this->assertArrayHasKey(
+			AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE,
+			$emptyObject->getSections()
+		);
 
-		$ledeSection = $emptyObject->getSections()[ AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE ];
+		$ledeSection = $emptyObject->getSectionByQid( AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE );
 
 		$this->assertSame( 0, $ledeSection['index'] );
 		$this->assertCount( 1, $ledeSection['fragments'] );
+
+		$this->assertNull( $emptyObject->getSectionByQid( 'Q111' ) );
 	}
 
 	public function testEmptyContentIsValid() {

@@ -294,16 +294,19 @@ class RepoHooks implements
 		$availableRights = [
 			'wikilambda-abstract-create',
 			'wikilambda-abstract-edit',
+			'wikilambda-abstract-run-unsaved-fragment',
 		];
 
 		$groupPermissions = [
 			'*' => [
 				'wikilambda-abstract-create' => false,
 				'wikilambda-abstract-edit' => false,
+				'wikilambda-abstract-run-unsaved-fragment' => false,
 			],
 			'user' => [
 				'wikilambda-abstract-create' => true,
 				'wikilambda-abstract-edit' => true,
+				'wikilambda-abstract-run-unsaved-fragment' => true,
 			],
 		];
 
@@ -317,6 +320,7 @@ class RepoHooks implements
 				'editpage' => [
 					'wikilambda-abstract-create' => true,
 					'wikilambda-abstract-edit' => true,
+					'wikilambda-abstract-run-unsaved-fragment' => true,
 				],
 			],
 			[],

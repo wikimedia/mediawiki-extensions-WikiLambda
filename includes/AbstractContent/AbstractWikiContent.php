@@ -99,6 +99,14 @@ EOD;
 	}
 
 	/**
+	 * @param string $sectionQid
+	 * @return ?array
+	 */
+	public function getSectionByQid( string $sectionQid ): ?array {
+		return $this->object['sections'][$sectionQid] ?? null;
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function getTextForSearchIndex() {
