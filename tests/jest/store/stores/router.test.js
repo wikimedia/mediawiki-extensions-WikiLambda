@@ -71,6 +71,29 @@ describe( 'Router Pinia store', () => {
 	} );
 
 	describe( 'Actions', () => {
+		describe( 'isAbstractCreatePage', () => {
+			it( 'Returns true when creating a new Abstract Wiki page', () => {
+				window.mw.config = {
+					get: jest.fn( () => ( { abstractContent: true, createNewPage: true } ) )
+				};
+				expect( store.isAbstractCreatePage() ).toBe( true );
+			} );
+
+			it( 'Returns false when not creating a new page', () => {
+				window.mw.config = {
+					get: jest.fn( () => ( { abstractContent: true, createNewPage: false } ) )
+				};
+				expect( store.isAbstractCreatePage() ).toBe( false );
+			} );
+
+			it( 'Returns false when not on Abstract content', () => {
+				window.mw.config = {
+					get: jest.fn( () => ( { abstractContent: false, createNewPage: true } ) )
+				};
+				expect( store.isAbstractCreatePage() ).toBe( false );
+			} );
+		} );
+
 		describe( 'navigate', () => {
 			it( 'does not change view when view is invalid', () => {
 				const payload = {

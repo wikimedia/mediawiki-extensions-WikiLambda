@@ -93,6 +93,53 @@ describe( 'Visual Editor Pinia store', () => {
 			store.veFunctionParamsDirty = true;
 			expect( store.isParameterSetupDirty ).toBe( true );
 		} );
+
+		it( 'getVESelectedText returns the text selected before opening the dialog', () => {
+			store.veSelectedText = 'selected text from editor';
+			expect( store.getVESelectedText ).toBe( 'selected text from editor' );
+		} );
+
+		it( 'getSearchTerm returns the current search term', () => {
+			store.searchTerm = 'add';
+			expect( store.getSearchTerm ).toBe( 'add' );
+		} );
+
+		it( 'getLookupResults returns the current lookup results', () => {
+			store.lookupResults = [ 'Z801', 'Z802' ];
+			expect( store.getLookupResults ).toEqual( [ 'Z801', 'Z802' ] );
+		} );
+
+		describe( 'defaultValueCallbacks', () => {
+			it( 'exposes a callback per argument type with a default value', () => {
+				expect( store.defaultValueCallbacks ).toEqual( expect.objectContaining( {
+					[ Constants.Z_GREGORIAN_CALENDAR_DATE ]: expect.any( Function ),
+					[ Constants.Z_NATURAL_LANGUAGE ]: expect.any( Function ),
+					[ Constants.Z_WIKIDATA_ITEM ]: expect.any( Function ),
+					[ Constants.Z_WIKIDATA_REFERENCE_ITEM ]: expect.any( Function )
+				} ) );
+			} );
+		} );
+
+		describe( 'hasDefaultValueForType', () => {
+			it( 'returns true for a type that has a default value callback', () => {
+				expect( store.hasDefaultValueForType( Constants.Z_WIKIDATA_ITEM ) ).toBe( true );
+			} );
+
+			it( 'returns false for a type that has no default value callback', () => {
+				expect( store.hasDefaultValueForType( Constants.Z_STRING ) ).toBe( false );
+			} );
+		} );
+
+		describe( 'getDefaultValueForType', () => {
+			it( 'returns the callback result for a type that has a default value', () => {
+				mw.config.get = jest.fn().mockReturnValue( 'Q42' );
+				expect( store.getDefaultValueForType( Constants.Z_WIKIDATA_ITEM ) ).toBe( 'Q42' );
+			} );
+
+			it( 'returns undefined for a type that has no default value callback', () => {
+				expect( store.getDefaultValueForType( Constants.Z_STRING ) ).toBeUndefined();
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

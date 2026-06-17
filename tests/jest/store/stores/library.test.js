@@ -160,6 +160,17 @@ describe( 'library Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getFetchedObject', () => {
+			it( 'Returns undefined if the zid was not fetched', () => {
+				expect( store.getFetchedObject( 'Z10000' ) ).toEqual( undefined );
+			} );
+
+			it( 'Returns the fetched object (including error data) if available in the state', () => {
+				store.objects = mockStoredObjects;
+				expect( store.getFetchedObject( 'Z6' ) ).toEqual( mockStoredObjects.Z6 );
+			} );
+		} );
+
 		describe( 'getExpectedTypeOfKey', () => {
 			beforeEach( () => {
 				store.objects = mockStoredObjects;
