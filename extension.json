@@ -1224,6 +1224,20 @@
 						]
 					},
 					"type": "data"
+				},
+				"AbstractWikiOptedInArticles": {
+					"store": {
+						"type": "wikipage",
+						"args": [
+							"MediaWiki:AbstractWikiOptedInArticles.json"
+						]
+					},
+					"validator": {
+						"type": "jsonschema",
+						"args": [
+							"MediaWiki\\Extension\\WikiLambda\\Config\\AbstractWikiOptedInArticlesSchema"
+						]
+					}
 				}
 			}
 		}

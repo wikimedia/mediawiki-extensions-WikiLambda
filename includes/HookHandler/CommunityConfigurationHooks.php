@@ -41,5 +41,8 @@ class CommunityConfigurationHooks implements CommunityConfigurationProvider_init
 		if ( !$this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			unset( $providers['AbstractWikiSuggestedWikifunctions'] );
 		}
+		if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+			unset( $providers['AbstractWikiOptedInArticles'] );
+		}
 	}
 }

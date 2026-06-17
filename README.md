@@ -945,10 +945,17 @@ script.
 ## Abstract mode
 
 To develop in abstract mode you need the Wikibase extension (WikibaseClient) and
-CommunityConfiguration installed alongside WikiLambda. WikibaseClient is used to resolve
-Wikidata item labels server-side — for example, turning a QID like Q42 into "Douglas Adams"
-in page titles and link text. Without it the code falls back gracefully to displaying raw QIDs.
-CommunityConfiguration provides the Abstract-mode suggested Wikifunctions list in the editor.
+CommunityConfiguration installed alongside WikiLambda.
+
+`WikibaseClient` is used to resolve Wikidata item labels server-side — for example, turning a QID like
+Q42 into "Douglas Adams" in page titles and link text. Without it the code falls back gracefully to
+displaying raw QIDs.
+
+`CommunityConfiguration` provides:
+* in Abstract mode: the suggested Wikifunctions list in the editor,
+* in Abstract Client mode: the list of Opted-in articles to render content from Abstract Wikipedia
+content in case of not having any local content.
+
 See the [recommended extensions](#setup) section above for installation instructions.
 
 ### Abstract Repo and Client
