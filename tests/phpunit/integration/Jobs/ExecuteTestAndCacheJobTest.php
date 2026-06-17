@@ -427,6 +427,11 @@ class ExecuteTestAndCacheJobTest extends WikiLambdaIntegrationTestCase {
 	 * OrchestratorCPU, EvaluatorCPU, and ExecutorCPU (but can easily be changed as needs evolve).
 	 */
 	public static function provideMaybeUpdateImplementationRanking() {
+		yield 'No test status rows, no update' => [
+			[],
+			null
+		];
+
 		yield 'Request specifies orchestrationCpuUsage values calling for an update' => [
 			[
 				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU,

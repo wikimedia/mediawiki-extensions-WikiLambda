@@ -209,8 +209,19 @@ class ExecuteTestAndCacheJob extends Job implements GenericParameterJob {
 			];
 		}
 
+		if ( !$implementationMap ) {
+			$this->logger->debug(
+				__METHOD__ . ' Not updating {functionZid}: no connected implementation/test results.',
+				[
+					'functionZid' => $functionZid,
+					'functionRevision' => $functionRevision
+				]
+			);
+			return;
+		}
+
 		$connectedImplementations = array_keys( $implementationMap );
-		$connectedTests = array_keys( reset( $implementationMap ) );
+		$connectedTests = array_keys( reset( $implementationMap ) ?: [] );
 
 		// Gather common log context
 		$logContext = [
