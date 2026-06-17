@@ -39,7 +39,8 @@ class RepoHooks implements
 		require_once __DIR__ . '/../defines.php';
 
 		// Can't use MediaWikiServices or config objects yet, so use globals
-		global $wgWikiLambdaEnableRepoMode, $wgWikiLambdaEnableAbstractMode;
+		global $wgWikiLambdaEnableRepoMode, $wgWikiLambdaEnableAbstractMode,
+			$wgWikiLambdaEnableAbstractClientMode;
 
 		if ( $wgWikiLambdaEnableRepoMode ) {
 			self::registerRepoModeConfig();
@@ -47,6 +48,10 @@ class RepoHooks implements
 
 		if ( $wgWikiLambdaEnableAbstractMode ) {
 			self::registerAbstractModeConfig();
+		}
+
+		if ( $wgWikiLambdaEnableAbstractClientMode ) {
+			self::registerAbstractClientModeConfig();
 		}
 	}
 
@@ -317,6 +322,38 @@ class RepoHooks implements
 			[],
 			[]
 		);
+	}
+
+	/**
+	 * Configure the user right that gates the Abstract Wikipedia opt-in action: choosing which
+	 * local articles render from Abstract Wikipedia content in the absence of a local article.
+	 * Gated on abstract-client mode, as that's where the opt-in list lives (managed through the
+	 * AbstractWikiOptedInArticles CommunityConfiguration provider). (T422697)
+	 *
+	 * Granted to 'sysop' by default — the assignment every WMF wiki is expected to start with —
+	 * but registered as a first-class right so communities can reassign it through the standard
+	 * $wgGroupPermissions / $wgRevokePermissions mechanisms with no code change on our side. Pairs
+	 * with the staff- and maintainer-only rights in being deliberately kept out of every OAuth
+	 * grant group: it manages site configuration, not everyday page editing.
+	 *
+	 * Safe to call repeatedly.
+	 */
+	private static function registerAbstractClientModeConfig(): void {
+		$availableRights = [
+			'wikilambda-abstract-optin',
+		];
+
+		// '*' => false is an explicit denial we keep on record, matching registerRepoModeConfig().
+		$groupPermissions = [
+			'*' => [
+				'wikilambda-abstract-optin' => false,
+			],
+			'sysop' => [
+				'wikilambda-abstract-optin' => true,
+			],
+		];
+
+		self::applyRegisteredConfig( $availableRights, $groupPermissions, [], [] );
 	}
 
 	/**

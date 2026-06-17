@@ -42,6 +42,12 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 	private const ABSTRACT_USER_RIGHT = 'wikilambda-abstract-create';
 
 	/**
+	 * An abstract-client-mode-only right granted to sysops: gates the opt-in action that
+	 * chooses which local articles render from Abstract Wikipedia content. (T422697)
+	 */
+	private const ABSTRACT_CLIENT_RIGHT = 'wikilambda-abstract-optin';
+
+	/**
 	 * The new, repo-mode-only OAuth grant group; should appear in $wgGrantPermissions,
 	 * $wgGrantPermissionGroups, and $wgGrantRiskGroups only when repo mode is enabled. (T423542)
 	 */
@@ -54,16 +60,19 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 	 *
 	 * @param bool $enableRepoMode
 	 * @param bool $enableAbstractMode
+	 * @param bool $enableAbstractClientMode
 	 * @param array $groupPermissionOverrides Initial $wgGroupPermissions to use as a baseline
 	 */
 	private function primeGlobals(
 		bool $enableRepoMode,
 		bool $enableAbstractMode,
+		bool $enableAbstractClientMode,
 		array $groupPermissionOverrides = []
 	): void {
 		$this->setMwGlobals( [
 			'wgWikiLambdaEnableRepoMode' => $enableRepoMode,
 			'wgWikiLambdaEnableAbstractMode' => $enableAbstractMode,
+			'wgWikiLambdaEnableAbstractClientMode' => $enableAbstractClientMode,
 			'wgNamespaceContentModels' => [],
 			'wgNamespaceProtection' => [],
 			'wgNonincludableNamespaces' => [],
@@ -85,29 +94,47 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 			'Wikifunctions repo (repo on, abstract on)' => [
 				'enableRepoMode' => true,
 				'enableAbstractMode' => true,
+				'enableAbstractClientMode' => false,
 				'expectRepoModeRights' => true,
 				'expectAbstractModeRights' => true,
+				'expectAbstractClientModeRights' => false,
 			],
 			// Hypothetical Functions-only repo with no abstract content.
 			'Functions-only repo (repo on, abstract off)' => [
 				'enableRepoMode' => true,
 				'enableAbstractMode' => false,
+				'enableAbstractClientMode' => false,
 				'expectRepoModeRights' => true,
 				'expectAbstractModeRights' => false,
+				'expectAbstractClientModeRights' => false,
 			],
 			// Abstract-content authoring wiki that calls a remote Wikifunctions repo.
 			'Abstract repo only (repo off, abstract on)' => [
 				'enableRepoMode' => false,
 				'enableAbstractMode' => true,
+				'enableAbstractClientMode' => false,
 				'expectRepoModeRights' => false,
 				'expectAbstractModeRights' => true,
+				'expectAbstractClientModeRights' => false,
+			],
+			// Wikipedia consuming Abstract Wikipedia content into its local articles: only the
+			// abstract-client opt-in right should appear, gated independently of the other modes.
+			'Abstract client (only client on)' => [
+				'enableRepoMode' => false,
+				'enableAbstractMode' => false,
+				'enableAbstractClientMode' => true,
+				'expectRepoModeRights' => false,
+				'expectAbstractModeRights' => false,
+				'expectAbstractClientModeRights' => true,
 			],
 			// Pure client wiki (e.g. test.wikipedia.org with WikiLambda installed for {{#function:…}}).
 			'Pure client (repo off, abstract off)' => [
 				'enableRepoMode' => false,
 				'enableAbstractMode' => false,
+				'enableAbstractClientMode' => false,
 				'expectRepoModeRights' => false,
 				'expectAbstractModeRights' => false,
+				'expectAbstractClientModeRights' => false,
 			],
 		];
 	}
@@ -118,10 +145,12 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 	public function testRegisterExtensionGatesRightsByMode(
 		bool $enableRepoMode,
 		bool $enableAbstractMode,
+		bool $enableAbstractClientMode,
 		bool $expectRepoModeRights,
-		bool $expectAbstractModeRights
+		bool $expectAbstractModeRights,
+		bool $expectAbstractClientModeRights
 	): void {
-		$this->primeGlobals( $enableRepoMode, $enableAbstractMode );
+		$this->primeGlobals( $enableRepoMode, $enableAbstractMode, $enableAbstractClientMode );
 
 		RepoHooks::registerExtension();
 
@@ -211,6 +240,26 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 				self::ABSTRACT_USER_RIGHT, $wgGrantPermissions['editpage'] ?? []
 			);
 		}
+
+		if ( $expectAbstractClientModeRights ) {
+			$this->assertContains(
+				self::ABSTRACT_CLIENT_RIGHT, $wgAvailableRights,
+				'Abstract-client-mode rights must be in $wgAvailableRights when abstract-client mode is enabled'
+			);
+			$this->assertSame(
+				true, $wgGroupPermissions['sysop'][self::ABSTRACT_CLIENT_RIGHT] ?? null,
+				"'sysop' must be granted the opt-in right when abstract-client mode is enabled"
+			);
+			// The opt-in right manages site config, not page editing, so it stays out of OAuth grants.
+			$this->assertArrayNotHasKey(
+				self::ABSTRACT_CLIENT_RIGHT, $wgGrantPermissions['editpage'] ?? []
+			);
+		} else {
+			$this->assertNotContains(
+				self::ABSTRACT_CLIENT_RIGHT, $wgAvailableRights,
+				'Abstract-client-mode rights must NOT leak into wikis without abstract-client mode (T407066)'
+			);
+		}
 	}
 
 	/**
@@ -218,7 +267,7 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 	 * tests) must not duplicate entries in indexed lists or change permission maps.
 	 */
 	public function testRegisterExtensionIsIdempotent(): void {
-		$this->primeGlobals( true, true );
+		$this->primeGlobals( true, true, true );
 
 		RepoHooks::registerExtension();
 
@@ -259,7 +308,7 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 	 * GroupPermissions declarations.
 	 */
 	public function testRegisterExtensionPreservesLocalSettingsPermissionOverrides(): void {
-		$this->primeGlobals( true, false, [
+		$this->primeGlobals( true, false, false, [
 			'user' => [ self::REPO_USER_RIGHT => false ],
 		] );
 
