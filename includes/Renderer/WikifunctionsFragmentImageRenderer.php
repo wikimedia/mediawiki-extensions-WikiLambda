@@ -246,6 +246,7 @@ class WikifunctionsFragmentImageRenderer {
 			'width' => $thumbWidth,
 			'height' => $thumbHeight,
 			'decoding' => 'async',
+			'class' => 'mw-file-element'
 		] );
 
 		if ( $data['descriptionUrl'] ) {
@@ -253,12 +254,18 @@ class WikifunctionsFragmentImageRenderer {
 				'href' => $data['descriptionUrl'],
 				'target' => '_blank',
 				'rel' => 'noopener noreferrer',
+				'class' => 'mw-file-description'
 			], $img );
 		} else {
 			$inner = $img;
 		}
 
-		return Html::rawElement( 'figure', [ 'class' => 'ext-wikilambda-image ext-wikilambda-image--thumb' ], $inner );
+		$figcaption = Html::element( 'figcaption', [] );
+
+		return Html::rawElement( 'figure', [
+			'class' => 'ext-wikilambda-image ext-wikilambda-image--thumb mw-default-size',
+			'typeof' => 'mw:File/Thumb',
+		], $inner . $figcaption );
 	}
 
 	/**
