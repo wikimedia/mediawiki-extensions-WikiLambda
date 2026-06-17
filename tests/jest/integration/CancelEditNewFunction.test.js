@@ -47,10 +47,14 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 
 	it( 'allows cancelling after changes', async () => {
 		const {
+			container,
 			findByRole,
 			findByTestId,
 			getByText
 		} = render( App );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		// ACT: Change first language name
 		const nameInput = await findByTestId( 'function-editor-name-input' );

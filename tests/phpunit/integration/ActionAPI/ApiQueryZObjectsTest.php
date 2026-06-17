@@ -9,14 +9,18 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZObjects;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Title\Title;
+use Wikimedia\TestingAccessWrapper;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZobjects
+ * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZObjects
  * @group Database
  * @group API
  */
@@ -318,5 +322,113 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 		$this->assertTrue( $zobjects[ 'Z10015' ][ 'success' ] );
 		$this->assertTrue( $zobjects[ 'Z10014' ][ 'success' ] );
 		$this->assertSame( [ 'Z10016', 'Z10015', 'Z10014' ], $zids );
+	}
+
+	// Test private methods
+	// ====================
+
+	private function buildApi(): TestingAccessWrapper {
+		$context = RequestContext::getMain();
+		$main = new ApiMain( $context );
+		$instance = new ApiQueryZObjects(
+			$main->getModuleManager()->getModule( 'query' ),
+			'wikilambdaload_zobjects',
+			$this->getServiceContainer()->getLanguageFallback(),
+			$this->getServiceContainer()->getLanguageNameUtils(),
+			$this->getServiceContainer()->getTitleFactory()
+		);
+		return TestingAccessWrapper::newFromObject( $instance );
+	}
+
+	/**
+	 * @dataProvider provideIsUnknownTypeReference
+	 */
+	public function testIsUnknownTypeReference( $value, $expected ) {
+		$api = $this->buildApi();
+		$this->assertSame( $expected, $api->isUnknownTypeReference( $value ) );
+	}
+
+	private static function provideIsUnknownTypeReference() {
+		$generic = '{ "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" }';
+		return [
+			'null is not an unknown type reference' => [ null, false ],
+			'blank string is not an unknown type reference' => [ '', false ],
+			'stdClass is not an unknown type reference' => [ json_decode( $generic ), false ],
+			'array is not an unknown type reference' => [ json_decode( $generic, true ), false ],
+			'builtin zid is not unknown' => [ 'Z11', false ],
+			'zid might be an unknown type reference' => [ 'Z10000', true ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideExtractTypeReferences
+	 */
+	public function testExtractTypeReferences( $input, array $expected ) {
+		$api = $this->buildApi();
+		$this->assertSame( $expected, $api->extractTypeReferences( $input ) );
+	}
+
+	public static function provideExtractTypeReferences() {
+		return [
+			'unknown string type returns itself' => [
+				'Z10000',
+				[ 'Z10000' ]
+			],
+			'builtin string type returns empty' => [
+				'Z6',
+				[]
+			],
+			'null returns empty' => [
+				null,
+				[]
+			],
+			'typed list with unknown item type' => [
+				json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z10000" }' ),
+				[ 'Z10000' ]
+			],
+			'typed list with builtin item type returns empty' => [
+				json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" }' ),
+				[]
+			],
+			'typed pair with two unknown types' => [
+				json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z10000", "Z882K2": "Z10001" }' ),
+				[ 'Z10000', 'Z10001' ]
+			],
+			'typed map with two unknown types' => [
+				json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z883", "Z883K1": "Z10000", "Z883K2": "Z10001" }' ),
+				[ 'Z10000', 'Z10001' ]
+			],
+			'typed pair with one builtin and one unknown' => [
+				json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z10000" }' ),
+				[ 'Z10000' ]
+			],
+		];
+	}
+
+	public function testGetTypeDependenciesForType() {
+		$api = $this->buildApi();
+
+		$zobject = json_decode( '{ "Z2K2": { "Z1K1": "Z4", "Z4K2": [ "Z3",'
+			. ' { "Z3K1": "Z6" }, '
+			. ' { "Z3K1": "Z10001" }, '
+			. ' { "Z3K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z11", "Z882K2": "Z10002" } } '
+			. ' ] } }' );
+
+		$dependencies = $api->getTypeDependencies( $zobject );
+		$this->assertSame( [ 'Z10001', 'Z10002' ], $dependencies );
+	}
+
+	public function testGetTypeDependenciesForFunction() {
+		$api = $this->buildApi();
+
+		$zobject = json_decode( '{ "Z2K2": { "Z1K1": "Z8", "Z8K1": [ "Z17",'
+			. ' { "Z17K1": "Z6" }, '
+			. ' { "Z17K1": "Z10001" }, '
+			. ' { "Z17K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z883K1": "Z10002", "Z883K2": "Z12" } }, '
+			. ' { "Z17K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z10003" } } '
+			. ' ] } }' );
+
+		$dependencies = $api->getTypeDependencies( $zobject );
+		$this->assertSame( [ 'Z10001', 'Z10002', 'Z10003' ], $dependencies );
 	}
 }

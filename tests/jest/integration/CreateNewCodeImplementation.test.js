@@ -113,13 +113,16 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it( 'allows changing the selected function call and ensures the function report testers are updated, but not executed', async () => {
-		const { findByTestId } = render( App, {
+		const { container, findByTestId } = render( App, {
 			global: {
 				stubs: {
 					WlFunctionEvaluatorWidget: true
 				}
 			}
 		} );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		//* -- Function report widget
 		const functionReportWidget = await findByTestId( 'function-report-widget' );

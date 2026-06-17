@@ -124,6 +124,54 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 	}
 
 	/**
+	 * Whether the given type is a string, a reference to a type but not builtin
+	 *
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private function isUnknownTypeReference( $value ): bool {
+		return is_string( $value ) &&
+			ZObjectUtils::isValidZObjectReference( $value ) &&
+			!$this->typeRegistry->isZTypeBuiltIn( $value );
+	}
+
+	/**
+	 * Extract possible type dependency references from a given
+	 * type: When input type is string, return itself. When input type
+	 * is an object, it might have interesting types in its generic
+	 * declaration (typed list, pair or map)
+	 *
+	 * @param mixed $value
+	 * @return array
+	 */
+	private function extractTypeReferences( $value ): array {
+		if ( $this->isUnknownTypeReference( $value ) ) {
+			return [ $value ];
+		}
+
+		if ( !$value || !is_object( $value ) ) {
+			return [];
+		}
+
+		$types = [];
+
+		$checkTypeKeys = [
+			ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE,
+			ZTypeRegistry::Z_FUNCTION_TYPED_FIRST_TYPE,
+			ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE,
+			ZTypeRegistry::Z_FUNCTION_TYPED_MAP_KEY_TYPE,
+			ZTypeRegistry::Z_FUNCTION_TYPED_MAP_VALUE_TYPE
+		];
+
+		foreach ( $checkTypeKeys as $key ) {
+			if ( property_exists( $value, $key ) && $this->isUnknownTypeReference( $value->{ $key } ) ) {
+				$types[] = $value->{ $key };
+			}
+		}
+		return $types;
+	}
+
+	/**
 	 * Returns the types of type keys and function arguments
 	 *
 	 * @param stdClass $zobject
@@ -145,21 +193,20 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 		}
 
 		$type = $content->{ ZTypeRegistry::Z_OBJECT_TYPE };
+
 		if ( $type === ZTypeRegistry::Z_TYPE ) {
+			// Extract type references from a types' array of keys
 			$keys = $content->{ ZTypeRegistry::Z_TYPE_KEYS };
 			foreach ( array_slice( $keys, 1 ) as $key ) {
 				$keyType = $key->{ ZTypeRegistry::Z_KEY_TYPE };
-				if ( is_string( $keyType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $keyType ) ) ) {
-					array_push( $dependencies, $keyType );
-				}
+				$dependencies = array_merge( $dependencies, $this->extractTypeReferences( $keyType ) );
 			}
 		} elseif ( $type === ZTypeRegistry::Z_FUNCTION ) {
+			// Extract type references from a types' array of keys
 			$args = $content->{ ZTypeRegistry::Z_FUNCTION_ARGUMENTS };
 			foreach ( array_slice( $args, 1 ) as $arg ) {
 				$argType = $arg->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE };
-				if ( is_string( $argType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $argType ) ) ) {
-					array_push( $dependencies, $argType );
-				}
+				$dependencies = array_merge( $dependencies, $this->extractTypeReferences( $argType ) );
 			}
 		}
 

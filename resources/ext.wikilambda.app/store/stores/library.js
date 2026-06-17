@@ -423,6 +423,67 @@ module.exports = {
 			return findFetchedObject;
 		},
 		/**
+		 * Returns the list of zid dependencies from an already
+		 * fetched and stored object
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getDependencies: function () {
+			/**
+			 * @param {string} zid
+			 * @return {Array} persisted ZObject
+			 */
+			const findDependencies = ( zid ) => {
+				const stored = this.getStoredObject( zid );
+				if ( !stored ) {
+					return [];
+				}
+				const inner = stored[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				const innerType = getZObjectType( inner );
+
+				const extractTypeRefs = ( type ) => {
+					if ( type && typeof type === 'object' ) {
+						return [
+							Constants.Z_TYPED_LIST_TYPE,
+							Constants.Z_TYPED_PAIR_TYPE1,
+							Constants.Z_TYPED_PAIR_TYPE2,
+							Constants.Z_TYPED_MAP_TYPE1,
+							Constants.Z_TYPED_MAP_TYPE2
+						].map( ( key ) => type[ key ] )
+							.filter( ( keyType ) => keyType && typeof keyType === 'string' );
+					}
+
+					return ( type && typeof type === 'string' ) ? [ type ] : [];
+				};
+
+				// For type, return string types or type references
+				// extracted from generic types for each key
+				if ( innerType === Constants.Z_TYPE ) {
+					const keys = inner[ Constants.Z_TYPE_KEYS ].slice( 1 );
+					const valueTypes = [];
+					keys.forEach( ( key ) => {
+						valueTypes.push( ...extractTypeRefs( key[ Constants.Z_KEY_TYPE ] ) );
+					} );
+					return [ ... new Set( valueTypes ) ];
+				}
+
+				// For function, return string types or type references
+				// extracted from generic types for each argument
+				if ( innerType === Constants.Z_FUNCTION ) {
+					const args = inner[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
+					const inputTypes = [];
+					args.forEach( ( arg ) => {
+						inputTypes.push( ...extractTypeRefs( arg[ Constants.Z_ARGUMENT_TYPE ] ) );
+					} );
+					return [ ... new Set( inputTypes ) ];
+				}
+
+				return [];
+			};
+			return findDependencies;
+		},
+		/**
 		 * Returns the LabelData of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 * The label is in the user selected language, if available, or else in the closest fallback.
 		 * If not available, returns a new LabelData object with the input zid as the label.
@@ -968,11 +1029,19 @@ module.exports = {
 		fetchZids: function ( payload ) {
 			let requestZids = [];
 			const allPromises = [];
-			const {
-				zids = []
-			} = payload;
+			const zids = payload.zids || [];
 
+			// Expand every zid with its dependencies (for function and type)
+			const expanded = [];
 			zids.forEach( ( zid ) => {
+				expanded.push( zid );
+				if ( zid in this.objects ) {
+					expanded.push( ...this.getDependencies( zid ) );
+				}
+			} );
+
+			// Select the zids to request by excluding those already fetched
+			expanded.forEach( ( zid ) => {
 				// Ignore if:
 				// * Zid is Z0
 				// * Zid has already been fetched (success or failure)
@@ -984,6 +1053,7 @@ module.exports = {
 				) {
 					requestZids.push( zid );
 				}
+
 				// Capture pending promise to await if:
 				// * Zid is waiting to be fetched
 				if ( zid in this.requests ) {
@@ -1233,6 +1303,7 @@ module.exports = {
 					Constants.Z_ABSTRACT_RENDER_FUNCTION,
 					// Needed for Abstract Preview language selector
 					Constants.Z_NATURAL_LANGUAGE,
+					Constants.Z_HTML_FRAGMENT,
 					// Needed for ZObject selector
 					Constants.Z_TYPE,
 					// Needed to resolve typed list labels (e.g. Z881)
@@ -1259,6 +1330,7 @@ module.exports = {
 				Constants.Z_BOOLEAN_TRUE,
 				Constants.Z_BOOLEAN_FALSE,
 				Constants.Z_IMPLEMENTATION,
+				Constants.Z_HTML_FRAGMENT,
 				this.getUserLangZid,
 				Constants.Z_TYPED_LIST,
 				Constants.Z_ARGUMENT_REFERENCE,

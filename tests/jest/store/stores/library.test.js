@@ -757,6 +757,60 @@ describe( 'library Pinia store', () => {
 				expect( store.getResolvingType( canonicalToHybrid( zobject ) ) ).toEqual( expected );
 			} );
 		} );
+
+		describe( 'getDependencies', () => {
+			it( 'returns empty array for non-type non-function object', () => {
+				store.objects = {
+					Z1003: mockStoredObjects.Z1003
+				};
+				const findDependencies = store.getDependencies;
+				expect( findDependencies( 'Z1003' ) ).toEqual( [] );
+			} );
+
+			it( 'returns dependencies of a type object', () => {
+				store.objects = {
+					Z10000: { success: true, data: {
+						Z2K2: {
+							Z1K1: 'Z4',
+							Z4K2: [
+								'Z3',
+								// Exclude blank
+								{ Z1K1: 'Z3', Z3K1: '' },
+								{ Z1K1: 'Z3', Z3K1: 'Z6' },
+								// Exclude duplicates
+								{ Z1K1: 'Z3', Z3K1: 'Z10001' },
+								{ Z1K1: 'Z3', Z3K1: 'Z10001' },
+								{ Z1K1: 'Z3', Z3K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z10002' } },
+								{ Z1K1: 'Z3', Z3K1: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z10003', Z882K2: 'Z40' } }
+							]
+						}
+					} }
+				};
+				const findDependencies = store.getDependencies;
+				expect( findDependencies( 'Z10000' ) ).toEqual( [ 'Z6', 'Z10001', 'Z10002', 'Z10003', 'Z40' ] );
+			} );
+
+			it( 'returns dependencies of a function object', () => {
+				store.objects = {
+					Z10000: { success: true, data: {
+						Z2K2: {
+							Z1K1: 'Z8',
+							Z8K1: [
+								'Z17',
+								// Exclude blank
+								{ Z1K1: 'Z17', Z17K1: '' },
+								{ Z1K1: 'Z17', Z17K1: 'Z6' },
+								// Exclude unknown generic type
+								{ Z1K1: 'Z17', Z17K1: { Z1K1: 'Z7', Z7K1: 'Z999', Z999K1: 'Z10001' } },
+								{ Z1K1: 'Z17', Z17K1: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z10002', Z883K2: 'Z40' } }
+							]
+						}
+					} }
+				};
+				const findDependencies = store.getDependencies;
+				expect( findDependencies( 'Z10000' ) ).toEqual( [ 'Z6', 'Z10002', 'Z40' ] );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -893,9 +947,9 @@ describe( 'library Pinia store', () => {
 				} );
 			} );
 
-			it( 'Will call the APi only with the Zids that are not yet fetched', () => {
-				const zids = [ 'Z1', 'Z2', 'Z6' ];
-				const expectedWikiLambdaloadZids = 'Z2|Z6';
+			it( 'Will call the API only with the Zids that are not yet fetched', () => {
+				const zids = [ 'Z1', 'Z4', 'Z2', 'Z6' ];
+				const expectedWikiLambdaloadZids = 'Z4|Z2|Z6';
 				store.objects = {
 					Z1: mockStoredObjects.Z1
 				};

@@ -225,7 +225,7 @@ const schemataUtils = {
 	 *
 	 * @param {Object|string} zobject a Z1/Object
 	 * @param {boolean} returnKeys if set to true, return both matching Zids and matching Keys
-	 * @return {Set} Set of (string) ZIDs
+	 * @return {Array} Set of (string) ZIDs
 	 */
 	extractZIDs: function ( zobject, returnKeys = false ) {
 		const str = JSON.stringify( zobject );

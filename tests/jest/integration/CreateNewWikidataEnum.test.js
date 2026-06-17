@@ -154,7 +154,10 @@ describe( 'WikiLambda frontend, create Wikidata enum', () => {
 	} );
 
 	it( 'swaps the Wikidata type and removes incompatible list items', async () => {
-		const { getByText, findByTestId, findByRole } = render( App );
+		const { container, getByText, findByTestId, findByRole } = render( App );
+
+		// Wait for loading to finish (max 5 seconds)
+		await waitFor( () => expect( container ).not.toHaveTextContent( 'Loading data' ), { timeout: 5000 } );
 
 		// All actions and queries are scoped within the content area
 		const content = await findByTestId( 'content' );
