@@ -23,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\TitleFactory;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
@@ -34,6 +35,7 @@ require_once "$IP/maintenance/Maintenance.php";
 class UpdateAbstractWikiArticleStore extends Maintenance {
 	private AWArticleStore $articleStore;
 	private AWFragmentStore $fragmentStore;
+	private StatsFactory $statsFactory;
 
 	private WikifunctionsLanguageFactory $languageFactory;
 
@@ -134,6 +136,10 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		$this->articleStore = WikiLambdaServices::buildAWArticleStore( $services );
 		$this->fragmentStore = WikiLambdaServices::buildAWFragmentStore( $services );
 
+		// Set up metrics
+		// withComponent() scopes all metrics under 'mediawiki.WikiLambda.*'
+		$this->statsFactory = $services->getStatsFactory()->withComponent( 'WikiLambda' );
+
 		// Build AbstractWiki ContentHandler
 		$contentHandlerFactory = $services->getContentHandlerFactory();
 		$contentHandler = $contentHandlerFactory->getContentHandler( CONTENT_MODEL_ABSTRACT );
@@ -157,6 +163,8 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		// the fragments are generated for a consistent date.
 		$now = new ConvertibleTimestamp();
 		$this->output( "Start time: " . $now->format( 'Y-m-d H:i:s O' ) . "\n" );
+
+		$startTime = microtime( true );
 
 		foreach ( $topics as $topicQid ) {
 			$this->output( "Generating topic $topicQid\n" );
@@ -248,6 +256,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					// time, so issues are less recoverable and affect the generation of whole
 					// articles rather than only article sections.
 					$language = $this->languageFactory->getLanguage( $locale );
+					$sectionStartTime = microtime( true );
 					$freshSection = $this->generateAWSectionForLang(
 						$topicQid,
 						$sectionQid,
@@ -255,6 +264,12 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 						$now,
 						$sectionFragments
 					);
+					// How long did it take to fetch all fragments from cache and join them into a section?
+					// Grafana: mediawiki.WikiLambda.aw_section_generate_seconds{section=…, locale=…}
+					$this->statsFactory->getTiming( 'aw_section_generate_seconds' )
+						->setLabel( 'section', $sectionQid )
+						->setLabel( 'locale', $locale )
+						->observeSeconds( microtime( true ) - $sectionStartTime );
 
 					// Depending on the section state (missing or failing)
 					// we can do different things. For pending sections,
@@ -286,6 +301,12 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					);
 					// TODO: do we need to handle errors from this setter?
 					$this->articleStore->setSection( $freshSection );
+					// How many bytes does the HTML payload write to the store per section?
+					// Grafana: mediawiki.WikiLambda.aw_section_bytes_written_total{section=…, locale=…}
+					$this->statsFactory->getCounter( 'aw_section_bytes_written_total' )
+						->setLabel( 'section', $sectionQid )
+						->setLabel( 'locale', $locale )
+						->incrementBy( strlen( $freshSection->getPayload() ) );
 					// Remove section $sectionQid, from language $locale and set metadata
 				}
 			}
@@ -304,6 +325,15 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 			// so that we can filter out or initialize necessary keys if we need to
 			$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $payload ) );
 		}
+
+		$elapsed = microtime( true ) - $startTime;
+		// How long did each run take, by run type?
+		// regular = all requested topics/sections; pending = backlogged sections only,
+		// ie. sections recorded as 'pending' in AWArticleMetadata from a previous run
+		// Grafana: mediawiki.WikiLambda.aw_update_run_seconds{run_type=pending|regular}
+		$this->statsFactory->getTiming( 'aw_update_run_seconds' )
+			->setLabel( 'run_type', $doPending ? 'pending' : 'regular' )
+			->observeSeconds( $elapsed );
 	}
 
 	/**
@@ -332,6 +362,31 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 				$language,
 				$ts->format( 'Y-m-d' ),
 			);
+
+			if ( $awFragment->isMissing() ) {
+				// Never been rendered, or result evicted; to be queued
+				$outcome = 'missing';
+			} elseif ( $awFragment->isFresh() && $awFragment->isOk() ) {
+				// Rendered today and succeeded
+				$outcome = 'fresh_ok';
+			} elseif ( $awFragment->isFresh() ) {
+				// A render attempt was made today but was cached as a failure
+				$outcome = 'fresh_failed';
+			} elseif ( $awFragment->isOk() ) {
+				// Rendered on earlier date and succeeded; usable but outdated HTML
+				$outcome = 'stale_ok';
+			} else {
+				// A render attempt was made on an earlier date and was cached as a failure
+				$outcome = 'stale_failed';
+			}
+			// Are fragments being rendered and cached successfully?
+			// Broken down by outcome so Grafana can show success, cache hit, freshness rates per section/locale
+			// Grafana: mediawiki.WikiLambda.aw_fragment_total{section=…, locale=…, outcome=…}
+			$this->statsFactory->getCounter( 'aw_fragment_total' )
+				->setLabel( 'section', $sectionQid )
+				->setLabel( 'locale', $language->getCode() )
+				->setLabel( 'outcome', $outcome )
+				->increment();
 
 			// 3.2.2. Append the fragment to the section
 			// Internally, AWSection::appendFragment keeps a record whenever it
