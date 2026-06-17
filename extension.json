@@ -130,6 +130,14 @@
 		"WikiLambda": "MediaWiki\\Config\\GlobalVarConfig::newInstance"
 	},
 	"HookHandlers": {
+		"AbstractPageRenderingHandler": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\AbstractPageRenderingHandler",
+			"services": [
+				"MainConfig",
+				"SpecialPageFactory",
+				"TitleFactory"
+			]
+		},
 		"WikiLambdaRepoHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks"
 		},
@@ -216,13 +224,19 @@
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
 		"BeforePageDisplay": "PageRenderingHandler",
-		"BeforeDisplayNoArticleText": "PageRenderingHandler",
+		"BeforeDisplayNoArticleText": [
+			"AbstractPageRenderingHandler",
+			"PageRenderingHandler"
+		],
 		"GetMagicVariableIDs": "PageRenderingHandler",
 		"ParserGetVariableValueSwitch": "PageRenderingHandler",
 		"SpecialStatsAddExtra": "PageRenderingHandler",
 		"ParserFirstCallInit": "PageRenderingHandler",
 		"SkinPageReadyConfig": "PageRenderingHandler",
-		"CommunityConfigurationProvider_initList": "WikiLambdaCommunityConfigurationHooks"
+		"CommunityConfigurationProvider_initList": "WikiLambdaCommunityConfigurationHooks",
+		"ShowMissingArticle": "AbstractPageRenderingHandler",
+		"Article::MissingArticleConditions": "AbstractPageRenderingHandler",
+		"InitializeArticleMaybeRedirect": "AbstractPageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
