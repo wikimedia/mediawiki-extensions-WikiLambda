@@ -55,9 +55,9 @@ describe( 'miscUtils', () => {
 	describe( 'createConnectedItemsChangesSummaryMessage', () => {
 		beforeAll( () => {
 			// Mocking the global mw object
-			textMock = jest.fn().mockReturnValue( 'Mocked message' );
-			paramsMock = jest.fn().mockReturnValue( { text: textMock } );
-			messageMock = jest.fn().mockReturnValue( { params: paramsMock } );
+			const textMock = jest.fn().mockReturnValue( 'Mocked message' );
+			const paramsMock = jest.fn().mockReturnValue( { text: textMock } );
+			const messageMock = jest.fn().mockReturnValue( { params: paramsMock } );
 
 			global.mw = {
 				message: messageMock,
