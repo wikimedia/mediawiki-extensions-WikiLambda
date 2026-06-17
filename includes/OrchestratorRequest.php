@@ -448,11 +448,12 @@ class OrchestratorRequest {
 				$responseBody = self::substituteLoneSurrogates( $responseBody );
 				$responseBodyObject = json_decode( $responseBody, true, 512, JSON_THROW_ON_ERROR );
 			}
-			if (
-				!is_array( $responseBodyObject ) ||
-				!isset( $responseBodyObject['Z1K1'] ) ||
-				$responseBodyObject['Z1K1'] !== 'Z22'
-			) {
+			// Z1K1 may be canonical ("Z22") or in normal form ({ Z1K1: "Z9", Z9K1: "Z22" }); accept either.
+			$responseType = is_array( $responseBodyObject ) ? ( $responseBodyObject['Z1K1'] ?? null ) : null;
+			if ( is_array( $responseType ) ) {
+				$responseType = $responseType['Z9K1'] ?? null;
+			}
+			if ( $responseType !== ZTypeRegistry::Z_RESPONSEENVELOPE ) {
 				throw new JsonException( 'Response is not a Z22: ' . var_export( $responseBody, true ) );
 			}
 		} catch ( JsonException $e ) {

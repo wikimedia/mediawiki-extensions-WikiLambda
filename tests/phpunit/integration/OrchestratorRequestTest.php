@@ -110,6 +110,41 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$this->assertEquals( json_decode( $envelopeString ), json_decode( $response['result'] ) );
 	}
 
+	public function testExecuteWithNormalFormEnvelope() {
+		// (T414062) The trivial Z22 check must accept a Z22 whose Z1K1 is in normal form
+		// ({ Z1K1: "Z9", Z9K1: "Z22" }), not just the canonical "Z22" string. The orchestrator
+		// emits normal form for some responses (e.g. a Z24/void result carrying an internal error
+		// in its meta-data); such envelopes are valid and must pass through unchanged rather than
+		// being discarded and replaced with a Z577 error.
+		$envelopeString = '{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z22"},"Z22K1":{"Z1K1":"Z9","Z9K1":"Z24"},' .
+			'"Z22K2":"Z24"}';
+
+		$expectCachedValue = [
+			'result' => $envelopeString,
+			'httpStatusCode' => HttpStatus::OK
+		];
+		$this->mockMemcachedWrapper( false, [ $expectCachedValue, MemcachedWrapper::TTL_MONTH ] );
+
+		$guzzleResponse = new Response( HttpStatus::OK, [], $envelopeString );
+		$orchestrator = $this->getOrchestratorWithMockResponse( $guzzleResponse );
+
+		$inputFile = __DIR__ .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'test_data' .
+			DIRECTORY_SEPARATOR .
+			'Z902_false.json';
+		$Z902 = file_get_contents( $inputFile );
+		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
+
+		$response = $orchestrator->orchestrate( json_decode( $Z902, true ) );
+
+		// Passed through verbatim: same body and status, NOT wrapped as a 500/Z577 error.
+		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
+		$this->assertEquals( json_decode( $envelopeString ), json_decode( $response['result'] ) );
+	}
+
 	public function testExecuteWithLoneSurrogateInResponse() {
 		// The orchestrator runs on Node.js, which can serialise mangled user input as lone UTF-16
 		// surrogate escapes (here a lone low surrogate \udff3 and a lone high surrogate \ud83c).
