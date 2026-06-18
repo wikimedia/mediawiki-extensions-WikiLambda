@@ -15,7 +15,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Z객체 Z1의 판 12, Z2의 판 14, 그리고 Z3의 판 25를 가져옵니다.",
 	"apihelp-wikilambda_function_call-param-zobject": "함수 호출을 위한 Z객체",
 	"apihelp-wikilambda_function_call-param-bypass-cache": "내부적인 특수 용도로만 사용되는 선택적 매개변수인 캐시 우회 플래그",
-	"apihelp-wikilambda_function_call-example-generic-list": "타입이 지정된 리스트의 첫 번째 원소를 반환하는 함수를 호출합니다",
+	"apihelp-wikilambda_function_call-example-generic-list": "typed 리스트의 첫 번째 원소를 반환하는 함수를 호출합니다",
 	"apihelp-wikilambda_function_call-example-generic-pair": "타입이 지정된 pair&lt;문자열, 타입이 지정된 pair&lt;문자열, 불리안&gt;&gt;의 두 번째 원소를 반환하는 함수를 호출합니다",
 	"apihelp-wikilambda_function_call-example-generic-map": "주어진 키에 해당하는 일반 매핑의 요소를 해당 값의 문자열 버전으로 매핑하는 함수를 호출합니다.",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "사용자 정의 함수를 사용하여 Z4/Type을 생성하고 해당 Z4/Type을 Z객체의 Z1K1/Type으로써 사용합니다.",
