@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
 use MediaWiki\Hook\SidebarBeforeOutputHook;
+use MediaWiki\Hook\TitleIsAlwaysKnownHook;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
@@ -41,7 +42,8 @@ class AbstractPageRenderingHandler implements
 	InitializeArticleMaybeRedirectHook,
 	SkinAddFooterLinksHook,
 	SkinTemplateNavigation__UniversalHook,
-	SidebarBeforeOutputHook
+	SidebarBeforeOutputHook,
+	TitleIsAlwaysKnownHook
 {
 
 	private LoggerInterface $logger;
@@ -109,6 +111,40 @@ class AbstractPageRenderingHandler implements
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Treat an opted-in integrated Abstract Wikipedia article as a known page, so that wiki links
+	 * to it (e.g. [[Douglas Adams]]) and the subject tab on its talk page render blue rather than
+	 * as redlinks — even though no local revision exists. Its content is synthesised from the
+	 * remote topic by onShowMissingArticle(), so "known but not existing" is the correct state:
+	 * the page reads as present, while action=edit still offers local creation.
+	 *
+	 * This hook fires for every title whose known-ness is tested (notably once per link via
+	 * LinkBatch), so the body must stay cheap: integrationEnabled() is two config reads and
+	 * provideOptedIn() is process-cached, leaving an O(1) array lookup on the hot path.
+	 *
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/TitleIsAlwaysKnown
+	 *
+	 * @param Title $title
+	 * @param bool|null &$isKnown Set to true to force the title to be considered known
+	 */
+	public function onTitleIsAlwaysKnown( $title, &$isKnown ): void {
+		// Respect a decision already made by core or another handler.
+		if ( $isKnown !== null || !$this->integrationEnabled() ) {
+			return;
+		}
+
+		// Integrated content only lives in the main namespace; this guard also cheaply rejects the
+		// Talk:/File:/Template: etc. links that make up much of a page's link set before consulting
+		// the opted-in map.
+		if ( !$title->inNamespace( NS_MAIN ) ) {
+			return;
+		}
+
+		if ( array_key_exists( $title->getPrefixedText(), $this->awConfigProvider->provideOptedIn() ) ) {
+			$isKnown = true;
+		}
 	}
 
 	/**

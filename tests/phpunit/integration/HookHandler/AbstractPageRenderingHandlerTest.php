@@ -675,4 +675,94 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 
 		$this->assertSame( $original, $sidebar['TOOLBOX']['whatlinkshere'] );
 	}
+
+	// onTitleIsAlwaysKnown
+	// ====================
+	// An opted-in integrated article has no local revision, but should be treated as known so its
+	// wiki links and the subject tab on its talk page render blue rather than as redlinks. This
+	// applies to both the primary title and any secondary (redirect) titles configured for the topic.
+
+	public function testOnTitleIsAlwaysKnown_clientModeDisabled_leavesKnownUnset(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientMode', false );
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$handler = $this->buildHandler();
+
+		$isKnown = null;
+		$handler->onTitleIsAlwaysKnown( Title::makeTitle( NS_MAIN, 'Douglas Adams' ), $isKnown );
+		$this->assertNull( $isKnown );
+	}
+
+	public function testOnTitleIsAlwaysKnown_integrationDisabled_leavesKnownUnset(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', false );
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$handler = $this->buildHandler();
+
+		$isKnown = null;
+		$handler->onTitleIsAlwaysKnown( Title::makeTitle( NS_MAIN, 'Douglas Adams' ), $isKnown );
+		$this->assertNull( $isKnown );
+	}
+
+	public function testOnTitleIsAlwaysKnown_notInMainNamespace_leavesKnownUnset(): void {
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$handler = $this->buildHandler();
+
+		// The talk page of an opted-in article is not itself integrated content.
+		$isKnown = null;
+		$handler->onTitleIsAlwaysKnown( Title::makeTitle( NS_TALK, 'Douglas Adams' ), $isKnown );
+		$this->assertNull( $isKnown );
+	}
+
+	public function testOnTitleIsAlwaysKnown_titleNotOptedIn_leavesKnownUnset(): void {
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$handler = $this->buildHandler();
+
+		$isKnown = null;
+		$handler->onTitleIsAlwaysKnown( Title::makeTitle( NS_MAIN, 'Pangolin' ), $isKnown );
+		$this->assertNull( $isKnown );
+	}
+
+	public function testOnTitleIsAlwaysKnown_primaryTitleOptedIn_setsKnown(): void {
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+			'Douglas Noël Adams' => [ 'qid' => 'Q42', 'redirect' => 'Douglas Adams' ],
+		] );
+		$handler = $this->buildHandler();
+
+		$isKnown = null;
+		$handler->onTitleIsAlwaysKnown( Title::makeTitle( NS_MAIN, 'Douglas Adams' ), $isKnown );
+		$this->assertTrue( $isKnown );
+	}
+
+	public function testOnTitleIsAlwaysKnown_secondaryTitleOptedIn_setsKnown(): void {
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+			'Douglas Noël Adams' => [ 'qid' => 'Q42', 'redirect' => 'Douglas Adams' ],
+		] );
+		$handler = $this->buildHandler();
+
+		// A configured redirect alias is just as much a known link target as the primary title.
+		$isKnown = null;
+		$handler->onTitleIsAlwaysKnown( Title::makeTitle( NS_MAIN, 'Douglas Noël Adams' ), $isKnown );
+		$this->assertTrue( $isKnown );
+	}
+
+	public function testOnTitleIsAlwaysKnown_respectsPriorDecision(): void {
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$handler = $this->buildHandler();
+
+		// A decision already made by core or another handler is left untouched.
+		$isKnown = false;
+		$handler->onTitleIsAlwaysKnown( Title::makeTitle( NS_MAIN, 'Douglas Adams' ), $isKnown );
+		$this->assertFalse( $isKnown );
+	}
 }

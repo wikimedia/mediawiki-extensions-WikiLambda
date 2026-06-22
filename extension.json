@@ -251,7 +251,8 @@
 		"SkinAddFooterLinks": "AbstractPageRenderingHandler",
 		"ShowMissingArticle": "AbstractPageRenderingHandler",
 		"Article::MissingArticleConditions": "AbstractPageRenderingHandler",
-		"InitializeArticleMaybeRedirect": "AbstractPageRenderingHandler"
+		"InitializeArticleMaybeRedirect": "AbstractPageRenderingHandler",
+		"TitleIsAlwaysKnown": "AbstractPageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
