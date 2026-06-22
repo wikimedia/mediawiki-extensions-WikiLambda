@@ -263,7 +263,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 	 */
 	private function displayNotAvailableError(): never {
 		$titleMessage = $this->msg( 'wikilambda-abstract-special-preview-not-enabled-title' );
-		$errorMessage = $this->msg( 'wikilambda-abstract-special-preview-not-enabled' );
+		$errorMessage = $this->msg( 'wikilambda-abstract-special-preview-not-enabled-body' );
 		throw new ErrorPageError( $titleMessage, $errorMessage );
 	}
 
