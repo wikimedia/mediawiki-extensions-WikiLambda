@@ -57,6 +57,19 @@ class AbstractPageRenderingHandler implements
 	}
 
 	/**
+	 * Whether Abstract Wikipedia content should be integrated into local articles on this wiki.
+	 *
+	 * Requires both the abstract client mode master switch and the integration sub-flag, so the
+	 * latter can act as an independent kill-switch without disabling the rest of client mode.
+	 *
+	 * @return bool
+	 */
+	private function integrationEnabled(): bool {
+		return $this->config->get( 'WikiLambdaEnableAbstractClientMode' ) &&
+			$this->config->get( 'WikiLambdaEnableAbstractClientModeIntegration' );
+	}
+
+	/**
 	 * Resolve a CommunityConfiguration-managed list of opted in articles
 	 * provided by AbstractWikiOptedInArticles. The schema provides a list
 	 * of items, each item containing a list of titles (where the first is the
@@ -133,7 +146,7 @@ class AbstractPageRenderingHandler implements
 	 * @param Article $article
 	 */
 	public function onShowMissingArticle( $article ): void {
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+		if ( !$this->integrationEnabled() ) {
 			// True or no return to continue
 			return;
 		}
@@ -211,7 +224,7 @@ class AbstractPageRenderingHandler implements
 		&$target,
 		&$article
 	) {
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+		if ( !$this->integrationEnabled() ) {
 			// True or no return to continue
 			return;
 		}
@@ -247,7 +260,7 @@ class AbstractPageRenderingHandler implements
 	 * @return bool|void True or no return value to continue or false to abort
 	 */
 	public function onArticle__MissingArticleConditions( &$conds, $logTypes ) {
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+		if ( !$this->integrationEnabled() ) {
 			// True or no return to continue
 			return;
 		}
@@ -280,8 +293,8 @@ class AbstractPageRenderingHandler implements
 	 * @return bool
 	 */
 	public function onBeforeDisplayNoArticleText( $article ): bool {
-		// If not AbstractClient mode, return true and let other hooks do their thing
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+		// If integration is disabled, return true and let other hooks do their thing
+		if ( !$this->integrationEnabled() ) {
 			return true;
 		}
 

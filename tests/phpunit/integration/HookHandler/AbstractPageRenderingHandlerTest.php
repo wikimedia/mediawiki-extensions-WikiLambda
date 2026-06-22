@@ -115,6 +115,21 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertSame( '', $article->getContext()->getOutput()->getHTML() );
 	}
 
+	public function testOnShowMissingArticle_integrationDisabled_doesNothing(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', false );
+		$this->mockOptedInArticles( [
+			(object)[ 'qid' => 'Q42', 'title' => [ 'Douglas Adams' ] ],
+		] );
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onShowMissingArticle( $article );
+
+		$this->assertSame( '', $article->getContext()->getOutput()->getHTML() );
+	}
+
 	public function testOnShowMissingArticle_notInMainNamespace_doesNothing(): void {
 		$this->mockOptedInArticles();
 
@@ -208,6 +223,25 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertNull( $article->getRedirectedFrom() );
 	}
 
+	public function testOnInitializeArticleMaybeRedirect_integrationDisabled_doesNothing(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', false );
+		$this->mockOptedInArticles( [
+			(object)[ 'qid' => 'Q42', 'title' => [ 'Douglas Adams', 'Douglas Noël Adams' ] ],
+		] );
+		$handler = $this->buildHandler();
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+		$request = $article->getContext()->getRequest();
+		// Set a redirect source so only the gate (not a missing source) can prevent action.
+		$request->getSession()->set( 'awRedirectedFrom', 'Douglas_Noël_Adams' );
+		$ignoreRedirect = false;
+		$target = false;
+
+		$handler->onInitializeArticleMaybeRedirect( $title, $request, $ignoreRedirect, $target, $article );
+		$this->assertNull( $article->getRedirectedFrom() );
+	}
+
 	public function testOnInitializeArticleMaybeRedirect_titleNotOptedIn_doesNothing(): void {
 		$this->mockOptedInArticles();
 		$handler = $this->buildHandler();
@@ -278,6 +312,20 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertSame( [], $conds );
 	}
 
+	public function testOnArticleMissingArticleConditions_integrationDisabled_doesNothing(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', false );
+		$this->mockOptedInArticles( [
+			(object)[ 'qid' => 'Q42', 'title' => [ 'Douglas Adams', 'Douglas Noël Adams' ] ],
+		] );
+		$handler = $this->buildHandler();
+
+		RequestContext::getMain()->setTitle( Title::makeTitle( NS_MAIN, 'Douglas Adams' ) );
+
+		$conds = [];
+		$handler->onArticle__MissingArticleConditions( $conds, [ 'delete' ] );
+		$this->assertSame( [], $conds );
+	}
+
 	public function testOnArticleMissingArticleConditions_titleNotOptedIn_doesNothing(): void {
 		$this->mockOptedInArticles();
 		$handler = $this->buildHandler();
@@ -324,6 +372,20 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 
 	public function testOnBeforeDisplayNoArticleText_clientModeDisabled_returnsTrue(): void {
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientMode', false );
+		$this->mockOptedInArticles( [
+			(object)[ 'qid' => 'Q42', 'title' => [ 'Douglas Adams', 'Douglas Noël Adams' ] ],
+		] );
+		$handler = $this->buildHandler();
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$result = $handler->onBeforeDisplayNoArticleText( $article );
+		$this->assertTrue( $result );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_integrationDisabled_returnsTrue(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', false );
 		$this->mockOptedInArticles( [
 			(object)[ 'qid' => 'Q42', 'title' => [ 'Douglas Adams', 'Douglas Noël Adams' ] ],
 		] );

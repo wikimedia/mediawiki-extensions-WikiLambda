@@ -113,6 +113,10 @@
 			"description": "If true, enable the 'abstract client' mode of WikiLambda that enables integration of Abstract Wikipedia generated articles.",
 			"value": true
 		},
+		"WikiLambdaEnableAbstractClientModeIntegration": {
+			"description": "If true (and WikiLambdaEnableAbstractClientMode is also true), Abstract Wikipedia generated content is rendered in place of opted-in missing local articles. Acts as a kill-switch for the integration behaviour, independent of the rest of abstract client mode.",
+			"value": true
+		},
 		"WikiLambdaAWArticleStoreBackend": {
 			"description": "Storage backend for the Abstract Wikipedia article store. Either 'db' (RDBMS-backed; aw_article_sections on the virtual-awstorage domain) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T426873).",
 			"value": "mainstash"
