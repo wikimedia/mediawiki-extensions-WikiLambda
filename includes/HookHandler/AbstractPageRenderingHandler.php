@@ -413,6 +413,14 @@ class AbstractPageRenderingHandler implements
 				'href' => $localTalkTitle->getLocalURL( $langParams ),
 			];
 		}
+
+		// On an integrated local article (never the preview special page, which has no local
+		// article of its own), relabel the skin's native create tab so it reads as creating a
+		// *local* article rather than the generic "Create", keeping its local edit target.
+		if ( !$title->isSpecial( 'PreviewAbstract' ) && isset( $links['views']['edit'] ) ) {
+			$links['views']['edit']['text'] =
+				$skinTemplate->msg( 'wikilambda-abstract-tab-createlocal' )->text();
+		}
 	}
 
 	/**

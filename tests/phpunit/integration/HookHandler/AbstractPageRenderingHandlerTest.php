@@ -2,7 +2,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
-use MediaWiki\Config\HashConfig;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
@@ -26,9 +25,6 @@ use MediaWiki\Title\Title;
  * @group Database
  */
 class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrationTestCase {
-
-	private AbstractPageRenderingHandler $handler;
-	private HashConfig $config;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -593,6 +589,44 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 
 		// Talk tab exists and points at the local discussion page.
 		$this->assertStringContainsString( 'Talk:Douglas_Adams', $links['associated-pages']['talk']['href'] );
+	}
+
+	public function testOnSkinTemplateNavigation_integratedArticle_relabelsCreateTab(): void {
+		$this->defineAbstractInterwiki();
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_MAIN, 'Douglas Adams' ) );
+
+		$links = [
+			'views' => [ 'edit' => [ 'text' => 'Create', 'href' => '/wiki/Douglas_Adams?action=edit' ] ],
+			'actions' => [],
+			'associated-pages' => [],
+		];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinTemplateNavigation__Universal( $skin, $links );
+
+		$this->assertSame( 'Create local article', $links['views']['edit']['text'] );
+		// The local create target is preserved.
+		$this->assertSame( '/wiki/Douglas_Adams?action=edit', $links['views']['edit']['href'] );
+	}
+
+	public function testOnSkinTemplateNavigation_specialPage_doesNotRelabelCreateTab(): void {
+		$this->defineAbstractInterwiki();
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_SPECIAL, 'PreviewAbstract/en/Q42' ) );
+
+		$links = [
+			'views' => [ 'edit' => [ 'text' => 'Create', 'href' => '/wiki/Special:X?action=edit' ] ],
+			'actions' => [],
+			'associated-pages' => [],
+		];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinTemplateNavigation__Universal( $skin, $links );
+
+		// No "Create local article" relabel on the preview special page.
+		$this->assertSame( 'Create', $links['views']['edit']['text'] );
 	}
 
 	public function testOnSkinTemplateNavigation_integrationDisabled_doesNothing(): void {
