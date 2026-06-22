@@ -93,5 +93,7 @@
 	"wikilambda-abstract-special-preview-unsupported-lang-title": "This language is not supported yet.",
 	"wikilambda-abstract-special-preview-unsupported-qid-body": "The topic $1 does not have an Abstract Article, or it has not yet been included in the list of topics for which Abstract Wikipedia articles are generated. [[abstract:Help:Abstract_articles#Language_coverage|See list of enabled topics]]",
 	"wikilambda-abstract-special-preview-unsupported-qid-title": "This topic is not supported yet.",
-	"wikilambda-abstract-special-view": "View an Abstract Article"
+	"wikilambda-abstract-special-view": "View an Abstract Article",
+	"wikilambda-abstract-tab-edit": "Edit abstract",
+	"wikilambda-abstract-tab-history": "Abstract history"
 }

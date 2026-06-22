@@ -231,7 +231,11 @@
 		"NamespaceIsMovable": "PageEditingHandler",
 		"RecentChange_save": "PagePostSaveHandler",
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
-		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
+		"SkinTemplateNavigation::Universal": [
+			"PageRenderingHandler",
+			"AbstractPageRenderingHandler"
+		],
+		"SidebarBeforeOutput": "AbstractPageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler",
 		"BeforePageDisplay": "PageRenderingHandler",
 		"BeforeDisplayNoArticleText": [

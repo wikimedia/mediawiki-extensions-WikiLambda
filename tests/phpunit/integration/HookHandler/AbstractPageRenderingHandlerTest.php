@@ -9,10 +9,13 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\HookHandler\AbstractPageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaAbstractClientIntegrationTestCase;
+use MediaWiki\Interwiki\Interwiki;
+use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\FauxRequest;
+use MediaWiki\Skin\Skin;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\SpecialPage\SpecialPageFactory;
 use MediaWiki\Tests\Unit\Libs\Rdbms\AddQuoterMock;
@@ -472,5 +475,170 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertStringContainsString( 'last updated on 04:05, at 31 May 2026.', $footerItems['lastmod'] );
 		$this->assertStringContainsString( 'Page was rendered from', $footerItems['renderedwith'] );
 		$this->assertStringContainsString( 'Abstract Wikipedia', $footerItems['renderedwith'] );
+	}
+
+	// onSkinTemplateNavigation__Universal
+	// ===================================
+	// On Abstract Content surfaces, synthesise article-like tabs: a local Read tab, off-wiki
+	// Edit/History/Talk pointing at Abstract Wikipedia via the 'abstract' interwiki prefix, and
+	// none of the actions (delete/protect/move/watch) that are meaningless for a read-only render.
+
+	/**
+	 * Define an 'abstract' interwiki prefix so cross-wiki getFullURL() calls resolve, via a fake
+	 * InterwikiLookup service (the InterwikiLoadPrefix hook was deprecated in MediaWiki 1.36).
+	 */
+	private function defineAbstractInterwiki(): void {
+		$interwiki = new Interwiki( 'abstract', 'https://abstract.wikipedia.org/wiki/$1' );
+		$lookup = $this->createMock( InterwikiLookup::class );
+		$lookup->method( 'isValidInterwiki' )->willReturnCallback(
+			static fn ( $prefix ) => $prefix === 'abstract'
+		);
+		$lookup->method( 'fetch' )->willReturnCallback(
+			static fn ( $prefix ) => $prefix === 'abstract' ? $interwiki : null
+		);
+		$this->setService( 'InterwikiLookup', $lookup );
+	}
+
+	private function makeSkinForTitle( Title $title ): Skin {
+		$context = new RequestContext();
+		$context->setLanguage( 'en' );
+		$context->setTitle( $title );
+		$context->setRequest( new FauxRequest( [ 'uselang' => 'en' ] ) );
+		$skin = $this->getServiceContainer()->getSkinFactory()->makeSkin( 'fallback' );
+		$skin->setContext( $context );
+		return $skin;
+	}
+
+	public function testOnSkinTemplateNavigation_notAbstractSurface_doesNothing(): void {
+		$this->mockOptedInArticles();
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_MAIN, 'Pangolin' ) );
+
+		$links = [ 'views' => [], 'actions' => [ 'delete' => [ 'text' => 'Delete' ] ], 'associated-pages' => [] ];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinTemplateNavigation__Universal( $skin, $links );
+
+		$this->assertArrayNotHasKey( 'edit-abstract', $links['views'] );
+		// Untouched: actions left as they were.
+		$this->assertArrayHasKey( 'delete', $links['actions'] );
+	}
+
+	public function testOnSkinTemplateNavigation_specialPage_addsAbstractTabs(): void {
+		$this->defineAbstractInterwiki();
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_SPECIAL, 'PreviewAbstract/en/Q42' ) );
+
+		$links = [ 'views' => [], 'actions' => [], 'associated-pages' => [] ];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinTemplateNavigation__Universal( $skin, $links );
+
+		$this->assertSame( 'Edit abstract', $links['views']['edit-abstract']['text'] );
+		$this->assertStringContainsString(
+			'abstract.wikipedia.org/wiki/Q42', $links['views']['edit-abstract']['href'] );
+		$this->assertStringContainsString( 'action=edit', $links['views']['edit-abstract']['href'] );
+
+		$this->assertSame( 'Abstract history', $links['views']['history-abstract']['text'] );
+		$this->assertStringContainsString( 'action=history', $links['views']['history-abstract']['href'] );
+
+		// A local Read tab is synthesised (the special page has none of its own).
+		$this->assertArrayHasKey( 'view', $links['views'] );
+
+		// No talk pages for special pages
+		$this->assertArrayNotHasKey( 'talk', $links['views'] );
+	}
+
+	public function testOnSkinTemplateNavigation_specialPage_removesMeaninglessActions(): void {
+		$this->defineAbstractInterwiki();
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_SPECIAL, 'PreviewAbstract/en/Q42' ) );
+
+		$links = [
+			'views' => [ 'viewsource' => [ 'text' => 'View source' ] ],
+			'actions' => [
+				'delete' => [ 'text' => 'Delete' ],
+				'protect' => [ 'text' => 'Protect' ],
+				'move' => [ 'text' => 'Move' ],
+				'watch' => [ 'text' => 'Watch' ],
+			],
+			'associated-pages' => [],
+		];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinTemplateNavigation__Universal( $skin, $links );
+
+		$this->assertArrayNotHasKey( 'viewsource', $links['views'] );
+		$this->assertArrayNotHasKey( 'delete', $links['actions'] );
+		$this->assertArrayNotHasKey( 'protect', $links['actions'] );
+		$this->assertArrayNotHasKey( 'move', $links['actions'] );
+		$this->assertArrayNotHasKey( 'watch', $links['actions'] );
+	}
+
+	public function testOnSkinTemplateNavigation_integratedArticle_keepsLocalReadTab(): void {
+		$this->defineAbstractInterwiki();
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_MAIN, 'Douglas Adams' ) );
+
+		$localView = [ 'text' => 'Read', 'href' => '/wiki/Douglas_Adams' ];
+		$links = [ 'views' => [ 'view' => $localView ], 'actions' => [], 'associated-pages' => [] ];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinTemplateNavigation__Universal( $skin, $links );
+
+		// The existing local Read tab is preserved, not overwritten.
+		$this->assertSame( $localView, $links['views']['view'] );
+		// And the off-wiki Edit tab is added alongside it.
+		$this->assertStringContainsString(
+			'abstract.wikipedia.org/wiki/Q42', $links['views']['edit-abstract']['href'] );
+
+		// Talk tab exists and points at the local discussion page.
+		$this->assertStringContainsString( 'Talk:Douglas_Adams', $links['associated-pages']['talk']['href'] );
+	}
+
+	public function testOnSkinTemplateNavigation_integrationDisabled_doesNothing(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', false );
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+		] );
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_MAIN, 'Douglas Adams' ) );
+
+		$links = [ 'views' => [], 'actions' => [], 'associated-pages' => [] ];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinTemplateNavigation__Universal( $skin, $links );
+
+		$this->assertArrayNotHasKey( 'edit-abstract', $links['views'] );
+	}
+
+	// onSidebarBeforeOutput
+	// =====================
+	// Point the "What links here" Tools-sidebar entry at the source article on Abstract Wikipedia.
+
+	public function testOnSidebarBeforeOutput_specialPage_pointsWhatLinksHereOffWiki(): void {
+		$this->defineAbstractInterwiki();
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_SPECIAL, 'PreviewAbstract/en/Q42' ) );
+
+		$sidebar = [ 'TOOLBOX' => [ 'whatlinkshere' => [ 'href' => '/wiki/Special:WhatLinksHere' ] ] ];
+
+		$handler = $this->buildHandler();
+		$handler->onSidebarBeforeOutput( $skin, $sidebar );
+
+		$this->assertStringContainsString(
+			'Special:WhatLinksHere/Q42', $sidebar['TOOLBOX']['whatlinkshere']['href'] );
+		$this->assertStringContainsString(
+			'abstract.wikipedia.org', $sidebar['TOOLBOX']['whatlinkshere']['href'] );
+	}
+
+	public function testOnSidebarBeforeOutput_notAbstractSurface_doesNothing(): void {
+		$this->mockOptedInArticles();
+		$skin = $this->makeSkinForTitle( Title::makeTitle( NS_MAIN, 'Pangolin' ) );
+
+		$original = [ 'href' => '/wiki/Special:WhatLinksHere/Pangolin' ];
+		$sidebar = [ 'TOOLBOX' => [ 'whatlinkshere' => $original ] ];
+
+		$handler = $this->buildHandler();
+		$handler->onSidebarBeforeOutput( $skin, $sidebar );
+
+		$this->assertSame( $original, $sidebar['TOOLBOX']['whatlinkshere'] );
 	}
 }

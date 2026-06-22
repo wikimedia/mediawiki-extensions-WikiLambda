@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
+use MediaWiki\Hook\SidebarBeforeOutputHook;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
@@ -26,6 +27,7 @@ use MediaWiki\Page\Hook\BeforeDisplayNoArticleTextHook;
 use MediaWiki\Page\Hook\ShowMissingArticleHook;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Skin\Hook\SkinAddFooterLinksHook;
+use MediaWiki\Skin\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Skin\Skin;
 use MediaWiki\SpecialPage\SpecialPageFactory;
 use MediaWiki\Title\Title;
@@ -37,7 +39,9 @@ class AbstractPageRenderingHandler implements
 	Article__MissingArticleConditionsHook,
 	BeforeDisplayNoArticleTextHook,
 	InitializeArticleMaybeRedirectHook,
-	SkinAddFooterLinksHook
+	SkinAddFooterLinksHook,
+	SkinTemplateNavigation__UniversalHook,
+	SidebarBeforeOutputHook
 {
 
 	private LoggerInterface $logger;
@@ -67,6 +71,44 @@ class AbstractPageRenderingHandler implements
 	private function integrationEnabled(): bool {
 		return $this->config->get( 'WikiLambdaEnableAbstractClientMode' ) &&
 			$this->config->get( 'WikiLambdaEnableAbstractClientModeIntegration' );
+	}
+
+	/**
+	 * Extract the Abstract Wikipedia topic QID for an Abstract Content surface from its Title:
+	 * the final path segment of a Special:PreviewAbstract subpage (…/<lang>/<qid> or …/<qid>),
+	 * or the opted-in QID of an integrated local article. Returns null if neither yields a
+	 * well-formed Wikidata item reference.
+	 *
+	 * @param Title $title
+	 * @return ?string
+	 */
+	private function getTopicQidFromTitle( Title $title ): ?string {
+		if ( $title->isSpecial( 'PreviewAbstract' ) ) {
+			$parts = explode( '/', $title->getSubpageText() );
+			$topicQid = end( $parts );
+		} else {
+			$optedIn = $this->awConfigProvider->provideOptedIn();
+			$topicQid = $optedIn[ $title->getPrefixedText() ][ 'qid' ] ?? '';
+		}
+
+		return AbstractContentUtils::isValidWikidataItemReference( $topicQid ) ? $topicQid : null;
+	}
+
+	/**
+	 * Determine if the current view is one on which tabs should be shown.
+	 *
+	 * @param Title $title
+	 * @return bool
+	 */
+	private function isViewOnWhichToShowTabs( Title $title ): bool {
+		if ( $title->isSpecial( 'PreviewAbstract' ) ) {
+			if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+				return false;
+			}
+		} elseif ( !$this->integrationEnabled() ) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -265,20 +307,8 @@ class AbstractPageRenderingHandler implements
 				return;
 			}
 
-			$topicQid = '';
-
-			if ( $title->isSpecialPage() ) {
-				// For Special Page (Special:PreviewAbstract), extract the topicQid from the subpage
-				$parts = explode( '/', $title->getSubpageText() );
-				$topicQid = end( $parts );
-			} else {
-				// For Article, extract the topicQid from the optedIn list
-				$titleText = $title->getPrefixedText();
-				$optedIn = $this->awConfigProvider->provideOptedIn();
-				$topicQid = $optedIn[ $titleText ][ 'qid' ] ?? '';
-			}
-
-			if ( trim( $topicQid ) === '' || !AbstractContentUtils::isValidWikidataItemReference( $topicQid ) ) {
+			$topicQid = $this->getTopicQidFromTitle( $title );
+			if ( $topicQid === null ) {
 				// No topic Qid; either missing from the url or this article isn't in the optedIn list
 				return;
 			}
@@ -300,5 +330,122 @@ class AbstractPageRenderingHandler implements
 
 			$footerItems[ 'renderedwith' ] = $skin->msg( 'wikilambda-abstract-renderedwith' )->parse();
 		}
+	}
+
+	/**
+	 * Synthesise article-like content-action tabs on Abstract Content surfaces, pointing the
+	 * editing-related ones at the source article on Abstract Wikipedia.
+	 *
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SkinTemplateNavigation::Universal
+	 *
+	 * @param \MediaWiki\Skin\SkinTemplate $skinTemplate
+	 * @param array &$links
+	 */
+	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
+		$title = $skinTemplate->getTitle();
+
+		// Don't do anything if …
+		if (
+			// … there's no Title for this view (e.g. Special:Search)
+			!$title ||
+			// … the title is a real page that exists (as we won't take over)
+			$title->exists() ||
+			// … we wouldn't show tabs here
+			!$this->isViewOnWhichToShowTabs( $title )
+		) {
+			return;
+		}
+
+		$topicQid = $this->getTopicQidFromTitle( $title );
+		// This will only return null if the title is a Special:PreviewAbstract page with no QID in the URL, or an
+		if ( $topicQid === null ) {
+			return;
+		}
+
+		$langParams = [ 'uselang' => $skinTemplate->getLanguage()->getCode() ];
+
+		// Cross-wiki link target of the Abstract Wikipedia page for a topic, its bare QID. This is
+		// built via the 'abstract' interwiki prefix (a per-wiki interwiki-table entry) rather than
+		// hard-coded URLs, to survive any future relocation of the repo wiki, and support tests.
+		$awSubject = Title::makeTitle( NS_MAIN, $topicQid, '', 'abstract' );
+
+		// Drop the actions that are meaningless for a read-only cross-wiki render. They should
+		// not appear at all, rather than appearing disabled.
+		unset(
+			$links['views']['viewsource'],
+			$links['actions']['delete'],
+			$links['actions']['protect'],
+			$links['actions']['unprotect'],
+			$links['actions']['move'],
+			$links['actions']['watch'],
+			$links['actions']['unwatch']
+		);
+
+		// Ensure a local Read tab exists: Special pages have no content tabs of their own, while
+		// an integrated article already has one pointing at the local page (which we leave alone).
+		if ( !isset( $links['views']['view'] ) ) {
+			$links['views']['view'] = [
+				'class' => 'selected',
+				'text' => $skinTemplate->msg( 'view' )->text(),
+				'href' => $title->getLocalURL( $langParams ),
+			];
+		}
+
+		// Off-wiki Edit and History tabs. Distinct keys from the native 'edit' tab, so a local
+		// "Create local article" tab (added separately) can coexist on integrated pages.
+		$links['views']['edit-abstract'] = [
+			'class' => '',
+			'text' => $skinTemplate->msg( 'wikilambda-abstract-tab-edit' )->text(),
+			'href' => $awSubject->getFullURL( [ 'action' => 'edit' ] + $langParams ),
+		];
+		$links['views']['history-abstract'] = [
+			'class' => '',
+			'text' => $skinTemplate->msg( 'wikilambda-abstract-tab-history' )->text(),
+			'href' => $awSubject->getFullURL( [ 'action' => 'history' ] + $langParams ),
+		];
+
+		// Add a local discussion page link
+		$localTalkTitle = $title->getTalkPageIfDefined();
+		if ( $localTalkTitle ) {
+			$links['associated-pages']['talk'] = [
+				'class' => ( $localTalkTitle->exists() ? '' : 'new' ),
+				'text' => $skinTemplate->msg( 'talk' )->text(),
+				'href' => $localTalkTitle->getLocalURL( $langParams ),
+			];
+		}
+	}
+
+	/**
+	 * Point the "What links here" Tools-sidebar entry at the source article on Abstract Wikipedia.
+	 *
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SidebarBeforeOutput
+	 *
+	 * @param Skin $skin
+	 * @param array &$sidebar
+	 */
+	public function onSidebarBeforeOutput( $skin, &$sidebar ): void {
+		$title = $skin->getTitle();
+		if ( !$title ) {
+			return;
+		}
+
+		if ( !$this->isViewOnWhichToShowTabs( $title ) ) {
+			return;
+		}
+
+		$topicQid = $this->getTopicQidFromTitle( $title );
+		if ( $topicQid === null ) {
+			return;
+		}
+
+		$awWhatLinksHere = Title::makeTitle( NS_SPECIAL, 'WhatLinksHere/' . $topicQid, '', 'abstract' );
+
+		// Override the skin's local entry; "what links here" locally is meaningless for content
+		// whose links live on Abstract Wikipedia.
+		$sidebar['TOOLBOX']['whatlinkshere'] = [
+			'text' => $skin->msg( 'whatlinkshere' )->text(),
+			'href' => $awWhatLinksHere->getFullURL(),
+			'id' => 't-whatlinkshere',
+		];
 	}
 }
