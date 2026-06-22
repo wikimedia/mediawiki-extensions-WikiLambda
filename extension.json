@@ -144,7 +144,8 @@
 				"MainConfig",
 				"SpecialPageFactory",
 				"TitleFactory",
-				"AbstractWikiArticleStore"
+				"AbstractWikiArticleStore",
+				"AbstractWikiConfigProvider"
 			]
 		},
 		"WikiLambdaRepoHooks": {
@@ -1198,6 +1199,7 @@
 				"LanguageNameUtils",
 				"WikifunctionsLanguageFactory",
 				"AbstractWikiArticleStore",
+				"AbstractWikiConfigProvider",
 				"WikiLambdaWikidataEntityLookup"
 			]
 		}

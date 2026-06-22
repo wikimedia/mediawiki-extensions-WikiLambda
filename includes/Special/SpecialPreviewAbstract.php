@@ -15,6 +15,7 @@ use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWSection;
@@ -33,6 +34,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		private readonly LanguageNameUtils $languageNameUtils,
 		private readonly WikifunctionsLanguageFactory $languageFactory,
 		private readonly AWArticleStore $articleStore,
+		private readonly AbstractWikiConfigProvider $awConfigProvider,
 		private readonly WikidataEntityLookup $entityLookup
 	) {
 		parent::__construct( 'PreviewAbstract' );
@@ -223,8 +225,79 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 
 		// Finally show AW provenance banner at the bottom of the article
 		$this->showAbstractWikiBox(
+			$this->getProvenanceNotice( $usertime, $userdate ) .
+			$this->getOptInCallToAction( $targetQid )
+		);
+	}
+
+	/**
+	 * @param string $usertime
+	 * @param string $userdate
+	 * @return string
+	 */
+	private function getProvenanceNotice( $usertime, $userdate ): string {
+		return Html::rawElement( 'p', [],
 			$this->msg( 'wikilambda-abstract-special-preview-provenance-banner', $usertime, $userdate )->escaped()
 		);
+	}
+
+	/**
+	 * Whether Abstract Wikipedia content should be integrated into local articles on this wiki.
+	 *
+	 * Requires both the abstract client mode master switch and the integration sub-flag, so the
+	 * latter can act as an independent kill-switch without disabling the rest of client mode.
+	 *
+	 * @return bool
+	 */
+	private function integrationEnabled(): bool {
+		return $this->getConfig()->get( 'WikiLambdaEnableAbstractClientMode' ) &&
+			$this->getConfig()->get( 'WikiLambdaEnableAbstractClientModeIntegration' );
+	}
+
+	/**
+	 * @param string $targetQid
+	 * @return string
+	 */
+	private function getOptInCallToAction( $targetQid ): string {
+		// Only show Opt-in or Opt-out Call To Action notices in AbstractClient mode
+		if ( !$this->integrationEnabled() ) {
+			return '';
+		}
+
+		// Only show Opt-in or Opt-out Call To Action if user holds 'wikilambda-abstract-optin' rigth
+		if ( !$this->getUser()->isAllowed( 'wikilambda-abstract-optin' ) ) {
+			return '';
+		}
+
+		$optedIn = $this->awConfigProvider->provideOptedIn();
+		$primaryTitle = null;
+
+		// Find primary title if Qid is opted in
+		foreach ( $optedIn as $pageTitle => $pageConfig ) {
+			if ( ( $pageConfig[ 'qid' ] === $targetQid ) && ( $pageConfig[ 'redirect' ] === false ) ) {
+				$primaryTitle = $pageTitle;
+				break;
+			}
+		}
+
+		// If article is not opted in, show notice and cta
+		if ( $primaryTitle === null ) {
+			return Html::rawElement( 'p', [],
+				$this->msg( 'wikilambda-abstract-special-preview-optedout-notice' )->parse()
+				. ' ' . $this->msg( 'wikilambda-abstract-special-preview-optin-cta' )->parse()
+			);
+		}
+
+		// If article is opted in, this can be Special:PreviewAbstract or the article page:
+		// * Special:PreviewAbstract page: we show notice about where this page is shown.
+		// * Article page: we don't show notice, as we are already there.
+		$isSpecialPage = $this->getContext()->getTitle()->isSpecialPage();
+		$parts = [];
+		if ( $isSpecialPage ) {
+			$parts[] = $this->msg( 'wikilambda-abstract-special-preview-optedin-notice', $primaryTitle )->parse();
+		}
+		$parts[] = $this->msg( 'wikilambda-abstract-special-preview-optout-cta' )->parse();
+		return Html::rawElement( 'p', [], implode( ' ', $parts ) );
 	}
 
 	/**

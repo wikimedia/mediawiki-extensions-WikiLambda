@@ -14,6 +14,7 @@ use MediaWiki\Config\Config;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
 use MediaWiki\Logger\LoggerFactory;
@@ -23,7 +24,6 @@ use MediaWiki\Page\Article;
 use MediaWiki\Page\Hook\Article__MissingArticleConditionsHook;
 use MediaWiki\Page\Hook\BeforeDisplayNoArticleTextHook;
 use MediaWiki\Page\Hook\ShowMissingArticleHook;
-use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Skin\Hook\SkinAddFooterLinksHook;
 use MediaWiki\Skin\Skin;
@@ -31,7 +31,6 @@ use MediaWiki\SpecialPage\SpecialPageFactory;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class AbstractPageRenderingHandler implements
 	ShowMissingArticleHook,
@@ -50,7 +49,8 @@ class AbstractPageRenderingHandler implements
 		private readonly Config $config,
 		private readonly SpecialPageFactory $specialPageFactory,
 		private readonly TitleFactory $titleFactory,
-		private readonly AWArticleStore $articleStore
+		private readonly AWArticleStore $articleStore,
+		private readonly AbstractWikiConfigProvider $awConfigProvider
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstractClient' );
@@ -67,76 +67,6 @@ class AbstractPageRenderingHandler implements
 	private function integrationEnabled(): bool {
 		return $this->config->get( 'WikiLambdaEnableAbstractClientMode' ) &&
 			$this->config->get( 'WikiLambdaEnableAbstractClientModeIntegration' );
-	}
-
-	/**
-	 * Resolve a CommunityConfiguration-managed list of opted in articles
-	 * provided by AbstractWikiOptedInArticles. The schema provides a list
-	 * of items, each item containing a list of titles (where the first is the
-	 * primary one) and their corresponding qid.
-	 *
-	 * The returned map should contain titles as the key, so that the different
-	 * methods can cheaply consult the qid or redirect listed for the requested
-	 * title.
-	 *
-	 * @see \MediaWiki\Extension\WikiLambda\Config\AbstractWikiOptedInArticlesSchema
-	 *
-	 * @return array
-	 */
-	private function provideOptedIn(): array {
-		if ( $this->optedInCache !== null ) {
-			return $this->optedInCache;
-		}
-
-		$this->optedInCache = [];
-
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
-			return $this->optedInCache;
-		}
-
-		try {
-			$provider = MediaWikiServices::getInstance()
-				->getService( 'CommunityConfiguration.ProviderFactory' )
-				->newProvider( self::AW_OPTEDIN_PROVIDER_ID );
-			$status = $provider->loadValidConfiguration();
-
-			if ( $status->isOK() ) {
-				$value = $status->getValue();
-				$items = $value->OptedInArticles ?? [];
-
-				foreach ( $items as $item ) {
-					$titles = $item->title ?? [];
-
-					if ( count( $titles ) === 0 || $titles[0] === null || trim( $titles[0] ) === '' ) {
-						// This should not happen, log error and continue, we want to ignore
-						// this item, but we also want to notice that there's a malformed item
-						$this->logger->error(
-							__METHOD__ . ': CommunityConfiguration provider {id} contains malformed item', [
-								'id' => self::AW_OPTEDIN_PROVIDER_ID,
-								'qid' => $item->qid,
-								'title' => json_encode( $item->title )
-							]
-						);
-						continue;
-					}
-
-					foreach ( $titles as $index => $title ) {
-						$this->optedInCache[ $title ] = [
-							'qid' => $item->qid,
-							'redirect' => $index === 0 ? false : $titles[0]
-						];
-					}
-				}
-				return $this->optedInCache;
-			}
-		} catch ( Throwable $e ) {
-			$this->logger->warning(
-				__METHOD__ . ': CommunityConfiguration lookup for {id} failed: {msg}',
-				[ 'id' => self::AW_OPTEDIN_PROVIDER_ID, 'msg' => $e->getMessage() ]
-			);
-		}
-
-		return $this->optedInCache;
 	}
 
 	/**
@@ -164,7 +94,7 @@ class AbstractPageRenderingHandler implements
 		// We need to see if this page has opted-in AW content in the local wiki (CommunityConfiguration)
 		// If so, we need to render the Special:Preview page content
 		$titleText = $title->getBaseText();
-		$optedIn = $this->provideOptedIn();
+		$optedIn = $this->awConfigProvider->provideOptedIn();
 
 		if ( !array_key_exists( $titleText, $optedIn ) ) {
 			// TODO Opt-in is descoped
@@ -230,7 +160,7 @@ class AbstractPageRenderingHandler implements
 		}
 
 		// Exit if this page doesn't contain AW content
-		$optedIn = $this->provideOptedIn();
+		$optedIn = $this->awConfigProvider->provideOptedIn();
 		if ( !array_key_exists( $title->getBaseText(), $optedIn ) ) {
 			// True or no return to continue
 			return;
@@ -271,8 +201,7 @@ class AbstractPageRenderingHandler implements
 			return;
 		}
 
-		// TODO: We are checking twice, can we set this finding somewhere? Where?
-		$optedIn = $this->provideOptedIn();
+		$optedIn = $this->awConfigProvider->provideOptedIn();
 		if ( !array_key_exists( $title->getBaseText(), $optedIn ) ) {
 			return;
 		}
@@ -301,7 +230,7 @@ class AbstractPageRenderingHandler implements
 		// For AbstractClient mode:
 		// See if this page is opt-in for an AW article, and remove page footer
 		$titleText = $article->getTitle()->getBaseText();
-		$optedIn = $this->provideOptedIn();
+		$optedIn = $this->awConfigProvider->provideOptedIn();
 
 		if ( array_key_exists( $titleText, $optedIn ) ) {
 			// return false to not display the footer "no text" footer
@@ -345,7 +274,7 @@ class AbstractPageRenderingHandler implements
 			} else {
 				// For Article, extract the topicQid from the optedIn list
 				$titleText = $title->getPrefixedText();
-				$optedIn = $this->provideOptedIn();
+				$optedIn = $this->awConfigProvider->provideOptedIn();
 				$topicQid = $optedIn[ $titleText ][ 'qid' ] ?? '';
 			}
 

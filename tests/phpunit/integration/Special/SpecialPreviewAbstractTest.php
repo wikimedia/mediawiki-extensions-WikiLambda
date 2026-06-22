@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Special;
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\ErrorPageError;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWSection;
@@ -397,5 +398,76 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 			'This article was last updated as of 04:05, 31 May 2026 but',
 			html_entity_decode( $sections[1] )
 		);
+	}
+
+	private function mockOptedInArticles( array $items = [] ): void {
+		$mockProvider = $this->createMock( AbstractWikiConfigProvider::class );
+		$mockProvider
+			->method( 'provideOptedIn' )
+			->willReturn( $items );
+
+		$this->setService( 'AbstractWikiConfigProvider', $mockProvider );
+	}
+
+	public function testSuccessShowsOptin(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', true );
+		$this->setGroupPermissions( 'user', 'wikilambda-abstract-optin', true );
+
+		$this->mockOptedInArticles();
+
+		$this->mockArticleStoreWithSections( 'Q42', 'en', [
+			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html ] = $this->executeSpecialPage(
+			/* subpage */ 'en/Q42',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertStringContainsString( 'cdx-message--notice', $html );
+		$this->assertStringContainsString(
+			'This Abstract Article is not yet used in this wiki.', $html );
+		$this->assertStringContainsString(
+			'Show this page to readers', $html );
+	}
+
+	public function testSuccessShowsOptout(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', true );
+		$this->setGroupPermissions( 'user', 'wikilambda-abstract-optin', true );
+
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ],
+			'Douglas Noël Adams' => [ 'qid' => 'Q42', 'redirect' => 'Douglas Adams' ]
+		] );
+
+		$this->mockArticleStoreWithSections( 'Q42', 'en', [
+			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html ] = $this->executeSpecialPage(
+			/* subpage */ 'en/Q42',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertStringContainsString( 'cdx-message--notice', $html );
+		$this->assertStringContainsString( 'This Abstract Article powers the article', $html );
+		$this->assertStringContainsString( 'Douglas Adams', $html );
+		$this->assertStringContainsString( 'Stop showing this page to readers', $html );
 	}
 }

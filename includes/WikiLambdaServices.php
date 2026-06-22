@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
@@ -105,6 +106,13 @@ class WikiLambdaServices {
 	 */
 	public static function getWikidataEntityLookup(): WikidataEntityLookup {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaWikidataEntityLookup' );
+	}
+
+	/**
+	 * @return AbstractWikiConfigProvider
+	 */
+	public static function getAbstractWikiConfigProvider(): AbstractWikiConfigProvider {
+		return MediaWikiServices::getInstance()->getService( 'AbstractWikiConfigProvider' );
 	}
 
 	/**

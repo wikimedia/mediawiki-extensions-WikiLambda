@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
@@ -93,6 +94,10 @@ return [
 
 	'AbstractWikiFragmentStore' => static function ( MediaWikiServices $services ): AWFragmentStore {
 		return WikiLambdaServices::buildAWFragmentStore( $services );
+	},
+
+	'AbstractWikiConfigProvider' => static function ( MediaWikiServices $services ): AbstractWikiConfigProvider {
+		return new AbstractWikiConfigProvider();
 	},
 
 	// For all environments
