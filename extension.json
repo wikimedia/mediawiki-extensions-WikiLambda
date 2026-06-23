@@ -197,7 +197,8 @@
 		"WikiLambdaCommunityConfigurationHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\CommunityConfigurationHooks",
 			"services": [
-				"MainConfig"
+				"MainConfig",
+				"RevisionStore"
 			]
 		},
 		"ViewUrlCacheHandler": {
@@ -213,7 +214,8 @@
 	"Hooks": {
 		"PageSaveComplete": [
 			"WikiLambdaClientHooks",
-			"ViewUrlCacheHandler"
+			"ViewUrlCacheHandler",
+			"WikiLambdaCommunityConfigurationHooks"
 		],
 		"PageDeleteComplete": "ViewUrlCacheHandler",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
@@ -1327,5 +1329,15 @@
 		"virtual-awstorage",
 		"virtual-wikifunctions-usage"
 	],
+	"LogTypes": [ "abstractwiki" ],
+	"LogNames": {
+		"abstractwiki": "wikilambda-abstract-log-name"
+	},
+	"LogHeaders": {
+		"abstractwiki": "wikilambda-abstract-log-header"
+	},
+	"LogActionsHandlers": {
+		"abstractwiki/*": "MediaWiki\\Extension\\WikiLambda\\AbstractContent\\AbstractWikiLogFormatter"
+	},
 	"manifest_version": 2
 }
