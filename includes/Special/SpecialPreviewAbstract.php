@@ -27,8 +27,11 @@ use MediaWiki\MainConfigNames;
 use MediaWiki\SpecialPage\UnlistedSpecialPage;
 use MediaWiki\Title\Title;
 use Wikimedia\HtmlArmor\HtmlArmor;
+use Wikimedia\Stats\StatsFactory;
 
 class SpecialPreviewAbstract extends UnlistedSpecialPage {
+
+	private StatsFactory $statsFactory;
 
 	public function __construct(
 		private readonly ContentRenderer $contentRenderer,
@@ -36,9 +39,11 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		private readonly WikifunctionsLanguageFactory $languageFactory,
 		private readonly AWArticleStore $articleStore,
 		private readonly AbstractWikiConfigProvider $awConfigProvider,
-		private readonly WikidataEntityLookup $entityLookup
+		private readonly WikidataEntityLookup $entityLookup,
+		StatsFactory $statsFactory
 	) {
 		parent::__construct( 'PreviewAbstract' );
+		$this->statsFactory = $statsFactory->withComponent( 'WikiLambda' );
 	}
 
 	/** @inheritDoc */
@@ -96,6 +101,11 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		$output->setCopyright( true );
 		$this->getSkin()->setRelevantTitle( Title::newMainPage() );
 
+		$startTime = microtime( true );
+		$locale = 'unknown';
+		$title = $this->getContext()->getTitle();
+		$source = $title !== null && $title->isSpecialPage() ? 'special_page' : 'embedded';
+
 		// If there's no subpage info
 		// TODO: Do we want to enable the base SpecialPage to show a list of
 		// available articles? E.g. a field allows the reader to select a language
@@ -108,6 +118,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 				$this->msg( 'wikilambda-abstract-special-preview-missing-params-title' )->escaped(),
 				$this->msg( 'wikilambda-abstract-special-preview-missing-params-body' )->escaped()
 			);
+			$this->recordRenderTiming( $startTime, $locale, $source, 'missing_params' );
 			return;
 		}
 
@@ -124,6 +135,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		// Allow the user to over-ride the content language if explicitly requested
 		$targetLang = $request->getRawVal( 'uselang' ) ?? $targetLang;
 		$contextLang = $this->getLanguage();
+		$locale = $targetLang;
 
 		// WikifunctionsLanguageFactory::isKnownLanguageCode verifies that the requested
 		// language code is present in the bcp-47 => zid language mappings.
@@ -132,6 +144,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 				$this->msg( 'wikilambda-abstract-special-preview-bad-lang-title' )->escaped(),
 				$this->msg( 'wikilambda-abstract-special-preview-bad-lang-body', $targetLang )->escaped()
 			);
+			$this->recordRenderTiming( $startTime, $locale, $source, 'bad_lang' );
 			return;
 		}
 
@@ -144,6 +157,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 				$this->msg( 'wikilambda-abstract-special-preview-bad-qid-title' )->escaped(),
 				$this->msg( 'wikilambda-abstract-special-preview-bad-qid-body', $targetQid )->escaped()
 			);
+			$this->recordRenderTiming( $startTime, $locale, $source, 'bad_qid' );
 			return;
 		}
 
@@ -168,6 +182,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 				$this->msg( 'wikilambda-abstract-special-preview-unsupported-qid-title' )->escaped(),
 				$this->msg( 'wikilambda-abstract-special-preview-unsupported-qid-body', $fullTitle )->parse()
 			);
+			$this->recordRenderTiming( $startTime, $locale, $source, 'unsupported_topic' );
 			return;
 		}
 
@@ -183,6 +198,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 				$this->msg( 'wikilambda-abstract-special-preview-unsupported-lang-title' )->escaped(),
 				$this->msg( 'wikilambda-abstract-special-preview-unsupported-lang-body', $langName )->parse()
 			);
+			$this->recordRenderTiming( $startTime, $locale, $source, 'unsupported_lang' );
 			return;
 		}
 
@@ -199,6 +215,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 				$this->msg( 'wikilambda-abstract-special-preview-not-ready-title' )->escaped(),
 				$this->msg( 'wikilambda-abstract-special-preview-not-ready-body', $fullTitle, $langName )->parse()
 			);
+			$this->recordRenderTiming( $startTime, $locale, $source, 'not_ready' );
 			return;
 		}
 
@@ -209,6 +226,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		$usertime = $contextLang->userTime( $awMetadata->getLastUpdated(), $this->getUser() );
 
 		$sectionQids = $awMetadata->getSectionQids();
+		$hasMissingSections = false;
 		foreach ( $sectionQids as $sectionIndex => $sectionQid ) {
 			// Resolve the section title only if not the Lede paragraph
 			$sectionTitle = ( $sectionQid !== AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE ) ?
@@ -217,6 +235,18 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 
 			// Get from the store
 			$awSection = $this->articleStore->getSection( $targetQid, $sectionQid, $language->getCode() );
+
+			if ( $awSection === null ) {
+				$hasMissingSections = true;
+			}
+
+			// Was a pre-rendered section available in the store, or did we fall back to a placeholder?
+			// Grafana: mediawiki.WikiLambda.aw_preview_section_total{locale=…, source=…, outcome=…}
+			$this->statsFactory->getCounter( 'aw_preview_section_total' )
+				->setLabel( 'locale', $locale )
+				->setLabel( 'source', $source )
+				->setLabel( 'outcome', $awSection === null ? 'missing' : 'found' )
+				->increment();
 
 			// Transform into Html the retrieved section or an empty one (with the right section title)
 			$sectionHtml = $awSection === null ?
@@ -238,6 +268,24 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			$this->getProvenanceNotice( $usertime, $userdate ) .
 			$this->getOptInCallToAction( $targetQid )
 		);
+
+		$this->recordRenderTiming( $startTime, $locale, $source, $hasMissingSections ? 'incomplete' : 'complete' );
+	}
+
+	/**
+	 * @param float $startTime
+	 * @param string $locale
+	 * @param string $source
+	 * @param string $outcome
+	 */
+	private function recordRenderTiming( float $startTime, string $locale, string $source, string $outcome ): void {
+		// How long does serving an AW article preview take, end-to-end?
+		// Grafana: mediawiki.WikiLambda.aw_preview_render_seconds{locale=…, source=…, outcome=…}
+		$this->statsFactory->getTiming( 'aw_preview_render_seconds' )
+			->setLabel( 'locale', $locale )
+			->setLabel( 'source', $source )
+			->setLabel( 'outcome', $outcome )
+			->observeSeconds( microtime( true ) - $startTime );
 	}
 
 	/**

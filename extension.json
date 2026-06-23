@@ -1207,7 +1207,8 @@
 				"WikifunctionsLanguageFactory",
 				"AbstractWikiArticleStore",
 				"AbstractWikiConfigProvider",
-				"WikiLambdaWikidataEntityLookup"
+				"WikiLambdaWikidataEntityLookup",
+				"StatsFactory"
 			]
 		}
 	},
