@@ -12,12 +12,10 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Deferred\DataUpdate;
-use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AbstractContentDataRemoval extends DataUpdate {
 
@@ -47,11 +45,23 @@ class AbstractContentDataRemoval extends DataUpdate {
 
 		// Get the metadata payload (if stored) to edit only the relevant keys
 		$metadata = $this->articleStore->getArticleMetadata( $topicQid );
-		$payload = $metadata === null ? [] : $metadata->getPayload();
-		$payload[ 'awDeleted' ] = ConvertibleTimestamp::now();
 
-		// Store the metadata object in the article store
-		$metadata = new AWArticleMetadata( $topicQid, $payload );
-		$this->articleStore->setArticleMetadata( $metadata );
+		// If no metadata is returned, do nothing
+		if ( $metadata == null ) {
+			return;
+		}
+
+		// 1. Delete all sections for all languages
+		$languages = $metadata->getRenderedLanguages();
+		$sections = $metadata->getSectionQids();
+
+		foreach ( $sections as $sectionQid ) {
+			foreach ( $languages as $locale ) {
+				$this->articleStore->deleteSection( $topicQid, $sectionQid, $locale );
+			}
+		}
+
+		// 2. Delete metadata
+		$this->articleStore->deleteArticleMetadata( $topicQid );
 	}
 }

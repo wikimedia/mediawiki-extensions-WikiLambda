@@ -54,13 +54,11 @@ class AWArticleMetadata {
 	 * * awLastUpdated: time of latest revision
 	 * * awLatestRevID: ID of latest revision
 	 *
-	 * Keys touched on AbstractWikiContent delete:
-	 * * awDeleted: time of the content deletion
-	 *
 	 * Keys touched on updateAbstractWikiArticleStore:
 	 * * sections: [ sectionIndex => sectionQid ]
 	 * * pendingSections: [ locale => [ sectionQids ] ]
 	 * * lastRendered: time of the latest re-render
+	 * * renderedLangs: [ locale, ... ]
 	 *
 	 * @return array
 	 */
@@ -85,6 +83,19 @@ class AWArticleMetadata {
 
 		// Return ordered QIDs only
 		return array_values( $sections );
+	}
+
+	/**
+	 * Returns the locales in which this article was rendered.
+	 *
+	 * @return string[]
+	 */
+	public function getRenderedLanguages(): array {
+		$langs = $this->payload[ 'renderedLangs' ] ?? [];
+		if ( !is_array( $langs ) ) {
+			return [];
+		}
+		return array_values( $langs );
 	}
 
 	/**

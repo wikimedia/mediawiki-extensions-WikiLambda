@@ -269,4 +269,21 @@ class MainStashAWArticleStore extends AWArticleStore {
 			self::ENTRY_TTL
 		);
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function deleteArticleMetadata(
+		string $topicQid,
+		int $schemaVersion = self::AW_STORAGE_SCHEMA_VERSION
+	): void {
+		$this->stash->delete(
+			$this->makeSectionKey(
+				$topicQid,
+				self::AW_STORAGE_METADATA_KEY,
+				self::AW_STORAGE_LOCALE_MULTILINGUAL,
+				$schemaVersion
+			)
+		);
+	}
 }

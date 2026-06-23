@@ -32,62 +32,92 @@ class AbstractContentDataRemovalTest extends MediaWikiUnitTestCase {
 		parent::tearDown();
 	}
 
-	public function testDoUpdate_setNewMetadata(): void {
+	private function makeMockTitle( string $qid ): Title {
 		$mockTitle = $this->createMock( Title::class );
-		$mockTitle->method( 'getDBkey' )->willReturn( 'Q319' );
+		$mockTitle->method( 'getDBkey' )->willReturn( $qid );
+		return $mockTitle;
+	}
 
+	public function testDoUpdate_noMetadata_doesNothing(): void {
 		$mockArticleStore = $this->createMock( AWArticleStore::class );
 		$mockArticleStore
 			->method( 'getArticleMetadata' )
 			->with( 'Q319' )
 			->willReturn( null );
 
-		$capturedMetadata = null;
-		$mockArticleStore->expects( $this->once() )
-			->method( 'setArticleMetadata' )
-			->willReturnCallback( static function ( AWArticleMetadata $metadata ) use ( &$capturedMetadata ) {
-				$capturedMetadata = $metadata;
-				return true;
-			} );
+		$mockArticleStore->expects( $this->never() )->method( 'deleteSection' );
+		$mockArticleStore->expects( $this->never() )->method( 'deleteArticleMetadata' );
 
-		$update = new AbstractContentDataRemoval( $mockTitle, $mockArticleStore );
+		$update = new AbstractContentDataRemoval( $this->makeMockTitle( 'Q319' ), $mockArticleStore );
 		$update->doUpdate();
-
-		$this->assertNotNull( $capturedMetadata );
-		$payload = $capturedMetadata->getPayload();
-		$this->assertSame( 'Q319', $capturedMetadata->getTopicQid() );
-		$this->assertSame( self::NOW, $payload[ 'awDeleted' ] );
 	}
 
-	public function testDoUpdate_updateExistingMetadata(): void {
-		$mockTitle = $this->createMock( Title::class );
-		$mockTitle->method( 'getDBkey' )->willReturn( 'Q319' );
-
+	public function testDoUpdate_deletesSections(): void {
 		$metadata = new AWArticleMetadata( 'Q319', [
-			'someOtherKey' => 'should be kept',
+			'sections' => [ 'Q101', 'Q102' ],
+			'renderedLangs' => [ 'en', 'es' ],
 		] );
+
 		$mockArticleStore = $this->createMock( AWArticleStore::class );
 		$mockArticleStore
 			->method( 'getArticleMetadata' )
 			->with( 'Q319' )
 			->willReturn( $metadata );
 
-		$capturedMetadata = null;
-		$mockArticleStore->expects( $this->once() )
-			->method( 'setArticleMetadata' )
-			->willReturnCallback( static function ( AWArticleMetadata $metadata ) use ( &$capturedMetadata ) {
-				$capturedMetadata = $metadata;
+		$deletedSections = [];
+		$mockArticleStore
+			->method( 'deleteSection' )
+			->willReturnCallback( static function ( $topicQid, $sectionQid, $locale ) use ( &$deletedSections ) {
+				$deletedSections[] = [ $topicQid, $sectionQid, $locale ];
 				return true;
 			} );
 
-		$update = new AbstractContentDataRemoval( $mockTitle, $mockArticleStore );
+		$update = new AbstractContentDataRemoval( $this->makeMockTitle( 'Q319' ), $mockArticleStore );
 		$update->doUpdate();
 
-		$this->assertNotNull( $capturedMetadata );
-		$payload = $capturedMetadata->getPayload();
-		$this->assertSame( 'Q319', $capturedMetadata->getTopicQid() );
-		$this->assertSame( self::NOW, $payload[ 'awDeleted' ] );
-		// Make sure this doesn't overwritte additional keys
-		$this->assertSame( 'should be kept', $payload[ 'someOtherKey' ] );
+		$this->assertCount( 4, $deletedSections );
+		$this->assertContains( [ 'Q319', 'Q101', 'en' ], $deletedSections );
+		$this->assertContains( [ 'Q319', 'Q101', 'es' ], $deletedSections );
+		$this->assertContains( [ 'Q319', 'Q102', 'en' ], $deletedSections );
+		$this->assertContains( [ 'Q319', 'Q102', 'es' ], $deletedSections );
+	}
+
+	public function testDoUpdate_deletesMetadata(): void {
+		$metadata = new AWArticleMetadata( 'Q319', [
+			'sections' => [ 'Q101' ],
+			'renderedLangs' => [ 'en' ],
+		] );
+
+		$mockArticleStore = $this->createMock( AWArticleStore::class );
+		$mockArticleStore
+			->method( 'getArticleMetadata' )
+			->with( 'Q319' )
+			->willReturn( $metadata );
+
+		$mockArticleStore->expects( $this->once() )
+			->method( 'deleteArticleMetadata' )
+			->with( 'Q319' );
+
+		$update = new AbstractContentDataRemoval( $this->makeMockTitle( 'Q319' ), $mockArticleStore );
+		$update->doUpdate();
+	}
+
+	public function testDoUpdate_noSections_deletesMetadata(): void {
+		$metadata = new AWArticleMetadata( 'Q319', [
+			'sections' => [],
+			'renderedLangs' => [],
+		] );
+
+		$mockArticleStore = $this->createMock( AWArticleStore::class );
+		$mockArticleStore
+			->method( 'getArticleMetadata' )
+			->with( 'Q319' )
+			->willReturn( $metadata );
+
+		$mockArticleStore->expects( $this->never() )->method( 'deleteSection' );
+		$mockArticleStore->expects( $this->once() )->method( 'deleteArticleMetadata' )->with( 'Q319' );
+
+		$update = new AbstractContentDataRemoval( $this->makeMockTitle( 'Q319' ), $mockArticleStore );
+		$update->doUpdate();
 	}
 }

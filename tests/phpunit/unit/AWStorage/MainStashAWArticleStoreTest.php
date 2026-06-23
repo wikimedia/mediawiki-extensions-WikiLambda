@@ -397,4 +397,26 @@ class MainStashAWArticleStoreTest extends MediaWikiUnitTestCase {
 		$this->assertSame( strlen( $payload ), strlen( $retrieved->getPayload() ) );
 		$this->assertSame( $payload, $retrieved->getPayload() );
 	}
+
+	public function testDeleteArticleMetadata(): void {
+		$this->store->setArticleMetadata( new AWArticleMetadata( 'Q101', [ 'sections' => [ 'Q201' ] ] ) );
+		$this->store->setArticleMetadata( new AWArticleMetadata( 'Q102', [ 'sections' => [ 'Q202' ] ] ) );
+
+		// Check that all are stored
+		$metadataObj1 = $this->store->getArticleMetadata( 'Q101' );
+		$metadataObj2 = $this->store->getArticleMetadata( 'Q102' );
+
+		$this->assertInstanceOf( AWArticleMetadata::class, $metadataObj1 );
+		$this->assertInstanceOf( AWArticleMetadata::class, $metadataObj2 );
+
+		$this->store->deleteArticleMetadata( 'Q101' );
+
+		// Check that all are stored
+		$metadataObj1 = $this->store->getArticleMetadata( 'Q101' );
+		$metadataObj2 = $this->store->getArticleMetadata( 'Q102' );
+
+		// Metadata for Q101 is not present
+		$this->assertNull( $metadataObj1 );
+		$this->assertInstanceOf( AWArticleMetadata::class, $metadataObj2 );
+	}
 }

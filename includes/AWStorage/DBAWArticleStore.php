@@ -238,4 +238,25 @@ class DBAWArticleStore extends AWArticleStore {
 
 		return true;
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function deleteArticleMetadata(
+		string $topicQid,
+		int $schemaVersion = self::AW_STORAGE_SCHEMA_VERSION
+	): void {
+		$dbw = $this->getPrimaryDB();
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'aw_article_sections' )
+			->where( [
+				'awas_topic_qid' => $topicQid,
+				'awas_section_qid' => self::AW_STORAGE_METADATA_KEY,
+				'awas_locale' => self::AW_STORAGE_LOCALE_MULTILINGUAL,
+				'awas_schema_version' => self::AW_STORAGE_SCHEMA_VERSION
+		] )
+			->caller( __METHOD__ )
+			->execute();
+	}
 }

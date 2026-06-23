@@ -163,6 +163,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		// New keys have been added
 		$this->assertSame( self::NOW, $newMetadata[ 'lastRendered' ] );
 		$this->assertSame( [], $newMetadata[ 'pendingSections' ] );
+		$this->assertEquals( [ 'en' ], $newMetadata[ 'renderedLangs' ] );
 	}
 
 	/**
@@ -280,6 +281,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		// New keys have been added
 		$this->assertSame( self::NOW, $newMetadata[ 'lastRendered' ] );
 		$this->assertEquals( $expectedPendingSections, $newMetadata[ 'pendingSections' ] );
+		$this->assertEquals( [ 'en', 'es', 'fr' ], $newMetadata[ 'renderedLangs' ] );
 	}
 
 	/**

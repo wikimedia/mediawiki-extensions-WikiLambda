@@ -105,4 +105,15 @@ abstract class AWArticleStore {
 	 * @return bool
 	 */
 	abstract public function setArticleMetadata( AWArticleMetadata $metadata ): bool;
+
+	/**
+	 * Delete article metadata.
+	 *
+	 * @param string $topicQid
+	 * @param int $schemaVersion
+	 */
+	abstract public function deleteArticleMetadata(
+		string $topicQid,
+		int $schemaVersion = self::AW_STORAGE_SCHEMA_VERSION
+	): void;
 }

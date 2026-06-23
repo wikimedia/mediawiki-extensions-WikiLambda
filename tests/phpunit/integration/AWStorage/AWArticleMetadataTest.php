@@ -70,4 +70,13 @@ class AWArticleMetadataTest extends WikiLambdaAbstractClientIntegrationTestCase 
 		$this->assertSame( 'Q201', $metadata->getSectionQids()[0] );
 		$this->assertSame( 'Q202', $metadata->getSectionQids()[1] );
 	}
+
+	public function testGetRenderedLanguages(): void {
+		$payload = [
+			'renderedLangs' => [ 'Z1002', 'Z1003', 'Z1004' ]
+		];
+
+		$metadata = new AWArticleMetadata( 'Q101', $payload );
+		$this->assertEquals( [ 'Z1002', 'Z1003', 'Z1004' ], $metadata->getRenderedLanguages() );
+	}
 }
