@@ -381,4 +381,34 @@ class DBAWArticleStoreTest extends WikiLambdaAbstractClientIntegrationTestCase {
 		);
 		$this->assertNull( $mulSection );
 	}
+
+	public function testDeleteArticleMetadata() {
+		$dbr = $this->getPrimaryDB();
+
+		$metadataEncoded = '{ "created": "xxx", "updated": "xxx", "sections": ["Q201", "Q202", "Q203"] }';
+		$metadataArray = json_decode( $metadataEncoded, true );
+		$metadata1 = new AWArticleMetadata( 'Q101', $metadataArray );
+		$metadata2 = new AWArticleMetadata( 'Q102', $metadataArray );
+
+		$this->store->setArticleMetadata( $metadata1 );
+		$this->store->setArticleMetadata( $metadata2 );
+
+		// Check that all are stored
+		$metadataObj1 = $this->store->getArticleMetadata( 'Q101' );
+		$metadataObj2 = $this->store->getArticleMetadata( 'Q102' );
+
+		$this->assertInstanceOf( AWArticleMetadata::class, $metadataObj1 );
+		$this->assertInstanceOf( AWArticleMetadata::class, $metadataObj2 );
+
+		// Delete metadata for Q101
+		$this->store->deleteArticleMetadata( 'Q101' );
+
+		// Check that all are stored
+		$metadataObj1 = $this->store->getArticleMetadata( 'Q101' );
+		$metadataObj2 = $this->store->getArticleMetadata( 'Q102' );
+
+		// Metadata for Q101 is not present
+		$this->assertNull( $metadataObj1 );
+		$this->assertInstanceOf( AWArticleMetadata::class, $metadataObj2 );
+	}
 }

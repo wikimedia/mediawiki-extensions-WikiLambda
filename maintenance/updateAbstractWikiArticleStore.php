@@ -314,6 +314,9 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 			// 4. Before being done with this topicQid, we compile and store the AWArticleMetadata
 			$payload[ 'sections' ] = $sectionIds;
 			$payload[ 'lastRendered' ] = ConvertibleTimestamp::now();
+			$payload[ 'renderedLangs' ] = array_values(
+				array_unique( array_merge( $payload[ 'renderedLangs' ] ?? [], $langs ) )
+			);
 			$payload[ 'pendingSections' ] = array_filter( $pendingByLang, static function ( $secs ) {
 				return count( $secs ) > 0;
 			} );
