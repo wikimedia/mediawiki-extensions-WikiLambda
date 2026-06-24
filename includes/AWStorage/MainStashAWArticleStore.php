@@ -62,7 +62,7 @@ class MainStashAWArticleStore extends AWArticleStore {
 		string $locale,
 		int $schemaVersion
 	): string {
-		return $this->stash->makeKey(
+		return $this->stash->makeGlobalKey(
 			self::KEY_PREFIX,
 			'section',
 			$topicQid,
