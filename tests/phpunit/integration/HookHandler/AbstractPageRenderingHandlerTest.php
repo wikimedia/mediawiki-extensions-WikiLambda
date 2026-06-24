@@ -185,6 +185,150 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertSame( $expectedHtml, $article->getContext()->getOutput()->getHTML() );
 	}
 
+	// onBeforeDisplayNoArticleText: external-indexability metadata (T422707)
+	// ======================================================================
+	// The integrated article is the crawler-facing surface, so its real OutputPage must carry the
+	// indexability signals: a 200 status, a <link rel="canonical"> at the local mainspace URL, an
+	// indexable robots policy, and hreflang alternates. These are emitted in this hook rather than
+	// onShowMissingArticle() because Article::showMissingArticle() applies the nonexistent-page
+	// noindex,nofollow policy and 404 status between the two hooks; only signals set here, in the
+	// later hook, survive.
+
+	public function testOnBeforeDisplayNoArticleText_optedIn_setsCanonicalUrl(): void {
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		$output = $article->getContext()->getOutput();
+		// Canonical points at the article's own local mainspace URL, resolved via the Title API
+		// so it honours $wgArticlePath/$wgCanonicalServer and is properly percent-encoded —
+		// never a hand-built "/wiki/" . $title string with a raw space in it.
+		$this->assertSame( $title->getCanonicalURL(), $output->getCanonicalUrl() );
+		$this->assertStringNotContainsString( 'Douglas Adams', $output->getCanonicalUrl() );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_optedIn_setsIndexableRobotPolicy(): void {
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		// Simulate core: Article::showMissingArticle() applies a noindex policy via the metadata
+		// before this hook runs, so the assertion proves the handler actively flips the
+		// deliberately-"sticky" (T16899) noindex back to index.
+		$output = $article->getContext()->getOutput();
+		$output->getMetadata()->setIndexPolicy( 'noindex' );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		$this->assertSame( 'index', $output->getMetadata()->getIndexPolicy() );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_optedIn_sends200Status(): void {
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		// Simulate core's 404 on a missing page; the integrated article is a real 200 surface, so
+		// the handler must override it — crawlers won't index a 404 whatever its robots meta says.
+		$response = $article->getContext()->getRequest()->response();
+		$response->statusHeader( 404 );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		$this->assertSame( 200, $response->getStatusCode() );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_optedIn_setsHreflangSelfDeclaration(): void {
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$context = new RequestContext();
+		$context->setTitle( $title );
+		$context->setLanguage( 'en' );
+		$context->setRequest( new FauxRequest() );
+		$context->setOutput( $output = new OutputPage( $context ) );
+		$article = Article::newFromTitle( $title, $context );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		// A single hreflang alternate self-declaring the page's own language, pointing at the
+		// canonical local URL. Keyed so it is emitted once and is assertable in isolation.
+		$headItems = $output->getHeadItemsArray();
+		$this->assertArrayHasKey( 'aw-hreflang-self', $headItems );
+		$this->assertStringContainsString( 'hreflang="en"', $headItems['aw-hreflang-self'] );
+		$this->assertStringContainsString( $title->getCanonicalURL(), $headItems['aw-hreflang-self'] );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_optedIn_setsMulHreflangAlternate(): void {
+		$this->defineAbstractInterwiki();
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		// An hreflang="mul" alternate at the source topic on Abstract Wikipedia, addressed by its
+		// bare QID via the 'abstract' interwiki prefix.
+		$headItems = $article->getContext()->getOutput()->getHeadItemsArray();
+		$this->assertArrayHasKey( 'aw-hreflang-mul', $headItems );
+		$this->assertStringContainsString( 'hreflang="mul"', $headItems['aw-hreflang-mul'] );
+		$this->assertStringContainsString(
+			'abstract.wikipedia.org/wiki/Q42', $headItems['aw-hreflang-mul'] );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_notOptedIn_setsNoMetadata(): void {
+		$this->mockOptedInArticles();
+
+		$title = Title::makeTitle( NS_MAIN, 'Pangolin' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		// A page with no integrated content must not claim a cross-wiki canonical or hreflang.
+		$output = $article->getContext()->getOutput();
+		// Cast so the assertion holds whether unset canonical defaults to false or ''.
+		$this->assertSame( '', (string)$output->getCanonicalUrl() );
+		$this->assertArrayNotHasKey( 'aw-hreflang-self', $output->getHeadItemsArray() );
+		$this->assertArrayNotHasKey( 'aw-hreflang-mul', $output->getHeadItemsArray() );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_integrationDisabled_setsNoMetadata(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', false );
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		// The integration kill-switch suppresses the whole surface, metadata included.
+		$output = $article->getContext()->getOutput();
+		// Cast so the assertion holds whether unset canonical defaults to false or ''.
+		$this->assertSame( '', (string)$output->getCanonicalUrl() );
+		$this->assertArrayNotHasKey( 'aw-hreflang-self', $output->getHeadItemsArray() );
+		$this->assertArrayNotHasKey( 'aw-hreflang-mul', $output->getHeadItemsArray() );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_redirectSource_setsNoMetadata(): void {
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Noël Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		// A secondary title is HTTP-redirected to its primary (by onShowMissingArticle) before
+		// rendering a body of its own, so it carries no canonical/hreflang — those belong on the
+		// primary's own response, not the 3xx redirect source.
+		$output = $article->getContext()->getOutput();
+		// Cast so the assertion holds whether unset canonical defaults to false or ''.
+		$this->assertSame( '', (string)$output->getCanonicalUrl() );
+		$this->assertArrayNotHasKey( 'aw-hreflang-self', $output->getHeadItemsArray() );
+		$this->assertArrayNotHasKey( 'aw-hreflang-mul', $output->getHeadItemsArray() );
+	}
+
 	// onInitializeArticleMaybeRedirect
 	// ================================
 	// Detects when an Opted-in article is a redirect from a secondary title and in that

@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
 use MediaWiki\Hook\SidebarBeforeOutputHook;
 use MediaWiki\Hook\TitleIsAlwaysKnownHook;
+use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
@@ -26,6 +27,7 @@ use MediaWiki\Page\Article;
 use MediaWiki\Page\Hook\Article__MissingArticleConditionsHook;
 use MediaWiki\Page\Hook\BeforeDisplayNoArticleTextHook;
 use MediaWiki\Page\Hook\ShowMissingArticleHook;
+use MediaWiki\Parser\ParserOutputFlags;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Skin\Hook\SkinAddFooterLinksHook;
 use MediaWiki\Skin\Hook\SkinTemplateNavigation__UniversalHook;
@@ -196,6 +198,11 @@ class AbstractPageRenderingHandler implements
 			return;
 		}
 
+		// (T422707) Note: external-indexability metadata (canonical URL, indexable robots policy,
+		// hreflang alternates, 200 status) is emitted in onBeforeDisplayNoArticleText(), not here.
+		// Article::showMissingArticle() applies the nonexistent-page robots policy and 404 status
+		// *after* this hook but *before* that one, so anything set here would be overwritten.
+
 		// Build another output page to capture the special page HTML
 		$specialContext = new DerivativeContext( $article->getContext() );
 		$specialOutput = new OutputPage( $specialContext );
@@ -310,12 +317,60 @@ class AbstractPageRenderingHandler implements
 		$titleText = $article->getTitle()->getBaseText();
 		$optedIn = $this->awConfigProvider->provideOptedIn();
 
-		if ( array_key_exists( $titleText, $optedIn ) ) {
-			// return false to not display the footer "no text" footer
-			return false;
+		if ( !array_key_exists( $titleText, $optedIn ) ) {
+			return true;
 		}
 
-		return true;
+		// (T422707) Emit external-indexability metadata on the integrated article's real output so
+		// crawlers index this local surface rather than the cross-wiki source. This must happen
+		// here, not in onShowMissingArticle(): Article::showMissingArticle() applies the
+		// nonexistent-page robots policy (noindex,nofollow) and 404 status *after* the
+		// ShowMissingArticle hook but *before* this one, so anything set earlier is overwritten.
+		// Redirect sources are HTTP-redirected before rendering a body of their own, so only the
+		// canonical primary title carries these signals.
+		$optedInArticle = $optedIn[ $titleText ];
+		if ( $optedInArticle[ 'redirect' ] === false ) {
+			$output = $article->getContext()->getOutput();
+			$canonicalUrl = $article->getTitle()->getCanonicalURL();
+
+			// The integrated article is a genuine 200 surface, not the bare 404 a missing page
+			// would otherwise return; search engines won't index a 404 however its robots meta
+			// reads, so override the status core set moments earlier.
+			$article->getContext()->getRequest()->response()->statusHeader( 200 );
+
+			// Force an indexable robots policy. noindex is deliberately "sticky" (T16899), so a
+			// plain setIndexPolicy( 'index' ) is a no-op after core's noindex; we must clear the
+			// NO_INDEX_POLICY flag first, exactly as the now-deprecated OutputPage::setIndexPolicy()
+			// did internally, then set index,follow.
+			$metadata = $output->getMetadata();
+			$metadata->setOutputFlag( ParserOutputFlags::NO_INDEX_POLICY, false );
+			$metadata->setIndexPolicy( 'index' );
+			$output->setFollowPolicy( 'follow' );
+
+			// Self-referential canonical at the local mainspace URL, resolved via the Title API so
+			// it honours $wgArticlePath/$wgCanonicalServer and is properly percent-encoded.
+			$output->setCanonicalUrl( $canonicalUrl );
+
+			// An hreflang self-declaration for the rendered language...
+			$output->addHeadItem( 'aw-hreflang-self', Html::element( 'link', [
+				'rel' => 'alternate',
+				'hreflang' => $output->getLanguage()->getHtmlCode(),
+				'href' => $canonicalUrl,
+			] ) );
+
+			// ...plus an hreflang="mul" alternate pointing at the genuinely-multilingual source
+			// topic on Abstract Wikipedia (ISO 639-2 "multiple languages", honoured by major search
+			// engines). Built via the 'abstract' interwiki prefix to match the cross-wiki
+			// tab/sidebar links and survive any relocation of the repo wiki.
+			$output->addHeadItem( 'aw-hreflang-mul', Html::element( 'link', [
+				'rel' => 'alternate',
+				'hreflang' => 'mul',
+				'href' => Title::makeTitle( NS_MAIN, $optedInArticle[ 'qid' ], '', 'abstract' )->getFullURL(),
+			] ) );
+		}
+
+		// return false to not display the "no text" footer
+		return false;
 	}
 
 	/**
