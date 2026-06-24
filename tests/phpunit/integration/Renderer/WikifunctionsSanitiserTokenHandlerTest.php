@@ -157,6 +157,21 @@ class WikifunctionsSanitiserTokenHandlerTest extends MediaWikiIntegrationTestCas
 		$this->assertStringContainsString( '<a href=', $result );
 	}
 
+	public function testLocalAWLinkToNonExistentPageIsRedLinkWithProtocolRelativeServer() {
+		// Regression: in production $wgServer is protocol-relative (e.g. //abstract.wikipedia.org).
+		// The host normalisation must strip the leading '//' so the link's host still matches the
+		// local server; otherwise isEmptyAbstractArticle() never recognises the link as local and
+		// no red-link class is added, even though the link still renders via the allow-list.
+		$this->overrideConfigValue( 'Server', '//abstract.wikipedia.org' );
+		$this->overrideConfigValue( 'CanonicalServer', 'https://abstract.wikipedia.org' );
+
+		$url = 'https://abstract.wikipedia.org/wiki/Abstract_Wikipedia:Q00000';
+		$result = $this->sanitise( '<a href="' . $url . '">Link</a>' );
+
+		$this->assertStringContainsString( 'class="new"', $result,
+			'Red-link class must still be applied when $wgServer is protocol-relative' );
+	}
+
 	public function testLocalAWLinkIsBlueWhenNotInAbstractMode() {
 		// When not abstract mode, isEmptyAbstractArticle always return false
 		$emptyContent = new AbstractWikiContent(
