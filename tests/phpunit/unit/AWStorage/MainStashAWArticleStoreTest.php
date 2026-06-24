@@ -419,4 +419,42 @@ class MainStashAWArticleStoreTest extends MediaWikiUnitTestCase {
 		$this->assertNull( $metadataObj1 );
 		$this->assertInstanceOf( AWArticleMetadata::class, $metadataObj2 );
 	}
+
+	public function testKeysAreSharedAcrossWikis(): void {
+		// Article sections and metadata are written to MainStash on
+		// abstractwiki, and read cross-wiki. That means all stash operations
+		// need to use a global (wiki-independent) key.
+
+		// Pass through stash operations but record which keys are used.
+		$makeWikiStash = static function ( string $wikiId ) {
+			return new class( [ 'keyspace' => $wikiId ] ) extends HashBagOStuff {
+				/** @var string[] */
+				public array $keysSeen = [];
+
+				public function get( $key, $flags = 0 ) {
+					$this->keysSeen[] = $key;
+					return parent::get( $key, $flags );
+				}
+
+				public function set( $key, $value, $exptime = 0, $flags = 0 ) {
+					$this->keysSeen[] = $key;
+					return parent::set( $key, $value, $exptime, $flags );
+				}
+			};
+		};
+
+		$abstractStash = $makeWikiStash( 'abstractwiki' );
+		$enStash = $makeWikiStash( 'enwiki' );
+		$abstractStore = new MainStashAWArticleStore( $abstractStash );
+		$testStore = new MainStashAWArticleStore( $enStash );
+
+		// Write the metadata in abstractwiki, read it in enwiki.
+		$abstractStore->setArticleMetadata( new AWArticleMetadata( 'Q101', [ 'sections' => [ 'Q201' ] ] ) );
+		$testStore->getArticleMetadata( 'Q101' );
+
+		// Both operations used the same key.
+		$this->assertCount( 1, $abstractStash->keysSeen );
+		$this->assertCount( 1, $enStash->keysSeen );
+		$this->assertSame( $abstractStash->keysSeen[0], $enStash->keysSeen[0] );
+	}
 }
