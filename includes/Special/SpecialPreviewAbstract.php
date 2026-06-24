@@ -25,6 +25,7 @@ use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\MainConfigNames;
 use MediaWiki\SpecialPage\UnlistedSpecialPage;
+use MediaWiki\Title\Title;
 use Wikimedia\HtmlArmor\HtmlArmor;
 
 class SpecialPreviewAbstract extends UnlistedSpecialPage {
@@ -86,6 +87,14 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 
 		// Start setting headers
 		$this->setHeaders();
+
+		// (T345453) Show the standard copyright footer on every outcome, including the error
+		// and warning states below. The footer only renders its copyright line when the
+		// *relevant* title exists (SkinComponentFooter), which a Special page's own NS_SPECIAL
+		// title never does; stand in the wiki's main page for now. The success path below
+		// refines this to the backing local article where one is configured.
+		$output->setCopyright( true );
+		$this->getSkin()->setRelevantTitle( Title::newMainPage() );
 
 		// If there's no subpage info
 		// TODO: Do we want to enable the base SpecialPage to show a list of
@@ -217,8 +226,9 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			$articleHtml .= HtmlArmor::getHtml( $sectionHtml );
 		}
 
-		// (T345453) Have the standard copyright stuff show up.
-		$output->setCopyright( true );
+		// (T345453) Refine the relevant title set above to the backing local article where
+		// one is configured, so the standard copyright footer attributes the right page.
+		$this->getSkin()->setRelevantTitle( $this->getRelevantTitleForPreview( $targetQid ) );
 
 		// Set content html
 		$output->addHTML( $articleHtml );
@@ -255,6 +265,43 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 	}
 
 	/**
+	 * Find the primary local article title that the given topic Qid is opted in to,
+	 * scanning the opt-in configuration. Returns null if the topic is not opted in.
+	 *
+	 * @param string $targetQid
+	 * @return string|null
+	 */
+	private function findPrimaryTitle( string $targetQid ): ?string {
+		foreach ( $this->awConfigProvider->provideOptedIn() as $pageTitle => $pageConfig ) {
+			if ( ( $pageConfig[ 'qid' ] === $targetQid ) && ( $pageConfig[ 'redirect' ] === false ) ) {
+				return $pageTitle;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * The title whose content this preview stands in for, used as the relevant title so
+	 * the skin footer's title-exists gate passes (see execute()). This is the opted-in
+	 * local article when one is configured and exists, otherwise the wiki's main page.
+	 *
+	 * @param string $targetQid
+	 * @return Title
+	 */
+	private function getRelevantTitleForPreview( string $targetQid ): Title {
+		if ( $this->integrationEnabled() ) {
+			$primaryTitle = $this->findPrimaryTitle( $targetQid );
+			if ( $primaryTitle !== null ) {
+				$title = Title::newFromText( $primaryTitle );
+				if ( $title && $title->exists() ) {
+					return $title;
+				}
+			}
+		}
+		return Title::newMainPage();
+	}
+
+	/**
 	 * @param string $targetQid
 	 * @return string
 	 */
@@ -269,16 +316,7 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			return '';
 		}
 
-		$optedIn = $this->awConfigProvider->provideOptedIn();
-		$primaryTitle = null;
-
-		// Find primary title if Qid is opted in
-		foreach ( $optedIn as $pageTitle => $pageConfig ) {
-			if ( ( $pageConfig[ 'qid' ] === $targetQid ) && ( $pageConfig[ 'redirect' ] === false ) ) {
-				$primaryTitle = $pageTitle;
-				break;
-			}
-		}
+		$primaryTitle = $this->findPrimaryTitle( $targetQid );
 
 		// If article is not opted in, show notice and cta
 		if ( $primaryTitle === null ) {

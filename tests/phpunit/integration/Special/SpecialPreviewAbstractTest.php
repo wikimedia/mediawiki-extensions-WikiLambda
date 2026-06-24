@@ -470,4 +470,95 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 		$this->assertStringContainsString( 'Douglas Adams', $html );
 		$this->assertStringContainsString( 'Stop showing this page to readers', $html );
 	}
+
+	/**
+	 * (T345453) The copyright footer must be enabled even in error/warning states. As the footer
+	 * only renders its copyright line when the relevant title exists, those states stand in the
+	 * wiki's main page (a Special page's own title never exists).
+	 */
+	public function testErrorStateEnablesCopyrightWithMainPageRelevantTitle(): void {
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		// Unsupported topic: returns before the success path, but must still enable copyright.
+		[ $html ] = $this->executeSpecialPage(
+			/* subpage */ 'en/Q319',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertStringContainsString( 'cdx-message--warning', $html );
+		$this->assertTrue( $context->getOutput()->showsCopyright(), 'Copyright is enabled in error states' );
+		$this->assertTrue(
+			$context->getSkin()->getRelevantTitle()->isMainPage(),
+			'Error states stand in the main page as relevant title'
+		);
+	}
+
+	public function testSuccessRelevantTitleIsBackingArticle(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', true );
+		$this->setGroupPermissions( 'user', 'wikilambda-abstract-optin', true );
+
+		// The backing article must exist for it to be used as the relevant title. Let the
+		// helper pick a title in the default wikitext namespace, since abstract mode reshapes
+		// the main namespace's content model away from wikitext.
+		$articleTitle = $this->getExistingTestPage()->getTitle()->getPrefixedText();
+		$this->mockOptedInArticles( [
+			$articleTitle => [ 'qid' => 'Q42', 'redirect' => false ]
+		] );
+
+		$this->mockArticleStoreWithSections( 'Q42', 'en', [
+			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		$this->executeSpecialPage(
+			/* subpage */ 'en/Q42',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertTrue( $context->getOutput()->showsCopyright() );
+		$this->assertSame(
+			$articleTitle,
+			$context->getSkin()->getRelevantTitle()->getPrefixedText(),
+			'Success refines the relevant title to the backing local article'
+		);
+	}
+
+	public function testSuccessRelevantTitleFallsBackToMainPage(): void {
+		// Integration is disabled by default in setUp(), so there is no backing article.
+		$this->mockArticleStoreWithSections( 'Q42', 'en', [
+			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		$this->executeSpecialPage(
+			/* subpage */ 'en/Q42',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertTrue( $context->getOutput()->showsCopyright() );
+		$this->assertTrue(
+			$context->getSkin()->getRelevantTitle()->isMainPage(),
+			'Success without a backing article falls back to the main page'
+		);
+	}
 }
