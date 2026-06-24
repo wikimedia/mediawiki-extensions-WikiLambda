@@ -99,6 +99,18 @@ class AbstractPageRenderingHandler implements
 	}
 
 	/**
+	 * Build the URL of an opted-in article's source topic on Abstract Wikipedia, addressed by its
+	 * bare QID via the 'abstract' interwiki prefix so it tracks the cross-wiki tab/sidebar links
+	 * and survives any relocation of the repo wiki.
+	 *
+	 * @param string $topicQid
+	 * @return string
+	 */
+	private function getAbstractSourceUrl( string $topicQid ): string {
+		return Title::makeTitle( NS_MAIN, $topicQid, '', 'abstract' )->getFullURL();
+	}
+
+	/**
 	 * Determine if the current view is one on which tabs should be shown.
 	 *
 	 * @param Title $title
@@ -213,9 +225,28 @@ class AbstractPageRenderingHandler implements
 		$specialPage->setContext( $specialContext );
 		$specialPage->execute( $topicQid );
 
-		// Get the captured HTML and add it to the real output
+		// Get the captured HTML and add it to the real output, wrapped in a schema.org CreativeWork
+		// declared via RDFa Lite attributes (T422717). The isBasedOn property records that this page
+		// is derived from its source topic on Abstract Wikipedia — the machine-readable counterpart
+		// of the human-facing provenance banner. RDFa rides on the wrapper as plain attributes
+		// (escaped by Html), so unlike a JSON-LD <script> it needs no inline-script CSP allowance and
+		// trips no output-sanitiser taint. The entity is bound to the page's own canonical URL via
+		// @resource so isBasedOn attaches to this page rather than a floating node; the nested empty
+		// <link> carries the property without overloading the wrapper's @resource. A lightweight
+		// <link rel="via"> companion in <head> (see onBeforeDisplayNoArticleText) covers consumers
+		// that read link relations but not RDFa.
+		$sourceUrl = $this->getAbstractSourceUrl( $topicQid );
 		$output->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
-		$output->addHTML( $specialOutput->getHTML() );
+		$output->addHTML( Html::rawElement(
+			'div',
+			[
+				'vocab' => 'https://schema.org/',
+				'typeof' => 'CreativeWork',
+				'resource' => $title->getCanonicalURL(),
+			],
+			Html::element( 'link', [ 'property' => 'isBasedOn', 'href' => $sourceUrl ] )
+				. $specialOutput->getHTML()
+		) );
 	}
 
 	/**
@@ -332,6 +363,7 @@ class AbstractPageRenderingHandler implements
 		if ( $optedInArticle[ 'redirect' ] === false ) {
 			$output = $article->getContext()->getOutput();
 			$canonicalUrl = $article->getTitle()->getCanonicalURL();
+			$sourceUrl = $this->getAbstractSourceUrl( $optedInArticle[ 'qid' ] );
 
 			// The integrated article is a genuine 200 surface, not the bare 404 a missing page
 			// would otherwise return; search engines won't index a 404 however its robots meta
@@ -365,7 +397,17 @@ class AbstractPageRenderingHandler implements
 			$output->addHeadItem( 'aw-hreflang-mul', Html::element( 'link', [
 				'rel' => 'alternate',
 				'hreflang' => 'mul',
-				'href' => Title::makeTitle( NS_MAIN, $optedInArticle[ 'qid' ], '', 'abstract' )->getFullURL(),
+				'href' => $sourceUrl,
+			] ) );
+
+			// (T422717) A lightweight machine-readable provenance hint: rel="via" (IANA link
+			// relation) declares this page was obtained via its Abstract Wikipedia source. Emitted
+			// here as a <head> <link> for consumers that read link relations; the more semantically
+			// precise schema.org isBasedOn statement rides on the body wrapper as RDFa (see
+			// onShowMissingArticle).
+			$output->addHeadItem( 'aw-provenance-via', Html::element( 'link', [
+				'rel' => 'via',
+				'href' => $sourceUrl,
 			] ) );
 		}
 

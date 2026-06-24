@@ -182,7 +182,32 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$handler = $this->buildHandler();
 		$handler->onShowMissingArticle( $article );
 
-		$this->assertSame( $expectedHtml, $article->getContext()->getOutput()->getHTML() );
+		// The special page's HTML is rendered into the real output (now inside the RDFa provenance
+		// wrapper, hence a containment rather than exact-equality assertion).
+		$this->assertStringContainsString( $expectedHtml, $article->getContext()->getOutput()->getHTML() );
+	}
+
+	public function testOnShowMissingArticle_optedIn_setsIsBasedOnProvenance(): void {
+		$this->defineAbstractInterwiki();
+		$this->mockSpecialPageFactory( '<p>body</p>' );
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onShowMissingArticle( $article );
+
+		// The rendered body is wrapped in a schema.org CreativeWork (RDFa Lite) bound to the page's
+		// own canonical URL, with isBasedOn pointing at the Abstract Wikipedia source topic. RDFa
+		// rather than a JSON-LD <script>, so no inline-script CSP allowance or output-taint.
+		$html = $article->getContext()->getOutput()->getHTML();
+		$this->assertStringContainsString( 'vocab="https://schema.org/"', $html );
+		$this->assertStringContainsString( 'typeof="CreativeWork"', $html );
+		$this->assertStringContainsString( 'resource="' . $title->getCanonicalURL() . '"', $html );
+		$this->assertStringContainsString( 'property="isBasedOn"', $html );
+		$this->assertStringContainsString( 'abstract.wikipedia.org/wiki/Q42', $html );
+		// The provenance must not be emitted as an executable/script element.
+		$this->assertStringNotContainsString( 'ld+json', $html );
 	}
 
 	// onBeforeDisplayNoArticleText: external-indexability metadata (T422707)
@@ -276,6 +301,24 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertStringContainsString( 'hreflang="mul"', $headItems['aw-hreflang-mul'] );
 		$this->assertStringContainsString(
 			'abstract.wikipedia.org/wiki/Q42', $headItems['aw-hreflang-mul'] );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_optedIn_setsViaProvenance(): void {
+		$this->defineAbstractInterwiki();
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onBeforeDisplayNoArticleText( $article );
+
+		// A rel="via" link relation pointing at the Abstract Wikipedia source topic, the lightweight
+		// head-level counterpart to the RDFa isBasedOn statement on the body wrapper.
+		$headItems = $article->getContext()->getOutput()->getHeadItemsArray();
+		$this->assertArrayHasKey( 'aw-provenance-via', $headItems );
+		$this->assertStringContainsString( 'rel="via"', $headItems['aw-provenance-via'] );
+		$this->assertStringContainsString(
+			'abstract.wikipedia.org/wiki/Q42', $headItems['aw-provenance-via'] );
 	}
 
 	public function testOnBeforeDisplayNoArticleText_notOptedIn_setsNoMetadata(): void {
