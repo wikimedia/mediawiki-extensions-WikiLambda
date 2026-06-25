@@ -172,6 +172,7 @@ class LoadPreDefinedObject extends Maintenance {
 		natsort( $zidsToLoad );
 
 		$success = 0;
+		$unchanged = 0;
 		$failure = 0;
 		$skipped = 0;
 
@@ -199,6 +200,10 @@ class LoadPreDefinedObject extends Maintenance {
 					$success++;
 					break;
 
+				case 2:
+					$unchanged++;
+					break;
+
 				case -1:
 					$failure++;
 					break;
@@ -216,6 +221,10 @@ class LoadPreDefinedObject extends Maintenance {
 
 		if ( $success > 0 ) {
 			$this->output( "> $success objects were created or updated successfully.\n" );
+		}
+
+		if ( $unchanged > 0 ) {
+			$this->output( "> $unchanged objects were already up to date (no change).\n" );
 		}
 
 		if ( $skipped > 0 ) {
@@ -319,9 +328,14 @@ class LoadPreDefinedObject extends Maintenance {
 
 		// We create or update the ZObject
 		try {
-			$return = $zObjectStore->pushZObject( $zid, $data, $summary );
-			$this->output( ( $creating ? 'Created' : 'Updated' ) . " $zid $mergeSummary\n" );
-			return 1;
+			$revisionCreated = $zObjectStore->pushZObject( $zid, $data, $summary );
+			if ( $revisionCreated ) {
+				$this->output( ( $creating ? 'Created' : 'Updated' ) . " $zid $mergeSummary\n" );
+				return 1;
+			}
+			// Null edit: the pushed data matched the current revision, so nothing changed.
+			$this->output( "Unchanged $zid $mergeSummary\n" );
+			return 2;
 		} catch ( ZErrorException $e ) {
 			$this->error( "Problem " . ( $creating ? 'creating' : 'updating' ) . " $zid:" );
 			$this->error( $e->getMessage() );

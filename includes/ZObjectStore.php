@@ -270,7 +270,7 @@ class ZObjectStore {
 	 * @param string $zid
 	 * @param string $data
 	 * @param string $summary
-	 * @return bool
+	 * @return bool True if a new revision was created; false on a null edit (no change)
 	 * @throws Exception
 	 */
 	public function pushZObject( string $zid, string $data, string $summary ) {
@@ -333,7 +333,7 @@ class ZObjectStore {
 			);
 		}
 
-		return true;
+		return $status->wasRevisionCreated();
 	}
 
 	/**

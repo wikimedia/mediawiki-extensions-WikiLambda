@@ -52,7 +52,7 @@ abstract class WikiLambdaMaintenanceTestCase extends MaintenanceBaseTestCase {
 	 * @param string $zid
 	 * @return string
 	 */
-	private static function getDefinition( string $zid ): string {
+	protected static function getDefinition( string $zid ): string {
 		$mainFile = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions' . "/$zid.json";
 		if ( !file_exists( $mainFile ) ) {
 			throw new RuntimeException( "ZObject definition for $zid not found." );

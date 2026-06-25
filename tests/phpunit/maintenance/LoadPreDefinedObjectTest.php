@@ -96,11 +96,29 @@ class LoadPreDefinedObjectTest extends WikiLambdaMaintenanceTestCase {
 
 	public function testZidFlag_forceUpdatesExisting(): void {
 		$this->setUpAsRepoMode();
-		$this->insertZids( [ 'Z1' ] );
+
+		// Pre-insert a locally-modified Z1 (a tweaked label) so that --force has
+		// something to override: restoring the builtin definition then creates a
+		// real revision, exercising the "Updated" path rather than a null edit.
+		$modified = json_decode( self::getDefinition( 'Z1' ) );
+		$modified->Z2K3->Z12K1[ 1 ]->Z11K2 = 'Object (locally modified)';
+		$this->editPage( 'Z1', json_encode( $modified ), 'Pre-insert modified Z1', NS_MAIN );
 
 		// /s flag lets . match newlines so we can match across the per-ZID
 		// "Updated" line and the trailing summary in one assertion.
 		$this->expectOutputRegex( '/Updated Z1.*1 objects were created or updated successfully/s' );
+		$this->maintenance->loadWithArgv( [ '--zid', 'Z1', '--force' ] );
+		$this->maintenance->execute();
+	}
+
+	public function testZidFlag_forceWithNoChange_reportsUnchanged(): void {
+		$this->setUpAsRepoMode();
+		// Pre-insert the unmodified builtin Z1, so --force re-pushes byte-identical
+		// data: MediaWiki performs a null edit (no new revision) and the script
+		// reports the object as already up to date rather than updated.
+		$this->insertZids( [ 'Z1' ] );
+
+		$this->expectOutputRegex( '/Unchanged Z1.*1 objects were already up to date \(no change\)/s' );
 		$this->maintenance->loadWithArgv( [ '--zid', 'Z1', '--force' ] );
 		$this->maintenance->execute();
 	}

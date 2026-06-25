@@ -2237,6 +2237,21 @@ class ZObjectStoreTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertTrue( $title->exists() );
 	}
 
+	public function testPushZObject_nullEditReturnsFalse() {
+		$zid = 'Z40001';
+		$data = '{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"' . $zid . '"},'
+			. '"Z2K2":{"Z1K1":"Z6","Z6K1":"test push"},'
+			. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]},'
+			. '"Z2K4":{"Z1K1":"Z32","Z32K1":["Z31"]},'
+			. '"Z2K5":{"Z1K1":"Z12","Z12K1":["Z11"]}}';
+
+		// First push creates a revision.
+		$this->assertTrue( $this->zobjectStore->pushZObject( $zid, $data, 'Test push' ) );
+
+		// Second push of identical data is a null edit; no revision is created.
+		$this->assertFalse( $this->zobjectStore->pushZObject( $zid, $data, 'Test push again' ) );
+	}
+
 	public function testFetchZObject_returnsFalseForInvalidTitle() {
 		$result = $this->zobjectStore->fetchZObject( '||||invalid||||' );
 		$this->assertFalse( $result );
