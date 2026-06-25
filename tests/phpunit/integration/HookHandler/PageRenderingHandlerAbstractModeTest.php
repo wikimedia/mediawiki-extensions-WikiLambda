@@ -165,6 +165,37 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 		);
 	}
 
+	public function testOnHtmlPageLinkRendererEnd_interwikiLinkIsLeftUntouched() {
+		// (T430174) An interwiki link to Wikidata (e.g. "d:Q715040") lands in an abstract namespace with a
+		// Q-ID-shaped title, so it would otherwise pass the abstract-article guard and then throw a
+		// PageAssertionException from newFromTitle(), as external titles can't exist locally. The hook
+		// should bail out before that.
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::makeTitle( NS_SPECIAL, 'RecentChanges' ) );
+		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'en' ] ) );
+
+		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
+		// The empty namespace + 'd' interwiki prefix makes this an external title.
+		$linkTarget = Title::makeTitle( 2300, 'Q715040', '', 'd' );
+		$this->assertTrue( $linkTarget->isExternal(), 'Test fixture must be an external (interwiki) title' );
+		$isKnown = true;
+		$text = null;
+		$attribs = [ 'href' => '//www.wikidata.org/wiki/Q715040' ];
+		$ret = '';
+
+		$this->pageRenderingHandlerAbstractMode->onHtmlPageLinkRendererEnd(
+			$linkRenderer, $linkTarget, $isKnown, $text, $attribs, $ret
+		);
+
+		$this->assertNull( $text, 'An interwiki link should be left untouched by the hook' );
+		$this->assertSame(
+			'//www.wikidata.org/wiki/Q715040',
+			$attribs['href'],
+			'An interwiki link href should not be rewritten by the hook'
+		);
+	}
+
 	public function testOnHtmlPageLinkRendererEnd_abstractMode_missingLabel() {
 		// Set up a RequestContext to simulate being on a special page
 		$context = RequestContext::getMain();

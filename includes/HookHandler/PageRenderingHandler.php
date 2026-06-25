@@ -266,6 +266,11 @@ class PageRenderingHandler implements
 		// Convert the slimline LinkTarget into a full-fat Title so we can ask deeper questions
 		$targetTitle = Title::newFromLinkTarget( $linkTarget );
 
+		// (T430174) Interwiki/external links (e.g. "d:Q199" to Wikidata) are never ours to rewrite.
+		if ( $targetTitle->isExternal() ) {
+			return;
+		}
+
 		$entityId = $targetTitle->getBaseText();
 
 		if (
