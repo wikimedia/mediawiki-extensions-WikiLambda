@@ -21,8 +21,11 @@ use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorException;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -397,6 +400,49 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 		$this->assertTrue( $result[ 'passed' ] );
 		$this->assertFalse( $result[ 'hasErrors' ] );
+	}
+
+	public function testOrchestrateTestExecution_degradesUnconstructableExpectedValue() {
+		// Regression test for T430082: when a test fails, step 3.b builds the
+		// expectedTestResult metadata from the validator's second input (K2), which is
+		// author-supplied and might not round-trip through ZObjectFactory. Here that K2
+		// is an incomplete Z11 missing its required Z11K1, which makes create() throw a
+		// Z511/"Key not found". That must degrade to Z24/Void rather than escaping as an
+		// uncaught ZErrorException and failing the whole perform_test request.
+		$testCall = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10000"}' );
+		$validationCall = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10001","Z10001K2":{"Z1K1":"Z11"}}' );
+
+		$testValue = '{"Z1K1":"Z6","Z6K1":"some result"}';
+		// Empty Z883(Z6,Z1) metadata map; the branch under test writes actual/expected into it
+		$metadataMap = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"}]}';
+		$testEnvelope = '{"Z1K1":"Z22","Z22K1":' . $testValue . ',"Z22K2":' . $metadataMap . '}';
+
+		// Validation returns Z42/false, so we enter the actual-vs-expected branch (3.b)
+		$validationEnvelope = '{"Z1K1":"Z22","Z22K1":{"Z1K1":"Z9","Z9K1":"Z42"},"Z22K2":"Z24"}';
+		$cachedValidationResponse = [ 'result' => $validationEnvelope, 'httpStatusCode' => HttpStatus::OK ];
+
+		$mockCache = $this->createMock( MemcachedWrapper::class );
+		$mockCache
+			->method( 'makeKey' )
+			->willReturn( 'some-mock-key' );
+		$mockCache
+			->method( 'get' )
+			->willReturnOnConsecutiveCalls( false, $cachedValidationResponse );
+
+		$this->setService( 'WikiLambdaMemcachedWrapper', $mockCache );
+
+		$guzzleResponse = new Response( HttpStatus::OK, [], $testEnvelope );
+		$orchestrator = $this->getOrchestratorWithMockResponse( $guzzleResponse );
+
+		$result = $orchestrator->orchestrateTestExecution( $testCall, $validationCall, true );
+
+		$this->assertFalse( $result[ 'passed' ] );
+		$this->assertFalse( $result[ 'hasErrors' ] );
+
+		$expectedTestResult = $result[ 'metadata' ]->getValueGivenKey( new ZString( 'expectedTestResult' ) );
+		$this->assertInstanceOf( ZReference::class, $expectedTestResult );
+		$this->assertSame( ZTypeRegistry::Z_VOID, $expectedTestResult->getZValue() );
 	}
 
 	// OrchestratorRequest::getSupportedProgrammingLanguages

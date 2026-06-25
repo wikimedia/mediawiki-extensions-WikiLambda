@@ -344,10 +344,22 @@ class OrchestratorRequest {
 		// 3.b. If the validation call is false, set metadata keys with actual vs expected result
 		if ( ZObjectUtils::isFalse( $validationResponseValue ) ) {
 			$passed = false;
-			// validator might not be a two-input call, set expected as Z24/Void if that's the case
-			$expectedValue = ZObjectFactory::create(
-				$validationCall->{ $validationCallFunctionZid . 'K2' } ?? ZTypeRegistry::Z_VOID
-			);
+			// The expected value is author-supplied (the validator's second input) and might not
+			// round-trip through ZObjectFactory, e.g. an incomplete literal missing a required key.
+			// That's only metadata enrichment for an already-failed test, so degrade to Z24/Void
+			// rather than letting the ZErrorException bubble up and fail the whole request. (T430082)
+			try {
+				// validator might not be a two-input call, set expected as Z24/Void if that's the case
+				$expectedValue = ZObjectFactory::create(
+					$validationCall->{ $validationCallFunctionZid . 'K2' } ?? ZTypeRegistry::Z_VOID
+				);
+			} catch ( ZErrorException $e ) {
+				$this->logger->info(
+					__METHOD__ . ' could not build expected test result: {message}',
+					[ 'message' => $e->getMessage() ]
+				);
+				$expectedValue = new ZReference( ZTypeRegistry::Z_VOID );
+			}
 			$testMetadata->setValueForKey( new ZString( 'actualTestResult' ), $callResponseValue );
 			$testMetadata->setValueForKey( new ZString( 'expectedTestResult' ), $expectedValue );
 		}
