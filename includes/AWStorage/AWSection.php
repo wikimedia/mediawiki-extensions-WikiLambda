@@ -16,21 +16,16 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AWSection {
 
-	/** The section contains all ready and successful fragments */
-	public const STATUS_OK = 0;
-	/** The section contains pending fragments */
-	public const STATUS_PENDING = 1;
-	/** The section contains failing fragments */
-	public const STATUS_FAILING = 2;
-	/** The section has no status record yet */
-	public const STATUS_UNKNOWN = 5;
+	/** Status counters: Tracks this section's pending, failing or stale fragments */
+	private int $countPending = 0;
+	private int $countFailed = 0;
+	private int $countStale = 0;
 
 	/** String to concatenate different fragment html blobs */
 	public const FRAGMENT_SEPARATOR = "\n";
 
 	private string $payload;
 	private ConvertibleTimestamp $lastUpdated;
-	private int $status;
 
 	public function __construct(
 		private readonly string $topicQid,
@@ -42,9 +37,12 @@ class AWSection {
 	) {
 		$this->payload = $payload;
 		$this->lastUpdated = $lastUpdated ?? new ConvertibleTimestamp();
-		// If the section is initialized with a non-empty payload, we set the
-		// status as unknown, as it could have pending or failing fragments.
-		$this->status = $payload !== '' ? self::STATUS_UNKNOWN : self::STATUS_OK;
+
+		// If the section is retrieved from the store and initialized with the stored
+		// payload, we need to parse the metadata hidden element to update the status:
+		if ( $payload !== '' ) {
+			$this->parseStatusMetadata();
+		}
 	}
 
 	/**
@@ -114,24 +112,24 @@ class AWSection {
 	/**
 	 * Whether this AWSection contains any pending AWFragment.
 	 *
-	 * TODO: this is only valid when creating the section and appending its fragments one
-	 * by one, but when loading the section from the store, we don't have this info (yet).
-	 *
-	 * One solution that would make section status be accurate at any time (which might
-	 * become necessary in the future) would be to save it into the store, which means:
-	 * * a table schema update to add a new column,
-	 * * a new key in the MainStash payload,
-	 * * update the AWArticleStore interfaces and all their implementations.
-	 *
-	 * Another possibility, without having to modify the data schema is:
-	 * * if STATUS_UNKNOWN, then infer status from payload
-	 * * if the section payload has an element marked with a pending fragment class
-	 * or attribute (e.g. with a class="wf-some-class-for-pending"), return true
-	 *
 	 * @return bool
 	 */
 	public function isPending(): bool {
-		return $this->status === self::STATUS_PENDING;
+		return $this->countPending > 0;
+	}
+
+	/**
+	 * Returns the status data for this section, consisting on
+	 * the total counts of pending, failed and stale fragments.
+	 *
+	 * @return array
+	 */
+	public function getFragmentStatus(): array {
+		return [
+			'pending' => $this->countPending,
+			'failed' => $this->countFailed,
+			'stale' => $this->countStale
+		];
 	}
 
 	/**
@@ -145,14 +143,19 @@ class AWSection {
 
 		// Fragment is a miss: set section as pending, generate pending placeholder for fragment
 		if ( $awFragment->isMissing() ) {
-			$this->status = self::STATUS_PENDING;
+			$this->countPending += 1;
 			$htmlFragment = AWFragmentStore::createPendingFragmentBlock( $this->locale );
 		} else {
 			$awFragmentValue = $awFragment->getValue()['value'];
 
+			// If a stale fragment appears, mark section as stale
+			if ( $awFragment->isStale() ) {
+				$this->countStale += 1;
+			}
+
 			if ( !$awFragment->isOk() ) {
 				// Fragment exists but is a failure: generate error fragment html
-				$this->status = self::STATUS_FAILING;
+				$this->countFailed += 1;
 				$htmlFragment = AWFragmentStore::createFailingFragmentBlock( $this->locale );
 			} else {
 				// Fragment exists and is a success:
@@ -169,6 +172,43 @@ class AWSection {
 
 		// Append the fragment to the existing payload
 		$this->payload .= $htmlFragment;
+	}
+
+	/**
+	 * Appends a hidden span element with fragment status metadata
+	 * to the existing payload (only non-zero values).
+	 *
+	 * @return void
+	 */
+	public function appendStatusMetadata(): void {
+		// Only non-zero values, to keep the output clean
+		$metadata = array_filter( [
+			'data-pending' => $this->countPending,
+			'data-failed' => $this->countFailed,
+			'data-stale' => $this->countStale,
+		] );
+		if ( count( $metadata ) > 0 ) {
+			$this->payload .= Html::element( 'meta', [
+				'itemprop' => 'aw-section-status',
+				...$metadata
+			] );
+		}
+	}
+
+	/**
+	 * Reads fragment status metadata from the payload and updates
+	 * the local counters for pending, failed and stale fragments.
+	 *
+	 * @return void
+	 */
+	public function parseStatusMetadata(): void {
+		preg_match( '/data-pending="(\d+)"/', $this->payload, $pendingMatch );
+		preg_match( '/data-failed="(\d+)"/', $this->payload, $failedMatch );
+		preg_match( '/data-stale="(\d+)"/', $this->payload, $staleMatch );
+
+		$this->countPending = isset( $pendingMatch[1] ) ? (int)$pendingMatch[1] : 0;
+		$this->countFailed = isset( $failedMatch[1] ) ? (int)$failedMatch[1] : 0;
+		$this->countStale = isset( $staleMatch[1] ) ? (int)$staleMatch[1] : 0;
 	}
 
 	/**
@@ -189,6 +229,7 @@ class AWSection {
 		$section = Html::rawElement( 'section', [
 			'data-mw-section-id' => (string)$sectionIndex,
 			'aria-labelledby' => $sectionTitle ?? $this->sectionQid,
+			'itemscope' => true,
 		], $heading . $this->payload );
 
 		// We know that AWSection->payload is built out of rendered and sanitized

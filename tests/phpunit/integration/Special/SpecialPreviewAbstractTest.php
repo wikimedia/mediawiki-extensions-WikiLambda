@@ -335,13 +335,15 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 		$sections = $matches[0];
 		$this->assertCount( 2, $sections );
 
-		// Section 0: lede section
-		$this->assertStringContainsString( '<section data-mw-section-id="0"', $sections[0] );
+		// Section 0: lede section (with itemscope)
+		$this->assertMatchesRegularExpression(
+			'/<section[^>]*data-mw-section-id="0"[^>]*itemscope[^>]*>/', $sections[0] );
 		$this->assertStringNotContainsString( '<h2', $sections[0] );
 		$this->assertStringContainsString( '<b>some neutral but interesting text</b>', $sections[0] );
 
-		// Section 1: non-lede section
-		$this->assertStringContainsString( '<section data-mw-section-id="1"', $sections[1] );
+		// Section 1: non-lede section (with itemscope)
+		$this->assertMatchesRegularExpression(
+			'/<section[^>]*data-mw-section-id="1"[^>]*itemscope[^>]*>/', $sections[1] );
 		$this->assertStringContainsString( '<h2 id="Other Section"', $sections[1] );
 		$this->assertStringContainsString( '<b>some other section</b>', $sections[1] );
 	}

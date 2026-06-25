@@ -415,10 +415,6 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 
 		// SETUP:
 		$this->loadAWContent( $topicQid, $awJson );
-		// Fragments are ready for english, french and runssian
-		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', null, $value );
-		$this->loadAWFragment( $fragment, $topicQid, 'Z1004', null, $value );
-		$this->loadAWFragment( $fragment, $topicQid, 'Z1005', null, $value );
 		// Sections are stored for all objects, with outdated value
 		$oldValue = '<p>Outdated</p>';
 		$this->articleStore->setSection( new AWSection( $topicQid, $sectionQid, 'en', $oldValue ) );
@@ -432,6 +428,12 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $oldMetadata ) );
 
 		ConvertibleTimestamp::setFakeTime( self::NOW );
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+
+		// Fragments are freshly ready for english, french and russian
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', $date, $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1004', $date, $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1005', $date, $value );
 
 		// EXECUTE:
 		// Run the script for --topics Q42 --langs en,es,ru --pending
@@ -482,6 +484,46 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->assertSame( "<p>Outdated</p>", $section->getPayload() );
 		// French is still pending section in metadata
 		$this->assertArrayNotHasKey( 'ru', $newPending );
+	}
+
+	public function testSectionPayloadContainsStatusMetadata(): void {
+		$topicQid = 'Q42';
+		$sectionQid = 'Q8776414';
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+
+		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z401' ];
+		$fragment2 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z402' ];
+		$fragment3 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z403' ];
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $sectionQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",'
+			. json_encode( $fragment1 ) . ','
+			. json_encode( $fragment2 ) . ','
+			. json_encode( $fragment3 ) . ' ] } } }';
+
+		$valueOk = [ 'success' => true, 'value' => '<p>Fragment</p>' ];
+		$valueFailed = [ 'success' => false, 'value' => [] ];
+
+		$this->loadAWContent( $topicQid, $awJson );
+		// Fragment 1 is pending
+		// Fragment 2 is OK but stale
+		// Fragment 3 is fresh but failed
+		$this->loadAWFragment( $fragment2, $topicQid, 'Z1002', null, $valueOk );
+		$this->loadAWFragment( $fragment3, $topicQid, 'Z1002', $date, $valueFailed );
+
+		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en' ] );
+		$this->maintenance->execute();
+
+		$payload = $this->articleStore->getSection( $topicQid, $sectionQid, 'en' )->getPayload();
+
+		preg_match( '/<meta itemprop="aw-section-status"[^>]*>/', $payload, $matches );
+		$this->assertNotEmpty( $matches, 'Expected aw-section-status meta tag in payload' );
+		$metaTag = $matches[0];
+
+		$this->assertStringContainsString( 'data-pending="1"', $metaTag );
+		$this->assertStringContainsString( 'data-failed="1"', $metaTag );
+		$this->assertStringContainsString( 'data-stale="1"', $metaTag );
 	}
 
 	// Helper functions

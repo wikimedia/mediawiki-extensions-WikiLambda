@@ -21,6 +21,13 @@ class AWFragment {
 	/** The fragment is stale: only available for an earlier date */
 	public const AVAILABILITY_STALE = 2;
 
+	// Literals for different availability and status combinations, for observability
+	public const STATUS_MISSING = 'missing';
+	public const STATUS_FRESH_OK = 'fresh_ok';
+	public const STATUS_FRESH_FAILED = 'fresh_failed';
+	public const STATUS_STALE_OK = 'stale_ok';
+	public const STATUS_STALE_FAILED = 'stale_failed';
+
 	private ?array $payload = null;
 
 	private int $availability = self::AVAILABILITY_MISSING;
@@ -112,6 +119,27 @@ class AWFragment {
 	 */
 	public function isStale(): bool {
 		return $this->availability === self::AVAILABILITY_STALE;
+	}
+
+	/**
+	 * Returns the status literal for observability, depending on the
+	 * fragment availability and render status. One literal per each
+	 * possible combination of status.
+	 *
+	 * @return string
+	 */
+	public function getStatus(): string {
+		if ( $this->isMissing() ) {
+			return self::STATUS_MISSING;
+		}
+		if ( $this->isFresh() ) {
+			return $this->isOk() ?
+				self::STATUS_FRESH_OK :
+				self::STATUS_FRESH_FAILED;
+		}
+		return $this->isOk() ?
+			self::STATUS_STALE_OK :
+			self::STATUS_STALE_FAILED;
 	}
 
 	/**

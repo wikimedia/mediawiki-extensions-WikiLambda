@@ -257,13 +257,14 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					// articles rather than only article sections.
 					$language = $this->languageFactory->getLanguage( $locale );
 					$sectionStartTime = microtime( true );
-					$freshSection = $this->generateAWSectionForLang(
+					$awSection = $this->generateAWSectionForLang(
 						$topicQid,
 						$sectionQid,
 						$language,
 						$now,
 						$sectionFragments
 					);
+
 					// How long did it take to fetch all fragments from cache and join them into a section?
 					// Grafana: mediawiki.WikiLambda.aw_section_generate_seconds{section=…, locale=…}
 					$this->statsFactory->getTiming( 'aw_section_generate_seconds' )
@@ -274,7 +275,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					// Depending on the section state (missing or failing)
 					// we can do different things. For pending sections,
 					// only update if there's no current section stored.
-					if ( $freshSection->isPending() ) {
+					if ( $awSection->isPending() ) {
 						// Mark this section as pending for this language
 						if ( !in_array( $sectionQid, $pendingByLang[ $locale ] ) ) {
 							$pendingByLang[ $locale ][] = $sectionQid;
@@ -295,19 +296,19 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					}
 
 					$this->output( "> > Storing section $sectionQid for $locale - payload: "
-						. substr( $freshSection->getPayload(), 0, 100 )
-						. ( strlen( $freshSection->getPayload() ) > 100 ? '…' : '' )
+						. substr( $awSection->getPayload(), 0, 100 )
+						. ( strlen( $awSection->getPayload() ) > 100 ? '…' : '' )
 						. "\n"
 					);
 					// TODO: do we need to handle errors from this setter?
-					$this->articleStore->setSection( $freshSection );
+					$this->articleStore->setSection( $awSection );
+
 					// How many bytes does the HTML payload write to the store per section?
 					// Grafana: mediawiki.WikiLambda.aw_section_bytes_written_total{section=…, locale=…}
 					$this->statsFactory->getCounter( 'aw_section_bytes_written_total' )
 						->setLabel( 'section', $sectionQid )
 						->setLabel( 'locale', $locale )
-						->incrementBy( strlen( $freshSection->getPayload() ) );
-					// Remove section $sectionQid, from language $locale and set metadata
+						->incrementBy( strlen( $awSection->getPayload() ) );
 				}
 			}
 
@@ -366,29 +367,13 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 				$ts->format( 'Y-m-d' ),
 			);
 
-			if ( $awFragment->isMissing() ) {
-				// Never been rendered, or result evicted; to be queued
-				$outcome = 'missing';
-			} elseif ( $awFragment->isFresh() && $awFragment->isOk() ) {
-				// Rendered today and succeeded
-				$outcome = 'fresh_ok';
-			} elseif ( $awFragment->isFresh() ) {
-				// A render attempt was made today but was cached as a failure
-				$outcome = 'fresh_failed';
-			} elseif ( $awFragment->isOk() ) {
-				// Rendered on earlier date and succeeded; usable but outdated HTML
-				$outcome = 'stale_ok';
-			} else {
-				// A render attempt was made on an earlier date and was cached as a failure
-				$outcome = 'stale_failed';
-			}
 			// Are fragments being rendered and cached successfully?
 			// Broken down by outcome so Grafana can show success, cache hit, freshness rates per section/locale
 			// Grafana: mediawiki.WikiLambda.aw_fragment_total{section=…, locale=…, outcome=…}
 			$this->statsFactory->getCounter( 'aw_fragment_total' )
 				->setLabel( 'section', $sectionQid )
 				->setLabel( 'locale', $language->getCode() )
-				->setLabel( 'outcome', $outcome )
+				->setLabel( 'outcome', $awFragment->getStatus() )
 				->increment();
 
 			// 3.2.2. Append the fragment to the section
@@ -396,6 +381,9 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 			// encounters pending or failing fragments.
 			$awSection->appendFragment( $awFragment );
 		}
+
+		// Append a hidden span with data-pending, data-failed and data-stale data
+		$awSection->appendStatusMetadata();
 
 		return $awSection;
 	}

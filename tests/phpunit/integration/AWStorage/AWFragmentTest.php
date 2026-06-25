@@ -25,6 +25,9 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		$this->assertFalse( $fragment->isOk() );
 		$this->assertTrue( $fragment->isMissing() );
 		$this->assertSame( [], $fragment->getValue() );
+
+		// Status literal
+		$this->assertSame( AWFragment::STATUS_MISSING, $fragment->getStatus() );
 	}
 
 	public function testFragmentSetValue_Fresh_Success() {
@@ -43,6 +46,9 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 		// Render status
 		$this->assertTrue( $fragment->isOk() );
+
+		// Status literal
+		$this->assertSame( AWFragment::STATUS_FRESH_OK, $fragment->getStatus() );
 	}
 
 	public function testFragmentSetValue_Stale_Success() {
@@ -61,6 +67,9 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 		// Render status
 		$this->assertTrue( $fragment->isOk() );
+
+		// Status literal
+		$this->assertSame( AWFragment::STATUS_STALE_OK, $fragment->getStatus() );
 	}
 
 	public function testFragmentSetValue_Fresh_Failure() {
@@ -85,5 +94,35 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 		// Render status
 		$this->assertFalse( $fragment->isOk() );
+
+		// Status literal
+		$this->assertSame( AWFragment::STATUS_FRESH_FAILED, $fragment->getStatus() );
+	}
+
+	public function testFragmentSetValue_Stale_Failure() {
+		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en', '2026-05-15' );
+
+		$value = [
+			'success' => false,
+			'value' => [
+				'msg' => 'some-error-msg',
+				'httpStatusCode' => 400
+			]
+		];
+		$fragment->setValue( $value, AWFragment::AVAILABILITY_STALE );
+
+		$this->assertSame( 'some-fragment-key', $fragment->getKey() );
+		$this->assertSame( $value, $fragment->getValue() );
+
+		// Availability status
+		$this->assertFalse( $fragment->isMissing() );
+		$this->assertFalse( $fragment->isFresh() );
+		$this->assertTrue( $fragment->isStale() );
+
+		// Render status
+		$this->assertFalse( $fragment->isOk() );
+
+		// Status literal
+		$this->assertSame( AWFragment::STATUS_STALE_FAILED, $fragment->getStatus() );
 	}
 }
