@@ -9,7 +9,7 @@
 	"action-wikilambda-abstract-create": "create new Abstract Articles",
 	"action-wikilambda-abstract-edit": "edit existing Abstract Articles",
 	"action-wikilambda-abstract-optin": "manage the list of local articles opted in to Abstract Wikipedia content",
-	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Suggested Wikifunctions for Abstract Wiki",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Suggested Wikifunctions for Abstract Wikipedia",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "The list of HTML-returning Wikifunctions (by ZID) offered in the Abstract Article \"Add fragment\" menu. Up to ten entries.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Suggested Wikifunctions",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "Up to ten HTML-returning Wikifunctions by their ZID (for example <code>Z20756</code>) to feature in the Abstract Article fragment menu.",
