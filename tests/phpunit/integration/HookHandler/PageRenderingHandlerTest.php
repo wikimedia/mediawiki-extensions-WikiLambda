@@ -600,6 +600,41 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		);
 	}
 
+	/**
+	 * T430558 regression: core only emits a 'view' tab inside its $userCanRead branch, so an
+	 * existing ZObject page can reach us with no 'view' entry at all. A bare nested assignment
+	 * would auto-vivify a malformed entry (href but no text/html), which Vector rejects with
+	 * "Menu item 'view' in menu 'views' is missing required `text` or `html` key." We must not
+	 * fabricate the entry: if core didn't show a view tab, we leave it absent.
+	 */
+	public function testOnSkinTemplateNavigation_missingViewIsNotFabricated() {
+		$this->insertZids( [ 'Z1' ] );
+		$title = Title::newFromText( 'Z1' );
+
+		$mockSkinTemplate = $this->createMock( SkinTemplate::class );
+		$mockSkinTemplate->method( 'getRelevantTitle' )->willReturn( $title );
+		$mockSkinTemplate->method( 'getLanguage' )->willReturn( $this->makeLanguage( 'en' ) );
+
+		// No 'view' entry, as when core suppresses the tab (e.g. the user can't read the page).
+		$links = [
+			'user-interface-preferences' => [],
+			'views' => [
+				'history' => [ 'href' => '/w/index.php?title=Z1&action=history' ],
+			],
+			'associated-pages' => [
+				'main' => [ 'href' => '/wiki/Z1' ],
+			],
+		];
+
+		// Must not throw, and must not fabricate a 'view' entry.
+		$this->pageRenderingHandler->onSkinTemplateNavigation__Universal( $mockSkinTemplate, $links );
+
+		$this->assertArrayNotHasKey(
+			'view', $links['views'],
+			'A missing view tab must stay missing rather than being auto-vivified into a malformed entry'
+		);
+	}
+
 	public function testOnHtmlPageLinkRendererEnd_notOnAWikitextPage() {
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
 

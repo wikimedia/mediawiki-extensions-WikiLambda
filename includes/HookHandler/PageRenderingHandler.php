@@ -164,9 +164,12 @@ class PageRenderingHandler implements
 		$viewPageKey = $isMain ? 'main' : explode( ':', $pageKey, 2 )[0];
 		$canonicalViewLink = '/view/' . $lang . '/' . $prefixedTitle;
 
-		// Note: 'view' is assumed always present; if a skin ever nulls it out, this can use
-		// rewriteHrefIfPresent() check as we do for the other tabs.
-		$links['views']['view']['href'] = $canonicalViewLink;
+		// (T430558) Core only emits a 'view' tab inside its $userCanRead branch, so an existing
+		// page can reach us without one. A bare nested assignment would auto-vivify a malformed
+		// entry (href but no text/html), which Vector then rejects, so only rewrite it in place.
+		if ( isset( $links['views']['view'] ) && is_array( $links['views']['view'] ) ) {
+			$links['views']['view']['href'] = $canonicalViewLink;
+		}
 		if ( isset( $links['associated-pages' ] ) && isset( $links['associated-pages'][$viewPageKey] ) ) {
 			$links['associated-pages'][$viewPageKey]['href'] = $canonicalViewLink;
 		}
