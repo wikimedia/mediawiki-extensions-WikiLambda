@@ -67,6 +67,8 @@
 	"wikilambda-abstract-menu-option-move-after": "Move fragment after",
 	"wikilambda-abstract-menu-option-move-before": "Move fragment before",
 	"wikilambda-abstract-preview-fragment-max-retries": "Reached max retries. Try again later.",
+	"wikilambda-abstract-preview-fragment-missing": "Missing",
+	"wikilambda-abstract-preview-fragment-pending": "Pending",
 	"wikilambda-abstract-preview-fragment-retry": "Retry",
 	"wikilambda-abstract-preview-in-language": "Generated text",
 	"wikilambda-abstract-renderedwith": "Page was rendered from [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",

@@ -104,6 +104,48 @@ const miscUtils = {
 		} catch ( error ) {
 			return null;
 		}
+	},
+
+	/**
+	 * Computes SHA-256 hash of a string and returns it as a hex string.
+	 *
+	 * @param {string} input - The string to hash
+	 * @return {Promise<string>} Promise resolving to the hex hash string
+	 */
+	sha256: async function ( input ) {
+		const enc = new TextEncoder();
+		const data = enc.encode( input );
+		return crypto.subtle.digest( 'SHA-256', data ).then( ( hashBuf ) => {
+			const hashArr = Array.from( new Uint8Array( hashBuf ) );
+			return hashArr.map( ( b ) => b.toString( 16 ).padStart( 2, '0' ) ).join( '' );
+		} );
+	},
+
+	/**
+	 * Lightweight JSON standardizer. Walks a nested tree and:
+	 * * if array, iterate through its children and recurse
+	 * * if dictionary, order keys alphabetically and recurse
+	 * * other types, exit and don't recurse
+	 *
+	 * @param {Object|Array|string} value
+	 * @return {Object|Array|string}
+	 */
+	stabilize: function ( value ) {
+		// Iterate and recurse if array
+		if ( Array.isArray( value ) ) {
+			return value.map( miscUtils.stabilize );
+		}
+		// For an object, order keys and recurse
+		if ( value !== null && typeof value === 'object' ) {
+			return Object.keys( value )
+				.sort()
+				.reduce( ( acc, key ) => {
+					acc[ key ] = miscUtils.stabilize( value[ key ] );
+					return acc;
+				}, {} );
+		}
+		// Exit if string, number, boolean, null, undefined...
+		return value;
 	}
 };
 

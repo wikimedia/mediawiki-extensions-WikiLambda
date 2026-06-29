@@ -17,7 +17,6 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
-use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
@@ -60,35 +59,36 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *   nor stale values cached, it will perform a synchronous call to
 	 *   wikifunctions_function_call and wait for its response.
 	 *
-	 * A successful response will contain a 'success' flag set to true,
+	 * A successful fragment will contain a 'success' flag set to true,
 	 * and the sanitized rendered fragment as 'value':
 	 * [
 	 *   'success' => true,
 	 *   'value' => '<em>sanitized fragment</em>'
 	 * ]
 	 *
-	 * A pending response will contain a 'success' flag set to true,
+	 * A pending fragment will contain a 'success' flag set to true,
 	 * and a 'pending' flag, also set to true:
 	 * [
 	 *   'success' => true,
 	 *   'pending' => true
 	 * ]
 	 *
-	 * A failed response will contain a 'success' flag set to false,
+	 * A failed fragment will contain a 'success' flag set to false,
 	 * the error information under the 'value' key:
 	 * [
 	 *   'success' => false,
 	 *   'value' => [
-	 *     'httpStatus' => 400,
-	 *     'code' => 'wikilambda-zerror',
-	 *     'data' => [
-	 *        'msg' => 'some-error-message',
-	 *        'params' => [],
-	 *        'zerror' => [ ... ],
-	 *        'zerrorType' => 'Z500'
-	 *     ]
+	 *     'msg' => 'apierror-abstractwiki_run_fragment-returned-zerror',
+	 *     'params' => [ 'Z500' ]
+	 *     'httpStatusCode' => 400,
+	 *     'zerror' => [ ... ],
 	 *   ]
 	 * ]
+	 *
+	 * Note that a successfully retrieved fragment that contains a failure
+	 * will be returned as a successful HTTP request (200). A failed request
+	 * due to API-related reasons (not enabled, bad request, etc.) will exit
+	 * with an ApiUsageException.
 	 *
 	 * @inheritDoc
 	 */
@@ -122,25 +122,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 		$result = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date, $async );
 
-		// Build WikifunctionCallException from the serialized cached error
-		// for convenience when building and throwing ApiUsageException:
-		if ( $result[ 'success' ] === false ) {
-			$e = WikifunctionCallException::fromArray( $result[ 'value' ] );
-			$errorData = [
-				'msg' => $e->getMessageKey(),
-				'zerror' => $e->getZError(),
-				'zerrorType' => $e->getZErrorType()
-			];
-
-			$this->dieWithError(
-				/* message */ $e->getMessageObject(),
-				/* code */ $e->getErrorCode(),
-				/* data */ $errorData,
-				/* status */ $e->getHttpStatusCode()
-			);
-		}
-
-		// Set successful responses (pending or finalized):
+		// Set response (fragment might be pending, successful or failed):
 		$pageResult = $this->getResult();
 		$pageResult->addValue( [], $this->getModuleName(), $result );
 	}
@@ -199,6 +181,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	public function isInternal() {
 		return true;

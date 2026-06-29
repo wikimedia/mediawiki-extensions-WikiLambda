@@ -43,6 +43,7 @@ describe( 'AbstractPreview', () => {
 			global: {
 				stubs: {
 					'wl-widget-base': false,
+					'wl-abstract-preview-section': false,
 					'wl-abstract-preview-fragment': true
 				}
 			}

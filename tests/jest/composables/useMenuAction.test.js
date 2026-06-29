@@ -17,7 +17,6 @@ describe( 'useMenuAction', () => {
 	beforeEach( () => {
 		store = useMainStore();
 		store.setDirty = jest.fn();
-		store.setDirtyFragment = jest.fn();
 
 		const [ result ] = loadComposable( () => useMenuAction() );
 		menuAction = result;
@@ -47,7 +46,6 @@ describe( 'useMenuAction', () => {
 			menuAction.setDirtyKeyPath( keyPath );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'sets page-level dirty flag when keyPath points to an abstract fragment root', () => {
@@ -56,17 +54,6 @@ describe( 'useMenuAction', () => {
 			menuAction.setDirtyKeyPath( keyPath );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
-		} );
-
-		it( 'sets page-level and fragment-level dirty flags when keyPath is inside an abstract fragment', () => {
-			const keyPath = 'abstractwiki.sections.Q8776414.fragments.3.Z444K1.4';
-
-			menuAction.setDirtyKeyPath( keyPath );
-
-			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath );
 		} );
 
 		it( 'does nothing for other namespaces', () => {
@@ -75,7 +62,6 @@ describe( 'useMenuAction', () => {
 			menuAction.setDirtyKeyPath( keyPath );
 
 			expect( store.setDirty ).not.toHaveBeenCalled();
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 	} );
 
@@ -92,7 +78,7 @@ describe( 'useMenuAction', () => {
 
 			menuAction.addBefore( payload, keyPath );
 
-			expect( store.shiftFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.insertHashAtKeyPath ).not.toHaveBeenCalled();
 
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledWith( {
@@ -101,7 +87,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'shifts fragment previews when adding a new fragment', () => {
@@ -109,8 +94,8 @@ describe( 'useMenuAction', () => {
 
 			menuAction.addBefore( payload, keyPath );
 
-			expect( store.shiftFragmentPreviews ).toHaveBeenCalledTimes( 1 );
-			expect( store.shiftFragmentPreviews ).toHaveBeenCalledWith( keyPath, 1 );
+			expect( store.insertHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.insertHashAtKeyPath ).toHaveBeenCalledWith( keyPath );
 
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledWith( {
@@ -119,7 +104,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'marks fragment dirty when adding items inside an abstract fragment', () => {
@@ -127,7 +111,7 @@ describe( 'useMenuAction', () => {
 
 			menuAction.addBefore( payload, keyPath );
 
-			expect( store.shiftFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.insertHashAtKeyPath ).not.toHaveBeenCalled();
 
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledWith( {
@@ -136,8 +120,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath );
 		} );
 	} );
 
@@ -155,7 +137,7 @@ describe( 'useMenuAction', () => {
 
 			menuAction.addAfter( payload, keyPath );
 
-			expect( store.shiftFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.insertHashAtKeyPath ).not.toHaveBeenCalled();
 
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledWith( {
@@ -164,7 +146,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'shifts fragment previews when adding a new fragment', () => {
@@ -173,8 +154,8 @@ describe( 'useMenuAction', () => {
 
 			menuAction.addAfter( payload, keyPath );
 
-			expect( store.shiftFragmentPreviews ).toHaveBeenCalledTimes( 1 );
-			expect( store.shiftFragmentPreviews ).toHaveBeenCalledWith( nextKeyPath, 1 );
+			expect( store.insertHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.insertHashAtKeyPath ).toHaveBeenCalledWith( nextKeyPath );
 
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledWith( {
@@ -183,7 +164,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'marks fragment dirty when adding items inside an abstract fragment', () => {
@@ -192,7 +172,7 @@ describe( 'useMenuAction', () => {
 
 			menuAction.addAfter( payload, keyPath );
 
-			expect( store.shiftFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.insertHashAtKeyPath ).not.toHaveBeenCalled();
 
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.insertListItemAtKeyPath ).toHaveBeenCalledWith( {
@@ -201,8 +181,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath );
 		} );
 	} );
 
@@ -230,7 +208,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'inserts an item at the bottom of the list and marks page and fragment as dirty', () => {
@@ -245,7 +222,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 
@@ -263,7 +239,6 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'deletes an item of a list inside an abstract fragment and sets page and fragment as dirty', () => {
@@ -279,13 +254,11 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'deletes an abstract fragment and shifts fragment previews', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments';
 			const itemKeyPath = `${ keyPath }.2`;
-			const nextKeyPath = `${ keyPath }.3`;
 
 			menuAction.deleteListItem( itemKeyPath );
 
@@ -296,10 +269,9 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 
-			expect( store.shiftFragmentPreviews ).toHaveBeenCalledTimes( 1 );
-			expect( store.shiftFragmentPreviews ).toHaveBeenCalledWith( nextKeyPath, -1 );
+			expect( store.deleteHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.deleteHashAtKeyPath ).toHaveBeenCalledWith( itemKeyPath );
 		} );
 	} );
 
@@ -316,9 +288,8 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 
-			expect( store.swapFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves list item inside fragment one position before and sets page and fragment as dirty', () => {
@@ -333,14 +304,12 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves fragment one position before and swaps fragment previews', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.3';
-			const previousKeyPath = 'abstractwiki.sections.Q8776414.fragments.2';
 
 			menuAction.moveBefore( keyPath );
 
@@ -351,10 +320,9 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 
-			expect( store.swapFragmentPreviews ).toHaveBeenCalledTimes( 1 );
-			expect( store.swapFragmentPreviews ).toHaveBeenCalledWith( keyPath, previousKeyPath );
+			expect( store.swapHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.swapHashAtKeyPath ).toHaveBeenCalledWith( keyPath, -1 );
 		} );
 	} );
 
@@ -371,9 +339,8 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 
-			expect( store.swapFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves list item inside fragment one position after and sets page and fragment as dirty', () => {
@@ -388,14 +355,12 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapFragmentPreviews ).not.toHaveBeenCalled();
+			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves fragment one position after and swaps fragment previews', () => {
 			const keyPath = 'abstractwiki.sections.Q8776414.fragments.3';
-			const nextKeyPath = 'abstractwiki.sections.Q8776414.fragments.4';
 
 			menuAction.moveAfter( keyPath );
 
@@ -406,10 +371,9 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
-			expect( store.setDirtyFragment ).not.toHaveBeenCalled();
 
-			expect( store.swapFragmentPreviews ).toHaveBeenCalledTimes( 1 );
-			expect( store.swapFragmentPreviews ).toHaveBeenCalledWith( keyPath, nextKeyPath );
+			expect( store.swapHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.swapHashAtKeyPath ).toHaveBeenCalledWith( keyPath, 1 );
 		} );
 	} );
 } );

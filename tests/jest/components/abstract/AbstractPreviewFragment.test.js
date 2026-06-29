@@ -8,25 +8,23 @@
 
 const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
+const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractPreviewFragment = require( '../../../../resources/ext.wikilambda.app/components/abstract/AbstractPreviewFragment.vue' );
 
 const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
-
-const fragmentCall = {
-	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
-	Z7K1: { Z1K1: 'Z9', Z9K1: 'Z444' }
-};
+const fragmentHash = 'somegood#';
 
 describe( 'AbstractPreviewFragment', () => {
 	let store;
 	let wrapper;
 
-	function renderFragment() {
+	function renderFragment( props = {} ) {
 		return shallowMount( AbstractPreviewFragment, {
 			props: {
 				keyPath,
-				fragment: fragmentCall
+				fragmentHash,
+				...props
 			},
 			global: {
 				stubs: {
@@ -40,57 +38,118 @@ describe( 'AbstractPreviewFragment', () => {
 	beforeEach( () => {
 		store = useMainStore();
 
-		store.getAbstractWikiId = 'Q42';
-		store.getUserLangZid = 'Z1002';
 		store.getFragmentPreview = jest.fn().mockReturnValue( undefined );
+		store.getPreviewLanguageZid = 'Z1002';
+		store.getLabelData = createLabelDataMock( {
+			Z500: 'Some unknown error'
+		} );
 
 		store.getHighlightedFragment = undefined;
-		store.renderFragmentPreview = jest.fn().mockResolvedValue();
 		store.setHighlightedFragment = jest.fn();
-
-		jest.useFakeTimers().setSystemTime( new Date( '2023-07-26T00:00:00Z' ) );
-	} );
-
-	afterEach( () => {
-		// Unmount component after running each test, so that there
-		// are no dangling unresolved promises that affect next test!
-		wrapper.unmount();
 	} );
 
 	it( 'renders without errors', () => {
 		wrapper = renderFragment();
-
 		expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' ).exists() ).toBe( true );
 	} );
 
+	it( 'calls getFragmentPreview with fragmentHash and preview language', () => {
+		wrapper = renderFragment();
+		expect( store.getFragmentPreview ).toHaveBeenCalledWith( fragmentHash, 'Z1002' );
+	} );
+
+	// Missing fragment
+	// ================
+
+	it( 'renders missing state when no preview is stored', () => {
+		wrapper = renderFragment();
+		expect( wrapper.text() ).toContain( 'Missing' );
+	} );
+
+	it( 'renders retry button when no preview is stored', () => {
+		wrapper = renderFragment();
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		expect( retryButton.exists() ).toBe( true );
+	} );
+
+	it( 'emits retry when retry button is clicked on missing fragmen', async () => {
+		wrapper = renderFragment();
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		await retryButton.trigger( 'click' );
+		expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
+	} );
+
+	// Pending fragmnet
+	// ================
+
+	it( 'renders pending label when preview is pending', () => {
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			isLoading: false,
+			isPending: true,
+			hasError: false,
+			html: ''
+		} );
+
+		wrapper = renderFragment();
+
+		expect( wrapper.text() ).toContain( 'Pending' );
+	} );
+
+	it( 'renders retry button when preview is pending', () => {
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			isLoading: false,
+			isPending: true,
+			hasError: false,
+			html: ''
+		} );
+
+		wrapper = renderFragment();
+
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		expect( retryButton.exists() ).toBe( true );
+	} );
+
+	it( 'emits retry when retry button is clicked on pending fragment', async () => {
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			isLoading: false,
+			isPending: true,
+			hasError: false,
+			html: ''
+		} );
+
+		wrapper = renderFragment();
+
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		await retryButton.trigger( 'click' );
+		expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
+	} );
+
+	// Loading
+	// =======
+
 	it( 'renders progress indicator when preview is being rendered', () => {
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			isLoading: true,
+			isPending: false,
+			hasError: false,
+			html: ''
+		} );
+
 		wrapper = renderFragment();
 
 		const loader = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-loading' );
-
 		expect( loader.exists() ).toBe( true );
 	} );
 
-	it( 'generates the fragment preview on mount (async)', () => {
-		wrapper = renderFragment();
-
-		expect( store.renderFragmentPreview ).toHaveBeenCalledWith( {
-			keyPath,
-			fragment: fragmentCall,
-			qid: 'Q42',
-			language: 'Z1002',
-			date: '2023-07-26',
-			isAsync: true
-		} );
-	} );
+	// Ready fragment
+	// ==============
 
 	it( 'renders fragment output html when preview is available', async () => {
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
 			html: '<p>A very bold fragment</p>',
 			hasError: false,
 			error: null,
-			isLoading: false,
-			isDirty: false
+			isLoading: false
 		} );
 
 		wrapper = renderFragment();
@@ -110,7 +169,7 @@ describe( 'AbstractPreviewFragment', () => {
 				text: 'some error happened'
 			},
 			isLoading: false,
-			isDirty: false
+			isPending: false
 		} );
 
 		wrapper = renderFragment();
@@ -131,7 +190,7 @@ describe( 'AbstractPreviewFragment', () => {
 				text: 'some warning'
 			},
 			isLoading: false,
-			isDirty: false
+			isPending: false
 		} );
 
 		wrapper = renderFragment();
@@ -142,7 +201,6 @@ describe( 'AbstractPreviewFragment', () => {
 	} );
 
 	it( 'renders retry button when error has retry=true', async () => {
-		store.setDirtyFragment = jest.fn();
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
 			html: '',
 			hasError: true,
@@ -152,7 +210,7 @@ describe( 'AbstractPreviewFragment', () => {
 				text: 'Some error'
 			},
 			isLoading: false,
-			isDirty: false
+			isPending: false
 		} );
 
 		wrapper = renderFragment();
@@ -161,8 +219,9 @@ describe( 'AbstractPreviewFragment', () => {
 		await waitFor( () => expect( message.exists() ).toBe( true ) );
 		expect( message.find( 'button' ).text() ).toBe( 'Retry' );
 
+		// Click button and check emitted event
 		message.find( 'button' ).trigger( 'click' );
-		expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath, true );
+		expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
 	} );
 
 	it( 'renders error message when preview has i18n+zerror error', async () => {
@@ -177,7 +236,7 @@ describe( 'AbstractPreviewFragment', () => {
 				zid: 'Z555'
 			},
 			isLoading: false,
-			isDirty: false
+			isPending: false
 		} );
 
 		wrapper = renderFragment();
@@ -189,39 +248,32 @@ describe( 'AbstractPreviewFragment', () => {
 		expect( wrapper.text() ).toContain( 'Wikifunctions returned a failed response: Some zerror happened' );
 	} );
 
-	it( 'rerenders preview when fragment preview becomes dirty', async () => {
+	it( 'emits retry when fragment preview becomes blank', async () => {
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
 			html: '<em>Old fragment in italics</em>',
 			hasError: false,
 			error: null,
-			isDirty: false,
-			isLoading: false
+			isBlank: false,
+			isLoading: false,
+			isPending: false
 		} );
 
 		wrapper = renderFragment();
 
+		expect( wrapper.emitted( 'retry' ) ).toBeFalsy();
+
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
-			html: '<em>Old fragment in italics</em>',
-			hasError: false,
-			error: null,
-			isDirty: true,
+			isBlank: true, /* changed! */
 			isLoading: false
 		} );
 
-		await waitFor( () => expect( store.renderFragmentPreview ).toHaveBeenCalledTimes( 1 ) );
-
-		expect( store.renderFragmentPreview ).toHaveBeenCalledWith( {
-			keyPath,
-			fragment: fragmentCall,
-			qid: 'Q42',
-			language: 'Z1002',
-			date: '2023-07-26',
-			isAsync: false
-		} );
+		await waitFor( () => expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 ) );
 	} );
 
-	describe( 'highlight fragments', () => {
+	// Highlight
+	// =========
 
+	describe( 'highlight fragments', () => {
 		it( 'adds highlight on pointer enter', async () => {
 			wrapper = renderFragment();
 			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );

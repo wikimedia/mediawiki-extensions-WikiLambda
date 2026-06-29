@@ -155,4 +155,79 @@ describe( 'AbstractContentFragment', () => {
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( undefined );
 		} );
 	} );
+
+	describe( 'fragment hashing', () => {
+		beforeEach( () => {
+			jest.useFakeTimers();
+		} );
+
+		afterEach( () => {
+			jest.useRealTimers();
+		} );
+
+		it( 'emits rehash event after debounce when fragment content changes', async () => {
+			const wrapper = renderFragment();
+
+			// Test deep=true by changing a fragment nested value
+			wrapper.vm.$props.fragment.Z7K1.Z9K1 = 'Z10000';
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.emitted( 'rehash' ) ).toBeFalsy();
+
+			jest.advanceTimersByTime( 3000 );
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.emitted( 'rehash' ) ).toHaveLength( 1 );
+		} );
+
+		it( 'emits rehash event after debounce when the whole fragment changes', async () => {
+			const wrapper = renderFragment();
+
+			await wrapper.setProps( { fragment: {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+				Z10000K1: { Z1K1: 'Z6', Z6K1: 'foo' },
+				Z10000K2: { Z1K1: 'Z6', Z6K1: 'bar' }
+			} } );
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.emitted( 'rehash' ) ).toBeFalsy();
+
+			jest.advanceTimersByTime( 3000 );
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.emitted( 'rehash' ) ).toHaveLength( 1 );
+		} );
+
+		it( 'debounces multiple changes and emits rehash only once', async () => {
+			const wrapper = renderFragment();
+
+			const waitAndEdit = async ( wait, key, value ) => {
+				jest.advanceTimersByTime( wait );
+				await wrapper.vm.$nextTick();
+				wrapper.vm.$props.fragment[ key ].Z6K1 = value;
+			};
+
+			// Simulate multiple edits, separated by arbitrary times, each one
+			// of them lower than the debounce time, but together are longer (>2000)
+			await wrapper.setProps( { fragment: {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+				Z10000K1: { Z1K1: 'Z6', Z6K1: '' },
+				Z10000K2: { Z1K1: 'Z6', Z6K1: '' }
+			} } );
+			await waitAndEdit( 100, 'Z10000K1', 'a' );
+			await waitAndEdit( 500, 'Z10000K1', 'ab' );
+			await waitAndEdit( 700, 'Z10000K1', 'abc' );
+			await waitAndEdit( 500, 'Z10000K2', 'e' );
+			await waitAndEdit( 800, 'Z10000K2', 'ef' );
+			await waitAndEdit( 300, 'Z10000K2', 'efg' );
+
+			// Simulate inactivity by waiting a bit longer than the debouncer time
+			jest.advanceTimersByTime( 2100 );
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.emitted( 'rehash' ) ).toHaveLength( 1 );
+		} );
+	} );
 } );

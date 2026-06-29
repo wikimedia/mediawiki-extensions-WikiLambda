@@ -11,7 +11,9 @@ const {
 	getNestedProperty,
 	createConnectedItemsChangesSummaryMessage,
 	arraysAreEqual,
-	throttle
+	throttle,
+	sha256,
+	stabilize
 } = require( '../../../resources/ext.wikilambda.app/utils/miscUtils.js' );
 
 describe( 'miscUtils', () => {
@@ -160,6 +162,78 @@ describe( 'miscUtils', () => {
 			throttledFunc( 'arg1', 'arg2' );
 
 			expect( func ).toHaveBeenCalledWith( 'arg1', 'arg2' );
+		} );
+	} );
+
+	describe( 'sha256', () => {
+		it( 'should return a hex string of length 64', async () => {
+			const result = await sha256( 'hello' );
+			expect( result ).toHaveLength( 64 );
+			expect( result ).toMatch( /^[0-9a-f]+$/ );
+		} );
+
+		it( 'should return the correct hash for a known input', async () => {
+			const result = await sha256( 'hello' );
+			expect( result ).toBe( '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824' );
+		} );
+
+		it( 'should return different hashes for different inputs', async () => {
+			const result1 = await sha256( 'hello' );
+			const result2 = await sha256( 'world' );
+			expect( result1 ).not.toBe( result2 );
+		} );
+
+		it( 'should return the same hash for the same input', async () => {
+			const result1 = await sha256( 'hello' );
+			const result2 = await sha256( 'hello' );
+			expect( result1 ).toBe( result2 );
+		} );
+
+		it( 'should handle an empty string', async () => {
+			const result = await sha256( '' );
+			expect( result ).toHaveLength( 64 );
+			expect( result ).toBe( 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' );
+		} );
+	} );
+
+	describe( 'stabilize', () => {
+		it( 'should return primitives as-is', () => {
+			expect( stabilize( 'hello' ) ).toBe( 'hello' );
+			expect( stabilize( 42 ) ).toBe( 42 );
+			expect( stabilize( true ) ).toBe( true );
+			expect( stabilize( null ) ).toBe( null );
+			expect( stabilize( undefined ) ).toBe( undefined );
+		} );
+
+		it( 'should sort object keys alphabetically', () => {
+			const input = { z: 1, a: 2, m: 3 };
+			const result = stabilize( input );
+			expect( Object.keys( result ) ).toEqual( [ 'a', 'm', 'z' ] );
+		} );
+
+		it( 'should recursively sort nested object keys', () => {
+			const input = { z: { b: 1, a: 2 }, a: 3 };
+			const result = stabilize( input );
+			expect( Object.keys( result ) ).toEqual( [ 'a', 'z' ] );
+			expect( Object.keys( result.z ) ).toEqual( [ 'a', 'b' ] );
+		} );
+
+		it( 'should iterate through arrays and recurse', () => {
+			const input = [ { z: 1, a: 2 }, { y: 3, b: 4 } ];
+			const result = stabilize( input );
+			expect( Object.keys( result[ 0 ] ) ).toEqual( [ 'a', 'z' ] );
+			expect( Object.keys( result[ 1 ] ) ).toEqual( [ 'b', 'y' ] );
+		} );
+
+		it( 'should produce the same output for objects with different key order', () => {
+			const input1 = { z: 1, a: 2 };
+			const input2 = { a: 2, z: 1 };
+			expect( JSON.stringify( stabilize( input1 ) ) ).toBe( JSON.stringify( stabilize( input2 ) ) );
+		} );
+
+		it( 'should handle empty objects and arrays', () => {
+			expect( stabilize( {} ) ).toEqual( {} );
+			expect( stabilize( [] ) ).toEqual( [] );
 		} );
 	} );
 } );

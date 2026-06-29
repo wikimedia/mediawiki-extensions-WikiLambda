@@ -8,29 +8,17 @@
 	<div class="ext-wikilambda-app-abstract-view">
 		<div class="ext-wikilambda-app-row">
 			<template v-if="!qid">
-				<div
-					class="ext-wikilambda-app-col
-					ext-wikilambda-app-col-24">
-					<wl-abstract-title
-						:edit="edit"
-					></wl-abstract-title>
-				</div>
 				<!-- No selected title -->
+				<div class="ext-wikilambda-app-col ext-wikilambda-app-col-24">
+					<wl-abstract-title :edit="edit"></wl-abstract-title>
+				</div>
 			</template>
 			<template v-else>
 				<!-- Selected title -->
-				<div
-					class="ext-wikilambda-app-col
-					ext-wikilambda-app-col-12
-					ext-wikilambda-app-col-tablet-24">
-					<wl-abstract-content
-						:edit="edit"
-					></wl-abstract-content>
+				<div class="ext-wikilambda-app-col ext-wikilambda-app-col-12 ext-wikilambda-app-col-tablet-24">
+					<wl-abstract-content :edit="edit"></wl-abstract-content>
 				</div>
-				<div
-					class="ext-wikilambda-app-col
-					ext-wikilambda-app-col-12
-					ext-wikilambda-app-col-tablet-24">
+				<div class="ext-wikilambda-app-col ext-wikilambda-app-col-12 ext-wikilambda-app-col-tablet-24">
 					<wl-abstract-preview></wl-abstract-preview>
 				</div>
 			</template>

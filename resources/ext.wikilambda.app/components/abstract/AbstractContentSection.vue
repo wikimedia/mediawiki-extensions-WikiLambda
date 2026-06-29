@@ -24,6 +24,7 @@
 				:key-path="`${ section.fragmentsPath }.${ index }`"
 				:fragment="fragment"
 				@action="performAction( $event, index )"
+				@rehash="regenerateHash( fragment, index )"
 			></wl-abstract-content-fragment>
 		</template>
 		<!-- Add fragment menu button in edit mode -->
@@ -55,6 +56,7 @@ const Constants = require( '../../Constants.js' );
 const useMenuAction = require( '../../composables/useMenuAction.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
+const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
 
 // Abstract components
 const AbstractContentFragment = require( './AbstractContentFragment.vue' );
@@ -121,9 +123,8 @@ module.exports = exports = defineComponent( {
 				value: cleanValue
 			} );
 
-			// Set page as dirty and set fragment as dirty
+			// Set page as dirty
 			store.setDirty();
-			store.setDirtyFragment( copyToKeyPath.value );
 
 			closeClipboard();
 		}
@@ -259,6 +260,34 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Fragment hashing
+		// ================
+		// This component is in charge of keeping the fragment hash array updated,
+		// regenerating the hashes whenever appropriate, and moving the hashes
+		// around whenever fragments are moved.
+		// The preview component tree will depend on the hashes to render and
+		// refresh its content, but should not ever touch the hash map.
+		//
+		// * On initializeAbstractWikiContent: hash lists are initialized for each
+		//   section Qid. This happens once in read pages, and they are never touched
+		//   again.
+		// * On AbstractContentFragment change, emits a 'rehash' event after waiting
+		//   for inactivity. On receiving 'rehash', this component rebuilds the hash
+		//   and updates the array in the store.
+
+		/**
+		 * Updates the fragment hash for the fragment placed in the given index
+		 * (benjamin-padded). Writes it as the value for sectionHashes[ section ][ index-1 ]
+		 *
+		 * @param {Object} fragment
+		 * @param {number} fragmentIndex
+		 */
+		async function regenerateHash( fragment, fragmentIndex ) {
+			const hashIndex = parseInt( fragmentIndex ) - 1;
+			const hashed = await sha256( JSON.stringify( stabilize( fragment ) ) );
+			store.setAbstractFragmentHash( props.section.qid, hashIndex, hashed );
+		}
+
 		return {
 			closeClipboard,
 			pasteFromClipboard,
@@ -266,6 +295,7 @@ module.exports = exports = defineComponent( {
 			addFragment,
 			menuItems,
 			performAction,
+			regenerateHash,
 			iconAdd,
 			i18n
 		};

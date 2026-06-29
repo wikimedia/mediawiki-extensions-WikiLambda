@@ -158,6 +158,10 @@ class ApiError extends Error {
 	 */
 	// eslint-disable-next-line no-unused-vars
 	static fromMwApiRejection( code, arg2, _arg3, _arg4 ) {
+		if ( code instanceof ApiError ) {
+			// Generally for mocks and tests, but doesn't hurt
+			return code;
+		}
 		// Detect abort by promise.abort():
 		if ( code === 'http' && arg2 && arg2.textStatus === 'abort' ) {
 			// Return a special ApiError or throw, as desired

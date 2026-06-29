@@ -7,10 +7,12 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
 const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractContentSection = require( '../../../../resources/ext.wikilambda.app/components/abstract/AbstractContentSection.vue' );
+const { sha256, stabilize } = require( '../../../../resources/ext.wikilambda.app/utils/miscUtils.js' );
 
 const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
 const benjaminType = { Z1K1: 'Z9', Z9K1: 'Z89' };
@@ -210,5 +212,18 @@ describe( 'AbstractContentSection', () => {
 		fragment.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.DELETE_ITEM } );
 
 		expect( mockMenuActions.deleteListItem ).toHaveBeenCalledWith( keyPath );
+	} );
+
+	it( 'refreshes a fragment hash when fragment child component detects a change', async () => {
+		const fragmentHash = await sha256( JSON.stringify( stabilize( fragmentCall ) ) );
+
+		store.setAbstractFragmentHash = jest.fn();
+		const wrapper = renderSection();
+
+		const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+		fragment.trigger( 'rehash' );
+
+		await waitFor( () => expect( store.setAbstractFragmentHash ).toHaveBeenCalledTimes( 1 ) );
+		expect( store.setAbstractFragmentHash ).toHaveBeenCalledWith( section.qid, 0, fragmentHash );
 	} );
 } );

@@ -45,8 +45,8 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$langFactory = $this->createMock( WikifunctionsLanguageFactory::class );
 
 		$langFactory->method( 'getLanguageFromZid' )
-		->with( 'Z1002' )
-		->willReturn( $enWfLang );
+			->with( 'Z1002' )
+			->willReturn( $enWfLang );
 
 		return $langFactory;
 	}
@@ -67,7 +67,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			->with(
 				$args['fragment'],
 				$args['topicQid'],
-				$args[ 'language'],
+				$args['language'],
 				$args['date'],
 			)
 			->willReturn( $output );
@@ -322,8 +322,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	}
 
 	/**
-	 * When the cached result is a failure, the API should die with the
-	 * WikifunctionCallException's error data.
+	 * When the cached result is a failure, the API should not die with
+	 * ApiUsageException, but instead return a succesful response with
+	 * a failing fragment
 	 */
 	public function testExecute_diesWhenCachedResultIsFailure() {
 		$qid = 'Q42';
@@ -356,14 +357,17 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		], $storedFragment );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
-		$this->expectException( ApiUsageException::class );
-
-		$this->doApiRequest( [
+		$result = $this->doApiRequest( [
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
 			'abstractwiki_run_fragment_language' => $languageZid,
 			'abstractwiki_run_fragment_date' => $date,
-			'abstractwiki_run_fragment_fragment' => $fragmentStr
-		] );
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
+		] )[0][ 'abstractwiki_run_fragment' ];
+
+		$this->assertArrayHasKey( 'success', $result );
+		$this->assertArrayHasKey( 'value', $result );
+		$this->assertFalse( $result[ 'success' ] );
+		$this->assertEquals( $failureValue[ 'value' ], $result[ 'value' ] );
 	}
 }

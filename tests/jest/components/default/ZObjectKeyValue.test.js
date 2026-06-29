@@ -523,7 +523,6 @@ describe( 'ZObjectKeyValue', () => {
 				modeSelector.vm.$emit( 'move-after' );
 
 				expect( store.setDirty ).toHaveBeenCalled();
-				expect( store.setDirtyFragment ).toHaveBeenCalledWith( keyPath );
 				expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 					keyPath: [ 'abstractwiki', 'sections', 'Q8776414', 'fragments', '2', 'Z444K3', '4' ],
 					offset: 1

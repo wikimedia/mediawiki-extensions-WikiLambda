@@ -12,12 +12,36 @@
 		@focus="setHighlight"
 		@blur="unsetHighlight"
 	>
+		<!-- Fragment exists but was not initialized in this language -->
+		<div
+			v-if="isMissing"
+			ref="contentRef"
+			class="ext-wikilambda-app-abstract-preview-fragment-blank-wrapper"
+		>
+			<div class="ext-wikilambda-app-abstract-preview-fragment-blank">
+				{{ missingLabel }}
+				<button
+					v-if="missingCanRetry"
+					type="button"
+					class="ext-wikilambda-app-button-reset
+						ext-wikilambda-app-abstract-preview-fragment-retry"
+					:aria-label="i18n( 'wikilambda-abstract-prefiew-fragment-retry' ).text()"
+					@click.stop="retryPreview"
+				>
+					<cdx-icon :icon="iconRetry"></cdx-icon>
+				</button>
+			</div>
+		</div>
+
+		<!-- Fragment is loading (promise in flight) -->
 		<cdx-progress-indicator
-			v-if="!fragmentPreview || fragmentPreview.isLoading"
+			v-else-if="fragmentPreview.isLoading"
 			class="ext-wikilambda-app-abstract-preview-fragment-loading"
 		>
 			{{ i18n( 'wikilambda-loading' ).text() }}
 		</cdx-progress-indicator>
+
+		<!-- Fragment is available (error or success) -->
 		<template v-else>
 			<div
 				v-if="fragmentPreview.hasError"
@@ -58,14 +82,16 @@ const Constants = require( '../../Constants.js' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useInitImages = require( '../../composables/useInitImages.js' );
 const useMainStore = require( '../../store/index.js' );
+const icons = require( '../../../lib/icons.json' );
 
 // Codex components
-const { CdxMessage, CdxProgressIndicator } = require( '../../../codex.js' );
+const { CdxMessage, CdxIcon, CdxProgressIndicator } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-preview-fragment',
 	components: {
 		'cdx-message': CdxMessage,
+		'cdx-icon': CdxIcon,
 		'cdx-progress-indicator': CdxProgressIndicator
 	},
 	props: {
@@ -73,28 +99,66 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: true
 		},
-		fragment: {
-			type: Object,
-			required: true
+		fragmentHash: {
+			type: String,
+			required: false,
+			default: null
 		}
 	},
-	setup( props ) {
+	emits: [ 'retry' ],
+	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
-		const fragmentHighlightRegistry = inject( 'fragmentHighlightRegistry', null );
 
-		// Date for today in a standard format that can be
-		// parsed by the default date reading function:
-		// See: https://www.wikifunctions.org/view/en/Z23997
-		const dateForToday = computed( () => new Date().toISOString().slice( 0, 10 ) );
+		const iconRetry = icons.cdxIconReload;
 
-		const contentRef = ref( null );
-		const { initReferences } = useInitReferences( contentRef );
-		const { initImages } = useInitImages( contentRef );
-		const errorRef = ref( null );
+		// Fragment Preview Status
+		// =======================
 
-		const fragmentPreview = computed( () => store.getFragmentPreview( props.keyPath ) );
-		const fragmentDirty = computed( () => fragmentPreview.value && fragmentPreview.value.isDirty );
+		// Fragment preview as cached by the fragmentHash:languageZid key
+		const fragmentPreview = computed( () => {
+			const storedPreview = store.getFragmentPreview(
+				props.fragmentHash,
+				store.getPreviewLanguageZid
+			);
+			return storedPreview || {
+				isLoading: false,
+				isBlank: true
+			};
+		} );
+
+		// The fragment is missing so the editor should see a missing state
+		const isMissing = computed( () => {
+			if ( fragmentPreview.value.isLoading ) {
+				return false;
+			}
+			return fragmentPreview.value.isBlank || fragmentPreview.value.isPending;
+		} );
+
+		// The fragment is missing and can be requested again, show retry button
+		const missingCanRetry = computed( () => (
+			fragmentPreview.value.isBlank ||
+			fragmentPreview.value.isPending
+		) );
+
+		// Label of the missing (blank or pending) block
+		const missingLabel = computed( () => ( fragmentPreview.value.isPending ?
+			i18n( 'wikilambda-abstract-preview-fragment-pending' ).text() :
+			i18n( 'wikilambda-abstract-preview-fragment-missing' ).text() ) );
+
+		// Observe fragmentPreview changes and request retry when no preview available.
+		// Options:
+		// * deep should be false, we only want to observe a change in the object reference.
+		// * immediate should be false, to not cause fragment-level requests on mount
+		//   or when requesting a new language; in thas case, it's the section-level
+		//   component who should make a block sectionr request for initialization.
+		watch( fragmentPreview, ( newPreview ) => {
+			if ( newPreview.isBlank ) {
+				retryPreview();
+			}
+		}, { deep: false, immediate: false } );
+
+		// Fragment error render information for the preview
 		const fragmentError = computed( () => {
 			if ( !fragmentPreview.value.hasError ) {
 				return null;
@@ -110,32 +174,20 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Renders the preview of the given fragment for the
-		 * current preview language: qid, language and today's date
-		 *
-		 * @param {boolean} isInitialMount Whether this is the watch-triggered initial
-		 *   mount render (true) or a user-triggered re-render such as a dirty-flag
-		 *   retry (false). The initial mount uses the backend's async path (pending
-		 *   + client polling); user-triggered re-renders use the sync path (a
-		 *   blocking call to the orchestrator).
-		 */
-		function renderPreview( isInitialMount = false ) {
-			store.renderFragmentPreview( {
-				keyPath: props.keyPath,
-				fragment: props.fragment,
-				qid: store.getAbstractWikiId,
-				date: dateForToday.value,
-				language: store.getPreviewLanguageZid,
-				isAsync: isInitialMount
-			} );
-		}
-
-		/**
-		 * Sets a fragment as dirty so that it triggers
-		 * a fresh render attempt.
 		 */
 		function retryPreview() {
-			store.setDirtyFragment( props.keyPath, true );
+			emit( 'retry' );
 		}
+
+		// Highlight fragments
+		// ====================
+		const contentRef = ref( null );
+		const errorRef = ref( null );
+
+		const { initReferences } = useInitReferences( contentRef );
+		const { initImages } = useInitImages( contentRef );
+
+		const fragmentHighlightRegistry = inject( 'fragmentHighlightRegistry', null );
 
 		/**
 		 * Add highlight to fragment
@@ -151,20 +203,6 @@ module.exports = exports = defineComponent( {
 			store.setHighlightedFragment( undefined );
 		}
 
-		// Watch when fragment preview is set to dirty and rerender synchonously
-		watch( fragmentDirty, ( isDirty, oldDirty ) => {
-			if ( oldDirty === false && isDirty === true ) {
-				renderPreview();
-			}
-		} );
-
-		// Watch when fragment preview is fully unset, rerender asynchronously
-		watch( fragmentPreview, ( preview ) => {
-			if ( !preview ) {
-				renderPreview( true );
-			}
-		}, { immediate: true } );
-
 		/**
 		 * Update highlight overlay registration after DOM is in sync with preview state.
 		 */
@@ -173,7 +211,7 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 			const preview = fragmentPreview.value;
-			if ( !preview ) {
+			if ( preview.isBlank ) {
 				fragmentHighlightRegistry.unregisterFragmentNodes( props.keyPath );
 				return;
 			}
@@ -217,13 +255,17 @@ module.exports = exports = defineComponent( {
 		} );
 
 		return {
+			retryPreview,
 			fragmentError,
 			fragmentPreview,
 			contentRef,
 			errorRef,
-			retryPreview,
+			isMissing,
+			missingCanRetry,
+			missingLabel,
 			setHighlight,
 			unsetHighlight,
+			iconRetry,
 			i18n
 		};
 	}
@@ -235,6 +277,26 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-abstract-preview-fragment {
 	display: unset;
+
+	.ext-wikilambda-app-abstract-preview-fragment-blank-wrapper {
+		display: inline-block;
+	}
+
+	.ext-wikilambda-app-abstract-preview-fragment-blank {
+		display: inline-block;
+		background-color: @background-color-neutral;
+		border: @border-width-base @border-style-base @border-color-muted;
+		border-radius: @border-radius-base;
+		margin-right: @spacing-25;
+		margin-bottom: @spacing-25;
+		font-family: @font-family-base;
+		font-weight: @font-weight-normal;
+		font-size: @font-size-small;
+		line-height: @line-height-x-small;
+		color: @color-subtle;
+		vertical-align: middle;
+		padding: @spacing-12 @spacing-35;
+	}
 
 	.ext-wikilambda-app-abstract-preview-fragment-loading {
 		margin: 0 @spacing-25;

@@ -7,6 +7,7 @@
 'use strict';
 
 const apiUtils = require( '../../utils/apiUtils.js' );
+const miscUtils = require( '../../utils/miscUtils.js' );
 
 module.exports = {
 	state: {
@@ -33,21 +34,6 @@ module.exports = {
 
 	actions: {
 		/**
-		 * Computes SHA-256 hash of a string and returns it as a hex string.
-		 *
-		 * @param {string} input - The string to hash
-		 * @return {Promise<string>} Promise resolving to the hex hash string
-		 */
-		sha256Hex: function ( input ) {
-			const enc = new TextEncoder();
-			const data = enc.encode( input );
-			return crypto.subtle.digest( 'SHA-256', data ).then( ( hashBuf ) => {
-				const hashArr = Array.from( new Uint8Array( hashBuf ) );
-				return hashArr.map( ( b ) => b.toString( 16 ).padStart( 2, '0' ) ).join( '' );
-			} );
-		},
-
-		/**
 		 * Sanitises HTML fragment with caching.
 		 * Returns cached result if available, otherwise calls API and caches result.
 		 *
@@ -61,7 +47,7 @@ module.exports = {
 			}
 
 			// Hash the HTML to use as cache key
-			return this.sha256Hex( html ).then( ( hash ) => {
+			return miscUtils.sha256( html ).then( ( hash ) => {
 				// Check if we already have a cached sanitized result
 				if ( this.sanitizationCache.has( hash ) ) {
 					return this.sanitizationCache.get( hash );

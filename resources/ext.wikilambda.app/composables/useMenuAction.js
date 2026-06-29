@@ -52,15 +52,11 @@ module.exports = function useMenuAction() {
 		// For fragments, set dirty page
 		if ( parts[ 0 ] === Constants.STORED_OBJECTS.ABSTRACT ) {
 			mainStore.setDirty();
-			// If change is inside a fragment, set fragment as dirty
-			if ( parts.length > 5 ) {
-				mainStore.setDirtyFragment( keyPath );
-			}
 		}
 	}
 
 	/**
-	 * Adds an empty item before the given keyPath
+	 * Adds an empty item at the given keyPath
 	 *
 	 * @param {Object} payload - payload for object creation action
 	 * @param {string} payload.type
@@ -71,7 +67,7 @@ module.exports = function useMenuAction() {
 
 		// Shift fragment previews before inserting the item
 		if ( isAbstractFragment( keyPath ) ) {
-			mainStore.shiftFragmentPreviews( keyPath, 1 );
+			mainStore.insertHashAtKeyPath( keyPath );
 		}
 
 		mainStore.insertListItemAtKeyPath( {
@@ -83,7 +79,7 @@ module.exports = function useMenuAction() {
 	}
 
 	/**
-	 * Adds an empty item before the given keyPath
+	 * Adds an empty item after the given keyPath
 	 *
 	 * @param {Object} payload - payload for object creation action
 	 * @param {string} payload.type
@@ -97,7 +93,7 @@ module.exports = function useMenuAction() {
 
 		// Shift fragment previews before inserting the item
 		if ( isAbstractFragment( keyPath ) ) {
-			mainStore.shiftFragmentPreviews( next.join( '.' ), 1 );
+			mainStore.insertHashAtKeyPath( next.join( '.' ) );
 		}
 
 		mainStore.insertListItemAtKeyPath( {
@@ -147,9 +143,7 @@ module.exports = function useMenuAction() {
 
 		// If list item is deleted, we need to shift all next items to a previous position
 		if ( isAbstractFragment( keyPath ) ) {
-			const nextIndex = Number( lastItem[ 0 ] ) + 1;
-			const keyToShift = [ ...listKeyPath, nextIndex ].join( '.' );
-			mainStore.shiftFragmentPreviews( keyToShift, -1 );
+			mainStore.deleteHashAtKeyPath( keyPath );
 		}
 	}
 
@@ -160,20 +154,7 @@ module.exports = function useMenuAction() {
 	 * @param {string} keyPath
 	 */
 	function moveBefore( keyPath ) {
-		mainStore.moveListItemByKeyPath( {
-			keyPath: keyPath.split( '.' ),
-			offset: -1
-		} );
-
-		setDirtyKeyPath( keyPath );
-
-		// If fragments are moved, swap their preview keys without flagging them as dirty
-		if ( isAbstractFragment( keyPath ) ) {
-			const parts = keyPath.split( '.' );
-			parts[ parts.length - 1 ] = String( Number( parts[ parts.length - 1 ] ) - 1 );
-			const previousKeyPath = parts.join( '.' );
-			mainStore.swapFragmentPreviews( keyPath, previousKeyPath );
-		}
+		moveByOffset( keyPath, -1 );
 	}
 
 	/**
@@ -183,19 +164,28 @@ module.exports = function useMenuAction() {
 	 * @param {string} keyPath
 	 */
 	function moveAfter( keyPath ) {
+		moveByOffset( keyPath, 1 );
+	}
+
+	/**
+	 * Generic moveByOffset for moveBefore (offset=-1) and moveAfter (offset=1)
+	 *
+	 * @param {string} keyPath
+	 * @param {number} offset -1 or 1
+	 */
+	function moveByOffset( keyPath, offset ) {
 		mainStore.moveListItemByKeyPath( {
 			keyPath: keyPath.split( '.' ),
-			offset: 1
+			offset
 		} );
 
 		setDirtyKeyPath( keyPath );
 
-		// If fragments are moved, swap their preview keys without flagging them as dirty
+		// If fragments are moved, swap the fragment keys for reflecting the change
+		// immediately in the preview; otherwise a change will be detected causing
+		// delayed re-hasing and update, but will come a couple seconds later.
 		if ( isAbstractFragment( keyPath ) ) {
-			const parts = keyPath.split( '.' );
-			parts[ parts.length - 1 ] = String( Number( parts[ parts.length - 1 ] ) + 1 );
-			const nextKeyPath = parts.join( '.' );
-			mainStore.swapFragmentPreviews( keyPath, nextKeyPath );
+			mainStore.swapHashAtKeyPath( keyPath, offset );
 		}
 	}
 

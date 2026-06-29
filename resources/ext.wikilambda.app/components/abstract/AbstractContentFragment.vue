@@ -41,7 +41,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onUnmounted } = require( 'vue' );
+const { computed, defineComponent, inject, onUnmounted, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -73,7 +73,7 @@ module.exports = exports = defineComponent( {
 			required: true
 		}
 	},
-	emits: [ 'action' ],
+	emits: [ 'action', 'rehash' ],
 	setup( props, { emit } ) {
 		const store = useMainStore();
 		const i18n = inject( 'i18n' );
@@ -164,6 +164,9 @@ module.exports = exports = defineComponent( {
 			emit( 'action', { action } );
 		}
 
+		// Fragment highlighting
+		// =====================
+
 		// Highlight state for fragment and preview
 		const isHighlighted = computed( () => store.getHighlightedFragment === props.keyPath );
 
@@ -184,6 +187,28 @@ module.exports = exports = defineComponent( {
 		onUnmounted( () => {
 			unsetHighlight();
 		} );
+
+		// Fragment hashing
+		// ================
+
+		let debounceTimer = null;
+		const DEBOUNCE_FRAGMENT_REFRESH_TIMEOUT = 2000;
+
+		// Watch the input fragment call and trigger 'rehash' to request
+		// the regeneration of the fragment hash when the content changes.
+		// Options:
+		// * deep=true to capture changes in depth,
+		// * immediate=false to skip trigger on initialization
+		watch(
+			/* source */ () => props.fragment,
+			/* callback */ () => {
+				clearTimeout( debounceTimer );
+				debounceTimer = setTimeout( () => {
+					emit( 'rehash' );
+				}, DEBOUNCE_FRAGMENT_REFRESH_TIMEOUT );
+			},
+			/* options */ { deep: true, immediate: false }
+		);
 
 		return {
 			i18n,

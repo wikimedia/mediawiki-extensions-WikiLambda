@@ -9,6 +9,7 @@
 const { setActivePinia, createPinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
 
 const mockLang = 'Z1002';
 const mockDate = '26-7-2023';
@@ -63,8 +64,11 @@ describe( 'abstractWiki Pinia store', () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
 		store.jsonObject = { abstractwiki: {} };
-		store.qid = undefined;
+
 		store.fragments = {};
+		store.fragmentPromises = {};
+		store.sectionHashes = {};
+		store.qid = undefined;
 		store.highlight = undefined;
 		store.previewLanguageZid = mockLang;
 
@@ -111,6 +115,27 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getAbstractSectionHashes', () => {
+			it( 'returns empty array if section has no hashes', () => {
+				store.sectionHashes = {};
+				expect( store.getAbstractSectionHashes( ledeQid ) ).toEqual( [] );
+			} );
+
+			it( 'returns the hashes for a given section', () => {
+				store.sectionHashes = {
+					[ ledeQid ]: [ 'hash1', 'hash2', 'hash3' ]
+				};
+				expect( store.getAbstractSectionHashes( ledeQid ) ).toEqual( [ 'hash1', 'hash2', 'hash3' ] );
+			} );
+
+			it( 'returns empty array for an unknown section', () => {
+				store.sectionHashes = {
+					[ ledeQid ]: [ 'hash1', 'hash2' ]
+				};
+				expect( store.getAbstractSectionHashes( 'Q9999' ) ).toEqual( [] );
+			} );
+		} );
+
 		describe( 'getAbstractWikipediaNamespace', () => {
 			it( 'returns the value of wgWikiLambdaAbstractPrimaryNamespace', () => {
 				expect( store.getAbstractWikipediaNamespace ).toEqual( 'Abstract_Wikipedia' );
@@ -132,12 +157,10 @@ describe( 'abstractWiki Pinia store', () => {
 
 		describe( 'getFragmentPreview', () => {
 			it( 'returns undefined if the fragment is not stored', () => {
-				const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
-				expect( store.getFragmentPreview( keyPath ) ).toBeUndefined();
+				expect( store.getFragmentPreview( 'hash', 'Z1002' ) ).toBeUndefined();
 			} );
 
 			it( 'returns the stored fragment preview for a given language', () => {
-				const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
 				const fragmentPreview = {
 					hasError: false,
 					isDirty: false,
@@ -146,11 +169,9 @@ describe( 'abstractWiki Pinia store', () => {
 					html: '<b>Preview</b>'
 				};
 				store.fragments = {
-					[ keyPath ]: {
-						[ mockLang ]: fragmentPreview
-					}
+					'some-hash:Z1002': fragmentPreview
 				};
-				expect( store.getFragmentPreview( keyPath ) ).toEqual( fragmentPreview );
+				expect( store.getFragmentPreview( 'some-hash', 'Z1002' ) ).toEqual( fragmentPreview );
 			} );
 		} );
 
@@ -176,6 +197,104 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.getSuggestedHtmlFunctions ).toEqual( [ 'Z10001', 'Z10002' ] );
 			} );
 		} );
+
+		describe( 'getPendingCount', () => {
+			it( 'returns false if section has no hashes', () => {
+				store.sectionHashes = {};
+				expect( store.getPendingCount( 'Q101', 'Z1002' ) ).toBe( false );
+			} );
+
+			it( 'returns 0 if all fragments are rendered', () => {
+				store.sectionHashes = {
+					Q101: [ 'hash1', 'hash2' ]
+				};
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' },
+					'hash2:Z1002': { isPending: false, html: 'rendered' }
+				};
+				expect( store.getPendingCount( 'Q101', 'Z1002' ) ).toBe( 0 );
+			} );
+
+			it( 'returns count of missing fragments', () => {
+				store.sectionHashes = {
+					Q101: [ 'hash1', 'hash2', 'hash3' ]
+				};
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' }
+				};
+				expect( store.getPendingCount( 'Q101', 'Z1002' ) ).toBe( 2 );
+			} );
+
+			it( 'returns count of pending fragments', () => {
+				store.sectionHashes = {
+					Q101: [ 'hash1', 'hash2', 'hash3' ]
+				};
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' },
+					'hash2:Z1002': { isPending: true },
+					'hash3:Z1002': { isPending: true }
+				};
+				expect( store.getPendingCount( 'Q101', 'Z1002' ) ).toBe( 2 );
+			} );
+
+			it( 'returns count of both missing and pending fragments', () => {
+				store.sectionHashes = {
+					Q101: [ 'hash1', 'hash2' ]
+				};
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' },
+					'hash2:Z1002': { isPending: false, html: 'rendered' },
+					'hash1:Z1003': { isPending: true }
+				};
+				expect( store.getPendingCount( 'Q101', 'Z1003' ) ).toBe( 2 );
+			} );
+		} );
+
+		describe( 'isSectionPending', () => {
+			it( 'returns false if getPendingCount returns 0', () => {
+				Object.defineProperty( store, 'getPendingCount', {
+					value: jest.fn( () => 0 )
+				} );
+				expect( store.isSectionPending( 'Q101', 'Z1002' ) ).toBe( false );
+			} );
+
+			it( 'returns true if getPendingCount returns a positive number', () => {
+				Object.defineProperty( store, 'getPendingCount', {
+					value: jest.fn( () => 2 )
+				} );
+				expect( store.isSectionPending( 'Q101', 'Z1002' ) ).toBe( true );
+			} );
+		} );
+
+		describe( 'isLanguageSeen', () => {
+			it( 'returns false if fragments is empty', () => {
+				store.fragments = {};
+				expect( store.isLanguageSeen( 'Z1002' ) ).toBe( false );
+			} );
+
+			it( 'returns true if language is present in fragments', () => {
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' }
+				};
+				expect( store.isLanguageSeen( 'Z1002' ) ).toBe( true );
+			} );
+
+			it( 'returns false if language is not present in fragments', () => {
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' }
+				};
+				expect( store.isLanguageSeen( 'Z1003' ) ).toBe( false );
+			} );
+
+			it( 'returns true if language is present among multiple languages', () => {
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' },
+					'hash1:Z1003': { isPending: false, html: 'rendered' },
+					'hash2:Z1002': { isPending: false, html: 'rendered' }
+				};
+				expect( store.isLanguageSeen( 'Z1003' ) ).toBe( true );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -194,6 +313,49 @@ describe( 'abstractWiki Pinia store', () => {
 				expect(
 					store.jsonObject[ Constants.STORED_OBJECTS.ABSTRACT ][ Constants.ABSTRACT_WIKI_QID ]
 				).toBe( mockQid );
+			} );
+		} );
+
+		describe( 'setAbstractSectionHashes', () => {
+			beforeEach( () => {
+				store.sectionHashes = {};
+			} );
+
+			it( 'sets the array of hashes for a given qid', () => {
+				store.setAbstractSectionHashes( 'Q101', [ 'hash1', 'hash2', 'hash3' ] );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2', 'hash3' ] );
+			} );
+
+			it( 'overwrites existing data only for the given hash', () => {
+				store.sectionHashes = { Q101: [ 'oldhash' ], Q102: [ 'goodhash' ] };
+
+				store.setAbstractSectionHashes( 'Q101', [ 'hash1', 'hash2', 'hash3' ] );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2', 'hash3' ] );
+				expect( store.sectionHashes.Q102 ).toEqual( [ 'goodhash' ] );
+			} );
+		} );
+
+		describe( 'setAbstractFragmentHash', () => {
+			beforeEach( () => {
+				store.sectionHashes = {};
+			} );
+
+			it( 'initializes the section and sets the hash if section did not exist', () => {
+				store.setAbstractFragmentHash( 'Q101', 0, 'hash1' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1' ] );
+			} );
+
+			it( 'sets the hash at the given index for an existing section', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
+				store.setAbstractFragmentHash( 'Q101', 1, 'newhash' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'newhash', 'hash3' ] );
+			} );
+
+			it( 'does not overwrite other sections', () => {
+				store.sectionHashes = { Q101: [ 'hash1' ], Q102: [ 'goodhash' ] };
+				store.setAbstractFragmentHash( 'Q101', 0, 'newhash' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'newhash' ] );
+				expect( store.sectionHashes.Q102 ).toEqual( [ 'goodhash' ] );
 			} );
 		} );
 
@@ -257,6 +419,10 @@ describe( 'abstractWiki Pinia store', () => {
 
 				// Set page as initialized
 				expect( store.setInitialized ).toHaveBeenCalledWith( true );
+
+				// Fragment hashes for each section are initialized
+				expect( store.sectionHashes ).toHaveProperty( 'Q8776414' );
+				expect( store.sectionHashes.Q8776414.length ).toBe( 1 );
 			} );
 
 			it( 'also prefetches the page title qid when creating a new Abstract Article', async () => {
@@ -346,6 +512,417 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'onlyNeededFragments', () => {
+			const keys = [
+				'hash1:Z1002',
+				'hash2:Z1002',
+				'hash3:Z1002'
+			];
+			const fragments = [
+				{ Z1K1: 'Z7', Z7K1: 'Z401' },
+				{ Z1K1: 'Z7', Z7K1: 'Z402' },
+				{ Z1K1: 'Z7', Z7K1: 'Z403' }
+			];
+
+			beforeEach( () => {
+				Object.defineProperty( store, 'getViewMode', { value: false, configurable: true } );
+			} );
+
+			it( 'in view mode returns all keys and undefined fragments', () => {
+				Object.defineProperty( store, 'getViewMode', { value: true, configurable: true } );
+				const [ neededKeys, neededFragments ] = store.onlyNeededFragments( keys, fragments, 'Z1002' );
+				expect( neededKeys ).toEqual( keys );
+				expect( neededFragments ).toBeUndefined();
+			} );
+
+			it( 'returns all keys and canonicalized fragments if language was never seen', () => {
+				store.fragments = {};
+				const [ neededKeys, neededFragments ] = store.onlyNeededFragments( keys, fragments, 'Z1002' );
+				expect( neededKeys ).toEqual( keys );
+				expect( neededFragments ).toHaveLength( 3 );
+			} );
+
+			it( 'returns missing and pending fragments if language was seen', () => {
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' },
+					'hash2:Z1002': { isPending: true }
+					/* hash3 missing */
+				};
+				const [ neededKeys, neededFragments ] = store.onlyNeededFragments( keys, fragments, 'Z1002' );
+				expect( neededKeys ).toEqual( [ 'hash2:Z1002', 'hash3:Z1002' ] );
+				expect( neededFragments ).toHaveLength( 2 );
+			} );
+
+			it( 'returns empty arrays if all fragments are rendered', () => {
+				store.fragments = {
+					'hash1:Z1002': { isPending: false, html: 'rendered' },
+					'hash2:Z1002': { isPending: false, html: 'rendered' },
+					'hash3:Z1002': { isPending: false, html: 'rendered' }
+				};
+				const [ neededKeys, neededFragments ] = store.onlyNeededFragments( keys, fragments, 'Z1002' );
+				expect( neededKeys ).toEqual( [] );
+				expect( neededFragments ).toEqual( [] );
+			} );
+		} );
+
+		describe( 'fetchSectionPreview', () => {
+			const fragments = [
+				{ Z1K1: 'Z7', Z7K1: 'Z401' },
+				{ Z1K1: 'Z7', Z7K1: 'Z402' }
+			];
+			const fragmentHashes = [ 'hash1', 'hash2' ];
+
+			let postMock;
+
+			beforeEach( () => {
+				store.fragments = {};
+				store.fragmentPromises = {};
+
+				store.setError = jest.fn();
+				store.processFragmentResponse = jest.fn();
+
+				Object.defineProperty( store, 'getViewMode', { value: false, configurable: true } );
+
+				postMock = jest.fn().mockResolvedValue( {
+					abstractwiki_fetch_section: {
+						[ ledeQid ]: [
+							{ success: true, value: '<p>Fragment 1</p>' },
+							{ success: true, value: '<p>Fragment 2</p>' }
+						]
+					}
+				} );
+				mw.Api = jest.fn( () => ( {
+					post: postMock
+				} ) );
+			} );
+
+			it( 'does nothing if view mode, language seen and section not pending', async () => {
+				Object.defineProperty( store, 'getViewMode', { value: true } );
+				Object.defineProperty( store, 'isSectionPending', { value: jest.fn( () => false ) } );
+
+				store.fragments = { [ `hash1:${ mockLang }` ]: { isPending: false, html: 'rendered' } };
+
+				await store.fetchSectionPreview( { mockQid, section: ledeQid, language: mockLang, mockDate, fragments, fragmentHashes } );
+
+				expect( postMock ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does nothing if all requested fragments are already available', async () => {
+				store.fragments = {
+					[ `hash1:${ mockLang }` ]: { isPending: false, html: 'rendered' },
+					[ `hash2:${ mockLang }` ]: { isPending: false, html: 'rendered' }
+				};
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( postMock ).not.toHaveBeenCalled();
+			} );
+
+			it( 'sets fragments as loading before the request', async () => {
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.fragments[ `hash1:${ mockLang }` ] ).toHaveProperty( 'isLoading' );
+				expect( store.fragments[ `hash2:${ mockLang }` ] ).toHaveProperty( 'isLoading' );
+			} );
+
+			it( 'makes the API call with no fragments in view mode', async () => {
+				Object.defineProperty( store, 'getViewMode', { value: true } );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( postMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_fetch_section',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_fetch_section_topic: mockQid,
+					abstractwiki_fetch_section_section: ledeQid,
+					abstractwiki_fetch_section_language: mockLang,
+					abstractwiki_fetch_section_date: mockDate
+				}, { signal: undefined } );
+			} );
+
+			it( 'makes the API call with a fragments array in edit mode', async () => {
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				const expectedFragments = JSON.stringify( fragments );
+
+				expect( postMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_fetch_section',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_fetch_section_topic: mockQid,
+					abstractwiki_fetch_section_section: ledeQid,
+					abstractwiki_fetch_section_language: mockLang,
+					abstractwiki_fetch_section_date: mockDate,
+					abstractwiki_fetch_section_fragments: expectedFragments
+				}, { signal: undefined } );
+			} );
+
+			it( 'makes the API call with a filtered fragments array in edit mode', async () => {
+				store.fragments = {
+					[ `hash1:${ mockLang }` ]: { isPending: false, html: 'rendered' },
+					[ `hash2:${ mockLang }` ]: { isPending: true }
+				};
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				// hash1 fragment is ready, hash2 fragment will be requested
+				const expectedFragments = JSON.stringify( [ fragments[ 1 ] ] );
+
+				expect( postMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_fetch_section',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_fetch_section_topic: mockQid,
+					abstractwiki_fetch_section_section: ledeQid,
+					abstractwiki_fetch_section_language: mockLang,
+					abstractwiki_fetch_section_date: mockDate,
+					abstractwiki_fetch_section_fragments: expectedFragments
+				}, { signal: undefined } );
+			} );
+
+			it( 'processes each fragmnet response on success', async () => {
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.processFragmentResponse ).toHaveBeenCalledTimes( 2 );
+				expect( store.processFragmentResponse ).toHaveBeenCalledWith(
+					`hash1:${ mockLang }`,
+					{ success: true, value: '<p>Fragment 1</p>' }
+				);
+				expect( store.processFragmentResponse ).toHaveBeenCalledWith(
+					`hash2:${ mockLang }`,
+					{ success: true, value: '<p>Fragment 2</p>' }
+				);
+			} );
+
+			it( 'sets error if response length does not match requested fragment count (fragmentKeys)', async () => {
+				postMock = jest.fn().mockResolvedValue( {
+					[ ledeQid ]: [ { success: true, value: '<p>Fragment 1</p>' } ]
+				} );
+				mw.Api = jest.fn( () => ( { post: postMock } ) );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.setError ).toHaveBeenCalled();
+				expect( store.processFragmentResponse ).not.toHaveBeenCalled();
+			} );
+
+			it( 'sets error on API failure', async () => {
+				postMock = jest.fn().mockRejectedValue( new ApiError( 'error-code', { error: { message: 'error!' } } ) );
+				mw.Api = jest.fn( () => ( { post: postMock } ) );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.setError ).toHaveBeenCalled();
+			} );
+
+			it( 'clears loading state and promises in finally', async () => {
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					date: mockDate,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.fragments[ `hash1:${ mockLang }` ].isLoading ).toBe( false );
+				expect( store.fragments[ `hash2:${ mockLang }` ].isLoading ).toBe( false );
+				expect( store.fragmentPromises[ `hash1:${ mockLang }` ] ).toBeUndefined();
+				expect( store.fragmentPromises[ `hash2:${ mockLang }` ] ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'processFragmentResponse', () => {
+			const fragmentKey = `hash1:${ mockLang }`;
+
+			beforeEach( () => {
+				store.fragments = {
+					[ fragmentKey ]: {
+						isPending: false,
+						isLoading: false,
+						hasError: false,
+						html: 'old fragment',
+						retryCount: 0
+					}
+				};
+
+				store.setRenderedFragment = jest.fn();
+				store.enqueueFragmentPreview = jest.fn();
+				store.fetchZids = jest.fn();
+
+				jest.useFakeTimers();
+			} );
+
+			afterEach( () => {
+				jest.useRealTimers();
+			} );
+
+			it( 'processes a successful fragment and calls the setter', () => {
+				const result = { success: true, value: '<p>rendered</p>' };
+
+				store.processFragmentResponse( fragmentKey, result );
+
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+					language: mockLang,
+					html: '<p>rendered</p>',
+					isPending: false
+				} );
+			} );
+
+			it( 'processes a pending fragment and calls the setter (if no retry)', () => {
+				const result = { success: true, pending: true };
+
+				store.processFragmentResponse( fragmentKey, result );
+
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+					language: mockLang,
+					isPending: true
+				} );
+
+				// Also make sure there's no retries
+				expect( store.enqueueFragmentPreview ).not.toHaveBeenCalled();
+			} );
+
+			it( 'processes a pending fragment and enqueues retry job if under max retries', () => {
+				const result = { success: true, pending: true };
+				const job = jest.fn();
+
+				store.processFragmentResponse( fragmentKey, result, job );
+
+				expect( store.fragments[ fragmentKey ].retryCount ).toBe( 1 );
+				expect( store.setRenderedFragment ).not.toHaveBeenCalled();
+
+				// Assert that a job has been enqueued after the first-retry backoff
+				// delay (INITIAL_RETRY_DELAY = 2000ms for retryCount === 1).
+				jest.advanceTimersByTime( 2100 );
+
+				expect( store.enqueueFragmentPreview ).toHaveBeenCalledTimes( 1 );
+				store.enqueueFragmentPreview.mock.calls[ 0 ][ 0 ]();
+				expect( job ).toHaveBeenCalled();
+			} );
+
+			it( 'sets fragment as pending if max retries reached', () => {
+				store.fragments[ fragmentKey ].retryCount = 2;
+				const result = { success: true, pending: true };
+				const job = jest.fn();
+
+				store.processFragmentResponse( fragmentKey, result, job );
+
+				expect( store.fragments[ fragmentKey ].retryCount ).toBe( 3 );
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+					language: mockLang,
+					isPending: true
+				} );
+
+				// Advance the counter 2000 * 2^(retryCount-1) = 8000 to make sure that
+				// no job is retried after the timer with the back off factor goes off
+				jest.advanceTimersByTime( 8100 );
+				expect( store.enqueueFragmentPreview ).not.toHaveBeenCalled();
+			} );
+
+			it( 'sets error with code and zid when failed fragment contains zerror', () => {
+				const result = {
+					success: false,
+					value: {
+						msg: 'apierror-abstractwiki_run_fragment-returned-zerror',
+						httpStatusCode: 400,
+						zerror: { Z1K1: 'Z5' },
+						params: [ 'Z500' ]
+					}
+				};
+
+				store.processFragmentResponse( fragmentKey, result );
+
+				// Check that we asynchronously fetch the error zid for its label
+				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z500' ] } );
+
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+					language: mockLang,
+					error: {
+						type: Constants.ERROR_TYPES.ERROR,
+						retry: false,
+						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
+						zid: 'Z500'
+					}
+				} );
+			} );
+
+			it( 'sets fragment with unknown error', () => {
+				const result = {
+					success: false,
+					value: { info: 'some unpredictable error structure' }
+				};
+
+				store.processFragmentResponse( fragmentKey, result );
+
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+					language: mockLang,
+					error: {
+						type: Constants.ERROR_TYPES.ERROR,
+						retry: false,
+						text: 'Unable to render this fragment due to an unknown error.'
+					}
+				} );
+			} );
+		} );
+
 		describe( 'enqueueFragmentPreview', () => {
 			beforeEach( () => {
 				store.fragmentQueue = [];
@@ -426,26 +1003,22 @@ describe( 'abstractWiki Pinia store', () => {
 		} );
 
 		describe( 'renderFragmentPreview', () => {
-			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+			const fragmentKey = `suchgood#:${ mockLang }`;
 			const payload = {
-				keyPath,
+				fragmentHash: 'suchgood#',
 				qid: mockQid,
 				language: mockLang,
 				date: mockDate,
-				isAsync: false,
 				fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
 			};
 
 			beforeEach( () => {
 				store.fragments = {
-					[ keyPath ]: {
-						[ mockLang ]: {
-							hasError: false,
-							isDirty: true,
-							isLoading: false,
-							error: null,
-							html: 'old fragment'
-						}
+					[ fragmentKey ]: {
+						hasError: false,
+						isLoading: false,
+						error: null,
+						html: 'old fragment'
 					}
 				};
 
@@ -453,8 +1026,8 @@ describe( 'abstractWiki Pinia store', () => {
 				store.enqueueFragmentPreview = jest.fn();
 			} );
 
-			it( 'does not render again if fragment is not dirty', async () => {
-				store.fragments[ keyPath ][ mockLang ].isDirty = false;
+			it( 'does not render again if there is a request in flight', async () => {
+				store.fragmentPromises[ fragmentKey ] = Promise.resolve();
 
 				await store.renderFragmentPreview( payload );
 
@@ -462,7 +1035,7 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'does not render again if fragment is loading', async () => {
-				store.fragments[ keyPath ][ mockLang ].isLoading = true;
+				store.fragments[ fragmentKey ].isLoading = true;
 
 				await store.renderFragmentPreview( payload );
 
@@ -470,10 +1043,12 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'sets loading state when ongoing render call', () => {
+				store.fragments[ fragmentKey ].isLoading = undefined;
+
 				store.renderFragmentPreview( payload );
 
 				expect( store.enqueueFragmentPreview ).toHaveBeenCalled();
-				expect( store.fragments[ keyPath ][ mockLang ].isLoading ).toBe( true );
+				expect( store.fragments[ fragmentKey ].isLoading ).toBe( true );
 			} );
 
 			it( 'adds new request job to the queue', () => {
@@ -492,35 +1067,30 @@ describe( 'abstractWiki Pinia store', () => {
 			let getMock;
 			let retryJob;
 
-			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+			const fragmentKey = `suchgood#:${ mockLang }`;
 			const payload = {
-				keyPath,
+				fragmentHash: 'suchgood#',
 				qid: mockQid,
 				language: mockLang,
 				date: mockDate,
-				isAsync: true,
 				fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
 			};
 
 			beforeEach( () => {
 				store.fragments = {
-					[ keyPath ]: {
-						[ mockLang ]: {
-							hasError: false,
-							isDirty: true,
-							isLoading: false,
-							retryCount: 0,
-							error: null,
-							html: 'old fragment'
-						}
+					[ fragmentKey ]: {
+						hasError: false,
+						isDirty: true,
+						isLoading: false,
+						retryCount: 0,
+						error: null,
+						html: 'old fragment'
 					}
 				};
 
 				retryJob = jest.fn();
 				store.setRenderedFragment = jest.fn();
-				store.enqueueFragmentPreview = jest.fn();
-
-				jest.useFakeTimers();
+				store.processFragmentResponse = jest.fn();
 
 				// Mock Api GET abstractwiki_run_fragment
 				getMock = jest.fn().mockResolvedValue( {
@@ -531,35 +1101,7 @@ describe( 'abstractWiki Pinia store', () => {
 				} ) );
 			} );
 
-			afterEach( () => {
-				jest.useRealTimers();
-			} );
-
-			it( 'runs sync call', async () => {
-				const syncPayload = {
-					keyPath,
-					qid: mockQid,
-					language: mockLang,
-					date: mockDate,
-					isAsync: false,
-					fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
-				};
-
-				await store.requestFragmentPreview( syncPayload, retryJob );
-
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'abstractwiki_run_fragment',
-					format: 'json',
-					formatversion: '2',
-					abstractwiki_run_fragment_qid: mockQid,
-					abstractwiki_run_fragment_language: mockLang,
-					abstractwiki_run_fragment_date: mockDate,
-					abstractwiki_run_fragment_async: false,
-					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
-				}, { signal: undefined } );
-			} );
-
-			it( 'runs render fragment and stores successful response', async () => {
+			it( 'runs run fragment and stores successful response', async () => {
 				await store.requestFragmentPreview( payload, retryJob );
 
 				expect( getMock ).toHaveBeenCalledWith( {
@@ -569,20 +1111,19 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
 					abstractwiki_run_fragment_date: mockDate,
-					abstractwiki_run_fragment_async: true,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
-				const expectedFragment = { keyPath, language: mockLang, fragment: 'rendered fragment' };
-				expect( store.setRenderedFragment ).toHaveBeenCalledWith( expectedFragment );
+				expect( store.processFragmentResponse ).toHaveBeenCalledWith(
+					fragmentKey,
+					{ success: true, value: 'rendered fragment' },
+					retryJob
+				);
 			} );
 
-			it( 'runs render fragment and retries if fragment pending', async () => {
-				getMock = jest.fn().mockResolvedValue( {
-					abstractwiki_run_fragment: { success: true, pending: true }
-				} );
-
-				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 0 );
+			it( 'runs render fragment and stores failed unknown response (no retry)', async () => {
+				getMock = jest.fn().mockRejectedValue( new ApiError( 'http', { error: { message: 'error!' } }, 400 ) );
+				mw.Api = jest.fn( () => ( { get: getMock } ) );
 
 				await store.requestFragmentPreview( payload, retryJob );
 
@@ -593,34 +1134,18 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
 					abstractwiki_run_fragment_date: mockDate,
-					abstractwiki_run_fragment_async: true,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
-				// Assert that the retryCount has increased
-				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 1 );
-
-				// Assert that a job has been enqueued after the first-retry backoff
-				// delay (INITIAL_RETRY_DELAY = 2000ms for retryCount === 1).
-				jest.advanceTimersByTime( 2100 );
-				expect( store.enqueueFragmentPreview ).toHaveBeenCalledTimes( 1 );
-
-				// Assert that the job enqueued is the one passed as input
-				expect( retryJob ).not.toHaveBeenCalled();
-				store.enqueueFragmentPreview.mock.calls[ 0 ][ 0 ]();
-				expect( retryJob ).toHaveBeenCalled();
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith(
+					fragmentKey,
+					{ error: { retry: false, text: 'error!', type: 'error' } }
+				);
 			} );
 
-			it( 'runs render fragment and stops if fragment pending but reached max retries', async () => {
-				// MAX_FRAGMENT_RETRIES = 3, so seed retryCount at MAX - 1 so that
-				// the next pending response trips the max-retries branch.
-				store.fragments[ keyPath ][ mockLang ].retryCount = 2;
-
-				getMock = jest.fn().mockResolvedValue( {
-					abstractwiki_run_fragment: { success: true, pending: true }
-				} );
-
-				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 2 );
+			it( 'runs render fragment and stores failed unknown response (show retry)', async () => {
+				getMock = jest.fn().mockRejectedValue( new ApiError( 'http', { error: { message: 'error!' } }, 503 ) );
+				mw.Api = jest.fn( () => ( { get: getMock } ) );
 
 				await store.requestFragmentPreview( payload, retryJob );
 
@@ -631,127 +1156,37 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
 					abstractwiki_run_fragment_date: mockDate,
-					abstractwiki_run_fragment_async: true,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
-				// Assert that the retryCount has increased to MAX_FRAGMENT_RETRIES
-				expect( store.fragments[ keyPath ][ mockLang ].retryCount ).toBe( 3 );
-
-				// Assert that final preview has been set
-				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
-					keyPath,
-					language: mockLang,
-					error: {
-						type: 'warning',
-						retry: true,
-						text: 'Reached max retries. Try again later.'
-					}
-				} );
-
-				// Assert that a job has not been enqueued
-				jest.advanceTimersByTime( 300 );
-				expect( store.enqueueFragmentPreview ).not.toHaveBeenCalled();
-			} );
-
-			it( 'runs render fragment and stores failed unknown response', async () => {
-				getMock = jest.fn().mockRejectedValue( new Error( 'API error' ) );
-
-				const mockErrMsg = 'some unknown error message';
-				mw.message = jest.fn().mockReturnValue( { text: jest.fn().mockReturnValue( mockErrMsg ) } );
-
-				await store.requestFragmentPreview( payload, retryJob );
-
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'abstractwiki_run_fragment',
-					format: 'json',
-					formatversion: '2',
-					abstractwiki_run_fragment_qid: mockQid,
-					abstractwiki_run_fragment_language: mockLang,
-					abstractwiki_run_fragment_date: mockDate,
-					abstractwiki_run_fragment_async: true,
-					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
-				}, { signal: undefined } );
-
-				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
-					keyPath,
-					language: mockLang,
-					error: {
-						retry: false,
-						text: mockErrMsg
-					}
-				} );
-			} );
-
-			it( 'runs render fragment and stores failed zerror response', async () => {
-				store.fetchZids = jest.fn();
-
-				const error = {
-					code: 'wikilambda-zerror',
-					msg: 'apierror-abstractwiki_run_fragment-returned-zerror',
-					zerror: { Z1K1: 'Z5', Z5K1: 'Z555' },
-					zerrorType: 'Z555'
-				};
-
-				// NOTE: use real timers for this job, we need it for the get mock
-				jest.useRealTimers();
-				getMock = jest.fn().mockImplementation( () => ( {
-					then: () => ( {
-						catch: ( handler ) => setTimeout( () => handler( 'code', { error } ), 0 )
-					} )
-				} ) );
-
-				await store.requestFragmentPreview( payload, retryJob );
-
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'abstractwiki_run_fragment',
-					format: 'json',
-					formatversion: '2',
-					abstractwiki_run_fragment_qid: mockQid,
-					abstractwiki_run_fragment_language: mockLang,
-					abstractwiki_run_fragment_date: mockDate,
-					abstractwiki_run_fragment_async: true,
-					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
-				}, { signal: undefined } );
-
-				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z555' ] } );
-
-				expect( store.setRenderedFragment ).toHaveBeenCalledWith( {
-					keyPath,
-					language: mockLang,
-					error: {
-						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
-						retry: false,
-						zid: 'Z555'
-					}
-				} );
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith(
+					fragmentKey,
+					{ error: { retry: true, text: 'error!', type: 'error' } }
+				);
 			} );
 		} );
 
 		describe( 'setRenderedFragment', () => {
-			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+			const fragmentKey = `suchgood#:${ mockLang }`;
 
 			beforeEach( () => {
 				store.fragments = {
-					[ keyPath ]: {
-						[ mockLang ]: {
-							html: 'old fragment'
-						}
+					[ fragmentKey ]: {
+						retryCount: 0,
+						html: 'old fragment'
 					}
 				};
 			} );
 
 			it( 'sets successful rendered fragment', () => {
-				store.setRenderedFragment( {
-					keyPath,
-					language: mockLang,
-					fragment: 'some rendered fragment'
+				store.setRenderedFragment( fragmentKey, {
+					html: 'some rendered fragment'
 				} );
 
-				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
+				expect( store.fragments[ fragmentKey ] ).toEqual( {
 					hasError: false,
-					isDirty: false,
 					isLoading: false,
+					isPending: false,
 					retryCount: 0,
 					error: null,
 					html: 'some rendered fragment'
@@ -759,18 +1194,16 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'sets failed rendered fragment with error text', () => {
-				store.setRenderedFragment( {
-					keyPath,
-					language: mockLang,
+				store.setRenderedFragment( fragmentKey, {
 					error: {
 						text: 'Some error message'
 					}
 				} );
 
-				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
+				expect( store.fragments[ fragmentKey ] ).toEqual( {
 					hasError: true,
-					isDirty: false,
 					isLoading: false,
+					isPending: false,
 					retryCount: 0,
 					error: {
 						text: 'Some error message'
@@ -780,19 +1213,17 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'sets failed rendered fragment with zerror', () => {
-				store.setRenderedFragment( {
-					keyPath,
-					language: mockLang,
+				store.setRenderedFragment( fragmentKey, {
 					error: {
 						code: 'error-code',
 						zid: 'Z555'
 					}
 				} );
 
-				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
+				expect( store.fragments[ fragmentKey ] ).toEqual( {
 					hasError: true,
-					isDirty: false,
 					isLoading: false,
+					isPending: false,
 					retryCount: 0,
 					error: {
 						code: 'error-code',
@@ -803,240 +1234,148 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'sets new fragment', () => {
-				const newKeyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+				const unseenKey = `better#:${ mockLang }`;
 
-				store.setRenderedFragment( {
-					keyPath: newKeyPath,
-					language: mockLang,
-					fragment: 'some new fragment'
+				store.setRenderedFragment( unseenKey, {
+					html: 'some unseen fragment'
 				} );
 
-				expect( store.fragments[ keyPath ][ mockLang ] ).toEqual( {
+				expect( store.fragments[ unseenKey ] ).toEqual( {
 					hasError: false,
-					isDirty: false,
 					isLoading: false,
+					isPending: false,
 					retryCount: 0,
 					error: null,
-					html: 'some new fragment'
+					html: 'some unseen fragment'
 				} );
 			} );
 
 			it( 'sets new language for an existing fragment', () => {
-				const newLanguage = 'Z1111';
+				const unseenKey = 'suchgood#:Z1003';
 
-				store.setRenderedFragment( {
-					keyPath,
-					language: newLanguage,
-					fragment: 'some new fragment in new language'
+				store.setRenderedFragment( unseenKey, {
+					html: 'same fragment in new language'
 				} );
 
-				expect( store.fragments[ keyPath ][ newLanguage ] ).toEqual( {
+				expect( store.fragments[ unseenKey ] ).toEqual( {
 					hasError: false,
-					isDirty: false,
 					isLoading: false,
+					isPending: false,
 					retryCount: 0,
 					error: null,
-					html: 'some new fragment in new language'
+					html: 'same fragment in new language'
 				} );
 			} );
 		} );
 
-		describe( 'setDirtyFragment', () => {
-			const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
-			const childKeyPath = `${ keyPath }.Z444K1.3`;
-			const debounceTime = 2000;
-			const otherLang = 'Z1111';
-
+		describe( 'insertHashAtKeyPath', () => {
 			beforeEach( () => {
-				jest.useFakeTimers();
-
-				store.fragments = {
-					[ keyPath ]: {
-						[ mockLang ]: {
-							hasError: false,
-							isDirty: false,
-							isLoading: false,
-							error: null,
-							html: 'old fragment'
-						},
-						[ otherLang ]: {
-							hasError: true,
-							isDirty: false,
-							isLoading: false,
-							error: null,
-							html: 'old fragment in other lang'
-						}
-					}
-				};
+				store.sectionHashes = {};
 			} );
 
-			afterEach( () => {
-				jest.useRealTimers();
+			it( 'initializes the section and inserts hash if section did not exist', () => {
+				store.insertHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 'hash1' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1' ] );
 			} );
 
-			it( 'sets fragment as dirty after debounce', () => {
-				store.setDirtyFragment( childKeyPath );
-
-				// Doesn't set dirty immediately but waits for debounce
-				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( false );
-				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( false );
-
-				// Sets dirty after debounce timer goes off
-				jest.advanceTimersByTime( debounceTime );
-				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( true );
-				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( true );
+			it( 'inserts hash at the beginning of the list', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
+				store.insertHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 'newhash' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'newhash', 'hash1', 'hash2' ] );
 			} );
 
-			it( 'sets fragment as dirty immediately if requested', () => {
-				store.setDirtyFragment( childKeyPath, true );
-
-				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( false );
-				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( false );
-
-				// Sets dirty after 0ms timer goes off
-				jest.advanceTimersByTime( 1 );
-				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( true );
-				expect( store.fragments[ keyPath ][ otherLang ].isDirty ).toBe( true );
+			it( 'inserts hash in the middle of the list', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
+				store.insertHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.2', 'newhash' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'newhash', 'hash2', 'hash3' ] );
 			} );
 
-			it( 'does nothing if fragment is not initialized', () => {
-				store.fragments = {};
-
-				store.setDirtyFragment( childKeyPath );
-				jest.runAllTimers();
-
-				expect( store.fragments[ keyPath ] ).toBeUndefined();
+			it( 'inserts null hash if no hash is given', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
+				store.insertHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ null, 'hash1', 'hash2' ] );
 			} );
 
-			it( 'debounces multiple calls', () => {
-				store.fragments = {
-					[ keyPath ]: {
-						[ mockLang ]: {
-							hasError: false,
-							isDirty: false,
-							isLoading: false,
-							error: null,
-							html: 'old fragment'
-						}
-					}
-				};
-				store.setDirtyFragment( childKeyPath );
-				store.setDirtyFragment( childKeyPath );
-				store.setDirtyFragment( childKeyPath );
-
-				jest.advanceTimersByTime( debounceTime );
-
-				expect( store.fragments[ keyPath ][ mockLang ].isDirty ).toBe( true );
+			it( 'does not affect other sections', () => {
+				store.sectionHashes = { Q101: [ 'hash1' ], Q102: [ 'goodhash' ] };
+				store.insertHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 'newhash' );
+				expect( store.sectionHashes.Q102 ).toEqual( [ 'goodhash' ] );
 			} );
 		} );
 
-		describe( 'swapFragmentPreviews', () => {
-			const keyPath = 'abstractwiki.sections.Q8776414.fragments';
-			const en = 'Z1002';
-			const es = 'Z1003';
-
+		describe( 'deleteHashAtKeyPath', () => {
 			beforeEach( () => {
-				store.fragments = {
-					[ `${ keyPath }.1` ]: {
-						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 1' },
-						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 1' }
-					},
-					[ `${ keyPath }.2` ]: {
-						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 2' },
-						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 2' }
-					},
-					[ `${ keyPath }.3` ]: {
-						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 3' },
-						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 3' }
-					}
-				};
+				store.sectionHashes = {};
 			} );
 
-			it( 'throws error if first keyPath does not exist', () => {
-				expect( () => {
-					store.swapFragmentPreviews( `${ keyPath }.4`, `${ keyPath }.3` );
-				} ).toThrowError();
+			it( 'does nothing if section does not exist', () => {
+				store.deleteHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1' );
+				expect( store.sectionHashes.Q101 ).toBeUndefined();
 			} );
 
-			it( 'throws error if second keyPath does not exist', () => {
-				expect( () => {
-					store.swapFragmentPreviews( `${ keyPath }.3`, `${ keyPath }.4` );
-				} ).toThrowError();
+			it( 'removes hash at the beginning of the list', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
+				store.deleteHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash2', 'hash3' ] );
 			} );
 
-			it( 'swaps two given fragment previews', () => {
-				store.swapFragmentPreviews( `${ keyPath }.1`, `${ keyPath }.2` );
+			it( 'removes hash in the middle of the list', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
+				store.deleteHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.2' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash3' ] );
+			} );
 
-				expect( store.fragments[ `${ keyPath }.1` ][ en ].html ).toBe( 'EN fragment 2' );
-				expect( store.fragments[ `${ keyPath }.1` ][ es ].html ).toBe( 'ES fragment 2' );
+			it( 'removes hash at the end of the list', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
+				store.deleteHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.3' );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2' ] );
+			} );
 
-				expect( store.fragments[ `${ keyPath }.2` ][ en ].html ).toBe( 'EN fragment 1' );
-				expect( store.fragments[ `${ keyPath }.2` ][ es ].html ).toBe( 'ES fragment 1' );
+			it( 'does not affect other sections', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ], Q102: [ 'goodhash' ] };
+				store.deleteHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1' );
+				expect( store.sectionHashes.Q102 ).toEqual( [ 'goodhash' ] );
 			} );
 		} );
 
-		describe( 'shiftFragmentPreviews', () => {
-			const keyPath = 'abstractwiki.sections.Q8776414.fragments';
-			const en = 'Z1002';
-			const es = 'Z1003';
-
+		describe( 'swapHashAtKeyPath', () => {
 			beforeEach( () => {
-				store.fragments = {
-					[ `${ keyPath }.1` ]: {
-						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 1' },
-						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 1' }
-					},
-					[ `${ keyPath }.2` ]: {
-						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 2' },
-						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 2' }
-					},
-					[ `${ keyPath }.3` ]: {
-						[ en ]: { isDirty: false, isLoading: false, hasError: false, html: 'EN fragment 3' },
-						[ es ]: { isDirty: false, isLoading: false, hasError: false, html: 'ES fragment 3' }
-					}
-				};
+				store.sectionHashes = {};
 			} );
 
-			it( 'throws error if offset is not a number', () => {
-				expect( () => {
-					store.shiftFragmentPreviews( `${ keyPath }.2`, null );
-				} ).toThrowError();
+			it( 'does nothing if section does not exist', () => {
+				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 1 );
+				expect( store.sectionHashes.Q101 ).toBeUndefined();
 			} );
 
-			it( 'throws error if keyPath is not a list item', () => {
-				expect( () => {
-					store.shiftFragmentPreviews( `${ keyPath }.2.Z444K1`, 1 );
-				} ).toThrowError();
+			it( 'does nothing if swap index is out of bounds (forward)', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
+				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.2', 1 );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2' ] );
 			} );
 
-			it( 'shifts two items one position forward', () => {
-				store.shiftFragmentPreviews( `${ keyPath }.2`, 1 );
-
-				// Left slot 2 empty
-				expect( store.fragments[ `${ keyPath }.2` ] ).toBeUndefined();
-
-				// Shiftead forward fragment 2 to 3
-				expect( store.fragments[ `${ keyPath }.3` ][ en ].html ).toBe( 'EN fragment 2' );
-				expect( store.fragments[ `${ keyPath }.3` ][ es ].html ).toBe( 'ES fragment 2' );
-
-				// Shifted forward framgnet 3 to 4
-				expect( store.fragments[ `${ keyPath }.4` ][ en ].html ).toBe( 'EN fragment 3' );
-				expect( store.fragments[ `${ keyPath }.4` ][ es ].html ).toBe( 'ES fragment 3' );
+			it( 'does nothing if swap index is out of bounds (backward)', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
+				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', -1 );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2' ] );
 			} );
 
-			it( 'shifts two items one position back', () => {
-				store.shiftFragmentPreviews( `${ keyPath }.2`, -1 );
+			it( 'swaps hash one position forward', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
+				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 1 );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash2', 'hash1', 'hash3' ] );
+			} );
 
-				// Shifted back fragment 2 to 1
-				expect( store.fragments[ `${ keyPath }.1` ][ en ].html ).toBe( 'EN fragment 2' );
-				expect( store.fragments[ `${ keyPath }.1` ][ es ].html ).toBe( 'ES fragment 2' );
+			it( 'swaps hash one position backward', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
+				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.2', -1 );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash2', 'hash1', 'hash3' ] );
+			} );
 
-				// Shifted back fragment 3 to 2
-				expect( store.fragments[ `${ keyPath }.2` ][ en ].html ).toBe( 'EN fragment 3' );
-				expect( store.fragments[ `${ keyPath }.2` ][ es ].html ).toBe( 'ES fragment 3' );
-
-				// Left slot 3 empty
-				expect( store.fragments[ `${ keyPath }.3` ] ).toBeUndefined();
+			it( 'does not affect other sections', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ], Q102: [ 'goodhash' ] };
+				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 1 );
+				expect( store.sectionHashes.Q102 ).toEqual( [ 'goodhash' ] );
 			} );
 		} );
 
