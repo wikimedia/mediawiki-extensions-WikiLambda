@@ -68,6 +68,8 @@ you have cloned the `mediawiki/core` repository.
   $wgWikiLambdaEnableRepoMode = true;
   $wgWikiLambdaEnableClientMode = true;
   $wgWikiLambdaEnableAbstractMode = true;
+  $wgWikiLambdaEnableAbstractClientMode = true;
+  $wgWikiLambdaEnableAbstractClientModeIntegration = true;
   wfLoadExtensions( ['WikimediaMessages', 'UniversalLanguageSelector'] ); # Required
   wfLoadExtensions( ['EventLogging', 'EventBus', 'TestKitchen'] ); # Recommended, for metrics
   wfLoadExtensions( ['CommunityConfiguration'] ); # Recommended, for configuration
@@ -984,6 +986,7 @@ $wgWikiLambdaEnableRepoMode = true;
 $wgWikiLambdaEnableClientMode = true;
 $wgWikiLambdaEnableAbstractMode = true;
 $wgWikiLambdaEnableAbstractClientMode = false;
+$wgWikiLambdaEnableAbstractClientModeIntegration = false;
 ```
 
 * Another possibility is to set the local environment only to work as Abstract Wikipedia and set production Wikifunctions as the repo. This should work, too, although means more load for production Wikifunctions
@@ -993,7 +996,8 @@ $wgWikiLambdaClientTargetAPI = 'https://www.wikifunctions.org';
 $wgWikiLambdaEnableRepoMode = false;
 $wgWikiLambdaEnableClientMode = true;
 $wgWikiLambdaEnableAbstractMode = true;
-$wgWikiLambdaEnableAbstractClientMode = false;
+$wgWikiLambdaEnableAbstractClientMode = true;
+$wgWikiLambdaEnableAbstractClientModeIntegration = true;
 ```
 
 ### Update Abstract Article Store
