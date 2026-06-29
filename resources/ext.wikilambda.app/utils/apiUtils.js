@@ -598,19 +598,25 @@ const apiUtils = {
 	fetchAbstractWikiSection: function ( payload ) {
 		// Should never work with foreign API
 		const api = new mw.Api();
+		const params = {
+			action: 'abstractwiki_fetch_section',
+			format: 'json',
+			formatversion: '2',
+			abstractwiki_fetch_section_topic: payload.topic,
+			abstractwiki_fetch_section_section: payload.section,
+			abstractwiki_fetch_section_language: payload.language,
+			abstractwiki_fetch_section_date: payload.date,
+			abstractwiki_fetch_section_fragments: payload.fragments
+		};
+		const options = { signal: payload.signal };
+		// Fetching a section's persisted fragments is an idempotent read served as
+		// a cacheable GET, like the sibling abstractwiki_run_fragment API. Supplying
+		// unsaved fragments flips the API to its POST-only render path.
+		const request = payload.fragments === undefined ?
+			api.get( params, options ) :
+			api.post( params, options );
 		return new Promise( ( resolve, reject ) => {
-			api.post( {
-				action: 'abstractwiki_fetch_section',
-				format: 'json',
-				formatversion: '2',
-				abstractwiki_fetch_section_topic: payload.topic,
-				abstractwiki_fetch_section_section: payload.section,
-				abstractwiki_fetch_section_language: payload.language,
-				abstractwiki_fetch_section_date: payload.date,
-				abstractwiki_fetch_section_fragments: payload.fragments
-			}, {
-				signal: payload.signal
-			} )
+			request
 				.then( ( data ) => resolve( data.abstractwiki_fetch_section ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );

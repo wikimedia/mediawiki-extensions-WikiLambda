@@ -9,14 +9,18 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Content\IContentHandlerFactory;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
@@ -125,6 +129,24 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		] );
 		$params['abstractwiki_fetch_section_token'] = $tokenData['query']['tokens']['csrftoken'];
 		return $this->doApiRequest( $params, $session );
+	}
+
+	/**
+	 * Builds the action module bound to a FauxRequest carrying the given params,
+	 * so its HTTP-method declarations (mustBePosted/needsToken), which read the
+	 * raw request, can be asserted directly. doApiRequest() runs FauxRequests in
+	 * internal mode, which skips the mustBePosted gate, so we exercise the module
+	 * contract rather than the full pipeline.
+	 *
+	 * @param array $params
+	 * @return ApiBase
+	 */
+	private function getFetchSectionModuleForParams( array $params ): ApiBase {
+		$context = new RequestContext();
+		$context->setRequest( new FauxRequest( $params ) );
+		$context->setUser( $this->getTestUser()->getUser() );
+		$main = new ApiMain( $context );
+		return $main->getModuleManager()->getModule( 'abstractwiki_fetch_section' );
 	}
 
 	// Request stored content
@@ -389,6 +411,33 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		// And the stored value is surfaced unchanged.
 		$this->assertCount( 1, $result );
 		$this->assertSame( '<b>content</b>', $result[0][ 'value' ] );
+	}
+
+	// HTTP method
+	// ===========
+
+	public function testReadPathIsGetEligible(): void {
+		// The persisted-fragment read (no "fragments") is idempotent and must be
+		// reachable via GET, i.e. it must not require POST or a token. Supplying
+		// "fragments" flips it to POST plus a CSRF token (large payload + the
+		// elevated unsaved-render right).
+		$baseParams = [
+			'action' => 'abstractwiki_fetch_section',
+			'abstractwiki_fetch_section_topic' => 'Q42',
+			'abstractwiki_fetch_section_section' => 'Q8776414',
+			'abstractwiki_fetch_section_language' => 'Z1002',
+			'abstractwiki_fetch_section_date' => '2026-01-01',
+		];
+
+		$readModule = $this->getFetchSectionModuleForParams( $baseParams );
+		$this->assertFalse( $readModule->mustBePosted(), 'Persisted read must be GET-eligible' );
+		$this->assertFalse( (bool)$readModule->needsToken(), 'Persisted read must not require a token' );
+
+		$writeModule = $this->getFetchSectionModuleForParams(
+			$baseParams + [ 'abstractwiki_fetch_section_fragments' => '[]' ]
+		);
+		$this->assertTrue( $writeModule->mustBePosted(), 'Unsaved-fragments path must require POST' );
+		$this->assertSame( 'csrf', $writeModule->needsToken(), 'Unsaved-fragments path must require a CSRF token' );
 	}
 
 	// API returned exceptions

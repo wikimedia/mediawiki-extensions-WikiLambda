@@ -195,12 +195,15 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 	}
 
 	/**
+	 * Fetching a section's persisted fragments is an idempotent read and can be
+	 * served as a cacheable GET. Only the unsaved-fragment render path needs
+	 * POST, for its large JSON payload and the CSRF token from needsToken().
+	 *
 	 * @see ApiBase::mustBePosted()
 	 * @inheritDoc
-	 * @codeCoverageIgnore
 	 */
 	public function mustBePosted() {
-		return true;
+		return $this->isUnsavedFragmentsRequest();
 	}
 
 	/**

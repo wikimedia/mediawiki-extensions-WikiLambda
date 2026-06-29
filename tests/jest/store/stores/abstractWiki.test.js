@@ -573,6 +573,7 @@ describe( 'abstractWiki Pinia store', () => {
 			const fragmentHashes = [ 'hash1', 'hash2' ];
 
 			let postMock;
+			let getMock;
 
 			beforeEach( () => {
 				store.fragments = {};
@@ -583,15 +584,18 @@ describe( 'abstractWiki Pinia store', () => {
 
 				Object.defineProperty( store, 'getViewMode', { value: false, configurable: true } );
 
-				postMock = jest.fn().mockResolvedValue( {
+				const response = {
 					abstractwiki_fetch_section: {
 						[ ledeQid ]: [
 							{ success: true, value: '<p>Fragment 1</p>' },
 							{ success: true, value: '<p>Fragment 2</p>' }
 						]
 					}
-				} );
+				};
+				postMock = jest.fn().mockResolvedValue( response );
+				getMock = jest.fn().mockResolvedValue( response );
 				mw.Api = jest.fn( () => ( {
+					get: getMock,
 					post: postMock
 				} ) );
 			} );
@@ -639,7 +643,7 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.fragments[ `hash2:${ mockLang }` ] ).toHaveProperty( 'isLoading' );
 			} );
 
-			it( 'makes the API call with no fragments in view mode', async () => {
+			it( 'makes the API call as a GET with no fragments in view mode', async () => {
 				Object.defineProperty( store, 'getViewMode', { value: true } );
 
 				await store.fetchSectionPreview( {
@@ -651,7 +655,10 @@ describe( 'abstractWiki Pinia store', () => {
 					fragmentHashes
 				} );
 
-				expect( postMock ).toHaveBeenCalledWith( {
+				// The persisted-fragment read is idempotent, so it is issued as a
+				// cacheable GET rather than a POST.
+				expect( postMock ).not.toHaveBeenCalled();
+				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'abstractwiki_fetch_section',
 					format: 'json',
 					formatversion: '2',
@@ -662,7 +669,7 @@ describe( 'abstractWiki Pinia store', () => {
 				}, { signal: undefined } );
 			} );
 
-			it( 'makes the API call with a fragments array in edit mode', async () => {
+			it( 'makes the API call as a POST with a fragments array in edit mode', async () => {
 				await store.fetchSectionPreview( {
 					topic: mockQid,
 					section: ledeQid,
@@ -674,6 +681,9 @@ describe( 'abstractWiki Pinia store', () => {
 
 				const expectedFragments = JSON.stringify( fragments );
 
+				// Rendering unsaved fragments is a write under an elevated right, so
+				// it stays a POST rather than the read path's GET.
+				expect( getMock ).not.toHaveBeenCalled();
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'abstractwiki_fetch_section',
 					format: 'json',
