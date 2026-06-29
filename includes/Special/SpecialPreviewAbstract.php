@@ -236,17 +236,50 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			// Get from the store
 			$awSection = $this->articleStore->getSection( $targetQid, $sectionQid, $language->getCode() );
 
-			if ( $awSection === null ) {
-				$hasMissingSections = true;
-			}
-
 			// Was a pre-rendered section available in the store, or did we fall back to a placeholder?
 			// Grafana: mediawiki.WikiLambda.aw_preview_section_total{locale=…, source=…, outcome=…}
-			$this->statsFactory->getCounter( 'aw_preview_section_total' )
+			// locale and source are the same for all outcomes; only outcome varies
+			$sectionCounter = $this->statsFactory->getCounter( 'aw_preview_section_total' )
 				->setLabel( 'locale', $locale )
-				->setLabel( 'source', $source )
-				->setLabel( 'outcome', $awSection === null ? 'missing' : 'found' )
-				->increment();
+				->setLabel( 'source', $source );
+			// Always record total so ratios (ok/total, missing/total) can be calculated in Grafana
+			$sectionCounter->setLabel( 'outcome', 'total' )->increment();
+			if ( $awSection === null ) {
+				$hasMissingSections = true;
+				$sectionCounter->setLabel( 'outcome', 'missing' )->increment();
+			} else {
+				$fragmentStatus = $awSection->getFragmentStatus();
+				// Map each section-level outcome to whether this section meets that condition
+				$sectionOutcomes = [
+					'incomplete' => $fragmentStatus['pending'] > 0,
+					'failed'     => $fragmentStatus['failed'] > 0,
+					'stale'      => $fragmentStatus['stale'] > 0,
+				];
+
+				if ( !array_filter( $sectionOutcomes ) ) {
+					// No issues found: record ok so we have a healthy baseline to compare against
+					$sectionCounter->setLabel( 'outcome', 'ok' )->increment();
+				} else {
+					// A section can be incomplete, failed, and stale at the same time;
+					// each condition is recorded separately so Grafana can filter independently
+					foreach ( $sectionOutcomes as $outcome => $hasIssue ) {
+						if ( $hasIssue ) {
+							$sectionCounter->setLabel( 'outcome', $outcome )->increment();
+						}
+					}
+				}
+
+				// Fragment-level counts tracked separately so they don't mix with section counts above
+				// Grafana: mediawiki.WikiLambda.aw_preview_fragment_total{locale=…, source=…, status=…}
+				$fragmentCounter = $this->statsFactory->getCounter( 'aw_preview_fragment_total' )
+					->setLabel( 'locale', $locale )
+					->setLabel( 'source', $source );
+				foreach ( $fragmentStatus as $status => $count ) {
+					if ( $count > 0 ) {
+						$fragmentCounter->setLabel( 'status', $status )->incrementBy( $count );
+					}
+				}
+			}
 
 			// Transform into Html the retrieved section or an empty one (with the right section title)
 			$sectionHtml = $awSection === null ?
