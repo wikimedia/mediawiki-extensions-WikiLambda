@@ -354,35 +354,45 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 	 * @return string
 	 */
 	private function getOptInCallToAction( $targetQid ): string {
-		// Only show Opt-in or Opt-out Call To Action notices in AbstractClient mode
+		// Only show provenance and opt-in/opt-out notices in AbstractClient mode.
 		if ( !$this->integrationEnabled() ) {
-			return '';
-		}
-
-		// Only show Opt-in or Opt-out Call To Action if user holds 'wikilambda-abstract-optin' rigth
-		if ( !$this->getUser()->isAllowed( 'wikilambda-abstract-optin' ) ) {
 			return '';
 		}
 
 		$primaryTitle = $this->findPrimaryTitle( $targetQid );
 
-		// If article is not opted in, show notice and cta
-		if ( $primaryTitle === null ) {
-			return Html::rawElement( 'p', [],
-				$this->msg( 'wikilambda-abstract-special-preview-optedout-notice' )->parse()
-				. ' ' . $this->msg( 'wikilambda-abstract-special-preview-optin-cta' )->parse()
-			);
-		}
+		// Whether the viewer may change opt-in status. The actionable "show/stop showing this
+		// page to readers" links are only useful to, and only shown to, such users; but the
+		// "this Abstract Article powers the article X" notice is public provenance, so gate the
+		// call-to-action links on their own rather than bailing out of the whole method (which
+		// previously hid the provenance notice from anonymous readers too).
+		$canManageOptIn = $this->getUser()->isAllowed( 'wikilambda-abstract-optin' );
 
-		// If article is opted in, this can be Special:PreviewAbstract or the article page:
-		// * Special:PreviewAbstract page: we show notice about where this page is shown.
-		// * Article page: we don't show notice, as we are already there.
+		// On the article page itself the "powers the article X" notice is redundant — the reader
+		// is already there — so it is only emitted on Special:PreviewAbstract.
 		$isSpecialPage = $this->getContext()->getTitle()->isSpecialPage();
+
 		$parts = [];
-		if ( $isSpecialPage ) {
+
+		// Public provenance: which local article this preview powers.
+		if ( $primaryTitle !== null && $isSpecialPage ) {
 			$parts[] = $this->msg( 'wikilambda-abstract-special-preview-optedin-notice', $primaryTitle )->parse();
 		}
-		$parts[] = $this->msg( 'wikilambda-abstract-special-preview-optout-cta' )->parse();
+
+		// Opt-in management call to action, shown only to users who can change opt-in status.
+		if ( $canManageOptIn ) {
+			if ( $primaryTitle === null ) {
+				$parts[] = $this->msg( 'wikilambda-abstract-special-preview-optedout-notice' )->parse();
+				$parts[] = $this->msg( 'wikilambda-abstract-special-preview-optin-cta' )->parse();
+			} else {
+				$parts[] = $this->msg( 'wikilambda-abstract-special-preview-optout-cta' )->parse();
+			}
+		}
+
+		if ( $parts === [] ) {
+			return '';
+		}
+
 		return Html::rawElement( 'p', [], implode( ' ', $parts ) );
 	}
 
