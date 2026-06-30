@@ -222,7 +222,9 @@ class AWFragmentStore {
 	}
 
 	/**
-	 * TODO (T428784): decide how we are showing a failed framgent in an integrated AW article
+	 * Creates a chip-like html element for a fragment that returned an error, which will
+	 * be rendered inside an integrated AW Article, for end-readers to consume as a normal
+	 * Wikipedia article.
 	 *
 	 * @param string $locale
 	 * @return string
@@ -234,7 +236,9 @@ class AWFragmentStore {
 	}
 
 	/**
-	 * TODO (T428784): decide how we are showing a failed framgent in an integrated AW article
+	 * Creates a chip-like html element for a fragment that has not been rendered yet, which
+	 * will be rendered inside an integrated AW Article, for end-readers to consume as a
+	 * normal Wikipedia article.
 	 *
 	 * @param string $locale
 	 * @return string

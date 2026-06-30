@@ -224,7 +224,7 @@ class AWSectionTest extends WikiLambdaAbstractClientIntegrationTestCase {
 			/* pending */ 2,
 			/* failed */ 0,
 			/* stale */ 1,
-			[ "a", "Pending", "b", "Pending" ]
+			[ "a", "Content pending", "b", "Content pending" ]
 		];
 
 		yield 'all fragments are both stale and failing' => [
@@ -236,7 +236,7 @@ class AWSectionTest extends WikiLambdaAbstractClientIntegrationTestCase {
 			/* pending */ 0,
 			/* failed */ 3,
 			/* stale */ 3,
-			[ "Failing", "Failing", "Failing" ]
+			[ "Content unavailable", "Content unavailable", "Content unavailable" ]
 		];
 
 		yield 'big section with all states' => [
@@ -255,7 +255,10 @@ class AWSectionTest extends WikiLambdaAbstractClientIntegrationTestCase {
 			/* pending */ 2,
 			/* failed */ 2,
 			/* stale */ 4,
-			[ "a", "b", "c", "d", "Pending", "Failing", "Failing", "d", "e", "Pending" ]
+			[
+				"a", "b", "c", "d", "Content pending", "Content unavailable",
+				"Content unavailable", "d", "e", "Content pending"
+			]
 		];
 	}
 
