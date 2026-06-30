@@ -25,7 +25,6 @@ use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\MainConfigNames;
 use MediaWiki\SpecialPage\UnlistedSpecialPage;
-use MediaWiki\Title\Title;
 use Wikimedia\HtmlArmor\HtmlArmor;
 use Wikimedia\Stats\StatsFactory;
 
@@ -94,12 +93,13 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		$this->setHeaders();
 
 		// (T345453) Show the standard copyright footer on every outcome, including the error
-		// and warning states below. The footer only renders its copyright line when the
-		// *relevant* title exists (SkinComponentFooter), which a Special page's own NS_SPECIAL
-		// title never does; stand in the wiki's main page for now. The success path below
-		// refines this to the backing local article where one is configured.
+		// and warning states below. We deliberately do not override the skin's relevant title
+		// to coax the footer into rendering: that title also drives the content-action tabs and
+		// namespace links, so standing in the main page there mislabelled every tab and leaked
+		// a second, broken "View history". The relevant title is left as the genuine surface
+		// (the integrated article, or this special page), both of which are isKnown(); the
+		// footer's copyright line is enabled for known titles that opt in via setCopyright().
 		$output->setCopyright( true );
-		$this->getSkin()->setRelevantTitle( Title::newMainPage() );
 
 		$startTime = microtime( true );
 		$locale = 'unknown';
@@ -256,10 +256,6 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			$articleHtml .= HtmlArmor::getHtml( $sectionHtml );
 		}
 
-		// (T345453) Refine the relevant title set above to the backing local article where
-		// one is configured, so the standard copyright footer attributes the right page.
-		$this->getSkin()->setRelevantTitle( $this->getRelevantTitleForPreview( $targetQid ) );
-
 		// Set content html
 		$output->addHTML( $articleHtml );
 
@@ -326,27 +322,6 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * The title whose content this preview stands in for, used as the relevant title so
-	 * the skin footer's title-exists gate passes (see execute()). This is the opted-in
-	 * local article when one is configured and exists, otherwise the wiki's main page.
-	 *
-	 * @param string $targetQid
-	 * @return Title
-	 */
-	private function getRelevantTitleForPreview( string $targetQid ): Title {
-		if ( $this->integrationEnabled() ) {
-			$primaryTitle = $this->findPrimaryTitle( $targetQid );
-			if ( $primaryTitle !== null ) {
-				$title = Title::newFromText( $primaryTitle );
-				if ( $title && $title->exists() ) {
-					return $title;
-				}
-			}
-		}
-		return Title::newMainPage();
 	}
 
 	/**
