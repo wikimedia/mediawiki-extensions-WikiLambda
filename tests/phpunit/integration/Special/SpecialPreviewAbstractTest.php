@@ -474,11 +474,13 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 	}
 
 	/**
-	 * (T345453) The copyright footer must be enabled even in error/warning states. As the footer
-	 * only renders its copyright line when the relevant title exists, those states stand in the
-	 * wiki's main page (a Special page's own title never exists).
+	 * (T345453) The copyright footer must be enabled even in error/warning states, but the
+	 * special page must not hijack the skin's relevant title to achieve it: that title also
+	 * drives the content-action tabs and namespace links, so standing in the main page there
+	 * mislabelled every tab. The relevant title is left as the special page's own title, which
+	 * is isKnown(); the footer renders copyright for known titles that opt in via setCopyright().
 	 */
-	public function testErrorStateEnablesCopyrightWithMainPageRelevantTitle(): void {
+	public function testErrorStateEnablesCopyrightWithoutHijackingRelevantTitle(): void {
 		$context = RequestContext::getMain();
 		$context->setUser( $this->performer );
 		$context->setLanguage( 'en' );
@@ -495,22 +497,22 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 
 		$this->assertStringContainsString( 'cdx-message--warning', $html );
 		$this->assertTrue( $context->getOutput()->showsCopyright(), 'Copyright is enabled in error states' );
-		$this->assertTrue(
+		$this->assertFalse(
 			$context->getSkin()->getRelevantTitle()->isMainPage(),
-			'Error states stand in the main page as relevant title'
+			'The relevant title is not hijacked to the main page'
+		);
+		$this->assertTrue(
+			$context->getSkin()->getRelevantTitle()->isSpecial( 'PreviewAbstract' ),
+			'The relevant title is left as the special page itself'
 		);
 	}
 
-	public function testSuccessRelevantTitleIsBackingArticle(): void {
+	public function testSuccessEnablesCopyrightWithoutHijackingRelevantTitle(): void {
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', true );
 		$this->setGroupPermissions( 'user', 'wikilambda-abstract-optin', true );
 
-		// The backing article must exist for it to be used as the relevant title. Let the
-		// helper pick a title in the default wikitext namespace, since abstract mode reshapes
-		// the main namespace's content model away from wikitext.
-		$articleTitle = $this->getExistingTestPage()->getTitle()->getPrefixedText();
 		$this->mockOptedInArticles( [
-			$articleTitle => [ 'qid' => 'Q42', 'redirect' => false ]
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ]
 		] );
 
 		$this->mockArticleStoreWithSections( 'Q42', 'en', [
@@ -531,36 +533,13 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 		);
 
 		$this->assertTrue( $context->getOutput()->showsCopyright() );
-		$this->assertSame(
-			$articleTitle,
-			$context->getSkin()->getRelevantTitle()->getPrefixedText(),
-			'Success refines the relevant title to the backing local article'
-		);
-	}
-
-	public function testSuccessRelevantTitleFallsBackToMainPage(): void {
-		// Integration is disabled by default in setUp(), so there is no backing article.
-		$this->mockArticleStoreWithSections( 'Q42', 'en', [
-			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
-		] );
-
-		$context = RequestContext::getMain();
-		$context->setUser( $this->performer );
-		$context->setLanguage( 'en' );
-
-		$this->executeSpecialPage(
-			/* subpage */ 'en/Q42',
-			/* request */ $context->getRequest(),
-			/* language */ null,
-			/* performer */ null,
-			/* fullHtml */ false,
-			/* context */ $context
-		);
-
-		$this->assertTrue( $context->getOutput()->showsCopyright() );
-		$this->assertTrue(
+		$this->assertFalse(
 			$context->getSkin()->getRelevantTitle()->isMainPage(),
-			'Success without a backing article falls back to the main page'
+			'Success does not hijack the relevant title to the main page'
+		);
+		$this->assertTrue(
+			$context->getSkin()->getRelevantTitle()->isSpecial( 'PreviewAbstract' ),
+			'The relevant title is left as the special page itself'
 		);
 	}
 
