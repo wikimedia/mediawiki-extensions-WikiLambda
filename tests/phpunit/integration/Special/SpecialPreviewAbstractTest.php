@@ -563,4 +563,37 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 			'Success without a backing article falls back to the main page'
 		);
 	}
+
+	public function testOptedInProvenanceShownWithoutOptInRight(): void {
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', true );
+		// Deliberately ungrant the opt-in management right: an ordinary reader.
+		$this->setGroupPermissions( 'user', 'wikilambda-abstract-optin', false );
+
+		$this->mockOptedInArticles( [
+			'Douglas Adams' => [ 'qid' => 'Q42', 'redirect' => false ]
+		] );
+
+		$this->mockArticleStoreWithSections( 'Q42', 'en', [
+			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html ] = $this->executeSpecialPage(
+			/* subpage */ 'en/Q42',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		// Public provenance: every reader is told which article this preview powers ...
+		$this->assertStringContainsString( 'This Abstract Article powers the article', $html );
+		$this->assertStringContainsString( 'Douglas Adams', $html );
+		// ... but the actionable opt-out link is reserved for users who can manage opt-in.
+		$this->assertStringNotContainsString( 'Stop showing this page to readers', $html );
+	}
 }
