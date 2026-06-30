@@ -612,9 +612,14 @@ const apiUtils = {
 		// Fetching a section's persisted fragments is an idempotent read served as
 		// a cacheable GET, like the sibling abstractwiki_run_fragment API. Supplying
 		// unsaved fragments flips the API to its POST-only render path.
+		// We get csrf token, manually set it as abstractwiki_fetch_section_token,
+		// because postWithToken would add the token parameter without the prefix
 		const request = payload.fragments === undefined ?
 			api.get( params, options ) :
-			api.post( params, options );
+			api.getToken( 'csrf' ).then( ( token ) => {
+				params.abstractwiki_fetch_section_token = token;
+				return api.post( params, options );
+			} );
 		return new Promise( ( resolve, reject ) => {
 			request
 				.then( ( data ) => resolve( data.abstractwiki_fetch_section ) )

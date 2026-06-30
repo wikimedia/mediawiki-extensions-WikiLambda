@@ -574,6 +574,7 @@ describe( 'abstractWiki Pinia store', () => {
 
 			let postMock;
 			let getMock;
+			let getTokenMock;
 
 			beforeEach( () => {
 				store.fragments = {};
@@ -594,8 +595,10 @@ describe( 'abstractWiki Pinia store', () => {
 				};
 				postMock = jest.fn().mockResolvedValue( response );
 				getMock = jest.fn().mockResolvedValue( response );
+				getTokenMock = jest.fn().mockResolvedValue( 'csrf-token' );
 				mw.Api = jest.fn( () => ( {
 					get: getMock,
+					getToken: getTokenMock,
 					post: postMock
 				} ) );
 			} );
@@ -692,6 +695,7 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_fetch_section_section: ledeQid,
 					abstractwiki_fetch_section_language: mockLang,
 					abstractwiki_fetch_section_date: mockDate,
+					abstractwiki_fetch_section_token: 'csrf-token',
 					abstractwiki_fetch_section_fragments: expectedFragments
 				}, { signal: undefined } );
 			} );
@@ -722,6 +726,7 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_fetch_section_section: ledeQid,
 					abstractwiki_fetch_section_language: mockLang,
 					abstractwiki_fetch_section_date: mockDate,
+					abstractwiki_fetch_section_token: 'csrf-token',
 					abstractwiki_fetch_section_fragments: expectedFragments
 				}, { signal: undefined } );
 			} );
@@ -751,7 +756,7 @@ describe( 'abstractWiki Pinia store', () => {
 				postMock = jest.fn().mockResolvedValue( {
 					[ ledeQid ]: [ { success: true, value: '<p>Fragment 1</p>' } ]
 				} );
-				mw.Api = jest.fn( () => ( { post: postMock } ) );
+				mw.Api = jest.fn( () => ( { post: postMock, getToken: getTokenMock } ) );
 
 				await store.fetchSectionPreview( {
 					topic: mockQid,
@@ -768,7 +773,7 @@ describe( 'abstractWiki Pinia store', () => {
 
 			it( 'sets error on API failure', async () => {
 				postMock = jest.fn().mockRejectedValue( new ApiError( 'error-code', { error: { message: 'error!' } } ) );
-				mw.Api = jest.fn( () => ( { post: postMock } ) );
+				mw.Api = jest.fn( () => ( { post: postMock, getToken: getTokenMock } ) );
 
 				await store.fetchSectionPreview( {
 					topic: mockQid,
