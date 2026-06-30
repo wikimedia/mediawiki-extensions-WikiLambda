@@ -18,7 +18,9 @@ const {
 module.exports = {
 	state: {
 		lexemes: {},
-		senses: {}
+		senses: {},
+		scheduledLexemes: [],
+		scheduledLexemesPromise: null
 	},
 
 	getters: {
@@ -434,12 +436,24 @@ module.exports = {
 		 * @return {Promise} - A promise that resolves to the fetched data.
 		 */
 		fetchLexemes: function ( { ids } ) {
-			return this.fetchWikidataEntitiesBatched( {
-				ids,
-				getData: this.getLexemeData,
-				setData: this.setLexemeData,
-				resetData: this.resetLexemeData
-			} );
+			this.scheduledLexemes = [ ... new Set( [ ...this.scheduledLexemes, ...ids ] ) ];
+
+			if ( !this.scheduledLexemesPromise ) {
+				this.scheduledLexemesPromise = new Promise( ( resolve, reject ) => {
+					setTimeout( () => {
+						this.fetchWikidataEntitiesBatched( {
+							ids: this.scheduledLexemes,
+							getData: this.getLexemeData,
+							setData: this.setLexemeData,
+							resetData: this.resetLexemeData
+						} ).then( resolve, reject );
+						this.scheduledLexemes = [];
+						this.scheduledLexemesPromise = null;
+					}, Constants.WIKIDATA_REQUEST_TIME_WINDOW );
+				} );
+			}
+
+			return this.scheduledLexemesPromise;
 		},
 
 		/**

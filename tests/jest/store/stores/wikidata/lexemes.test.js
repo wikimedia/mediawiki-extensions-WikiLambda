@@ -334,8 +334,6 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 	} );
 
 	describe( 'Actions', () => {
-		let getMock;
-
 		describe( 'setLexemeData', () => {
 			it( 'stores a promise directly if data is a promise', () => {
 				const promise = Promise.resolve( 'foo' );
@@ -349,6 +347,7 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				expect( store.lexemes.L999999.extra ).toBeUndefined();
 			} );
 		} );
+
 		describe( 'resetLexemeData', () => {
 			it( 'removes lexeme data for given IDs', () => {
 				store.lexemes = { L111111: 'foo', L222222: 'bar', L333333: 'baz' };
@@ -358,164 +357,122 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 		} );
 
 		describe( 'fetchLexemes', () => {
+			// NOTE: before T429766 test cases were duplicate between fetchItems/Lexemes/Properties
+			// and fetchWikidataEntitiesBatched. Now, fetchItems/Lexemes/Properties tests need to
+			// test that the time window behavior is correct, and the call to fetchWikidataEntitiesBatched
+			// happens with the right parameters. The internal behavior of the entities fetch method
+			// is fully tested in entities.js
 			beforeEach( () => {
-				store.lexemes = {
-					L111111: 'has data',
-					L222222: new Promise( ( resolve ) => {
-						resolve();
-					} )
-				};
-				getMock = jest.fn().mockResolvedValue( {} );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				// Mock the getters
-				Object.defineProperty( store, 'getUserLangCode', {
-					value: 'en'
+				store.lexemes = {};
+				store.scheduledLexemes = [];
+				store.scheduledLexemesPromise = null;
+				jest.useFakeTimers();
+				Object.defineProperty( store, 'getUserLangCode', { value: 'en' } );
+				store.fetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
+			} );
+
+			afterEach( () => {
+				jest.useRealTimers();
+			} );
+
+			it( 'creates a new promise and initiates scheduledLexemes on first call', () => {
+				const promise = store.fetchLexemes( { ids: [ 'L111111' ] } );
+
+				expect( store.scheduledLexemes ).toEqual( [ 'L111111' ] );
+				expect( store.scheduledLexemesPromise ).toStrictEqual( promise );
+				expect( promise ).toBeInstanceOf( Promise );
+			} );
+
+			it( 'subsequent calls within the time window add to scheduledLexemes and return the same promise', () => {
+				const promise1 = store.fetchLexemes( { ids: [ 'L111111' ] } );
+				const promise2 = store.fetchLexemes( { ids: [ 'L222222' ] } );
+				const promise3 = store.fetchLexemes( { ids: [ 'L111111', 'L333333' ] } );
+
+				expect( store.scheduledLexemes ).toEqual( [ 'L111111', 'L222222', 'L333333' ] );
+				expect( promise2 ).toStrictEqual( promise1 );
+				expect( promise3 ).toStrictEqual( promise1 );
+			} );
+
+			it( 'deduplicates ids across concurrent calls', () => {
+				store.fetchLexemes( { ids: [ 'L111111', 'L222222' ] } );
+				store.fetchLexemes( { ids: [ 'L222222', 'L333333' ] } );
+
+				expect( store.scheduledLexemes ).toEqual( [ 'L111111', 'L222222', 'L333333' ] );
+			} );
+
+			it( 'calls fetchWikidataEntitiesBatched with collected qids', () => {
+				store.fetchLexemes( { ids: [ 'L111111' ] } );
+				store.fetchLexemes( { ids: [ 'L222222' ] } );
+
+				jest.runAllTimers();
+
+				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
+					ids: [ 'L111111', 'L222222' ],
+					getData: expect.any( Function ),
+					setData: expect.any( Function ),
+					resetData: expect.any( Function )
 				} );
 			} );
 
-			it( 'exits early if lexeme ids are already fetched or in flight', () => {
-				const lexemes = [
-					'L111111', // Already fetched
-					'L222222' // Request in flight
-				];
+			it( 'calls fetchWikidataEntitiesBatched with the correct item setters and getters', () => {
+				// Mock getter, setter an resetter
+				const mockGetter = jest.fn();
+				const mockSetter = jest.fn();
+				const mockResetter = jest.fn();
 
-				store.fetchLexemes( { ids: lexemes } );
+				Object.defineProperty( store, 'getLexemeData', { value: mockGetter } );
+				store.setLexemeData = mockSetter;
+				store.resetLexemeData = mockResetter;
 
-				expect( mw.ForeignApi ).not.toHaveBeenCalled();
+				// Make call
+				store.fetchLexemes( { ids: [ 'L111111' ] } );
+				jest.runAllTimers();
+
+				const call = store.fetchWikidataEntitiesBatched.mock.calls[ 0 ][ 0 ];
+
+				// Check getter
+				call.getData( 'L111111' );
+				expect( mockGetter ).toHaveBeenCalledWith( 'L111111' );
+
+				// Check setter
+				call.setData( { id: 'L111111', data: lexemeData } );
+				expect( mockSetter ).toHaveBeenCalledWith( { id: 'L111111', data: lexemeData } );
+
+				// Check resetter
+				call.resetData( { ids: [ 'L111111' ] } );
+				expect( mockResetter ).toHaveBeenCalledWith( { ids: [ 'L111111' ] } );
 			} );
 
-			it( 'calls wbgetentities API to fetch all unfetched lexemes', async () => {
-				const lexemes = [
-					'L111111', // Already fetched
-					'L222222', // Request in flight
-					'L333333',
-					'L444444'
-				];
+			it( 'resolves the promise after the time window', async () => {
+				const promise = store.fetchLexemes( { ids: [ 'L111111' ] } );
 
-				const expectedResponse = { entities: { L333333: 'this', L444444: 'that' } };
-				getMock = jest.fn().mockResolvedValue( expectedResponse );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setLexemeData = jest.fn();
-
-				const promise = store.fetchLexemes( { ids: lexemes } );
-
-				expect( getMock ).toHaveBeenCalledWith(
-					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'L333333|L444444' },
-					{ signal: undefined }
-				);
-
-				// Save promises while request is in flight
-				expect( store.setLexemeData ).toHaveBeenCalledWith( {
-					id: 'L333333',
-					data: promise
-				} );
-				expect( store.setLexemeData ).toHaveBeenCalledWith( {
-					id: 'L444444',
-					data: promise
-				} );
-
-				const response = await promise;
-
-				// Save data when response arrives
-				expect( store.setLexemeData ).toHaveBeenCalledWith( {
-					id: 'L333333',
-					data: 'this'
-				} );
-				expect( store.setLexemeData ).toHaveBeenCalledWith( {
-					id: 'L444444',
-					data: 'that'
-				} );
-
-				expect( response ).toEqual( expectedResponse );
-			} );
-
-			it( 'stores the resolving promise for fetching lexemes', async () => {
-				const lexemes = [ 'L333333', 'L444444' ];
-				const promise = store.fetchLexemes( { ids: lexemes } );
-
-				expect( store.lexemes.L333333 ).toStrictEqual( promise );
-				expect( store.lexemes.L444444 ).toStrictEqual( promise );
-
+				jest.runAllTimers();
 				await promise;
+
+				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledTimes( 1 );
 			} );
 
-			it( 'resets ids when API fails', async () => {
-				store.lexemes = {
-					L111111: 'has data'
-				};
-				const lexemes = [
-					'L111111', // Already fetched
-					'L333333',
-					'L444444'
-				];
+			it( 'resets scheduledLexemes and scheduledLexemesPromise after the time window', async () => {
+				const promise = store.fetchLexemes( { ids: [ 'L111111' ] } );
 
-				getMock = jest.fn().mockRejectedValue( 'some error' );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setLexemeData = jest.fn();
+				jest.runAllTimers();
+				await promise;
 
-				await store.fetchLexemes( { ids: lexemes } );
-
-				expect( getMock ).toHaveBeenCalledWith(
-					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'L333333|L444444' },
-					{ signal: undefined }
-				);
-				expect( store.lexemes ).toEqual( { L111111: 'has data' } );
+				expect( store.scheduledLexemes ).toEqual( [] );
+				expect( store.scheduledLexemesPromise ).toBeNull();
 			} );
 
-			it( 'removes lexeme IDs and returns data when API returns error', async () => {
-				const lexemes = [ 'L333333', 'L444444' ];
-				const errorResponse = { error: 'Some error' };
-				getMock = jest.fn().mockResolvedValue( errorResponse );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setLexemeData = jest.fn();
-				store.resetLexemeData = jest.fn();
+			it( 'allows a new window to start after the previous one resolves', async () => {
+				const promise1 = store.fetchLexemes( { ids: [ 'L111111' ] } );
+				jest.runAllTimers();
+				await promise1;
 
-				await store.fetchLexemes( { ids: lexemes } );
+				const promise2 = store.fetchLexemes( { ids: [ 'L222222' ] } );
+				jest.runAllTimers();
+				await promise2;
 
-				expect( store.resetLexemeData ).toHaveBeenCalledWith( { ids: [ 'L333333', 'L444444' ] } );
-			} );
-
-			it( 'removes a single lexeme ID when entity is missing in API response', async () => {
-				const lexemes = [ 'L333333', 'L444444' ];
-				const apiResponse = {
-					entities: {
-						L333333: { missing: '' }, // Simulate missing entity
-						L444444: { title: 'Lexeme:L444444', forms: [], lemmas: {} }
-					}
-				};
-				getMock = jest.fn().mockResolvedValue( apiResponse );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setLexemeData = jest.fn();
-				store.resetLexemeData = jest.fn();
-
-				await store.fetchLexemes( { ids: lexemes } );
-
-				expect( store.resetLexemeData ).toHaveBeenCalledWith( { ids: [ 'L333333' ] } );
-				expect( store.setLexemeData ).toHaveBeenCalledWith( {
-					id: 'L444444',
-					data: { title: 'Lexeme:L444444', forms: [], lemmas: {} }
-				} );
-			} );
-
-			it( 'handles undefined entities correctly', async () => {
-				const lexemes = [ 'L333333' ];
-				const apiResponse = {
-					entities: {
-						L333333: undefined
-					}
-				};
-				getMock = jest.fn().mockResolvedValue( apiResponse );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setLexemeData = jest.fn();
-
-				await store.fetchLexemes( { ids: lexemes } );
-
-				// setLexemeData is called to store the promise, but not to store entity data
-				// The promise resolves but no entity data is stored because entity is undefined
-				expect( store.setLexemeData ).toHaveBeenCalledWith( {
-					id: 'L333333',
-					data: expect.any( Promise )
-				} );
+				expect( promise2 ).not.toBe( promise1 );
+				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledTimes( 2 );
 			} );
 		} );
 
@@ -581,8 +538,6 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				store.senses = {};
 				store.lexemes.L333333 = lexemeData;
 				store.items.Q123 = itemDataWithLabelAndDescription;
-				getMock = jest.fn().mockResolvedValue( {} );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				Object.defineProperty( store, 'getUserLangCode', {
 					value: 'en'
 				} );
@@ -611,21 +566,6 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 							}
 						} )
 					]
-				} );
-			} );
-
-			it( 'calls the batching method with correct parameters', () => {
-				const mockFetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
-				store.fetchWikidataEntitiesBatched = mockFetchWikidataEntitiesBatched;
-
-				const lexemes = [ 'L333333', 'L444444' ];
-				store.fetchLexemes( { ids: lexemes } );
-
-				expect( mockFetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
-					ids: lexemes,
-					getData: store.getLexemeData,
-					setData: store.setLexemeData,
-					resetData: store.resetLexemeData
 				} );
 			} );
 		} );

@@ -11,7 +11,9 @@ const { isWikidataPropertyId } = require( '../../../utils/wikidataUtils.js' );
 
 module.exports = {
 	state: {
-		properties: {}
+		properties: {},
+		scheduledProps: [],
+		scheduledPropsPromise: null
 	},
 	getters: {
 		/**
@@ -156,12 +158,24 @@ module.exports = {
 		 * @return {Promise | undefined} - A promise that resolves to the fetched data.
 		 */
 		fetchProperties: function ( { ids } ) {
-			return this.fetchWikidataEntitiesBatched( {
-				ids,
-				getData: this.getPropertyData,
-				setData: this.setPropertyData,
-				resetData: this.resetPropertyData
-			} );
+			this.scheduledProps = [ ... new Set( [ ...this.scheduledProps, ...ids ] ) ];
+
+			if ( !this.scheduledPropsPromise ) {
+				this.scheduledPropsPromise = new Promise( ( resolve, reject ) => {
+					setTimeout( () => {
+						this.fetchWikidataEntitiesBatched( {
+							ids: this.scheduledProps,
+							getData: this.getPropertyData,
+							setData: this.setPropertyData,
+							resetData: this.resetPropertyData
+						} ).then( resolve, reject );
+						this.scheduledProps = [];
+						this.scheduledPropsPromise = null;
+					}, Constants.WIKIDATA_REQUEST_TIME_WINDOW );
+				} );
+			}
+
+			return this.scheduledPropsPromise;
 		}
 	}
 };

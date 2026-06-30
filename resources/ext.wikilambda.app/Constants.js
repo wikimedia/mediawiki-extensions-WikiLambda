@@ -453,6 +453,9 @@ Constants.API_LIMIT_MAX = 100;
 Constants.API_REQUEST_ITEMS_LIMIT = 50;
 Constants.API_LIMIT_WIKIDATA = 50;
 
+// Wbgetentities request time window (miliseconds)
+Constants.WIKIDATA_REQUEST_TIME_WINDOW = 100;
+
 // App Limits
 Constants.DESCRIPTION_CHARS_MAX = 200;
 Constants.INPUT_CHARS_MAX = 50;

@@ -12,7 +12,9 @@ const { isWikidataQid } = require( '../../../utils/wikidataUtils.js' );
 
 module.exports = {
 	state: {
-		items: {}
+		items: {},
+		scheduledItems: [],
+		scheduledItemsPromise: null
 	},
 
 	getters: {
@@ -159,12 +161,24 @@ module.exports = {
 		 * @return {Promise} - A promise that resolves to the fetched data.
 		 */
 		fetchItems: function ( { ids } ) {
-			return this.fetchWikidataEntitiesBatched( {
-				ids,
-				getData: this.getItemData,
-				setData: this.setItemData,
-				resetData: this.resetItemData
-			} );
+			this.scheduledItems = [ ... new Set( [ ...this.scheduledItems, ...ids ] ) ];
+
+			if ( !this.scheduledItemsPromise ) {
+				this.scheduledItemsPromise = new Promise( ( resolve, reject ) => {
+					setTimeout( () => {
+						this.fetchWikidataEntitiesBatched( {
+							ids: this.scheduledItems,
+							getData: this.getItemData,
+							setData: this.setItemData,
+							resetData: this.resetItemData
+						} ).then( resolve, reject );
+						this.scheduledItems = [];
+						this.scheduledItemsPromise = null;
+					}, Constants.WIKIDATA_REQUEST_TIME_WINDOW );
+				} );
+			}
+
+			return this.scheduledItemsPromise;
 		}
 	}
 };

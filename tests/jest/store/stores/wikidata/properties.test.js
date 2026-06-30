@@ -100,8 +100,6 @@ describe( 'Wikidata Properties Pinia store', () => {
 	} );
 
 	describe( 'Actions', () => {
-		let getMock;
-
 		describe( 'setPropertyData', () => {
 			it( 'stores a promise directly if data is a promise', () => {
 				const promise = Promise.resolve( 'foo' );
@@ -124,158 +122,122 @@ describe( 'Wikidata Properties Pinia store', () => {
 		} );
 
 		describe( 'fetchProperties', () => {
+			// NOTE: before T429766 test cases were duplicate between fetchItems/Lexemes/Properties
+			// and fetchWikidataEntitiesBatched. Now, fetchItems/Lexemes/Properties tests need to
+			// test that the time window behavior is correct, and the call to fetchWikidataEntitiesBatched
+			// happens with the right parameters. The internal behavior of the entities fetch method
+			// is fully tested in entities.js
 			beforeEach( () => {
-				store.properties = {
-					P111111: 'has data',
-					P222222: new Promise( ( resolve ) => {
-						resolve();
-					} )
-				};
-				getMock = jest.fn().mockResolvedValue( {} );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				// Mock the getters
-				Object.defineProperty( store, 'getUserLangCode', {
-					value: 'en'
+				store.properties = {};
+				store.scheduledProps = [];
+				store.scheduledPropsPromise = null;
+				jest.useFakeTimers();
+				Object.defineProperty( store, 'getUserLangCode', { value: 'en' } );
+				store.fetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
+			} );
+
+			afterEach( () => {
+				jest.useRealTimers();
+			} );
+
+			it( 'creates a new promise and initiates scheduledProps on first call', () => {
+				const promise = store.fetchProperties( { ids: [ 'P111111' ] } );
+
+				expect( store.scheduledProps ).toEqual( [ 'P111111' ] );
+				expect( store.scheduledPropsPromise ).toStrictEqual( promise );
+				expect( promise ).toBeInstanceOf( Promise );
+			} );
+
+			it( 'subsequent calls within the time window add to scheduledProps and return the same promise', () => {
+				const promise1 = store.fetchProperties( { ids: [ 'P111111' ] } );
+				const promise2 = store.fetchProperties( { ids: [ 'P222222' ] } );
+				const promise3 = store.fetchProperties( { ids: [ 'P111111', 'P333333' ] } );
+
+				expect( store.scheduledProps ).toEqual( [ 'P111111', 'P222222', 'P333333' ] );
+				expect( promise2 ).toStrictEqual( promise1 );
+				expect( promise3 ).toStrictEqual( promise1 );
+			} );
+
+			it( 'deduplicates ids across concurrent calls', () => {
+				store.fetchProperties( { ids: [ 'P111111', 'P222222' ] } );
+				store.fetchProperties( { ids: [ 'P222222', 'P333333' ] } );
+
+				expect( store.scheduledProps ).toEqual( [ 'P111111', 'P222222', 'P333333' ] );
+			} );
+
+			it( 'calls fetchWikidataEntitiesBatched with collected qids', () => {
+				store.fetchProperties( { ids: [ 'P111111' ] } );
+				store.fetchProperties( { ids: [ 'P222222' ] } );
+
+				jest.runAllTimers();
+
+				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
+					ids: [ 'P111111', 'P222222' ],
+					getData: expect.any( Function ),
+					setData: expect.any( Function ),
+					resetData: expect.any( Function )
 				} );
 			} );
 
-			it( 'exits early if property ids are already fetched or in flight', () => {
-				const properties = [
-					'P111111', // Already fetched
-					'P222222' // Request in flight
-				];
+			it( 'calls fetchWikidataEntitiesBatched with the correct item setters and getters', () => {
+				// Mock getter, setter an resetter
+				const mockGetter = jest.fn();
+				const mockSetter = jest.fn();
+				const mockResetter = jest.fn();
 
-				store.fetchProperties( { ids: properties } );
+				Object.defineProperty( store, 'getPropertyData', { value: mockGetter } );
+				store.setPropertyData = mockSetter;
+				store.resetPropertyData = mockResetter;
 
-				expect( mw.ForeignApi ).not.toHaveBeenCalled();
+				// Make call
+				store.fetchProperties( { ids: [ 'P111111' ] } );
+				jest.runAllTimers();
+
+				const call = store.fetchWikidataEntitiesBatched.mock.calls[ 0 ][ 0 ];
+
+				// Check getter
+				call.getData( 'P111111' );
+				expect( mockGetter ).toHaveBeenCalledWith( 'P111111' );
+
+				// Check setter
+				call.setData( { id: 'P111111', data: propertyData } );
+				expect( mockSetter ).toHaveBeenCalledWith( { id: 'P111111', data: propertyData } );
+
+				// Check resetter
+				call.resetData( { ids: [ 'P111111' ] } );
+				expect( mockResetter ).toHaveBeenCalledWith( { ids: [ 'P111111' ] } );
 			} );
 
-			it( 'calls wbgetentities API to fetch all unfetched properties', async () => {
-				const properties = [
-					'P111111', // Already fetched
-					'P222222', // Request in flight
-					'P333333',
-					'P444444'
-				];
+			it( 'resolves the promise after the time window', async () => {
+				const promise = store.fetchProperties( { ids: [ 'P111111' ] } );
 
-				const expectedResponse = { entities: { P333333: 'this', P444444: 'that' } };
-				getMock = jest.fn().mockResolvedValue( expectedResponse );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setPropertyData = jest.fn();
-
-				const promise = store.fetchProperties( { ids: properties } );
-
-				expect( getMock ).toHaveBeenCalledWith(
-					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'P333333|P444444' },
-					{ signal: undefined }
-				);
-
-				// Save promises while request is in flight
-				expect( store.setPropertyData ).toHaveBeenCalledWith( {
-					id: 'P333333',
-					data: promise
-				} );
-				expect( store.setPropertyData ).toHaveBeenCalledWith( {
-					id: 'P444444',
-					data: promise
-				} );
-
-				const response = await promise;
-
-				// Save data when response arrives
-				expect( store.setPropertyData ).toHaveBeenCalledWith( {
-					id: 'P333333',
-					data: 'this'
-				} );
-				expect( store.setPropertyData ).toHaveBeenCalledWith( {
-					id: 'P444444',
-					data: 'that'
-				} );
-
-				expect( response ).toEqual( expectedResponse );
-			} );
-
-			it( 'stores the resolving promise for fetching properties', async () => {
-				const properties = [ 'P333333', 'P444444' ];
-				const promise = store.fetchProperties( { ids: properties } );
-
-				expect( store.properties.P333333 ).toStrictEqual( promise );
-				expect( store.properties.P444444 ).toStrictEqual( promise );
-
+				jest.runAllTimers();
 				await promise;
+
+				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledTimes( 1 );
 			} );
 
-			it( 'resets ids when API fails', async () => {
-				store.properties = {
-					P111111: 'has data'
-				};
-				const properties = [
-					'P111111', // Already fetched
-					'P333333',
-					'P444444'
-				];
+			it( 'resets scheduledProps and scheduledPropsPromise after the time window', async () => {
+				const promise = store.fetchProperties( { ids: [ 'P111111' ] } );
 
-				getMock = jest.fn().mockRejectedValue( 'some error' );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setPropertyData = jest.fn();
+				jest.runAllTimers();
+				await promise;
 
-				await store.fetchProperties( { ids: properties } );
-
-				expect( getMock ).toHaveBeenCalledWith(
-					{ action: 'wbgetentities', format: 'json', formatversion: '2', languages: 'en', languagefallback: true, ids: 'P333333|P444444' },
-					{ signal: undefined }
-				);
-				expect( store.properties ).toEqual( { P111111: 'has data' } );
+				expect( store.scheduledProps ).toEqual( [] );
+				expect( store.scheduledPropsPromise ).toBeNull();
 			} );
 
-			it( 'removes property IDs and returns data when API returns error', async () => {
-				const properties = [ 'P333333', 'P444444' ];
-				const errorResponse = { error: 'Some error' };
-				getMock = jest.fn().mockResolvedValue( errorResponse );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setPropertyData = jest.fn();
-				store.resetPropertyData = jest.fn();
+			it( 'allows a new window to start after the previous one resolves', async () => {
+				const promise1 = store.fetchProperties( { ids: [ 'P111111' ] } );
+				jest.runAllTimers();
+				await promise1;
 
-				await store.fetchProperties( { ids: properties } );
+				const promise2 = store.fetchProperties( { ids: [ 'P222222' ] } );
+				jest.runAllTimers();
+				await promise2;
 
-				expect( store.resetPropertyData ).toHaveBeenCalledWith( { ids: [ 'P333333', 'P444444' ] } );
-			} );
-
-			it( 'removes a single property ID when entity is missing in API response', async () => {
-				const properties = [ 'P333333', 'P444444' ];
-				const apiResponse = {
-					entities: {
-						P333333: { missing: '' }, // Simulate missing entity
-						P444444: { title: 'Property:P444444', labels: {} }
-					}
-				};
-				getMock = jest.fn().mockResolvedValue( apiResponse );
-				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				store.setPropertyData = jest.fn();
-				store.resetPropertyData = jest.fn();
-
-				await store.fetchProperties( { ids: properties } );
-
-				expect( store.resetPropertyData ).toHaveBeenCalledWith( { ids: [ 'P333333' ] } );
-				expect( store.setPropertyData ).toHaveBeenCalledWith( {
-					id: 'P444444',
-					data: { title: 'Property:P444444', labels: {} }
-				} );
-			} );
-
-			it( 'calls the batching method with correct parameters', () => {
-				const mockFetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
-				store.fetchWikidataEntitiesBatched = mockFetchWikidataEntitiesBatched;
-
-				const properties = [ 'P333333', 'P444444' ];
-				store.fetchProperties( { ids: properties } );
-
-				expect( mockFetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
-					ids: properties,
-					getData: store.getPropertyData,
-					setData: store.setPropertyData,
-					resetData: store.resetPropertyData
-				} );
+				expect( promise2 ).not.toBe( promise1 );
+				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledTimes( 2 );
 			} );
 		} );
 	} );
