@@ -30,6 +30,7 @@
 			:placeholder="lookupPlaceholder"
 			:menu-items="menuItems"
 			:menu-config="lookupConfig"
+			:start-icon="startIcon"
 			:status="errorLookupStatus"
 			data-testid="z-object-selector-lookup"
 			@update:selected="onSelect"
@@ -380,6 +381,24 @@ module.exports = exports = defineComponent( {
 					return i18n( 'wikilambda-typeselector-label' ).text();
 				default:
 					return i18n( 'wikilambda-zobjectselector-label' ).text();
+			}
+		} );
+
+		/**
+		 * Icon shown inside the lookup input for type-specific selectors,
+		 * mirroring the Wikidata logo shown by the Wikidata EntitySelector.
+		 * Returns undefined for generic selectors so no icon is shown.
+		 *
+		 * @return {string|undefined}
+		 */
+		const startIcon = computed( () => {
+			switch ( props.type ) {
+				case Constants.Z_FUNCTION:
+					return icons.cdxIconFunction;
+				case Constants.Z_NATURAL_LANGUAGE:
+					return icons.cdxIconLanguage;
+				default:
+					return undefined;
 			}
 		} );
 
@@ -740,6 +759,7 @@ module.exports = exports = defineComponent( {
 			onSelect,
 			selectConfig,
 			selectedValue,
+			startIcon,
 			i18n
 		};
 	}

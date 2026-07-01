@@ -187,6 +187,21 @@ describe( 'ZObjectSelector', () => {
 			} );
 		} );
 
+		it( 'shows the function icon inside the input when selecting a function', () => {
+			const wrapper = renderZObjectSelector( { type: Constants.Z_FUNCTION } );
+			expect( wrapper.vm.startIcon ).toBe( '<path data-testid="mock-icon-cdxIconFunction"/>' );
+		} );
+
+		it( 'shows the language icon inside the input when selecting a language', () => {
+			const wrapper = renderZObjectSelector( { type: Constants.Z_NATURAL_LANGUAGE } );
+			expect( wrapper.vm.startIcon ).toBe( '<path data-testid="mock-icon-cdxIconLanguage"/>' );
+		} );
+
+		it( 'shows no icon inside the input for other types', () => {
+			const wrapper = renderZObjectSelector( { type: Constants.Z_TYPE } );
+			expect( wrapper.vm.startIcon ).toBeUndefined();
+		} );
+
 		it( 'on initialization, sets suggested objects', async () => {
 			const wrapper = renderZObjectSelector( {
 				type: Constants.Z_TYPE
