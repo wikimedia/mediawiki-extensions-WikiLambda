@@ -1234,7 +1234,9 @@ class ZObjectStore {
 	public function getPreferredLabelsQuery( $languageChain ) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
-		// Build the CASE expression to assign language preference index and select the MIN
+		// Build the CASE expression to assign each label row a language preference
+		// index: the position of its language in the fallback chain if it is that
+		// language's primary label, otherwise a shared worst index.
 		$caseParts = [];
 		foreach ( $languageChain as $index => $langZid ) {
 			$caseParts[] = "WHEN l1.wlzl_language = " .
@@ -1242,18 +1244,25 @@ class ZObjectStore {
 				$dbr->addQuotes( true ) . " THEN " . ( $index + 1 );
 		}
 		$caseExpr = "CASE " . implode( " ", $caseParts ) . " ELSE " . ( count( $languageChain ) + 1 ) . " END";
-		$minPriorityCase = "MIN( $caseExpr )";
 
-		// Create subquery to get the preferred label depending on the languageChain
+		// Rank each label row within its zid and keep only the single best one.
+		// The tiebreakers after the preference index make the choice deterministic
+		// even when no fallback-chain language has a primary label (in which case
+		// every row shares the ELSE index): prefer a primary label, then the
+		// earliest language, then the row id (wlzl_id, the table's PK). Without
+		// this a zid with no preferred label was emitted once per label (T430847).
+		$rankExpr = "ROW_NUMBER() OVER ( PARTITION BY l1.wlzl_zobject_zid ORDER BY " .
+			"$caseExpr, l1.wlzl_label_primary DESC, l1.wlzl_language, l1.wlzl_id )";
+
+		$rankedQuery = $dbr->newSelectQueryBuilder()
+			->select( [ 'l1.wlzl_id', 'row_num' => $rankExpr ] )
+			->from( 'wikilambda_zobject_labels', 'l1' );
+
+		// Subquery yielding exactly one winning label row id per zid
 		$prefQuery = $dbr->newSelectQueryBuilder()
-			->select( [ 'l1.wlzl_zobject_zid', 'min_priority' => $minPriorityCase ] )
-			->from( 'wikilambda_zobject_labels', 'l1' )
-			->groupBy( [ 'l1.wlzl_zobject_zid' ] );
-
-		$prefJoinConditions = [
-			'pref.wlzl_zobject_zid = l1.wlzl_zobject_zid',
-			'pref.min_priority = ' . $caseExpr
-		];
+			->select( [ 'wlzl_id' ] )
+			->rawTables( [ 'ranked' => new Subquery( $rankedQuery->getSQL() ) ] )
+			->where( [ 'row_num' => 1 ] );
 
 		$pageJoinConditions = [
 			'p.page_title = l1.wlzl_zobject_zid',
@@ -1261,7 +1270,7 @@ class ZObjectStore {
 		];
 
 		// Create query to select the preferred label for each zid
-		// - Join with the preferred labels table to select the most appropriate label
+		// - Inner join on the winning label row id to keep one row per zid
 		// - Join with zobject entries in the page table to order objects by creation date
 		$queryBuilder = $dbr->newSelectQueryBuilder()
 			->select( [
@@ -1275,7 +1284,7 @@ class ZObjectStore {
 				'l1.wlzl_return_type'
 			] )
 			->from( 'wikilambda_zobject_labels', 'l1' )
-			->join( $prefQuery, 'pref', $prefJoinConditions )
+			->join( $prefQuery, 'pref', 'l1.wlzl_id = pref.wlzl_id' )
 			->leftJoin( 'page', 'p', $pageJoinConditions );
 
 		return $queryBuilder;

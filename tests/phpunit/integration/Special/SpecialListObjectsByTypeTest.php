@@ -45,6 +45,11 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 	 *   1st          Z10001   Charlie function   Z6
 	 *   2nd          Z10002   Alpha function     Z40
 	 *   3rd          Z10003   Bravo function     Z6
+	 *
+	 * Z10004 is a regression fixture for T430847: its only labels are in French
+	 * (a name plus two aliases), so a viewer whose fallback chain lacks French
+	 * has no preferred label for it. It exists to prove that such an object is
+	 * still listed exactly once rather than once per stored label.
 	 */
 	public function addDBDataOnce() {
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
@@ -53,6 +58,7 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 		$this->editPage( 'Z10001', json_encode( $data->Z10001 ), 'function Z10001', NS_MAIN );
 		$this->editPage( 'Z10002', json_encode( $data->Z10002 ), 'function Z10002', NS_MAIN );
 		$this->editPage( 'Z10003', json_encode( $data->Z10003 ), 'function Z10003', NS_MAIN );
+		$this->editPage( 'Z10004', json_encode( $data->Z10004 ), 'function Z10004', NS_MAIN );
 		DeferredUpdates::doUpdates();
 	}
 
@@ -74,6 +80,21 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 			'/Alpha function(.|\n)*Bravo function(.|\n)*Charlie function/',
 			$html
 		);
+	}
+
+	public function testExecute_objectWithoutPreferredLabel_isListedExactlyOnce() {
+		// T430847: a function whose only labels fall outside the viewer's
+		// language fallback chain (here Z10004, labelled only in French — a name
+		// plus two aliases) used to be listed once per stored label, i.e. three
+		// times with different names. It must appear exactly once, showing its
+		// (non-preferred) name rather than an alias.
+		[ $html ] = $this->executeSpecialPage();
+		$this->assertSame(
+			1,
+			substr_count( $html, '(Z10004)' ),
+			'Z10004 should be listed exactly once despite lacking a preferred-language label'
+		);
+		$this->assertStringContainsString( 'Delta fonction', $html );
 	}
 
 	public function testExecute_filterByReturnType_Z6_listsOnlyMatchingFunctions() {
