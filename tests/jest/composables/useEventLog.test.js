@@ -11,12 +11,12 @@ const useEventLog = require( '../../../resources/ext.wikilambda.app/composables/
 
 describe( 'useEventLog composable', () => {
 	let eventLog;
+	let instrument;
 
 	beforeEach( () => {
 		const [ result ] = loadComposable( () => useEventLog() );
 		eventLog = result;
-		// Reset mock
-		mw.eventLog.submitInteraction.mockClear();
+		instrument = mw.testKitchen.getInstrument();
 	} );
 
 	it( 'returns submitInteraction function', () => {
@@ -31,9 +31,8 @@ describe( 'useEventLog composable', () => {
 
 		eventLog.submitInteraction( 'test-action', interactionData );
 
-		expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith(
-			'mediawiki.product_metrics.wikifunctions_ui',
-			'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0',
+		expect( mw.testKitchen.getInstrument ).toHaveBeenCalledWith( 'wikifunctions-ui-actions' );
+		expect( instrument.send ).toHaveBeenCalledWith(
 			'test-action',
 			{
 				zobjecttype: 'Z8',
@@ -51,9 +50,7 @@ describe( 'useEventLog composable', () => {
 
 		eventLog.submitInteraction( 'test-action', interactionData );
 
-		expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith(
-			'mediawiki.product_metrics.wikifunctions_ui',
-			'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0',
+		expect( instrument.send ).toHaveBeenCalledWith(
 			'test-action',
 			{
 				zobjecttype: 'Z8',

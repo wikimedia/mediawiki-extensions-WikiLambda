@@ -169,12 +169,10 @@ describe( 'Publish widget', () => {
 
 			wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
-			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
-			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const action = 'cancel';
 			const interactionData = { zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
-			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
+			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );
 
 		it( 'emits cancel event when leaving an edit code implementation page', async () => {
@@ -189,12 +187,10 @@ describe( 'Publish widget', () => {
 
 			wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
-			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
-			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const action = 'cancel';
 			const interactionData = { implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
 
-			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
+			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );
 	} );
 

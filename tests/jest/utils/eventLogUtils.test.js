@@ -61,9 +61,10 @@ describe( 'eventLogUtils', () => {
 	} );
 
 	describe( 'submitInteraction', () => {
+		let instrument;
+
 		beforeEach( () => {
-			// Reset mock
-			mw.eventLog.submitInteraction.mockClear();
+			instrument = mw.testKitchen.getInstrument();
 		} );
 
 		it( 'submits interaction event with cleaned data', () => {
@@ -75,9 +76,8 @@ describe( 'eventLogUtils', () => {
 
 			eventLogUtils.submitInteraction( 'test-action', interactionData );
 
-			expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith(
-				'mediawiki.product_metrics.wikifunctions_ui',
-				'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0',
+			expect( mw.testKitchen.getInstrument ).toHaveBeenCalledWith( 'wikifunctions-ui-actions' );
+			expect( instrument.send ).toHaveBeenCalledWith(
 				'test-action',
 				{
 					zobjecttype: 'Z8',
@@ -93,9 +93,7 @@ describe( 'eventLogUtils', () => {
 
 			eventLogUtils.submitInteraction( 'test-action', interactionData );
 
-			expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith(
-				'mediawiki.product_metrics.wikifunctions_ui',
-				'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0',
+			expect( instrument.send ).toHaveBeenCalledWith(
 				'test-action',
 				{
 					zobjecttype: JSON.stringify( { Z1K1: 'Z8' } )
@@ -103,15 +101,15 @@ describe( 'eventLogUtils', () => {
 			);
 		} );
 
-		it( 'does not submit if mw.eventLog is not available', () => {
-			const originalEventLog = mw.eventLog;
-			delete mw.eventLog;
+		it( 'does not submit if mw.testKitchen is not available', () => {
+			const originalTestKitchen = mw.testKitchen;
+			delete mw.testKitchen;
 
 			// Should not throw error
 			eventLogUtils.submitInteraction( 'test-action', { data: 'test' } );
 
 			// Restore
-			mw.eventLog = originalEventLog;
+			mw.testKitchen = originalTestKitchen;
 
 			expect( true ).toBe( true );
 		} );

@@ -259,12 +259,10 @@ describe( 'Publish Dialog', () => {
 
 			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
-			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
-			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const action = 'publish';
 			const interactionData = { haserrors: false, implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
 
-			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
+			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );
 
 		it( 'emits publish event after unsuccessful creation of a function', async () => {
@@ -283,12 +281,10 @@ describe( 'Publish Dialog', () => {
 
 			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
-			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
-			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const action = 'publish';
 			const interactionData = { haserrors: true, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
-			await waitFor( () => expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, action, interactionData ) );
+			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );
 	} );
 } );

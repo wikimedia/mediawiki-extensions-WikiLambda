@@ -200,7 +200,7 @@ module.exports = {
 	actions: {
 
 		/**
-		 * Submit an interaction event using Metrics Platform for Visual Editor
+		 * Submit an interaction event using Test Kitchen for Visual Editor
 		 *
 		 * @param {string} action - The action to submit.
 		 * @example action: search-change-query, search-choose-function, preview-change-query, function-link-click

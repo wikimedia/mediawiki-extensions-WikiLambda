@@ -102,9 +102,6 @@ describe( 'clipboard Pinia store', () => {
 		} );
 
 		describe( 'copyToClipboard', () => {
-			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
-			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
-
 			beforeEach( () => {
 				const mockLabels = {
 					Z802K2: 'then',
@@ -174,7 +171,7 @@ describe( 'clipboard Pinia store', () => {
 					zobjecttype: 'Z14',
 					zlang: 'Z1002'
 				};
-				expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'copy', interactionData );
+				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'copy', interactionData );
 			} );
 
 			it( 'copies another value to the clipboard', () => {
@@ -236,7 +233,7 @@ describe( 'clipboard Pinia store', () => {
 					zobjecttype: 'abstractwiki',
 					zlang: 'Z1002'
 				};
-				expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'copy', interactionData );
+				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'copy', interactionData );
 			} );
 
 			it( 'copies a partially blank object to the clipboard', () => {
@@ -276,7 +273,7 @@ describe( 'clipboard Pinia store', () => {
 					zobjecttype: 'Z14',
 					zlang: 'Z1002'
 				};
-				expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'copy', interactionData );
+				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'copy', interactionData );
 			} );
 		} );
 

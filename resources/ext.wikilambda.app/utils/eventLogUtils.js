@@ -1,10 +1,15 @@
 /**
- * WikiLambda Vue editor: Event logging utilities for Metrics Platform
+ * WikiLambda Vue editor: Event logging utilities for Test Kitchen
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
+
+// Machine-readable name of the instrument registered in Test Kitchen. The
+// instrument encapsulates the destination stream and the event schema, so
+// neither needs to be specified at the call site.
+const INSTRUMENT_NAME = 'wikifunctions-ui-actions';
 
 const eventLogUtils = {
 	/**
@@ -24,7 +29,7 @@ const eventLogUtils = {
 	},
 
 	/**
-	 * Submit an interaction event using Metrics Platform
+	 * Submit an interaction event using the Test Kitchen instrument.
 	 *
 	 * Since the schema specifies each property to be either string or Boolean, we defensively remove
 	 * properties with null or undefined values. (Otherwise, a null or undefined property would cause
@@ -34,17 +39,15 @@ const eventLogUtils = {
 	 * @param {Object} interactionData
 	 */
 	submitInteraction: function ( action, interactionData ) {
-		if ( mw.eventLog ) {
+		// Test Kitchen is a soft dependency: it loads its own SDK (mw.testKitchen)
+		// when installed and enabled, so we simply no-op when it is unavailable.
+		if ( mw.testKitchen ) {
 			// Ensure zobjecttype (if present) is a string, to avoid event validation error
 			if ( interactionData.zobjecttype && typeof interactionData.zobjecttype !== 'string' ) {
 				interactionData.zobjecttype = JSON.stringify( interactionData.zobjecttype );
 			}
-			mw.eventLog.submitInteraction(
-				'mediawiki.product_metrics.wikifunctions_ui',
-				'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0',
-				action,
-				eventLogUtils.removeNullUndefined( interactionData )
-			);
+			const instrument = mw.testKitchen.getInstrument( INSTRUMENT_NAME );
+			instrument.send( action, eventLogUtils.removeNullUndefined( interactionData ) );
 		}
 	}
 };

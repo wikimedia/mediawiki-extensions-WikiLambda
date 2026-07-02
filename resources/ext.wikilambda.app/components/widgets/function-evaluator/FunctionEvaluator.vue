@@ -486,7 +486,7 @@ module.exports = exports = defineComponent( {
 				running.value = false;
 				hasResult.value = true;
 
-				// Log an event using Metrics Platform's core interaction events
+				// Log an event using Test Kitchen's core interaction events
 				const interactionData = {
 					zobjecttype: store.getCurrentZObjectType || null,
 					zobjectid: store.getCurrentZObjectId || null,

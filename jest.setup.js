@@ -125,6 +125,17 @@ class Mocki18n {
 	}
 }
 
+// Stable Test Kitchen instrument stub, shared across getInstrument() calls so
+// tests can assert on the same submitInteraction mock.
+const testKitchenInstrument = {
+	submitInteraction: jest.fn( ( action, interactionData ) => {
+
+		console.log( 'Test Kitchen event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
+	} ),
+	send: jest.fn(),
+	setSchemaID: jest.fn()
+};
+
 // Mock MW object
 global.mw = {
 	Api: Api,
@@ -196,15 +207,8 @@ global.mw = {
 
 		console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
 	} ),
-	eventLog: {
-		dispatch: jest.fn( ( eventName, customData ) => {
-
-			console.log( 'Metrics Platform event emitted: ' + eventName + ' - ' + JSON.stringify( customData ) );
-		} ),
-		submitInteraction: jest.fn( ( streamName, schemaID, action, interactionData ) => {
-
-			console.log( 'Metrics Platform event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
-		} )
+	testKitchen: {
+		getInstrument: jest.fn( () => testKitchenInstrument )
 	},
 	message: jest.fn( ( str, ...params ) => new Mocki18n( str, ...params ) ),
 	msg: jest.fn( ( str, ...params ) => new Mocki18n( str, ...params ) ),
@@ -237,12 +241,12 @@ vueTestUtils.config.global.directives = {
 global.store = createTestingPinia();
 vueTestUtils.config.global.plugins = [ global.store ];
 
-// Suppress Metrics Platform event logs
+// Suppress Test Kitchen event logs
 const originalLog = console.log;
 console.log = function ( ...args ) {
 	if (
 		typeof args[ 0 ] === 'string' &&
-			args[ 0 ].startsWith( 'Metrics Platform event emitted using submitInteraction' )
+			args[ 0 ].startsWith( 'Test Kitchen event emitted using submitInteraction' )
 	) {
 		return; // Suppress this log
 	}

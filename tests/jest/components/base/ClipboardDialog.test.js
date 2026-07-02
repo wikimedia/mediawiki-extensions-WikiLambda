@@ -457,14 +457,14 @@ describe( 'ClipboardDialog', () => {
 				resolvingType: 'Z6'
 			} ] ] );
 
-			const streamName = 'mediawiki.product_metrics.wikifunctions_ui';
-			const schemaID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 			const interactionData = {
 				zobjectid: 'Z0',
 				zobjecttype: 'Z14',
 				zlang: 'Z1002'
 			};
-			expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith( streamName, schemaID, 'paste', interactionData );
+			const instrument = mw.testKitchen.getInstrument();
+			expect( mw.testKitchen.getInstrument ).toHaveBeenCalledWith( 'wikifunctions-ui-actions' );
+			expect( instrument.send ).toHaveBeenCalledWith( 'paste', interactionData );
 
 			expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy();
 		} );

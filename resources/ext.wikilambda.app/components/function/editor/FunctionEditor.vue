@@ -250,7 +250,7 @@ module.exports = exports = defineComponent( {
 			// Initialize initial state of inputs and output
 			saveInitialFunctionSignature();
 
-			// Log an event using Metrics Platform's core interaction events
+			// Log an event using Test Kitchen's core interaction events
 			const interactionData = {
 				zobjecttype: Constants.Z_FUNCTION,
 				zobjectid: store.getCurrentZObjectId || null,

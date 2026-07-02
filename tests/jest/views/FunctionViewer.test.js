@@ -77,9 +77,7 @@ describe( 'FunctionViewer', () => {
 		aboutWidget.vm.$emit( 'edit-metadata' );
 
 		await waitFor( () => {
-			expect( mw.eventLog.submitInteraction ).toHaveBeenCalledWith(
-				expect.any( String ),
-				expect.any( String ),
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
 				'edit',
 				expect.objectContaining( {
 					zobjecttype: Constants.Z_FUNCTION,

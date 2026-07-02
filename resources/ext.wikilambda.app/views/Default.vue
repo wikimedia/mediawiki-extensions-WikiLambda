@@ -180,7 +180,7 @@ module.exports = exports = defineComponent( {
 
 		// Actions
 		/**
-		 * Dispatch event (via Metrics Platform) to record loading this view,
+		 * Dispatch event (via Test Kitchen) to record loading this view,
 		 * or editing the About widget content.
 		 * This event indicates that the user is either (a) viewing a ZObject,
 		 * (b) starting to create a new one, or (c) starting to edit an existing one.
@@ -189,7 +189,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} editValue
 		 */
 		function dispatchLoadEvent( editValue ) {
-			// Log an event using Metrics Platform's core interaction events
+			// Log an event using Test Kitchen's core interaction events
 			const interactionData = {
 				zobjecttype: contentType.value || null,
 				zobjectid: store.getCurrentZObjectId || null,
