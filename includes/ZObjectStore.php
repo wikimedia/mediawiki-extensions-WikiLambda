@@ -1229,9 +1229,12 @@ class ZObjectStore {
 	 * passed as parameter.
 	 *
 	 * @param string[] $languageChain List of language zids in order of preference
+	 * @param string|null $type Optional type zid to restrict the query to; callers
+	 *   that only want objects of one type should pass it here rather than filter
+	 *   the returned query, so that only that type's rows are ranked (T430853)
 	 * @return SelectQueryBuilder
 	 */
-	public function getPreferredLabelsQuery( $languageChain ) {
+	public function getPreferredLabelsQuery( $languageChain, ?string $type = null ) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
 		// Build the CASE expression to assign each label row a language preference
@@ -1257,6 +1260,14 @@ class ZObjectStore {
 		$rankedQuery = $dbr->newSelectQueryBuilder()
 			->select( [ 'l1.wlzl_id', 'row_num' => $rankExpr ] )
 			->from( 'wikilambda_zobject_labels', 'l1' );
+
+		// Restricting by type before ranking cannot change any per-zid winner:
+		// a zid has exactly one wlzl_type across all of its label rows, so the
+		// filter keeps all-or-none of each partition. Applying it here rather
+		// than on the outer query prunes the window sort to one type's rows.
+		if ( $type !== null ) {
+			$rankedQuery->where( [ 'l1.wlzl_type' => $type ] );
+		}
 
 		// Subquery yielding exactly one winning label row id per zid
 		$prefQuery = $dbr->newSelectQueryBuilder()
@@ -1286,6 +1297,14 @@ class ZObjectStore {
 			->from( 'wikilambda_zobject_labels', 'l1' )
 			->join( $prefQuery, 'pref', 'l1.wlzl_id = pref.wlzl_id' )
 			->leftJoin( 'page', 'p', $pageJoinConditions );
+
+		// Semantically redundant with the ranked-subquery filter above (the
+		// join on the winning wlzl_id already restricts rows to this type),
+		// but restated here so the optimiser can prune this scan too rather
+		// than reading and sorting every label row.
+		if ( $type !== null ) {
+			$queryBuilder->where( [ 'l1.wlzl_type' => $type ] );
+		}
 
 		return $queryBuilder;
 	}
@@ -1367,13 +1386,12 @@ class ZObjectStore {
 			$this->functionsByIOTypesQuery( $inputTypes, $outputType );
 
 		// Subquery: Preferred labels for all functions
+		// * Only rank and return labels of functions
 		// * Only return necessary fields
-		// * Add early condition: only functions
-		$preferredLabelsQuery = $this->getPreferredLabelsQuery( $languages );
+		$preferredLabelsQuery = $this->getPreferredLabelsQuery( $languages, ZTypeRegistry::Z_FUNCTION );
 		$preferredLabelsQuery
 			->clearFields()
-			->fields( [ 'p.page_id', 'l1.wlzl_zobject_zid', 'l1.wlzl_label', 'l1.wlzl_language' ] )
-			->andWhere( [ 'l1.wlzl_type' => 'Z8' ] );
+			->fields( [ 'p.page_id', 'l1.wlzl_zobject_zid', 'l1.wlzl_label', 'l1.wlzl_language' ] );
 
 		// String match condition: match tokenized searchTerm substrings (if any)
 		$searchTerm = ZObjectUtils::comparableString( $searchTerm );

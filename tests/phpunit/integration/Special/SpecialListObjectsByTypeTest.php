@@ -50,6 +50,9 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 	 * (a name plus two aliases), so a viewer whose fallback chain lacks French
 	 * has no preferred label for it. It exists to prove that such an object is
 	 * still listed exactly once rather than once per stored label.
+	 *
+	 * Z10005 ("Echo string") is not a function but a plain Z6/String object,
+	 * so that the type filter is exercised against mixed-type data (T430853).
 	 */
 	public function addDBDataOnce() {
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
@@ -59,6 +62,7 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 		$this->editPage( 'Z10002', json_encode( $data->Z10002 ), 'function Z10002', NS_MAIN );
 		$this->editPage( 'Z10003', json_encode( $data->Z10003 ), 'function Z10003', NS_MAIN );
 		$this->editPage( 'Z10004', json_encode( $data->Z10004 ), 'function Z10004', NS_MAIN );
+		$this->editPage( 'Z10005', json_encode( $data->Z10005 ), 'string Z10005', NS_MAIN );
 		DeferredUpdates::doUpdates();
 	}
 
@@ -143,6 +147,20 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 		$this->assertStringContainsString(
 			'wikilambda-special-objectsbytype-empty', $html
 		);
+	}
+
+	public function testExecute_typeFilter_excludesOtherTypes() {
+		// T430853: the type filter is pushed down into the preferred-labels
+		// ranking subquery; with mixed-type fixtures, each type's listing
+		// must still contain only its own objects.
+		[ $html ] = $this->executeSpecialPage();
+		$this->assertStringNotContainsString( 'Echo string', $html );
+
+		[ $html ] = $this->executeSpecialPage( 'Z6' );
+		$this->assertStringContainsString( 'Echo string', $html );
+		$this->assertStringNotContainsString( 'Alpha function', $html );
+		$this->assertStringNotContainsString( 'Bravo function', $html );
+		$this->assertStringNotContainsString( 'Charlie function', $html );
 	}
 
 	public function testExecute_typeFromSubpage_isUsed() {
@@ -294,9 +312,14 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 		);
 	}
 
-	public function testPager_typeFilter_addsTypeCondition() {
+	public function testPager_typeFilter_isPushedIntoSubquery() {
+		// T430853: the type filter lands inside the preferred-labels subquery,
+		// where it can prune the ranking, rather than in the outer conds.
 		$info = $this->newPager( [ 'type' => 'Z8' ] )->getQueryInfo();
-		$this->assertSame( 'Z8', $info['conds']['wlzl_type'] );
+		$this->assertArrayNotHasKey( 'wlzl_type', $info['conds'] );
+		$subquery = (string)$info['tables']['preferred_labels'];
+		$this->assertStringContainsString( 'wlzl_type', $subquery );
+		$this->assertStringContainsString( 'Z8', $subquery );
 	}
 
 	public function testPager_returnTypeFilter_addsReturnTypeCondition() {

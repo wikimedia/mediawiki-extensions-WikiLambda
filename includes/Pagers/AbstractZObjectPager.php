@@ -50,6 +50,18 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	}
 
 	/**
+	 * The type zid to restrict the listing to, or null for no restriction.
+	 * Subclasses that list a single type should override this so that the
+	 * type filter is pushed down into the preferred-labels ranking rather
+	 * than applied over its results (T430853).
+	 *
+	 * @return string|null
+	 */
+	protected function getTypeFilter(): ?string {
+		return null;
+	}
+
+	/**
 	 * Provides all parameters needed for the main paged query. It returns
 	 * an associative array with the following elements:
 	 *    tables => Table(s) for passing to Database::select()
@@ -65,8 +77,11 @@ abstract class AbstractZObjectPager extends AlphabeticPager {
 	 * @return array
 	 */
 	public function getQueryInfo() {
-		// Returns table with unique zids and the most preferred primary label
-		$subquery = $this->zObjectStore->getPreferredLabelsQuery( $this->languageZids )->getSQL();
+		// Returns table with unique zids and the most preferred primary label,
+		// restricted to the pager's type (if any) before ranking
+		$subquery = $this->zObjectStore
+			->getPreferredLabelsQuery( $this->languageZids, $this->getTypeFilter() )
+			->getSQL();
 
 		$tables = [ 'preferred_labels' => new Subquery( $subquery ) ];
 		$fields = [

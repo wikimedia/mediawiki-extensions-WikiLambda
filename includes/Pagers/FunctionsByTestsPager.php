@@ -39,6 +39,17 @@ class FunctionsByTestsPager extends AbstractZObjectPager {
 	}
 
 	/**
+	 * This pager only lists functions; the type filter is pushed down into
+	 * the preferred-labels ranking subquery rather than applied over its
+	 * results (T430853).
+	 *
+	 * @return string|null
+	 */
+	protected function getTypeFilter(): ?string {
+		return ZTypeRegistry::Z_FUNCTION;
+	}
+
+	/**
 	 * Gets the base conditions from the parent class and adds the
 	 * additional conditions for this pager, depending on the filters.
 	 * This pager inner joins the preferredLabels table returned by the
@@ -103,7 +114,6 @@ class FunctionsByTestsPager extends AbstractZObjectPager {
 		$queryInfo[ 'tables' ][ 'tests' ] = new Subquery( $filteredFunctions->getSQL() );
 		$queryInfo[ 'join_conds' ][ 'tests' ] = [ 'LEFT JOIN', 'wlzl_zobject_zid = tests.function_zid' ];
 		// 3. Return functions for which matching_tests count is less than max.
-		$queryInfo[ 'conds' ][ 'wlzl_type' ] = ZTypeRegistry::Z_FUNCTION;
 		if ( $max > -1 ) {
 			$queryInfo[ 'conds' ][] = "matching_tests <= $max";
 		}

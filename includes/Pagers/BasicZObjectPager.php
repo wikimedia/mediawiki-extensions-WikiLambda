@@ -43,9 +43,19 @@ class BasicZObjectPager extends AbstractZObjectPager {
 	}
 
 	/**
+	 * The type filter (used by Special:ListObjectsByType and
+	 * Special:ListMissingLabels) is pushed down into the preferred-labels
+	 * ranking subquery rather than applied over its results (T430853).
+	 *
+	 * @return string|null
+	 */
+	protected function getTypeFilter(): ?string {
+		return $this->filters[ 'type' ] ?? null;
+	}
+
+	/**
 	 * Gets the base conditions from the parent class and adds the
 	 * additional conditions for this pager, depending on the filters:
-	 * - WHERE wlzl_type = type
 	 * - WHERE wlzl_return_type = return_type
 	 * - WHERE wlzl_language != missing_language
 	 *
@@ -54,11 +64,6 @@ class BasicZObjectPager extends AbstractZObjectPager {
 	public function getQueryInfo() {
 		// Get base queryInfo from parent
 		$queryInfo = parent::getQueryInfo();
-
-		// Special:ListObjectsByType and Special:ListMissingLabels
-		if ( array_key_exists( 'type', $this->filters ) ) {
-			$queryInfo[ 'conds' ][ 'wlzl_type' ] = $this->filters[ 'type' ];
-		}
 
 		// Special:ListObjectsByType only
 		if ( array_key_exists( 'return_type', $this->filters ) && $this->filters[ 'return_type' ] !== 'Z1' ) {
