@@ -11,3 +11,6 @@
 /**/i18n/**/*.json
 !/**/i18n/**/en.json
 !/**/i18n/**/qqq.json
+
+# Content cache for CI
+maintenance/initial-content/
