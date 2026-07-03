@@ -68,4 +68,12 @@ else
 Created commit with changes:
 $NEWCHANGESDISPLAY
 END
+
+	cat >&2 <<END
+
+To update the initial-content snapshot bundle (and so keep CI install fast), regenerate it from a
+clean install and stage the result:
+
+docker compose exec mediawiki php ./maintenance/run.php ./extensions/WikiLambda/maintenance/dumpInitialContent.php
+END
 fi

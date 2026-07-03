@@ -15,6 +15,7 @@ use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
+use MediaWiki\Extension\WikiLambda\InitialContentSnapshot;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -613,6 +614,7 @@ class RepoHooks implements
 				"$dir/$type/patch-add-return-type-field.sql"
 			);
 
+			$updater->addExtensionUpdate( [ [ self::class, 'maybeRestoreInitialContent' ] ] );
 			$updater->addExtensionUpdate( [ [ self::class, 'createInitialContent' ] ] );
 			$updater->addExtensionUpdate( [ [ self::class, 'initializeZObjectJoinTable' ] ] );
 		}
@@ -625,6 +627,103 @@ class RepoHooks implements
 	 */
 	protected static function getDataPath() {
 		return dirname( __DIR__ ) . '/../function-schemata/data/definitions/';
+	}
+
+	/**
+	 * Enumerate the built-in ZObject definition filenames (e.g. "Z2.json") shipped in the
+	 * function-schemata data directory, naturally sorted so that dependencies such as Z2
+	 * (Persistent Object) sort ahead of higher-numbered objects.
+	 *
+	 * @return string[] List of "Z<n>.json" filenames, natsorted
+	 */
+	protected static function getInitialContentFilenames(): array {
+		$listing = array_filter(
+			scandir( static::getDataPath() ),
+			static function ( $key ) {
+				return (bool)preg_match( '/^Z\d+\.json$/', $key );
+			}
+		);
+
+		// Naturally sort, so Z2/Persistent Object gets created before others
+		natsort( $listing );
+
+		return $listing;
+	}
+
+	/**
+	 * Ensure the ZObject content model is registered, injecting it if necessary. Both the snapshot
+	 * restore and the per-object createInitialContent() path create/import ZObject-model revisions,
+	 * and update.php can run before the model is otherwise defined.
+	 */
+	private static function ensureZObjectContentModelDefined(): void {
+		$contentHandler = MediaWikiServices::getInstance()->getContentHandlerFactory();
+		if ( !$contentHandler->isDefinedModel( CONTENT_MODEL_ZOBJECT ) ) {
+			if ( method_exists( $contentHandler, 'defineContentHandler' ) ) {
+				// @phan-suppress-next-line PhanUndeclaredMethod this apparently phan doesn't take the hint above
+				$contentHandler->defineContentHandler( CONTENT_MODEL_ZOBJECT, ZObjectContentHandler::class );
+			} else {
+				throw new ConfigException( 'WikiLambda content model is not registered and we cannot inject it.' );
+			}
+		}
+	}
+
+	/**
+	 * Installer/Updater callback that, on a fresh repo-mode install with a valid committed snapshot
+	 * bundle, restores the built-in ZObject pages and their secondary tables from the bundle instead
+	 * of leaving createInitialContent() to replay the ~1,500 per-object edits. Records the snapshot
+	 * marker on success so createInitialContent()/initializeZObjectJoinTable() no-op in the same run.
+	 *
+	 * Safe on an existing wiki: it never restores when initial content is already present, and any
+	 * missing/invalid/mismatched bundle simply leaves the slow path to run.
+	 *
+	 * @param DatabaseUpdater $updater
+	 */
+	public static function maybeRestoreInitialContent( DatabaseUpdater $updater ) {
+		// Ensure the extension is set up (namespace is defined) even when running update.php outside MW.
+		self::registerExtension();
+
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+			return;
+		}
+
+		if ( $updater->updateRowExists( InitialContentSnapshot::MARKER ) ) {
+			return;
+		}
+
+		$db = $updater->getDB();
+		$fname = __METHOD__;
+
+		// Only restore on a genuinely fresh install: if any initial content is already present, this
+		// is an existing (or partially-installed) wiki, so leave createInitialContent() to handle it
+		// and never re-import over live content. The labels table is created earlier in this run.
+		if ( !$db->tableExists( 'wikilambda_zobject_labels', $fname ) ) {
+			return;
+		}
+		$hasContent = $db->newSelectQueryBuilder()
+			->select( '1' )
+			->from( 'wikilambda_zobject_labels' )
+			->limit( 1 )
+			->caller( $fname )
+			->fetchField();
+		if ( $hasContent ) {
+			return;
+		}
+
+		// The bundle's revisions use the ZObject content model, so ensure it's registered before
+		// importing (mirrors createInitialContent(); update.php may run before it's otherwise defined).
+		self::ensureZObjectContentModelDefined();
+
+		$restored = InitialContentSnapshot::restore(
+			$db,
+			InitialContentSnapshot::DEFAULT_DIR,
+			static fn ( $m ) => $updater->output( "...$m\n" )
+		);
+		if ( $restored ) {
+			// Use insertUpdateRow() so DatabaseUpdater's own state records the marker, letting the
+			// createInitialContent()/initializeZObjectJoinTable() guards see it in this same run.
+			$updater->insertUpdateRow( InitialContentSnapshot::MARKER );
+		}
 	}
 
 	/**
@@ -644,15 +743,14 @@ class RepoHooks implements
 			return;
 		}
 
-		$contentHandler = MediaWikiServices::getInstance()->getContentHandlerFactory();
-		if ( !$contentHandler->isDefinedModel( CONTENT_MODEL_ZOBJECT ) ) {
-			if ( method_exists( $contentHandler, 'defineContentHandler' ) ) {
-				// @phan-suppress-next-line PhanUndeclaredMethod this apparently phan doesn't take the hint above
-				$contentHandler->defineContentHandler( CONTENT_MODEL_ZOBJECT, ZObjectContentHandler::class );
-			} else {
-				throw new ConfigException( 'WikiLambda content model is not registered and we cannot inject it.' );
-			}
+		// If the initial content was restored from a snapshot bundle, the pages and their
+		// secondary tables are already in place; skip the ~1,500-object edit-and-purge loop.
+		if ( $updater->updateRowExists( InitialContentSnapshot::MARKER ) ) {
+			$updater->output( "...WikiLambda initial content already restored from snapshot; skipping.\n" );
+			return;
 		}
+
+		self::ensureZObjectContentModelDefined();
 
 		// Note: Hard-coding the English version for messages as this can run without a Context and so no language set.
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
@@ -676,15 +774,7 @@ class RepoHooks implements
 		}
 		$dependencies = json_decode( $dependenciesFile, true );
 
-		$initialDataToLoadListing = array_filter(
-			scandir( $initialDataToLoadPath ),
-			static function ( $key ) {
-				return (bool)preg_match( '/^Z\d+\.json$/', $key );
-			}
-		);
-
-		// Naturally sort, so Z2/Persistent Object gets created before others
-		natsort( $initialDataToLoadListing );
+		$initialDataToLoadListing = static::getInitialContentFilenames();
 
 		$inserted = [];
 		foreach ( $initialDataToLoadListing as $filename ) {
@@ -822,6 +912,11 @@ class RepoHooks implements
 	 * @param DatabaseUpdater $updater
 	 */
 	public static function initializeZObjectJoinTable( DatabaseUpdater $updater ) {
+		// A snapshot restore already populated wikilambda_zobject_join, so there's nothing to do.
+		if ( $updater->updateRowExists( InitialContentSnapshot::MARKER ) ) {
+			return;
+		}
+
 		$updateKey = 'Initialized wikilambda_zobject_join for Z8s';
 
 		if ( !$updater->updateRowExists( $updateKey ) ) {
