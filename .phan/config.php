@@ -15,6 +15,7 @@ $cfg['directory_list'] = array_merge(
 	$cfg['directory_list'],
 	[
 		'../../extensions/AbuseFilter',
+		'../../extensions/CirrusSearch',
 		'../../extensions/CommunityConfiguration',
 		'../../extensions/SpamBlacklist',
 		'../../extensions/SiteMatrix',
@@ -27,6 +28,7 @@ $cfg['exclude_analysis_directory_list'] = array_merge(
 	$cfg['exclude_analysis_directory_list'],
 	[
 		'../../extensions/AbuseFilter',
+		'../../extensions/CirrusSearch',
 		'../../extensions/CommunityConfiguration',
 		'../../extensions/SpamBlacklist',
 		'../../extensions/SiteMatrix',

@@ -27,6 +27,7 @@ use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Search\ZObjectSearchIndexFieldsBuilder;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -39,9 +40,14 @@ use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Permissions\Authority;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
+use MediaWiki\Search\SearchEngine;
 use MediaWiki\Title\Title;
 use StatusValue;
 
@@ -274,6 +280,65 @@ class ZObjectContentHandler extends ContentHandler {
 				$this->zObjectCache
 			) ]
 		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getFieldsForSearchIndex( SearchEngine $engine ) {
+		$fields = parent::getFieldsForSearchIndex( $engine );
+
+		if ( $this->searchIndexFieldsEnabled( $engine ) ) {
+			// searchIndexFieldsEnabled() guarantees a CirrusSearch engine; narrow for phan.
+			'@phan-var \CirrusSearch\CirrusSearch $engine';
+			$builder = new ZObjectSearchIndexFieldsBuilder(
+				$this->config->get( 'WikiLambdaSearchIndexLanguages' ),
+				ZLangRegistry::singleton()
+			);
+			$fields += $builder->getFields( $engine );
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getDataForSearchIndex(
+		WikiPage $page,
+		ParserOutput $output,
+		SearchEngine $engine,
+		?RevisionRecord $revision = null
+	) {
+		$fields = parent::getDataForSearchIndex( $page, $output, $engine, $revision );
+
+		if ( $this->searchIndexFieldsEnabled( $engine ) ) {
+			$content = ( $revision ?? $page->getRevisionRecord() )?->getContent( SlotRecord::MAIN );
+			if ( $content instanceof ZObjectContent ) {
+				$builder = new ZObjectSearchIndexFieldsBuilder(
+					$this->config->get( 'WikiLambdaSearchIndexLanguages' ),
+					ZLangRegistry::singleton()
+				);
+				$fields += $builder->getData( $content );
+			}
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Whether the structured, multilingual CirrusSearch index fields should be built.
+	 *
+	 * All three conditions must hold before any CirrusSearch-touching code runs, so that on a
+	 * CirrusSearch-less or client-mode wiki nothing is referenced, instantiated or errors.
+	 *
+	 * @param SearchEngine $engine
+	 * @return bool
+	 */
+	private function searchIndexFieldsEnabled( SearchEngine $engine ): bool {
+		return $this->config->get( 'WikiLambdaEnableSearchIndexFields' )
+			&& ExtensionRegistry::getInstance()->isLoaded( 'CirrusSearch' )
+			&& $engine instanceof \CirrusSearch\CirrusSearch;
 	}
 
 	/**

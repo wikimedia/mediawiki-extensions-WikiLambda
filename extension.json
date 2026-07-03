@@ -145,6 +145,14 @@
 		"WikiLambdaClientFragmentStoreBackend": {
 			"description": "Storage backend for the Wikifunctions Client fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T432849).",
 			"value": "memcached"
+		},
+		"WikiLambdaEnableSearchIndexFields": {
+			"description": "If true, WikiLambda adds structured, multilingual ZObject fields (labels, aliases, description, type, and function input/output signature) to the CirrusSearch index. Off by default; must not be enabled in production until the Elasticsearch mapping has been reviewed with the Search Platform team (T390562). Temporary flag ahead of deployment. Inert where CirrusSearch is not loaded.",
+			"value": false
+		},
+		"WikiLambdaSearchIndexLanguages": {
+			"description": "Allowlist of language codes that get their own per-language CirrusSearch fields (zobject_labels.<lang> etc.) when WikiLambdaEnableSearchIndexFields is on. All other languages are still searchable via the zobject_labels_all catch-all field. Deliberately small; to be tuned with the Search Platform team (T390562 M1).",
+			"value": [ "en" ]
 		}
 	},
 	"ConfigRegistry": {

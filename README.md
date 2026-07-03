@@ -1058,6 +1058,32 @@ $ docker compose exec mediawiki php maintenance/run.php \
 ```
 
 
+## Special:Search integration
+
+In repo mode (Wikifunctions.org), WikiLambda indexes ZObject content into the
+wiki's CirrusSearch index so that `Special:Search` can find and rank functions
+and other objects by their labels, descriptions and type signature, rather than
+by their raw JSON.
+
+The whole surface is off by default and gated behind a single flag:
+
+```php
+# Enable structured ZObject search (repo mode; requires CirrusSearch):
+$wgWikiLambdaEnableSearchIndexFields = true;
+# Optional: languages given their own per-language index fields. All other
+# languages stay findable through a catch-all field. Default: [ 'en' ].
+$wgWikiLambdaSearchIndexLanguages = [ 'en' ];
+```
+
+After enabling the flag you must (re)build the CirrusSearch index so the
+structured fields are populated: run CirrusSearch's `UpdateSearchIndexConfig`
+and then `ForceSearchIndex` maintenance scripts. (Whenever you toggle the flag,
+re-run both, or the index and the code will disagree.)
+
+The integration is inert where CirrusSearch is not loaded, and must not be
+enabled in production until the Elasticsearch mapping has been reviewed with the
+Search Platform team.
+
 ## See also
 
 <https://www.mediawiki.org/wiki/Extension:WikiLambda>

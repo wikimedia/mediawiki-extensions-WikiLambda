@@ -29,7 +29,9 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSlotDiffRenderer;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Parser\ParserOutputLinkTypes;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
@@ -39,6 +41,7 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataRemoval
+ * @covers \MediaWiki\Extension\WikiLambda\Search\ZObjectSearchIndexFieldsBuilder
  * @group Database
  */
 class ZObjectContentHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
@@ -500,6 +503,71 @@ class ZObjectContentHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->makeLanguage( 'pcd' )
 		);
 		$this->assertSame( "Éxample - $sitename", $pcdTitle );
+	}
+
+	private function skipIfNoCirrusSearch(): void {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CirrusSearch' ) ) {
+			$this->markTestSkipped( 'CirrusSearch extension is not loaded' );
+		}
+	}
+
+	public function testGetDataForSearchIndex_disabledByDefault() {
+		$this->registerLangs( [ 'en', 'fr' ] );
+		$this->insertZids( [ 'Z2', 'Z6', 'Z9', 'Z11', 'Z12', 'Z40' ] );
+
+		// The flag is off by default, so no ZObject-specific fields should be added. We use the
+		// real default search engine (non-CirrusSearch in the standard CI config): the parent
+		// getFieldsForSearchIndex builds real field mappings, which a bare mock cannot supply.
+		$handler = $this->buildZObjectContentHandler();
+		$engine = $this->getServiceContainer()->getSearchEngineFactory()->create();
+
+		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_MAIN );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$page = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $title );
+
+		$data = $handler->getDataForSearchIndex( $page, new ParserOutput(), $engine );
+
+		// Parent fields are still present ...
+		$this->assertArrayHasKey( 'content_model', $data );
+		// ... but none of ours are.
+		$this->assertArrayNotHasKey( 'zobject_type', $data );
+		$this->assertArrayNotHasKey( 'zobject_labels', $data );
+		$this->assertArrayNotHasKey( 'zobject_labels_all', $data );
+
+		$fields = $handler->getFieldsForSearchIndex( $engine );
+		$this->assertArrayNotHasKey( 'zobject_type', $fields );
+		$this->assertArrayNotHasKey( 'zobject_labels', $fields );
+	}
+
+	public function testSearchIndexFields_enabled() {
+		$this->skipIfNoCirrusSearch();
+
+		$this->registerLangs( [ 'en', 'fr' ] );
+		$this->insertZids( [ 'Z2', 'Z6', 'Z9', 'Z11', 'Z12', 'Z40' ] );
+
+		$this->overrideConfigValues( [
+			// CirrusSearch is loaded here but is not the default active engine; force it so the
+			// enabled path (which requires an $engine instanceof CirrusSearch) actually runs.
+			MainConfigNames::SearchType => 'CirrusSearch',
+			'WikiLambdaEnableSearchIndexFields' => true,
+			'WikiLambdaSearchIndexLanguages' => [ 'en' ],
+		] );
+		// buildZObjectContentHandler() snapshots getMainConfig(), so build it after the override.
+		$handler = $this->buildZObjectContentHandler();
+
+		$engine = $this->getServiceContainer()->getSearchEngineFactory()->create();
+		if ( !( $engine instanceof \CirrusSearch\CirrusSearch ) ) {
+			$this->markTestSkipped( 'The active search engine is not CirrusSearch' );
+		}
+
+		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_MAIN );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$page = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $title );
+
+		$data = $handler->getDataForSearchIndex( $page, new ParserOutput(), $engine );
+
+		$this->assertArrayHasKey( 'zobject_type', $data );
+		$this->assertArrayHasKey( 'zobject_labels', $data );
 	}
 
 }
