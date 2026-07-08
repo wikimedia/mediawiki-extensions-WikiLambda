@@ -106,11 +106,12 @@
 	"apihelp-wikilambda_perform_test-param-nocache": "캐시 사용 여부",
 	"apihelp-wikifunctions_html_sanitiser-summary": "Wikifunctions.org 및 클라이언트 위키미디어 위키에서 사용자에게 표시하기 위해 HTML 문자열을 새니타이즈하기 위한 API입니다.",
 	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "실행중인 새니타이즈 호출이 너무 많습니다.",
+	"apierror-wikifunctions_html_sanitiser-length-limit": "입력 HTML 문자열이 너무 깁니다.",
 	"apihelp-wikifunctions_html_sanitiser-param-html": "사용자에게 표시하기에 적합하도록 새니타이즈드된 HTML 문자열입니다.",
 	"apihelp-wikifunctions_html_sanitiser-example-untouched": "기본적인 no-op 호출의 예시입니다.",
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "금지된 HTML이 포함된 예시 호출입니다.",
 	"wikilambda-restapi-disabled-repo-mode-only": "이 API는 메인 'repo' 위키인 Wikifunctions.org를 제외하고는 사용할 수 없습니다.",
-	"wikilambda-restapi-fetch-too-many": "한 번에 개체를 너무 많이 요청했습니다 ($1개 요청함, 최대 허용 개수는 $2개)",
-	"wikilambda-restapi-revision-mismatch": "'$2' 개체의 $1 판을 요청했지만, 해당 개체를 찾을 수 없습니다",
+	"wikilambda-restapi-fetch-too-many": "한 번에 객체를 너무 많이 요청했습니다 ($1개 요청함, 최대 허용 개수는 $2개)",
+	"wikilambda-restapi-revision-mismatch": "'$2' 객체의 $1 판을 요청했지만, 해당 객체를 찾을 수 없습니다",
 	"wikilambda-api-disabled-repo-mode-only": "이 API는 메인 'repo' 위키인 Wikifunctions.org를 제외하고는 사용할 수 없습니다."
 }

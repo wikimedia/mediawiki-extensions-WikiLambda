@@ -8,6 +8,19 @@
 	"wikifunctions-rest-module-v0-desc": "واجهات برمجة التطبيقات للتفاعل مع وظائف ويكي",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "جلب كائنات Z",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "استرجاع الإصدارات التاريخية من كائنات ZObjects",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "قائمة مفصولة بعلامة الأنبوب (|) لمعرفات المناطق (ZIDs) المطلوب جلبها، بحد أقصى 50 معرفًا لكل طلب.",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "قائمة مفصولة بعلامة الأنبوب (|) لمعرفات المراجعات، واحد لكل معرف ZID مطلوب، لجلب الإصدارات السابقة؛ في حالة حذفها، يتم إرجاع أحدث مراجعة لكل معرف ZID",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "رمز اللغة BCP-47 المستخدم عند حلّ التسميات متعددة اللغات في كائنات ZObject المُعادة؛ في حال حذفه، تُعاد جميع اللغات.",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "ما إذا كان سيتم إرجاع كائنات ZObjects المشار إليها كأنواع في مفاتيح أو وسائط كائنات ZObjects المطلوبة بشكل إضافي",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "خريطة تربط كل معرّف منطقة (ZID) مطلوب (والتبعية، إن وُجدت) بكائن ZObject الخاص به، مُسلسلة كسلسلة JSON.",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "كائن ZObject مُسلسل كسلسلة JSON، كما تم إرجاعه بواسطة نقطة نهاية تمثيل محتوى الصفحة",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "استدعاء دالة",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "استدعاء دالة، مع لغات تحليل وعرض مخصصة"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "استدعاء دالة، مع لغات تحليل وعرض مخصصة",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "معرف المنطقة (ZID) للدالة المراد استدعاؤها",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "قائمة الوسائط المراد تمريرها إلى الدالة، مفصولة بعلامة الأنبوب (|)، بالترتيب الذي تم تعريف الوسائط به، مع ترميز كل وسيط باستخدام ترميز URL.",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "رمز لغة BCP-47 المستخدم لتحليل الوسائط ذات القيم النصية التي تحتوي على دالة تحليل؛ القيمة الافتراضية هي 'en'",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "رمز لغة BCP-47 المستخدم لعرض مخرجات الدالة وأي رسائل خطأ؛ القيمة الافتراضية هي 'en'",
+	"wikifunctions-rest-module-v0-call-response-desc": "نتيجة تقييم استدعاء الدالة",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "يتم تقييم الناتج كسلسلة نصية؛ إما سلسلة نصية عادية (لـ Z6) أو جزء من HTML (لـ Z89)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "معرّف ZID لنوع المخرجات المُقيّمة: 'Z6' لسلسلة نصية عادية، و'Z89' لجزء من HTML"
 }

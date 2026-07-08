@@ -68,6 +68,7 @@
 	"action-wikilambda-edit-user-function": "modificare la funzione esistente fornita dall'utente",
 	"action-wikilambda-execute": "eseguire funzioni",
 	"action-wikilambda-execute-unsaved-code": "eseguire codice di implementazione non salvato",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label": "Titolo",
 	"content-model-zobject": "Oggetto WikiLambda",
 	"group-functioneer": "Funzionisti",
 	"group-functioneer-member": "{{GENDER:$1|funzionista}}",

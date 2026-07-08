@@ -1,13 +1,27 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"Ladypine"
 		]
 	},
 	"wikifunctions-rest-module-v0-title": "ממשק API של ויקיפונקציות",
 	"wikifunctions-rest-module-v0-desc": "ממשק API לעבודה עם ויקיפונקציות",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "שליפת עצמי Z",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "שליפת גרסאות היסטוריות של עצמי Z",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "רשימה מופרדת בקווים ניצבים של ZID־ים שיש לשלוף, 50 לכל היותר בכל בקשה",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "רשימה מופרדת בקווים ניצבים של ZID־ים שיש לשלוף, אחת לכל ZID מבוקש, כדי לשלוף גרסאות היסטוריות; אם הרשימה לא מוזנת, מוחזרת הגרסאה האחרונה של כל ZID",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "קוד שפה בתקן BCP-47 לשימוש בעת מציאת תוויות רב־לשוניות בעצמי Z מוחזרים; אם זה לא ניתן, מוחזרות כל השפות",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "האם להחזיר בנוסף את עצמי ה־Z שיש אליהם התייחסות כסוגים במפתחות או בארגומנטים של עצמי ה־Z המבוקשים",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "מפה מכל ZID מבוקש (ואם getDependencies מוגדר, גם מכל תלויות) לעצם ה־Z שלו, מוסדר כמחרוזת JSON",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "ZObject שעבר סידור כמחרוזת JSON, כפי שמוחזר על־ידי נקודת הקצה של ייצוג תוכן הדף",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "קריאה לפונקציה",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "קריאה לפונקציה, עם שפות מותאמות לפענוח ותיצוג"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "קריאה לפונקציה, עם שפות מותאמות לפענוח ותיצוג",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID של הפונקציה לקריאה",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "רשימה מופרדת בקווים ניצבים של ארגומנטים שיש להעביר לפונקציה, לפי הסדר שבו הארגומנטים שלה מוצהרים, כאשר כל ארגומנט מקודד URL",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "קוד שפה בתקן BCP-47 שמשמש לניתוח ארגומנטים שהערך שלהם הוא מחרוזת ושיש להם פונקציית מפענח; ברירת המחדל היא \"en\"",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "קוד שפה בתקן BCP-47 שמשמש לעיבוד פלט הפונקציה ולכל הודעות שגיאה; ברירת המחדל היא \"en\"",
+	"wikifunctions-rest-module-v0-call-response-desc": "תוצאת הערכת קריאה לפונקציה",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "הפלט המוערך כמחרוזת; מחרוזת רגילה (עבור Z6) או מקטע HTML (עבור Z89)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "ה־ZID של סוג הפלט המוערך: \"Z6\" עבור מחרוזת רגילה, \"Z89\" עבור מקטע HTML"
 }

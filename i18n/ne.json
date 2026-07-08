@@ -2,10 +2,15 @@
 	"@metadata": {
 		"authors": [
 			"Bada Kaji",
+			"Pratik11",
 			"पर्वत सुबेदी",
 			"बडा काजी"
 		]
 	},
+	"communityconfiguration-abstractwikioptedinarticles-title": "सार-विकिपिडिया अप्ट-इन लेखहरू",
+	"communityconfiguration-abstractwikioptedinarticles-description": "सारांश विकिपिडिया सामग्रीबाट प्रस्तुत गरिएका लेखहरूको सूची।",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label": "शीर्षक",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-help-text": "पहिलो प्रविष्टि लेखको प्राथमिक शीर्षक हो। कुनै पनि अतिरिक्त शीर्षकहरूलाई पुन: निर्देशित मानिनेछ।",
 	"group-functionmaintainer": "मर्मतकर्ताहरू",
 	"group-functionmaintainer-member": "{{GENDER:$1|मर्मतकर्ता}}",
 	"grouppage-functioneer": "{{ns:project}}:कार्यकर्ताहरू",

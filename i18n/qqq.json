@@ -395,7 +395,7 @@
 	"wikilambda-functioncall-metadata-actual-result": "Label for the actual result returned from a tester's test run.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-cached": "Summary for the caching section in the function call metadata, stating that the response was retrieved from a cache.\n\n{{doc-wikilambda}}.",
 	"wikilambda-functioncall-metadata-cache-stored": "Label for the time when the function call was stored in the cache.",
-	"wikilambda-functioncall-metadata-cache-test-call-stored": "Label for the time when the test call was stored in the cache.",
+	"wikilambda-functioncall-metadata-cache-test-call-stored": "Label for the time when the test call was stored in the cache.\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-cache-test-result-key": "Label for the key used to store the test results in the cache, which indicates the function, implementation and test zids as well as their revision IDs.",
 	"wikilambda-functioncall-metadata-cache-test-result-stored": "Label for the time when test result was stored in the cache.",
 	"wikilambda-functioncall-metadata-cache-test-validation-stored": "Label for the time when the validation call was stored in the cache.",

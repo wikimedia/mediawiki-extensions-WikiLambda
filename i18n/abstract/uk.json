@@ -54,5 +54,7 @@
 	"wikilambda-abstract-special-create-not-enabled": "Створення Абстрактних статей наразі не ввімкнено. Будь ласка, перевірте пізніше.",
 	"wikilambda-abstract-special-create-not-enabled-title": "Створення Абстрактної статті не увімкнено",
 	"wikilambda-abstract-special-create-qid": "Створити нову Абстрактну статтю для $1",
+	"wikilambda-abstract-special-preview-unsupported-lang-title": "Ця мова ще не підтримується.",
+	"wikilambda-abstract-special-preview-unsupported-qid-title": "Ця тема ще не підтримується.",
 	"wikilambda-abstract-special-view": "Переглянути Абстрактну статтю"
 }

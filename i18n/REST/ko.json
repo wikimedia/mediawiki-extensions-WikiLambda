@@ -6,7 +6,7 @@
 		]
 	},
 	"wikifunctions-rest-module-v0-title": "위키함수 API",
-	"wikifunctions-rest-module-v0-desc": "Wikifunctions와 상호작용하기 위한 API들입니다",
+	"wikifunctions-rest-module-v0-desc": "위키함수와 상호작용하기 위한 API들입니다",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "Z객체를 가져옵니다",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Z객체의 이전 버전을 가져옵니다",
 	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "파이프로 구분된 가져올 ZID의 목록입니다. 요청당 최대 50개까지 가능합니다",

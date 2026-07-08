@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"apierror-abstractwiki_fetch_section-bad-content": "Der Inhalt für das angegebene Thema Qid konnte nicht abgerufen werden.",
+	"apierror-abstractwiki_fetch_section-bad-fragments": "Die angegebene Liste von Fragmenten ist nicht wohlgeformt.",
+	"apierror-abstractwiki_fetch_section-bad-section": "Der angegebene Abschnitt Qid ist ungültig oder existiert nicht auf dieser Seite der abstrakten Wikipedia.",
+	"apierror-abstractwiki_fetch_section-bad-topic": "Das angegebene Thema (Qid) ist ungültig oder existiert nicht in der abstrakten Wikipedia.",
+	"apierror-abstractwiki_fetch_section-not-enabled": "Fragmente der abstrakten Wikipedia können nicht gerendert werden: Diese Funktion ist nicht aktiviert."
+}

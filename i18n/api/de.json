@@ -112,6 +112,7 @@
 	"apihelp-wikilambda_perform_test-param-nocache": "Ob der Cache verwendet werden soll oder nicht",
 	"apihelp-wikifunctions_html_sanitiser-summary": "API zur Bereinigung einer HTML-Zeichenkette für die Anzeige durch Benutzer auf Wikifunctions.org und Client-Wikis von Wikimedia.",
 	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "Du hast momentan zu viele Sanitisierungsaufrufe am Laufen.",
+	"apierror-wikifunctions_html_sanitiser-length-limit": "Die eingegebene HTML-Zeichenkette ist zu lang.",
 	"apihelp-wikifunctions_html_sanitiser-param-html": "Der bereinigte HTML-String, geeignet für die Anzeige durch den Benutzer.",
 	"apihelp-wikifunctions_html_sanitiser-example-untouched": "Beispiel eines einfachen No-Op-Aufrufs.",
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Beispielaufruf mit unzulässigem HTML-Code.",

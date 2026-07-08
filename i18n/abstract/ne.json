@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pratik11"
+		]
+	},
+	"action-wikilambda-abstract-run-unsaved-fragment": "बचत नगरिएका सारांश विकिपिडिया टुक्राहरू रेन्डर गर्नुहोस्",
+	"right-wikilambda-abstract-optin": "सारांश विकिपिडिया सामग्रीमा अप्ट इन गरिएका स्थानीय लेखहरूको सूची व्यवस्थापन गर्नुहोस्।",
+	"right-wikilambda-abstract-run-unsaved-fragment": "बचत नगरिएका सारांश विकिपिडिया टुक्राहरू रेन्डर गर्नुहोस्",
+	"wikilambda-abstract-lastupdatedat": "यो पृष्ठ अन्तिम पटक $1 मा $2 मा अपडेट गरिएको थियो।",
+	"wikilambda-abstract-log-action-optin-redirect": "$1 {{GENDER:$2| ले}} $3 लाई सारांश विकिपिडिया विषय देखाउन $5 मा रिडिरेक्ट गर्‍यो $4",
+	"wikilambda-abstract-log-action-optout": "$1 {{GENDER:$2| disabled}} पृष्ठ $3 मा सारांश विकिपिडिया विषय $4 देखाउँदै",
+	"wikilambda-abstract-log-name": "सारांश विकिपिडिया गतिविधि लग",
+	"wikilambda-abstract-log-header": "यो लगले अमूर्त विकिपिडिया लेखहरूलाई पाठकहरूले देख्न सक्ने बनाउन वा असक्षम पार्नको लागि गरिएको अप्ट-इन र अप्ट-आउट कार्यहरू देखाउँछ।",
+	"wikilambda-abstract-preview-fragment-pending": "विचाराधीन",
+	"wikilambda-abstract-renderedwith": "पृष्ठ [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]] बाट रेन्डर गरिएको थियो।",
+	"wikilambda-abstract-special-preview-optedin-notice": "यो सारांश लेखले [[ $1 ]] लेखलाई शक्ति प्रदान गर्दछ।",
+	"wikilambda-abstract-special-preview-optin-cta": "[[Special:CommunityConfiguration/AbstractWikiOptedInArticles|पाठकहरूलाई यो पृष्ठ देखाउनुहोस्]]।",
+	"wikilambda-abstract-special-preview-provenance-banner": "यो लेख एब्स्ट्र्याक्ट विकिपिडियामा आधारित छ र अन्तिम पटक $1 , $2 मा अपडेट गरिएको थियो। यो लेख सम्पादन गर्न, तपाईंलाई एब्स्ट्र्याक्ट विकिपिडियामा लगिनेछ।",
+	"wikilambda-abstract-tab-createlocal": "एउटा लेख सिर्जना गर्नुहोस्",
+	"wikilambda-abstract-tab-edit": "\nसार सम्पादन गर्नुहोस्"
+}

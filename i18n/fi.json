@@ -46,6 +46,7 @@
 	"action-wikilambda-edit-type": "muokata olemassa olevia tyyppiobjekteja",
 	"action-wikilambda-edit-unit": "muokata olemassa olevia yksikköobjekteja",
 	"action-wikilambda-execute": "suorittaa funktioita",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label": "Nimi",
 	"content-model-zobject": "WikiLambda-objekti",
 	"group-functioneer": "funktio-ohjelmoijat",
 	"group-functioneer-member": "{{GENDER:$1|funktio-ohjelmoija}}",

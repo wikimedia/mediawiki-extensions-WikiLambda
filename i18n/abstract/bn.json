@@ -3,7 +3,8 @@
 		"authors": [
 			"Asked42",
 			"Saurmandal",
-			"Tanbiruzzaman"
+			"Tanbiruzzaman",
+			"আফতাবুজ্জামান"
 		]
 	},
 	"action-wikilambda-abstract-create": "নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
@@ -42,6 +43,7 @@
 	"wikilambda-abstract-menu-option-move-after": "ফ্র্যাগমেন্টটি পরে স্থানান্তর করুন",
 	"wikilambda-abstract-menu-option-move-before": "ফ্র্যাগমেন্টটি আগে স্থানান্তর করুন",
 	"wikilambda-abstract-preview-fragment-max-retries": "সর্বোচ্চ সংখ্যকবার চেষ্টা করা হয়েছে। পরে আবার চেষ্টা করুন।",
+	"wikilambda-abstract-preview-fragment-pending": "অমীমাংসিত",
 	"wikilambda-abstract-preview-fragment-retry": "পুনঃচেষ্টা",
 	"wikilambda-abstract-preview-in-language": "তৈরি করা পাঠ্য",
 	"wikilambda-abstract-special-create": "একটি নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
@@ -52,5 +54,16 @@
 	"wikilambda-abstract-special-create-not-enabled": "বিমূর্ত নিবন্ধ তৈরি করা বর্তমানে সক্রিয় করা হয়নি। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
 	"wikilambda-abstract-special-create-not-enabled-title": "বিমূর্ত নিবন্ধ তৈরি সক্রিয় করা হয়নি",
 	"wikilambda-abstract-special-create-qid": "$1 এর জন্য একটি নতুন বিমূর্ত নিবন্ধ তৈরি করুন",
-	"wikilambda-abstract-special-view": "একটি বিমূর্ত নিবন্ধ দেখুন"
+	"wikilambda-abstract-special-preview-not-ready-title": "এই নিবন্ধটির প্রাকদর্শন এখনও প্রস্তুত নয়।",
+	"wikilambda-abstract-special-preview-optedin-notice": "এই বিমূর্ত নিবন্ধটি [[$1]] নামক নিবন্ধ তৈরি করতে ব্যবহৃত হচ্ছে।",
+	"wikilambda-abstract-special-preview-optedout-notice": "এই বিমূর্ত নিবন্ধটি এখনও এই উইকিতে ব্যবহৃত হয়নি।",
+	"wikilambda-abstract-special-preview-provenance-banner": "এই নিবন্ধটি বিমূর্ত উইকিপিডিয়ার ওপর ভিত্তি করে তৈরি করা হয়েছে এবং সর্বশেষ $2 তারিখের $1-এ হালনাগাদ করা হয়েছে। এই নিবন্ধটি সম্পাদনা করতে আপনাকে বিমূর্ত উইকিপিডিয়ায় নিয়ে যাওয়া হবে।",
+	"wikilambda-abstract-special-preview-unsupported-lang-body": "\"$1\" ভাষা এখনো সেই ভাষাগুলোর তালিকায় অন্তর্ভুক্ত হয়নি যেগুলোর জন্য বিমূর্ত উইকিপিডিয়ার নিবন্ধ তৈরি করা যাবে। [[abstract:Help:Abstract_articles#Language_coverage|সক্রিয় ভাষাসমূহের তালিকা দেখুন]]",
+	"wikilambda-abstract-special-preview-unsupported-lang-title": "এই ভাষাটি এখনও সমর্থিত নয়।",
+	"wikilambda-abstract-special-preview-unsupported-qid-body": "বিষয় $1-এর কোনো বিমূর্ত নিবন্ধ নেই অথবা এটি এখনো সেই বিষয়গুলোর তালিকায় অন্তর্ভুক্ত হয়নি যেগুলোর জন্য বিমূর্ত উইকিপিডিয়ার নিবন্ধ তৈরি করা যাবে। [[abstract:Help:Abstract_articles#Language_coverage|সক্রিয় বিষয়গুলোর তালিকা দেখুন]]",
+	"wikilambda-abstract-special-preview-unsupported-qid-title": "এই বিষয়টি এখনও সমর্থিত নয়।",
+	"wikilambda-abstract-special-view": "একটি বিমূর্ত নিবন্ধ দেখুন",
+	"wikilambda-abstract-tab-createlocal": "স্থানীয় নিবন্ধ তৈরি করুন",
+	"wikilambda-abstract-tab-edit": "বিমূর্ত সম্পাদনা",
+	"wikilambda-abstract-tab-history": "বিমূর্ত ইতিহাস"
 }

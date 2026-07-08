@@ -5,7 +5,8 @@
 			"FARMER",
 			"Tahmid",
 			"WikiAbuHuraira",
-			"ZeetBaral"
+			"ZeetBaral",
+			"আফতাবুজ্জামান"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Z-বস্তুর JSON মডেল আনয়ন করুন।",
@@ -46,6 +47,7 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "পরীক্ষা করার জন্য Z-বাস্তবায়ন আইডি (বা বস্তুর) তালিকা",
 	"apihelp-wikilambda_perform_test-param-ztesters": "পরীক্ষা করার জন্য ZTester আইডি (বা বস্তুর) তালিকা",
 	"apihelp-wikilambda_perform_test-param-nocache": "ক্যাশ ব্যবহার করা হবে কি না",
+	"apierror-wikifunctions_html_sanitiser-length-limit": "ইনপুট HTML স্ট্রিং খুব লম্বা।",
 	"wikilambda-restapi-fetch-too-many": "আপনি $1-এর জন্য অনুরোধ করেছেন, যা একসাথে অনেকগুলি বস্তু (সর্বাধিক $2টি অনুমোদিত)",
 	"wikilambda-restapi-revision-mismatch": "আপনি বস্তু '$2' এর $1 সংশোধনের অনুরোধ করেছেন, যা পাওয়া যায়নি।"
 }

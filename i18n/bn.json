@@ -70,6 +70,7 @@
 	"action-wikilambda-edit-user-function": "বিদ্যমান ব্যবহারকারী প্রদত্ত ফাংশন সম্পাদনা করুন",
 	"action-wikilambda-execute": "ফাংশন চালানোর",
 	"action-wikilambda-execute-unsaved-code": "অসংরক্ষিত বাস্তবায়ন কোড চালান",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label": "শিরোনাম",
 	"communityconfiguration-wikifunctionssuggestions-title": "প্রস্তাবিত উইকিফাংশন্স",
 	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-label": "প্রস্তাবিত উইকিফাংশন্স",
 	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-item-label": "প্রস্তাবিত উইকিফাংশন্স সমূহ $1",
