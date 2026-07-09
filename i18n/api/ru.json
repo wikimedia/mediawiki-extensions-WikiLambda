@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Dirruw'o"
+			"Dirruw'o",
+			"HyoerFlint"
 		]
 	},
 	"apihelp-wikifunctions_run-summary": "Запуск вызова функции",
 	"apihelp-wikifunctions_run-param-function_call": "ZObject для вызова функции для запуска",
+	"apierror-wikifunctions_html_sanitiser-length-limit": "Введенная строка HTML слишком длинная.",
 	"wikilambda-restapi-fetch-too-many": "Вы запросили $1 , что слишком много объектов одновременно (разрешено максимум $2 )",
 	"wikilambda-restapi-revision-mismatch": "Вы запросили ревизию $1 объекта « $2 », которая не найдена."
 }

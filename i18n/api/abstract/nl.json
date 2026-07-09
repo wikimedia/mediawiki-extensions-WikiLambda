@@ -1,9 +1,23 @@
 {
 	"@metadata": {
 		"authors": [
+			"McDutchie",
 			"Siebrand"
 		]
 	},
+	"apierror-abstractwiki_fetch_section-bad-content": "De inhoud voor de opgegeven onderwerp-Qid kon niet worden opgehaald.",
+	"apierror-abstractwiki_fetch_section-bad-fragments": "De opgegeven lijst met fragmenten is niet juist ingedeeld.",
+	"apierror-abstractwiki_fetch_section-bad-section": "De opgegeven sectie-Qid is foutief of bestaat niet op deze Abstract Wikipedia-pagina.",
+	"apierror-abstractwiki_fetch_section-bad-topic": "De opgegeven onderwerp-Qid is foutief of bestaat niet op Abstract Wikipedia.",
+	"apierror-abstractwiki_fetch_section-not-enabled": "Het is niet mogelijk om fragmenten van Abstract Wikipedia weer te geven: deze functie is niet ingeschakeld.",
+	"apihelp-abstractwiki_fetch_section-summary": "Vraagt de momenteel beschikbare verwerkte fragmenten van Abstract Wikipedia op voor de opgegeven onderwerp-Qid (Wikidata-item-ID), sectie-Qid, taal-Zid en datum. Als alternatief (en alleen met speciale rechten) kunt u de momenteel beschikbare verwerkte uitvoer opvragen van een reeks fragmenten die in het verzoek zijn doorgegeven; deze kan afwijken van de momenteel opgeslagen versie.\n\nOp deze aanvraag wordt nooit gewacht. Wanneer een van de opgevraagde fragmenten nog niet gereed is, wordt voor dat fragment de vlag “pending“ op “true“ gezet.\n\nHet antwoord levert gegarandeerd evenveel resultaten op als er zijn opgevraagd. Als de parameter “fragments“ bijvoorbeeld leeg is en de opgevraagde sectie N fragmenten bevat, worden ze alle N geretourneerd. Hetzelfde geldt als er via de parameter “fragments“ M fragmenten worden opgevraagd: het antwoord bevat dan M items.",
+	"apihelp-abstractwiki_fetch_section-param-topic": "De Wikidata-item-ID die gebruikt wordt om de fragmenten te verwerken. Het moet een geldige Qid zijn.",
+	"apihelp-abstractwiki_fetch_section-param-section": "De Wikidata-item-ID die de gevraagde sectie identificeert. Dit moet een geldige Qid zijn.",
+	"apihelp-abstractwiki_fetch_section-param-language": "De taal-ZObject-ID die gebruikt wordt om de fragmenten te verwerken. Dit moet een geldige Zid zijn.",
+	"apihelp-abstractwiki_fetch_section-param-date": "De datumtekst die gebruikt wordt om de fragmenten te verwerken.",
+	"apihelp-abstractwiki_fetch_section-param-fragments": "Een optionele array met fragmenten waarvan de weergegeven waarden moeten worden geretourneerd. Als de array leeg is, zijn de geretourneerde fragmenten dezelfde als die volgens de huidige versie voor de opgegeven sectie-Qid zijn opgeslagen. Als de array niet leeg is, moet er een lijst met fragmentfunctie-aanroepen in staan. Deze kunnen afwijken van degenen die in de sectie zijn vastgelegd (bijvoorbeeld omdat ze op dat moment actief worden bewerkt en hun huidige status nog niet is vastgelegd). In dat geval zijn aanvullende rechten vereist.",
+	"apihelp-abstractwiki_fetch_section-example-lede": "De verwerkte fragmenten van een bepaalde sectie ophalen.",
+	"apihelp-abstractwiki_fetch_section-example-unsaved": "De verwerkte waarden van een lijst met niet-opgeslagen fragmenten ophalen.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Het fragment is geen geldige functieaanroep.",
 	"apierror-abstractwiki_run_fragment-bad-response": "Het fragment gaf een onjuist gegevenstype terug.",
 	"apierror-abstractwiki_run_fragment-forbidden": "U hebt niet de benodigde machtigingen om dit fragment weer te geven.",

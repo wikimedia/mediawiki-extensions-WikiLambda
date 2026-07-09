@@ -108,6 +108,7 @@
 	"apihelp-wikilambda_perform_test-param-nocache": "Of de cache gebruikt moet worden of niet",
 	"apihelp-wikifunctions_html_sanitiser-summary": "API om een HTML-string te zuiveren voor weergave op Wikifunctions.org en Wikimedia-wiki's.",
 	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "U hebt momenteel te veel verzoeken voor zuivering in behandeling.",
+	"apierror-wikifunctions_html_sanitiser-length-limit": "De HTML-invoerstring is te lang.",
 	"apihelp-wikifunctions_html_sanitiser-param-html": "De gezuiverde HTML-string is geschikt voor weergave aan de gebruiker.",
 	"apihelp-wikifunctions_html_sanitiser-example-untouched": "Voorbeeld van een eenvoudige aanroep zonder uitvoering.",
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Voorbeeld van een oproep met niet toegelaten HTML.",

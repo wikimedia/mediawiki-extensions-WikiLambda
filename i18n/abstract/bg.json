@@ -5,8 +5,8 @@
 			"StanProg"
 		]
 	},
-	"wikilambda-abstract-special-preview-empty-section-body": "Тази статия е актуализирана за последно към $1, но този раздел все още не е генериран за този език. Моля, опитайте отново по-късно. [[abstract:Help:Abstract_articles#Abstract_article_rendering|Защо това не става веднага?]]",
+	"wikilambda-abstract-special-preview-empty-section-body": "Тази статия е актуализирана за последно към $1, но този раздел все още не е генериран за този език. Моля, опитайте отново по-късно. [[abstract:Special:MyLanguage/Help:Abstract articles#Abstract article rendering|Защо това не става веднага?]]",
 	"wikilambda-abstract-special-preview-missing-params-body": "URL адресът трябва да съдържа език и Qid на темата. Напр. „Special:PreviewAbstract/en/Q42“",
-	"wikilambda-abstract-special-preview-unsupported-lang-body": "Езикът „$1“ все още не е включен в списъка с езици, за които се генерират статии в Абстрактна Уикипедия. [[abstract:Help:Abstract_articles#Language_coverage|Вижте списъка с активирани езици]]",
-	"wikilambda-abstract-special-preview-unsupported-qid-body": "Темата $1 няма абстрактна статия или все още не е включена в списъка с теми, за които се генерират статии в Абстрактна Уикипедия. [[abstract:Help:Abstract_articles#Language_coverage|Вижте списъка с активирани теми]]"
+	"wikilambda-abstract-special-preview-unsupported-lang-body": "Езикът „$1“ все още не е включен в списъка с езици, за които се генерират статии в Абстрактна Уикипедия. [[abstract:Special:MyLanguage/Help:Abstract articles#Language coverage|Вижте списъка с активирани езици]]",
+	"wikilambda-abstract-special-preview-unsupported-qid-body": "Темата $1 няма абстрактна статия или все още не е включена в списъка с теми, за които се генерират статии в Абстрактна Уикипедия. [[abstract:Special:MyLanguage/Help:Abstract articles#Wikidata topic coverage|Вижте списъка с активирани теми]]"
 }
