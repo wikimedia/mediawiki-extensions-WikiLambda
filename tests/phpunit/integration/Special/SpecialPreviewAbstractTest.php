@@ -78,7 +78,14 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 		);
 	}
 
-	public function testShowsErrorWithNoSubpage(): void {
+	public function testShowsTopicListWithNoSubpage(): void {
+		$metadata = new AWArticleMetadata(
+			/* topicQid= */ 'Q42',
+			/* payload= */ [ 'renderedLangs' => [ 'en' ] ],
+			/* lastUpdated= */ new ConvertibleTimestamp( '2026-05-31T04:05:00Z' )
+		);
+		$this->mockArticleStoreWithMetadata( 'Q42', $metadata );
+
 		$context = RequestContext::getMain();
 		$context->setUser( $this->performer );
 		$context->setLanguage( 'en' );
@@ -92,9 +99,61 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 			/* context */ $context
 		);
 
-		$this->assertStringContainsString( 'cdx-message--error', $html );
-		$this->assertStringContainsString( 'Missing URL parameters', $html );
-		$this->assertStringContainsString( 'The URL should have language and topic Qid', $html );
+		$this->assertStringContainsString( 'Select a topic to preview its Abstract Article', $html );
+		// The topic is listed, linked to its own preview, with its resolved label and details.
+		$this->assertStringContainsString( 'PreviewAbstract/en/Q42', $html );
+		$this->assertStringContainsString( 'Douglas Adams', $html );
+		$this->assertStringContainsString( '(Q42, generated 31 May 2026)', html_entity_decode( $html ) );
+	}
+
+	public function testTopicListEmptyStateFallsBackToOtherLanguages(): void {
+		// The only allowed topic has been rendered in German, but not the interface language (English).
+		$metadata = new AWArticleMetadata(
+			/* topicQid= */ 'Q42',
+			/* payload= */ [ 'renderedLangs' => [ 'de' ] ],
+			/* lastUpdated= */ new ConvertibleTimestamp( '2026-05-31T04:05:00Z' )
+		);
+		$this->mockArticleStoreWithMetadata( 'Q42', $metadata );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html ] = $this->executeSpecialPage(
+			/* subpage */ '',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertStringContainsString( 'No Abstract Articles are available in English yet', $html );
+		// The languages that do have content are offered as ?uselang= switch links.
+		$this->assertStringContainsString( 'They are available in other languages', $html );
+		$this->assertStringContainsString( 'uselang=de', html_entity_decode( $html ) );
+		$this->assertStringContainsString( 'Deutsch', $html );
+	}
+
+	public function testTopicListFallsBackToCodeForUnnamedLanguage(): void {
+		// "en-us" is a well-formed BCP-47 code with no MediaWiki language name, so the
+		// language name would otherwise be blank; the code itself is shown instead.
+		$this->mockArticleStoreWithMetadata( 'Q42', null );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en-us' );
+
+		[ $html ] = $this->executeSpecialPage(
+			/* subpage */ '',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertStringContainsString( 'No Abstract Articles are available in en-us yet', $html );
 	}
 
 	public function testShowsErrorWithBadLanguage(): void {

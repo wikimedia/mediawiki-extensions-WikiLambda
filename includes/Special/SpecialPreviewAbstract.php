@@ -106,19 +106,12 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		$title = $this->getContext()->getTitle();
 		$source = $title !== null && $title->isSpecialPage() ? 'special_page' : 'embedded';
 
-		// If there's no subpage info
-		// TODO: Do we want to enable the base SpecialPage to show a list of
-		// available articles? E.g. a field allows the reader to select a language
-		// from the available languages list. On selection, the page loads a
-		// paginated list of topics that are ready for the language. Each
-		// item shows the topic label, maybe a "generated on YYYY-mm-dd H:m:s"
-		// and its linked to go to Special:PreviewAbstract/lang/qid
+		// With no subpage, show a list of the Abstract Articles available in the
+		// viewer's interface language, each linking to its preview, rather than an
+		// error. (A future iteration may add a language picker and pagination, as
+		// the reader can currently only browse the interface language's articles.)
 		if ( !$subPage || !is_string( $subPage ) ) {
-			$this->showErrorBox(
-				$this->msg( 'wikilambda-abstract-special-preview-missing-params-title' )->escaped(),
-				$this->msg( 'wikilambda-abstract-special-preview-missing-params-body' )->escaped()
-			);
-			$this->recordRenderTiming( $startTime, $locale, $source, 'missing_params' );
+			$this->showTopicList( $startTime, $source );
 			return;
 		}
 
@@ -299,6 +292,148 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		);
 
 		$this->recordRenderTiming( $startTime, $locale, $source, $hasMissingSections ? 'incomplete' : 'complete' );
+	}
+
+	/**
+	 * Render the landing state shown when no topic Qid is requested: a list of the
+	 * Abstract Articles available in the viewer's interface language, each linking to
+	 * its preview. When none are available in that language, show which languages do
+	 * have content so the reader can switch to one of them.
+	 *
+	 * The candidate topics come from the WikiLambdaAbstractWikiAllowedTopics allow
+	 * list rather than the article store, because the store has no enumeration API
+	 * (and its default MainStash backend cannot be enumerated by design); per-topic
+	 * readiness and languages come from each topic's stored metadata.
+	 *
+	 * @param float $startTime
+	 * @param string $source
+	 */
+	private function showTopicList( float $startTime, string $source ): void {
+		$langCode = $this->getLanguage()->getCode();
+		$output = $this->getOutput();
+
+		$allowedTopics = $this->getConfig()->has( 'WikiLambdaAbstractWikiAllowedTopics' ) ?
+			$this->getConfig()->get( 'WikiLambdaAbstractWikiAllowedTopics' ) :
+			[];
+
+		$available = [];
+		$otherLangs = [];
+		foreach ( $allowedTopics as $topicQid ) {
+			$metadata = $this->articleStore->getArticleMetadata( $topicQid );
+			// A topic with no metadata has not been pre-generated yet; skip it.
+			if ( !$metadata ) {
+				continue;
+			}
+			$renderedLangs = $metadata->getRenderedLanguages();
+			if ( in_array( $langCode, $renderedLangs, true ) ) {
+				$available[] = [
+					'qid' => $topicQid,
+					'label' => $this->entityLookup->resolveAbstractLabel( $topicQid, $langCode ) ?? $topicQid,
+					'lastUpdated' => $metadata->getLastUpdated(),
+				];
+			} else {
+				// Not in this language, but track the languages it does have for the fallback below.
+				$otherLangs = array_merge( $otherLangs, $renderedLangs );
+			}
+		}
+
+		$output->setPageTitle(
+			$this->msg( 'wikilambda-abstract-special-preview-list-title' )
+				->params( $this->languageLabel( $langCode ) )
+				->text()
+		);
+
+		$output->addHTML( $available === [] ?
+			$this->getTopicListEmptyState( $langCode, $otherLangs ) :
+			$this->getTopicListBody( $langCode, $available )
+		);
+
+		$this->recordRenderTiming( $startTime, $langCode, $source, 'topic_list' );
+	}
+
+	/**
+	 * Build the list of Abstract Articles available in the given language, linked to
+	 * their previews and ordered by label.
+	 *
+	 * @param string $langCode
+	 * @param array[] $available List of [ 'qid' => string, 'label' => string, 'lastUpdated' => ConvertibleTimestamp ]
+	 * @return string
+	 */
+	private function getTopicListBody( string $langCode, array $available ): string {
+		$lang = $this->getLanguage();
+
+		// Order by label, case-insensitively, for a stable presentation.
+		usort( $available, static fn ( $a, $b ) => strcasecmp( $a['label'], $b['label'] ) );
+
+		$linkRenderer = $this->getLinkRenderer();
+		$items = '';
+		foreach ( $available as $topic ) {
+			$link = $linkRenderer->makeKnownLink(
+				$this->getPageTitle( "$langCode/{$topic['qid']}" ),
+				$topic['label']
+			);
+			$details = $this->msg( 'wikilambda-abstract-special-preview-list-item-details' )
+				->params( $topic['qid'], $lang->userDate( $topic['lastUpdated'], $this->getUser() ) )
+				->escaped();
+			$items .= Html::rawElement( 'li', [], "$link $details" );
+		}
+
+		$intro = Html::rawElement( 'p', [],
+			$this->msg( 'wikilambda-abstract-special-preview-list-intro' )->escaped()
+		);
+		return $intro . Html::rawElement( 'ul', [], $items );
+	}
+
+	/**
+	 * Build the empty landing state: no Abstract Articles in the requested language,
+	 * plus links to switch to any language that does have content.
+	 *
+	 * @param string $langCode
+	 * @param string[] $otherLangs Rendered-language codes gathered from topics unavailable in $langCode
+	 * @return string
+	 */
+	private function getTopicListEmptyState( string $langCode, array $otherLangs ): string {
+		$html = Html::rawElement( 'p', [],
+			$this->msg( 'wikilambda-abstract-special-preview-list-none' )
+				->params( $this->languageLabel( $langCode ) )
+				->escaped()
+		);
+
+		$otherLangs = array_values( array_unique( $otherLangs ) );
+		if ( $otherLangs === [] ) {
+			return $html;
+		}
+
+		// Each language links back to this page with ?uselang=, re-rendering the list
+		// in that language (getLanguage() honours uselang), so no extra route is needed.
+		$linkRenderer = $this->getLinkRenderer();
+		$langLinks = [];
+		foreach ( $otherLangs as $code ) {
+			$langLinks[] = $linkRenderer->makeKnownLink(
+				$this->getPageTitle(),
+				$this->languageLabel( $code ),
+				[],
+				[ 'uselang' => $code ]
+			);
+		}
+
+		return $html . Html::rawElement( 'p', [],
+			$this->msg( 'wikilambda-abstract-special-preview-list-other-langs' )
+				->rawParams( $this->getLanguage()->listToText( $langLinks ) )
+				->escaped()
+		);
+	}
+
+	/**
+	 * Human-readable name for a language code, falling back to the code itself when
+	 * MediaWiki has no name for it (e.g. a well-formed but undefined BCP-47 variant
+	 * such as "en-us", for which getLanguageName() returns an empty string).
+	 *
+	 * @param string $code
+	 * @return string
+	 */
+	private function languageLabel( string $code ): string {
+		return $this->languageNameUtils->getLanguageName( $code ) ?: $code;
 	}
 
 	/**
