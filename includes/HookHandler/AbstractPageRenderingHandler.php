@@ -10,12 +10,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use MediaWiki\Config\Config;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
 use MediaWiki\Hook\SidebarBeforeOutputHook;
 use MediaWiki\Hook\TitleIsAlwaysKnownHook;
@@ -54,7 +54,7 @@ class AbstractPageRenderingHandler implements
 	private const AW_OPTEDIN_PROVIDER_ID = 'AbstractWikiOptedInArticles';
 
 	public function __construct(
-		private readonly Config $config,
+		private readonly WikiLambdaMode $mode,
 		private readonly SpecialPageFactory $specialPageFactory,
 		private readonly TitleFactory $titleFactory,
 		private readonly AWArticleStore $articleStore,
@@ -73,8 +73,7 @@ class AbstractPageRenderingHandler implements
 	 * @return bool
 	 */
 	private function integrationEnabled(): bool {
-		return $this->config->get( 'WikiLambdaEnableAbstractClientMode' ) &&
-			$this->config->get( 'WikiLambdaEnableAbstractClientModeIntegration' );
+		return $this->mode->isAbstractClientIntegration();
 	}
 
 	/**
@@ -118,7 +117,7 @@ class AbstractPageRenderingHandler implements
 	 */
 	private function isViewOnWhichToShowTabs( Title $title ): bool {
 		if ( $title->isSpecial( 'PreviewAbstract' ) ) {
-			if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+			if ( !$this->mode->isAbstractClient() ) {
 				return false;
 			}
 		} elseif ( !$this->integrationEnabled() ) {
@@ -435,7 +434,7 @@ class AbstractPageRenderingHandler implements
 
 			// If not AbstractClient mode and not the Special:PreviewAbstract, exit early
 			if (
-				!$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) &&
+				!$this->mode->isAbstractClient() &&
 				!$title->isSpecial( 'PreviewAbstract' )
 			) {
 				// True or no return to continue

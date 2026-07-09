@@ -24,6 +24,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -65,7 +66,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * @return bool
 	 */
 	public function canBeUsedOn( Title $title ) {
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isAbstract() ) {
 			return false;
 		}
 

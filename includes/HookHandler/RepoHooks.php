@@ -450,6 +450,9 @@ class RepoHooks implements
 	 */
 	public function onMediaWikiServices( $services ) {
 		$config = $services->getMainConfig();
+		// Read the flag directly (not via WikiLambdaMode): this hook fires during
+		// service-container construction, so we use the passed-in $services rather
+		// than re-entering MediaWikiServices::getInstance() to resolve a service.
 		if ( !$config->get( 'WikiLambdaEnableAbstractMode' ) ) {
 			// Nothing for us to do.
 			return;
@@ -682,8 +685,7 @@ class RepoHooks implements
 		// Ensure the extension is set up (namespace is defined) even when running update.php outside MW.
 		self::registerExtension();
 
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			return;
 		}
 
@@ -737,8 +739,7 @@ class RepoHooks implements
 		// Ensure that the extension is set up (namespace is defined) even when running in update.php outside of MW.
 		self::registerExtension();
 
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			// Nothing for us to do.
 			return;
 		}
@@ -955,7 +956,7 @@ class RepoHooks implements
 		$services = MediaWikiServices::getInstance();
 
 		$config = $services->getMainConfig();
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			// Nothing for us to do.
 			return;
 		}

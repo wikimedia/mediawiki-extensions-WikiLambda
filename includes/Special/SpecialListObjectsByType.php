@@ -14,6 +14,7 @@ use MediaWiki\Extension\WikiLambda\Fields\HTMLZTypeSelectField;
 use MediaWiki\Extension\WikiLambda\Pagers\BasicZObjectPager;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\HTMLForm\HTMLForm;
@@ -57,7 +58,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	/** @inheritDoc */
 	public function isListed() {
 		// No usage allowed on client-mode wikis.
-		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+		return WikiLambdaServices::getMode()->isRepo();
 	}
 
 	/**
@@ -67,7 +68,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * @return bool
 	 */
 	public function userCanExecute( User $user ) {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			// No usage allowed on client-mode wikis.
 			return false;
 		}

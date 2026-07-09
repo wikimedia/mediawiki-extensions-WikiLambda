@@ -13,10 +13,10 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\LanguageFallback;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
@@ -127,7 +127,7 @@ class ApiQueryFunctions extends WikiLambdaApiQueryGeneratorBase {
 	protected function getAllowedParams(): array {
 		// Don't try to read the supported languages from the DB on client wikis, we can't.
 		$supportedLanguageCodes =
-			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			( WikiLambdaServices::getMode()->isRepo() ) ?
 			$this->zObjectStore->fetchAllZLanguageCodes() :
 			[];
 

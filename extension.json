@@ -141,7 +141,7 @@
 		"AbstractPageRenderingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\AbstractPageRenderingHandler",
 			"services": [
-				"MainConfig",
+				"WikiLambdaMode",
 				"SpecialPageFactory",
 				"TitleFactory",
 				"AbstractWikiArticleStore",
@@ -154,7 +154,8 @@
 		"WikiLambdaClientHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ClientHooks",
 			"services": [
-				"MainConfig"
+				"MainConfig",
+				"WikiLambdaMode"
 			]
 		},
 		"WikiLambdaClientChangeHooks": {
@@ -163,7 +164,8 @@
 				"UserOptionsLookup",
 				"ConnectionProvider",
 				"MainConfig",
-				"LinkRenderer"
+				"LinkRenderer",
+				"WikiLambdaMode"
 			]
 		},
 		"PageEditingHandler": {
@@ -171,14 +173,15 @@
 			"services": [
 				"MainConfig",
 				"ConnectionProvider",
-				"WikiLambdaZObjectStore"
+				"WikiLambdaZObjectStore",
+				"WikiLambdaMode"
 			]
 		},
 		"PagePostSaveHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PagePostSaveHandler",
 			"services": [
 				"ConnectionProvider",
-				"MainConfig",
+				"WikiLambdaMode",
 				"WikiLambdaZObjectStore",
 				"JobQueueGroup"
 			]
@@ -191,13 +194,14 @@
 				"LanguageNameUtils",
 				"LanguageFactory",
 				"WikiLambdaZObjectStore",
-				"WikiLambdaWikidataEntityLookup"
+				"WikiLambdaWikidataEntityLookup",
+				"WikiLambdaMode"
 			]
 		},
 		"WikiLambdaCommunityConfigurationHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\CommunityConfigurationHooks",
 			"services": [
-				"MainConfig",
+				"WikiLambdaMode",
 				"RevisionStore"
 			]
 		},
@@ -207,7 +211,8 @@
 				"MainConfig",
 				"HTMLCacheUpdater",
 				"LanguageNameUtils",
-				"UrlUtils"
+				"UrlUtils",
+				"WikiLambdaMode"
 			]
 		}
 	},

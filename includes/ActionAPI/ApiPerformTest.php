@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\Jobs\ExecuteTestAndCacheJob;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -31,7 +32,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Json\FormatJson;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -601,7 +601,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	protected function getExamplesMessages() {
 		// Don't try to read the latest ZID from the DB on client wikis, we can't.
 		$exampleZid =
-			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			( WikiLambdaServices::getMode()->isRepo() ) ?
 			$this->zObjectStore->findFirstZImplementationFunction() :
 			'Z10000';
 

@@ -15,6 +15,7 @@ use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditPageTrait;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
@@ -55,7 +56,7 @@ class SpecialCreateAbstract extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function isListed() {
-		return $this->getConfig()->get( 'WikiLambdaEnableAbstractMode' );
+		return WikiLambdaServices::getMode()->isAbstract();
 	}
 
 	/**
@@ -131,7 +132,7 @@ class SpecialCreateAbstract extends SpecialPage {
 	 */
 	public function execute( $subpage ) {
 		// Throw ErrorPageError if Abtract Mode is not enabled
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isAbstract() ) {
 			$this->displayNotAvailableError();
 		}
 

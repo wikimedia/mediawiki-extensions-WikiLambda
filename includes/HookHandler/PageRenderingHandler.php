@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -55,7 +56,8 @@ class PageRenderingHandler implements
 		private readonly LanguageNameUtils $languageNameUtils,
 		private readonly LanguageFactory $languageFactory,
 		private readonly ZObjectStore $zObjectStore,
-		private readonly WikidataEntityLookup $entityLookup
+		private readonly WikidataEntityLookup $entityLookup,
+		private readonly WikiLambdaMode $mode
 	) {
 	}
 
@@ -66,10 +68,7 @@ class PageRenderingHandler implements
 	 */
 	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
 		// We only do this in repo or abstract mode
-		if (
-			!$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
-			!$this->config->get( 'WikiLambdaEnableAbstractMode' )
-		) {
+		if ( !$this->mode->isRepoOrAbstract() ) {
 			return;
 		}
 
@@ -252,10 +251,7 @@ class PageRenderingHandler implements
 	public function onHtmlPageLinkRendererEnd(
 		$linkRenderer, $linkTarget, $isKnown, &$text, &$attribs, &$ret
 	) {
-		if (
-			!$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
-			!$this->config->get( 'WikiLambdaEnableAbstractMode' )
-		) {
+		if ( !$this->mode->isRepoOrAbstract() ) {
 			return;
 		}
 
@@ -304,7 +300,7 @@ class PageRenderingHandler implements
 			// If we're in repo mode, is this a known ZLanguage?
 			(
 				// (T423515) LangRegistry can only be use in repo mode, as it relies on the ZObjectStore / DB
-				$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
+				$this->mode->isRepo() &&
 				!ZLangRegistry::singleton()->isLanguageKnownGivenCode( $currentPageContentLanguageCode )
 			) ||
 			// If we're not, just use MediaWiki's language support check
@@ -418,7 +414,7 @@ class PageRenderingHandler implements
 		$id = $data[ '$1' ];
 
 		if (
-			$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
+			$this->mode->isRepo() &&
 			ZObjectUtils::isValidZObjectReference( $id )
 		) {
 			$matches['title'] = "Special:ViewObject/$lang/$id";
@@ -426,7 +422,7 @@ class PageRenderingHandler implements
 		}
 
 		if (
-			$this->config->get( 'WikiLambdaEnableAbstractMode' ) &&
+			$this->mode->isAbstract() &&
 			AbstractContentUtils::isValidAbstractWikiTitle( $id )
 		) {
 			$matches['title'] = "Special:ViewAbstract/$lang/$id";
@@ -457,7 +453,7 @@ class PageRenderingHandler implements
 	public function onBeforePageDisplay( $out, $skin ): void {
 		// We only do the rest in repo mode
 		// Note: Search client is registered via SkinPageReadyConfig hook, not here
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			return;
 		}
 
@@ -483,7 +479,7 @@ class PageRenderingHandler implements
 	public function onBeforeDisplayNoArticleText( $article ): bool {
 		// We only do this in repo mode
 		// TODO (T411705): Add this for AbstractContent pages too, once we have an edit page for them
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			return true;
 		}
 
@@ -533,7 +529,7 @@ class PageRenderingHandler implements
 	 */
 	public function onGetMagicVariableIDs( &$variableIDs ): void {
 		// We only do this in repo mode
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			return;
 		}
 
@@ -557,7 +553,7 @@ class PageRenderingHandler implements
 	 */
 	public function onParserGetVariableValueSwitch( $parser, &$variableCache, $magicWordId, &$ret, $frame ) {
 		// We only do this in repo mode
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			return true;
 		}
 
@@ -593,7 +589,7 @@ class PageRenderingHandler implements
 	 */
 	public function onSpecialStatsAddExtra( &$extraStats, $context ) {
 		// We only do this in repo mode
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			return;
 		}
 
@@ -624,7 +620,7 @@ class PageRenderingHandler implements
 	/** @inheritDoc */
 	public function onParserFirstCallInit( $parser ) {
 		// We only do this in repo mode
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			return;
 		}
 		// Provide {{#wikifunctionlabel:Z1234|en}} that will render a link to the ZObject with its label
@@ -738,7 +734,7 @@ class PageRenderingHandler implements
 	 * @return ?string The label, or null if not found
 	 */
 	private function fetchAbstractModeLabel( string $entityId, string $currentPageContentLanguageCode ): ?string {
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !$this->mode->isAbstract() ) {
 			return null;
 		}
 
@@ -753,7 +749,7 @@ class PageRenderingHandler implements
 	 * @return ?string The label, or null if not found
 	 */
 	private function fetchRepoModeLabel( Title $title, Language $language ): ?string {
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			// (T423515) Don't do this on a non-repo, as it will explode the DB
 			return null;
 		}
@@ -773,10 +769,7 @@ class PageRenderingHandler implements
 		// We only register search if WikiLambda is in repo or abstract mode.
 		// This replaces the deprecated mw.config.get( 'wgVectorSearchClient' ) approach (T395641).
 		// The client decides which underlying search implementation to use based on configuration.
-		if (
-			$this->config->get( 'WikiLambdaEnableAbstractMode' ) ||
-			$this->config->get( 'WikiLambdaEnableRepoMode' )
-		) {
+		if ( $this->mode->isRepoOrAbstract() ) {
 			$config['searchModule'] = 'ext.wikilambda.search';
 		}
 	}

@@ -38,7 +38,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 	/** @inheritDoc */
 	public function run( $ZIDs, $revisions = [] ) {
 		// This API is only availble on the repo installation, not client wikis
-		if ( !MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			$this->dieRESTfully( 'wikilambda-restapi-disabled-repo-mode-only', [], HttpStatus::BAD_REQUEST );
 		}
 
@@ -217,7 +217,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 
 		// Don't try to read the supported languages from the DB on client wikis, we can't.
 		$supportedLanguageCodes =
-			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			( WikiLambdaServices::getMode()->isRepo() ) ?
 				$zObjectStore->fetchAllZLanguageCodes() :
 				[];
 

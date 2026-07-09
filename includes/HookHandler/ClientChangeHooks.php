@@ -15,6 +15,7 @@ use MediaWiki\Config\Config;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsRecentChangesInsertJob;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Html\FormOptions;
 use MediaWiki\Html\Html;
 use MediaWiki\Linker\Linker;
@@ -47,7 +48,8 @@ class ClientChangeHooks implements
 		private readonly UserOptionsLookup $userOptionsLookup,
 		private readonly IConnectionProvider $dbProvider,
 		private readonly Config $config,
-		private readonly LinkRenderer $linkRenderer
+		private readonly LinkRenderer $linkRenderer,
+		private readonly WikiLambdaMode $mode
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
@@ -55,7 +57,7 @@ class ClientChangeHooks implements
 
 	private function makeTitleForPossiblyRemoteZObject( string $zObject ): Title {
 		// If we're in "repo" mode, we don't want an interwiki Title
-		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( $this->mode->isRepo() ) {
 			$title = Title::makeTitleSafe( 0, $zObject );
 		} else {
 			$title = Title::makeTitleSafe( 0, $zObject, '', 'wikifunctionswiki' );
@@ -429,7 +431,7 @@ class ClientChangeHooks implements
 	 * @param array[] &$prefs
 	 */
 	public function onGetPreferences( $user, &$prefs ) {
-		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+		if ( !$this->mode->isClient() ) {
 			return;
 		}
 

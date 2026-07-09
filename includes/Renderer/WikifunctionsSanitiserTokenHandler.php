@@ -14,6 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\Renderer;
 use MediaWiki\Extension\SiteMatrix\SiteMatrix;
 use MediaWiki\Extension\SpamBlacklist\BaseBlacklist;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockSiteMatrix;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Sanitizer;
@@ -424,7 +425,7 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		$services = MediaWikiServices::getInstance();
 		$config = $services->getMainConfig();
 
-		if ( !$config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isAbstract() ) {
 			return false;
 		}
 

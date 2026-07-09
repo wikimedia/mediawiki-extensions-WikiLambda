@@ -9,13 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
-use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 use Psr\Log\LoggerInterface;
@@ -28,7 +26,6 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 
 	private LoggerInterface $logger;
 	private WikifunctionsClientStore $wikifunctionsClientStore;
-	private Config $config;
 
 	private string $targetFunction;
 	private string $targetPageText;
@@ -45,8 +42,6 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
-
-		$this->config = MediaWikiServices::getInstance()->getMainConfig();
 
 		$this->logger->debug(
 			__CLASS__ . ' created for {targetFunction} on {targetPageNS}:{targetPage}',
@@ -71,13 +66,8 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 			]
 		);
 
-		if (
-			// If the wgWikiLambdaEnableClientMode flag is not set, don't try to run anything
-			!$this->config->get( 'WikiLambdaEnableClientMode' ) &&
-			// … but don't do this if the server thinks the wiki isn't configured for WikiLambda at all, which will
-			// happen when one server thinks we're configured and one doesn't (i.e., we're admist a deployment)
-			$this->config->has( 'WikiLambdaEnableClientMode' )
-		) {
+		// If client mode isn't enabled on this wiki, there's nothing to do
+		if ( !WikiLambdaServices::getMode()->isClient() ) {
 			$this->logger->warning(
 				__CLASS__ . ' triggered for {targetFunction} on {targetPageNS}:{targetPage}; not in client mode.',
 				[

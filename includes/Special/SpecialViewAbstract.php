@@ -15,6 +15,7 @@ use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
@@ -67,7 +68,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 	 */
 	public function userCanExecute( User $user ) {
 		// No usage allowed if not abstract mode
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isAbstract() ) {
 			return false;
 		}
 		return parent::userCanExecute( $user );
@@ -87,7 +88,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		$output = $this->getOutput();
 
 		// If abstract not enabled, go back to Main
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isAbstract() ) {
 			$this->redirectToMain( $output );
 			return;
 		}

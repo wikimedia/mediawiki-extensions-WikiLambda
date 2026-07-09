@@ -15,6 +15,7 @@ use MediaWiki\Api\ApiMessage;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -40,8 +41,8 @@ class PageEditingHandler implements
 	public function __construct(
 		private readonly Config $config,
 		IConnectionProvider $dbProvider,
-		private readonly ZObjectStore $zObjectStore
-
+		private readonly ZObjectStore $zObjectStore,
+		private readonly WikiLambdaMode $mode
 	) {
 		// Non-injected items
 		$this->dbr = $dbProvider->getReplicaDatabase();
@@ -54,7 +55,7 @@ class PageEditingHandler implements
 	 */
 	public function onNamespaceIsMovable( $index, &$result ) {
 		// For Repo Mode:
-		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( $this->mode->isRepo() ) {
 			// If Repo Mode is enabled, NS_MAIN will always be ZObject content
 			if ( $index === NS_MAIN ) {
 				$result = false;
@@ -64,7 +65,7 @@ class PageEditingHandler implements
 		}
 
 		// For Abstract Mode:
-		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( $this->mode->isAbstract() ) {
 			foreach ( $this->config->get( 'WikiLambdaAbstractNamespaces' ) as $configuredIndex ) {
 				if ( $index === $configuredIndex ) {
 					// NOTE: If we want to later support moving abstract content pages (e.g. draft-to-main), we'll
@@ -83,7 +84,7 @@ class PageEditingHandler implements
 	 */
 	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $hookStatus ) {
 		// Abstract Mode is enabled
-		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( $this->mode->isAbstract() ) {
 			$linkTarget = $renderedRevision->getRevision()->getPageAsLinkTarget();
 
 			$configuredNamespaces = array_keys( $this->config->get( 'WikiLambdaAbstractNamespaces' ) );
@@ -96,7 +97,7 @@ class PageEditingHandler implements
 		}
 
 		// Repo Mode is enabled
-		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( $this->mode->isRepo() ) {
 			$linkTarget = $renderedRevision->getRevision()->getPageAsLinkTarget();
 
 			// If namespace is Main (ZObjects) check title, content type and validity:
@@ -216,7 +217,7 @@ class PageEditingHandler implements
 		}
 
 		// Repo Mode is enabled
-		if ( $this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( $this->mode->isRepo() ) {
 			if ( $title->inNamespace( NS_MAIN ) ) {
 				// Main namespace; check for errors in Repo content and exit
 				return $this->getRepoUserPermissionsErrors( $title, $result );
@@ -224,7 +225,7 @@ class PageEditingHandler implements
 		}
 
 		// Abstract Mode is enabled
-		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( $this->mode->isAbstract() ) {
 			$configuredNamespaces = array_keys( $this->config->get( 'WikiLambdaAbstractNamespaces' ) );
 			if ( in_array( $title->getNamespace(), $configuredNamespaces, true ) ) {
 				// Abstract Wiki namespace; check for errors in Abstract content and exit

@@ -14,6 +14,7 @@ use MediaWiki\Extension\WikiLambda\HookHandler\PagePostSaveHandler;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\JobQueue\JobQueueGroup;
@@ -46,12 +47,14 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		parent::setUp();
 
 		$this->mockHashConfigRepoMode = $this->createMock( HashConfig::class );
+		$this->mockHashConfigRepoMode->method( 'has' )->willReturn( true );
 		$this->mockHashConfigRepoMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', true ],
 			[ 'WikiLambdaEnableAbstractMode', false ],
 		] );
 
 		$this->mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
+		$this->mockHashConfigNotRepoMode->method( 'has' )->willReturn( true );
 		$this->mockHashConfigNotRepoMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
 			[ 'WikiLambdaEnableAbstractMode', false ],
@@ -103,7 +106,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandlerRepoModeOff = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigNotRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigNotRepoMode ),
 			$this->createNoOpMock( ZObjectStore::class ),
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -124,7 +127,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -153,7 +156,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -182,7 +185,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -213,7 +216,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -242,7 +245,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -271,7 +274,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -300,7 +303,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);
@@ -329,7 +332,7 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pushedJobs = [];
 		$pagePostSaveHandler = new PagePostSaveHandler(
 			$this->mockICP,
-			$this->mockHashConfigRepoMode,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
 			$this->makeMockJobQueueGroup( $pushedJobs )
 		);

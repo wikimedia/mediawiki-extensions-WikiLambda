@@ -44,7 +44,7 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 
 	private function buildHandler(): AbstractPageRenderingHandler {
 		return new AbstractPageRenderingHandler(
-			$this->getServiceContainer()->getMainConfig(),
+			$this->getServiceContainer()->getService( 'WikiLambdaMode' ),
 			$this->getServiceContainer()->getSpecialPageFactory(),
 			$this->getServiceContainer()->getTitleFactory(),
 			$this->getServiceContainer()->get( 'AbstractWikiArticleStore' ),

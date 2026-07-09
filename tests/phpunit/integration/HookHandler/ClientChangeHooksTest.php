@@ -35,7 +35,8 @@ class ClientChangeHooksTest extends WikiLambdaClientIntegrationTestCase {
 			$this->getServiceContainer()->getUserOptionsLookup(),
 			$this->getServiceContainer()->getConnectionProvider(),
 			$this->getServiceContainer()->getMainConfig(),
-			$this->getServiceContainer()->getLinkRenderer()
+			$this->getServiceContainer()->getLinkRenderer(),
+			$this->getServiceContainer()->getService( 'WikiLambdaMode' )
 		);
 	}
 

@@ -314,7 +314,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 	protected function getAllowedParams(): array {
 		// Don't try to read the supported languages from the DB on client wikis, we can't.
 		$supportedLanguageCodes =
-			( MediaWikiServices::getInstance()->getMainConfig()->get( 'WikiLambdaEnableRepoMode' ) ) ?
+			( WikiLambdaServices::getMode()->isRepo() ) ?
 			WikiLambdaServices::getZObjectStore()->fetchAllZLanguageCodes() :
 			[];
 

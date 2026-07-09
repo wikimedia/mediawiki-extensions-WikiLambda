@@ -124,7 +124,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 
 		// We restrict this maintenance script to be run in Abstract Mode, so that we can depend
 		// on AbstractWikiContentHandler and load the AW article locally without any network trip.
-		if ( !$config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isAbstract() ) {
 			$this->fatalError( 'This maintenance script should be run in the Abstract Wikipedia (repo) instance' );
 		}
 

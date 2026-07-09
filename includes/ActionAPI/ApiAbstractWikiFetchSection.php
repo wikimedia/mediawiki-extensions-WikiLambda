@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RevisionStore;
@@ -54,7 +55,7 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 	 */
 	public function execute() {
 		// Abstract Wiki not enabled: exit with HTTP 501
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isAbstract() ) {
 			$this->dieWithError(
 				[ 'apierror-abstractwiki_fetch_section-not-enabled' ],
 				null, null, HttpStatus::NOT_IMPLEMENTED

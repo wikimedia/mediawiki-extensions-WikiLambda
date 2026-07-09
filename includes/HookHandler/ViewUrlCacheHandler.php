@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\Cache\HTMLCacheUpdater;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\LanguageNameUtils;
@@ -41,7 +42,8 @@ class ViewUrlCacheHandler implements
 		private readonly Config $config,
 		private readonly HTMLCacheUpdater $htmlCacheUpdater,
 		private readonly LanguageNameUtils $languageNameUtils,
-		private readonly UrlUtils $urlUtils
+		private readonly UrlUtils $urlUtils,
+		private readonly WikiLambdaMode $mode
 	) {
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
@@ -138,7 +140,7 @@ class ViewUrlCacheHandler implements
 	private function getViewLanguages( Title $title ): ?array {
 		// Repo mode: ZObject pages in the Main namespace, served at /view/<lang>/<Zid>.
 		if (
-			$this->config->get( 'WikiLambdaEnableRepoMode' ) &&
+			$this->mode->isRepo() &&
 			$title->inNamespace( NS_MAIN ) &&
 			ZObjectUtils::isValidZObjectReference( $title->getDBkey() )
 		) {
@@ -149,7 +151,7 @@ class ViewUrlCacheHandler implements
 		}
 
 		// Abstract mode: pages in a configured Abstract namespace, served at /view/<lang>/<Qid>.
-		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( $this->mode->isAbstract() ) {
 			$abstractNamespaces = array_keys( $this->config->get( 'WikiLambdaAbstractNamespaces' ) );
 			if ( in_array( $title->getNamespace(), $abstractNamespaces, true ) ) {
 				return array_keys( $this->languageNameUtils->getLanguageNames(

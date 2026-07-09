@@ -11,10 +11,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientFanOutQueueJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -34,7 +34,7 @@ class PagePostSaveHandler implements
 
 	public function __construct(
 		IConnectionProvider $dbProvider,
-		private readonly Config $config,
+		private readonly WikiLambdaMode $mode,
 		private readonly ZObjectStore $zObjectStore,
 		private readonly JobQueueGroup $jobQueueGroup
 	) {
@@ -55,7 +55,7 @@ class PagePostSaveHandler implements
 		$targetPage = $recentChange->getPage();
 		if (
 			// We're not in repo-mode
-			!$this->config->get( 'WikiLambdaEnableRepoMode' ) ||
+			!$this->mode->isRepo() ||
 			// We're on a page that's not in the main namespace
 			$targetPage->getNamespace() !== NS_MAIN
 		) {

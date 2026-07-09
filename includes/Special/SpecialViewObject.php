@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectRepoUtils;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -66,7 +67,7 @@ class SpecialViewObject extends UnlistedSpecialPage {
 	 * @return bool
 	 */
 	public function userCanExecute( User $user ) {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			// No usage allowed on client-mode wikis.
 			return false;
 		}
@@ -85,7 +86,7 @@ class SpecialViewObject extends UnlistedSpecialPage {
 
 		$outputPage = $this->getOutput();
 
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			// No usage allowed on client-mode wikis.
 			$this->redirectToMain( $outputPage );
 			return;

@@ -14,6 +14,7 @@ use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageEditingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
@@ -51,12 +52,14 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		parent::setUp();
 
 		$this->mockHashConfigRepoMode = $this->createMock( HashConfig::class );
+		$this->mockHashConfigRepoMode->method( 'has' )->willReturn( true );
 		$this->mockHashConfigRepoMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', true ],
 			[ 'WikiLambdaEnableAbstractMode', false ],
 		] );
 
 		$this->mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
+		$this->mockHashConfigNotRepoMode->method( 'has' )->willReturn( true );
 		$this->mockHashConfigNotRepoMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
 			[ 'WikiLambdaEnableAbstractMode', false ],
@@ -81,7 +84,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandler = new PageEditingHandler(
 			$this->mockHashConfigRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigRepoMode )
 		);
 
 		$result = true;
@@ -97,7 +101,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandlerRepoModeOff = new PageEditingHandler(
 			$this->mockHashConfigNotRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigNotRepoMode )
 		);
 
 		$result = false;
@@ -168,7 +173,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandlerRepoModeOff = new PageEditingHandler(
 			$this->mockHashConfigNotRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigNotRepoMode )
 		);
 
 		$mockRenderedRevision = $this->createNoOpMock( RenderedRevision::class );
@@ -199,7 +205,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandler = new PageEditingHandler(
 			$this->mockHashConfigRepoMode,
 			$this->mockICP,
-			$mockZObjectStore
+			$mockZObjectStore,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode )
 		);
 
 		$response = $pageEditingHandler->onMultiContentSave(
@@ -228,7 +235,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandlerNoLabels = new PageEditingHandler(
 			$this->mockHashConfigRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigRepoMode )
 		);
 
 		$status = new Status();
@@ -257,7 +265,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandlerWithConflicts = new PageEditingHandler(
 			$this->mockHashConfigRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigRepoMode )
 		);
 
 		$status = new Status();
@@ -294,7 +303,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandlerWithConflicts = new PageEditingHandler(
 			$this->mockHashConfigRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigRepoMode )
 		);
 
 		$status = new Status();
@@ -332,7 +342,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandlerWithConflicts = new PageEditingHandler(
 			$this->mockHashConfigRepoMode,
 			$this->mockICP,
-			$mockZObjectStoreWithConflicts
+			$mockZObjectStoreWithConflicts,
+			new WikiLambdaMode( $this->mockHashConfigRepoMode )
 		);
 
 		$status = new Status();
@@ -360,7 +371,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandler = new PageEditingHandler(
 			$this->mockHashConfigRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigRepoMode )
 		);
 
 		$zObjectTitle = Title::newFromText( 'Z400', NS_MAIN );
@@ -411,7 +423,8 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$pageEditingHandlerRepoModeOff = new PageEditingHandler(
 			$this->mockHashConfigNotRepoMode,
 			$this->mockICP,
-			$this->createNoOpMock( ZObjectStore::class )
+			$this->createNoOpMock( ZObjectStore::class ),
+			new WikiLambdaMode( $this->mockHashConfigNotRepoMode )
 		);
 
 		$result = 'hello';

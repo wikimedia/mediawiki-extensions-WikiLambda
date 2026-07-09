@@ -7,6 +7,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
@@ -30,6 +31,7 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 		$this->setUpAsClientMode();
 
 		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
+		$mockHashConfigAbstractMode->method( 'has' )->willReturn( true );
 		$mockHashConfigAbstractMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
 			[ 'WikiLambdaEnableAbstractMode', true ],
@@ -57,7 +59,8 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
-			$mockWikidataEntityLookup
+			$mockWikidataEntityLookup,
+			new WikiLambdaMode( $mockHashConfigAbstractMode )
 		);
 	}
 

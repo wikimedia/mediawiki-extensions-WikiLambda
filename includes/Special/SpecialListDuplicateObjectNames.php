@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Page\LinkBatchFactory;
 use MediaWiki\Parser\ParserOptions;
@@ -42,7 +43,7 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 	/** @inheritDoc */
 	public function isListed() {
 		// No usage allowed on client-mode wikis.
-		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+		return WikiLambdaServices::getMode()->isRepo();
 	}
 
 	/**
@@ -52,7 +53,7 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 	 * @return bool
 	 */
 	public function userCanExecute( User $user ) {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			// No usage allowed on client-mode wikis.
 			return false;
 		}

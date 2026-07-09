@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
@@ -51,6 +52,7 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/test_definitions' );
 
 		$mockHashConfigRepoMode = $this->createMock( HashConfig::class );
+		$mockHashConfigRepoMode->method( 'has' )->willReturn( true );
 		$mockHashConfigRepoMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', true ],
 			[ 'WikiLambdaEnableAbstractMode', false ],
@@ -71,10 +73,12 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
-			$mockWikidataEntityLookup
+			$mockWikidataEntityLookup,
+			new WikiLambdaMode( $mockHashConfigRepoMode )
 		);
 
 		$mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
+		$mockHashConfigNotRepoMode->method( 'has' )->willReturn( true );
 		$mockHashConfigNotRepoMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
 			[ 'WikiLambdaEnableAbstractMode', false ],
@@ -86,10 +90,12 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
-			$mockWikidataEntityLookup
+			$mockWikidataEntityLookup,
+			new WikiLambdaMode( $mockHashConfigNotRepoMode )
 		);
 
 		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
+		$mockHashConfigAbstractMode->method( 'has' )->willReturn( true );
 		$mockHashConfigAbstractMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
 			[ 'WikiLambdaEnableAbstractMode', true ],
@@ -101,7 +107,8 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
-			$mockWikidataEntityLookup
+			$mockWikidataEntityLookup,
+			new WikiLambdaMode( $mockHashConfigAbstractMode )
 		);
 	}
 

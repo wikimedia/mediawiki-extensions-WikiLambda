@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -86,8 +87,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		);
 
 		// 0. Make sure that this call is not being run in a client instance
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			$errorMessage = __METHOD__ . ' called repo mode is not enabled';
 			$this->logger->debug( $errorMessage );
 			$span->setAttributes( [

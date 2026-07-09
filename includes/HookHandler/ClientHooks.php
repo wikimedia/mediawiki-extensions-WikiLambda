@@ -12,6 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
@@ -42,7 +43,8 @@ class ClientHooks implements
 	private LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Config $config
+		private readonly Config $config,
+		private readonly WikiLambdaMode $mode
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
@@ -67,7 +69,7 @@ class ClientHooks implements
 		$revisionRecord,
 		$editResult
 	) {
-		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+		if ( !$this->mode->isClient() ) {
 			// Nothing for us to do.
 			return;
 		}
@@ -210,19 +212,19 @@ class ClientHooks implements
 		$vars['wgWikiLambdaEnableRepoMode'] = $this->config->get( 'WikiLambdaEnableRepoMode' );
 
 		// 2. Add wgWikifunctionsBaseUrl when the setup is non-repo
-		if ( !$this->config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !$this->mode->isRepo() ) {
 			$vars['wgWikifunctionsBaseUrl'] = $this->getClientTargetUrl();
 		}
 
 		// 3. Add primary namespace for Abstract content
-		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( $this->mode->isAbstract() ) {
 			$namespaces = $this->config->get( 'WikiLambdaAbstractNamespaces' );
 			$vars['wgWikiLambdaAbstractPrimaryNamespace'] = array_values( $namespaces )[0][0];
 		}
 
 		// 4. In client mode, expose the recommended-Wikifunctions list for the VE dialog.
 		// Sourced from CommunityConfiguration (T394410).
-		if ( $this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+		if ( $this->mode->isClient() ) {
 			$vars['wgWikiLambdaSuggestedFunctions'] = $this->loadProviderList(
 				'WikifunctionsSuggestions'
 			);
@@ -230,7 +232,7 @@ class ClientHooks implements
 
 		// 5. In abstract mode, expose the suggested HTML-returning Wikifunctions shown
 		// in the Abstract Article "Add fragment" menu.
-		if ( $this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( $this->mode->isAbstract() ) {
 			$vars['wgWikiLambdaAbstractSuggestions'] = $this->loadProviderList(
 				'AbstractWikiSuggestedWikifunctions'
 			);
@@ -278,7 +280,7 @@ class ClientHooks implements
 		// via the ResourceModules definition.
 
 		if (
-			$this->config->get( 'WikiLambdaEnableClientMode' )
+			$this->mode->isClient()
 			&& ExtensionRegistry::getInstance()->isLoaded( 'VisualEditor' )
 		) {
 			$directoryName = __DIR__ . '/../../resources/ext.wikilambda.visualeditor';

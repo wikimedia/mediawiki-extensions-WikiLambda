@@ -22,6 +22,7 @@
 namespace MediaWiki\Extension\WikiLambda\Maintenance;
 
 use MediaWiki\Extension\WikiLambda\InitialContentSnapshot;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Maintenance\Maintenance;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
@@ -56,8 +57,7 @@ class RestoreInitialContent extends Maintenance {
 	 * @inheritDoc
 	 */
 	public function execute() {
-		$config = $this->getServiceContainer()->getMainConfig();
-		if ( !$config->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			$this->fatalError( 'WikiLambda repo mode is not enabled; there is no initial content to restore.' );
 		}
 

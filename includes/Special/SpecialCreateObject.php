@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectEditingPageTrait;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
@@ -60,7 +61,7 @@ class SpecialCreateObject extends SpecialPage {
 	 */
 	public function isListed() {
 		// No usage allowed on client-mode wikis.
-		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+		return WikiLambdaServices::getMode()->isRepo();
 	}
 
 	/**
@@ -93,7 +94,7 @@ class SpecialCreateObject extends SpecialPage {
 	 */
 	public function execute( $subPage ) {
 		// Throw ErrorPageError if Abtract Mode is not enabled
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			$this->displayNotAvailableError();
 		}
 

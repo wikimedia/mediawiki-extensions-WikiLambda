@@ -16,9 +16,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
-use MediaWiki\Config\Config;
 use MediaWiki\Content\JsonContent;
 use MediaWiki\Extension\CommunityConfiguration\Hooks\CommunityConfigurationProvider_initListHook;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Logging\ManualLogEntry;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
@@ -31,7 +31,7 @@ class CommunityConfigurationHooks implements
 {
 
 	public function __construct(
-		private readonly Config $config,
+		private readonly WikiLambdaMode $mode,
 		private readonly RevisionStore $revisionStore
 	) {
 	}
@@ -45,13 +45,13 @@ class CommunityConfigurationHooks implements
 	 * @return void
 	 */
 	public function onCommunityConfigurationProvider_initList( array &$providers ): void {
-		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+		if ( !$this->mode->isClient() ) {
 			unset( $providers['WikifunctionsSuggestions'] );
 		}
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+		if ( !$this->mode->isAbstract() ) {
 			unset( $providers['AbstractWikiSuggestedWikifunctions'] );
 		}
-		if ( !$this->config->get( 'WikiLambdaEnableAbstractClientMode' ) ) {
+		if ( !$this->mode->isAbstractClient() ) {
 			unset( $providers['AbstractWikiOptedInArticles'] );
 		}
 	}

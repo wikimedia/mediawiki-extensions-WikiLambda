@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 use MediaWiki\Cache\HTMLCacheUpdater;
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\WikiLambda\HookHandler\ViewUrlCacheHandler;
+use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Page\WikiPage;
@@ -61,7 +62,8 @@ class ViewUrlCacheHandlerTest extends MediaWikiIntegrationTestCase {
 			new HashConfig( $configMap ),
 			$htmlCacheUpdater,
 			$languageNameUtils,
-			$urlUtils
+			$urlUtils,
+			new WikiLambdaMode( new HashConfig( $configMap ) )
 		);
 	}
 

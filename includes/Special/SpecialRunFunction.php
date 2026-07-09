@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\UIUtils;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
@@ -45,7 +46,7 @@ class SpecialRunFunction extends SpecialPage {
 	/** @inheritDoc */
 	public function isListed() {
 		// No usage allowed on client-mode wikis.
-		return $this->getConfig()->get( 'WikiLambdaEnableRepoMode' );
+		return WikiLambdaServices::getMode()->isRepo();
 	}
 
 	/**
@@ -55,7 +56,7 @@ class SpecialRunFunction extends SpecialPage {
 	 * @return bool
 	 */
 	public function userCanExecute( User $user ) {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isRepo() ) {
 			// No usage allowed on client-mode wikis.
 			return false;
 		}

@@ -74,7 +74,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// Note: We can't hint this as `: PFragment|AsyncResult` as we're still in PHP 7.4-land
 		// If client mode isn't enabled on this wiki, there's nothing to do, just show an error message
-		if ( !$this->config->get( 'WikiLambdaEnableClientMode' ) ) {
+		if ( !WikiLambdaServices::getMode()->isClient() ) {
 			// TODO: Make this a proper error box or inline error.
 			$errorMsgString = wfMessage(
 				'wikilambda-functioncall-error-message',
@@ -231,7 +231,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		);
 
 		// Check if SRE have set this wiki (probably all wikis) temporarily to not try to use Wikifunctions.
-		if ( $this->config->get( 'WikiLambdaClientModeOffline' ) ) {
+		if ( WikiLambdaServices::getMode()->isClientOffline() ) {
 			$this->statsFactoryTimer->setLabel( 'response', 'offline' )->stop();
 			return HtmlPFragment::newFromHtmlString( Html::errorBox(
 				wfMessage( 'wikilambda-fragment-disabled' )->text()
