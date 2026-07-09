@@ -30,6 +30,13 @@ use MediaWiki\MediaWikiServices;
 class WikiLambdaServices {
 
 	/**
+	 * @return WikiLambdaMode
+	 */
+	public static function getMode(): WikiLambdaMode {
+		return MediaWikiServices::getInstance()->getService( 'WikiLambdaMode' );
+	}
+
+	/**
 	 * @return ZObjectStore
 	 */
 	public static function getZObjectStore(): ZObjectStore {

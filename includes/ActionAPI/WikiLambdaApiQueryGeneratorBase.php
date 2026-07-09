@@ -25,6 +25,8 @@ use Psr\Log\LoggerInterface;
  */
 abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase implements LoggerAwareInterface {
 
+	use WikiLambdaApiModeGuardTrait;
+
 	protected LoggerInterface $logger;
 
 	/**
@@ -41,24 +43,6 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 	public function executeGenerator( $resultPageSet ) {
 		$this->dieIfNotRepoMode();
 		$this->run( $resultPageSet );
-	}
-
-	/**
-	 * Exit with an ApiUsageException if we're not running in repo mode (e.g. on a client
-	 * wiki). We respond 403/FORBIDDEN because the whole API surface — not this particular
-	 * request — is unavailable here, so the caller cannot fix it by re-shaping the request.
-	 * We can't use dieWithZError because ZErrorFactory may reach into ZObjectFactory, which
-	 * relies on stored ZObjects that don't exist in non-repo mode (T423873).
-	 */
-	private function dieIfNotRepoMode(): void {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			$this->dieWithError(
-				'wikilambda-api-disabled-repo-mode-only',
-				null,
-				null,
-				HttpStatus::FORBIDDEN
-			);
-		}
 	}
 
 	/**

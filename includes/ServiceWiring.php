@@ -111,6 +111,10 @@ return [
 
 	// For all environments
 
+	'WikiLambdaMode' => static function ( MediaWikiServices $services ): WikiLambdaMode {
+		return new WikiLambdaMode( $services->getMainConfig() );
+	},
+
 	'WikifunctionsLanguageFactory' => static function ( MediaWikiServices $services ): WikifunctionsLanguageFactory {
 		return new WikifunctionsLanguageFactory(
 			$services->getLanguageFactory()

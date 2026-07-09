@@ -38,6 +38,8 @@ use Wikimedia\RequestTimeout\TimeoutException;
  */
 abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface {
 
+	use WikiLambdaApiModeGuardTrait;
+
 	protected LoggerInterface $logger;
 	protected ?OrchestratorRequest $orchestrator;
 
@@ -68,24 +70,6 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	public function execute() {
 		$this->dieIfNotRepoMode();
 		$this->run();
-	}
-
-	/**
-	 * Exit with an ApiUsageException if we're not running in repo mode (e.g. on a client
-	 * wiki). We respond 403/FORBIDDEN because the whole API surface — not this particular
-	 * request — is unavailable here, so the caller cannot fix it by re-shaping the request.
-	 * We can't use dieWithZError because ZErrorFactory may reach into ZObjectFactory, which
-	 * relies on stored ZObjects that don't exist in non-repo mode (T423873).
-	 */
-	protected function dieIfNotRepoMode(): void {
-		if ( !$this->getConfig()->get( 'WikiLambdaEnableRepoMode' ) ) {
-			$this->dieWithError(
-				'wikilambda-api-disabled-repo-mode-only',
-				null,
-				null,
-				HttpStatus::FORBIDDEN
-			);
-		}
 	}
 
 	/**
