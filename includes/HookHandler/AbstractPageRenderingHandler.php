@@ -201,10 +201,12 @@ class AbstractPageRenderingHandler implements
 		if ( $redirect !== false ) {
 			$targetTitle = $this->titleFactory->newFromText( $redirect );
 
-			// Pass redirect source as session parameter?
-			$request = $article->getContext()->getRequest();
-			$request->getSession()->set( 'awRedirectedFrom', $title->getPrefixedDBkey() );
-			$targetUrl = $targetTitle->getFullURL();
+			// Carry the redirect source in the target URL, not the session. Writing it to the
+			// session persists an anonymous session (a Set-Cookie), which makes both this redirect
+			// and the primary article's rendered response uncacheable at the CDN. A query parameter
+			// keeps the responses cookie-free; the primary page still advertises its clean canonical
+			// URL (see onBeforeDisplayNoArticleText), so indexing is unaffected.
+			$targetUrl = $targetTitle->getFullURL( [ 'awredirectedfrom' => $title->getPrefixedDBkey() ] );
 
 			$output->redirect( $targetUrl );
 			return;
@@ -283,10 +285,10 @@ class AbstractPageRenderingHandler implements
 		}
 
 		// Handle redirect:
-		// Find redirect source from the session
-		$redirectSource = $request->getSession()->get( 'awRedirectedFrom' );
+		// Read the redirect source from the request URL. onShowMissingArticle carries it as a query
+		// parameter rather than the session, so the response stays cookie-free and CDN-cacheable.
+		$redirectSource = $request->getRawVal( 'awredirectedfrom' );
 		if ( $redirectSource ) {
-			$request->getSession()->remove( 'awRedirectedFrom' );
 			$sourceTitle = $this->titleFactory->newFromText( $redirectSource );
 			if ( $sourceTitle ) {
 				$article->setRedirectedFrom( $sourceTitle );

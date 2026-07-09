@@ -52,10 +52,10 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		);
 	}
 
-	private function makeArticle( Title $title ): Article {
+	private function makeArticle( Title $title, array $queryParams = [] ): Article {
 		$context = new RequestContext();
 		$context->setTitle( $title );
-		$context->setRequest( new FauxRequest() );
+		$context->setRequest( new FauxRequest( $queryParams ) );
 		$output = new OutputPage( $context );
 		$context->setOutput( $output );
 		$article = Article::newFromTitle( $title, $context );
@@ -161,15 +161,18 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertStringContainsString( 'Douglas_Adams', $output->getRedirect() );
 	}
 
-	public function testOnShowMissingArticle_redirectTitle_setsSessionRedirectSource(): void {
+	public function testOnShowMissingArticle_redirectTitle_setsRedirectSourceInUrl(): void {
 		$title = Title::makeTitle( NS_MAIN, 'Douglas Noël Adams' );
 		$article = $this->makeArticle( $title );
 
 		$handler = $this->buildHandler();
 		$handler->onShowMissingArticle( $article );
 
-		$session = $article->getContext()->getRequest()->getSession();
-		$this->assertSame( 'Douglas_Noël_Adams', $session->get( 'awRedirectedFrom' ) );
+		// The source is carried in the redirect URL, not the session — otherwise the response
+		// would set a session cookie and become uncacheable at the CDN.
+		$output = $article->getContext()->getOutput();
+		$this->assertStringContainsString( 'awredirectedfrom=Douglas', $output->getRedirect() );
+		$this->assertNull( $article->getContext()->getRequest()->getSession()->get( 'awRedirectedFrom' ) );
 	}
 
 	public function testOnShowMissingArticle_optedIn_rendersArticle(): void {
@@ -397,10 +400,9 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$handler = $this->buildHandler();
 
 		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
-		$article = $this->makeArticle( $title );
-		$request = $article->getContext()->getRequest();
 		// Set a redirect source so only the gate (not a missing source) can prevent action.
-		$request->getSession()->set( 'awRedirectedFrom', 'Douglas_Noël_Adams' );
+		$article = $this->makeArticle( $title, [ 'awredirectedfrom' => 'Douglas_Noël_Adams' ] );
+		$request = $article->getContext()->getRequest();
 		$ignoreRedirect = false;
 		$target = false;
 
@@ -422,7 +424,7 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertNull( $article->getRedirectedFrom() );
 	}
 
-	public function testOnInitializeArticleMaybeRedirect_noSessionRedirectSource_doesNothing(): void {
+	public function testOnInitializeArticleMaybeRedirect_noRedirectSource_doesNothing(): void {
 		$handler = $this->buildHandler();
 
 		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
@@ -439,9 +441,8 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$handler = $this->buildHandler();
 
 		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
-		$article = $this->makeArticle( $title );
+		$article = $this->makeArticle( $title, [ 'awredirectedfrom' => 'Douglas_Noël_Adams' ] );
 		$request = $article->getContext()->getRequest();
-		$request->getSession()->set( 'awRedirectedFrom', 'Douglas_Noël_Adams' );
 		$ignoreRedirect = false;
 		$target = false;
 
@@ -449,7 +450,6 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 
 		$this->assertNotNull( $article->getRedirectedFrom() );
 		$this->assertSame( 'Douglas Noël Adams', $article->getRedirectedFrom()->getText() );
-		$this->assertNull( $request->getSession()->get( 'awRedirectedFrom' ) );
 	}
 
 	// onArticle__MissingArticleConditions
