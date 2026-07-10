@@ -241,6 +241,32 @@ describe( 'zobjectUtils', () => {
 		} );
 	} );
 
+	describe( 'getListItemKey', () => {
+		it( 'returns a stable key for the same object reference', () => {
+			const item = { Z1K1: 'Z6', Z6K1: 'one' };
+
+			const first = zobjectUtils.getListItemKey( item, 1 );
+			// Same reference at a different index yields the same key, so Vue
+			// relocates the instance (with its state) rather than reusing it.
+			expect( zobjectUtils.getListItemKey( item, 2 ) ).toBe( first );
+		} );
+
+		it( 'returns distinct keys for distinct object references', () => {
+			const itemA = { Z1K1: 'Z6', Z6K1: 'same' };
+			const itemB = { Z1K1: 'Z6', Z6K1: 'same' };
+
+			// Equal content but different references must not share a key.
+			expect( zobjectUtils.getListItemKey( itemA, 1 ) )
+				.not.toBe( zobjectUtils.getListItemKey( itemB, 2 ) );
+		} );
+
+		it( 'keys primitive items positionally', () => {
+			expect( zobjectUtils.getListItemKey( 'foo', 3 ) ).toBe( 'item-3' );
+			expect( zobjectUtils.getListItemKey( 42, 4 ) ).toBe( 'item-4' );
+			expect( zobjectUtils.getListItemKey( null, 5 ) ).toBe( 'item-5' );
+		} );
+	} );
+
 	describe( 'getZStringTerminalValue', () => {
 		it( 'returns undefined when object is undefined', () => {
 			const zobject = undefined;

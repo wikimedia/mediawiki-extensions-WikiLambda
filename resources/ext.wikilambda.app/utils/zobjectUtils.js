@@ -18,6 +18,13 @@ const Constants = require( '../Constants.js' );
 const { hybridToCanonical } = require( './schemata.js' );
 const { isValidZidFormat, getScaffolding } = require( './typeUtils.js' );
 
+// Stable, position-independent identity for typed-list items. A list item's
+// object reference survives reordering (moveListItemByKeyPath splices the same
+// object), so a WeakMap keyed on it yields a Vue key that travels with the item
+// rather than with its array index. See getListItemKey below.
+const listItemKeys = new WeakMap();
+let listItemKeyCounter = 0;
+
 const zobjectUtils = {
 	/**
 	 * Gets the type of a valid ZObject.
@@ -111,6 +118,39 @@ const zobjectUtils = {
 
 		const finalKey = keyPath[ lastKeyIndex ];
 		return { target, finalKey };
+	},
+
+	/**
+	 * Returns a stable, position-independent Vue key for a typed-list item.
+	 *
+	 * List items are addressed positionally (there is no per-item id stored in
+	 * the ZObject), but keying a `v-for` by position makes Vue reuse component
+	 * instances in place on reorder, leaving their local UI state (expansion,
+	 * rendered-value caches) paired with the wrong item (T431714). Because a
+	 * reorder splices the *same* item object to its new index, a WeakMap keyed
+	 * on the item object gives an identity that travels with it: Vue relocates
+	 * the existing instance (and its state) to the new position instead of
+	 * reusing it in place. The returned key must NOT include the index, or the
+	 * move would recreate the instance rather than relocate it.
+	 *
+	 * Terminal (primitive) items can't key a WeakMap and carry no relocatable
+	 * state, so they fall back to a positional key (kept distinct from the
+	 * object-identity keys by prefix).
+	 *
+	 * @param {Object|Array|string|number} item
+	 * @param {number|string} index Position of the item, used only for the
+	 *   primitive fallback.
+	 * @return {string}
+	 */
+	getListItemKey: function ( item, index ) {
+		if ( item === null || typeof item !== 'object' ) {
+			return `item-${ index }`;
+		}
+		if ( !listItemKeys.has( item ) ) {
+			listItemKeyCounter += 1;
+			listItemKeys.set( item, listItemKeyCounter );
+		}
+		return `item-id-${ listItemKeys.get( item ) }`;
 	},
 
 	/**

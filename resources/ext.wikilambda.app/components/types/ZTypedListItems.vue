@@ -32,7 +32,7 @@
 			<!-- Show list items -->
 			<wl-z-object-key-value
 				v-for="index in listItemIndexes"
-				:key="`list-item-${ index }`"
+				:key="getListItemKey( objectValue[ index ], index )"
 				class="ext-wikilambda-app-typed-list-items__block"
 				:key-path="`${ keyPath }.${ index }`"
 				:object-value="objectValue[ index ]"
@@ -65,6 +65,7 @@ const { computed, defineComponent, inject } = require( 'vue' );
 
 const icons = require( '../../../lib/icons.json' );
 const LabelData = require( '../../store/classes/LabelData.js' );
+const { getListItemKey } = require( '../../utils/zobjectUtils.js' );
 
 // Base components
 const KeyValueBlock = require( '../base/KeyValueBlock.vue' );
@@ -135,6 +136,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			addListItem,
+			getListItemKey,
 			iconAdd,
 			itemsLabel,
 			listItemIndexes,

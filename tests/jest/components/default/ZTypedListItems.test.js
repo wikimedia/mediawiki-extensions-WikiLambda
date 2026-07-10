@@ -107,6 +107,37 @@ describe( 'ZTypedListItems', () => {
 		} );
 	} );
 
+	describe( 'list item keys (T431714)', () => {
+		// A reorder must move the child instances (and their local state) with
+		// their items, not reuse them positionally. Assert the Vue key tracks
+		// item identity, so a swap relocates rather than recreates instances.
+		it( 'keys items by identity so a reorder relocates instances', async () => {
+			const itemA = { Z1K1: 'Z6', Z6K1: 'A' };
+			const itemB = { Z1K1: 'Z6', Z6K1: 'B' };
+			const benjamin = { Z1K1: 'Z9', Z9K1: 'Z6' };
+			const wrapper = renderZTypedListItems( {
+				objectValue: [ benjamin, itemA, itemB ]
+			} );
+
+			// Read the Vue key of the child rendering the item with the given value
+			const keyOf = ( value ) => wrapper
+				.findAllComponents( { name: 'wl-z-object-key-value' } )
+				.find( ( child ) => child.props( 'objectValue' ).Z6K1 === value )
+				.vm.$.vnode.key;
+
+			const keyA = keyOf( 'A' );
+			const keyB = keyOf( 'B' );
+			expect( keyA ).not.toBe( keyB );
+
+			// Swap the items, reusing the same references (as moveListItemByKeyPath does)
+			await wrapper.setProps( { objectValue: [ benjamin, itemB, itemA ] } );
+
+			// Keys followed the items to their new positions
+			expect( keyOf( 'A' ) ).toBe( keyA );
+			expect( keyOf( 'B' ) ).toBe( keyB );
+		} );
+	} );
+
 	describe( 'in edit mode', () => {
 		it( 'renders without errors', () => {
 			const wrapper = renderZTypedListItems( { edit: true } );
