@@ -91,7 +91,7 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 
 		$location = $response->getHeader( 'Location' );
 
-		$this->assertStringContainsString( 'Main Page', $location );
+		$this->assertStringContainsString( 'Main_Page', $location );
 	}
 
 	public function testMissingPageRedirectToMain(): void {
@@ -108,7 +108,7 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 
 		$location = $response->getHeader( 'Location' );
 
-		$this->assertStringContainsString( 'Main Page', $location );
+		$this->assertStringContainsString( 'Main_Page', $location );
 	}
 
 	public function testUnknownLangRedirectToMain(): void {
@@ -123,7 +123,7 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 
 		$location = $response->getHeader( 'Location' );
 
-		$this->assertStringContainsString( 'Main Page', $location );
+		$this->assertStringContainsString( 'Main_Page', $location );
 	}
 
 	public function testBadRevisionRedirectToMain(): void {
@@ -141,7 +141,7 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 
 		$location = $response->getHeader( 'Location' );
 
-		$this->assertStringContainsString( 'Main Page', $location );
+		$this->assertStringContainsString( 'Main_Page', $location );
 	}
 
 	public function testOverwriteWithUselangProp(): void {

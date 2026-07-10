@@ -225,9 +225,7 @@ class SpecialViewObject extends UnlistedSpecialPage {
 	 * @param OutputPage $outputPage
 	 */
 	private function redirectToMain( OutputPage $outputPage ) {
-		// We use inContentLanguage() to get it in English, rather than redirecting to non-existent pages
-		// like https://www.wikifunctions.org/wiki/Strona_g%C5%82%C3%B3wna if the user's language is pl.
-		$mainPageUrl = '/wiki/' . $outputPage->msg( 'Mainpage' )->inContentLanguage()->text();
+		$mainPageUrl = Title::newMainPage( $outputPage )->getFullURL();
 		$outputPage->redirect( $mainPageUrl, 303 );
 	}
 
