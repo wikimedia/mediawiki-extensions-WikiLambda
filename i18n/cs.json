@@ -363,6 +363,7 @@
 	"wikilambda-toast-close": "Zavřít",
 	"wikilambda-typeselector-label": "Vyberte typ",
 	"wikilambda-typeunavailable": "Nerozpoznaný typ",
+	"wikilambda-validation-error-description-toolong": "Popis v jazyce $1 smí mít délku {{PLURAL:$2|$2 znak|$2 znaky|$2 znaků}} nebo méně.",
 	"wikilambda-wikidata-entity-selector-placeholder": "Vybrat entitu Wikidat",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Bez hodnoty",
 	"wikilambda-wikidata-item-selector-placeholder": "Vybrat položku Wikidat",

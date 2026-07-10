@@ -2,11 +2,16 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
-			"YaronSh"
+			"YaronSh",
+			"Neriah"
 		]
 	},
 	"action-wikilambda-abstract-create": "ליצור ערכים מופשטים חדשים",
 	"action-wikilambda-abstract-edit": "לערוך ערכים מופשטים קיימים",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "רשימת ויקיפונקציות שמחזירות HTML (לפי ZID) ושמוצעות בתפריט \"הוספת מקטע\" של עריכת ערך מופשט. עד עשר רשומות.",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "ויקיפונקציות מוצעות",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "עד עשר ויקיפונקציות שמחזירות HTML לפי ה־ZID שלהן (למשל <code>Z20756</code>) שתוצגנה בהבלטה בתפריט מקטעים של ערך מופשט.",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "ויקיפונקציה מוצעת $1",
 	"content-model-abstractwiki": "ערך מופשט",
 	"right-wikilambda-abstract-create": "יצירת ערכים מופשטים חדשים",
 	"right-wikilambda-abstract-edit": "עריכת ערכים מופשטים קיימים",

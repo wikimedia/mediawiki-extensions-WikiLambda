@@ -6,7 +6,7 @@
 		]
 	},
 	"wikifunctions-rest-module-v0-title": "위키함수 API",
-	"wikifunctions-rest-module-v0-desc": "Wikifunctions와 상호작용하기 위한 API들입니다",
+	"wikifunctions-rest-module-v0-desc": "위키함수와 상호작용하기 위한 API들입니다",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "Z객체를 가져옵니다",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Z객체의 이전 버전을 가져옵니다",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "함수를 호출합니다",

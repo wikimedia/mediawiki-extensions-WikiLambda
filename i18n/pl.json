@@ -8,7 +8,8 @@
 			"Rail",
 			"Tar Lócesilion",
 			"WaldiSt",
-			"Woytecr"
+			"Woytecr",
+			"PanWor"
 		]
 	},
 	"wikilambda-desc": "Umożliwia pisanie, zarządzanie i uruchamianie funkcji programistycznych, na centralnej wiki.",
@@ -386,6 +387,9 @@
 	"wikilambda-typeselector-label": "Wybierz typ",
 	"wikilambda-typeunavailable": "Nierozpoznany typ",
 	"wikilambda-unknown-save-error-message": "Nie udało się opublikować. Proszę spróbować jeszcze raz.",
+	"wikilambda-wikidata-entity-selector-placeholder": "Wybierz encję Wikidanych",
+	"wikilambda-wikidata-lexeme-selector-placeholder": "Wybierz leksem Wikidanych",
+	"wikilambda-wikidata-property-selector-placeholder": "Wybierz właściwość Wikidanych",
 	"wikilambda-zerror": "Błąd typu $1",
 	"wikilambda-zimplememntation-composition-missing": "Złożenie jest puste. Wybierz funkcję.",
 	"wikilambda-zimplementation-code-language-missing": "Wybierz najpierw język programowania.",
