@@ -632,6 +632,9 @@ const zobjectStore = {
 				throw new Error( `Unable to mutate state: New index "${ newIndex }" out of bounds` );
 			}
 
+			// Relocate any field errors so they follow the moved item's new position
+			this.relocateErrorsForListMove( keyPath.slice( 0, -1 ), index, newIndex );
+
 			// Perform mutation:
 			const [ item ] = target.splice( index, 1 );
 			target.splice( newIndex, 0, item );

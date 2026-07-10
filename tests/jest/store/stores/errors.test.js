@@ -277,6 +277,57 @@ describe( 'Errors Pinia store', () => {
 			} );
 		} );
 
+		describe( 'relocateErrorsForListMove', () => {
+			const err = () => [ new ErrorData( 'k', [], null, Constants.ERROR_TYPES.ERROR ) ];
+
+			it( 'does nothing when the item does not move', () => {
+				store.errors = { 'main.Z2K2.K4.1': err() };
+				const before = store.errors;
+				store.relocateErrorsForListMove( 'main.Z2K2.K4', 1, 1 );
+				expect( store.errors ).toEqual( before );
+			} );
+
+			it( 'swaps the errors of two adjacent items on a move', () => {
+				const item1 = err();
+				const item2 = err();
+				store.errors = { 'main.Z2K2.K4.1': item1, 'main.Z2K2.K4.2': item2 };
+
+				// Move item at index 1 forward to index 2
+				store.relocateErrorsForListMove( 'main.Z2K2.K4', 1, 2 );
+
+				expect( store.errors ).toEqual( {
+					'main.Z2K2.K4.2': item1,
+					'main.Z2K2.K4.1': item2
+				} );
+			} );
+
+			it( 'moves descendant errors of the moved item', () => {
+				const childError = err();
+				store.errors = { 'main.Z2K2.K4.2.Z6K1': childError };
+
+				// Move item at index 2 back to index 1
+				store.relocateErrorsForListMove( [ 'main', 'Z2K2', 'K4' ], 2, 1 );
+
+				expect( store.errors ).toEqual( { 'main.Z2K2.K4.1.Z6K1': childError } );
+			} );
+
+			it( 'leaves errors outside the affected range and non-numeric children untouched', () => {
+				const outside = err();
+				const nonNumeric = err();
+				store.errors = {
+					'main.Z2K2.K4.5': outside,
+					'main.Z2K2.K4.Z9K1': nonNumeric
+				};
+
+				store.relocateErrorsForListMove( 'main.Z2K2.K4', 1, 2 );
+
+				expect( store.errors ).toEqual( {
+					'main.Z2K2.K4.5': outside,
+					'main.Z2K2.K4.Z9K1': nonNumeric
+				} );
+			} );
+		} );
+
 		describe( 'clearValidationErrors', () => {
 			it( 'does nothing if the state has no validation errors', () => {
 				store.errors = {

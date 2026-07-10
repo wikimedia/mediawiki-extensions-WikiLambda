@@ -2033,6 +2033,24 @@ describe( 'zobject Pinia store', () => {
 				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
 				expect( canonical ).toEqual( [ 'Z1', 'una', 'dola', 'catola', 'tela' ] );
 			} );
+
+			it( 'relocates field errors so they follow the moved item', () => {
+				store.errors = {
+					'main.Z2K2.1': [ 'error-for-una' ],
+					'main.Z2K2.2': [ 'error-for-dola' ]
+				};
+
+				store.moveListItemByKeyPath( {
+					keyPath: [ 'main', 'Z2K2', 1 ],
+					offset: 1
+				} );
+
+				// 'una' moved to index 2 and 'dola' to index 1; their errors followed
+				expect( store.errors ).toEqual( {
+					'main.Z2K2.2': [ 'error-for-una' ],
+					'main.Z2K2.1': [ 'error-for-dola' ]
+				} );
+			} );
 		} );
 
 		describe( 'addLocalArgumentToFunctionCall', () => {
