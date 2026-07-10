@@ -100,7 +100,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const { typeToString, isKeyTypedListItem } = useType();
-		const { getZReferenceTerminalValue, key, parentKey } = useZObject( { keyPath: props.keyPath } );
+		const { getZReferenceTerminalValue, key, parentKey } = useZObject( { keyPath: () => props.keyPath } );
 		const store = useMainStore();
 
 		// Selected value

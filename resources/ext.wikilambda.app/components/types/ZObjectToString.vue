@@ -121,7 +121,7 @@ module.exports = exports = defineComponent( {
 	emits: [ 'mounted', 'expand' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
-		const { hasChildErrors } = useError( { keyPath: props.keyPath } );
+		const { hasChildErrors } = useError( { keyPath: () => props.keyPath } );
 		const {
 			getCommonsMediaId,
 			getWikidataEntityId,
@@ -135,7 +135,7 @@ module.exports = exports = defineComponent( {
 			isWikidataEntity,
 			isWikidataFetch,
 			key
-		} = useZObject( { keyPath: props.keyPath } );
+		} = useZObject( { keyPath: () => props.keyPath } );
 		const { typeToString } = useType();
 		const store = useMainStore();
 

@@ -68,7 +68,7 @@ module.exports = exports = defineComponent( {
 	emits: [ 'add-list-item' ],
 	setup( props, { emit } ) {
 		// Data access
-		const { depth } = useZObject( { keyPath: props.keyPath } );
+		const { depth } = useZObject( { keyPath: () => props.keyPath } );
 		const store = useMainStore();
 
 		// List item type

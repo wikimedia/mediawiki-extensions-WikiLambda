@@ -129,7 +129,7 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
-		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
+		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: () => props.keyPath } );
 
 		// Shared data
 		/**

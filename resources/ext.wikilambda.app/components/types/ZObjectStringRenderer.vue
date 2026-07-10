@@ -134,8 +134,8 @@ module.exports = exports = defineComponent( {
 	emits: [ 'expand', 'set-type', 'set-value' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
-		const { getZObjectType } = useZObject( { keyPath: props.keyPath } );
-		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: props.keyPath } );
+		const { getZObjectType } = useZObject( { keyPath: () => props.keyPath } );
+		const { hasFieldErrors, fieldErrors, clearFieldErrors } = useError( { keyPath: () => props.keyPath } );
 		const store = useMainStore();
 
 		// State

@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const { ref } = require( 'vue' );
 const loadComposable = require( '../helpers/loadComposable.js' );
 const useZObject = require( '../../../resources/ext.wikilambda.app/composables/useZObject.js' );
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
@@ -147,6 +148,36 @@ describe( 'useZObject', () => {
 			expect( zobject.key.value ).toBeUndefined();
 			expect( zobject.parentKey.value ).toBeUndefined();
 			expect( zobject.depth.value ).toBe( 0 );
+		} );
+	} );
+
+	describe( 'reactive keyPath', () => {
+		// When a list-item component is relocated on reorder, its keyPath prop
+		// changes; the keyPath-derived getters must track it (T431714).
+		it( 'recomputes key and parentKey when a ref keyPath changes', () => {
+			const keyPath = ref( 'main.Z2K2.5' );
+			const [ zobject ] = loadComposable( () => useZObject( { keyPath } ) );
+
+			expect( zobject.key.value ).toBe( '5' );
+			expect( zobject.parentKey.value ).toBe( 'Z2K2' );
+
+			keyPath.value = 'main.Z2K2.4';
+
+			expect( zobject.key.value ).toBe( '4' );
+			expect( zobject.parentKey.value ).toBe( 'Z2K2' );
+		} );
+
+		it( 'recomputes depth when a getter keyPath changes', () => {
+			const keyPath = ref( 'main.Z2K2' );
+			const [ zobject ] = loadComposable( () => useZObject( { keyPath: () => keyPath.value } ) );
+
+			// main.Z2K2 = 2 parts - 1 = 1, (1 % 6) + 1 = 2
+			expect( zobject.depth.value ).toBe( 2 );
+
+			keyPath.value = 'main.Z2K2.Z14K1.Z16K1';
+
+			// 4 parts - 1 = 3, (3 % 6) + 1 = 4
+			expect( zobject.depth.value ).toBe( 4 );
 		} );
 	} );
 } );

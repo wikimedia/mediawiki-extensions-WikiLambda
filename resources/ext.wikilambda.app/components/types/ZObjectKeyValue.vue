@@ -211,8 +211,8 @@ module.exports = exports = defineComponent( {
 			key,
 			parentKey,
 			getZFunctionCallFunctionId
-		} = useZObject( { keyPath: props.keyPath } );
-		const { hasFieldErrors, hasChildErrors } = useError( { keyPath: props.keyPath } );
+		} = useZObject( { keyPath: () => props.keyPath } );
+		const { hasFieldErrors, hasChildErrors } = useError( { keyPath: () => props.keyPath } );
 		const {
 			setDirtyKeyPath,
 			moveBefore,

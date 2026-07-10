@@ -88,12 +88,12 @@ module.exports = exports = defineComponent( {
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
-		const { hasFieldErrors, fieldErrors } = useError( { keyPath: props.keyPath } );
+		const { hasFieldErrors, fieldErrors } = useError( { keyPath: () => props.keyPath } );
 		const {
 			getZArgumentReferenceTerminalValue,
 			getZStringTerminalValue,
 			key
-		} = useZObject( { keyPath: props.keyPath } );
+		} = useZObject( { keyPath: () => props.keyPath } );
 		const store = useMainStore();
 
 		// Constants

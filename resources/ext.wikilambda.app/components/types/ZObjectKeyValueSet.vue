@@ -61,7 +61,7 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-type', 'set-value' ],
 	setup( props ) {
-		const { depth } = useZObject( { keyPath: props.keyPath } );
+		const { depth } = useZObject( { keyPath: () => props.keyPath } );
 
 		// Child keys
 		/**

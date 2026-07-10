@@ -59,7 +59,7 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'set-value' ],
 	setup( props, { emit } ) {
-		const { getZStringTerminalValue, key } = useZObject( { keyPath: props.keyPath } );
+		const { getZStringTerminalValue, key } = useZObject( { keyPath: () => props.keyPath } );
 
 		/**
 		 * Returns the terminal value of the string represented

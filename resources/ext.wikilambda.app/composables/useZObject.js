@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const { computed } = require( 'vue' );
+const { computed, toValue } = require( 'vue' );
 const Constants = require( '../Constants.js' );
 const {
 	getZObjectType,
@@ -44,7 +44,10 @@ const {
  * ZObject access composable
  *
  * @param {Object} options - Options object
- * @param {Object} [options.keyPath] - The keyPath ref from the component (optional)
+ * @param {string|Function|Object} [options.keyPath] - The component keyPath, as
+ *   a plain string, a ref, or a getter. Read reactively via `toValue` so that
+ *   keyPath-derived getters recompute when a component's keyPath prop changes
+ *   (e.g. when a list-item instance is relocated on reorder).
  * @return {Object} ZObject composable API
  */
 module.exports = function useZObject( { keyPath } = {} ) {
@@ -58,10 +61,11 @@ module.exports = function useZObject( { keyPath } = {} ) {
 	 * @return {string|undefined}
 	 */
 	const key = computed( () => {
-		if ( !keyPath || typeof keyPath !== 'string' ) {
+		const keyPathValue = toValue( keyPath );
+		if ( !keyPathValue || typeof keyPathValue !== 'string' ) {
 			return undefined;
 		}
-		return keyPath.split( '.' ).pop();
+		return keyPathValue.split( '.' ).pop();
 	} );
 
 	/**
@@ -74,10 +78,11 @@ module.exports = function useZObject( { keyPath } = {} ) {
 	 * @return {string|undefined}
 	 */
 	const parentKey = computed( () => {
-		if ( !keyPath || typeof keyPath !== 'string' ) {
+		const keyPathValue = toValue( keyPath );
+		if ( !keyPathValue || typeof keyPathValue !== 'string' ) {
 			return undefined;
 		}
-		const parts = keyPath.split( '.' );
+		const parts = keyPathValue.split( '.' );
 		return parts.length > 1 ? parts[ parts.length - 2 ] : undefined;
 	} );
 
@@ -89,10 +94,11 @@ module.exports = function useZObject( { keyPath } = {} ) {
 	 * @return {number}
 	 */
 	const depth = computed( () => {
-		if ( !keyPath || typeof keyPath !== 'string' ) {
+		const keyPathValue = toValue( keyPath );
+		if ( !keyPathValue || typeof keyPathValue !== 'string' ) {
 			return 0;
 		}
-		const depthValue = ( keyPath.split( '.' ) || [] ).length - 1;
+		const depthValue = ( keyPathValue.split( '.' ) || [] ).length - 1;
 		return ( depthValue % Constants.COLOR_NESTING_LEVELS ) + 1;
 	} );
 

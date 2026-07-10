@@ -125,7 +125,7 @@ module.exports = exports = defineComponent( {
 		const {
 			getZImplementationContentType,
 			getZImplementationFunctionZid
-		} = useZObject( { keyPath: props.keyPath } );
+		} = useZObject( { keyPath: () => props.keyPath } );
 		const store = useMainStore();
 
 		// Constants

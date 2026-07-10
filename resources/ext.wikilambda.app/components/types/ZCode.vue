@@ -128,7 +128,8 @@ module.exports = exports = defineComponent( {
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const { getZidOfGlobalKey } = useType();
-		const { getZCodeString, key, getZCodeProgrammingLanguageId } = useZObject( { keyPath: props.keyPath } );
+		const { getZCodeString, key, getZCodeProgrammingLanguageId } =
+			useZObject( { keyPath: () => props.keyPath } );
 		const store = useMainStore();
 
 		// Constants

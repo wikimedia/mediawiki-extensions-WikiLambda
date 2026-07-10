@@ -80,7 +80,7 @@ module.exports = exports = defineComponent( {
 			isWikidataFetch,
 			key,
 			parentKey
-		} = useZObject( { keyPath: props.keyPath } );
+		} = useZObject( { keyPath: () => props.keyPath } );
 		const store = useMainStore();
 
 		// Constants
