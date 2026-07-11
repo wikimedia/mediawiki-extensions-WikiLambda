@@ -374,7 +374,7 @@ class AbstractWikiContentHandler extends ContentHandler {
 		// Get requested or current revision
 		$revision = $revisionId ?
 			$revisionStore->getRevisionByTitle( $title, $revisionId, 0 ) :
-			$revisionStore->getKnownCurrentRevision( $title );
+			$revisionStore->getKnownLatestRevision( $title );
 
 		// Check revision exists
 		if ( !$revision ) {

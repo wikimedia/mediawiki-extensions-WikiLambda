@@ -266,7 +266,7 @@ class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase 
 
 	public function testShow_existingPageWithSymbolicDiffFallsBackToLatest() {
 		// 'diff=0' resolves to the current revision in core; we represent that
-		// as "no explicit revision" so getKnownCurrentRevision serves the load.
+		// as "no explicit revision" so getKnownLatestRevision serves the load.
 		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
 
 		$firstJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';

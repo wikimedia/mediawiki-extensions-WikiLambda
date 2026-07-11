@@ -171,7 +171,7 @@ class ZObjectStore {
 		if ( $requestedRevision ) {
 			$revision = $this->revisionStore->getRevisionByTitle( $title, $requestedRevision, 0 );
 		} else {
-			$revision = $this->revisionStore->getKnownCurrentRevision( $title );
+			$revision = $this->revisionStore->getKnownLatestRevision( $title );
 		}
 
 		if ( !$revision ) {
@@ -447,7 +447,7 @@ class ZObjectStore {
 		// while creating or editing an object
 		$fromContent = null;
 		if ( !$creating ) {
-			$currentRevision = $this->revisionStore->getKnownCurrentRevision( $title );
+			$currentRevision = $this->revisionStore->getKnownLatestRevision( $title );
 			$fromContent = $currentRevision->getSlots()->getContent( SlotRecord::MAIN );
 			'@phan-var ZObjectContent $fromContent';
 		}

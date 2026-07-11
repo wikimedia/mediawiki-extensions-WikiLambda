@@ -234,8 +234,8 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 
 		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
 		$titleZ12 = Title::newFromText( 'Z12', NS_MAIN );
-		$revisionZ11 = $revisionStore->getKnownCurrentRevision( $titleZ11 );
-		$revisionZ12 = $revisionStore->getKnownCurrentRevision( $titleZ12 );
+		$revisionZ11 = $revisionStore->getKnownLatestRevision( $titleZ11 );
+		$revisionZ12 = $revisionStore->getKnownLatestRevision( $titleZ12 );
 
 		// Requesting Z11|Z12 with their correct revision numbers
 		$result = $this->doApiRequest( [
@@ -255,7 +255,7 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
 
 		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
-		$revisionZ11 = $revisionStore->getKnownCurrentRevision( $titleZ11 );
+		$revisionZ11 = $revisionStore->getKnownLatestRevision( $titleZ11 );
 
 		$this->setExpectedApiException( [ 'apierror-query+wikilambdaload_zobjects-unloadable', 'Z12' ] );
 
@@ -273,7 +273,7 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
 
 		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
-		$revisionZ11 = $revisionStore->getKnownCurrentRevision( $titleZ11 );
+		$revisionZ11 = $revisionStore->getKnownLatestRevision( $titleZ11 );
 
 		$this->setExpectedApiException( [ 'wikilambda-zerror', 'Z500' ] );
 
