@@ -43739,6 +43739,132 @@
             "wlzl_label_normalised": "z20739",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z590",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Used a large portion of the available WASM fuel.",
+            "wlzl_label_normalised": "used a large portion of the available wasm fuel.",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z590",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z590",
+            "wlzl_label_normalised": "z590",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z591",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Used a large portion of the available memory.",
+            "wlzl_label_normalised": "used a large portion of the available memory.",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z591",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z591",
+            "wlzl_label_normalised": "z591",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z592",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Result exceeded the advisory size threshold in executor",
+            "wlzl_label_normalised": "result exceeded the advisory size threshold in executor",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z592",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z592",
+            "wlzl_label_normalised": "z592",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2051",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Khiamniungan",
+            "wlzl_label_normalised": "khiamniungan",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2051",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2051",
+            "wlzl_label": "Khiamniungan",
+            "wlzl_label_normalised": "khiamniungan",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2051",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2051",
+            "wlzl_label_normalised": "z2051",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2051",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "kix",
+            "wlzl_label_normalised": "kix",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2052",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Southern Uzbek",
+            "wlzl_label_normalised": "southern uzbek",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2052",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2052",
+            "wlzl_label": "اۉزبېکچه",
+            "wlzl_label_normalised": "اۉزبېکچه",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2052",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2052",
+            "wlzl_label_normalised": "z2052",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2052",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "uzs",
+            "wlzl_label_normalised": "uzs",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
         }
     ],
     "wikilambda_zobject_join": [
@@ -51863,6 +51989,14 @@
         {
             "wlzlangs_zid": "Z2050",
             "wlzlangs_language": "sd-sind"
+        },
+        {
+            "wlzlangs_zid": "Z2051",
+            "wlzlangs_language": "kix"
+        },
+        {
+            "wlzlangs_zid": "Z2052",
+            "wlzlangs_language": "uzs"
         }
     ]
 }

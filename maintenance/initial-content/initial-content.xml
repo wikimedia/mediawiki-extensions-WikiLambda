@@ -1,7 +1,7 @@
 <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.11/ http://www.mediawiki.org/xml/export-0.11.xsd" version="0.11" xml:lang="en">
   <siteinfo>
-    <sitename>MediaWiki</sitename>
-    <dbname>my_wiki</dbname>
+    <sitename>Wikifunctions (local)</sitename>
+    <dbname>functions</dbname>
     <base>http://localhost:8080/wiki/Main_Page</base>
     <generator>MediaWiki 1.47.0-alpha</generator>
     <case>first-letter</case>
@@ -30,8 +30,6 @@
       <namespace key="829" case="first-letter">Module talk</namespace>
       <namespace key="1198" case="first-letter">Translations</namespace>
       <namespace key="1199" case="first-letter">Translations talk</namespace>
-      <namespace key="2300" case="first-letter">Abstract Wikipedia</namespace>
-      <namespace key="2301" case="first-letter">Abstract Wikipedia talk</namespace>
     </namespaces>
   </siteinfo>
   <page>
@@ -75823,6 +75821,321 @@ Consult the [https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents Use
     }
 }</text>
       <sha1>80iezzx14dgg4cbv158qj26r2znzggz</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Z590</title>
+    <ns>0</ns>
+    <id>1500</id>
+    <revision>
+      <id>1500</id>
+      <timestamp>2026-07-10T20:03:05Z</timestamp>
+      <contributor>
+        <username>WikiLambda system</username>
+        <id>3</id>
+      </contributor>
+      <comment>Initial pre-defined WikiLambda content creation</comment>
+      <origin>1500</origin>
+      <model>zobject</model>
+      <format>text/plain</format>
+      <text bytes="1415" sha1="1saav0iea3uf7g0cd37kex0yq5nrq8j" xml:space="preserve">{
+    "Z1K1": "Z2",
+    "Z2K1": {
+        "Z1K1": "Z6",
+        "Z6K1": "Z590"
+    },
+    "Z2K2": {
+        "Z1K1": "Z50",
+        "Z50K1": [
+            "Z3",
+            {
+                "Z1K1": "Z3",
+                "Z3K1": "Z6",
+                "Z3K2": "Z590K1",
+                "Z3K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11",
+                        {
+                            "Z1K1": "Z11",
+                            "Z11K1": "Z1002",
+                            "Z11K2": "fuel used"
+                        }
+                    ]
+                }
+            },
+            {
+                "Z1K1": "Z3",
+                "Z3K1": "Z6",
+                "Z3K2": "Z590K2",
+                "Z3K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11",
+                        {
+                            "Z1K1": "Z11",
+                            "Z11K1": "Z1002",
+                            "Z11K2": "fuel limit"
+                        }
+                    ]
+                }
+            }
+        ],
+        "Z50K2": "Z590"
+    },
+    "Z2K3": {
+        "Z1K1": "Z12",
+        "Z12K1": [
+            "Z11",
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z1002",
+                "Z11K2": "Used a large portion of the available WASM fuel."
+            }
+        ]
+    }
+}</text>
+      <sha1>1saav0iea3uf7g0cd37kex0yq5nrq8j</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Z591</title>
+    <ns>0</ns>
+    <id>1501</id>
+    <revision>
+      <id>1501</id>
+      <timestamp>2026-07-10T20:03:05Z</timestamp>
+      <contributor>
+        <username>WikiLambda system</username>
+        <id>3</id>
+      </contributor>
+      <comment>Initial pre-defined WikiLambda content creation</comment>
+      <origin>1501</origin>
+      <model>zobject</model>
+      <format>text/plain</format>
+      <text bytes="1416" sha1="rfhoyqbxpi3plz2iufu7einwv0jjxzp" xml:space="preserve">{
+    "Z1K1": "Z2",
+    "Z2K1": {
+        "Z1K1": "Z6",
+        "Z6K1": "Z591"
+    },
+    "Z2K2": {
+        "Z1K1": "Z50",
+        "Z50K1": [
+            "Z3",
+            {
+                "Z1K1": "Z3",
+                "Z3K1": "Z6",
+                "Z3K2": "Z591K1",
+                "Z3K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11",
+                        {
+                            "Z1K1": "Z11",
+                            "Z11K1": "Z1002",
+                            "Z11K2": "memory used"
+                        }
+                    ]
+                }
+            },
+            {
+                "Z1K1": "Z3",
+                "Z3K1": "Z6",
+                "Z3K2": "Z591K2",
+                "Z3K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11",
+                        {
+                            "Z1K1": "Z11",
+                            "Z11K1": "Z1002",
+                            "Z11K2": "memory limit"
+                        }
+                    ]
+                }
+            }
+        ],
+        "Z50K2": "Z591"
+    },
+    "Z2K3": {
+        "Z1K1": "Z12",
+        "Z12K1": [
+            "Z11",
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z1002",
+                "Z11K2": "Used a large portion of the available memory."
+            }
+        ]
+    }
+}</text>
+      <sha1>rfhoyqbxpi3plz2iufu7einwv0jjxzp</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Z592</title>
+    <ns>0</ns>
+    <id>1502</id>
+    <revision>
+      <id>1502</id>
+      <timestamp>2026-07-10T20:03:05Z</timestamp>
+      <contributor>
+        <username>WikiLambda system</username>
+        <id>3</id>
+      </contributor>
+      <comment>Initial pre-defined WikiLambda content creation</comment>
+      <origin>1502</origin>
+      <model>zobject</model>
+      <format>text/plain</format>
+      <text bytes="1435" sha1="a0mk6j8jlhp5ymtfhkl0ghqh1jvqqlj" xml:space="preserve">{
+    "Z1K1": "Z2",
+    "Z2K1": {
+        "Z1K1": "Z6",
+        "Z6K1": "Z592"
+    },
+    "Z2K2": {
+        "Z1K1": "Z50",
+        "Z50K1": [
+            "Z3",
+            {
+                "Z1K1": "Z3",
+                "Z3K1": "Z6",
+                "Z3K2": "Z592K1",
+                "Z3K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11",
+                        {
+                            "Z1K1": "Z11",
+                            "Z11K1": "Z1002",
+                            "Z11K2": "result size"
+                        }
+                    ]
+                }
+            },
+            {
+                "Z1K1": "Z3",
+                "Z3K1": "Z6",
+                "Z3K2": "Z592K2",
+                "Z3K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11",
+                        {
+                            "Z1K1": "Z11",
+                            "Z11K1": "Z1002",
+                            "Z11K2": "result size threshold"
+                        }
+                    ]
+                }
+            }
+        ],
+        "Z50K2": "Z592"
+    },
+    "Z2K3": {
+        "Z1K1": "Z12",
+        "Z12K1": [
+            "Z11",
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z1002",
+                "Z11K2": "Result exceeded the advisory size threshold in executor"
+            }
+        ]
+    }
+}</text>
+      <sha1>a0mk6j8jlhp5ymtfhkl0ghqh1jvqqlj</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Z2051</title>
+    <ns>0</ns>
+    <id>1503</id>
+    <revision>
+      <id>1503</id>
+      <timestamp>2026-07-10T20:03:08Z</timestamp>
+      <contributor>
+        <username>WikiLambda system</username>
+        <id>3</id>
+      </contributor>
+      <comment>Initial pre-defined WikiLambda content creation</comment>
+      <origin>1503</origin>
+      <model>zobject</model>
+      <format>text/plain</format>
+      <text bytes="513" sha1="jdl3ubbs0gb35qz1tidzjeobs1307j1" xml:space="preserve">{
+    "Z1K1": "Z2",
+    "Z2K1": {
+        "Z1K1": "Z6",
+        "Z6K1": "Z2051"
+    },
+    "Z2K2": {
+        "Z1K1": "Z60",
+        "Z60K1": "kix"
+    },
+    "Z2K3": {
+        "Z1K1": "Z12",
+        "Z12K1": [
+            "Z11",
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z1002",
+                "Z11K2": "Khiamniungan"
+            },
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z2051",
+                "Z11K2": "Khiamniungan"
+            }
+        ]
+    }
+}</text>
+      <sha1>jdl3ubbs0gb35qz1tidzjeobs1307j1</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Z2052</title>
+    <ns>0</ns>
+    <id>1504</id>
+    <revision>
+      <id>1504</id>
+      <timestamp>2026-07-10T20:03:09Z</timestamp>
+      <contributor>
+        <username>WikiLambda system</username>
+        <id>3</id>
+      </contributor>
+      <comment>Initial pre-defined WikiLambda content creation</comment>
+      <origin>1504</origin>
+      <model>zobject</model>
+      <format>text/plain</format>
+      <text bytes="519" sha1="oy8asau2ixn0mehztmcbujum10jz459" xml:space="preserve">{
+    "Z1K1": "Z2",
+    "Z2K1": {
+        "Z1K1": "Z6",
+        "Z6K1": "Z2052"
+    },
+    "Z2K2": {
+        "Z1K1": "Z60",
+        "Z60K1": "uzs"
+    },
+    "Z2K3": {
+        "Z1K1": "Z12",
+        "Z12K1": [
+            "Z11",
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z1002",
+                "Z11K2": "Southern Uzbek"
+            },
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z2052",
+                "Z11K2": "اۉزبېکچه"
+            }
+        ]
+    }
+}</text>
+      <sha1>oy8asau2ixn0mehztmcbujum10jz459</sha1>
     </revision>
   </page>
 </mediawiki>
