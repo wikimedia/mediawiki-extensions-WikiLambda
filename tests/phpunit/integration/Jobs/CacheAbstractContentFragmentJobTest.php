@@ -49,18 +49,64 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaAbstractModeIntegrat
 		$this->assertTrue( $job->run() );
 	}
 
-	public function testRun_failedRender() {
+	public function testRun_failedRender_badRequest() {
 		$mockRequest = $this->createMock( AbstractWikiRequest::class );
 		$mockRequest->expects( $this->once() )
 			->method( 'fetchRenderedAWFragment' )
-			->willReturn( [ 'success' => false, 'value' => [ 'msg' => 'some error' ] ] );
+			->willReturn( [
+				'success' => false,
+				'value' => [
+					'msg' => 'bad request',
+					'httpStatusCode' => '400'
+				]
+			] );
 
 		$this->setService( 'AbstractWikiRequest', $mockRequest );
 
 		$job = $this->buildJob();
 
-		// Job returns true even on failed render (no retries)
+		// Job returns true so that http 400 are not retried
 		$this->assertTrue( $job->run() );
+	}
+
+	public function testRun_failedRender_serviceUnavailable() {
+		$mockRequest = $this->createMock( AbstractWikiRequest::class );
+		$mockRequest->expects( $this->once() )
+			->method( 'fetchRenderedAWFragment' )
+			->willReturn( [
+				'success' => false,
+				'value' => [
+					'msg' => 'service unavailable',
+					'httpStatusCode' => '503'
+				]
+			] );
+
+		$this->setService( 'AbstractWikiRequest', $mockRequest );
+
+		$job = $this->buildJob();
+
+		// Job returns false so that http 503 are retried
+		$this->assertFalse( $job->run() );
+	}
+
+	public function testRun_failedRender_tooManyRequests() {
+		$mockRequest = $this->createMock( AbstractWikiRequest::class );
+		$mockRequest->expects( $this->once() )
+			->method( 'fetchRenderedAWFragment' )
+			->willReturn( [
+				'success' => false,
+				'value' => [
+					'msg' => 'too many requests',
+					'httpStatusCode' => '429'
+				]
+			] );
+
+		$this->setService( 'AbstractWikiRequest', $mockRequest );
+
+		$job = $this->buildJob();
+
+		// Job returns false so that http 429 are retried
+		$this->assertFalse( $job->run() );
 	}
 
 	public function testIgnoreDuplicates() {
@@ -78,7 +124,7 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaAbstractModeIntegrat
 
 		$job = $this->buildJob();
 
-		$this->assertFalse( $job->allowRetries() );
+		$this->assertTrue( $job->allowRetries() );
 	}
 
 	public function testGetDeduplicationInfo() {

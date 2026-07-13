@@ -97,11 +97,12 @@ class AbstractWikiRequest {
 				if ( $e->hasZError() ) {
 					$logContext[ 'zerror' ] = $e->getZError();
 				}
-				$this->logger->debug(
-					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall failed: {error}',
+				$this->logger->info(
+					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall failed with http 400: {error}',
 					[
 						'error' => $e->getMessage(),
-						'fragmentKey' => $fragmentKey
+						'fragmentKey' => $fragmentKey,
+						'httpStatusCode' => $e->getHttpStatusCode(),
 					] + $logContext
 				);
 			} else {
@@ -125,6 +126,7 @@ class AbstractWikiRequest {
 							'error' => $e->getMessage(),
 							'exception' => $e,
 							'fragmentKey' => $fragmentKey,
+							'httpStatusCode' => $e->getHttpStatusCode(),
 						]
 					);
 				} else {
@@ -135,6 +137,7 @@ class AbstractWikiRequest {
 							'error' => $e->getMessage(),
 							'exception' => $e,
 							'fragmentKey' => $fragmentKey,
+							'httpStatusCode' => $e->getHttpStatusCode(),
 						]
 					);
 				}

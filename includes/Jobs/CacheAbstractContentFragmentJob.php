@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
@@ -49,7 +50,7 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 
 		$this->abstractWikiRequest = WikiLambdaServices::getAbstractWikiRequest();
 
-		$this->logger->debug(
+		$this->logger->info(
 			__CLASS__ . ' created',
 			[
 				'qid' => $params['qid'],
@@ -75,7 +76,7 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 		$date = $this->params['date'];
 		$fragmentKey = $this->params['fragmentKey'];
 
-		$this->logger->debug(
+		$this->logger->info(
 			__CLASS__ . ' initiated for qid:{qid} language:{language} and date:{date} ',
 			[
 				'qid' => $qid,
@@ -93,18 +94,40 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 			$fragmentKey
 		);
 
-		$this->logger->debug(
-			__CLASS__ . ' refreshed {status} cached fragment for qid:{qid} language:{language} and date:{date} ',
+		$httpStatusCode = $cachedValue['success'] ? HttpStatus::OK : (int)$cachedValue['value']['httpStatusCode'];
+
+		// Find out if the failure was due to rendering service unavailable, and retry only in that case
+		if ( $cachedValue[ 'success' ] === false ) {
+			if (
+				$httpStatusCode === HttpStatus::TOO_MANY_REQUESTS ||
+				$httpStatusCode === HttpStatus::SERVICE_UNAVAILABLE
+			) {
+				$this->logger->warning(
+					__CLASS__ . ' rate limited ({httpStatusCode}) for qid:{qid} language:{language} and date:{date} ',
+					[
+						'qid' => $qid,
+						'language' => $language,
+						'date' => $date,
+						'fragmentKey' => $fragmentKey,
+						'httpStatusCode' => $httpStatusCode
+					]
+				);
+				// Return false to force retry job in this case
+				return false;
+			}
+		}
+
+		$this->logger->info(
+			__CLASS__ . ' refresh fragment status:{httpStatusCode} for qid:{qid} language:{language} and date:{date} ',
 			[
-				'status' => $cachedValue[ 'success' ] ? 'successful' : 'failed',
 				'qid' => $qid,
 				'language' => $language,
 				'date' => $date,
-				'fragmentKey' => $fragmentKey
+				'fragmentKey' => $fragmentKey,
+				'httpStatusCode' => $httpStatusCode
 			]
 		);
-
-		// Return true even if cachedValue was failed; no job retries
+		// Return true to avoid retries
 		return true;
 	}
 
@@ -137,6 +160,6 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 	 * @inheritDoc
 	 */
 	public function allowRetries() {
-		return false;
+		return true;
 	}
 }
