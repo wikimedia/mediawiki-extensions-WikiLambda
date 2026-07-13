@@ -199,8 +199,20 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 		try {
 			$method = __METHOD__;
+			$statsFactory = MediaWikiServices::getInstance()->getStatsFactory()->withComponent( 'WikiLambda' );
+			// (T405554) Capture the moment we start contending for a PoolCounter worker slot. The
+			// existing 'mw_to_orchestrator_api_call_seconds' timer spans the whole handler, so both
+			// the queue-wait and the orchestrator call are hidden inside it; record them separately
+			// here so the SLO can tell true orchestrator latency (Envoy-bounded) from queue-wait.
+			$poolAcquireStart = microtime( true );
 			$work = new PoolCounterWorkViaCallback( self::FUNCTIONCALL_POOL_COUNTER_TYPE, $userName, [
-				'doWork' => function () use ( $queryArguments, $bypassCache, $method ) {
+				'doWork' => function () use (
+					$queryArguments, $bypassCache, $method, $statsFactory, $poolAcquireStart
+				) {
+					// (T405554) Time spent waiting for a free worker slot ('observe' takes milliseconds).
+					$statsFactory->getTiming( 'functioncall_pool_wait_seconds' )
+						->observe( 1000 * ( microtime( true ) - $poolAcquireStart ) );
+
 					$this->getLogger()->debug(
 						'{method} running {caller} request',
 						[
@@ -209,7 +221,18 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 							'query' => $queryArguments
 						]
 					);
-					return $this->orchestrator->orchestrate( $queryArguments, $bypassCache );
+
+					// (T405554) Time only the orchestration round-trip (served from cache when hot),
+					// excluding handler pre-processing and the queue-wait recorded above. Recorded in
+					// a finally so a timed-out or failed call (e.g. the Envoy deadline, surfaced as an
+					// OrchestratorException) is still measured -- those are the slow calls we care about.
+					$orchestrateStart = microtime( true );
+					try {
+						return $this->orchestrator->orchestrate( $queryArguments, $bypassCache );
+					} finally {
+						$statsFactory->getTiming( 'orchestrator_call_seconds' )
+							->observe( 1000 * ( microtime( true ) - $orchestrateStart ) );
+					}
 				},
 				// Failure Level #2: Execution is temporarily forbidden due to too many requests
 				// at once. Throw an exception so that the caller API can handle it as needed.
