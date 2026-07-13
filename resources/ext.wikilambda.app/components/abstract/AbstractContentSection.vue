@@ -18,7 +18,7 @@
 			fragments list, then we can remove the v-if and wrapper template -->
 			<wl-abstract-content-fragment
 				v-if="index !== 0"
-				:key="`${ section.fragmentsPath }-${ index }`"
+				:key="getListItemKey( fragment, index )"
 				class="ext-wikilambda-app-abstract-content-section-fragment"
 				:edit="edit"
 				:key-path="`${ section.fragmentsPath }.${ index }`"
@@ -57,6 +57,7 @@ const useMenuAction = require( '../../composables/useMenuAction.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
+const { getListItemKey } = require( '../../utils/zobjectUtils.js' );
 
 // Abstract components
 const AbstractContentFragment = require( './AbstractContentFragment.vue' );
@@ -296,6 +297,7 @@ module.exports = exports = defineComponent( {
 			menuItems,
 			performAction,
 			regenerateHash,
+			getListItemKey,
 			iconAdd,
 			i18n
 		};
