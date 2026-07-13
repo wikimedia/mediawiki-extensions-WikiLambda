@@ -404,24 +404,17 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Status property for the Lookup component (ValidateStatusType).
-		 * Can take the values 'default', 'warning', or 'error':
+		 * Can take the values 'default' or 'error':
 		 * https://doc.wikimedia.org/codex/latest/components/types-and-constants.html#validationstatustype
 		 *
 		 * @return {string}
 		 */
 		const errorLookupStatus = computed( () => {
-			if ( !hasFieldErrors.value ) {
-				return 'default';
-			}
-
-			// Check if any field error is of type 'error'
-			const hasError = fieldErrors.value.some( ( error ) => error.type === 'error' );
-			if ( hasError ) {
+			// Check if there is any field error
+			if ( fieldErrors.value.length > 0 ) {
 				return 'error';
 			}
-
-			// All field errors are warnings
-			return 'warning';
+			return 'default';
 		} );
 
 		/**

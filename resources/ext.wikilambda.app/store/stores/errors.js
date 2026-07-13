@@ -287,10 +287,18 @@ module.exports = {
 
 		/**
 		 * Clears field validation errors (doesn't clear global ones)
+		 * that are children of the given path. Does not clear global (main) errors.
+		 *
+		 * @param {string} parentPath
 		 */
-		clearValidationErrors: function () {
+		clearValidationErrors: function ( parentPath = Constants.STORED_OBJECTS.MAIN ) {
 			for ( const errorId in this.errors ) {
-				if ( errorId !== Constants.STORED_OBJECTS.MAIN ) {
+				if ( errorId === Constants.STORED_OBJECTS.MAIN ) {
+					// Don't clear global errors
+					continue;
+				}
+				if ( errorId.startsWith( `${ parentPath }.` ) || ( errorId === parentPath ) ) {
+					// Clear errors that are, or start with parentPath
 					this.errors[ errorId ] = [];
 				}
 			}

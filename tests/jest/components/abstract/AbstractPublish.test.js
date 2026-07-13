@@ -78,6 +78,25 @@ describe( 'AbstractPublish', () => {
 		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( true ) );
 	} );
 
+	it( 'sets a publish warning before opening dialog when there are empty reference errors', async () => {
+		store.getErrorPaths = [ 'abstractwiki.sections.Q8776414.fragments.2.Z12781K2' ];
+		store.getErrors = jest.fn().mockReturnValue( [ { messageKey: 'wikilambda-empty-reference-warning' } ] );
+		store.setError = jest.fn();
+
+		const wrapper = renderAbstractPublish();
+		const publishButton = wrapper.find( '.ext-wikilambda-app-abstract-publish__publish' );
+		publishButton.trigger( 'click' );
+
+		await waitFor( () => {
+			expect( store.setError ).toHaveBeenCalledWith( {
+				errorId: 'main',
+				errorMessageKey: 'wikilambda-empty-references-publish-warning',
+				errorType: 'warning'
+			} );
+			expect( wrapper.findComponent( { name: 'wl-publish-dialog' } ).props( 'showDialog' ) ).toBe( true );
+		} );
+	} );
+
 	it( 'does not open publish dialog if content validation fails', async () => {
 		store.validateAbstractWikiContent.mockReturnValue( false );
 

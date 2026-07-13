@@ -322,14 +322,27 @@ const abstractWikiStore = {
 			} );
 		},
 		/**
-		 * Validates the current Abstract Wiki content before submit.
+		 * Validates the current Abstract Wiki content before submission.
+		 * Does not stop publish, but shows error states for empty references,
+		 * giving the editor the chance of fixing them, but allowing publish
+		 * in case the issues are unrelated to the current changes.
 		 *
-		 * Placeholder implementation currently always returns `true`.
+		 * Checks:
+		 * * Abstract content does not have any empty references
 		 *
 		 * @return {boolean}
 		 */
 		validateAbstractWikiContent: function () {
-			// TODO
+			// Check for empty Z9K1 references, display as error, fail validation
+			const emptyReferences = this.getEmptyReferencesKeyPaths( Constants.STORED_OBJECTS.ABSTRACT );
+			emptyReferences.forEach( ( keyPath ) => {
+				this.setError( {
+					errorId: keyPath,
+					errorMessageKey: 'wikilambda-empty-reference-warning',
+					errorType: Constants.ERROR_TYPES.ERROR
+				} );
+			} );
+
 			return true;
 		},
 		/**

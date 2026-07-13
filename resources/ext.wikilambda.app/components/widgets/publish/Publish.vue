@@ -166,7 +166,7 @@ module.exports = exports = defineComponent( {
 		 */
 		function hasEmptyReferenceWarnings() {
 			return store.getErrorPaths.some( ( errorId ) => store.getErrors( errorId )
-				.some( ( error ) => error.errorMessageKey === 'wikilambda-empty-reference-warning' ) );
+				.some( ( error ) => error.messageKey === 'wikilambda-empty-reference-warning' ) );
 		}
 
 		/**

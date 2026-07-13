@@ -477,8 +477,46 @@ describe( 'abstractWiki Pinia store', () => {
 		} );
 
 		describe( 'validateAbstractWikiContent', () => {
-			it( 'TODO: always returns true', () => {
-				expect( store.validateAbstractWikiContent() ).toBe( true );
+			beforeEach( () => {
+				store.setError = jest.fn();
+			} );
+
+			it( 'returns true when there are no empty references', () => {
+				Object.defineProperty( store, 'getEmptyReferencesKeyPaths', {
+					value: jest.fn().mockReturnValue( [] ),
+					configurable: true
+				} );
+
+				const result = store.validateAbstractWikiContent();
+
+				expect( result ).toBe( true );
+				expect( store.setError ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns true and sets errors when there are empty references', () => {
+				const emptyRefs = [
+					'abstractwiki.sections.Q8776414.fragments.2.Z400',
+					'abstractwiki.sections.Q8776414.fragments.3.Z7K1.Z801K1.Z1K1'
+				];
+				Object.defineProperty( store, 'getEmptyReferencesKeyPaths', {
+					value: jest.fn().mockReturnValue( emptyRefs ),
+					configurable: true
+				} );
+
+				const result = store.validateAbstractWikiContent();
+
+				expect( result ).toBe( true );
+				expect( store.setError ).toHaveBeenCalledTimes( 2 );
+				expect( store.setError ).toHaveBeenCalledWith( {
+					errorId: 'abstractwiki.sections.Q8776414.fragments.2.Z400',
+					errorMessageKey: 'wikilambda-empty-reference-warning',
+					errorType: Constants.ERROR_TYPES.ERROR
+				} );
+				expect( store.setError ).toHaveBeenCalledWith( {
+					errorId: 'abstractwiki.sections.Q8776414.fragments.3.Z7K1.Z801K1.Z1K1',
+					errorMessageKey: 'wikilambda-empty-reference-warning',
+					errorType: Constants.ERROR_TYPES.ERROR
+				} );
 			} );
 		} );
 

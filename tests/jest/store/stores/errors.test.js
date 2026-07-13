@@ -43,19 +43,19 @@ describe( 'Errors Pinia store', () => {
 			} );
 
 			it( 'returns errors saved for a given errorId', () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 				expect( store.getErrors( 'main' ) ).toEqual( mockErrors.main );
 			} );
 
 			it( 'returns errors saved for a given errorId and type', () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 				expect( store.getErrors( 'main', Constants.ERROR_TYPES.WARNING ) ).toEqual( [ mockErrors.main[ 0 ] ] );
 			} );
 		} );
 
 		describe( 'hasErrorByKey', () => {
 			beforeEach( () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 			} );
 
 			it( 'returns false for a given errorId when an error with the provided code does not exist', () => {
@@ -251,13 +251,13 @@ describe( 'Errors Pinia store', () => {
 
 		describe( 'clearErrors', () => {
 			it( 'does nothing if the errorId has no errors in the state', () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 				store.clearErrors( 'main.non.existing.path' );
 				expect( store.errors ).toEqual( mockErrors );
 			} );
 
 			it( 'clears all errors associated with a given errorId', () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 				store.clearErrors( 'main.Z2K2' );
 				expect( store.errors ).toEqual( { main: mockErrors.main, 'main.Z2K2': [] } );
 			} );
@@ -265,13 +265,13 @@ describe( 'Errors Pinia store', () => {
 
 		describe( 'clearErrorsByKey', () => {
 			it( 'does nothing if the errorId has no errors in the state for the provided code', () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 				store.clearErrorsByKey( { errorId: 'main.Z2K2', errorMessageKey: 'wikilambda-unknown-error-message' } );
 				expect( store.errors ).toEqual( mockErrors );
 			} );
 
 			it( 'clears all errors associated with a given errorId', () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 				store.clearErrorsByKey( { errorId: 'main.Z2K2', errorMessageKey: 'wikilambda-missing-function-output-error-message' } );
 				expect( store.errors ).toEqual( { main: mockErrors.main, 'main.Z2K2': [] } );
 			} );
@@ -338,9 +338,39 @@ describe( 'Errors Pinia store', () => {
 			} );
 
 			it( 'clears all validation errors (not zero)', () => {
-				store.errors = mockErrors;
+				store.errors = Object.assign( {}, mockErrors );
 				store.clearValidationErrors( 'main.Z2K2' );
 				expect( store.errors ).toEqual( { main: mockErrors.main, 'main.Z2K2': [] } );
+			} );
+
+			it( 'clears child errors of a given path', () => {
+				store.errors = Object.assign( {}, mockErrors, {
+					'main.Z2K2.Z1K1': [ new ErrorData( 'wikilambda-some-error', [], null, Constants.ERROR_TYPES.ERROR ) ],
+					'main.Z2K2.Z1K1.Z9K1': [ new ErrorData( 'wikilambda-some-error', [], null, Constants.ERROR_TYPES.ERROR ) ],
+					'main.Z2K3': [ new ErrorData( 'wikilambda-some-error', [], null, Constants.ERROR_TYPES.ERROR ) ]
+				} );
+				store.clearValidationErrors( 'main.Z2K2' );
+				expect( store.errors[ 'main.Z2K2' ] ).toEqual( [] );
+				expect( store.errors[ 'main.Z2K2.Z1K1' ] ).toEqual( [] );
+				expect( store.errors[ 'main.Z2K2.Z1K1.Z9K1' ] ).toEqual( [] );
+				expect( store.errors[ 'main.Z2K3' ] ).not.toEqual( [] );
+				expect( store.errors.main ).toEqual( mockErrors.main );
+			} );
+
+			it( 'does not clear sibling paths', () => {
+				store.errors = Object.assign( {}, mockErrors, {
+					'main.Z2K3': [ new ErrorData( 'wikilambda-some-error', [], null, Constants.ERROR_TYPES.ERROR ) ],
+					'main.Z2K3.Z1K1': [ new ErrorData( 'wikilambda-some-error', [], null, Constants.ERROR_TYPES.ERROR ) ]
+				} );
+				store.clearValidationErrors( 'main.Z2K2' );
+				expect( store.errors[ 'main.Z2K3' ] ).not.toEqual( [] );
+				expect( store.errors[ 'main.Z2K3.Z1K1' ] ).not.toEqual( [] );
+			} );
+
+			it( 'does not clear main error with default parentPath', () => {
+				store.errors = Object.assign( {}, mockErrors );
+				store.clearValidationErrors();
+				expect( store.errors.main ).toEqual( mockErrors.main );
 			} );
 		} );
 

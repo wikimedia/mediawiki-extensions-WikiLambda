@@ -81,9 +81,29 @@ module.exports = exports = defineComponent( {
 		}
 
 		function handlePublish() {
+			// Clear global and validation (field) errors:
+			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+			store.clearValidationErrors( Constants.STORED_OBJECTS.ABSTRACT );
+
 			const isValid = store.validateAbstractWikiContent();
 			if ( isValid ) {
+				raisePublishWarnings();
 				showPublishDialog.value = true;
+			}
+		}
+
+		function raisePublishWarnings() {
+			const hasEmptyRefs = store.getErrorPaths
+				.some( ( errorId ) => store.getErrors( errorId ).some( ( error ) => (
+					error.messageKey === 'wikilambda-empty-reference-warning'
+				) ) );
+
+			if ( hasEmptyRefs ) {
+				store.setError( {
+					errorId: Constants.STORED_OBJECTS.MAIN,
+					errorMessageKey: 'wikilambda-empty-references-publish-warning',
+					errorType: Constants.ERROR_TYPES.WARNING
+				} );
 			}
 		}
 

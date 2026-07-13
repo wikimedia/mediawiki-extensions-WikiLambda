@@ -241,7 +241,7 @@ describe( 'Publish widget', () => {
 			// Mock empty reference warnings in errors
 			store.getErrorPaths = [ 'main.Z2K2.Z8K2' ];
 			store.getErrors = jest.fn().mockReturnValue( [
-				{ errorMessageKey: 'wikilambda-empty-reference-warning', type: 'warning' }
+				{ messageKey: 'wikilambda-empty-reference-warning', type: 'warning' }
 			] );
 
 			const wrapper = renderPublish( { isDirty: true } );
