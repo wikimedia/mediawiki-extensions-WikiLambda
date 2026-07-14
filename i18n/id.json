@@ -13,7 +13,8 @@
 			"Veracious",
 			"Felianiwiki",
 			"Penyuwangi",
-			"Bennylin"
+			"Bennylin",
+			"Bayahiu"
 		]
 	},
 	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
@@ -123,6 +124,8 @@
 	"wikilambda-about-widget-title": "Tentang",
 	"wikilambda-about-widget-unlabelled-input": "Tidak berlabel",
 	"wikilambda-about-widget-view-languages-accessible-title": "Dialog yang memperbolehkan Anda melihat label dan informasi dalam berbagai bahasa",
+	"wikilambda-about-widget-view-languages-other": "Bahasa lainnya",
+	"wikilambda-about-widget-view-languages-suggested": "Saran bahasa",
 	"wikilambda-about-widget-view-languages-title": "Informasi dalam bahasa lain",
 	"wikilambda-add-list-item": "Tambahkan Butir",
 	"wikilambda-add-list-item-button": "Tambah butir",
@@ -241,7 +244,7 @@
 	"wikilambda-function-view-function-button-text": "Lihat fungsi",
 	"wikilambda-function-viewer-aliases-header": "Alias",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Tampilkan lebih sedikit bahasa",
-	"wikilambda-function-viewer-aliases-show-language-button": "Tampilkan lebih banyak bahasa",
+	"wikilambda-function-viewer-aliases-show-language-button": "Tampilkan bahasa lainnya",
 	"wikilambda-function-viewer-details-input-number": "Masukkan $1",
 	"wikilambda-function-viewer-details-table-view-all": "Tampilkan semua",
 	"wikilambda-function-viewer-details-table-view-less": "Tampilkan seperlunya",
@@ -323,7 +326,7 @@
 	"wikilambda-move-after-list-item": "Pindahkan ke setelahnya",
 	"wikilambda-move-before-list-item": "Pindahkan ke sebelumnya",
 	"wikilambda-multilingualstring-nofallback": "Tidak ada label yang didefinisikan dalam bahasa ini atau bahasa cadangan yang diterima",
-	"wikilambda-object-selector-suggested-languages": "Bahasa yang disarankan",
+	"wikilambda-object-selector-suggested-languages": "Saran bahasa",
 	"wikilambda-object-selector-suggested-types": "Tipe yang disarankan",
 	"wikilambda-optional": "opsional",
 	"wikilambda-parser-unexpected-result-error": "[[$1|Fungsi pembaca]] mengembalikan hasil yang tidak diharapkan.",

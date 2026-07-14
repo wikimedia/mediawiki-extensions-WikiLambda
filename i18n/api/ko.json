@@ -84,6 +84,6 @@
 	"apihelp-wikilambda_perform_test-param-zimplementations": "테스트할 Z구현 ID 목록 (또는 객체) 입니다",
 	"apihelp-wikilambda_perform_test-param-ztesters": "테스트할 Z테스터 ID 목록 (또는 객체) 입니다",
 	"apihelp-wikilambda_perform_test-param-nocache": "캐시 사용 여부",
-	"wikilambda-restapi-fetch-too-many": "한 번에 개체를 너무 많이 요청했습니다 ($1개 요청함, 최대 허용 개수는 $2개)",
-	"wikilambda-restapi-revision-mismatch": "'$2' 개체의 $1 판을 요청했지만, 해당 개체를 찾을 수 없습니다"
+	"wikilambda-restapi-fetch-too-many": "한 번에 객체를 너무 많이 요청했습니다 ($1개 요청함, 최대 허용 개수는 $2개)",
+	"wikilambda-restapi-revision-mismatch": "'$2' 객체의 $1 판을 요청했지만, 해당 객체를 찾을 수 없습니다"
 }
