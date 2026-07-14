@@ -90,6 +90,38 @@ describe( 'apiUtils', () => {
 				}
 			} );
 		} );
+
+		it( 'omits props when none is given', async () => {
+			foreignApiGetMock.mockResolvedValue( { entities: {} } );
+
+			await apiUtils.fetchWikidataEntities( { language: 'en', ids: 'Q42' } );
+
+			expect( foreignApiGetMock ).toHaveBeenCalledWith( {
+				action: 'wbgetentities',
+				format: 'json',
+				formatversion: '2',
+				languages: 'en',
+				languagefallback: true,
+				ids: 'Q42',
+				props: undefined
+			}, { signal: undefined } );
+		} );
+
+		it( 'restricts the response to given props when provided', async () => {
+			foreignApiGetMock.mockResolvedValue( { entities: {} } );
+
+			await apiUtils.fetchWikidataEntities( { language: 'en', ids: 'Q42', props: 'labels' } );
+
+			expect( foreignApiGetMock ).toHaveBeenCalledWith( {
+				action: 'wbgetentities',
+				format: 'json',
+				formatversion: '2',
+				languages: 'en',
+				languagefallback: true,
+				ids: 'Q42',
+				props: 'labels'
+			}, { signal: undefined } );
+		} );
 	} );
 
 	describe( 'searchCommonsMedia', () => {

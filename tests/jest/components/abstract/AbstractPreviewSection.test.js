@@ -65,8 +65,11 @@ describe( 'AbstractPreviewSection', () => {
 		store.getPreviewLanguageZid = 'Z1002';
 
 		store.getAbstractSectionHashes = jest.fn().mockReturnValue( [ 'hash1', 'hash2' ] );
+		store.getLanguageIsoCodeOfZLang = jest.fn().mockReturnValue( 'en' );
+		// langCode is baked into the label so the h1 text itself proves which
+		// language was requested.
 		store.getItemLabelData = jest.fn().mockImplementation(
-			( id ) => ( id === 'Q42' ? { label: 'Douglas Adams' } : undefined ) );
+			( id, langCode ) => ( id === 'Q42' ? { label: `Douglas Adams (${ langCode })` } : undefined ) );
 		store.getPendingCount = jest.fn().mockReturnValue( 0 );
 
 		// Actions
@@ -95,9 +98,22 @@ describe( 'AbstractPreviewSection', () => {
 		wrapper = renderSection();
 
 		expect( wrapper.find( 'h1' ).exists() ).toBe( true );
-		expect( wrapper.find( 'h1' ).text() ).toBe( 'Douglas Adams' );
+		expect( wrapper.find( 'h1' ).text() ).toBe( 'Douglas Adams (en)' );
 
 		expect( wrapper.find( 'h2' ).exists() ).toBe( false );
+	} );
+
+	it( 'resolves the h1 title in the selected preview language, not the interface language', async () => {
+		wrapper = renderSection();
+
+		expect( store.getItemLabelData ).toHaveBeenCalledWith( 'Q42', 'en' );
+
+		store.getLanguageIsoCodeOfZLang.mockReturnValue( 'ar' );
+		await wrapper.setProps( { language: 'Z1832' } );
+
+		expect( store.getLanguageIsoCodeOfZLang ).toHaveBeenCalledWith( 'Z1832' );
+		expect( store.getItemLabelData ).toHaveBeenCalledWith( 'Q42', 'ar' );
+		expect( wrapper.find( 'h1' ).text() ).toBe( 'Douglas Adams (ar)' );
 	} );
 
 	it( 'renders h2 with section title for-lede section', () => {

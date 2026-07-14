@@ -16,7 +16,8 @@ const itemId = 'Q223044';
 const itemData = {
 	title: 'Q223044',
 	labels: {
-		en: { language: 'en', value: 'turtle' }
+		en: { language: 'en', value: 'turtle' },
+		ar: { language: 'ar', value: 'سلحفاة' }
 	}
 };
 
@@ -45,6 +46,18 @@ describe( 'Wikidata Items Pinia store', () => {
 				store.items[ itemId ] = itemData;
 				const expected = new LabelData( itemId, 'turtle', null, 'en' );
 				expect( store.getItemLabelData( itemId ) ).toEqual( expected );
+			} );
+
+			it( 'returns item label data in the requested language when available', () => {
+				store.items[ itemId ] = itemData;
+				const expected = new LabelData( itemId, 'سلحفاة', null, 'ar' );
+				expect( store.getItemLabelData( itemId, 'ar' ) ).toEqual( expected );
+			} );
+
+			it( 'falls back to another available language when the requested one is missing', () => {
+				store.items[ itemId ] = itemData;
+				const expected = new LabelData( itemId, 'turtle', null, 'en' );
+				expect( store.getItemLabelData( itemId, 'fr' ) ).toEqual( expected );
 			} );
 		} );
 
@@ -120,6 +133,101 @@ describe( 'Wikidata Items Pinia store', () => {
 				store.items = { Q111111: 'foo', Q222222: 'bar', Q333333: 'baz' };
 				store.resetItemData( { ids: [ 'Q111111', 'Q333333' ] } );
 				expect( store.items ).toEqual( { Q222222: 'bar' } );
+			} );
+		} );
+
+		describe( 'fetchItemLabelInLanguage', () => {
+			it( 'does nothing when id is missing', async () => {
+				mw.ForeignApi = jest.fn();
+				await store.fetchItemLabelInLanguage( { id: undefined, langCode: 'fr' } );
+				expect( mw.ForeignApi ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does nothing when langCode is missing', async () => {
+				mw.ForeignApi = jest.fn();
+				await store.fetchItemLabelInLanguage( { id: itemId, langCode: undefined } );
+				expect( mw.ForeignApi ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does not fetch when the item already has the requested language cached', async () => {
+				store.items[ itemId ] = itemData; // already has en and ar
+				mw.ForeignApi = jest.fn();
+
+				await store.fetchItemLabelInLanguage( { id: itemId, langCode: 'ar' } );
+
+				expect( mw.ForeignApi ).not.toHaveBeenCalled();
+				expect( store.items[ itemId ] ).toEqual( itemData );
+			} );
+
+			it( 'fetches and merges the label into the cached item, preserving other languages', async () => {
+				store.items[ itemId ] = { title: itemId, labels: { en: itemData.labels.en }, descriptions: {} };
+				const getMock = jest.fn().mockResolvedValue( {
+					entities: {
+						[ itemId ]: { labels: { fr: { language: 'fr', value: 'tortue' } } }
+					}
+				} );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
+
+				await store.fetchItemLabelInLanguage( { id: itemId, langCode: 'fr' } );
+
+				expect( getMock ).toHaveBeenCalledWith(
+					{
+						action: 'wbgetentities',
+						format: 'json',
+						formatversion: '2',
+						languages: 'fr',
+						languagefallback: true,
+						ids: itemId,
+						props: 'labels'
+					},
+					{ signal: undefined }
+				);
+				expect( store.items[ itemId ] ).toEqual( {
+					title: itemId,
+					labels: {
+						en: itemData.labels.en,
+						fr: { language: 'fr', value: 'tortue' }
+					},
+					descriptions: {}
+				} );
+			} );
+
+			it( 'creates a new cache entry when the item was never cached before', async () => {
+				const getMock = jest.fn().mockResolvedValue( {
+					entities: {
+						[ itemId ]: { labels: { fr: { language: 'fr', value: 'tortue' } } }
+					}
+				} );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
+
+				await store.fetchItemLabelInLanguage( { id: itemId, langCode: 'fr' } );
+
+				expect( store.items[ itemId ] ).toEqual( {
+					title: itemId,
+					labels: { fr: { language: 'fr', value: 'tortue' } },
+					descriptions: {}
+				} );
+			} );
+
+			it( 'leaves the cache untouched when the response has no label for the requested language', async () => {
+				store.items[ itemId ] = itemData;
+				const getMock = jest.fn().mockResolvedValue( { entities: { [ itemId ]: { labels: {} } } } );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
+
+				await store.fetchItemLabelInLanguage( { id: itemId, langCode: 'fr' } );
+
+				expect( store.items[ itemId ] ).toEqual( itemData );
+			} );
+
+			it( 'leaves the cache untouched and does not throw when the fetch fails', async () => {
+				store.items[ itemId ] = itemData;
+				const getMock = jest.fn().mockRejectedValue( new Error( 'network error' ) );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
+
+				await expect(
+					store.fetchItemLabelInLanguage( { id: itemId, langCode: 'fr' } )
+				).resolves.toBeUndefined();
+				expect( store.items[ itemId ] ).toEqual( itemData );
 			} );
 		} );
 

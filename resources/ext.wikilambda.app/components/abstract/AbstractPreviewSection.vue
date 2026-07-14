@@ -99,8 +99,12 @@ module.exports = exports = defineComponent( {
 		// List of hashes for the section fragments
 		const fragmentHashes = computed( () => store.getAbstractSectionHashes( props.section.qid ) );
 
-		// LabelData object for the page title; we use it as <h1> for the first section
-		const abstractTitle = computed( () => store.getItemLabelData( store.getAbstractWikiId ) );
+		// Resolve in the selected preview language, not the interface language, so the
+		// title stays in sync with the rest of the generated text.
+		const abstractTitle = computed( () => store.getItemLabelData(
+			store.getAbstractWikiId,
+			store.getLanguageIsoCodeOfZLang( props.language )
+		) );
 
 		// Date for today in a standard format that can be
 		// parsed by the default date reading function:

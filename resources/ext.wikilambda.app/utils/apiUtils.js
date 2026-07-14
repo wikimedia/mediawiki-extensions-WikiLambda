@@ -466,6 +466,8 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {string} payload.language user language code
 	 * @param {string} payload.ids entity Ids to fetch, separated by pipes and max 50 (API limit)
+	 * @param {string} [payload.props] wbgetentities `props` value to restrict the response (e.g.
+	 *  'labels'); when omitted, the API returns the full entity payload.
 	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -478,7 +480,8 @@ const apiUtils = {
 				formatversion: '2',
 				languages: payload.language,
 				languagefallback: true,
-				ids: payload.ids
+				ids: payload.ids,
+				props: payload.props || undefined
 			}, {
 				signal: payload.signal
 			} )

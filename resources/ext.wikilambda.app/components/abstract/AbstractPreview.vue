@@ -39,7 +39,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, provide, ref } = require( 'vue' );
+const { computed, defineComponent, inject, provide, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useFragmentHighlightRegistry = require( '../../composables/useFragmentHighlightRegistry.js' );
@@ -100,6 +100,17 @@ module.exports = exports = defineComponent( {
 		function onPreviewLanguageSelect( zid ) {
 			store.setPreviewLanguageZid( zid );
 		}
+
+		// Ensure the topic item's label is available in the selected preview language:
+		// item labels are otherwise only ever fetched in the interface language, so the
+		// lede title would keep showing that language regardless of the preview language
+		// picked here.
+		watch( previewLanguageZid, ( languageZid ) => {
+			store.fetchItemLabelInLanguage( {
+				id: store.getAbstractWikiId,
+				langCode: store.getLanguageIsoCodeOfZLang( languageZid )
+			} );
+		}, { immediate: false } );
 
 		return {
 			i18n,

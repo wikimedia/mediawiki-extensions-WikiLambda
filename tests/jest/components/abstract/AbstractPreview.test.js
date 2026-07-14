@@ -56,9 +56,12 @@ describe( 'AbstractPreview', () => {
 		store.getAbstractContentSections = sections;
 		store.getAbstractWikiId = 'Q42';
 		store.getUserLangZid = 'Z1002';
+		store.getPreviewLanguageZid = 'Z1002';
 		store.getLabelData = jest.fn().mockReturnValue( { label: 'English' } );
 		store.getLabelDataForLangCode = jest.fn().mockReturnValue( { langCode: 'en', langDir: 'ltr' } );
 		store.getItemLabelData = jest.fn().mockImplementation( ( id ) => ( id === 'Q42' ) ? { label: 'Douglas Adams' } : undefined );
+		store.getLanguageIsoCodeOfZLang = jest.fn().mockReturnValue( 'en' );
+		store.fetchItemLabelInLanguage = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
@@ -131,5 +134,24 @@ describe( 'AbstractPreview', () => {
 		expect( body.attributes( 'lang' ) ).toBe( 'he' );
 		expect( body.attributes( 'dir' ) ).toBe( 'rtl' );
 		expect( store.getLabelDataForLangCode ).toHaveBeenCalledWith( 'Z11926' );
+	} );
+
+	it( 'ensures the topic item label is fetched in the selected preview language on mount', () => {
+		renderPreview();
+
+		expect( store.getLanguageIsoCodeOfZLang ).toHaveBeenCalledWith( 'Z1002' );
+		expect( store.fetchItemLabelInLanguage ).toHaveBeenCalledWith( { id: 'Q42', langCode: 'en' } );
+	} );
+
+	it( 'fetches the topic item label again when the preview language changes', async () => {
+		const wrapper = renderPreview();
+		store.fetchItemLabelInLanguage.mockClear();
+		store.getLanguageIsoCodeOfZLang.mockReturnValue( 'ar' );
+
+		store.getPreviewLanguageZid = 'Z1832';
+		await wrapper.vm.$nextTick();
+
+		expect( store.getLanguageIsoCodeOfZLang ).toHaveBeenCalledWith( 'Z1832' );
+		expect( store.fetchItemLabelInLanguage ).toHaveBeenCalledWith( { id: 'Q42', langCode: 'ar' } );
 	} );
 } );
