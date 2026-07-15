@@ -547,14 +547,24 @@ class ZObjectContentHandler extends ContentHandler {
 	public function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
 		$languageCode = $context->getLanguage()->getCode();
 		$zObjectStore = $this->zObjectStore;
+		$langRegistry = ZLangRegistry::singleton();
+		$languageFactory = MediaWikiServices::getInstance()->getLanguageFactory();
 
-		// Resolve a language ZObject id (e.g. 'Z1002') to its label in the
-		// viewer's language (e.g. 'English'), using WikiLambda's own language
-		// labels and degrading gracefully to the id.
-		$languageNameResolver = static function ( string $languageZid ) use (
-			$zObjectStore, $languageCode
-		): string {
-			return $zObjectStore->fetchZObjectLabel( $languageZid, $languageCode ) ?? $languageZid;
+		// Resolve a language ZObject id (e.g. 'Z1002') to its display name (from
+		// WikiLambda's own labels, in the viewer's language) plus the BCP-47 code
+		// and writing direction, so language-specific values can be tagged with
+		// lang/dir. Degrades gracefully to the id and an undirected span.
+		$languageResolver = static function ( string $languageZid ) use (
+			$zObjectStore, $languageCode, $langRegistry, $languageFactory
+		): array {
+			$name = $zObjectStore->fetchZObjectLabel( $languageZid, $languageCode ) ?? $languageZid;
+			try {
+				$code = $langRegistry->getLanguageCodeFromZid( $languageZid );
+				$dir = $languageFactory->getLanguage( $code )->getDir();
+			} catch ( \Exception ) {
+				return [ 'name' => $name, 'code' => '', 'dir' => 'auto' ];
+			}
+			return [ 'name' => $name, 'code' => $code, 'dir' => $dir ];
 		};
 
 		// Resolve a global key (e.g. 'Z8K1') to its human-readable label by
@@ -586,7 +596,7 @@ class ZObjectContentHandler extends ContentHandler {
 
 		return new ZObjectSlotDiffRenderer(
 			new ZObjectDiffVisualiser(
-				$context, $languageNameResolver, $keyLabelResolver, $referenceResolver
+				$context, $languageResolver, $keyLabelResolver, $referenceResolver
 			),
 			$languageCode
 		);

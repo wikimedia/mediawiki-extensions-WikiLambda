@@ -46,9 +46,10 @@ class ZObjectDiffVisualiser {
 
 	/**
 	 * @param MessageLocalizer $messageLocalizer
-	 * @param Closure $languageNameResolver Maps a language ZObject id (e.g. 'Z1002')
-	 *   to a display name in the viewer's language (e.g. 'English'), falling back
-	 *   to the id itself when it cannot be resolved.
+	 * @param Closure $languageResolver Maps a language ZObject id (e.g. 'Z1002')
+	 *   to [ 'name' => string, 'code' => string, 'dir' => string ] in the
+	 *   viewer's language — the display name (falling back to the id), the BCP-47
+	 *   code (empty if unknown), and the writing direction ('ltr'/'rtl'/'auto').
 	 * @param Closure $keyLabelResolver Maps a global key (e.g. 'Z8K1') to its
 	 *   human-readable label, falling back to the key itself; other segments
 	 *   (list indices, bare local keys) are returned unchanged.
@@ -58,7 +59,7 @@ class ZObjectDiffVisualiser {
 	 */
 	public function __construct(
 		private readonly MessageLocalizer $messageLocalizer,
-		private readonly Closure $languageNameResolver,
+		private readonly Closure $languageResolver,
 		private readonly Closure $keyLabelResolver,
 		private readonly Closure $referenceResolver
 	) {
@@ -161,17 +162,18 @@ class ZObjectDiffVisualiser {
 			$header = $this->generateDiffHeaderHtml(
 				$this->labelWithLanguage( $context['fieldPath'], $context['languageZid'], $dropGroupHead )
 			);
+			$language = $this->languageAttributes( $context['languageZid'] );
 			if ( $type === 'change' ) {
 				'@phan-var DiffOpChange $op';
-				return $header . $this->generateChangeRowHtml( $op );
+				return $header . $this->generateChangeRowHtml( $op, null, $language );
 			}
 			$line = $this->getChangedLine(
 				$type === 'add' ? 'ins' : 'del',
 				$this->stringifyValue( $this->sidedValue( $op ) )
 			);
 			return $header . ( $type === 'add'
-				? $this->generateHtmlDiffTableRow( null, $line )
-				: $this->generateHtmlDiffTableRow( $line, null ) );
+				? $this->generateHtmlDiffTableRow( null, $line, $language )
+				: $this->generateHtmlDiffTableRow( $line, null, $language ) );
 		}
 
 		// Fallback: plain breadcrumb with only the top-level group localised.
@@ -230,10 +232,11 @@ class ZObjectDiffVisualiser {
 		$header = $this->generateDiffHeaderHtml(
 			$this->labelWithLanguage( $fieldPath, $languageZid, $dropGroupHead )
 		);
+		$language = $this->languageAttributes( $languageZid );
 		$line = $this->getChangedLine( $type === 'add' ? 'ins' : 'del', $text );
 		return $header . ( $type === 'add'
-			? $this->generateHtmlDiffTableRow( null, $line )
-			: $this->generateHtmlDiffTableRow( $line, null ) );
+			? $this->generateHtmlDiffTableRow( null, $line, $language )
+			: $this->generateHtmlDiffTableRow( $line, null, $language ) );
 	}
 
 	/**
@@ -359,8 +362,44 @@ class ZObjectDiffVisualiser {
 		if ( $languageZid === null ) {
 			return $label;
 		}
-		$language = '(' . ( $this->languageNameResolver )( $languageZid ) . ')';
+		$language = '(' . ( $this->languageResolver )( $languageZid )['name'] . ')';
 		return $label === '' ? $language : $label . ' ' . $language;
+	}
+
+	/**
+	 * Resolve the HTML lang/dir attributes for a language-specific value, so it
+	 * renders in its own script and direction rather than inheriting the
+	 * interface chrome's direction. Returns null when there is no language.
+	 *
+	 * @param string|null $languageZid
+	 * @return array{code:string,dir:string}|null
+	 */
+	private function languageAttributes( ?string $languageZid ): ?array {
+		if ( $languageZid === null ) {
+			return null;
+		}
+		$language = ( $this->languageResolver )( $languageZid );
+		return [ 'code' => $language['code'], 'dir' => $language['dir'] ];
+	}
+
+	/**
+	 * HTML attributes tagging a value cell with its own language and direction.
+	 * These go on the cell's block-level content <div> (not an inline span) so
+	 * the value gets both its base direction and alignment, overriding the diff
+	 * table's inherited direction. Empty when the language is unknown.
+	 *
+	 * @param array{code:string,dir:string}|null $language
+	 * @return array
+	 */
+	private function languageCellAttributes( ?array $language ): array {
+		if ( $language === null ) {
+			return [];
+		}
+		$attributes = [ 'dir' => $language['dir'] ];
+		if ( $language['code'] !== '' ) {
+			$attributes['lang'] = $language['code'];
+		}
+		return $attributes;
 	}
 
 	/**
@@ -460,9 +499,12 @@ class ZObjectDiffVisualiser {
 	 *
 	 * @param DiffOpChange $op
 	 * @param string|null $valueKey The key immediately holding the changed value
+	 * @param array{code:string,dir:string}|null $language Value's language, if any
 	 * @return string
 	 */
-	private function generateChangeRowHtml( DiffOpChange $op, ?string $valueKey = null ): string {
+	private function generateChangeRowHtml(
+		DiffOpChange $op, ?string $valueKey = null, ?array $language = null
+	): string {
 		$old = $this->stringifyValue( $op->getOldValue() );
 		$new = $this->stringifyValue( $op->getNewValue() );
 
@@ -473,7 +515,8 @@ class ZObjectDiffVisualiser {
 		) {
 			return $this->generateHtmlDiffTableRow(
 				$this->getChangedLine( 'del', $old, $valueKey ),
-				$this->getChangedLine( 'ins', $new, $valueKey )
+				$this->getChangedLine( 'ins', $new, $valueKey ),
+				$language
 			);
 		}
 
@@ -484,7 +527,8 @@ class ZObjectDiffVisualiser {
 		$wordLevelDiff = new WordLevelDiff( [ $old ], [ $new ] );
 		return $this->generateHtmlDiffTableRow(
 			implode( '<br />', $wordLevelDiff->orig() ),
-			implode( '<br />', $wordLevelDiff->closing() )
+			implode( '<br />', $wordLevelDiff->closing() ),
+			$language
 		);
 	}
 
@@ -628,14 +672,19 @@ class ZObjectDiffVisualiser {
 	 *
 	 * @param string|null $oldHtml Pre-escaped HTML for the deleted side, or null
 	 * @param string|null $newHtml Pre-escaped HTML for the added side, or null
+	 * @param array{code:string,dir:string}|null $language Language/direction to
+	 *   tag the value on, for language-specific values; null leaves it undirected
 	 * @return string
 	 */
-	private function generateHtmlDiffTableRow( ?string $oldHtml, ?string $newHtml ): string {
+	private function generateHtmlDiffTableRow(
+		?string $oldHtml, ?string $newHtml, ?array $language = null
+	): string {
+		$divAttributes = $this->languageCellAttributes( $language );
 		$html = Html::openElement( 'tr' );
 		if ( $oldHtml !== null ) {
 			$html .= Html::rawElement( 'td', [ 'class' => 'diff-marker', 'data-marker' => '−' ] );
 			$html .= Html::rawElement( 'td', [ 'class' => 'diff-deletedline' ],
-				Html::rawElement( 'div', [], $oldHtml ) );
+				Html::rawElement( 'div', $divAttributes, $oldHtml ) );
 		}
 		if ( $newHtml !== null ) {
 			if ( $oldHtml === null ) {
@@ -643,7 +692,7 @@ class ZObjectDiffVisualiser {
 			}
 			$html .= Html::rawElement( 'td', [ 'class' => 'diff-marker', 'data-marker' => '+' ] );
 			$html .= Html::rawElement( 'td', [ 'class' => 'diff-addedline' ],
-				Html::rawElement( 'div', [], $newHtml ) );
+				Html::rawElement( 'div', $divAttributes, $newHtml ) );
 		}
 		$html .= Html::closeElement( 'tr' );
 		return $html;

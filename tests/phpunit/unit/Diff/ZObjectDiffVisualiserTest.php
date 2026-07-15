@@ -32,10 +32,11 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 			$message->method( 'text' )->willReturn( "[$key]" );
 			return $message;
 		} );
-		$languageResolver = static fn ( string $zid ): string => [
-			'Z1002' => 'English',
-			'Z1004' => 'French',
-		][$zid] ?? $zid;
+		$languageResolver = static fn ( string $zid ): array => [
+			'Z1002' => [ 'name' => 'English', 'code' => 'en', 'dir' => 'ltr' ],
+			'Z1004' => [ 'name' => 'French', 'code' => 'fr', 'dir' => 'ltr' ],
+			'Z1005' => [ 'name' => 'Arabic', 'code' => 'ar', 'dir' => 'rtl' ],
+		][$zid] ?? [ 'name' => $zid, 'code' => '', 'dir' => 'auto' ];
 		$keyResolver = static fn ( string $key ): string => [
 			'Z8K1' => 'arguments',
 			'Z17K3' => 'label',
@@ -266,6 +267,36 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		// A name whose text happens to be a ZID is free text, not a reference.
 		$this->assertStringNotContainsString( '<a ', $html );
 		$this->assertStringContainsString( 'Z40', $html );
+	}
+
+	public function testLanguageSpecificValueCarriesLangAndDir() {
+		$old = $this->monolingualField( 'Z2K3', 'Mushroom' );
+		$new = $this->monolingualField( 'Z2K3', 'Toadstool' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// The English value is tagged with its own language and direction.
+		$this->assertStringContainsString( 'lang="en"', $html );
+		$this->assertStringContainsString( 'dir="ltr"', $html );
+	}
+
+	public function testRightToLeftValueIsMarkedRtl() {
+		$arabicName = static fn ( string $value ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K3' => [
+				'Z1K1' => 'Z12',
+				'Z12K1' => [
+					'Z11',
+					[ 'Z1K1' => 'Z11', 'Z11K1' => 'Z1005', 'Z11K2' => $value ],
+				],
+			],
+		];
+		$old = $arabicName( 'فطر' );
+		$new = $arabicName( 'خُبْز' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// A right-to-left value must not inherit the chrome's direction.
+		$this->assertStringContainsString( 'lang="ar"', $html );
+		$this->assertStringContainsString( 'dir="rtl"', $html );
 	}
 
 	public function testHostileValueIsEscaped() {
