@@ -157,32 +157,133 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 		// Note: We ignore the local prefix, as we're using the broadcast route instead.
 		$localService = $this->services[$localServiceName][0];
 
-		$this->logger->debug(
-			__METHOD__ . ': setting {key} on local server {localService} with broadcast cache route {route}',
-			[ 'key' => $key, 'localService' => $localServiceName, 'route' => $this->broadcastRoute ]
+		// TODO (T432217) We can demote to debug once this issue is fixed
+		$this->logger->info(
+			__METHOD__ . ': setting {memcached-key} on local server {memcached-server}'
+			. ' with broadcast cache route {route}',
+			[
+				'memcached-key' => $this->broadcastRoute . $key,
+				'memcached-server' => $localServiceName,
+				'route' => $this->broadcastRoute
+			]
 		);
 
 		$success = $localService->set( $this->broadcastRoute . $key, $value, $ttl );
 
 		if ( !$success ) {
 			$this->logger->warning(
-				__METHOD__ . ': failed to set broadcast prefixed {key} on {service} with error {code}: {err}',
+				__METHOD__ . ': failed to set broadcast prefixed {memcached-key} on {memcached-server}'
+				. ' with error {error_class}: {error}',
 				[
-					'key' => $this->broadcastRoute . $key,
-					'service' => $localServiceName,
-					'code' => ( $localService instanceof Memcached ? $localService->getResultCode() : '?' ),
-					'err' => ( $localService instanceof Memcached ? $localService->getResultMessage() : '?' ),
+					'memcached-key' => $this->broadcastRoute . $key,
+					'memcached-server' => $localServiceName,
+					'error_class' => ( $localService instanceof Memcached ? $localService->getResultCode() : '?' ),
+					'error' => ( $localService instanceof Memcached ? $localService->getResultMessage() : '?' ),
+					// TODO (T432217) Temporarily log stats in case of Memcached::set failure to diagnose the problem.
+					// We should remove this in the future, although it's not a very large object:
+					// https://www.php.net/manual/en/memcached.getstats.php
+					'status' => ( $localService instanceof Memcached ? $this->getStats( $localService, $value ) : '?' ),
 				]
 			);
 		} else {
-			$this->logger->debug(
-				__METHOD__ . ': successfully set broadcast prefixed {key} on {service}',
-				[ 'key' => $this->broadcastRoute . $key, 'service' => $localServiceName ]
+			// TODO (T432217) We can demote to debug once this issue is fixed
+			$this->logger->info(
+				__METHOD__ . ': successfully set broadcast prefixed {memcached-key} on {memcached-server}',
+				[
+					'memcached-key' => $this->broadcastRoute . $key,
+					'memcached-server' => $localServiceName
+				]
 			);
-
 		}
 
 		return $success;
+	}
+
+	/**
+	 * Get selected service stats to show in the MemcachedWrapper::set failure logs
+	 * See: https://github.com/memcached/memcached/blob/master/doc/protocol.txt
+	 *
+	 * Recording the following stats:
+	 * * limit_maxbytes: Number of bytes this server is allowed to use for storage
+	 * * bytes: Current number of bytes used to store items
+	 * * store_too_large: Number of rejected storage requests caused by attempting
+	 *   to write a value larget than the -I limit
+	 * * store_no_memory: Number of rejected storage requests caused by exhaustion
+	 *   of the -m memory limit (relevant when -M is used)
+	 * * max_connections: Max number of simultaneous connections
+	 * * curr_connections: Number of open connections
+	 * * rejected_connections: Conns rejected in maxconns_fast mode
+	 * * listen_disabled_num: Number of times server has stopped accepting new
+	 *   connections (maxconns)
+	 * * accepting_conns: Whether or not server is accepting conns
+	 * * evictions: Number of valid items removed from cache to free memory for new items
+	 * * cmd_set: Cumulative number of storage reqs
+	 * * auth_errors: Number of failed authentications.
+	 * * idle_kicks: Number of connections closed due to reaching their idle timeout.
+	 * * response_obj_oom: Connections closed by lack of memory
+	 * * read_buf_oom: Connections closed by lack of memory
+	 * * proxy_conn_oom: Number of out of memory errors while serving proxy requests
+	 *
+	 * Also compiling the following information:
+	 * * size_serialized and size_json: the size of the value after different serializations
+	 * * serializer: Serializer used before compression
+	 * * compression: Whether payload compression is enabled.
+	 * * compression_type: Algorithm used for compression (zlib, zstd, fastlz)
+	 *
+	 *
+	 * @param Memcached $localService
+	 * @param mixed $value
+	 * @return string
+	 */
+	private function getStats( Memcached $localService, mixed $value ): string {
+		$relevantStats = [];
+		$relevantKeys = [
+			// Size/memory
+			'limit_maxbytes',
+			'bytes',
+			'store_too_large',
+			'store_no_memory',
+			// Server load
+			'max_connections',
+			'curr_connections',
+			'rejected_connections',
+			'listen_disabled_num',
+			'accepting_conns',
+			// Operations
+			'evictions',
+			'cmd_set',
+			'auth_errors',
+			'idle_kicks',
+			'response_obj_oom',
+			'read_buf_oom',
+			'proxy_conn_oom'
+		];
+
+		// Value size diagnostics
+		$relevantStats['size_serialized'] = strlen( serialize( $value ) );
+		$relevantStats['size_json'] = strlen( json_encode( $value ) );
+		$relevantStats['compression_enabled'] = $localService->getOption( Memcached::OPT_COMPRESSION );
+		$relevantStats['compression_type'] = $localService->getOption( Memcached::OPT_COMPRESSION_TYPE );
+		$relevantStats['serializer'] = $localService->getOption( Memcached::OPT_SERIALIZER );
+
+		// If no stats, log status as unavailable
+		$stats = $localService->getStats();
+		if ( !$stats ) {
+			$relevantStats['server'] = 'unavailable';
+			return json_encode( $relevantStats );
+		}
+
+		// Log keys of all available memcached servers (should only be one, the local,
+		// but let's make sure that the stats being logged belong to the right service)
+		$relevantStats[ 'server' ] = array_keys( $stats );
+		$server = array_key_first( $stats );
+
+		// Log only the relevant keys, if available
+		foreach ( $relevantKeys as $statKey ) {
+			$relevantStats[ $statKey ] = $stats[ $server ][ $statKey ] ?? '?';
+		}
+
+		return json_encode( $relevantStats );
 	}
 
 	/**
