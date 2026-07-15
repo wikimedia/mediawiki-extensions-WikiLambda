@@ -80,8 +80,6 @@
 	"wikilambda-abstract-special-preview-bad-qid-title": "Chybné QID tématu",
 	"wikilambda-abstract-special-preview-empty-section-body": "Tento článek byl naposledy aktualizován $1, ale tato sekce zatím nebyla pro tento jazyk vykreslena. Zkuste to prosím znovu později. [[abstract:Special:MyLanguage/Help:Abstract articles#Abstract article rendering|Proč to není okamžité?]]",
 	"wikilambda-abstract-special-preview-empty-section-title": "Tato sekce zatím nebyla vykreslena",
-	"wikilambda-abstract-special-preview-missing-params-body": "URL by mělo obsahovat jazyk a QID tématu. Např. „Special:PreviewAbstract/cs/Q42“",
-	"wikilambda-abstract-special-preview-missing-params-title": "Chybějící parametry URL",
 	"wikilambda-abstract-special-preview-not-enabled-body": "Náhled Abstraktních článků nebyl v tomto prostředí povolen, nebo byl dočasně vypnut.",
 	"wikilambda-abstract-special-preview-not-enabled-title": "Náhled Abstraktních článků není povolen",
 	"wikilambda-abstract-special-preview-not-ready-body": "Náhled článku pro téma $1 v jazyce $2 nebyl zatím vygenerován. Zkuste to prosím znovu později.",

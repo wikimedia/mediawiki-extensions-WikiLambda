@@ -70,8 +70,6 @@
 	"wikilambda-abstract-special-preview-bad-qid-body": "المعرف \" $1 \" ليس معرف عنصر ويكي بيانات صالحًا (Qid).",
 	"wikilambda-abstract-special-preview-bad-qid-title": "موضوع سيء يا كيد",
 	"wikilambda-abstract-special-preview-empty-section-title": "لم يتم عرض هذا القسم بعد",
-	"wikilambda-abstract-special-preview-missing-params-body": "يجب أن يحتوي عنوان URL على معرّف اللغة ومعرّف الموضوع. على سبيل المثال: \"Special:PreviewAbstract/en/Q42\"",
-	"wikilambda-abstract-special-preview-missing-params-title": "معلمات عنوان URL مفقودة",
 	"wikilambda-abstract-special-preview-not-enabled-body": "خاصية معاينة المقالات الموجزة غير مفعلة في هذه البيئة، أو أنها معطلة مؤقتًا.",
 	"wikilambda-abstract-special-preview-not-enabled-title": "لم يتم تفعيل معاينة المقالة الموجزة",
 	"wikilambda-abstract-special-preview-not-ready-body": "لم يتم إنشاء معاينة المقال الخاص بموضوع $1 في $2 بعد. يرجى المحاولة مرة أخرى لاحقاً.",

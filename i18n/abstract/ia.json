@@ -72,8 +72,6 @@
 	"wikilambda-abstract-special-preview-bad-qid-title": "Mal Qid de topico",
 	"wikilambda-abstract-special-preview-empty-section-body": "Le ultime actualisation de iste articulo data del $1, ma iste section non ha ancora essite rendite pro iste lingua. Per favor reproba plus tarde. [[abstract:Special:MyLanguage/Help:Abstract articles#Abstract article rendering|Proque non es isto immediate?]]",
 	"wikilambda-abstract-special-preview-empty-section-title": "Iste section non ha ancora essite rendite",
-	"wikilambda-abstract-special-preview-missing-params-body": "Le URL debe includer le codice de lingua e le Qid del topico, p.ex. “Special:PreviewAbstract/ia/Q42”",
-	"wikilambda-abstract-special-preview-missing-params-title": "Parametros de URL mancante",
 	"wikilambda-abstract-special-preview-not-enabled-body": "Le previsualisation de articulos abstracte non es activate in iste ambiente, o ha essite disactivate temporarimente.",
 	"wikilambda-abstract-special-preview-not-enabled-title": "Previsualisation de articulos abstracte non activate",
 	"wikilambda-abstract-special-preview-not-ready-body": "Le previsualisation del articulo sur le topico $1 in $2 non ha ancora essite generate. Per favor tenta lo de novo plus tarde.",

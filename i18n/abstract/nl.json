@@ -87,8 +87,6 @@
 	"wikilambda-abstract-special-preview-bad-qid-title": "Incorrect onderwerp-Qid",
 	"wikilambda-abstract-special-preview-empty-section-body": "Dit artikel is het laatst bijgewerkt op $1, maar deze sectie is in deze taal nog niet gegenereerd. Probeer het later opnieuw. [[abstract:Special:MyLanguage/Help:Abstract articles#Abstract article rendering|Waarom gebeurt dit niet direct?]]",
 	"wikilambda-abstract-special-preview-empty-section-title": "Deze sectie wordt nog niet weergegeven",
-	"wikilambda-abstract-special-preview-missing-params-body": "De url moet een taal en een onderwerp-QiD hebben. Bijvoorbeeld \"Special:PreviewAbstract/en/Q42\"",
-	"wikilambda-abstract-special-preview-missing-params-title": "Url-parameters ontbreken",
 	"wikilambda-abstract-special-preview-not-enabled-body": "De voorvertoning van Abstract Articles is niet ingeschakeld in deze omgeving of is tijdelijk uitgeschakeld.",
 	"wikilambda-abstract-special-preview-not-enabled-title": "Abstract Article-voorvertoning is niet ingeschakeld",
 	"wikilambda-abstract-special-preview-not-ready-body": "De paginavoorvertoning van het onderwerp $1 in het $2 is nog niet aangemaakt. Probeer het later opnieuw.",

@@ -87,8 +87,6 @@
 	"wikilambda-abstract-special-preview-bad-qid-title": "מזהה Q שגוי של הנושא",
 	"wikilambda-abstract-special-preview-empty-section-body": "הערך הזה עודכן לאחרונה בתאריך $1, אבל הפרק הזה טרם תוצג עבור השפה הזאת. נא לנסות שוב מאוחר יותר. [[abstract:Special:MyLanguage/Help:Abstract articles#Abstract article rendering|למה זה לא מיידי?]]",
 	"wikilambda-abstract-special-preview-empty-section-title": "המקטע הזה עוד לא תוצג",
-	"wikilambda-abstract-special-preview-missing-params-body": "כתובת ה־URL צריכה לכלול את השפה ואת ה־Qid של הנושא. למשל \"Special:PreviewAbstract/en/Q42\"",
-	"wikilambda-abstract-special-preview-missing-params-title": "פרמטרים חסרים ב־URL",
 	"wikilambda-abstract-special-preview-not-enabled-body": "התצוגה המקדימה של מאמרים מופשטים אינה מופעלת בסביבה הזאת, או שהיא מושבתת זמנית.",
 	"wikilambda-abstract-special-preview-not-enabled-title": "תצוגה מקדימה של ערכים מופשטים אינה מופעלת",
 	"wikilambda-abstract-special-preview-not-ready-body": "התצוגה המקדימה של הנושא $1 ב{{GRAMMAR:תחילית|$2}} עוד לא נוצרה. נא לנסות שוב מאוחר יותר.",
