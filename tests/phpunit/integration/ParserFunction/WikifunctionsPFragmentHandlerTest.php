@@ -657,4 +657,63 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		);
 		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
 	}
+
+	/**
+	 * Regression test for the "stop() called before start()" Stats warning.
+	 *
+	 * The timing metric is a process-global object; sourceToFragment() can re-enter itself when a
+	 * `{{#function:…}}` is nested inside another call's argument, because Parsoid expands arguments
+	 * (getOrderedArgs → PFragment::expand), which executes the inner parser function. Previously the
+	 * handler drove start()/stop() on the shared metric, so the inner stop() nulled the shared
+	 * startTime and the outer stop() then warned. Using the per-invocation RunningTimer isolates the
+	 * two timings; this test simulates the nested call and asserts no warning is emitted.
+	 */
+	public function testSourceToFragment_nestedCallDoesNotUnbalanceTimer() {
+		$pushedJobs = [];
+		[ $handler, $extApi ] = $this->buildHandlerWithCachedValue( null, $pushedJobs );
+
+		// The outer argument mock re-enters sourceToFragment() once (guarded so the recursion
+		// terminates), standing in for a nested function call expanded while resolving the outer
+		// arguments. Both the outer and the inner call take the async-pending path.
+		$reentered = false;
+		$innerArgs = $this->getMockArguments( [ 'Z20000', 'inner' ] );
+		$outerArgs = $this->createMock( TemplateHandlerArguments::class );
+		$outerArgs
+			->method( 'getOrderedArgs' )
+			->willReturnCallback(
+				static function ( $api, $expandAndTrim = true ) use ( &$reentered, $handler, $innerArgs ) {
+					if ( !$reentered ) {
+						$reentered = true;
+						$handler->sourceToFragment( $api, $innerArgs, false );
+					}
+					return [
+						WikitextPFragment::newFromWt( 'Z10000', null ),
+						WikitextPFragment::newFromWt( 'foo', null ),
+					];
+				}
+			);
+
+		$warnings = [];
+		set_error_handler(
+			static function ( $errno, $errstr ) use ( &$warnings ) {
+				$warnings[] = $errstr;
+				return true;
+			},
+			E_USER_WARNING
+		);
+		try {
+			$handler->sourceToFragment( $extApi, $outerArgs, false );
+		} finally {
+			restore_error_handler();
+		}
+
+		$this->assertSame(
+			[],
+			array_filter(
+				$warnings,
+				static fn ( $warning ) => str_contains( $warning, 'stop() called before start()' )
+			),
+			'Nested function-call expansion must not unbalance the shared timing metric'
+		);
+	}
 }

@@ -70,7 +70,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 * @inheritDoc
 	 */
 	public function sourceToFragment( ParsoidExtensionAPI $extApi, Arguments $callArgs, bool $tagSyntax ) {
-		$this->statsFactoryTimer->start();
+		// Use the returned RunningTimer, not the shared metric, for start/stop: this method can
+		// re-enter itself when a `{{#function:…}}` is nested inside another call's argument (Parsoid
+		// expands the argument, executing the inner parser function), and the metric object is
+		// process-global. A per-invocation RunningTimer keeps each call's timing and labels isolated.
+		$timer = $this->statsFactoryTimer->start();
 
 		// Note: We can't hint this as `: PFragment|AsyncResult` as we're still in PHP 7.4-land
 		// If client mode isn't enabled on this wiki, there's nothing to do, just show an error message
@@ -83,7 +87,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				]
 			)->text();
 
-			$this->statsFactoryTimer->setLabel( 'response', 'disabled' )->stop();
+			$timer->setLabel( 'response', 'disabled' )->stop();
 			return WikifunctionsPFragment::newFromLiteral( $errorMsgString, null );
 		}
 
@@ -181,12 +185,12 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 					isset( $cachedValue['type'] )
 					&& $cachedValue['type'] === ZTypeRegistry::Z_HTML_FRAGMENT
 				) {
-					$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
 					$html = $this->getSanitisedHtmlFragment( $cachedValue['value'] ?? '' );
+					$timer->setLabel( 'response', 'cached' )->stop();
 					return HtmlPFragment::newFromHtmlString( $html, null );
 				}
 				// Otherwise, return as literal
-				$this->statsFactoryTimer->setLabel( 'response', 'cached' )->stop();
+				$timer->setLabel( 'response', 'cached' )->stop();
 				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'] ?? '', null );
 			}
 
@@ -213,7 +217,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				[ 'ext.wikilambda.inlineerrors' ]
 			);
 
-			$this->statsFactoryTimer->setLabel( 'response', 'cachedError' )->stop();
+			$timer->setLabel( 'response', 'cachedError' )->stop();
 
 			return $this->createErrorfulFragment( $extApi, $errorMessageKey );
 		}
@@ -232,7 +236,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// Check if SRE have set this wiki (probably all wikis) temporarily to not try to use Wikifunctions.
 		if ( WikiLambdaServices::getMode()->isClientOffline() ) {
-			$this->statsFactoryTimer->setLabel( 'response', 'offline' )->stop();
+			$timer->setLabel( 'response', 'offline' )->stop();
 			return HtmlPFragment::newFromHtmlString( Html::errorBox(
 				wfMessage( 'wikilambda-fragment-disabled' )->text()
 			), null );
@@ -248,7 +252,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$this->jobQueueGroup->lazyPush( $renderJob );
 
 		// As we're async, return a "sorry, no content yet" fragment
-		$this->statsFactoryTimer->setLabel( 'response', 'pending' )->stop();
+		$timer->setLabel( 'response', 'pending' )->stop();
 		return new WikifunctionsPendingFragment(
 			$extApi->getPageConfig()->getPageLanguageBcp47(), null
 		);
