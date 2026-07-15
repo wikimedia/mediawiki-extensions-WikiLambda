@@ -13,8 +13,15 @@ namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Content\Content;
 use MediaWiki\Diff\SlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
+use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffVisualiser;
 
 class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
+
+	public function __construct(
+		private readonly ZObjectDiffVisualiser $visualiser,
+		private readonly string $languageCode
+	) {
+	}
 
 	/**
 	 * @inheritDoc
@@ -23,15 +30,24 @@ class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 		?Content $oldContent = null,
 		?Content $newContent = null
 	) {
+		$oldObject = ( $oldContent === null ) ? [] : $this->toDiffArray( $oldContent );
+		$newObject = ( $newContent === null ) ? [] : $this->toDiffArray( $newContent );
+
 		// Create the entrypoint differ ZObjectDiffer and call doDiff
 		$differ = new ZObjectDiffer();
-		$diff = $differ->doDiff(
-			( $oldContent === null ) ? [] : $this->toDiffArray( $oldContent ),
-			( $newContent === null ) ? [] : $this->toDiffArray( $newContent )
-		);
+		$diff = $differ->doDiff( $oldObject, $newObject );
 
-		// TODO (T284473): Return string representation of the diff
-		return '';
+		return $this->visualiser->visualiseDiff( $diff, $oldObject, $newObject );
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * Group labels are localised, so the rendered diff must be cached per
+	 * interface language.
+	 */
+	public function getExtraCacheKeys() {
+		return [ 'lang-' . $this->languageCode ];
 	}
 
 	/**

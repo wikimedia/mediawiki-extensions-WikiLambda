@@ -15,7 +15,6 @@ use MediaWiki\Content\TextContent;
 use MediaWiki\Content\Transform\PreSaveTransformParamsValue;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\RequestContext;
-use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -26,6 +25,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectEditAction;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataRemoval;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSecondaryDataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectSlotDiffRenderer;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Parser\ParserOptions;
@@ -455,10 +455,10 @@ class ZObjectContentHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertInstanceOf( ZObjectContentDifferenceEngine::class, $engine );
 	}
 
-	public function testGetSlotDiffRendererWithOptions_returnsTextSlotDiffRenderer() {
+	public function testGetSlotDiffRendererWithOptions_returnsZObjectSlotDiffRenderer() {
 		$handler = $this->buildZObjectContentHandler();
 		$renderer = $handler->getSlotDiffRendererWithOptions( RequestContext::getMain() );
-		$this->assertInstanceOf( TextSlotDiffRenderer::class, $renderer );
+		$this->assertInstanceOf( ZObjectSlotDiffRenderer::class, $renderer );
 	}
 
 	public function testCreateZObjectViewTitle() {

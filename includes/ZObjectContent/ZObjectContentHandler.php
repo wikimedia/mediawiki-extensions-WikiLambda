@@ -20,8 +20,8 @@ use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
-use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffVisualiser;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -544,17 +544,22 @@ class ZObjectContentHandler extends ContentHandler {
 	 * Access level widened to public for use in ZObjectContentDifferenceEngine
 	 */
 	public function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
-		// NOTE: We intentionally avoid injecting ContentHandlerFactory here.
-		// Accessing MediaWikiServices during early service construction can
-		// trigger premature initialization of ContentHandlerFactory, which may
-		// prevent other extensions (e.g. Wikibase) from registering their
-		// content models correctly.
-		$slotDiffRenderer = MediaWikiServices::getInstance()
-			->getContentHandlerFactory()
-			->getContentHandler( CONTENT_MODEL_TEXT )
-			->getSlotDiffRenderer( $context );
-		'@phan-var TextSlotDiffRenderer $slotDiffRenderer';
-		return $slotDiffRenderer;
+		$languageCode = $context->getLanguage()->getCode();
+		$zObjectStore = $this->zObjectStore;
+
+		// Resolve a language ZObject id (e.g. 'Z1002') to its label in the
+		// viewer's language (e.g. 'English'), using WikiLambda's own language
+		// labels and degrading gracefully to the id.
+		$languageNameResolver = static function ( string $languageZid ) use (
+			$zObjectStore, $languageCode
+		): string {
+			return $zObjectStore->fetchZObjectLabel( $languageZid, $languageCode ) ?? $languageZid;
+		};
+
+		return new ZObjectSlotDiffRenderer(
+			new ZObjectDiffVisualiser( $context, $languageNameResolver ),
+			$languageCode
+		);
 	}
 
 }

@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Content\Content;
 use MediaWiki\Diff\DifferenceEngine;
-use MediaWiki\Diff\TextSlotDiffRenderer;
 
 class ZObjectContentDifferenceEngine extends DifferenceEngine {
 
@@ -25,21 +24,13 @@ class ZObjectContentDifferenceEngine extends DifferenceEngine {
 			return '';
 		}
 
-		// TODO (T284473): Instead of this text diff, generate and return html body of the diff page
-		// $slotRenderer = new ZObjectSlotDiffRenderer();
-		// $diffObject = $slotRenderer->getDiff( $oldContent, $newContent );
-
-		// HACK (T339348): For now, provide users with the raw JSON diff
-		$oldText = $oldContent->getText();
-		$newText = $newContent->getText();
-
 		$zObjectContentHandler = $newContent->getContentHandler();
 		'@phan-var ZObjectContentHandler $zObjectContentHandler';
 
 		$slotDiffRenderer = $zObjectContentHandler
 			->getSlotDiffRendererWithOptions( $this->getContext() );
-		'@phan-var TextSlotDiffRenderer $slotDiffRenderer';
+		'@phan-var ZObjectSlotDiffRenderer $slotDiffRenderer';
 
-		return $slotDiffRenderer->getTextDiff( $oldText, $newText );
+		return $slotDiffRenderer->getDiff( $oldContent, $newContent );
 	}
 }
