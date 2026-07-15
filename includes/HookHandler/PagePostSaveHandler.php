@@ -22,6 +22,7 @@ use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Title\Title;
+use MediaWiki\User\CentralId\CentralIdLookupFactory;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IReadableDatabase;
@@ -36,7 +37,8 @@ class PagePostSaveHandler implements
 		IConnectionProvider $dbProvider,
 		private readonly WikiLambdaMode $mode,
 		private readonly ZObjectStore $zObjectStore,
-		private readonly JobQueueGroup $jobQueueGroup
+		private readonly JobQueueGroup $jobQueueGroup,
+		private readonly CentralIdLookupFactory $centralIdLookupFactory
 	) {
 		// Non-injected items
 		$this->dbr = $dbProvider->getReplicaDatabase();
@@ -393,12 +395,16 @@ class PagePostSaveHandler implements
 		}
 		$changeData['oldId'] = $oldId ?? 0;
 
+		$performer = $recentChange->getPerformerIdentity();
+		$centralIdLookup = $this->centralIdLookupFactory->getNonLocalLookup();
+		$centralUserId = $centralIdLookup ? $centralIdLookup->centralIdFromLocalUser( $performer ) : 0;
+
 		$generalUpdateJob = new WikifunctionsClientFanOutQueueJob( [
 			'target' => $targetPage->getDBkey(),
 			'timestamp' => $recentChange->getAttribute( 'rc_timestamp' ),
 			'summary' => $changeComment,
 			'data' => $changeData,
-			'user' => $recentChange->getPerformerIdentity()->getId(),
+			'centralUserId' => $centralUserId,
 			'bot' => $recentChange->getAttribute( 'rc_bot' ),
 		] );
 

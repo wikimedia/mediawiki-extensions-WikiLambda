@@ -18,6 +18,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Title\Title;
 use MediaWiki\User\CentralId\CentralIdLookup;
+use MediaWiki\User\ExternalUserNames;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -49,8 +50,8 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 
-		// We use a CentralIdLookupFactory if configured to convert the repo wiki's user IDs to our local wiki's
-		// ones. If null, we assume this wiki is not connected to a central system.
+		// We use the shared (CentralAuth) lookup to map the repo wiki's user to this wiki. If null, this
+		// wiki isn't connected to a central system and we can't attribute cross-wiki changes (see run()).
 		$this->centralIdLookup = MediaWikiServices::getInstance()->getCentralIdLookupFactory()->getNonLocalLookup();
 	}
 
@@ -225,17 +226,39 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		// that facility isn't available, so we'll just insert the raw string as a new field and let RC deal.
 		$generalAttributes['rc_comment'] = $comment->text;
 
-		// Ask CentralAuth for the user ID lookup, if available.
-		$generalAttributes['rc_actor'] = 0;
-		if ( $this->centralIdLookup ) {
-			$localUser = $this->centralIdLookup->localUserFromCentralId( $this->params['user'] );
-			if ( $localUser ) {
-				$generalAttributes['rc_actor'] = $localUser->getId();
-			}
-			// If there's no local user, we'll fall back to id 0
+		// Attribute the change to the repo performer. We identify them by a shared central (CentralAuth)
+		// id computed on the repo wiki; without one (no central system, or an unattached/anonymous repo
+		// user) there's nothing we can safely map, so skip rather than guess.
+		$centralUserId = $this->params['centralUserId'] ?? 0;
+		if ( !$this->centralIdLookup || !$centralUserId ) {
+			$this->logger->warning(
+				__CLASS__ . ' has no central user id for the performer of {target}; skipping RecentChange insert',
+				[ 'target' => $this->params['target'] ]
+			);
+			return true;
+		}
+
+		$localUser = $this->centralIdLookup->localUserFromCentralId( $centralUserId );
+		if ( $localUser ) {
+			// They have an attached local account; attribute to it directly.
+			$generalAttributes['rc_user'] = $localUser->getId();
+			$generalAttributes['rc_user_text'] = $localUser->getName();
 		} else {
-			// Assume the user is a local one, and use their ID directly
-			$generalAttributes['rc_actor'] = $this->params['user'];
+			// No local account: attribute to the global user name as an interwiki user, exactly as
+			// Wikibase does for foreign edits, so the row still records and links. We resolve the name
+			// fresh from CentralAuth (rather than plumbing it from the repo) so renames are reflected.
+			$globalName = $this->centralIdLookup->nameFromCentralId( $centralUserId );
+			$externalUserNames = $this->getExternalUserNames();
+			if ( $globalName === null || $globalName === '' || !$externalUserNames ) {
+				$this->logger->error(
+					__CLASS__ . ' could not resolve a global user name for central id {centralUserId} on {target}; '
+						. 'skipping RecentChange insert',
+					[ 'centralUserId' => $centralUserId, 'target' => $this->params['target'] ]
+				);
+				return true;
+			}
+			$generalAttributes['rc_user'] = 0;
+			$generalAttributes['rc_user_text'] = $externalUserNames->addPrefix( $globalName );
 		}
 
 		// We can't stuff non-strings into the rc_params field, so we need to JSON-ify it
@@ -280,5 +303,41 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 		}
 
 		return true;
+	}
+
+	/**
+	 * Build an ExternalUserNames for the repo wiki, used to attribute changes by repo users who have
+	 * no local account here. The repo's interwiki prefix is taken from its entry in the sites table,
+	 * identified by the WikiLambdaClientRepoSiteId global key.
+	 *
+	 * @return ExternalUserNames|null Null if unconfigured, or the repo site/prefix can't be resolved.
+	 */
+	private function getExternalUserNames(): ?ExternalUserNames {
+		$services = MediaWikiServices::getInstance();
+
+		$repoSiteId = $services->getMainConfig()->get( 'WikiLambdaClientRepoSiteId' );
+		if ( !$repoSiteId ) {
+			return null;
+		}
+
+		$repoSite = $services->getSiteLookup()->getSite( $repoSiteId );
+		if ( $repoSite === null ) {
+			$this->logger->warning(
+				__CLASS__ . ': repo site {siteId} is not a known global site key',
+				[ 'siteId' => $repoSiteId ]
+			);
+			return null;
+		}
+
+		$interwikiPrefixes = $repoSite->getInterwikiIds();
+		if ( $interwikiPrefixes === [] ) {
+			$this->logger->warning(
+				__CLASS__ . ': repo site {siteId} has no interwiki prefix',
+				[ 'siteId' => $repoSiteId ]
+			);
+			return null;
+		}
+
+		return new ExternalUserNames( $interwikiPrefixes[0], false );
 	}
 }

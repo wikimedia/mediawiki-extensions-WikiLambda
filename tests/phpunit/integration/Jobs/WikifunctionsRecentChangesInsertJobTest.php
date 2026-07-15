@@ -14,7 +14,10 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Site\Site;
+use MediaWiki\Site\SiteLookup;
 use MediaWiki\Title\Title;
+use MediaWiki\User\CentralId\CentralIdLookup;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 use Wikimedia\TestingAccessWrapper;
 
@@ -60,9 +63,22 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 					],
 				],
 			],
-			'user' => 1,
+			'centralUserId' => 1,
 			'bot' => false,
 		], $overrides );
+	}
+
+	/**
+	 * Build a job whose (mocked) CentralIdLookup resolves the central id to a real local user,
+	 * standing in for the production CentralAuth path where the repo editor has a local account.
+	 */
+	private function makeJobWithLocalPerformer( array $overrides = [] ): WikifunctionsRecentChangesInsertJob {
+		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( $overrides ) );
+		$mock = $this->createMock( CentralIdLookup::class );
+		$mock->method( 'localUserFromCentralId' )
+			->willReturn( $this->getTestSysop()->getUserIdentity() );
+		TestingAccessWrapper::newFromObject( $job )->centralIdLookup = $mock;
+		return $job;
 	}
 
 	/**
@@ -73,8 +89,11 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	private function fetchWfRecentChanges(): array {
 		$dbr = $this->getServiceContainer()->getConnectionProvider()->getReplicaDatabase();
 		$result = $dbr->newSelectQueryBuilder()
-			->select( [ 'rc_source', 'rc_namespace', 'rc_title', 'rc_params', 'rc_bot' ] )
+			// The performer is stored via rc_actor (the recentchanges table has no rc_user/rc_user_text
+			// columns since the actor migration), so join the actor table to read it back.
+			->select( [ 'rc_source', 'rc_namespace', 'rc_title', 'rc_params', 'rc_bot', 'actor_user', 'actor_name' ] )
 			->from( 'recentchanges' )
+			->join( 'actor', null, 'actor_id = rc_actor' )
 			->where( [ 'rc_source' => WikifunctionsRecentChangesInsertJob::SRC_WIKIFUNCTIONS ] )
 			->orderBy( 'rc_id', SelectQueryBuilder::SORT_DESC )
 			->caller( __METHOD__ )
@@ -91,9 +110,9 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	// ------------------------------------------------------------------
 
 	public function testRun_earlyReturnWhenNoPagesUseFunction() {
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z99999',
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 		$this->assertCount( 0, $this->fetchWfRecentChanges() );
@@ -102,10 +121,10 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_earlyReturnForUnrecognisedAction() {
 		$this->seedPageWithUsage( 'RCJobTestBadAction', 'Z10091' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10091',
 			'data' => [ 'action' => 'purge', 'type' => ZTypeRegistry::Z_FUNCTION ],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 		$this->assertCount( 0, $this->fetchWfRecentChanges() );
@@ -114,10 +133,10 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_earlyReturnForDeleteOfUnknownType() {
 		$this->seedPageWithUsage( 'RCJobTestDeleteUnknown', 'Z10092' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10092',
 			'data' => [ 'action' => 'delete', 'type' => 'Z999', 'target' => 'Z10092' ],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 		$this->assertCount( 0, $this->fetchWfRecentChanges() );
@@ -126,14 +145,14 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_earlyReturnForEditOfUnknownType() {
 		$this->seedPageWithUsage( 'RCJobTestEditUnknown', 'Z10093' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10093',
 			'data' => [
 				'action' => 'edit',
 				'type' => 'Z999',
 				'operations' => [],
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 		$this->assertCount( 0, $this->fetchWfRecentChanges() );
@@ -146,7 +165,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_editFunctionConnectImplementations_createsRcEntry() {
 		$title = $this->seedPageWithUsage( 'RCJobTestConnectImpl', 'Z10094' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10094',
 			'data' => [
 				'action' => 'edit',
@@ -158,7 +177,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 					],
 				],
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -173,7 +192,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_editFunctionDisconnectTesters_createsRcEntry() {
 		$this->seedPageWithUsage( 'RCJobTestDisconnectTesters', 'Z10097' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10097',
 			'data' => [
 				'action' => 'edit',
@@ -185,7 +204,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 					],
 				],
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -200,7 +219,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_editFunctionGenericPath_createsRcEntry() {
 		$this->seedPageWithUsage( 'RCJobTestGenericEdit', 'Z10099' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10099',
 			'data' => [
 				'action' => 'edit',
@@ -210,7 +229,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 					'Z8K1' => [ 'changed' => true ],
 				],
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -227,7 +246,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_editImplementation_createsRcEntry() {
 		$this->seedPageWithUsage( 'RCJobTestEditImpl', 'Z10100' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10100',
 			'data' => [
 				'action' => 'edit',
@@ -235,7 +254,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 				'target' => 'Z10100',
 				'operations' => [],
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -252,7 +271,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_editTester_createsRcEntry() {
 		$this->seedPageWithUsage( 'RCJobTestEditTester', 'Z10101' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10101',
 			'data' => [
 				'action' => 'edit',
@@ -260,7 +279,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 				'target' => 'Z10101',
 				'operations' => [],
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -281,14 +300,14 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_deleteFunction_createsRcEntry() {
 		$this->seedPageWithUsage( 'RCJobTestDeleteFunc', 'Z10102' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10102',
 			'data' => [
 				'action' => 'delete',
 				'type' => ZTypeRegistry::Z_FUNCTION,
 				'target' => 'Z10102',
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -305,14 +324,14 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_restoreImplementation_createsRcEntry() {
 		$this->seedPageWithUsage( 'RCJobTestRestoreImpl', 'Z10103' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10103',
 			'data' => [
 				'action' => 'restore',
 				'type' => ZTypeRegistry::Z_IMPLEMENTATION,
 				'target' => 'Z10103',
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -329,14 +348,14 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 	public function testRun_deleteTester_createsRcEntry() {
 		$this->seedPageWithUsage( 'RCJobTestDeleteTester', 'Z10104' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10104',
 			'data' => [
 				'action' => 'delete',
 				'type' => ZTypeRegistry::Z_TESTER,
 				'target' => 'Z10104',
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 
@@ -358,7 +377,7 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 		$this->seedPageWithUsage( 'RCJobTestMultiA', 'Z10105' );
 		$this->seedPageWithUsage( 'RCJobTestMultiB', 'Z10105' );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10105',
 			'data' => [
 				'action' => 'edit',
@@ -366,26 +385,22 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 				'target' => 'Z10105',
 				'operations' => [],
 			],
-		] ) );
+		] );
 
 		$this->assertTrue( $job->run() );
 		$this->assertCount( 2, $this->fetchWfRecentChanges() );
 	}
 
 	// ------------------------------------------------------------------
-	// CentralIdLookup: null path (no central auth)
+	// Performer attribution via CentralAuth
 	// ------------------------------------------------------------------
 
-	public function testRun_usesDirectUserIdWhenNoCentralLookup() {
-		$this->seedPageWithUsage( 'RCJobTestNoCentral', 'Z10106' );
+	public function testRun_attributesLocalUserViaCentralId() {
+		$this->seedPageWithUsage( 'RCJobTestLocalUser', 'Z10106' );
+		$user = $this->getTestSysop()->getUserIdentity();
 
-		// Use a real user's actor ID so RecentChange::save() can resolve it.
-		$user = $this->getTestSysop()->getUser();
-		$actorId = $user->getActorId();
-
-		$params = $this->buildParams( [
+		$job = $this->makeJobWithLocalPerformer( [
 			'target' => 'Z10106',
-			'user' => $actorId,
 			'data' => [
 				'action' => 'edit',
 				'type' => ZTypeRegistry::Z_FUNCTION,
@@ -396,10 +411,98 @@ class WikifunctionsRecentChangesInsertJobTest extends WikiLambdaClientIntegratio
 			],
 		] );
 
-		$job = new WikifunctionsRecentChangesInsertJob( $params );
-		TestingAccessWrapper::newFromObject( $job )->centralIdLookup = null;
+		$this->assertTrue( $job->run() );
+
+		$rows = $this->fetchWfRecentChanges();
+		$this->assertCount( 1, $rows );
+		$this->assertSame( $user->getId(), (int)$rows[0]->actor_user );
+		$this->assertSame( $user->getName(), $rows[0]->actor_name );
+	}
+
+	public function testRun_skipsWhenNoCentralUserId() {
+		$this->seedPageWithUsage( 'RCJobTestNoCentralId', 'Z10107' );
+
+		// No central id for the performer (e.g. an unattached or anonymous repo user).
+		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+			'target' => 'Z10107',
+			'centralUserId' => 0,
+			'data' => [
+				'action' => 'edit',
+				'type' => ZTypeRegistry::Z_FUNCTION,
+				'target' => 'Z10107',
+				'operations' => [
+					'Z8K1' => [ 'changed' => true ],
+				],
+			],
+		] ) );
 
 		$this->assertTrue( $job->run() );
-		$this->assertCount( 1, $this->fetchWfRecentChanges() );
+		$this->assertCount( 0, $this->fetchWfRecentChanges() );
+	}
+
+	public function testRun_skipsWhenCentralAuthHasNoName() {
+		$this->seedPageWithUsage( 'RCJobTestNoName', 'Z10108' );
+
+		// CentralAuth knows a central id but returns neither a local user nor a global name.
+		$mock = $this->createMock( CentralIdLookup::class );
+		$mock->method( 'localUserFromCentralId' )->willReturn( null );
+		$mock->method( 'nameFromCentralId' )->willReturn( null );
+
+		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+			'target' => 'Z10108',
+			'centralUserId' => 42,
+			'data' => [
+				'action' => 'edit',
+				'type' => ZTypeRegistry::Z_FUNCTION,
+				'target' => 'Z10108',
+				'operations' => [
+					'Z8K1' => [ 'changed' => true ],
+				],
+			],
+		] ) );
+		TestingAccessWrapper::newFromObject( $job )->centralIdLookup = $mock;
+
+		$this->assertTrue( $job->run() );
+		$this->assertCount( 0, $this->fetchWfRecentChanges() );
+	}
+
+	public function testRun_attributesUnattachedRepoUserAsInterwiki() {
+		$this->seedPageWithUsage( 'RCJobTestInterwiki', 'Z10109' );
+
+		// Repo user with a global name but no local account: attribute as an interwiki user.
+		$mock = $this->createMock( CentralIdLookup::class );
+		$mock->method( 'localUserFromCentralId' )->willReturn( null );
+		$mock->method( 'nameFromCentralId' )->willReturn( 'RepoOnlyUser' );
+
+		// Configure the repo site so getExternalUserNames() can resolve an interwiki prefix.
+		$this->overrideConfigValue( 'WikiLambdaClientRepoSiteId', 'wikifunctionswiki' );
+		$repoSite = new Site();
+		$repoSite->setGlobalId( 'wikifunctionswiki' );
+		$repoSite->addInterwikiId( 'wikifunctions' );
+		$siteLookup = $this->createMock( SiteLookup::class );
+		$siteLookup->method( 'getSite' )->with( 'wikifunctionswiki' )->willReturn( $repoSite );
+		$this->setService( 'SiteLookup', $siteLookup );
+
+		$job = new WikifunctionsRecentChangesInsertJob( $this->buildParams( [
+			'target' => 'Z10109',
+			'centralUserId' => 42,
+			'data' => [
+				'action' => 'edit',
+				'type' => ZTypeRegistry::Z_FUNCTION,
+				'target' => 'Z10109',
+				'operations' => [
+					'Z8K1' => [ 'changed' => true ],
+				],
+			],
+		] ) );
+		TestingAccessWrapper::newFromObject( $job )->centralIdLookup = $mock;
+
+		$this->assertTrue( $job->run() );
+
+		$rows = $this->fetchWfRecentChanges();
+		$this->assertCount( 1, $rows );
+		// An external (interwiki) actor has no local user id.
+		$this->assertSame( 0, (int)$rows[0]->actor_user );
+		$this->assertSame( 'wikifunctions>RepoOnlyUser', $rows[0]->actor_name );
 	}
 }

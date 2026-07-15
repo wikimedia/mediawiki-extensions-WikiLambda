@@ -33,7 +33,7 @@ class WikifunctionsClientFanOutQueueJobTest extends WikiLambdaRepoModeIntegratio
 			'timestamp' => '20260412120000',
 			'summary' => 'Test edit summary',
 			'data' => [ 'action' => 'edit', 'type' => 'Z8', 'target' => 'Z10080' ],
-			'user' => 42,
+			'centralUserId' => 42,
 			'bot' => false,
 			'revision' => 999,
 		];

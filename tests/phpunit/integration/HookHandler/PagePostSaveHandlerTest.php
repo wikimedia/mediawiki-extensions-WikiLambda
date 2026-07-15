@@ -108,7 +108,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigNotRepoMode ),
 			$this->createNoOpMock( ZObjectStore::class ),
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$response = $pagePostSaveHandlerRepoModeOff->onRecentChange_save( new RecentChange() );
@@ -129,7 +130,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -158,7 +160,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -187,7 +190,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -218,7 +222,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -247,7 +252,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -276,7 +282,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -305,7 +312,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );
@@ -334,7 +342,8 @@ class PagePostSaveHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->mockICP,
 			new WikiLambdaMode( $this->mockHashConfigRepoMode ),
 			$mockZObjectStore,
-			$this->makeMockJobQueueGroup( $pushedJobs )
+			$this->makeMockJobQueueGroup( $pushedJobs ),
+			$this->getServiceContainer()->getCentralIdLookupFactory()
 		);
 
 		$mockRecentChange = $this->createMock( RecentChange::class );

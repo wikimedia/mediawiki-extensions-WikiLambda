@@ -91,6 +91,10 @@
 			"description": "Whether to show Wikifunctions edits on client wikis by default.",
 			"value": false
 		},
+		"WikiLambdaClientRepoSiteId": {
+			"description": "Global key of the Wikifunctions repo wiki in the sites table (the site_global_key value, e.g. 'wikifunctionswiki', as passed to SiteLookup::getSite() — NOT the per-wiki numeric site_id), used to derive the repo's interwiki prefix for attributing cross-wiki RecentChanges to editors without a local account. Empty disables external-user attribution.",
+			"value": ""
+		},
 		"WikiLambdaPersistBackendCache": {
 			"description": "Whether to persist changed objects to backend cache",
 			"value": false
@@ -183,7 +187,8 @@
 				"ConnectionProvider",
 				"WikiLambdaMode",
 				"WikiLambdaZObjectStore",
-				"JobQueueGroup"
+				"JobQueueGroup",
+				"CentralIdLookupFactory"
 			]
 		},
 		"PageRenderingHandler": {

@@ -73,8 +73,8 @@ class WikifunctionsClientFanOutQueueJob extends Job implements GenericParameterJ
 			'summary' => $this->params['summary'],
 			// Structured data about the edit
 			'data' => $this->params['data'],
-			// The user ID of the user that made the edit on the repo wiki
-			'user' => $this->params['user'],
+			// The central (CentralAuth) user ID of the user that made the edit on the repo wiki, or 0
+			'centralUserId' => $this->params['centralUserId'],
 			// Whether the user that made the edit on the repo wiki did so as a bot
 			'bot' => $this->params['bot'],
 		] );
