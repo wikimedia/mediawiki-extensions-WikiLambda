@@ -32,11 +32,15 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 			$message->method( 'text' )->willReturn( "[$key]" );
 			return $message;
 		} );
-		$resolver = static fn ( string $zid ): string => [
+		$languageResolver = static fn ( string $zid ): string => [
 			'Z1002' => 'English',
 			'Z1004' => 'French',
 		][$zid] ?? $zid;
-		return new ZObjectDiffVisualiser( $localizer, $resolver );
+		$keyResolver = static fn ( string $key ): string => [
+			'Z8K1' => 'arguments',
+			'Z17K3' => 'label',
+		][$key] ?? $key;
+		return new ZObjectDiffVisualiser( $localizer, $languageResolver, $keyResolver );
 	}
 
 	/**
@@ -190,6 +194,29 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		$this->assertStringContainsString( 'Z8K5', $html );
 		// The About row is still language-keyed under its heading.
 		$this->assertStringContainsString( '(English)', $html );
+	}
+
+	public function testBodyKeysAreLabelled() {
+		$function = static fn ( string $argType ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [
+				'Z1K1' => 'Z8',
+				'Z8K1' => [
+					'Z17',
+					[ 'Z1K1' => 'Z17', 'Z17K1' => $argType, 'Z17K2' => 'Z10000K1' ],
+				],
+			],
+		];
+		$old = $function( 'Z6' );
+		$new = $function( 'Z40' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// Under the Contents heading, the body key Z8K1 is shown by its label.
+		$this->assertStringContainsString( '<h2>[wikilambda-diff-section-contents]</h2>', $html );
+		$this->assertStringContainsString( 'arguments', $html );
+		$this->assertStringNotContainsString( 'Z8K1', $html );
+		// The value change itself is still shown.
+		$this->assertStringContainsString( 'Z40', $html );
 	}
 
 	public function testHostileValueIsEscaped() {

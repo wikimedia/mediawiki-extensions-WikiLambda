@@ -21,6 +21,7 @@ use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\Diff\DiffKeyLabeller;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffVisualiser;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -556,8 +557,15 @@ class ZObjectContentHandler extends ContentHandler {
 			return $zObjectStore->fetchZObjectLabel( $languageZid, $languageCode ) ?? $languageZid;
 		};
 
+		// Resolve a global key (e.g. 'Z8K1') to its human-readable label by
+		// fetching the owning type/function definition; memoised per render.
+		$keyLabeller = new DiffKeyLabeller( $zObjectStore, $context->getLanguage() );
+		$keyLabelResolver = static function ( string $key ) use ( $keyLabeller ): string {
+			return $keyLabeller->getKeyLabel( $key );
+		};
+
 		return new ZObjectSlotDiffRenderer(
-			new ZObjectDiffVisualiser( $context, $languageNameResolver ),
+			new ZObjectDiffVisualiser( $context, $languageNameResolver, $keyLabelResolver ),
 			$languageCode
 		);
 	}

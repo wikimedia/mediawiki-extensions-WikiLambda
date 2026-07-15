@@ -48,10 +48,14 @@ class ZObjectDiffVisualiser {
 	 * @param Closure $languageNameResolver Maps a language ZObject id (e.g. 'Z1002')
 	 *   to a display name in the viewer's language (e.g. 'English'), falling back
 	 *   to the id itself when it cannot be resolved.
+	 * @param Closure $keyLabelResolver Maps a global key (e.g. 'Z8K1') to its
+	 *   human-readable label, falling back to the key itself; other segments
+	 *   (list indices, bare local keys) are returned unchanged.
 	 */
 	public function __construct(
 		private readonly MessageLocalizer $messageLocalizer,
-		private readonly Closure $languageNameResolver
+		private readonly Closure $languageNameResolver,
+		private readonly Closure $keyLabelResolver
 	) {
 	}
 
@@ -366,9 +370,8 @@ class ZObjectDiffVisualiser {
 	 */
 	private function renderPathLabel( array $path, bool $dropGroupHead = false ): string {
 		if ( $dropGroupHead ) {
-			// The head is the section heading; remaining segments are raw body
-			// keys with no group localisation.
-			return implode( ' / ', array_map( 'strval', array_slice( $path, 1 ) ) );
+			// The head is the section heading; label the remaining body keys.
+			return implode( ' / ', array_map( [ $this, 'labelSegment' ], array_slice( $path, 1 ) ) );
 		}
 
 		if ( $path === [] ) {
@@ -377,9 +380,20 @@ class ZObjectDiffVisualiser {
 
 		$segments = [ $this->localiseGroupKey( (string)$path[0] ) ];
 		foreach ( array_slice( $path, 1 ) as $segment ) {
-			$segments[] = (string)$segment;
+			$segments[] = $this->labelSegment( $segment );
 		}
 		return implode( ' / ', $segments );
+	}
+
+	/**
+	 * Turn a single path segment into display text: a global key becomes its
+	 * human-readable label; a list index or unresolvable key is left verbatim.
+	 *
+	 * @param string|int $segment
+	 * @return string
+	 */
+	private function labelSegment( $segment ): string {
+		return ( $this->keyLabelResolver )( (string)$segment );
 	}
 
 	/**
