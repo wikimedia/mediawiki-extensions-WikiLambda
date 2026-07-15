@@ -104,6 +104,20 @@ class ZTypeRegistryTest extends WikiLambdaRepoModeIntegrationTestCase {
 		);
 	}
 
+	public function testIsZObjectKeyKnown_invalidTitleKey() {
+		$registry = ZTypeRegistry::singleton();
+
+		// Regression test: a user-supplied key that isn't a syntactically valid page title must
+		// return false, not fatal. Previously the null from Title::newFromText() was passed
+		// straight into fetchZObjectByTitle( Title $title ), throwing a TypeError.
+		foreach ( [ '', 'Z1|Z2', '<invalid>', "Z1\nZ2" ] as $invalidKey ) {
+			$this->assertFalse(
+				$registry->isZObjectKeyKnown( $invalidKey ),
+				"A key that can't form a page title ('" . addcslashes( $invalidKey, "\n" ) . "') is not known."
+			);
+		}
+	}
+
 	public function testGetCachedZObjectTypes() {
 		$registry = ZTypeRegistry::singleton();
 

@@ -552,6 +552,11 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 		$title = Title::newFromText( $key, NS_MAIN );
 
+		// An invalid key can't form a page title, so it can't be a persisted ZObject.
+		if ( $title === null ) {
+			return false;
+		}
+
 		// TODO (T300530): This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$content = $zObjectStore->fetchZObjectByTitle( $title );
