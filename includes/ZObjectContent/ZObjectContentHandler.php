@@ -564,8 +564,30 @@ class ZObjectContentHandler extends ContentHandler {
 			return $keyLabeller->getKeyLabel( $key );
 		};
 
+		// Resolve a referenced ZObject id (e.g. 'Z40') to its label and view-page
+		// URL, so diff values that are references render as links. Memoised per
+		// render, degrading to a bare ZID link when no label is found.
+		// TODO (T284473): If diffs are found to reference many distinct ZObjects,
+		// switch to a single batched ZObjectStore::fetchZObjectLabels() pre-pass
+		// rather than one fetchZObjectLabel() per distinct id.
+		$referenceMemo = [];
+		$referenceResolver = static function ( string $zid ) use (
+			$zObjectStore, $languageCode, &$referenceMemo
+		): ?array {
+			if ( !array_key_exists( $zid, $referenceMemo ) ) {
+				$title = Title::newFromText( $zid, NS_MAIN );
+				$referenceMemo[$zid] = $title === null ? null : [
+					'label' => $zObjectStore->fetchZObjectLabel( $zid, $languageCode ),
+					'url' => $title->getLocalURL(),
+				];
+			}
+			return $referenceMemo[$zid];
+		};
+
 		return new ZObjectSlotDiffRenderer(
-			new ZObjectDiffVisualiser( $context, $languageNameResolver, $keyLabelResolver ),
+			new ZObjectDiffVisualiser(
+				$context, $languageNameResolver, $keyLabelResolver, $referenceResolver
+			),
 			$languageCode
 		);
 	}

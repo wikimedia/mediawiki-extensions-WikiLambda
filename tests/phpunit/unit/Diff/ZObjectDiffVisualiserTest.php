@@ -40,7 +40,11 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 			'Z8K1' => 'arguments',
 			'Z17K3' => 'label',
 		][$key] ?? $key;
-		return new ZObjectDiffVisualiser( $localizer, $languageResolver, $keyResolver );
+		$referenceResolver = static fn ( string $zid ): ?array => [
+			'Z6' => [ 'label' => 'String', 'url' => '/wiki/Z6' ],
+			'Z40' => [ 'label' => 'Boolean', 'url' => '/wiki/Z40' ],
+		][$zid] ?? null;
+		return new ZObjectDiffVisualiser( $localizer, $languageResolver, $keyResolver, $referenceResolver );
 	}
 
 	/**
@@ -216,6 +220,51 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		$this->assertStringContainsString( 'arguments', $html );
 		$this->assertStringNotContainsString( 'Z8K1', $html );
 		// The value change itself is still shown.
+		$this->assertStringContainsString( 'Z40', $html );
+	}
+
+	public function testReferenceValueRendersAsLabelledLink() {
+		$function = static fn ( string $argType ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [
+				'Z1K1' => 'Z8',
+				'Z8K1' => [
+					'Z17',
+					[ 'Z1K1' => 'Z17', 'Z17K1' => $argType, 'Z17K2' => 'Z10000K1' ],
+				],
+			],
+		];
+		$old = $function( 'Z6' );
+		$new = $function( 'Z40' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// Each side of the reference change links to the target's page,
+		// labelled "<label> (<zid>)".
+		$this->assertStringContainsString( '<a href="/wiki/Z6">String (Z6)</a>', $html );
+		$this->assertStringContainsString( '<a href="/wiki/Z40">Boolean (Z40)</a>', $html );
+	}
+
+	public function testLiteralValueUnderStringKeyIsNotLinked() {
+		$string = static fn ( string $value ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [ 'Z1K1' => 'Z6', 'Z6K1' => $value ],
+		];
+		$old = $string( 'Z6' );
+		$new = $string( 'Z40' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// A Z6 string literal that happens to look like a ZID must not be linked.
+		$this->assertStringNotContainsString( '<a ', $html );
+		$this->assertStringContainsString( 'Z40', $html );
+	}
+
+	public function testMonolingualValueLookingLikeReferenceIsNotLinked() {
+		$old = $this->monolingualField( 'Z2K3', 'safe' );
+		$new = $this->monolingualField( 'Z2K3', 'Z40' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// A name whose text happens to be a ZID is free text, not a reference.
+		$this->assertStringNotContainsString( '<a ', $html );
 		$this->assertStringContainsString( 'Z40', $html );
 	}
 

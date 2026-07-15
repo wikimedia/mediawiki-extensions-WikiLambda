@@ -17,6 +17,7 @@ use Diff\DiffOp\DiffOpAdd;
 use Diff\DiffOp\DiffOpChange;
 use Diff\DiffOp\DiffOpRemove;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\MessageLocalizer;
 use UnexpectedValueException;
@@ -51,11 +52,15 @@ class ZObjectDiffVisualiser {
 	 * @param Closure $keyLabelResolver Maps a global key (e.g. 'Z8K1') to its
 	 *   human-readable label, falling back to the key itself; other segments
 	 *   (list indices, bare local keys) are returned unchanged.
+	 * @param Closure $referenceResolver Maps a referenced ZObject id (e.g. 'Z40')
+	 *   to [ 'label' => ?string, 'url' => string ], or null when the id has no
+	 *   valid target, so reference-valued changes can render as links.
 	 */
 	public function __construct(
 		private readonly MessageLocalizer $messageLocalizer,
 		private readonly Closure $languageNameResolver,
-		private readonly Closure $keyLabelResolver
+		private readonly Closure $keyLabelResolver,
+		private readonly Closure $referenceResolver
 	) {
 	}
 
@@ -171,7 +176,7 @@ class ZObjectDiffVisualiser {
 
 		// Fallback: plain breadcrumb with only the top-level group localised.
 		return $this->generateDiffHeaderHtml( $this->renderPathLabel( $path, $dropGroupHead ) )
-			. $this->generateOpRowHtml( $op );
+			. $this->generateOpRowHtml( $op, $this->valueKeyOf( $path ) );
 	}
 
 	/**
@@ -420,27 +425,28 @@ class ZObjectDiffVisualiser {
 	 * used when no language-aware layout applies).
 	 *
 	 * @param DiffOp $op
+	 * @param string|null $valueKey The key immediately holding the changed value
 	 * @return string
 	 */
-	private function generateOpRowHtml( DiffOp $op ): string {
+	private function generateOpRowHtml( DiffOp $op, ?string $valueKey = null ): string {
 		switch ( $op->getType() ) {
 			case 'add':
 				'@phan-var DiffOpAdd $op';
 				return $this->generateHtmlDiffTableRow(
 					null,
-					$this->getChangedLine( 'ins', $this->stringifyValue( $op->getNewValue() ) )
+					$this->getChangedLine( 'ins', $this->stringifyValue( $op->getNewValue() ), $valueKey )
 				);
 
 			case 'remove':
 				'@phan-var DiffOpRemove $op';
 				return $this->generateHtmlDiffTableRow(
-					$this->getChangedLine( 'del', $this->stringifyValue( $op->getOldValue() ) ),
+					$this->getChangedLine( 'del', $this->stringifyValue( $op->getOldValue() ), $valueKey ),
 					null
 				);
 
 			case 'change':
 				'@phan-var DiffOpChange $op';
-				return $this->generateChangeRowHtml( $op );
+				return $this->generateChangeRowHtml( $op, $valueKey );
 
 			default:
 				throw new UnexpectedValueException( 'Unsupported diff operation type: ' . $op->getType() );
@@ -448,20 +454,34 @@ class ZObjectDiffVisualiser {
 	}
 
 	/**
-	 * Render a change as an inline word-level diff of the old and new values.
+	 * Render a change to a leaf value. A reference-valued change is shown as a
+	 * whole-token swap of links (old on the deleted side, new on the added);
+	 * anything else uses an inline word-level diff.
 	 *
 	 * @param DiffOpChange $op
+	 * @param string|null $valueKey The key immediately holding the changed value
 	 * @return string
 	 */
-	private function generateChangeRowHtml( DiffOpChange $op ): string {
-		$wordLevelDiff = new WordLevelDiff(
-			[ $this->stringifyValue( $op->getOldValue() ) ],
-			[ $this->stringifyValue( $op->getNewValue() ) ]
-		);
+	private function generateChangeRowHtml( DiffOpChange $op, ?string $valueKey = null ): string {
+		$old = $this->stringifyValue( $op->getOldValue() );
+		$new = $this->stringifyValue( $op->getNewValue() );
+
+		// If either side is a reference, render both as links rather than
+		// character-diffing ZID strings against each other.
+		if ( $this->referenceLink( $old, $valueKey ) !== null
+			|| $this->referenceLink( $new, $valueKey ) !== null
+		) {
+			return $this->generateHtmlDiffTableRow(
+				$this->getChangedLine( 'del', $old, $valueKey ),
+				$this->getChangedLine( 'ins', $new, $valueKey )
+			);
+		}
+
 		// WordLevelDiff splits its input on newlines and returns one
 		// (already-escaped) HTML fragment per line; ZObject leaf values may be
 		// multi-line, so join every line with a visible break rather than
 		// taking only the first as a single-line diff would.
+		$wordLevelDiff = new WordLevelDiff( [ $old ], [ $new ] );
 		return $this->generateHtmlDiffTableRow(
 			implode( '<br />', $wordLevelDiff->orig() ),
 			implode( '<br />', $wordLevelDiff->closing() )
@@ -506,14 +526,66 @@ class ZObjectDiffVisualiser {
 	 *
 	 * @param string $tag 'ins' for additions, 'del' for removals
 	 * @param string $value
+	 * @param string|null $valueKey The key immediately holding the value
 	 * @return string
 	 */
-	private function getChangedLine( string $tag, string $value ): string {
+	private function getChangedLine( string $tag, string $value, ?string $valueKey = null ): string {
+		$inner = $this->referenceLink( $value, $valueKey ) ?? $this->escapeMultiline( $value );
 		return Html::rawElement(
 			$tag,
 			[ 'class' => 'diffchange diffchange-inline' ],
-			$this->escapeMultiline( $value )
+			$inner
 		);
+	}
+
+	/**
+	 * If a value is a ZObject reference in a labellable position, render it as a
+	 * link to the referenced object's page, labelled "<label> (<zid>)" (or just
+	 * the linked id when no label is known). Returns null for non-references,
+	 * literal positions, or ids with no valid target.
+	 *
+	 * @param string $value
+	 * @param string|null $valueKey The key immediately holding the value
+	 * @return string|null
+	 */
+	private function referenceLink( string $value, ?string $valueKey ): ?string {
+		// Only leaf values with a known key position are candidate references.
+		// Free-text values (monolingual strings, aliases) pass a null key and
+		// must never be linked, even when their text happens to look like a ZID.
+		// Likewise values under keys that hold literal content: Z6K1 (a string's
+		// value) is the key case and is not in the shared ignore list, so guard
+		// it explicitly alongside that list.
+		if ( $valueKey === null
+			|| $valueKey === ZTypeRegistry::Z_STRING_VALUE
+			|| in_array( $valueKey, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING, true )
+		) {
+			return null;
+		}
+		if ( !ZObjectUtils::isValidZObjectReference( $value ) ) {
+			return null;
+		}
+
+		$reference = ( $this->referenceResolver )( $value );
+		if ( $reference === null ) {
+			return null;
+		}
+
+		$label = $reference['label'] ?? null;
+		$text = ( $label === null || $label === '' )
+			? $value
+			: $label . ' (' . $value . ')';
+		return Html::element( 'a', [ 'href' => $reference['url'] ], $text );
+	}
+
+	/**
+	 * The key immediately holding a leaf value is the last path segment; return
+	 * it as a string (list indices included), or null for an empty path.
+	 *
+	 * @param array $path
+	 * @return string|null
+	 */
+	private function valueKeyOf( array $path ): ?string {
+		return $path === [] ? null : (string)$path[count( $path ) - 1];
 	}
 
 	/**
