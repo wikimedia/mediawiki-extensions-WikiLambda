@@ -1,18 +1,19 @@
 {
 	"@metadata": {
 		"authors": [
+			"Movses",
 			"Repakr"
 		]
 	},
 	"action-wikilambda-abstract-create": "створення нових Абстрактних статей",
 	"action-wikilambda-abstract-edit": "редагування наявних Абстрактних статей",
-	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Пропоновані Вікіфенкції для Абсткрактної Вікіпедії",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Запропоновані вікіфункції для Абстрактної вікіпедії",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Пропоновані Вікіфенкції",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "Пропонована Вікіфенкція $1",
 	"content-model-abstractwiki": "Абстрактна стаття",
 	"right-wikilambda-abstract-create": "Створення нових Абстрактних статей",
 	"right-wikilambda-abstract-edit": "Редагування наявних Абстрактних статей",
-	"specialpages-group-abstractwiki": "Сторінки Абстрактної Вікіпедії",
+	"specialpages-group-abstractwiki": "Сторінки Абстрактної вікіпедії",
 	"wikilambda-abstract-content-object": "Абстрактна стаття",
 	"wikilambda-abstract-content-history-title": "Історія версій «$1» ($2)",
 	"wikilambda-abstract-edit-title-with-label": "Редагувати Абстрактну статтю під назвою «$1» ($2)",

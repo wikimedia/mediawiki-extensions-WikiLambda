@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"COMISSIONTOPOC"
+		]
+	},
+	"wikilambda-abstract-special-preview-empty-section-body": "Aqueste article es estat actualizat per lo darrier còp a partir de $1 mai aquesta seccion es pas encara estada renduda per aquesta lenga. Ensajatz mai pus tard. [[abstract:Special:MyLanguage/Help:Articles abstraits#Rendut d'articles abstracts|Perqué aquò es pas immediat?]]",
+	"wikilambda-abstract-special-preview-list-intro": "Seleccionatz un tèma per previsualizar son article resumit :",
+	"wikilambda-abstract-special-preview-list-item-details": "( $1 , generat $2 )",
+	"wikilambda-abstract-special-preview-list-none": "Pas cap d'articles abstrachs son encara disponibles en $1 .",
+	"wikilambda-abstract-special-preview-list-other-langs": "Son disponibles dins d'autrei lengas : $1 .",
+	"wikilambda-abstract-special-preview-list-title": "Articles abstrachs disponibles en $1",
+	"wikilambda-abstract-special-preview-unsupported-qid-body": "Lo tèma $1 a pas d'article abstrach, o es pas encara estat inclús dins la lista dei subjèctes per quaus leis articles de Wikipèdia abstrach son generats. ..."
+}
