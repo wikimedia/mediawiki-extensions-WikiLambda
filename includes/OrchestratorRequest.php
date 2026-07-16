@@ -153,7 +153,8 @@ class OrchestratorRequest {
 
 			if (
 				( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
-				( $httpStatus === HttpStatus::TOO_MANY_REQUESTS )
+				( $httpStatus === HttpStatus::TOO_MANY_REQUESTS ) ||
+				( $httpStatus === HttpStatus::REQUEST_TIMEOUT )
 			) {
 				// Recoverable system errors: set to TTL_MINUTE
 				$exptime = $this->objectCache::TTL_MINUTE;
