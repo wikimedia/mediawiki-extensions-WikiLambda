@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Dirruw'o"
+			"Dirruw'o",
+			"HyoerFlint"
 		]
 	},
 	"apihelp-wikifunctions_run-summary": "Запуск вызова функции",
