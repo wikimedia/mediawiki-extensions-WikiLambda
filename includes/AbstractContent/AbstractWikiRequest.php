@@ -102,7 +102,7 @@ class AbstractWikiRequest {
 					[
 						'error' => $e->getMessage(),
 						'fragmentKey' => $fragmentKey,
-						'httpStatusCode' => $e->getHttpStatusCode(),
+						'httpStatusCode' => (string)$e->getHttpStatusCode(),
 					] + $logContext
 				);
 			} else {
@@ -113,12 +113,14 @@ class AbstractWikiRequest {
 				// - HttpStatus::SERVICE_UNAVAILABLE
 				// - HttpStatus::FORBIDDEN
 				// - HttpStatus::TOO_MANY_REQUESTS (not currently emitted below)
+				// - HttpStatus::REQUEST_TIMEOUT
 				if (
 					$e->getHttpStatusCode() === HttpStatus::NOT_IMPLEMENTED ||
 					$e->getHttpStatusCode() === HttpStatus::INTERNAL_SERVER_ERROR ||
 					$e->getHttpStatusCode() === HttpStatus::SERVICE_UNAVAILABLE ||
 					$e->getHttpStatusCode() === HttpStatus::FORBIDDEN ||
-					$e->getHttpStatusCode() === HttpStatus::TOO_MANY_REQUESTS
+					$e->getHttpStatusCode() === HttpStatus::TOO_MANY_REQUESTS ||
+					$e->getHttpStatusCode() === HttpStatus::REQUEST_TIMEOUT
 				) {
 					$this->logger->warning(
 						__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall got a server issue: {error}',
@@ -126,7 +128,7 @@ class AbstractWikiRequest {
 							'error' => $e->getMessage(),
 							'exception' => $e,
 							'fragmentKey' => $fragmentKey,
-							'httpStatusCode' => $e->getHttpStatusCode(),
+							'httpStatusCode' => (string)$e->getHttpStatusCode(),
 						]
 					);
 				} else {
@@ -137,7 +139,7 @@ class AbstractWikiRequest {
 							'error' => $e->getMessage(),
 							'exception' => $e,
 							'fragmentKey' => $fragmentKey,
-							'httpStatusCode' => $e->getHttpStatusCode(),
+							'httpStatusCode' => (string)$e->getHttpStatusCode(),
 						]
 					);
 				}
