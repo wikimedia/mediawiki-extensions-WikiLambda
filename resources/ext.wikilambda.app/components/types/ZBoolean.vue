@@ -35,7 +35,7 @@
 </template>
 
 <script>
-const { defineComponent, computed } = require( 'vue' );
+const { defineComponent, computed, onMounted } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useZObject = require( '../../composables/useZObject.js' );
@@ -130,6 +130,11 @@ module.exports = exports = defineComponent( {
 				value: newValue
 			} );
 		}
+
+		// Lifecycle
+		onMounted( () => {
+			store.fetchZids( { zids: [ Constants.Z_BOOLEAN_TRUE, Constants.Z_BOOLEAN_FALSE ] } );
+		} );
 
 		return {
 			radioChoices,

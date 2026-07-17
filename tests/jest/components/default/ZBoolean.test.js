@@ -46,6 +46,7 @@ describe( 'ZBoolean', () => {
 			Z41: 'true',
 			Z42: 'false'
 		} );
+		store.fetchZids = jest.fn();
 	} );
 
 	describe( 'in view mode', () => {
@@ -82,7 +83,13 @@ describe( 'ZBoolean', () => {
 			expect( wrapper.getComponent( { name: 'cdx-radio' } ).exists() ).toBe( true );
 			await wrapper.getComponent( { name: 'cdx-radio' } ).vm.$emit( 'update:modelValue', 'Z41' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_BOOLEAN_IDENTITY, Constants.Z_REFERENCE_ID ], value: 'Z41' } ] ] );
+		} );
 
+		it( 'requests true and false labels on mount', () => {
+			renderZBoolean( { edit: true } );
+
+			expect( store.fetchZids ).toHaveBeenCalledTimes( 1 );
+			expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z41', 'Z42' ] } );
 		} );
 	} );
 } );
