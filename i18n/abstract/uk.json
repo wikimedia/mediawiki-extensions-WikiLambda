@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Repakr"
+			"Repakr",
+			"Movses"
 		]
 	},
 	"action-wikilambda-abstract-create": "створення нових Абстрактних статей",
@@ -12,7 +13,7 @@
 	"content-model-abstractwiki": "Абстрактна стаття",
 	"right-wikilambda-abstract-create": "Створення нових Абстрактних статей",
 	"right-wikilambda-abstract-edit": "Редагування наявних Абстрактних статей",
-	"specialpages-group-abstractwiki": "Сторінки Абстрактної Вікіпедії",
+	"specialpages-group-abstractwiki": "Сторінки Абстрактної вікіпедії",
 	"wikilambda-abstract-content-object": "Абстрактна стаття",
 	"wikilambda-abstract-edit-title": "Редагувати Абстрактну статтю за $1",
 	"wikilambda-abstract-error-bad-fragments-type": "Розділ із ключем '$1' має список фрагментів з неправильним типом.",
