@@ -180,16 +180,39 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		}
 	}
 
-	public function testCallRenderFunctionCall_voidResponseWithZError() {
-		$factory = $this->getMockHttpFactoryForVoidZError();
+	/**
+	 * @dataProvider provideOrchestratorVoidResponses
+	 */
+	public function testCallRenderFunctionCall_voidResponseWithZError( $responseZError, $responseHttpStatus ) {
+		$factory = $this->getMockHttpFactoryForVoidZError( $responseZError, $responseHttpStatus );
 		$request = $this->buildAbstractWikiRequest( $factory );
 
 		try {
 			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
+			$this->fail( 'Expected WikifunctionCallException was not thrown' );
 		} catch ( WikifunctionCallException $e ) {
-			$this->assertSame( HttpStatus::BAD_REQUEST, $e->getHttpStatusCode() );
+			$this->assertSame( $responseHttpStatus, $e->getHttpStatusCode() );
 			$this->assertTrue( $e->hasZError() );
 		}
+	}
+
+	public static function provideOrchestratorVoidResponses(): array {
+		return [
+			// 4xx
+			'error_in_evaluation (Z507) -> http 400' => [ 'Z507', 400 ],
+			'user_not_permitted_to_evaluate_function (Z559) -> http 401' => [ 'Z559', 401 ],
+			'disallowed_root_object (Z553) -> http 403' => [ 'Z553', 403 ],
+			'zid_not_found (Z504) -> http 404' => [ 'Z504', 404 ],
+			'orchestrator_time_limit (Z574) -> http 408' => [ 'Z574', 408 ],
+			'resolved_object_without_z2k2 (Z513) -> http 409' => [ 'Z513', 409 ],
+			'unknown_error (Z500) -> http 422' => [ 'Z500', 422 ],
+			'orchestrator_rate_limit (Z570) -> http 429' => [ 'Z570', 429 ],
+			// 5xx
+			'api_failure (Z530) -> http 500' => [ 'Z530', 500 ],
+			'not_implemented_yet (Z503) -> http 501' => [ 'Z503', 501 ],
+			'invalid_orchestrator_result (Z577) -> http 502' => [ 'Z577', 502 ],
+			'evaluator_wasm_limit (Z576) -> http 504' => [ 'Z576', 504 ],
+		];
 	}
 
 	public function testCallRenderFunctionCall_responseNotHtmlFragment() {
@@ -367,19 +390,14 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 	}
 
 	public function testFetchRenderedAWFragment_userErrorWithZError() {
-		// Void response with ZError: the orchestrator ran the function but it
-		// returned Z24 (Void) with error details in the metadata.
-		$factory = $this->getMockHttpFactoryForVoidZError();
+		// Z579: Reached concurrent evaluator call limit in orchestrator
+		// http 429: Too many requests
+		$zerrorType = 'Z579';
+		$httpStatusCode = 429;
+		$factory = $this->getMockHttpFactoryForVoidZError( $zerrorType, $httpStatusCode );
 
 		// Mock the fragmentStore to be called with the failed fragment
-		$zerror = (object)[
-			'Z1K1' => 'Z5',
-			'Z5K1' => 'Z504',
-			'Z5K2' => (object)[
-				'Z1K1' => 'Z504',
-				'Z504K1' => 'Z400'
-			]
-		];
+		$zerror = $this->mockZErrorFromZErrorType( $zerrorType );
 		$fragmentStore = $this->getMockFragmentStoreForSetter( [
 			'topicQid' => 'Q42',
 			'languageZid' => 'Z1002',
@@ -389,9 +407,9 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 				'success' => false,
 				'value' => [
 					'msg' => 'apierror-abstractwiki_run_fragment-returned-zerror',
-					'httpStatusCode' => 400,
+					'httpStatusCode' => $httpStatusCode,
 					'zerror' => $zerror,
-					'params' => [ 'Z504' ]
+					'params' => [ $zerrorType ]
 				]
 			]
 		] );
@@ -409,7 +427,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		// Assert failure result with a ZError present
 		$this->assertFalse( $result[ 'success' ] );
 		$this->assertNotNull( $result[ 'value' ][ 'zerror' ] );
-		$this->assertSame( 'Z504', $result[ 'value' ][ 'zerror' ]->Z5K1 );
+		$this->assertSame( $zerrorType, $result[ 'value' ][ 'zerror' ]->Z5K1 );
 	}
 
 	/**
@@ -576,21 +594,43 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 	}
 
 	/**
-	 * Build a mock HttpRequestFactory that returns a Void (Z24) response with a
-	 * Z504 (ZID not found) ZError in the metadata.
+	 * Mock the returned zerror; even if the keys might not be accurate, this is not
+	 * important for this mock, we hardcode one K1 for the given error type.
 	 *
-	 * @return HttpRequestFactory
+	 * @param string $zerrorType
+	 * @return \stdClass
 	 */
-	private function getMockHttpFactoryForVoidZError(): HttpRequestFactory {
+	private function mockZErrorFromZErrorType( $zerrorType ): \stdClass {
+		$zerrorKey = $zerrorType . 'K1';
 		$zerror = (object)[
 			'Z1K1' => 'Z5',
-			'Z5K1' => 'Z504',
+			'Z5K1' => $zerrorType,
 			'Z5K2' => (object)[
-				'Z1K1' => 'Z504',
-				'Z504K1' => 'Z400'
+				'Z1K1' => (object)[
+					'Z1K1' => 'Z7',
+					'Z7K1' => 'Z825',
+					'Z825K1' => $zerrorType
+				],
+				$zerrorKey => 'err msg'
 			]
 		];
+		return $zerror;
+	}
 
+	/**
+	 * Build a mock HttpRequestFactory that returns a Void (Z24) response with a
+	 * ZError in the response metadata. The Http request returns OK/200, and the
+	 * response body contains:
+	 * * success: true for orchestrator responses < 500, false for orchestrator responses >= 500
+	 * * body: with void value (Z22K1) and the zerror inside the metadata (Z22K2)
+	 * * orchestratorHttpStatusCode: with the http status code returned by the orchestrator endpoint
+	 *
+	 * @param string $zerrorType
+	 * @param int $httpStatus
+	 * @return HttpRequestFactory
+	 */
+	private function getMockHttpFactoryForVoidZError( $zerrorType, $httpStatus ): HttpRequestFactory {
+		$zerror = $this->mockZErrorFromZErrorType( $zerrorType );
 		$metadata = (object)[
 			'K1' => [
 				'Z882',
@@ -600,13 +640,19 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 
 		$responseBody = json_encode( [
 			'wikilambda_function_call' => [
+				// success comes false for all errors > 500
+				'success' => ( $httpStatus < 500 ),
+				// data contains void and the error metadata
 				'data' => json_encode( [
 					'Z22K1' => 'Z24',
 					'Z22K2' => $metadata
-				] )
+				] ),
+				'orchestratorHttpStatusCode' => $httpStatus
 			]
 		] );
 
+		// In this case, the API returns http 200, and the error
+		// details, are inside the response body.
 		return $this->getMockHttpFactory(
 			StatusValue::newGood(),
 			$responseBody,

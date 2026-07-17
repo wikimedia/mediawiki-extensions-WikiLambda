@@ -294,11 +294,11 @@ class AbstractWikiRequest {
 		);
 
 		$status = $request->execute();
-		$httpStatusCode = $request->getStatus();
+		$apiHttpStatusCode = $request->getStatus();
 
 		// HTTP 503
 		// Transport level error; Wikifunctions could not be reached.
-		if ( !$status->isOK() && $httpStatusCode === 0 ) {
+		if ( !$status->isOK() && $apiHttpStatusCode === 0 ) {
 			throw new WikifunctionCallException(
 				'apierror-abstractwiki_run_fragment-service-unavailable',
 				HttpStatus::SERVICE_UNAVAILABLE
@@ -330,8 +330,8 @@ class AbstractWikiRequest {
 			$errorCode = $responseData[ 'error' ][ 'code' ];
 			// For 503 and 429, currently unavailable, try again later:
 			if (
-				$httpStatusCode === HttpStatus::SERVICE_UNAVAILABLE ||
-				$httpStatusCode === HttpStatus::TOO_MANY_REQUESTS
+				$apiHttpStatusCode === HttpStatus::SERVICE_UNAVAILABLE ||
+				$apiHttpStatusCode === HttpStatus::TOO_MANY_REQUESTS
 			) {
 				throw new WikifunctionCallException(
 					'apierror-abstractwiki_run_fragment-service-unavailable',
@@ -340,7 +340,7 @@ class AbstractWikiRequest {
 			}
 
 			// For 403, permissions error, return forbidden:
-			if ( $httpStatusCode === HttpStatus::FORBIDDEN ) {
+			if ( $apiHttpStatusCode === HttpStatus::FORBIDDEN ) {
 				throw new WikifunctionCallException(
 					'apierror-abstractwiki_run_fragment-forbidden',
 					HttpStatus::FORBIDDEN
@@ -348,7 +348,7 @@ class AbstractWikiRequest {
 			}
 
 			// For 400, either wrong JSON or wrong ZObject type, return bad request:
-			if ( $httpStatusCode === HttpStatus::BAD_REQUEST ) {
+			if ( $apiHttpStatusCode === HttpStatus::BAD_REQUEST ) {
 				throw new WikifunctionCallException(
 					'apierror-abstractwiki_run_fragment-bad-fragment',
 					HttpStatus::BAD_REQUEST
@@ -395,10 +395,14 @@ class AbstractWikiRequest {
 		// We can capture it and show some stuff.
 		if ( $htmlFragment === ZTypeRegistry::Z_VOID ) {
 			$zerror = ZObjectUtils::getMetadataValue( $responseEnvelope, 'errors' );
-
+			// (T432333) Surface http status code assigned and returned by the orchestrator
+			// This http status code maps with the inner zerror zid according to the mappings
+			// in `function-schemata/test_data/errors/http_status_mappings.yaml`
+			$orchestratorHttpStatusCode = $responseData['wikilambda_function_call']['orchestratorHttpStatusCode'] ??
+				HttpStatus::BAD_REQUEST;
 			throw new WikifunctionCallException(
 				'apierror-abstractwiki_run_fragment-returned-zerror',
-				HttpStatus::BAD_REQUEST,
+				$orchestratorHttpStatusCode,
 				$zerror,
 				[ $zerror->{'Z5K1'} ?? 'No error code provided' ]
 			);
