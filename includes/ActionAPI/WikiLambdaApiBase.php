@@ -266,7 +266,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			);
 
 			// 4. Everything went well: return the raw orchestrator response
-			// (an array with 'result' and 'httpStatus' keys) so that the caller
+			// (an array with 'result' and 'httpStatusCode' keys) so that the caller
 			// does whatever they need (e.g. ApiPerformTest will convert it to a
 			// response envelope object, while ApiFunctionCall will just track the
 			// http status and return the result string without validating it)

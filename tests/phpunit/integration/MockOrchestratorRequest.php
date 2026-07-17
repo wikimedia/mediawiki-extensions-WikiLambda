@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use GuzzleHttp\Psr7\Response;
-use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Psr\Http\Message\ResponseInterface;
@@ -55,15 +54,31 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 		// Add a debug log so it's easier to find the wrong test data in the file if it fails
 		wfDebugLog( 'WikiLambda', 'MockOrchestratorRequest: Found test data for key: "' . $key . '"' );
 
-		$response = $this->fileData->$key;
+		$entry = $this->fileData->$key;
+		$httpStatusCode = $entry->httpStatusCode;
 
-		if ( $response[0] !== '{' && $response[0] !== '[' ) {
-			$response = '"' . $response . '"';
+		$emptyZMap = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+			. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"}]}';
+
+		if ( isset( $entry->body ) ) {
+			// Success: Z22K1 = body value, Z22K2 = empty zmap
+			$z22k1 = $entry->body;
+			if ( $z22k1[0] !== '{' && $z22k1[0] !== '[' ) {
+				$z22k1 = '"' . $z22k1 . '"';
+			}
+			$z22k2 = $emptyZMap;
+		} else {
+			// Failure: Z22K1 = Z24, Z22K2 = zmap with errors key containing the error object
+			$z22k1 = '"Z24"';
+			$z22k2 = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"},'
+				. '"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+				. '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},'
+				. '"K1":"errors","K2":' . $entry->error . '}]}';
 		}
 
 		return [
-			'result' => '{ "Z1K1": "Z22", "Z22K1": ' . $response . ', "Z22K2": "oopswedidnotdothisbityet" }',
-			'httpStatusCode' => HttpStatus::OK
+			'result' => '{"Z1K1":"Z22","Z22K1":' . $z22k1 . ',"Z22K2":' . $z22k2 . '}',
+			'httpStatusCode' => $httpStatusCode
 		];
 	}
 

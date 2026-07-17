@@ -107,12 +107,13 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 
 			$result = [
 				'success' => true,
-				'data' => $response['result']
+				'data' => $response['result'],
+				'orchestratorHttpStatusCode' => $response['httpStatusCode']
 			];
 
 			// Get the Http status code returned by the orchestrator, and:
 			// * For 2xx or 4xx, log it as a successful request
-			// * For 5xx (server errors), log it as a failer request
+			// * For 5xx (server errors), log it as a failed request
 			$httpStatusCode = $response['httpStatusCode'];
 			if ( $httpStatusCode < HttpStatus::INTERNAL_SERVER_ERROR ) {
 				$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
