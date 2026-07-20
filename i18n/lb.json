@@ -360,6 +360,8 @@
 	"wikilambda-special-functionsbytests-row-connected": "$1 verbonnen",
 	"wikilambda-special-functionsbytests-row-failing": "{{PLURAL:$1|$1 Feeler}}",
 	"wikilambda-special-functionsbytests-row-tests": "{{PLURAL:$1|$1 Test|$1 Tester}}",
+	"wikilambda-special-functionusage-form-function": "Funktioun",
+	"wikilambda-special-functionusage-form-submit": "Benotzung weisen",
 	"wikilambda-special-list-all-pages": "All Lëschtesäiten",
 	"wikilambda-special-listduplicateobjectlabels-existing": "Besteeënden Objet",
 	"wikilambda-special-listduplicateobjectlabels-language": "Sprooch",
