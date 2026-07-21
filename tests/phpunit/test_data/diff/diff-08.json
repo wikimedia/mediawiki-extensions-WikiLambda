@@ -3,22 +3,27 @@
 	"description": "Disconnect and connect implementations and testers (different number of elements in the lists).",
 	"diffs": {
 		"Z2K2.Z8K3.2": {
-			"type": "add",
+			"type": "change",
+			"oldvalue": "Z10003",
 			"newvalue": "Z10004"
 		},
 		"Z2K2.Z8K3.3": {
-			"type": "change",
-			"oldvalue": "Z10003",
+			"type": "add",
 			"newvalue": "Z10005"
 		},
 		"Z2K2.Z8K4.1": {
-			"type": "remove",
-			"oldvalue": "Z10006"
+			"type": "change",
+			"oldvalue": "Z10006",
+			"newvalue": "Z10007"
+		},
+		"Z2K2.Z8K4.2": {
+			"type": "change",
+			"oldvalue": "Z10007",
+			"newvalue": "Z10009"
 		},
 		"Z2K2.Z8K4.3": {
-			"type": "change",
-			"oldvalue": "Z10008",
-			"newvalue": "Z10009"
+			"type": "remove",
+			"oldvalue": "Z10008"
 		}
 	},
 	"oldValue": {

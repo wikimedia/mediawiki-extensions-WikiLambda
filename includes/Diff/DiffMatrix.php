@@ -121,51 +121,151 @@ class DiffMatrix {
 	}
 
 	/**
-	 * Return the indices of the rows (old values) that were most edited,
-	 * which will be the ones most likely removed in the case that oldArray
-	 * has more items than newArray.
-	 * The number of indices returned is always the difference between
-	 * number of old items and number of new items.
+	 * Returns the indices of the old items that were most probably deleted, by looking
+	 * at the matrix's rows and finding out which one or ones are the items most distinct
+	 * from their previous version.
+	 *
+	 * The matrix is represented by new items in their columns and old items in its
+	 * rows, so when we see more columns than rows, we are calculating additions,
+	 * and when we see more rows than columns, we are calculating deletions.
 	 *
 	 * @return int[]
 	 */
 	public function getIndicesOfRemovedItems(): array {
 		$numItems = count( $this->oldArray ) - count( $this->newArray );
-		return $this->getIndicesOfMax( $this->editCountByRow, $numItems );
+		return $this->getIndicesOfMaxEdits( $this->diffCountMatrix, $numItems );
 	}
 
 	/**
-	 * Return the indices of the cols (new values) that were most edited,
-	 * which will be the ones most likely added in the case that oldArray
-	 * has less items than newArray.
-	 * The number of indices returned is always the difference between
-	 * number of new items and number of old items.
+	 * Returns the indices of the new items that were most probably added, by looking
+	 * at the matrix's columns and finding out which ones are the items most distinct
+	 * from their previous version.
+	 *
+	 * The matrix is represented by new items in their columns and old items in its
+	 * rows, so when we see more columns than rows, we are calculating additions,
+	 * and when we see more rows than columns, we are calculating deletions.
 	 *
 	 * @return int[]
 	 */
 	public function getIndicesOfAddedItems(): array {
 		$numItems = count( $this->newArray ) - count( $this->oldArray );
-		return $this->getIndicesOfMax( $this->editCountByCol, $numItems );
+		return $this->getIndicesOfMaxEdits( $this->getCols(), $numItems );
 	}
 
 	/**
-	 * Helper function to get the indices of the n highest values from a
-	 * given array. In case of two equal values, the returned index will
-	 * be the first one found.
+	 * Helper function to get the indices of the n highest values from a given array
+	 * of vectors. When we are calculating deletions, the array of vectors will be
+	 * the array of rows of the matrix. When calculating additions, the array of
+	 * vectors will be the transposed, so the list of columns.
 	 *
-	 * @param int[] $vector
+	 * Given a list of vectors, and a number of items to select (number of additions
+	 * or number of deletions):
+	 *
+	 * 1. First, try to select the indices of the added/deleted items by excluding
+	 *    vectors that contain zeroes. This is because vectors containing zeroes
+	 *    signal that they are identical to an element from the old version, so
+	 *    they have likely not been added or deleted (that would signal they are
+	 *    duplicates).
+	 *
+	 * 2. If with non-zero vectors we still haven't covered the number of indices
+	 *    that we need to find, we try with the rest of the vectors (those that
+	 *    contain one or more zeroes). For that, we order the rows by number
+	 *    of edits in descending order, and we choose those missing items
+	 *    that have more edits (they are most distinct to the old version)
+	 *
+	 * 3. In case of a tie, we prioritize choosing those items that have a higher
+	 *    index. This is so that we generally choose additions and deletions at
+	 *    the tail of the list, rather than at the head.
+	 *
+	 * @param int[][] $vectors
 	 * @param int $numItems
 	 * @return array
 	 */
-	private function getIndicesOfMax( array $vector, int $numItems ): array {
-		$vectorCopy = array_merge( [], $vector );
-		uasort(
-			$vectorCopy,
-			static function ( int $a, int $b ) {
-				return $b <=> $a;
-			}
+	private function getIndicesOfMaxEdits( array $vectors, int $numItems ): array {
+		// 1. Select indices from unseen vectors (those that don't have zeroes)
+		// array_filter() does not reindex, so we have the original indexes
+		$unseenVectors = array_filter( $vectors, static function ( array $vector ): bool {
+			return !in_array( 0, $vector, true );
+		} );
+		$unseenIndices = $this->getTopIndicesByEdits( $unseenVectors, $numItems );
+
+		// If we don't need to find any additional items added, we return the found indices
+		if ( count( $unseenIndices ) === $numItems ) {
+			return $unseenIndices;
+		}
+
+		// 2. From the other vectors (the ones containing zeroes), we need to choose n keys
+		// fill up till $numItems; we do this by getting those indexes that collect more edits.
+		$numMissing = $numItems - count( $unseenIndices );
+		$seenVectors = array_filter( $vectors, static function ( array $vector ): bool {
+			return in_array( 0, $vector, true );
+		} );
+
+		// We get the leftover from $seenIndices
+		$seenIndices = $this->getTopIndicesByEdits( $seenVectors, $numMissing );
+
+		// Merge all, and we're done
+		return [ ...$unseenIndices, ...$seenIndices ];
+	}
+
+	/**
+	 * Given a map of column/row vectors (indexed by their original position),
+	 * returns the indices of the $max vectors with the largest sum of edit counts.
+	 * If the given vectors contains less elements than the input $max, then returns
+	 * all of their indices.
+	 *
+	 * E.g.
+	 * * given $vectors [ 4 => [1,4,2,2], 5 => [2,5,3,3] ]
+	 * * with $max=1 returns [ 5 ]
+	 * * with $max=3 returns [ 4, 5 ]
+	 *
+	 * In case of tie, get latest indexes.
+	 *
+	 * E.g.
+	 * * given $vectors [ 4 => [1,4,2,2], 5 => [4,1,2,2] ]
+	 * * with $max=1 returns [ 5 ]
+	 *
+	 * @param int[][] $vectors
+	 * @param int $max
+	 * @return int[]
+	 */
+	private function getTopIndicesByEdits( array $vectors, int $max ): array {
+		// We choose those that have larger number of edits, for which we first aggregate
+		$sums = array_map( static fn ( array $vect ): int => array_sum( $vect ), $vectors );
+		// ... then we sort by values in DESC order, and in case tie, by indexes in DESC
+		// NOTE: We are intentionally adding or removing at/from the tail of the list
+		// whenever there are mixed up changes/adds/additions. Otherwise we could simply
+		// use arsort( $sums ) instead of sorting by both value and index.
+		uksort( $sums, static function ( int $idxA, int $idxB ) use ( $sums ): int {
+			$diff = $sums[$idxB] <=> $sums[$idxA];
+			return ( $diff !== 0 ) ? $diff : $idxB <=> $idxA;
+		} );
+		// ... and we slice to select max $numItems, preserve_keys=true to keep the indexes
+		$sums = array_slice( $sums, 0, $max, true );
+
+		return array_keys( $sums );
+	}
+
+	/**
+	 * Returns the diff count matrix transposed as columns.
+	 *
+	 * E.g. Given a diffCountMatrix containing the following rows:
+	 * [ [0, 2, 2],
+	 *   [1, 0, 4],
+	 *   [1, 5, 0] ]
+	 *
+	 * this method returns the transposed matrix:
+	 * [ [0, 1, 1],
+	 *   [2, 0, 5],
+	 *   [2, 4, 0] ]
+	 *
+	 * @return int[][]
+	 */
+	private function getCols(): array {
+		return array_map(
+			fn ( $j ) => array_column( $this->diffCountMatrix, $j ),
+			range( 0, count( $this->newArray ) - 1 )
 		);
-		return array_slice( array_keys( $vectorCopy ), 0, $numItems );
 	}
 
 	/**

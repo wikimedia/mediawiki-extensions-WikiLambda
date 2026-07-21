@@ -88,7 +88,8 @@ class ZObjectDiffer {
 	}
 
 	/**
-	 * Returns if an array is associative or not.
+	 * Returns if an array is associative or not by checking whether
+	 * any of its keys is a string key (and cannot be cast to an int)
 	 *
 	 * @param array $array
 	 * @return bool
