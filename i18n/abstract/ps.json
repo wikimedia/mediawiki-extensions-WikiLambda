@@ -4,9 +4,16 @@
 			"شاه زمان پټان"
 		]
 	},
+	"wikilambda-abstract-content-history-title": "د \"$1\" ($2) د بياليدنې پېښليک",
+	"wikilambda-abstract-content-history-title-no-label": "د  $1 د بياليدنې پېښليک",
 	"wikilambda-abstract-menu-option-add-named-fragment": "$1 ورگډول",
 	"wikilambda-abstract-menu-option-add-section": "برخه ورگډول",
 	"wikilambda-abstract-menu-option-delete-fragment": "ټوټه ړنگول",
 	"wikilambda-abstract-menu-option-insert-after": "وروسته ټوټه وروټومبئ",
-	"wikilambda-abstract-menu-option-insert-before": "مخکې ټوټه وروټومبئ"
+	"wikilambda-abstract-menu-option-insert-before": "مخکې ټوټه وروټومبئ",
+	"wikilambda-abstract-preview-fragment-missing": "ورک",
+	"wikilambda-abstract-preview-fragment-pending": "په تمه",
+	"wikilambda-abstract-preview-fragment-retry": "بيا هڅه‌کول",
+	"wikilambda-abstract-preview-in-language": "زېږېدلی ليک",
+	"wikilambda-abstract-special-create-createbutton-label": "جوړول"
 }
