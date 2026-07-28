@@ -60,13 +60,13 @@ class AbstractContentDataUpdate extends DataUpdate {
 		$payload = $metadata === null ? [] : $metadata->getPayload();
 
 		if ( $metadata === null ) {
-			// Not a problem, but we should only see this on the initial article
-			// creation. If we observe AWArticleMetadata missing often, we should
-			// figure out why it's being deleted from the AWArticleStore.
-			$this->logger->warning(
-				__METHOD__ . ' found missing AWArticleMetadata object for {topicQid}',
-				[ 'topicQid' => $topicQid ]
-			);
+			// If editing an existing page, the metadata should already exist: log warning
+			if ( !$this->title->isNewPage() ) {
+				$this->logger->warning(
+					__METHOD__ . ' found missing AWArticleMetadata object for {topicQid}',
+					[ 'topicQid' => $topicQid ]
+				);
+			}
 		}
 
 		// Iterate through the content sections, and gather the section index=>qid array:
