@@ -175,6 +175,17 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertNull( $article->getContext()->getRequest()->getSession()->get( 'awRedirectedFrom' ) );
 	}
 
+	public function testOnShowMissingArticle_redirectTitle_noRedirect(): void {
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Noël Adams' );
+		$article = $this->makeArticle( $title, [ 'redirect' => 'no' ] );
+
+		$handler = $this->buildHandler();
+		$handler->onShowMissingArticle( $article );
+
+		$output = $article->getContext()->getOutput();
+		$this->assertSame( '', $output->getRedirect() );
+	}
+
 	public function testOnShowMissingArticle_optedIn_rendersArticle(): void {
 		$expectedHtml = '<p>Special page was rendered, yay!</p>';
 		$this->mockSpecialPageFactory( $expectedHtml );

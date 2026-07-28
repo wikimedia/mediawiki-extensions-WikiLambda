@@ -207,6 +207,13 @@ class AbstractWikiContentHandler extends ContentHandler {
 	/**
 	 * @inheritDoc
 	 */
+	public function supportsRedirects() {
+		return true;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function getActionOverrides() {
 		return [
 			'edit' => [

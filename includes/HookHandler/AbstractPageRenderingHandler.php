@@ -197,7 +197,11 @@ class AbstractPageRenderingHandler implements
 
 		// Handle redirect on source:
 		$redirect = $optedInArticle[ 'redirect' ];
-		if ( $redirect !== false ) {
+		if (
+			$redirect !== false &&
+			// if redirect=no in the url, don't redirect
+			$article->getContext()->getRequest()->getVal( 'redirect' ) !== 'no'
+		) {
 			$targetTitle = $this->titleFactory->newFromText( $redirect );
 
 			// Carry the redirect source in the target URL, not the session. Writing it to the
