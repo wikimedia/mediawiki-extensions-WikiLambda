@@ -386,8 +386,13 @@ class ClientChangeHooksTest extends WikiLambdaClientIntegrationTestCase {
 		// Should execute without error; the filter gets registered as a side effect
 		$hooks->onChangesListSpecialPageStructuredFilters( $mockSpecialPage );
 
-		// If we reach here, the filter was successfully created and registered
-		$this->addToAssertionCount( 1 );
+		// The showHide message is a wrapper: SpecialRecentChanges::optionsPanel() passes the
+		// show/hide link in as $1, so a message without it silently renders a dead toggle.
+		$msg = wfMessage( 'wikilambda-rc-hide-wikifunctions' )->inLanguage( 'en' );
+		$this->assertTrue( $msg->exists(), 'showHide message must be defined' );
+		$this->assertStringContainsString(
+			'$1', $msg->plain(), 'showHide wrapper must accept the toggle link as $1'
+		);
 	}
 
 	// ─── onGetPreferences ──────────────────────────────────────

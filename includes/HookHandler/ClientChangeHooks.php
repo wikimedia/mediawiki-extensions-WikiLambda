@@ -401,6 +401,10 @@ class ClientChangeHooks implements
 			'priority' => -5,
 			'label' => 'wikilambda-recentchanges-filter-label',
 			'description' => 'wikilambda-recentchanges-filter-description',
+			// Triggers use on the non-JavaScript RecentChanges interface of messages:
+			// - wikilambda-rc-hide-wikifunctions
+			// - wikilambda-rc-hide-wikifunctions-hide
+			// - wikilambda-rc-hide-wikifunctions-show
 			'showHide' => 'wikilambda-rc-hide-wikifunctions',
 			'default' => !(
 				// True (i.e., show these) if the default is to show them …
