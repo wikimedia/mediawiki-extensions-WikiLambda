@@ -284,6 +284,7 @@
 	"wikilambda-object-selector-suggested-languages": "Virgeschloe Sproochen",
 	"wikilambda-object-selector-suggested-types": "Virgeschloen Typpen",
 	"wikilambda-optional": "fakultativ",
+	"wikilambda-parser-unknown-error": "D'[[$1|Liesfunktioun]] huet en onbekannte Feeler zeréckginn.",
 	"wikilambda-performtest-error-invalidimplementation": "Testduerchféierungsfeeler: „$1“ ass keng gülteg Implementéierung.",
 	"wikilambda-performtest-error-invalidtester": "Testduerchféierungsfeeler: „$1“ ass kee gültegen Testfall.",
 	"wikilambda-performtest-error-nonfunction": "Testduerchféierungsfeeler: „$1“ ass keng Funktioun.",
