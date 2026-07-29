@@ -11,7 +11,7 @@
 			class="ext-wikilambda-app-abstract-publish__publish"
 			action="progressive"
 			weight="primary"
-			:disabled="!isDirty"
+			:disabled="!isDirty && !revertToEdit"
 			@click.stop="waitAndHandlePublish"
 		>
 			{{ i18n( 'wikilambda-publishnew' ).text() }}
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-const { defineComponent, inject, ref } = require( 'vue' );
+const { computed, defineComponent, inject, ref } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
@@ -79,6 +79,18 @@ module.exports = exports = defineComponent( {
 		function waitAndHandlePublish() {
 			store.waitForRunningParsers.then( () => handlePublish() );
 		}
+
+		// Publish button state
+		/**
+		 * If 'oldid' or 'undo' exist in the query (and are not empty), return true.
+		 * If true, this enables the Publish button without needing an event.
+		 *
+		 * @return {boolean}
+		 */
+		const revertToEdit = computed( () => ( !store.isCreateNewPage && store.getQueryParams && (
+			( typeof store.getQueryParams.oldid === 'string' && store.getQueryParams.oldid.trim() !== '' ) ||
+			( typeof store.getQueryParams.undo === 'string' && store.getQueryParams.undo.trim() !== '' )
+		) ) );
 
 		function handlePublish() {
 			// Clear global and validation (field) errors:
@@ -143,6 +155,7 @@ module.exports = exports = defineComponent( {
 			isDirty,
 			leaveEditorCallback,
 			removeListeners,
+			revertToEdit,
 			showLeaveEditorDialog,
 			showPublishDialog,
 			submitAction,

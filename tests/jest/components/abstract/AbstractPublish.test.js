@@ -66,6 +66,20 @@ describe( 'AbstractPublish', () => {
 		expect( publishButton.attributes( 'disabled' ) ).not.toBe( 'true' );
 	} );
 
+	it( 'enables publish button if oldid', () => {
+		store.isDirty = false;
+		store.isCreateNewPage = false;
+		store.getQueryParams = {
+			oldid: '12345'
+		};
+
+		const wrapper = renderAbstractPublish();
+
+		const publishButton = wrapper.find( '.ext-wikilambda-app-abstract-publish__publish' );
+		expect( publishButton.exists() ).toBe( true );
+		expect( publishButton.attributes( 'disabled' ) ).not.toBe( 'true' );
+	} );
+
 	it( 'opens publish dialog when clicking publish and content is valid', async () => {
 		const wrapper = renderAbstractPublish();
 

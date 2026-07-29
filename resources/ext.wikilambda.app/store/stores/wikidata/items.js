@@ -169,7 +169,6 @@ module.exports = {
 		 * restricts the response to `props: 'labels'` instead of re-fetching the
 		 * whole entity.
 		 *
-		 *
 		 * @param {Object} payload
 		 * @param {string} payload.id The Wikidata Item ID
 		 * @param {string} payload.langCode The language code to ensure is available
