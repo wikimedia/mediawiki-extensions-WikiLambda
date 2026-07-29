@@ -18,6 +18,9 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\RevisionDelete\RevisionDeleter;
+use MediaWiki\Tests\Unit\Permissions\MockAuthorityTrait;
 use MediaWiki\Title\Title;
 use stdClass;
 use Wikimedia\Rdbms\IDBAccessObject;
@@ -33,6 +36,8 @@ use Wikimedia\Rdbms\IResultWrapper;
  * @group Database
  */
 class ZObjectStoreTest extends WikiLambdaRepoModeIntegrationTestCase {
+
+	use MockAuthorityTrait;
 
 	private static string $testResponse = '{ "Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": "Z24" }';
 	private ZObjectStore $zobjectStore;
@@ -197,6 +202,104 @@ class ZObjectStoreTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 		$this->assertEquals( $firstRevision->getText(), $firstObjectText );
 		$this->assertEquals( $secondRevision->getText(), $secondObjectText );
+	}
+
+	/**
+	 * fetchZObjectByTitle() must honour RevisionDelete/suppression when a
+	 * performer is supplied, and read raw (unchanged legacy behaviour) when no
+	 * performer is given.
+	 */
+	public function testFetchZObjectByTitle_deletedRevision() {
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$title = Title::newFromText( $zid, NS_MAIN );
+
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		// First revision:
+		$this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $input, 'Create summary', $sysopUser
+		);
+		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
+
+		// We change the text representation of the ZObject to update it in the DB
+		$firstObjectText = $zobject->getText();
+		$secondObjectText = str_replace( "hello", "bye", $zobject->getText() );
+
+		// Second revision:
+		$page = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(), $zid, $secondObjectText, 'Update summary', $sysopUser
+		);
+
+		// Get revision numbers:
+		$revisions = $revisionStore->getRevisionIdsBetween( $page->getWikiPage()->getId() );
+		$deletedRevId = $revisions[0];
+		$currentRevId = $revisions[1];
+
+		// RevisionDelete the text of the FIRST (non-current) revision. Using
+		// RevisionDeleter::createList()->setVisibility() rather than a bare
+		// `revision` table UPDATE is deliberate: setVisibility() both writes
+		// rev_deleted and purges/refreshes the RevisionStore + page caches, so
+		// the subsequent getRevisionByTitle() below sees the new visibility
+		// rather than a stale, still-viewable cached RevisionRecord.
+		$context = RequestContext::getMain();
+		$context->setUser( $sysopUser );
+		$deleter = RevisionDeleter::createList(
+			'revision', $context, $title, [ $deletedRevId ]
+		);
+		$status = $deleter->setVisibility( [
+			'value' => [ RevisionRecord::DELETED_TEXT => 1 ],
+			'comment' => 'Testing revision deletion',
+		] );
+		$this->assertStatusOK( $status );
+		$this->runDeferredUpdates();
+
+		// Unprivileged user cannot see the deleted revision's content.
+		$this->assertFalse(
+			$this->zobjectStore->fetchZObjectByTitle(
+				$title, $deletedRevId, $this->mockRegisteredNullAuthority()
+			),
+			'Unprivileged performer must not see a RevisionDelete\'d revision'
+		);
+
+		// Privileged (ultimate) user CAN see the deleted revision's content.
+		$privileged = $this->zobjectStore->fetchZObjectByTitle(
+			$title, $deletedRevId, $this->mockRegisteredUltimateAuthority()
+		);
+		$this->assertInstanceOf(
+			ZObjectContent::class, $privileged,
+			'Privileged performer must see a RevisionDelete\'d revision'
+		);
+		$this->assertEquals( $firstObjectText, $privileged->getText() );
+
+		// No performer: RAW read, unchanged legacy behaviour, still returns content.
+		$raw = $this->zobjectStore->fetchZObjectByTitle( $title, $deletedRevId );
+		$this->assertInstanceOf(
+			ZObjectContent::class, $raw,
+			'A null performer must read raw and still return the content'
+		);
+		$this->assertEquals( $firstObjectText, $raw->getText() );
+
+		// The current (second) revision is not deleted, so is visible to everyone.
+		$currentForNull = $this->zobjectStore->fetchZObjectByTitle(
+			$title, $currentRevId, $this->mockRegisteredNullAuthority()
+		);
+		$this->assertInstanceOf( ZObjectContent::class, $currentForNull );
+		$this->assertEquals( $secondObjectText, $currentForNull->getText() );
+
+		$currentForUltimate = $this->zobjectStore->fetchZObjectByTitle(
+			$title, $currentRevId, $this->mockRegisteredUltimateAuthority()
+		);
+		$this->assertInstanceOf( ZObjectContent::class, $currentForUltimate );
+		$this->assertEquals( $secondObjectText, $currentForUltimate->getText() );
+
+		$currentForRaw = $this->zobjectStore->fetchZObjectByTitle( $title, $currentRevId );
+		$this->assertInstanceOf( ZObjectContent::class, $currentForRaw );
+		$this->assertEquals( $secondObjectText, $currentForRaw->getText() );
 	}
 
 	public function testFetchZObjectByTitle_invalid() {

@@ -85,7 +85,8 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 						$fetchedContent = ZObjectContentHandler::getExternalRepresentation(
 							$title,
 							$language,
-							$revision
+							$revision,
+							$this->getAuthority()
 						);
 						$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 					} catch ( ZErrorException $e ) {

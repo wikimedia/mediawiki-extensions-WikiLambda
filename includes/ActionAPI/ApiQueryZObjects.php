@@ -84,7 +84,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 
 		// Fetch ZObject and die if there are unmanageable errors
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$page = $zObjectStore->fetchZObjectByTitle( $title, $revision );
+		$page = $zObjectStore->fetchZObjectByTitle( $title, $revision, $this->getAuthority() );
 
 		if ( !$page ) {
 			$this->dieWithError(

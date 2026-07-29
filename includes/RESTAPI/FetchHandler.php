@@ -104,7 +104,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 
 					try {
 						$fetchedContent = ZObjectContentHandler::getExternalRepresentation(
-							$title, $language, $revision
+							$title, $language, $revision, $this->getAuthority()
 						);
 						$span->setSpanStatus( SpanInterface::SPAN_STATUS_OK );
 					} catch ( ZErrorException $error ) {

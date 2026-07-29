@@ -40,6 +40,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use StatusValue;
@@ -163,11 +164,14 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param Title $zObjectTitle The page to fetch.
 	 * @param string|null $languageCode The language in which to return results. If unset, all results are returned.
 	 * @param int|null $revision The revision ID of the page to fetch. If unset, the latest is returned.
+	 * @param Authority|null $performer User to check deletion/suppression visibility for, if any. When
+	 *   fetching a specific revision on behalf of a user, pass their authority so hidden revisions are
+	 *   not disclosed (they surface as the usual not-found error instead).
 	 * @return string The external JSON form of the given title.
 	 * @throws ZErrorException
 	 */
 	public static function getExternalRepresentation(
-		Title $zObjectTitle, ?string $languageCode = null, ?int $revision = null
+		Title $zObjectTitle, ?string $languageCode = null, ?int $revision = null, ?Authority $performer = null
 	): string {
 		if ( $zObjectTitle->getNamespace() !== NS_MAIN ) {
 			throw new ZErrorException(
@@ -188,7 +192,7 @@ class ZObjectContentHandler extends ContentHandler {
 		}
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zObject = $zObjectStore->fetchZObjectByTitle( $zObjectTitle, $revision );
+		$zObject = $zObjectStore->fetchZObjectByTitle( $zObjectTitle, $revision, $performer );
 
 		if ( $zObject === false ) {
 			throw new ZErrorException(

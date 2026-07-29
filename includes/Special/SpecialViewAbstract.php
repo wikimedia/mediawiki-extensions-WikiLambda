@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -24,6 +25,8 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\SpecialPage\UnlistedSpecialPage;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
@@ -144,6 +147,9 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// Tell the skin what content specifically we're related to, so edit/history links etc. work.
 		$this->getSkin()->setRelevantTitle( $targetTitle );
 
+		// Begin output by setting headers
+		$this->setHeaders();
+
 		// (T343594) Set the title of the page to the target title, so Recent Changes Link works
 		$output->setTitle( $targetTitle );
 
@@ -161,23 +167,51 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// FIXME inject revision store
 		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
 		$targetRevision = $revisionStore->getRevisionById( $targetRevisionId );
-		$targetContent = $targetRevision ? $targetRevision->getMainContentRaw() : null;
 
-		// If content does not exist for the requested revision ID, send to Main
-		if ( !$targetContent ) {
+		// If the revision does not exist, send to Main
+		if ( !$targetRevision ) {
 			$this->redirectToMain( $output );
 			return;
 		}
 
-		$output->setRevisionId( $targetRevisionId );
-
-		// (T364318) Add the revision navigation bar if seeing an oldid
-		if ( $targetRevisionId !== $latestRevId ) {
-			$article = Article::newFromTitle( $targetTitle, $this->getContext() );
-			$article->setOldSubtitle( $targetRevisionId );
+		// (T430601) Respect RevisionDelete/suppression: if the viewer may not see this
+		// revision, show the same error message core's article view shows and stop, rather
+		// than leaking the hidden content through the /view/ path.
+		if ( !AbstractWikiContentHandler::assertRevisionViewable(
+			$targetRevision, $this->getAuthority(), $targetTitle, $output
+		) ) {
+			$output->setPageTitleMsg( $this->getContext()->msg( 'errorpagetitle' ) );
+			return;
 		}
 
-		$this->setHeaders();
+		// When requesting a specific revision...
+		if ( $this->getRequest()->getInt( 'oldid' ) > 0 ) {
+			// Build Article and call fetchRevisionRecord before all other Article methods
+			$article = Article::newFromTitle( $targetTitle, $this->getContext() );
+			$article->fetchRevisionRecord();
+
+			// (T364318) Add the revision navigation bar if seeing an oldid
+			$article->setOldSubtitle( $targetRevisionId );
+
+			// (T430601) If performer can see RevisionDelete/supression,
+			// fall back to Article::showDeletedRevisionHeader
+			$this->getContext()->getRequest()->setVal( 'oldid', $targetRevisionId );
+			$article->fetchRevisionRecord();
+			if ( !$article->showDeletedRevisionHeader() ) {
+				return;
+			}
+		}
+
+		// Only fetch content after confirming the viewer may see this revision
+		$targetContent = $targetRevision->getContent(
+			SlotRecord::MAIN, RevisionRecord::FOR_THIS_USER, $this->getAuthority()
+		);
+
+		// If content does not exist, send to Main
+		if ( !$targetContent ) {
+			$this->redirectToMain( $output );
+			return;
+		}
 
 		// (T345453) Have the standard copyright stuff show up.
 		$output->setCopyright( true );

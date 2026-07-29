@@ -49,13 +49,17 @@ class AbstractContentEditAction extends Action {
 		$output = $this->getOutput();
 
 		$pageTitle = $this->getTitle();
-		$this->generateAbstractContentPayload(
+		if ( !$this->generateAbstractContentPayload(
 			$this->getContext(),
 			$this->revisionStore,
 			$this->contentHandlerFactory,
 			$output,
 			$pageTitle
-		);
+		) ) {
+			// Requested revision is hidden from this viewer; the deleted-text
+			// message has been shown, so render no editor.
+			return;
+		}
 
 		// Load styles and Vue app module
 		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );

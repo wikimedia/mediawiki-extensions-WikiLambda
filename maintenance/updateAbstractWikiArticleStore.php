@@ -178,6 +178,10 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 				continue;
 			}
 
+			// No performer: the article store is public static content, so content is
+			// read at the public audience. A RevisionDelete'd/suppressed current
+			// revision is excluded (getAbstractContentForTitle returns false) rather
+			// than baked into the public store.
 			$awContent = $contentHandler->getAbstractContentForTitle( $this->revisionStore, $title );
 
 			if ( $awContent === false ) {

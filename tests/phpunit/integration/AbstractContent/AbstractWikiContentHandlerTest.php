@@ -15,6 +15,7 @@ use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Content\WikitextContent;
 use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentDataRemoval;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentDataUpdate;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
@@ -22,11 +23,16 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
+use MediaWiki\Html\Html;
 use MediaWiki\Json\FormatJson;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
+use MediaWiki\RevisionDelete\RevisionDeleter;
+use MediaWiki\Tests\Unit\Permissions\MockAuthorityTrait;
 use MediaWiki\Title\Title;
 
 /**
@@ -35,6 +41,8 @@ use MediaWiki\Title\Title;
  * @group Database
  */
 class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTestCase {
+
+	use MockAuthorityTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
 
@@ -340,6 +348,207 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 		} );
 
 		$this->assertCount( 1, $ownUpdates );
+	}
+
+	/**
+	 * Create an Abstract-content page with two revisions and RevisionDelete the
+	 * FIRST (non-current) revision's text.
+	 *
+	 * RevisionDeleter::createList()->setVisibility() is used rather than a bare
+	 * `revision` table UPDATE because it both writes rev_deleted and purges the
+	 * RevisionStore/page caches, so a subsequent getRevisionByTitle() sees the
+	 * new visibility instead of a stale, still-viewable cached RevisionRecord.
+	 *
+	 * @return array{0:Title,1:int,2:int} [ $title, $deletedRevId, $currentRevId ]
+	 */
+	private function createAbstractPageWithDeletedFirstRevision(): array {
+		$this->mockWikidataEntityLookup( [ 'Q42' => [ 'en' => 'Douglas Adams' ] ] );
+
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		$sysop = $this->getTestSysop()->getUser();
+
+		// Q8776414 is the lede section QID, required by AbstractWikiContent validation.
+		$firstContent = new AbstractWikiContent(
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
+		);
+		$firstStatus = $this->editPage(
+			$title, $firstContent, 'First abstract revision', self::TEST_ABSTRACT_NS, $sysop
+		);
+		$this->assertStatusOK( $firstStatus );
+		$deletedRevId = $firstStatus->getNewRevision()->getId();
+
+		$secondContent = new AbstractWikiContent(
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}'
+		);
+		$secondStatus = $this->editPage(
+			$title, $secondContent, 'Second abstract revision', self::TEST_ABSTRACT_NS, $sysop
+		);
+		$this->assertStatusOK( $secondStatus );
+		$currentRevId = $secondStatus->getNewRevision()->getId();
+
+		$context = RequestContext::getMain();
+		$context->setUser( $sysop );
+		$deleter = RevisionDeleter::createList(
+			'revision', $context, $title, [ $deletedRevId ]
+		);
+		$status = $deleter->setVisibility( [
+			'value' => [ RevisionRecord::DELETED_TEXT => 1 ],
+			'comment' => 'Testing revision deletion',
+		] );
+		$this->assertStatusOK( $status );
+		$this->runDeferredUpdates();
+
+		return [ $title, $deletedRevId, $currentRevId ];
+	}
+
+	/**
+	 * getAbstractContentForTitle() must honour RevisionDelete/suppression when a
+	 * performer is supplied, and read raw (unchanged legacy behaviour) when no
+	 * performer is given.
+	 */
+	public function testGetAbstractContentForTitleHonoursDeletionForPerformer() {
+		[ $title, $deletedRevId ] = $this->createAbstractPageWithDeletedFirstRevision();
+
+		$handler = $this->buildAbstractWikiContentHandler();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
+
+		// Unprivileged performer must not see the RevisionDelete'd revision.
+		$this->assertFalse(
+			$handler->getAbstractContentForTitle(
+				$revisionStore, $title, $deletedRevId, $this->mockRegisteredNullAuthority()
+			),
+			'Unprivileged performer must not see a RevisionDelete\'d revision'
+		);
+
+		// Privileged (ultimate) performer must see it.
+		$privileged = $handler->getAbstractContentForTitle(
+			$revisionStore, $title, $deletedRevId, $this->mockRegisteredUltimateAuthority()
+		);
+		$this->assertInstanceOf(
+			AbstractWikiContent::class, $privileged,
+			'Privileged performer must see a RevisionDelete\'d revision'
+		);
+
+		// No performer: public audience, so a deleted revision is excluded (the
+		// public article-store rebuild must not bake in hidden content).
+		$this->assertFalse(
+			$handler->getAbstractContentForTitle( $revisionStore, $title, $deletedRevId ),
+			'A null performer reads at the public audience and must not see a deleted revision'
+		);
+	}
+
+	public function testGetAbstractContentForTitleCurrentRevisionUnaffected() {
+		[ $title, , $currentRevId ] = $this->createAbstractPageWithDeletedFirstRevision();
+
+		$handler = $this->buildAbstractWikiContentHandler();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
+
+		// The current (second) revision is not deleted, so is visible to everyone.
+		$this->assertInstanceOf(
+			AbstractWikiContent::class,
+			$handler->getAbstractContentForTitle(
+				$revisionStore, $title, $currentRevId, $this->mockRegisteredNullAuthority()
+			)
+		);
+		$this->assertInstanceOf(
+			AbstractWikiContent::class,
+			$handler->getAbstractContentForTitle(
+				$revisionStore, $title, $currentRevId, $this->mockRegisteredUltimateAuthority()
+			)
+		);
+		$this->assertInstanceOf(
+			AbstractWikiContent::class,
+			$handler->getAbstractContentForTitle( $revisionStore, $title, $currentRevId )
+		);
+	}
+
+	public function testAssertRevisionViewableReturnsTrueForPrivilegedPerformer() {
+		[ $title, $deletedRevId ] = $this->createAbstractPageWithDeletedFirstRevision();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
+		$revision = $revisionStore->getRevisionById( $deletedRevId );
+
+		$output = new OutputPage( new RequestContext() );
+
+		$result = AbstractWikiContentHandler::assertRevisionViewable(
+			$revision, $this->mockRegisteredUltimateAuthority(), $title, $output
+		);
+
+		$this->assertTrue( $result );
+		// Nothing should have been written to the output for a viewable revision.
+		$this->assertSame( '', $output->getHTML() );
+	}
+
+	public function testAssertRevisionViewableAddsDeletedErrorForUnprivilegedPerformer() {
+		[ $title, $deletedRevId ] = $this->createAbstractPageWithDeletedFirstRevision();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
+		$revision = $revisionStore->getRevisionById( $deletedRevId );
+
+		$output = new OutputPage( new RequestContext() );
+
+		$result = AbstractWikiContentHandler::assertRevisionViewable(
+			$revision, $this->mockRegisteredNullAuthority(), $title, $output
+		);
+
+		$this->assertFalse( $result );
+		// Plain DELETED_TEXT (not DELETED_RESTRICTED) → rev-deleted-text-permission path.
+		$html = $output->getHTML();
+
+		$expected = Html::errorBox(
+			$output->msg( 'rev-deleted-text-permission', $title->getPrefixedDBkey() )->parse()
+		);
+		$this->assertSame( $expected, $html );
+	}
+
+	public function testAssertRevisionViewableAddsSuppressedErrorWhenRestricted() {
+		$this->mockWikidataEntityLookup( [ 'Q42' => [ 'en' => 'Douglas Adams' ] ] );
+
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		$sysop = $this->getTestSysop()->getUser();
+
+		$content = new AbstractWikiContent(
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
+		);
+		$editStatus = $this->editPage(
+			$title, $content, 'First abstract revision', self::TEST_ABSTRACT_NS, $sysop
+		);
+		$this->assertStatusOK( $editStatus );
+		// A second revision so the suppressed one is not the current revision.
+		$secondContent = new AbstractWikiContent(
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}'
+		);
+		$this->assertStatusOK( $this->editPage(
+			$title, $secondContent, 'Second abstract revision', self::TEST_ABSTRACT_NS, $sysop
+		) );
+		$suppressedRevId = $editStatus->getNewRevision()->getId();
+
+		// Suppress (DELETED_TEXT | DELETED_RESTRICTED) the first revision.
+		$context = RequestContext::getMain();
+		$context->setUser( $sysop );
+		$deleter = RevisionDeleter::createList(
+			'revision', $context, $title, [ $suppressedRevId ]
+		);
+		$status = $deleter->setVisibility( [
+			'value' => [
+				RevisionRecord::DELETED_TEXT => 1,
+				RevisionRecord::DELETED_RESTRICTED => 1,
+			],
+			'comment' => 'Testing suppression',
+		] );
+		$this->assertStatusOK( $status );
+		$this->runDeferredUpdates();
+
+		$revision = $this->getServiceContainer()->getRevisionStore()->getRevisionById( $suppressedRevId );
+		$output = new OutputPage( new RequestContext() );
+
+		$result = AbstractWikiContentHandler::assertRevisionViewable(
+			$revision, $this->mockRegisteredNullAuthority(), $title, $output
+		);
+
+		$this->assertFalse( $result );
+		// DELETED_RESTRICTED set → rev-suppressed-text path.
+		$html = $output->getHTML();
+		$expected = Html::errorBox( $output->msg( 'rev-suppressed-text' )->parse() );
+		$this->assertSame( $expected, $html );
 	}
 
 	/**

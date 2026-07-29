@@ -165,7 +165,9 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 			);
 		}
 
-		$awContent = $contentHandler->getAbstractContentForTitle( $this->revisionStore, $title );
+		$awContent = $contentHandler->getAbstractContentForTitle(
+			$this->revisionStore, $title, null, $this->getAuthority()
+		);
 		if ( $awContent === false || !$awContent->isValid() ) {
 			$this->dieWithError(
 				[ 'apierror-abstractwiki_fetch_section-bad-content' ],

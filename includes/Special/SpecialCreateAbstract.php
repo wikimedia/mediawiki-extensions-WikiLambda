@@ -169,7 +169,9 @@ class SpecialCreateAbstract extends SpecialPage {
 		// If title doesn't exist, start building the page:
 		$this->setHeaders();
 
-		// Generate Abstract Content payload and pass data through JS config vars
+		// Generate Abstract Content payload and pass data through JS config vars.
+		// At this point we know we are creating a new Abstract Content object,
+		// so no need to check for revision deletion returned flag.
 		$this->generateAbstractContentPayload(
 			$context,
 			$this->revisionStore,

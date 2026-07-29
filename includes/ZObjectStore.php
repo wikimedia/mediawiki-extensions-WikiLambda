@@ -28,6 +28,7 @@ use MediaWiki\Language\MessageLocalizer;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
@@ -163,11 +164,22 @@ class ZObjectStore {
 	/**
 	 * Fetch the ZObject given its title and return it wrapped in a ZObjectContent object
 	 *
+	 * When a performer is supplied the content is read for that user's audience,
+	 * so a RevisionDelete'd or suppressed revision they may not see yields false;
+	 * internal/system callers pass no performer and read raw.
+	 *
+	 * TODO: Once the security fix is deployed, make the visibility audience
+	 * explicit — an $audience parameter mirroring RevisionRecord::getContent(),
+	 * so the ~22 internal/system callers state RAW deliberately — rather than
+	 * inferring it from whether a performer is passed. Deferred to keep this
+	 * patch minimal; do it under regular code review.
+	 *
 	 * @param Title $title The ZObject to fetch
 	 * @param int|null $requestedRevision The revision ID of the page to fetch. If unset, the latest is returned.
+	 * @param Authority|null $performer User to check deletion/suppression visibility for, if any
 	 * @return ZObjectContent|bool Found ZObject
 	 */
-	public function fetchZObjectByTitle( Title $title, ?int $requestedRevision = null ) {
+	public function fetchZObjectByTitle( Title $title, ?int $requestedRevision = null, ?Authority $performer = null ) {
 		if ( $requestedRevision ) {
 			$revision = $this->revisionStore->getRevisionByTitle( $title, $requestedRevision, 0 );
 		} else {
@@ -180,9 +192,9 @@ class ZObjectStore {
 		}
 
 		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
-		$slot = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW );
-		// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
-		return $slot->getContent();
+		// Honour deletion/suppression for a specific user; null-fail if they may not see it.
+		$audience = $performer ? RevisionRecord::FOR_THIS_USER : RevisionRecord::RAW;
+		return $revision->getContent( SlotRecord::MAIN, $audience, $performer ) ?? false;
 	}
 
 	/**

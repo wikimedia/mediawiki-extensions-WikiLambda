@@ -28,8 +28,12 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Permissions\Authority;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
@@ -374,18 +378,31 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * Return the AbstractWikiContent object for a title and revisionId
 	 * or the latest revision if revisionId is null.
 	 *
-	 * Returns false if the revision is not found or the content model
-	 * of the retrieved revision doesn't match AbstractContent model.
+	 * Returns false if the revision is not found, the content model of the
+	 * retrieved revision doesn't match AbstractContent model, or the given
+	 * performer may not see the (deleted/suppressed) revision.
+	 *
+	 * When a performer is supplied the content is read for that user's audience
+	 * (RevisionDelete/suppression honoured); when it is null the content is read
+	 * at the public audience, so a deleted/suppressed revision is excluded. The
+	 * only null-performer caller is the public article-store rebuild.
+	 *
+	 * TODO: Once the security fix is deployed, make the visibility audience
+	 * explicit — an $audience parameter mirroring RevisionRecord::getContent() —
+	 * rather than inferring it from whether a performer is passed. Deferred to
+	 * keep this patch minimal; do it under regular code review.
 	 *
 	 * @param RevisionStore $revisionStore
 	 * @param Title $title
 	 * @param int|null $revisionId
+	 * @param Authority|null $performer
 	 * @return AbstractWikiContent|false
 	 */
 	public function getAbstractContentForTitle(
 		RevisionStore $revisionStore,
 		Title $title,
-		?int $revisionId = null
+		?int $revisionId = null,
+		?Authority $performer = null
 	) {
 		// Get requested or current revision
 		$revision = $revisionId ?
@@ -403,8 +420,46 @@ class AbstractWikiContentHandler extends ContentHandler {
 			return false;
 		}
 
-		$content = $revision->getMainContentRaw();
+		// Honour deletion/suppression. With a performer, use their audience; without
+		// one, fail closed at the public audience (the only no-performer caller is the
+		// public article-store rebuild, which must not bake in hidden content).
+		$audience = $performer ? RevisionRecord::FOR_THIS_USER : RevisionRecord::FOR_PUBLIC;
+		$content = $revision->getContent( SlotRecord::MAIN, $audience, $performer );
+		if ( $content === null ) {
+			return false;
+		}
 		'@phan-var AbstractWikiContent $content';
 		return $content;
+	}
+
+	/**
+	 * Guard a user-facing view of a (possibly deleted/suppressed) revision.
+	 *
+	 * Mirrors Article::fetchRevisionRecord(): if the performer may not see the
+	 * revision's deleted text, add the appropriate core warning box to the
+	 * output and return false so the caller can stop before leaking content.
+	 *
+	 * @param RevisionRecord $revision
+	 * @param Authority $performer
+	 * @param Title $title Page title, for the rev-deleted-text-permission message
+	 * @param OutputPage $output
+	 * @return bool True if the revision may be shown to the performer
+	 */
+	public static function assertRevisionViewable(
+		RevisionRecord $revision,
+		Authority $performer,
+		Title $title,
+		OutputPage $output
+	): bool {
+		if ( $revision->userCan( RevisionRecord::DELETED_TEXT, $performer ) ) {
+			return true;
+		}
+
+		$msg = $revision->isDeleted( RevisionRecord::DELETED_RESTRICTED )
+			? $output->msg( 'rev-suppressed-text' )
+			: $output->msg( 'rev-deleted-text-permission', $title->getPrefixedDBkey() );
+		$output->addHTML( Html::errorBox( $msg->parse() ) );
+
+		return false;
 	}
 }

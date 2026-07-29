@@ -30,6 +30,9 @@ trait AbstractContentEditPageTrait {
 	 * @param ContentHandlerFactory $contentHandlerFactory
 	 * @param OutputPage $output
 	 * @param Title $title
+	 * @return bool False if the requested revision is hidden from the viewer (a
+	 *   deleted-text message has been emitted); the caller should then render no
+	 *   editor. True otherwise.
 	 */
 	public function generateAbstractContentPayload(
 		IContextSource $context,
@@ -37,7 +40,7 @@ trait AbstractContentEditPageTrait {
 		ContentHandlerFactory $contentHandlerFactory,
 		OutputPage $output,
 		Title $title
-	): void {
+	): bool {
 		$contentHandler = $contentHandlerFactory->getContentHandler( CONTENT_MODEL_ABSTRACT );
 		'@phan-var AbstractWikiContentHandler $contentHandler';
 
@@ -75,10 +78,25 @@ trait AbstractContentEditPageTrait {
 		if ( $title->exists() ) {
 			// Content exists: retrieve given or latest revision
 			$createNewPage = false;
+			$performer = $context->getAuthority();
+
+			// (T430601) Respect RevisionDelete/suppression on a specifically requested revision:
+			// if the viewer may not see it, show core's message and render no editor.
+			if ( $targetRevisionId !== null ) {
+				$targetRevision = $revisionStore->getRevisionById( $targetRevisionId );
+				if ( $targetRevision && !AbstractWikiContentHandler::assertRevisionViewable(
+					$targetRevision, $performer, $title, $output
+				) ) {
+					$output->setPageTitleMsg( $context->msg( 'errorpagetitle' ) );
+					return false;
+				}
+			}
+
 			$awContent = $contentHandler->getAbstractContentForTitle(
 				$revisionStore,
 				$title,
-				$targetRevisionId
+				$targetRevisionId,
+				$performer
 			);
 			// FIXME if jsonContent is false, then title and oldid don't match
 			$jsonContent = $awContent ? $awContent->getText() : false;
@@ -87,11 +105,19 @@ trait AbstractContentEditPageTrait {
 			$jsonContent = $contentHandler->makeEmptyContent()->getText();
 		}
 
-		// (T364318) Add the revision navigation bar if seeing an oldid
+		// When requesting a specific revision...
 		if ( $targetRevisionId !== null ) {
 			$output->setRevisionId( $targetRevisionId );
 			$article = Article::newFromTitle( $title, $context );
+
+			// (T364318) Add the revision navigation bar if seeing an oldid
 			$article->setOldSubtitle( $targetRevisionId );
+
+			// (T430601) If performer can see RevisionDelete/supression,
+			// fall back to Article::showDeletedRevisionHeader
+			$request->setVal( 'oldid', $targetRevisionId );
+			$article->fetchRevisionRecord();
+			$article->showDeletedRevisionHeader();
 		}
 
 		// Fallback no-JS notice.
@@ -113,5 +139,7 @@ trait AbstractContentEditPageTrait {
 			'viewmode' => false
 		];
 		$output->addJsConfigVars( 'wgWikiLambda', $configVars );
+
+		return true;
 	}
 }
