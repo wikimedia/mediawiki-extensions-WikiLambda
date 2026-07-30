@@ -154,9 +154,10 @@ class SpecialViewObject extends UnlistedSpecialPage {
 
 		$outputPage->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 
-		$targetContent = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
+		$targetContent = $this->zObjectStore->fetchZObjectByTitle( $targetTitle, $targetRevision );
 		if ( !$targetContent ) {
 			$this->redirectToMain( $outputPage );
+			return;
 		}
 
 		// Request that we render the content in the given target language.
