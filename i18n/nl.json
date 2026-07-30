@@ -520,7 +520,7 @@
 	"wikilambda-special-functionusage-count": "Ingebed op {{PLURAL:$1|één pagina|$1 pagina's}} op alle wiki's.",
 	"wikilambda-special-functionusage-empty": "Er zijn momenteel geen pagina's die deze functie bevatten.",
 	"wikilambda-special-functionusage-form-function": "Functie",
-	"wikilambda-special-functionusage-form-submit": "Toon gebruik",
+	"wikilambda-special-functionusage-form-submit": "Gebruik weergeven",
 	"wikilambda-special-functionusage-header": "Pagina's die $1 insluiten:",
 	"wikilambda-special-functionusage-invalid": "$1 is geen juiste functiereferentie.",
 	"wikilambda-special-functionusage-summary": "Deze pagina bevat een lijst met pagina's, op deze en andere wiki's, die een bepaalde functie insluiten met behulp van de parserfunctie <code><nowiki>{{#function:}}</nowiki></code>.",
