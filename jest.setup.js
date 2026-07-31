@@ -133,7 +133,8 @@ const testKitchenInstrument = {
 		console.log( 'Test Kitchen event emitted using submitInteraction: ' + action + ' - ' + JSON.stringify( interactionData ) );
 	} ),
 	send: jest.fn(),
-	setSchemaID: jest.fn()
+	// Real InstrumentInterface#setSchema is chainable (returns the instrument).
+	setSchema: jest.fn( () => testKitchenInstrument )
 };
 
 // Mock MW object
