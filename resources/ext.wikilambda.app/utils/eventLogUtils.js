@@ -7,9 +7,18 @@
 'use strict';
 
 // Machine-readable name of the instrument registered in Test Kitchen. The
-// instrument encapsulates the destination stream and the event schema, so
-// neither needs to be specified at the call site.
+// instrument encapsulates the destination stream, so it need not be specified
+// at the call site.
 const INSTRUMENT_NAME = 'wikifunctions-ui-actions';
+
+// Schema against which our events are validated. Test Kitchen's getInstrument()
+// forces every instrument to the generic base schema and does not (yet) pass
+// the instrument's real schema from the Test Kitchen UI config through to the
+// JS client, so we must restore ours via setSchema() before send() or EventGate
+// drops the events for failing validation (T433550). This mirrors the PHP
+// instrument's setSchema() call in WikiLambdaApiBase::submitMetricsEvent().
+// TODO (T433550): drop this once TestKitchen serves schema_id to the JS SDK.
+const SCHEMA_ID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
 
 const eventLogUtils = {
 	/**
@@ -47,6 +56,7 @@ const eventLogUtils = {
 				interactionData.zobjecttype = JSON.stringify( interactionData.zobjecttype );
 			}
 			const instrument = mw.testKitchen.getInstrument( INSTRUMENT_NAME );
+			instrument.setSchema( SCHEMA_ID );
 			instrument.send( action, eventLogUtils.removeNullUndefined( interactionData ) );
 		}
 	}

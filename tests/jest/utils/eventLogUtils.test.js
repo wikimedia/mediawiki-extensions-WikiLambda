@@ -77,6 +77,12 @@ describe( 'eventLogUtils', () => {
 			eventLogUtils.submitInteraction( 'test-action', interactionData );
 
 			expect( mw.testKitchen.getInstrument ).toHaveBeenCalledWith( 'wikifunctions-ui-actions' );
+			// The instrument must be pointed at our schema before sending, otherwise
+			// Test Kitchen validates events against its generic base schema and
+			// EventGate drops them (T433550).
+			expect( instrument.setSchema ).toHaveBeenCalledWith(
+				'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0'
+			);
 			expect( instrument.send ).toHaveBeenCalledWith(
 				'test-action',
 				{
