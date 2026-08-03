@@ -21,7 +21,7 @@ use MediaWiki\Content\ValidationParams;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
-use MediaWiki\Extension\WikiLambda\Diff\DiffKeyLabeller;
+use MediaWiki\Extension\WikiLambda\Diff\DiffLabelResolver;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffVisualiser;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -549,60 +549,25 @@ class ZObjectContentHandler extends ContentHandler {
 	 * Access level widened to public for use in ZObjectContentDifferenceEngine
 	 */
 	public function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
-		$languageCode = $context->getLanguage()->getCode();
-		$zObjectStore = $this->zObjectStore;
-		$langRegistry = ZLangRegistry::singleton();
-		$languageFactory = MediaWikiServices::getInstance()->getLanguageFactory();
+		$language = $context->getLanguage();
 
-		// Resolve a language ZObject id (e.g. 'Z1002') to its display name (from
-		// WikiLambda's own labels, in the viewer's language) plus the BCP-47 code
-		// and writing direction, so language-specific values can be tagged with
-		// lang/dir. Degrades gracefully to the id and an undirected span.
-		$languageResolver = static function ( string $languageZid ) use (
-			$zObjectStore, $languageCode, $langRegistry, $languageFactory
-		): array {
-			$name = $zObjectStore->fetchZObjectLabel( $languageZid, $languageCode ) ?? $languageZid;
-			try {
-				$code = $langRegistry->getLanguageCodeFromZid( $languageZid );
-				$dir = $languageFactory->getLanguage( $code )->getDir();
-			} catch ( \Exception ) {
-				return [ 'name' => $name, 'code' => '', 'dir' => 'auto' ];
-			}
-			return [ 'name' => $name, 'code' => $code, 'dir' => $dir ];
-		};
-
-		// Resolve a global key (e.g. 'Z8K1') to its human-readable label by
-		// fetching the owning type/function definition; memoised per render.
-		$keyLabeller = new DiffKeyLabeller( $zObjectStore, $context->getLanguage() );
-		$keyLabelResolver = static function ( string $key ) use ( $keyLabeller ): string {
-			return $keyLabeller->getKeyLabel( $key );
-		};
-
-		// Resolve a referenced ZObject id (e.g. 'Z40') to its label and view-page
-		// URL, so diff values that are references render as links. Memoised per
-		// render, degrading to a bare ZID link when no label is found.
+		// Resolves the keys, references and languages appearing in the diff to
+		// display text; memoised for the lifetime of this one render.
 		// TODO (T284473): If diffs are found to reference many distinct ZObjects,
 		// switch to a single batched ZObjectStore::fetchZObjectLabels() pre-pass
 		// rather than one fetchZObjectLabel() per distinct id.
-		$referenceMemo = [];
-		$referenceResolver = static function ( string $zid ) use (
-			$zObjectStore, $languageCode, &$referenceMemo
-		): ?array {
-			if ( !array_key_exists( $zid, $referenceMemo ) ) {
-				$title = Title::newFromText( $zid, NS_MAIN );
-				$referenceMemo[$zid] = $title === null ? null : [
-					'label' => $zObjectStore->fetchZObjectLabel( $zid, $languageCode ),
-					'url' => $title->getLocalURL(),
-				];
-			}
-			return $referenceMemo[$zid];
-		};
+		$services = MediaWikiServices::getInstance();
+		$labels = new DiffLabelResolver(
+			$this->zObjectStore,
+			$language,
+			$services->getLanguageFactory(),
+			$services->getTitleFactory(),
+			ZLangRegistry::singleton()
+		);
 
 		return new ZObjectSlotDiffRenderer(
-			new ZObjectDiffVisualiser(
-				$context, $languageResolver, $keyLabelResolver, $referenceResolver
-			),
-			$languageCode
+			new ZObjectDiffVisualiser( $context, $labels ),
+			$language->getCode()
 		);
 	}
 

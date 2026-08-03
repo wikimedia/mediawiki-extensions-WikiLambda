@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
+use MediaWiki\Extension\WikiLambda\Diff\DiffLabelResolver;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffVisualiser;
 use MediaWiki\Language\MessageLocalizer;
@@ -22,8 +23,9 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 
 	/**
 	 * Build a visualiser whose MessageLocalizer echoes each message key back as
-	 * its text, and whose language resolver knows English and French, so tests
-	 * can assert grouping and language-keying without the real i18n or DB stack.
+	 * its text, and whose label resolver knows a handful of keys, references and
+	 * languages, so tests can assert grouping and language-keying without the
+	 * real i18n or DB stack.
 	 */
 	private function newVisualiser(): ZObjectDiffVisualiser {
 		$localizer = $this->createMock( MessageLocalizer::class );
@@ -32,20 +34,29 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 			$message->method( 'text' )->willReturn( "[$key]" );
 			return $message;
 		} );
-		$languageResolver = static fn ( string $zid ): array => [
-			'Z1002' => [ 'name' => 'English', 'code' => 'en', 'dir' => 'ltr' ],
-			'Z1004' => [ 'name' => 'French', 'code' => 'fr', 'dir' => 'ltr' ],
-			'Z1005' => [ 'name' => 'Arabic', 'code' => 'ar', 'dir' => 'rtl' ],
-		][$zid] ?? [ 'name' => $zid, 'code' => '', 'dir' => 'auto' ];
-		$keyResolver = static fn ( string $key ): string => [
-			'Z8K1' => 'arguments',
-			'Z17K3' => 'label',
-		][$key] ?? $key;
-		$referenceResolver = static fn ( string $zid ): ?array => [
-			'Z6' => [ 'label' => 'String', 'url' => '/wiki/Z6' ],
-			'Z40' => [ 'label' => 'Boolean', 'url' => '/wiki/Z40' ],
-		][$zid] ?? null;
-		return new ZObjectDiffVisualiser( $localizer, $languageResolver, $keyResolver, $referenceResolver );
+
+		$labels = $this->createMock( DiffLabelResolver::class );
+		$labels->method( 'getLanguage' )->willReturnCallback(
+			static fn ( string $zid ): array => [
+				'Z1002' => [ 'name' => 'English', 'code' => 'en', 'dir' => 'ltr' ],
+				'Z1004' => [ 'name' => 'French', 'code' => 'fr', 'dir' => 'ltr' ],
+				'Z1005' => [ 'name' => 'Arabic', 'code' => 'ar', 'dir' => 'rtl' ],
+			][$zid] ?? [ 'name' => $zid, 'code' => '', 'dir' => 'auto' ]
+		);
+		$labels->method( 'getKeyLabel' )->willReturnCallback(
+			static fn ( string $key ): string => [
+				'Z8K1' => 'arguments',
+				'Z17K3' => 'label',
+			][$key] ?? $key
+		);
+		$labels->method( 'getReference' )->willReturnCallback(
+			static fn ( string $zid ): ?array => [
+				'Z6' => [ 'label' => 'String', 'url' => '/wiki/Z6' ],
+				'Z40' => [ 'label' => 'Boolean', 'url' => '/wiki/Z40' ],
+			][$zid] ?? null
+		);
+
+		return new ZObjectDiffVisualiser( $localizer, $labels );
 	}
 
 	/**

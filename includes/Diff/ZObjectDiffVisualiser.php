@@ -11,7 +11,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
-use Closure;
 use Diff\DiffOp\DiffOp;
 use Diff\DiffOp\DiffOpAdd;
 use Diff\DiffOp\DiffOpChange;
@@ -46,22 +45,12 @@ class ZObjectDiffVisualiser {
 
 	/**
 	 * @param MessageLocalizer $messageLocalizer
-	 * @param Closure $languageResolver Maps a language ZObject id (e.g. 'Z1002')
-	 *   to [ 'name' => string, 'code' => string, 'dir' => string ] in the
-	 *   viewer's language — the display name (falling back to the id), the BCP-47
-	 *   code (empty if unknown), and the writing direction ('ltr'/'rtl'/'auto').
-	 * @param Closure $keyLabelResolver Maps a global key (e.g. 'Z8K1') to its
-	 *   human-readable label, falling back to the key itself; other segments
-	 *   (list indices, bare local keys) are returned unchanged.
-	 * @param Closure $referenceResolver Maps a referenced ZObject id (e.g. 'Z40')
-	 *   to [ 'label' => ?string, 'url' => string ], or null when the id has no
-	 *   valid target, so reference-valued changes can render as links.
+	 * @param DiffLabelResolver $labels Resolves the keys, references and
+	 *   languages appearing in the diff to display text in the viewer's language.
 	 */
 	public function __construct(
 		private readonly MessageLocalizer $messageLocalizer,
-		private readonly Closure $languageResolver,
-		private readonly Closure $keyLabelResolver,
-		private readonly Closure $referenceResolver
+		private readonly DiffLabelResolver $labels
 	) {
 	}
 
@@ -362,7 +351,7 @@ class ZObjectDiffVisualiser {
 		if ( $languageZid === null ) {
 			return $label;
 		}
-		$language = '(' . ( $this->languageResolver )( $languageZid )['name'] . ')';
+		$language = '(' . $this->labels->getLanguage( $languageZid )['name'] . ')';
 		return $label === '' ? $language : $label . ' ' . $language;
 	}
 
@@ -378,7 +367,7 @@ class ZObjectDiffVisualiser {
 		if ( $languageZid === null ) {
 			return null;
 		}
-		$language = ( $this->languageResolver )( $languageZid );
+		$language = $this->labels->getLanguage( $languageZid );
 		return [ 'code' => $language['code'], 'dir' => $language['dir'] ];
 	}
 
@@ -437,7 +426,7 @@ class ZObjectDiffVisualiser {
 	 * @return string
 	 */
 	private function labelSegment( $segment ): string {
-		return ( $this->keyLabelResolver )( (string)$segment );
+		return $this->labels->getKeyLabel( (string)$segment );
 	}
 
 	/**
@@ -609,7 +598,7 @@ class ZObjectDiffVisualiser {
 			return null;
 		}
 
-		$reference = ( $this->referenceResolver )( $value );
+		$reference = $this->labels->getReference( $value );
 		if ( $reference === null ) {
 			return null;
 		}
