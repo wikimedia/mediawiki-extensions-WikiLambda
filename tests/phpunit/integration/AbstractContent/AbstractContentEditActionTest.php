@@ -16,6 +16,8 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Page\Article;
 use MediaWiki\Request\FauxRequest;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\RevisionDelete\RevisionDeleter;
 use MediaWiki\Title\Title;
 
 /**
@@ -314,7 +316,163 @@ class AbstractContentEditActionTest extends WikiLambdaAbstractModeIntegrationTes
 		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'createNewPage' ] );
 		$this->assertFalse( $jsVars[ 'wgWikiLambda' ][ 'content' ] );
 
-		// Revision id is still set on the output
-		$this->assertSame( $otherRevId, $output->getRevisionId() );
+		// (T430601) The revision id is no longer set for an oldid that belongs to another
+		// page: pointing OutputPage at it would make this page's permanent link resolve to
+		// a revision of a different page.
+		$this->assertNull( $output->getRevisionId() );
+	}
+
+	// ------------------------------------------------------------------
+	// (T430601) RevisionDelete / suppression
+	// ------------------------------------------------------------------
+
+	/**
+	 * Create an Abstract page with two revisions and hide the FIRST (non-current) one's text.
+	 *
+	 * RevisionDeleter::createList()->setVisibility() is used rather than a bare `revision`
+	 * table UPDATE because it both writes rev_deleted and purges the RevisionStore/page
+	 * caches, so the subsequent read sees the new visibility rather than a stale, still-
+	 * viewable cached RevisionRecord.
+	 *
+	 * @param Title $title
+	 * @param int[] $visibility Bitfield constants to set, e.g. [ RevisionRecord::DELETED_TEXT ]
+	 * @return array{0:int,1:string} [ $hiddenRevisionId, $hiddenJson ]
+	 */
+	private function createPageWithHiddenFirstRevision( Title $title, array $visibility ): array {
+		$hiddenJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$status = $this->editPage(
+			$title, new AbstractWikiContent( $hiddenJson ), 'first', self::TEST_ABSTRACT_NS
+		);
+		$this->assertStatusOK( $status );
+		$hiddenRevisionId = $status->getNewRevision()->getId();
+
+		// A second revision, so the hidden one is not the current revision.
+		$visibleJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$this->assertStatusOK( $this->editPage(
+			$title, new AbstractWikiContent( $visibleJson ), 'second', self::TEST_ABSTRACT_NS
+		) );
+
+		// Derivative, so the sysop does not leak into the action under test via the
+		// shared context that getTestContext() derives from.
+		$deleteContext = new DerivativeContext( RequestContext::getMain() );
+		$deleteContext->setUser( $this->getTestSysop()->getUser() );
+		$deleter = RevisionDeleter::createList(
+			'revision', $deleteContext, $title, [ $hiddenRevisionId ]
+		);
+		$this->assertStatusOK( $deleter->setVisibility( [
+			'value' => array_fill_keys( $visibility, 1 ),
+			'comment' => 'Testing revision visibility',
+		] ) );
+		$this->runDeferredUpdates();
+
+		return [ $hiddenRevisionId, $hiddenJson ];
+	}
+
+	public function testShow_revisionDeletedOldidRendersNoEditorForUnprivilegedViewer() {
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		[ $hiddenRevisionId, $hiddenJson ] = $this->createPageWithHiddenFirstRevision(
+			$title, [ RevisionRecord::DELETED_TEXT ]
+		);
+
+		$context = $this->getTestContext( $title, new FauxRequest( [ 'oldid' => $hiddenRevisionId ] ) );
+		$context->setUser( $this->getTestUser()->getUser() );
+		$action = new AbstractContentEditAction(
+			Article::newFromTitle( $title, $context ),
+			$context,
+			$this->getServiceContainer()->getRevisionStore(),
+			$this->getServiceContainer()->getContentHandlerFactory()
+		);
+
+		$action->show();
+
+		$output = $action->getOutput();
+		$html = $output->getHTML();
+
+		// No editor, and no content of any kind handed to the SPA.
+		$this->assertArrayNotHasKey( 'wgWikiLambda', $output->getJsConfigVars() );
+		$this->assertStringNotContainsString( 'ext-wikilambda-app', $html );
+		$this->assertStringNotContainsString( $hiddenJson, $html );
+		// Core's rev-deleted-text-permission box, emitted by UIUtils::checkRevisionViewable().
+		$this->assertStringContainsString( 'cdx-message--error', $html );
+	}
+
+	/**
+	 * A viewer who may see hidden text still gets core's confirmation step. Before T430601
+	 * this path handed the deleted content straight to the SPA with no 'unhide' gate.
+	 */
+	public function testShow_revisionDeletedOldidNeedsUnhideForPrivilegedViewer() {
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		[ $hiddenRevisionId, $hiddenJson ] = $this->createPageWithHiddenFirstRevision(
+			$title, [ RevisionRecord::DELETED_TEXT ]
+		);
+
+		$context = $this->getTestContext( $title, new FauxRequest( [ 'oldid' => $hiddenRevisionId ] ) );
+		$context->setUser( $this->getTestSysop()->getUser() );
+		$action = new AbstractContentEditAction(
+			Article::newFromTitle( $title, $context ),
+			$context,
+			$this->getServiceContainer()->getRevisionStore(),
+			$this->getServiceContainer()->getContentHandlerFactory()
+		);
+
+		$action->show();
+
+		$output = $action->getOutput();
+		$this->assertArrayNotHasKey( 'wgWikiLambda', $output->getJsConfigVars() );
+		$this->assertStringNotContainsString( $hiddenJson, $output->getHTML() );
+	}
+
+	public function testShow_revisionDeletedOldidServedWithUnhideForPrivilegedViewer() {
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		[ $hiddenRevisionId, $hiddenJson ] = $this->createPageWithHiddenFirstRevision(
+			$title, [ RevisionRecord::DELETED_TEXT ]
+		);
+
+		$context = $this->getTestContext(
+			$title, new FauxRequest( [ 'oldid' => $hiddenRevisionId, 'unhide' => 1 ] )
+		);
+		$context->setUser( $this->getTestSysop()->getUser() );
+		$action = new AbstractContentEditAction(
+			Article::newFromTitle( $title, $context ),
+			$context,
+			$this->getServiceContainer()->getRevisionStore(),
+			$this->getServiceContainer()->getContentHandlerFactory()
+		);
+
+		$action->show();
+
+		$jsVars = $action->getOutput()->getJsConfigVars();
+		$this->assertSame( $hiddenJson, $jsVars[ 'wgWikiLambda' ][ 'content' ] );
+	}
+
+	/**
+	 * The trait used to rewrite 'oldid' on the shared WebRequest, so on a ?diff= URL every
+	 * later consumer in the request (skin nav, other extensions' hooks) saw the diff's
+	 * right-hand revision instead of the one the user asked for.
+	 */
+	public function testShow_doesNotMutateSharedRequestOldid() {
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+
+		$firstJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$firstStatus = $this->editPage(
+			$title, new AbstractWikiContent( $firstJson ), 'first', self::TEST_ABSTRACT_NS
+		);
+		$firstRevId = $firstStatus->getNewRevision()->getId();
+
+		$secondJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$secondStatus = $this->editPage(
+			$title, new AbstractWikiContent( $secondJson ), 'second', self::TEST_ABSTRACT_NS
+		);
+		$secondRevId = $secondStatus->getNewRevision()->getId();
+
+		$request = new FauxRequest( [ 'diff' => (string)$secondRevId, 'oldid' => $firstRevId ] );
+		$action = $this->buildAction( $title, $request );
+
+		$action->show();
+
+		// The trait resolved the diff's right-hand side for its own use…
+		$this->assertSame( $secondRevId, $action->getOutput()->getRevisionId() );
+		// …without rewriting what the rest of the request sees.
+		$this->assertSame( $firstRevId, $request->getInt( 'oldid' ) );
 	}
 }

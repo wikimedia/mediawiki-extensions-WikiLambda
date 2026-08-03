@@ -11,11 +11,13 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Content\ContentHandlerFactory;
+use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
+use MediaWiki\Request\DerivativeRequest;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\Title;
 
@@ -75,23 +77,61 @@ trait AbstractContentEditPageTrait {
 			$targetRevisionId = $request->getInt( 'oldid' ) ?: null;
 		}
 
-		if ( $title->exists() ) {
-			// Content exists: retrieve given or latest revision
-			$createNewPage = false;
-			$performer = $context->getAuthority();
+		$performer = $context->getAuthority();
 
-			// (T430601) Respect RevisionDelete/suppression on a specifically requested revision:
-			// if the viewer may not see it, show core's message and render no editor.
-			if ( $targetRevisionId !== null ) {
-				$targetRevision = $revisionStore->getRevisionById( $targetRevisionId );
-				if ( $targetRevision && !UIUtils::checkRevisionViewable(
-					$targetRevision, $performer, $title, $output
-				) ) {
+		// (T430601) When a specific revision is requested, resolve and gate it *before* any
+		// content is read, so nothing hidden reaches $jsonContent below. Resolve through the
+		// title so an oldid belonging to another page counts as not requested, rather than
+		// gating one revision while rendering another.
+		if ( $targetRevisionId !== null && $title->exists() ) {
+			$targetRevision = $revisionStore->getRevisionByTitle( $title, $targetRevisionId );
+
+			// A null revision means the oldid does not belong to this title; fall through and
+			// let getAbstractContentForTitle() report it the same way, with no editor content.
+			if ( $targetRevision ) {
+				$output->setRevisionId( $targetRevisionId );
+
+				// A viewer who may not see the revision gets core's message and no editor.
+				if ( !UIUtils::checkRevisionViewable( $targetRevision, $performer, $title, $output ) ) {
+					$output->setPageTitleMsg( $context->msg( 'errorpagetitle' ) );
+					return false;
+				}
+
+				// Article resolves which revision it is describing from its own request's
+				// 'oldid', and on a ?diff= URL that is not the revision we settled on above.
+				// Hand it a derived request carrying the resolved ID instead of mutating the
+				// shared one, which would leak the rewritten value into the skin and every
+				// other hook still to run on this request.
+				$articleRequestValues = $request->getValues();
+				unset( $articleRequestValues['diff'], $articleRequestValues['direction'] );
+				$articleRequestValues['oldid'] = $targetRevisionId;
+
+				$articleContext = new DerivativeContext( $context );
+				$articleContext->setRequest(
+					new DerivativeRequest( $request, $articleRequestValues, $request->wasPosted() )
+				);
+				$article = Article::newFromTitle( $title, $articleContext );
+
+				// Resolve the revision before the two calls below: both read
+				// Article::$mRevisionRecord, and showDeletedRevisionHeader() dereferences
+				// it without a null guard.
+				$article->fetchRevisionRecord();
+
+				// (T364318) Add the revision navigation bar if seeing an oldid
+				$article->setOldSubtitle( $targetRevisionId );
+
+				// (T430601) A viewer who *may* see hidden text still gets core's confirmation
+				// step: render no editor until they ask for it explicitly with unhide=1.
+				if ( !$article->showDeletedRevisionHeader() ) {
 					$output->setPageTitleMsg( $context->msg( 'errorpagetitle' ) );
 					return false;
 				}
 			}
+		}
 
+		if ( $title->exists() ) {
+			// Content exists: retrieve given or latest revision
+			$createNewPage = false;
 			$awContent = $contentHandler->getAbstractContentForTitle(
 				$revisionStore,
 				$title,
@@ -103,21 +143,6 @@ trait AbstractContentEditPageTrait {
 		} else {
 			// Content does not exist: generate empty content object
 			$jsonContent = $contentHandler->makeEmptyContent()->getText();
-		}
-
-		// When requesting a specific revision...
-		if ( $targetRevisionId !== null ) {
-			$output->setRevisionId( $targetRevisionId );
-			$article = Article::newFromTitle( $title, $context );
-
-			// (T364318) Add the revision navigation bar if seeing an oldid
-			$article->setOldSubtitle( $targetRevisionId );
-
-			// (T430601) If performer can see RevisionDelete/supression,
-			// fall back to Article::showDeletedRevisionHeader
-			$request->setVal( 'oldid', $targetRevisionId );
-			$article->fetchRevisionRecord();
-			$article->showDeletedRevisionHeader();
 		}
 
 		// Fallback no-JS notice.
