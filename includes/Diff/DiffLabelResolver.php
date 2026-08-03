@@ -39,8 +39,17 @@ use MediaWiki\Title\TitleFactory;
  */
 class DiffLabelResolver {
 
+	/**
+	 * Matches a global key such as "Z8K1", capturing the ZID of the type or
+	 * function that defines it and therefore holds its label.
+	 */
+	private const GLOBAL_KEY_PATTERN = '/^(Z\d+)K\d+$/';
+
 	/** @var array<string,?ZPersistentObject> Memoised zid => definition (null when unresolved) */
 	private array $definitions = [];
+
+	/** @var array<string,?string> Memoised zid => label in the viewer's language (null when it has none) */
+	private array $labels = [];
 
 	/** @var array<string,?array> Memoised zid => reference label and URL (null when no valid target) */
 	private array $references = [];
@@ -58,6 +67,56 @@ class DiffLabelResolver {
 	}
 
 	/**
+	 * Warm the caches for a batch of identifiers, so that rendering a whole diff
+	 * costs a fixed number of database reads rather than one or two per row.
+	 *
+	 * Identifiers are sorted by shape: a global key needs the whole owning type
+	 * or function definition, because its label lives in that definition's key
+	 * list, while a plain reference needs only its own label from the secondary
+	 * label table. Anything else — a list index, a bare local key, free text — is
+	 * ignored.
+	 *
+	 * Callers need not be exhaustive: whatever is missed simply falls back to an
+	 * individual read on first use. In particular the language of a changed
+	 * monolingual value is found by navigating the surrounding object rather than
+	 * from the diff itself, so it is usually resolved individually.
+	 *
+	 * @param string[] $identifiers Keys and references appearing in the diff, in
+	 *   any order and with any number of duplicates
+	 */
+	public function prefetch( array $identifiers ): void {
+		$keyOwners = [];
+		$references = [];
+		foreach ( array_unique( $identifiers ) as $identifier ) {
+			if ( preg_match( self::GLOBAL_KEY_PATTERN, $identifier, $matches ) ) {
+				$keyOwners[$matches[1]] = true;
+			} elseif ( ZObjectUtils::isValidZObjectReference( $identifier ) ) {
+				$references[$identifier] = true;
+			}
+		}
+
+		// Only ask for what is not already cached, so that a second call after
+		// more identifiers come to light does not re-read the first batch.
+		// array_diff() preserves keys, so reindex: these become query IN lists.
+		$keyOwners = array_values( array_diff( array_keys( $keyOwners ), array_keys( $this->definitions ) ) );
+		if ( $keyOwners !== [] ) {
+			$definitions = $this->zObjectStore->fetchBatchZObjects( $keyOwners );
+			foreach ( $keyOwners as $zid ) {
+				$this->definitions[$zid] = $definitions[$zid] ?? null;
+			}
+		}
+
+		// A language's display name is just the label of its ZLanguage object, so
+		// languages and references share this cache.
+		$references = array_values( array_diff( array_keys( $references ), array_keys( $this->labels ) ) );
+		if ( $references !== [] ) {
+			$this->labels += $this->zObjectStore->fetchZObjectLabels(
+				$references, $this->language->getCode()
+			);
+		}
+	}
+
+	/**
 	 * Resolve a key to its human-readable label, or return the key itself if it
 	 * is not a global key or cannot be resolved.
 	 *
@@ -71,7 +130,7 @@ class DiffLabelResolver {
 	 * @return string
 	 */
 	public function getKeyLabel( string $key ): string {
-		if ( !preg_match( '/^(Z\d+)K\d+$/', $key, $matches ) ) {
+		if ( !preg_match( self::GLOBAL_KEY_PATTERN, $key, $matches ) ) {
 			return $key;
 		}
 
@@ -102,7 +161,7 @@ class DiffLabelResolver {
 		if ( !array_key_exists( $zid, $this->references ) ) {
 			$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 			$this->references[$zid] = $title === null ? null : [
-				'label' => $this->zObjectStore->fetchZObjectLabel( $zid, $this->language->getCode() ),
+				'label' => $this->getLabel( $zid ),
 				'url' => $title->getLocalURL(),
 			];
 		}
@@ -130,8 +189,7 @@ class DiffLabelResolver {
 	 * @return array{name:string,code:string,dir:string}
 	 */
 	private function resolveLanguage( string $languageZid ): array {
-		$name = $this->zObjectStore->fetchZObjectLabel( $languageZid, $this->language->getCode() )
-			?? $languageZid;
+		$name = $this->getLabel( $languageZid ) ?? $languageZid;
 		try {
 			$code = $this->langRegistry->getLanguageCodeFromZid( $languageZid );
 			$dir = $this->languageFactory->getLanguage( $code )->getDir();
@@ -139,6 +197,20 @@ class DiffLabelResolver {
 			return [ 'name' => $name, 'code' => '', 'dir' => 'auto' ];
 		}
 		return [ 'name' => $name, 'code' => $code, 'dir' => $dir ];
+	}
+
+	/**
+	 * Fetch (and memoise) the label of a ZID in the viewer's language, or null if
+	 * it has none in that language or its fallback chain.
+	 *
+	 * @param string $zid
+	 * @return string|null
+	 */
+	private function getLabel( string $zid ): ?string {
+		if ( !array_key_exists( $zid, $this->labels ) ) {
+			$this->labels[$zid] = $this->zObjectStore->fetchZObjectLabel( $zid, $this->language->getCode() );
+		}
+		return $this->labels[$zid];
 	}
 
 	/**

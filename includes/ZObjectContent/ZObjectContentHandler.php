@@ -552,10 +552,7 @@ class ZObjectContentHandler extends ContentHandler {
 		$language = $context->getLanguage();
 
 		// Resolves the keys, references and languages appearing in the diff to
-		// display text; memoised for the lifetime of this one render.
-		// TODO (T284473): If diffs are found to reference many distinct ZObjects,
-		// switch to a single batched ZObjectStore::fetchZObjectLabels() pre-pass
-		// rather than one fetchZObjectLabel() per distinct id.
+		// display text; batched and memoised for the lifetime of this one render.
 		$services = MediaWikiServices::getInstance();
 		$labels = new DiffLabelResolver(
 			$this->zObjectStore,

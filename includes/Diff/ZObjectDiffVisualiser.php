@@ -75,7 +75,9 @@ class ZObjectDiffVisualiser {
 		$about = [];
 		$contents = [];
 		$other = [];
+		$identifiers = [];
 		foreach ( ZObjectDiffer::flattenDiff( $diffOp ) as $entry ) {
+			$this->collectIdentifiers( $entry, $identifiers );
 			$head = $entry['path'][0] ?? null;
 			if ( in_array( $head, $aboutKeys, true ) ) {
 				$about[] = $entry;
@@ -85,6 +87,11 @@ class ZObjectDiffVisualiser {
 				$other[] = $entry;
 			}
 		}
+
+		// Resolve every label the diff needs up front, so that a diff touching
+		// many objects costs a fixed number of database reads rather than growing
+		// with the number of rows.
+		$this->labels->prefetch( $identifiers );
 
 		$html = '';
 		if ( $about ) {
@@ -105,6 +112,52 @@ class ZObjectDiffVisualiser {
 			$html .= $this->renderEntry( $entry['path'], $entry['op'], $oldObject, $newObject, false );
 		}
 		return $html;
+	}
+
+	/**
+	 * Collect the ZObject identifiers one flattened diff entry will need display
+	 * text for: the keys naming it, which are its path segments, and any
+	 * reference it changes, which may be nested inside a changed sub-tree (the
+	 * language of a monolingual value, say).
+	 *
+	 * Deliberately over-collects rather than predicting what each row will
+	 * actually render: the resolver batches by shape and discards the rest, so a
+	 * superfluous identifier costs nothing beyond a slightly wider query.
+	 *
+	 * @param array $entry A 'path' and 'op' pair from ZObjectDiffer::flattenDiff()
+	 * @param string[] &$identifiers Accumulator, appended to in place
+	 */
+	private function collectIdentifiers( array $entry, array &$identifiers ): void {
+		foreach ( $entry['path'] as $segment ) {
+			$identifiers[] = (string)$segment;
+		}
+
+		$op = $entry['op'];
+		$this->collectValueIdentifiers( $this->sidedValue( $op ), $identifiers );
+		if ( $op instanceof DiffOpChange ) {
+			$this->collectValueIdentifiers( $op->getOldValue(), $identifiers );
+			$this->collectValueIdentifiers( $op->getNewValue(), $identifiers );
+		}
+	}
+
+	/**
+	 * Collect the strings held anywhere in a diff value, any of which may turn
+	 * out to be a reference. Keys are left alone: they are only labelled when
+	 * they appear in a path.
+	 *
+	 * @param mixed $value
+	 * @param string[] &$identifiers Accumulator, appended to in place
+	 */
+	private function collectValueIdentifiers( $value, array &$identifiers ): void {
+		if ( is_string( $value ) ) {
+			$identifiers[] = $value;
+			return;
+		}
+		if ( is_array( $value ) ) {
+			foreach ( $value as $item ) {
+				$this->collectValueIdentifiers( $item, $identifiers );
+			}
+		}
 	}
 
 	/**

@@ -84,6 +84,44 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		return ( new ZObjectDiffer() )->doDiff( $old, $new );
 	}
 
+	public function testLabelsArePrefetchedOnceForTheWholeDiff() {
+		$prefetched = [];
+		$labels = $this->createMock( DiffLabelResolver::class );
+		$labels->expects( $this->once() )->method( 'prefetch' )->willReturnCallback(
+			static function ( array $identifiers ) use ( &$prefetched ): void {
+				$prefetched = $identifiers;
+			}
+		);
+		$labels->method( 'getKeyLabel' )->willReturnArgument( 0 );
+		$labels->method( 'getLanguage' )->willReturn( [ 'name' => 'English', 'code' => 'en', 'dir' => 'ltr' ] );
+
+		$localizer = $this->createMock( MessageLocalizer::class );
+		$localizer->method( 'msg' )->willReturnCallback( function () {
+			$message = $this->createMock( Message::class );
+			$message->method( 'text' )->willReturn( '' );
+			return $message;
+		} );
+
+		$old = [ 'Z1K1' => 'Z2' ];
+		$new = [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [
+				'Z1K1' => 'Z14293',
+				'Z14293K1' => 'Z32270',
+				'Z14293K2' => [ 'Z60', 'Z2053' ],
+			],
+		];
+		( new ZObjectDiffVisualiser( $localizer, $labels ) )
+			->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// Both the keys naming the change and the references nested inside the
+		// added value must be offered up, so that neither needs its own read.
+		$this->assertContains( 'Z2K2', $prefetched );
+		$this->assertContains( 'Z14293', $prefetched );
+		$this->assertContains( 'Z32270', $prefetched );
+		$this->assertContains( 'Z2053', $prefetched );
+	}
+
 	public function testIdenticalObjectsProduceEmptyDiff() {
 		$object = $this->monolingualField( 'Z2K3', 'Mushroom' );
 		$this->assertSame(

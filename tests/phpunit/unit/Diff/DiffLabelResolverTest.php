@@ -160,6 +160,90 @@ class DiffLabelResolverTest extends MediaWikiUnitTestCase {
 		$resolver->getLanguage( 'Z1005' );
 	}
 
+	public function testPrefetchSortsIdentifiersByShape() {
+		$store = $this->createMock( ZObjectStore::class );
+		// Global keys need their owning definition; plain references need only a
+		// label; list indices and free text are neither.
+		$store->expects( $this->once() )
+			->method( 'fetchBatchZObjects' )
+			->with( [ 'Z8', 'Z17' ] )
+			->willReturn( [] );
+		$store->expects( $this->once() )
+			->method( 'fetchZObjectLabels' )
+			->with( [ 'Z40', 'Z1002' ], 'en' )
+			->willReturn( [ 'Z40' => 'Boolean', 'Z1002' => 'English' ] );
+
+		$this->newResolver( $store )->prefetch(
+			[ 'Z8K1', '17', 'Z40', 'Z17K3', 'Z1002', 'K1', 'not a zid', 'Z8K2' ]
+		);
+	}
+
+	public function testPrefetchSatisfiesLaterLookupsWithoutFurtherReads() {
+		$store = $this->createMock( ZObjectStore::class );
+		$store->method( 'fetchZObjectLabels' )->willReturn( [ 'Z40' => 'Boolean' ] );
+		$store->expects( $this->never() )->method( 'fetchZObjectLabel' );
+
+		$resolver = $this->newResolver( $store, $this->titleFactoryFor( 'Z40', '/wiki/Z40' ) );
+		$resolver->prefetch( [ 'Z40' ] );
+
+		$this->assertSame(
+			[ 'label' => 'Boolean', 'url' => '/wiki/Z40' ],
+			$resolver->getReference( 'Z40' )
+		);
+	}
+
+	public function testPrefetchedAbsenceIsNotRetried() {
+		$store = $this->createMock( ZObjectStore::class );
+		// fetchZObjectLabels() reports an unlabelled object as a null entry, which
+		// is a cached answer and not a cache miss to be read again individually.
+		$store->method( 'fetchZObjectLabels' )->willReturn( [ 'Z400' => null ] );
+		$store->expects( $this->never() )->method( 'fetchZObjectLabel' );
+
+		$resolver = $this->newResolver( $store, $this->titleFactoryFor( 'Z400', '/wiki/Z400' ) );
+		$resolver->prefetch( [ 'Z400' ] );
+
+		$this->assertSame(
+			[ 'label' => null, 'url' => '/wiki/Z400' ],
+			$resolver->getReference( 'Z400' )
+		);
+	}
+
+	public function testSecondPrefetchOnlyAsksForWhatIsNotCached() {
+		$labelBatches = [];
+		$definitionBatches = [];
+		$store = $this->createMock( ZObjectStore::class );
+		$store->method( 'fetchZObjectLabels' )->willReturnCallback(
+			static function ( array $zids ) use ( &$labelBatches ): array {
+				$labelBatches[] = $zids;
+				return array_fill_keys( $zids, 'a label' );
+			}
+		);
+		$store->method( 'fetchBatchZObjects' )->willReturnCallback(
+			static function ( array $zids ) use ( &$definitionBatches ): array {
+				$definitionBatches[] = $zids;
+				return [];
+			}
+		);
+
+		$resolver = $this->newResolver( $store );
+		$resolver->prefetch( [ 'Z8K1', 'Z40' ] );
+		$resolver->prefetch( [ 'Z8K1', 'Z40', 'Z17K1', 'Z60' ] );
+
+		// Z8 and Z40 are already known from the first batch, so the second asks
+		// only for the newcomers — as contiguously indexed lists, since these go
+		// straight into query IN clauses.
+		$this->assertSame( [ [ 'Z8' ], [ 'Z17' ] ], $definitionBatches );
+		$this->assertSame( [ [ 'Z40' ], [ 'Z60' ] ], $labelBatches );
+	}
+
+	public function testPrefetchWithNothingToResolveReadsNothing() {
+		$store = $this->createMock( ZObjectStore::class );
+		$store->expects( $this->never() )->method( 'fetchBatchZObjects' );
+		$store->expects( $this->never() )->method( 'fetchZObjectLabels' );
+
+		$this->newResolver( $store )->prefetch( [ '0', '17', 'K1', '', 'Mushroom' ] );
+	}
+
 	private function titleFactoryFor( string $text, string $url ): TitleFactory {
 		$title = $this->createMock( Title::class );
 		$title->method( 'getLocalURL' )->willReturn( $url );
