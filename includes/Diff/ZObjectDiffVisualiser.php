@@ -678,14 +678,36 @@ class ZObjectDiffVisualiser {
 	}
 
 	/**
-	 * The key immediately holding a leaf value is the last path segment; return
-	 * it as a string (list indices included), or null for an empty path.
+	 * The key that says how a leaf value at this path should be read — in
+	 * particular whether a reference-shaped one may be linked to its target.
+	 *
+	 * Normally the last path segment, but a value at a list index has no key of
+	 * its own, and the index carries none of the meaning a key would: taking it
+	 * literally would treat every item of every list as linkable, so a plain
+	 * string that happened to read "Z40" would become a link. Judge such an item
+	 * by the list's declared item type instead, and otherwise fall back to the
+	 * nearest enclosing key.
 	 *
 	 * @param array $path
-	 * @return string|null
+	 * @return string|null Null when nothing in the path decides it, meaning the
+	 *   value is free text and must not be linked
 	 */
 	private function valueKeyOf( array $path ): ?string {
-		return $path === [] ? null : (string)$path[count( $path ) - 1];
+		for ( $position = count( $path ) - 1; $position >= 0; $position-- ) {
+			$segment = $path[$position];
+			if ( !is_int( $segment ) ) {
+				return (string)$segment;
+			}
+
+			$listPath = array_slice( $path, 0, $position );
+			$list = $this->navigate( $this->newObject, $listPath )
+				?? $this->navigate( $this->oldObject, $listPath );
+			if ( is_array( $list ) && ( $list[0] ?? null ) === ZTypeRegistry::Z_STRING ) {
+				// A list of strings holds literal text, however it is spelled.
+				return ZTypeRegistry::Z_STRING_VALUE;
+			}
+		}
+		return null;
 	}
 
 	/**

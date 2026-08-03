@@ -145,6 +145,34 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		$this->assertStringContainsString( 'Z14294K1 / 1', $html );
 	}
 
+	public function testStringInAListIsNotLinkedEvenWhenItLooksLikeAReference() {
+		// A list of strings, not of references: an item that happens to read like a
+		// ZID is still literal text. The index holding it says nothing either way,
+		// so the list's declared item type has to decide.
+		$build = static fn ( string $last ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [ 'Z1K1' => 'Z14294', 'Z14294K1' => [ 'Z6', 'a', $last ] ],
+		];
+		$old = $build( 'b' );
+		$new = $build( 'Z40' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		$this->assertStringNotContainsString( '<a ', $html );
+		$this->assertStringContainsString( 'Z40', $html );
+	}
+
+	public function testReferenceInAListIsStillLinked() {
+		$build = static fn ( string $last ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [ 'Z1K1' => 'Z14294', 'Z14294K1' => [ 'Z14293', 'Z6', $last ] ],
+		];
+		$old = $build( 'Z600' );
+		$new = $build( 'Z40' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		$this->assertStringContainsString( '<a href="/wiki/Z40">Boolean (Z40)</a>', $html );
+	}
+
 	public function testLabelsArePrefetchedOnceForTheWholeDiff() {
 		$prefetched = [];
 		$labels = $this->createMock( DiffLabelResolver::class );
