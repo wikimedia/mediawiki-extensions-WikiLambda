@@ -14,6 +14,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
@@ -40,6 +41,7 @@ use MediaWiki\User\User;
  * @group Database
  */
 class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
+	use AbstractModeTestConfigTrait;
 	use MockWikidataEntityLookupTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
@@ -50,6 +52,10 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->setTestDataPath( dirname( __DIR__, 3 ) . '/phpunit/test_data/test_definitions' );
+		// The abstract-namespace data sets need ns 2300 registered, so that a title such as
+		// 'Abstract_Wikipedia:Q1234' resolves into it rather than staying in NS_MAIN. The
+		// trait's merges are additive, so NS_MAIN keeps the repo-mode ZObject content model.
+		$this->setUpAsAbstractMode();
 
 		$mockHashConfigRepoMode = $this->createMock( HashConfig::class );
 		$mockHashConfigRepoMode->method( 'has' )->willReturn( true );

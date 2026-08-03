@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Renderer;
 
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWikiIntegrationTestCase;
 
@@ -19,6 +20,14 @@ use MediaWikiIntegrationTestCase;
  * @group Database
  */
 class WikifunctionsSanitiserTokenHandlerTest extends MediaWikiIntegrationTestCase {
+	use AbstractModeTestConfigTrait;
+
+	protected function setUp(): void {
+		parent::setUp();
+		// The red-link cases below need abstract mode on and the abstract namespace
+		// registered, so isEmptyAbstractArticle() can recognise a local AW link.
+		$this->setUpAsAbstractMode();
+	}
 
 	/**
 	 * @param string $html

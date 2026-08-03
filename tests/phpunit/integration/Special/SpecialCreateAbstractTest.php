@@ -14,6 +14,7 @@ use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Exception\PermissionsError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Special\SpecialCreateAbstract;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Tests\Specials\SpecialPageTestBase;
@@ -24,6 +25,7 @@ use MediaWiki\Title\Title;
  * @group Database
  */
 class SpecialCreateAbstractTest extends SpecialPageTestBase {
+	use AbstractModeTestConfigTrait;
 	use MockWikidataEntityLookupTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
@@ -37,7 +39,7 @@ class SpecialCreateAbstractTest extends SpecialPageTestBase {
 
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
-		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
+		$this->setUpAsAbstractMode();
 
 		// Mock for all test suite: Q42 and Q319 exist, Q999999 doesn't
 		$this->mockWikidataEntityLookup( [

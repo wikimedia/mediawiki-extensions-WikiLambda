@@ -29,7 +29,7 @@ class LoadAbstractDumpTest extends WikiLambdaMaintenanceTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
+		$this->setUpAsAbstractMode();
 		$this->dumpPath = $this->makeTempDumpDir();
 		$this->dumpDirName = basename( $this->dumpPath );
 

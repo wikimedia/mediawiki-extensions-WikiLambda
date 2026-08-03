@@ -26,6 +26,10 @@ abstract class WikiLambdaAbstractClientIntegrationTestCase extends WikiLambdaInt
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', false );
 		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientMode', true );
+		// isAbstractClientIntegration() ANDs this with the mode flag above, so leaving it to the
+		// host wiki makes every integration assertion depend on the wiki the suite happens to run
+		// on. Tests that want the kill-switch thrown override it back to false individually.
+		$this->overrideConfigValue( 'WikiLambdaEnableAbstractClientModeIntegration', true );
 		$this->overrideConfigValue( 'WikiLambdaClientTargetAPI', 'test.wikifunctions.org' );
 		// registerExtension reads the actual globals, not Config — see
 		// WikiLambdaRepoModeIntegrationTestCase for the underlying reason.

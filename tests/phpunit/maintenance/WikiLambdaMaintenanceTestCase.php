@@ -12,12 +12,16 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 use FilesystemIterator;
 use MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
 use MediaWiki\Tests\Maintenance\MaintenanceBaseTestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 
 abstract class WikiLambdaMaintenanceTestCase extends MaintenanceBaseTestCase {
+
+	// Provides setUpAsAbstractMode(), the counterpart to setUpAsRepoMode() below.
+	use AbstractModeTestConfigTrait;
 
 	/** @var string[] Full paths to fixture directories created via makeTempDumpDir() */
 	private array $cleanupTempDirs = [];

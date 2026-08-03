@@ -13,6 +13,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Special\SpecialViewAbstract;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Request\FauxRequest;
@@ -25,6 +26,7 @@ use MediaWiki\Title\Title;
  * @group Database
  */
 class SpecialViewAbstractTest extends SpecialPageTestBase {
+	use AbstractModeTestConfigTrait;
 	use MockWikidataEntityLookupTrait;
 
 	private const TEST_ABSTRACT_NS = 2300;
@@ -38,7 +40,7 @@ class SpecialViewAbstractTest extends SpecialPageTestBase {
 
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
-		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
+		$this->setUpAsAbstractMode();
 
 		$this->mockWikidataEntityLookup( [ 'Q42' => [] ] );
 	}

@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Config;
 
+use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWikiIntegrationTestCase;
 
@@ -20,12 +21,15 @@ use MediaWikiIntegrationTestCase;
  * @coversNothing
  */
 class AbstractSuggestedFunctionsProviderTest extends MediaWikiIntegrationTestCase {
+	use AbstractModeTestConfigTrait;
 
 	protected function setUp(): void {
 		parent::setUp();
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
 			$this->markTestSkipped( 'CommunityConfiguration extension is not loaded' );
 		}
+		// CommunityConfigurationHooks hides this provider unless abstract mode is on.
+		$this->setUpAsAbstractMode();
 	}
 
 	public function testProviderIsRegistered(): void {
