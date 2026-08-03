@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ameisenigel",
 			"Brettchenweber"
 		]
 	},
@@ -87,9 +88,9 @@
 	"wikilambda-abstract-special-preview-empty-section-title": "Dieser Abschnitt wurde noch nicht gerendert",
 	"wikilambda-abstract-special-preview-list-intro": "Wähle ein Thema aus, um eine Vorschau des zugehörigen abstrakten Artikels zu sehen:",
 	"wikilambda-abstract-special-preview-list-item-details": "($1, erzeugt $2)",
-	"wikilambda-abstract-special-preview-list-none": "Es sind noch keine abstrakten Artikel in $1 erhältlich.",
+	"wikilambda-abstract-special-preview-list-none": "Es sind noch keine abstrakten Artikel auf $1 verfügbar.",
 	"wikilambda-abstract-special-preview-list-other-langs": "Sie sind in anderen Sprachen verfügbar: $1.",
-	"wikilambda-abstract-special-preview-list-title": "Abstrakte Artikel sind für $1 erhältlich.",
+	"wikilambda-abstract-special-preview-list-title": "Auf $1 verfügbare abstrakte Artikel",
 	"wikilambda-abstract-special-preview-not-enabled-body": "Die Vorschau auf abstrakte Artikel ist in dieser Umgebung nicht aktiviert oder vorübergehend deaktiviert.",
 	"wikilambda-abstract-special-preview-not-enabled-title": "Vorschau für abstrakte Artikel nicht aktiviert",
 	"wikilambda-abstract-special-preview-not-ready-body": "Die Artikelvorschau zum Thema $1 in $2 wurde noch nicht erstellt. Bitte versuche es später erneut.",

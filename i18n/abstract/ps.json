@@ -4,6 +4,8 @@
 			"شاه زمان پټان"
 		]
 	},
+	"action-wikilambda-abstract-optin": "د ويکي‌پېډيا د لنډيز منځپانگې لپاره د غوره‌شويو ځايي ليکنو لړليک مهارول",
+	"right-wikilambda-abstract-optin": "د ويکي‌پېډيا د لنډيز منځپانگې لپاره د غوره‌شويو ځايي ليکنو لړليک مهارول",
 	"wikilambda-abstract-content-history-title": "د \"$1\" ($2) د بياليدنې پېښليک",
 	"wikilambda-abstract-content-history-title-no-label": "د  $1 د بياليدنې پېښليک",
 	"wikilambda-abstract-menu-option-add-named-fragment": "$1 ورگډول",

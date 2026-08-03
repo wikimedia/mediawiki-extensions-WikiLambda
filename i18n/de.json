@@ -516,6 +516,7 @@
 	"wikilambda-special-functionusage-invalid": "$1 ist keine gültige Funktionsreferenz.",
 	"wikilambda-special-functionusage-summary": "Auf dieser Seite sind die Seiten in diesem und anderen Wikis aufgelistet, die eine bestimmte Funktion mithilfe der Parserfunktion <code><nowiki>{{#function:}}</nowiki></code> einbetten.",
 	"wikilambda-special-functionusage-whatlinkshere": "Für Objekte, die in ihren eigenen Definitionen auf diese Funktion verweisen, siehe $1.",
+	"wikilambda-special-functionusage-whatlinkshere-label": "Verweise auf diese Funktion",
 	"wikilambda-special-list-all-pages": "Alle Listenseiten",
 	"wikilambda-special-list-empty": "Keine persistenten Objekte für diesen Filter gefunden.",
 	"wikilambda-special-listduplicateobjectlabels": "ZObjekt-Seiten mit doppelten Bezeichnungen",
