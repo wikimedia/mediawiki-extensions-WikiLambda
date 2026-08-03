@@ -30,10 +30,12 @@ use Wikimedia\Diff\WordLevelDiff;
  * ZObjectDiffer::flattenDiff() — the same diff the authorization layer
  * consumes — rather than re-walking the object tree.
  *
- * Monolingual values (Z11/Z31) anywhere in the tree are keyed by their
- * language rather than by their raw list index, and additions/removals of a
- * whole multilingual structure (Z12/Z32) are decomposed into one row per
- * language, matching how Wikibase presents term diffs.
+ * A change to a list item is headed by what identifies that item — its
+ * language for a monolingual value (Z11/Z31), otherwise whatever
+ * DiffItemIdentifier can make of its content — rather than by its position,
+ * which means nothing to a reader and shifts as items are inserted. Additions
+ * and removals of a whole multilingual structure (Z12/Z32) are decomposed into
+ * one row per language, matching how Wikibase presents term diffs.
  *
  * Values are rendered by ZObjectValueRenderer, so that adding or removing a
  * whole sub-tree shows its labelled structure rather than its JSON.
@@ -42,6 +44,9 @@ class ZObjectDiffVisualiser {
 
 	/** @var ZObjectValueRenderer Renders the values carried by the diff's operations */
 	private readonly ZObjectValueRenderer $values;
+
+	/** @var DiffItemIdentifier Names the list items the diff's paths point at */
+	private readonly DiffItemIdentifier $items;
 
 	/** @var array The old Object being compared, for the duration of one render */
 	private array $oldObject = [];
@@ -59,6 +64,7 @@ class ZObjectDiffVisualiser {
 		private readonly DiffLabelResolver $labels
 	) {
 		$this->values = new ZObjectValueRenderer( $messageLocalizer, $labels );
+		$this->items = new DiffItemIdentifier( $labels );
 	}
 
 	/**
@@ -230,8 +236,11 @@ class ZObjectDiffVisualiser {
 				: $this->generateHtmlDiffTableRow( $line, null, $language ) );
 		}
 
-		// Fallback: plain breadcrumb with only the top-level group localised.
-		return $this->generateDiffHeaderHtml( $this->renderPathLabel( $path, $dropGroupHead ) )
+		// Fallback: a breadcrumb of labelled keys, with any list index along the way
+		// replaced by the identity of the item it points at. The operation is
+		// passed because this path names it exactly, so where it ends in an index
+		// the operation's own value is that item.
+		return $this->generateDiffHeaderHtml( $this->renderPathLabel( $path, $dropGroupHead, $op ) )
 			. $this->generateOpRowHtml( $op, $this->valueKeyOf( $path ) );
 	}
 
@@ -455,41 +464,85 @@ class ZObjectDiffVisualiser {
 	}
 
 	/**
-	 * Turn a diff path into a human-readable breadcrumb. The head segment (a
-	 * top-level ZPersistentObject key) is localised; deeper segments are shown
-	 * verbatim for now.
+	 * Turn a diff path into a human-readable breadcrumb: the head segment (a
+	 * top-level ZPersistentObject key) becomes its localised group label, keys
+	 * become their labels, and a list index becomes the identity of the item it
+	 * points at.
 	 *
 	 * @param array $path Sequence of keys/indices, e.g. [ 'Z2K3', 'Z12K1', 1, 'Z11K2' ]
 	 * @param bool $dropGroupHead When true, the top-level group key is shown as a
-	 *   section heading, so drop it and leave the remaining body keys verbatim
-	 * @return string Plain text, e.g. "Name / Z12K1 / 1 / Z11K2"
+	 *   section heading, so drop it from the breadcrumb
+	 * @param DiffOp|null $op The operation this path names, where the last segment
+	 *   is a list index and the operation therefore carries the whole item
+	 * @return string Plain text, e.g. "Name / English"
 	 */
-	private function renderPathLabel( array $path, bool $dropGroupHead = false ): string {
-		if ( $dropGroupHead ) {
-			// The head is the section heading; label the remaining body keys.
-			return implode( ' / ', array_map( [ $this, 'labelSegment' ], array_slice( $path, 1 ) ) );
-		}
-
+	private function renderPathLabel(
+		array $path, bool $dropGroupHead = false, ?DiffOp $op = null
+	): string {
 		if ( $path === [] ) {
-			return $this->messageLocalizer->msg( 'wikilambda-diff-group-object' )->text();
+			return $dropGroupHead
+				? ''
+				: $this->messageLocalizer->msg( 'wikilambda-diff-group-object' )->text();
 		}
 
-		$segments = [ $this->localiseGroupKey( (string)$path[0] ) ];
-		foreach ( array_slice( $path, 1 ) as $segment ) {
-			$segments[] = $this->labelSegment( $segment );
+		$segments = $dropGroupHead ? [] : [ $this->localiseGroupKey( (string)$path[0] ) ];
+		for ( $position = 1; $position < count( $path ); $position++ ) {
+			$segment = $path[$position];
+			if ( !is_int( $segment ) ) {
+				$segments[] = $this->labels->getKeyLabel( (string)$segment );
+				continue;
+			}
+
+			$handle = $this->itemHandle( $path, $position, $op );
+			if ( $handle === null ) {
+				// Nothing identifies the item, so its position is all there is.
+				$segments[] = (string)$segment;
+			} elseif ( $segments === [] ) {
+				$segments[] = $handle;
+			} else {
+				// Qualify the key naming the list, rather than reading as another
+				// step along the path — the same shape as "Name (English)".
+				$segments[count( $segments ) - 1] .= ' (' . $handle . ')';
+			}
 		}
 		return implode( ' / ', $segments );
 	}
 
 	/**
-	 * Turn a single path segment into display text: a global key becomes its
-	 * human-readable label; a list index or unresolvable key is left verbatim.
+	 * Name the list item a path points at, or return null to leave it numbered.
 	 *
-	 * @param string|int $segment
-	 * @return string
+	 * Which of the two Objects to read the item from needs care, because a list
+	 * index is only meaningful on one side once the list has changed length:
+	 * removing the fourth of five items leaves a different item at index three in
+	 * the new Object. So where the operation carries the whole item — an addition
+	 * or a removal of it — that value is used, which is exact. Otherwise the
+	 * change is to something inside the item, which therefore exists on both
+	 * sides, and a handle is used only when both sides agree on it; disagreement
+	 * means the lists are misaligned, and a number is better than a wrong name.
+	 *
+	 * @param array $path
+	 * @param int $position Which segment of the path the item's index is
+	 * @param DiffOp|null $op
+	 * @return string|null
 	 */
-	private function labelSegment( $segment ): string {
-		return $this->labels->getKeyLabel( (string)$segment );
+	private function itemHandle( array $path, int $position, ?DiffOp $op ): ?string {
+		// The operation carries the whole item only when the path stops at it.
+		if ( $op !== null && $position === count( $path ) - 1
+			&& ( $op instanceof DiffOpAdd || $op instanceof DiffOpRemove )
+		) {
+			return $this->items->getHandle( $this->sidedValue( $op ) );
+		}
+
+		$itemPath = array_slice( $path, 0, $position + 1 );
+		$new = $this->navigate( $this->newObject, $itemPath );
+		$old = $this->navigate( $this->oldObject, $itemPath );
+		if ( $new === null || $old === null ) {
+			// Present on one side only, so whichever it is names it unambiguously.
+			return $this->items->getHandle( $new ?? $old );
+		}
+
+		$handle = $this->items->getHandle( $new );
+		return ( $handle !== null && $handle === $this->items->getHandle( $old ) ) ? $handle : null;
 	}
 
 	/**

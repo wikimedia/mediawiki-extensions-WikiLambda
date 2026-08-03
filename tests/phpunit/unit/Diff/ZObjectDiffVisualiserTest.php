@@ -84,6 +84,67 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		return ( new ZObjectDiffer() )->doDiff( $old, $new );
 	}
 
+	/**
+	 * The reported case (T284473): an option appended to Z26096's list of
+	 * per-language function options.
+	 *
+	 * @param array $options Each a [ function, languages ] pair
+	 * @return array
+	 */
+	private function optionList( array $options ): array {
+		$items = [ 'Z14293' ];
+		foreach ( $options as [ $function, $languages ] ) {
+			$items[] = [
+				'Z1K1' => 'Z14293',
+				'Z14293K1' => $function,
+				'Z14293K2' => array_merge( [ 'Z60' ], $languages ),
+			];
+		}
+		return [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [ 'Z1K1' => 'Z14294', 'Z14294K1' => $items ],
+		];
+	}
+
+	public function testAddedListItemIsHeadedByItsIdentityNotItsIndex() {
+		$old = $this->optionList( [ [ 'Z23410', [ 'Z1002' ] ] ] );
+		$new = $this->optionList( [ [ 'Z23410', [ 'Z1002' ] ], [ 'Z40', [ 'Z1004' ] ] ] );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// "option (Boolean)", not "option / 2"; the key is unlabelled by the stub.
+		$this->assertStringContainsString( 'Z14294K1 (Boolean)', $html );
+		$this->assertStringNotContainsString( 'Z14294K1 / 2', $html );
+	}
+
+	public function testChangeInsideAListItemIsHeadedByThatItemsIdentity() {
+		$old = $this->optionList( [ [ 'Z40', [ 'Z1002' ] ] ] );
+		$new = $this->optionList( [ [ 'Z40', [ 'Z1004' ] ] ] );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// The item is unchanged in identity, so both sides agree on its name.
+		$this->assertStringContainsString( 'Z14294K1 (Boolean)', $html );
+		$this->assertStringNotContainsString( 'Z14294K1 / 1', $html );
+	}
+
+	public function testItemWithNoDerivableIdentityKeepsItsIndex() {
+		// A list of records whose only key holds a structure: nothing names them.
+		$build = static fn ( string $last ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [
+				'Z1K1' => 'Z14294',
+				'Z14294K1' => [
+					'Z14293',
+					[ 'Z1K1' => 'Z14293', 'Z14293K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => $last ] ],
+				],
+			],
+		];
+		$old = $build( 'a' );
+		$new = $build( 'b' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		$this->assertStringContainsString( 'Z14294K1 / 1', $html );
+	}
+
 	public function testLabelsArePrefetchedOnceForTheWholeDiff() {
 		$prefetched = [];
 		$labels = $this->createMock( DiffLabelResolver::class );
