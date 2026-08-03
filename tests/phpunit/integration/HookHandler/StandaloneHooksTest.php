@@ -219,7 +219,7 @@ EOT;
 		$secondTitle = Title::newFromText( $secondTitleText, NS_MAIN );
 		$this->assertFalse( $secondTitle->exists() );
 
-		$dupeEditStatus = $this->editPage(
+		$dupeEditStatus = $this->editPageUnchecked(
 			$secondTitleText, ZTestType::TEST_ENCODING, 'Duplicate creation (blocked)', NS_MAIN
 		);
 		$this->assertStatusError( 'wikilambda-labelclash', $dupeEditStatus );

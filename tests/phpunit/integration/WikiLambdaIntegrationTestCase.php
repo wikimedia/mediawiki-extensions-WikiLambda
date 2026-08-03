@@ -99,7 +99,11 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	protected function insertZids( $zids ): void {
 		foreach ( $zids as $zid ) {
 			$data = $this->getDefinition( $zid );
-			$this->editPage( $zid, $data, 'Test ZObject creation', NS_MAIN );
+			// Unchecked: seeding a definition whose own type isn't in the wiki yet is rejected as
+			// an invalid ZObject, which is why WikiLambdaRepoModeIntegrationTestCase's lone Z504
+			// seed has silently no-opped. Asserting here would fail every repo-mode test over
+			// that, so seeds stay best-effort until the seeding order is sorted out.
+			$this->editPageUnchecked( $zid, $data, 'Test ZObject creation', NS_MAIN );
 		}
 	}
 
@@ -114,8 +118,39 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		return ZObjectFactory::create( json_decode( $data ) );
 	}
 
-	/** @inheritDoc */
+	/**
+	 * @inheritDoc
+	 *
+	 * A rejected edit is otherwise indistinguishable from a successful one until something
+	 * dereferences the revision, so a test wiki that won't accept our content models fails
+	 * with a downstream "on null" fatal rather than with the reason. Assert the status here
+	 * so the failure names it (e.g. content-not-allowed-here) at the point of the edit.
+	 */
 	protected function editPage(
+		$page,
+		$content,
+		$summary = '',
+		$defaultNs = NS_MAIN,
+		?Authority $performer = null
+	) {
+		$status = $this->editPageUnchecked( $page, $content, $summary, $defaultNs, $performer );
+		$this->assertStatusOK( $status, "editPage of '$page' in namespace $defaultNs failed" );
+		return $status;
+	}
+
+	/**
+	 * As editPage(), but without asserting that the edit was accepted. For callers that
+	 * knowingly tolerate a rejection, or assert on one themselves (e.g. the tests covering
+	 * our save hooks refusing invalid content). Prefer editPage() everywhere else.
+	 *
+	 * @param mixed $page Title text, PageIdentity, LinkTarget or WikiPage, as core's editPage()
+	 * @param string|Content $content
+	 * @param string $summary
+	 * @param int $defaultNs
+	 * @param Authority|null $performer
+	 * @return \MediaWiki\Storage\PageUpdateStatus
+	 */
+	protected function editPageUnchecked(
 		$page,
 		$content,
 		$summary = '',

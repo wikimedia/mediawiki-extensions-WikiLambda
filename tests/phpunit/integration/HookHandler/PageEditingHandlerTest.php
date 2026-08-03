@@ -143,7 +143,7 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	public function testOnMultiContentSave_real_badTitle() {
 		$invalidTitleText = 'Bad page title';
 
-		$invalidZIDStatus = $this->editPage(
+		$invalidZIDStatus = $this->editPageUnchecked(
 			$invalidTitleText,
 			ZTestType::TEST_ENCODING,
 			'Test bad title',
@@ -159,7 +159,7 @@ class PageEditingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	public function testOnMultiContentSave_real_badContent() {
 		$invalidContent = '{"Z1K1": "Z3"}';
 
-		$invalidZIDStatus = $this->editPage(
+		$invalidZIDStatus = $this->editPageUnchecked(
 			ZTestType::TEST_ZID,
 			$invalidContent,
 			'Test bad content',
