@@ -28,7 +28,6 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
@@ -430,36 +429,5 @@ class AbstractWikiContentHandler extends ContentHandler {
 		}
 		'@phan-var AbstractWikiContent $content';
 		return $content;
-	}
-
-	/**
-	 * Guard a user-facing view of a (possibly deleted/suppressed) revision.
-	 *
-	 * Mirrors Article::fetchRevisionRecord(): if the performer may not see the
-	 * revision's deleted text, add the appropriate core warning box to the
-	 * output and return false so the caller can stop before leaking content.
-	 *
-	 * @param RevisionRecord $revision
-	 * @param Authority $performer
-	 * @param Title $title Page title, for the rev-deleted-text-permission message
-	 * @param OutputPage $output
-	 * @return bool True if the revision may be shown to the performer
-	 */
-	public static function assertRevisionViewable(
-		RevisionRecord $revision,
-		Authority $performer,
-		Title $title,
-		OutputPage $output
-	): bool {
-		if ( $revision->userCan( RevisionRecord::DELETED_TEXT, $performer ) ) {
-			return true;
-		}
-
-		$msg = $revision->isDeleted( RevisionRecord::DELETED_RESTRICTED )
-			? $output->msg( 'rev-suppressed-text' )
-			: $output->msg( 'rev-deleted-text-permission', $title->getPrefixedDBkey() );
-		$output->addHTML( Html::errorBox( $msg->parse() ) );
-
-		return false;
 	}
 }

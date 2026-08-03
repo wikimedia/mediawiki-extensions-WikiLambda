@@ -23,9 +23,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
-use MediaWiki\Html\Html;
 use MediaWiki\Json\FormatJson;
-use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionRecord;
@@ -460,95 +458,6 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 			AbstractWikiContent::class,
 			$handler->getAbstractContentForTitle( $revisionStore, $title, $currentRevId )
 		);
-	}
-
-	public function testAssertRevisionViewableReturnsTrueForPrivilegedPerformer() {
-		[ $title, $deletedRevId ] = $this->createAbstractPageWithDeletedFirstRevision();
-		$revisionStore = $this->getServiceContainer()->getRevisionStore();
-		$revision = $revisionStore->getRevisionById( $deletedRevId );
-
-		$output = new OutputPage( new RequestContext() );
-
-		$result = AbstractWikiContentHandler::assertRevisionViewable(
-			$revision, $this->mockRegisteredUltimateAuthority(), $title, $output
-		);
-
-		$this->assertTrue( $result );
-		// Nothing should have been written to the output for a viewable revision.
-		$this->assertSame( '', $output->getHTML() );
-	}
-
-	public function testAssertRevisionViewableAddsDeletedErrorForUnprivilegedPerformer() {
-		[ $title, $deletedRevId ] = $this->createAbstractPageWithDeletedFirstRevision();
-		$revisionStore = $this->getServiceContainer()->getRevisionStore();
-		$revision = $revisionStore->getRevisionById( $deletedRevId );
-
-		$output = new OutputPage( new RequestContext() );
-
-		$result = AbstractWikiContentHandler::assertRevisionViewable(
-			$revision, $this->mockRegisteredNullAuthority(), $title, $output
-		);
-
-		$this->assertFalse( $result );
-		// Plain DELETED_TEXT (not DELETED_RESTRICTED) → rev-deleted-text-permission path.
-		$html = $output->getHTML();
-
-		$expected = Html::errorBox(
-			$output->msg( 'rev-deleted-text-permission', $title->getPrefixedDBkey() )->parse()
-		);
-		$this->assertSame( $expected, $html );
-	}
-
-	public function testAssertRevisionViewableAddsSuppressedErrorWhenRestricted() {
-		$this->mockWikidataEntityLookup( [ 'Q42' => [ 'en' => 'Douglas Adams' ] ] );
-
-		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
-		$sysop = $this->getTestSysop()->getUser();
-
-		$content = new AbstractWikiContent(
-			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}'
-		);
-		$editStatus = $this->editPage(
-			$title, $content, 'First abstract revision', self::TEST_ABSTRACT_NS, $sysop
-		);
-		$this->assertStatusOK( $editStatus );
-		// A second revision so the suppressed one is not the current revision.
-		$secondContent = new AbstractWikiContent(
-			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}'
-		);
-		$this->assertStatusOK( $this->editPage(
-			$title, $secondContent, 'Second abstract revision', self::TEST_ABSTRACT_NS, $sysop
-		) );
-		$suppressedRevId = $editStatus->getNewRevision()->getId();
-
-		// Suppress (DELETED_TEXT | DELETED_RESTRICTED) the first revision.
-		$context = RequestContext::getMain();
-		$context->setUser( $sysop );
-		$deleter = RevisionDeleter::createList(
-			'revision', $context, $title, [ $suppressedRevId ]
-		);
-		$status = $deleter->setVisibility( [
-			'value' => [
-				RevisionRecord::DELETED_TEXT => 1,
-				RevisionRecord::DELETED_RESTRICTED => 1,
-			],
-			'comment' => 'Testing suppression',
-		] );
-		$this->assertStatusOK( $status );
-		$this->runDeferredUpdates();
-
-		$revision = $this->getServiceContainer()->getRevisionStore()->getRevisionById( $suppressedRevId );
-		$output = new OutputPage( new RequestContext() );
-
-		$result = AbstractWikiContentHandler::assertRevisionViewable(
-			$revision, $this->mockRegisteredNullAuthority(), $title, $output
-		);
-
-		$this->assertFalse( $result );
-		// DELETED_RESTRICTED set → rev-suppressed-text path.
-		$html = $output->getHTML();
-		$expected = Html::errorBox( $output->msg( 'rev-suppressed-text' )->parse() );
-		$this->assertSame( $expected, $html );
 	}
 
 	/**

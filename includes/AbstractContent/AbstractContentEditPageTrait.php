@@ -84,7 +84,7 @@ trait AbstractContentEditPageTrait {
 			// if the viewer may not see it, show core's message and render no editor.
 			if ( $targetRevisionId !== null ) {
 				$targetRevision = $revisionStore->getRevisionById( $targetRevisionId );
-				if ( $targetRevision && !AbstractWikiContentHandler::assertRevisionViewable(
+				if ( $targetRevision && !UIUtils::checkRevisionViewable(
 					$targetRevision, $performer, $title, $output
 				) ) {
 					$output->setPageTitleMsg( $context->msg( 'errorpagetitle' ) );

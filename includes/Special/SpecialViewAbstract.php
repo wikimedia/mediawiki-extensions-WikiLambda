@@ -13,8 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
@@ -177,7 +177,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// (T430601) Respect RevisionDelete/suppression: if the viewer may not see this
 		// revision, show the same error message core's article view shows and stop, rather
 		// than leaking the hidden content through the /view/ path.
-		if ( !AbstractWikiContentHandler::assertRevisionViewable(
+		if ( !UIUtils::checkRevisionViewable(
 			$targetRevision, $this->getAuthority(), $targetTitle, $output
 		) ) {
 			$output->setPageTitleMsg( $this->getContext()->msg( 'errorpagetitle' ) );
