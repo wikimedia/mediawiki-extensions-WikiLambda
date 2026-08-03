@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Content\Renderer\ContentRenderer;
+use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectRepoUtils;
@@ -23,6 +24,7 @@ use MediaWiki\Language\LanguageFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Revision\RevisionStore;
 use MediaWiki\SpecialPage\UnlistedSpecialPage;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
@@ -34,6 +36,7 @@ class SpecialViewObject extends UnlistedSpecialPage {
 	public function __construct(
 		private readonly ContentRenderer $contentRenderer,
 		private readonly LanguageFactory $languageFactory,
+		private readonly RevisionStore $revisionStore,
 		private readonly UrlUtils $urlUtils,
 		private readonly ZObjectStore $zObjectStore
 	) {
@@ -138,13 +141,26 @@ class SpecialViewObject extends UnlistedSpecialPage {
 		 * TODO (T364318): add the revision navigation bar to the page.
 		 */
 		$latestRevId = $outputPage->getTitle()->getLatestRevID();
-		$targetRevision = $this->getRequest()->getInt( 'oldid' ) ?: $latestRevId;
-		$outputPage->setRevisionId( $targetRevision );
+		$targetRevisionId = $this->getRequest()->getInt( 'oldid' ) ?: $latestRevId;
+		$outputPage->setRevisionId( $targetRevisionId );
+
+		$this->setHeaders();
+
+		$targetRevision = $this->revisionStore->getRevisionByTitle( $targetTitle, $targetRevisionId );
+		if ( !$targetRevision ) {
+			$this->redirectToMain( $outputPage );
+			return;
+		}
+		// (T430601) Respect RevisionDelete/suppression before reading any content
+		if ( !UIUtils::checkRevisionViewable(
+			$targetRevision, $this->getAuthority(), $targetTitle, $outputPage
+		) ) {
+			$outputPage->setPageTitleMsg( $this->msg( 'errorpagetitle' ) );
+			return;
+		}
 
 		// (T345453) Have the standard copyright stuff show up.
 		$outputPage->setCopyright( true );
-
-		$this->setHeaders();
 
 		// Turn the selected language code or ZID reference into a Language
 		$targetLanguageObject = ZObjectRepoUtils::getLanguageFromString( $targetLanguage );
@@ -154,7 +170,11 @@ class SpecialViewObject extends UnlistedSpecialPage {
 
 		$outputPage->addModules( [ 'ext.wikilambda.app', 'mediawiki.special' ] );
 
-		$targetContent = $this->zObjectStore->fetchZObjectByTitle( $targetTitle, $targetRevision );
+		// (T430601) Pass the viewer's authority so the content is read at their audience;
+		// the gate above has already rejected anything they may not see.
+		$targetContent = $this->zObjectStore->fetchZObjectByTitle(
+			$targetTitle, $targetRevisionId, $this->getAuthority()
+		);
 		if ( !$targetContent ) {
 			$this->redirectToMain( $outputPage );
 			return;
