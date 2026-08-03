@@ -129,7 +129,20 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		}
 
 		// 1.b. Check that Function Zid belongs to an object of the right type (Z8/Function)
-		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
+		// (T430601) Read at the requester's audience, so a RevisionDelete'd or suppressed
+		// current revision is not disclosed to those who may not see it; it then reads as
+		// the same unknown-Zid error as a missing object.
+		$targetObject = $this->zObjectStore->fetchZObjectByTitle(
+			$targetTitle, null, $this->getAuthority()
+		);
+		if ( !$targetObject ) {
+			$this->dieWithError(
+				[ "wikilambda-performtest-error-unknown-zid", $this->functionZid ],
+				null,
+				null,
+				HttpStatus::NOT_FOUND
+			);
+		}
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			$this->dieWithError(
 				[ "wikilambda-performtest-error-nonfunction", $this->functionZid ],
@@ -517,8 +530,13 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		}
 
 		// Check the zid belongs to an object of the right type
-		$fetchedObject = $this->zObjectStore->fetchZObjectByTitle( $title )->getInnerZObject();
-		if ( $fetchedObject->getZType() !== $type ) {
+		// (T430601) Read at the requester's audience; a hidden revision reads as the same
+		// "not an object of this type" error as a missing one, rather than a fatal.
+		$fetchedContent = $this->zObjectStore->fetchZObjectByTitle(
+			$title, null, $this->getAuthority()
+		);
+		$fetchedObject = $fetchedContent ? $fetchedContent->getInnerZObject() : null;
+		if ( !$fetchedObject || $fetchedObject->getZType() !== $type ) {
 			$response['zError'] = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [
 				'message' => wfMessage( $nonObjectMessge, $response['zid'] )->text()
 			] );

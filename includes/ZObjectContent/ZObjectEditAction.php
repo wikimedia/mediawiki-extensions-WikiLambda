@@ -30,19 +30,29 @@ class ZObjectEditAction extends Action {
 
 	/**
 	 * Get the type and language labels of the target zObject
-	 * @return array
+	 * @return array|null Null if the target zObject is not available to this viewer
 	 */
 	public function getTargetZObjectWithLabels() {
-		return $this->getTargetZObject()->getTypeStringAndLanguage( $this->getLanguage() );
+		$targetZObject = $this->getTargetZObject();
+		if ( !$targetZObject ) {
+			return null;
+		}
+		return $targetZObject->getTypeStringAndLanguage( $this->getLanguage() );
 	}
 
 	/**
 	 * Get the target zObject
+	 *
+	 * (T430601) Read at the viewer's audience, so a RevisionDelete'd or suppressed current
+	 * revision yields false for those who may not see it rather than disclosing its labels.
+	 *
 	 * @return ZObjectContent|bool Found ZObject
 	 */
 	public function getTargetZObject() {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		return $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
+		return $zObjectStore->fetchZObjectByTitle(
+			$this->getTitle(), null, $this->getContext()->getAuthority()
+		);
 	}
 
 	/**
@@ -109,7 +119,7 @@ class ZObjectEditAction extends Action {
 
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 
-		if ( $zObjectLabelsWithLang[ 'title' ] === 'Function' ) {
+		if ( $zObjectLabelsWithLang && $zObjectLabelsWithLang[ 'title' ] === 'Function' ) {
 			$url = Skin::makeInternalOrExternalUrl( $this->msg( 'wikilambda-users-help-link' )->text() );
 			$linkLabel = Html::element(
 				'a',

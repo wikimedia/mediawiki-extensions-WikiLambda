@@ -144,7 +144,10 @@ class FetchHandler extends WikiLambdaRESTHandler {
 				Title::newFromText( $ZID, NS_MAIN ),
 				$language,
 				// Get latest, as we have no revision to request.
-				null
+				null,
+				// (T430601) Same requester as the explicitly-requested ZIDs above, so read
+				// at their audience too rather than raw.
+				$this->getAuthority()
 			);
 		}
 

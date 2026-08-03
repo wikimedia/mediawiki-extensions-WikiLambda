@@ -26,7 +26,11 @@ class ZObjectHistoryAction extends HistoryAction {
 
 		try {
 			$zObjectStore = WikiLambdaServices::getZObjectStore();
-			$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
+			// (T430601) Read at the viewer's audience, so a RevisionDelete'd or suppressed
+			// current revision does not disclose its label in the history page heading.
+			$targetZObject = $zObjectStore->fetchZObjectByTitle(
+				$this->getTitle(), null, $this->getContext()->getAuthority()
+			);
 		} catch ( Exception ) {
 			// Something went wrong (e.g. corrupted ZObject), so fall back.
 			return parent::getPageTitle();
