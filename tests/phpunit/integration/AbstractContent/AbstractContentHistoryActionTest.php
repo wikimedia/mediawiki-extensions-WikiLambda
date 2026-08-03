@@ -20,14 +20,9 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction
  * @group Database
  */
-class AbstractContentHistoryActionTest extends WikiLambdaClientIntegrationTestCase {
+class AbstractContentHistoryActionTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	private const TEST_ABSTRACT_NS = 2300;
-
-	protected function setUp(): void {
-		parent::setUp();
-		$this->setUpAsClientMode();
-	}
 
 	public function testGetName() {
 		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );

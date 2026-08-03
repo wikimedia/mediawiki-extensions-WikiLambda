@@ -25,13 +25,12 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder::createAbstractEditPageHtmlTitle
  * @group Database
  */
-class AbstractContentEditActionTest extends WikiLambdaClientIntegrationTestCase {
+class AbstractContentEditActionTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	private const TEST_ABSTRACT_NS = 2300;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setUpAsClientMode();
 
 		// Mock Wikidata lookup entities so:
 		// * Q42 exists, has label in 'en'

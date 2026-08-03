@@ -6,7 +6,7 @@ use MediaWiki\Config\HashConfig;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler;
-use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaAbstractModeIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\LanguageFactory;
@@ -20,22 +20,19 @@ use Wikimedia\HtmlArmor\HtmlArmor;
  * @covers \MediaWiki\Extension\WikiLambda\HookHandler\PageRenderingHandler
  * @group Database
  */
-class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTestCase {
+class PageRenderingHandlerAbstractModeTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	private PageRenderingHandler $pageRenderingHandlerAbstractMode;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
-		$this->setMwGlobals( 'wgWikiLambdaEnableAbstractMode', true );
-		$this->setUpAsClientMode();
 
 		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
 		$mockHashConfigAbstractMode->method( 'has' )->willReturn( true );
 		$mockHashConfigAbstractMode->method( 'get' )->willReturnMap( [
 			[ 'WikiLambdaEnableRepoMode', false ],
 			[ 'WikiLambdaEnableAbstractMode', true ],
-			[ 'WikiLambdaAbstractNamespaces', [ 2300 => 'Abstract_Wikipedia' ] ],
+			[ 'WikiLambdaAbstractNamespaces', [ 2300 => [ 'Abstract_Wikipedia', 'Q50081413' ] ] ],
 		] );
 
 		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
@@ -65,9 +62,10 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 	}
 
 	public function testOnHtmlPageLinkRendererEnd_abstractMode() {
-		// Create the abstract page in the test DB so hasContentModel() works
+		// Create the abstract page in the test DB so hasContentModel() works.
+		// Q8776414 is the lede section QID; required by AbstractWikiContent.php validation.
 		$content = new AbstractWikiContent(
-			'{ "qid": "Q715040", "sections": {} }'
+			'{ "qid": "Q715040", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89", "lede" ] } } }'
 		);
 		$this->editPage( 'Q715040', $content, 'test abstract page', 2300 );
 
@@ -209,7 +207,9 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaClientIntegrationTe
 		$context->setRequest( new FauxRequest( [ 'title' => 'Special:RecentChanges', 'uselang' => 'es' ] ) );
 
 		// Create the abstract page in the test DB
-		$content = new AbstractWikiContent( '{ "qid": "Q715040", "sections": {} }' );
+		$content = new AbstractWikiContent(
+			'{ "qid": "Q715040", "sections": { "Q8776414": { "index": 0, "fragments": [ "Z89", "lede" ] } } }'
+		);
 		$this->editPage( 'Q715040', $content, 'test abstract page', 2300 );
 
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
