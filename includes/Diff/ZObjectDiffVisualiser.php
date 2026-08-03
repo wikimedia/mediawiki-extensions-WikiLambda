@@ -40,14 +40,20 @@ use Wikimedia\Diff\WordLevelDiff;
  */
 class ZObjectDiffVisualiser {
 
+	/** @var ZObjectValueRenderer Renders the values carried by the diff's operations */
+	private readonly ZObjectValueRenderer $values;
+
+	/** @var array The old Object being compared, for the duration of one render */
+	private array $oldObject = [];
+
+	/** @var array The new Object being compared, for the duration of one render */
+	private array $newObject = [];
+
 	/**
 	 * @param MessageLocalizer $messageLocalizer
 	 * @param DiffLabelResolver $labels Resolves the keys, references and
 	 *   languages appearing in the diff to display text in the viewer's language.
 	 */
-	/** @var ZObjectValueRenderer Renders the values carried by the diff's operations */
-	private readonly ZObjectValueRenderer $values;
-
 	public function __construct(
 		private readonly MessageLocalizer $messageLocalizer,
 		private readonly DiffLabelResolver $labels
@@ -59,11 +65,17 @@ class ZObjectDiffVisualiser {
 	 * Build the HTML diff body (a sequence of <tr> rows) for a computed diff.
 	 *
 	 * @param DiffOp $diffOp The diff returned by ZObjectDiffer::doDiff()
-	 * @param array $oldObject The old ZObject as a nested array (for language lookups)
-	 * @param array $newObject The new ZObject as a nested array (for language lookups)
+	 * @param array $oldObject The old ZObject as a nested array
+	 * @param array $newObject The new ZObject as a nested array
 	 * @return string HTML: one or more <tr> tags, or '' if there are no changes
 	 */
 	public function visualiseDiff( DiffOp $diffOp, array $oldObject = [], array $newObject = [] ): string {
+		// A diff operation records what changed but not what surrounds it, so the
+		// two compared Objects are kept for the duration of this render, to be
+		// navigated whenever a change has to be read in context.
+		$this->oldObject = $oldObject;
+		$this->newObject = $newObject;
+
 		// Partition the flattened changes into the two top-level sections shown
 		// as <h2> headings — "About" (name, aliases, description) and "Contents"
 		// (the value/body) — preserving encounter order within each. Anything
@@ -98,7 +110,7 @@ class ZObjectDiffVisualiser {
 		if ( $about ) {
 			$html .= $this->generateSectionHeaderHtml( 'wikilambda-diff-section-about' );
 			foreach ( $about as $entry ) {
-				$html .= $this->renderEntry( $entry['path'], $entry['op'], $oldObject, $newObject, false );
+				$html .= $this->renderEntry( $entry['path'], $entry['op'], false );
 			}
 		}
 		if ( $contents ) {
@@ -106,11 +118,11 @@ class ZObjectDiffVisualiser {
 			foreach ( $contents as $entry ) {
 				// The "Value" group key is represented by the section heading, so
 				// drop it from the per-row breadcrumb.
-				$html .= $this->renderEntry( $entry['path'], $entry['op'], $oldObject, $newObject, true );
+				$html .= $this->renderEntry( $entry['path'], $entry['op'], true );
 			}
 		}
 		foreach ( $other as $entry ) {
-			$html .= $this->renderEntry( $entry['path'], $entry['op'], $oldObject, $newObject, false );
+			$html .= $this->renderEntry( $entry['path'], $entry['op'], false );
 		}
 		return $html;
 	}
@@ -169,14 +181,12 @@ class ZObjectDiffVisualiser {
 	 *
 	 * @param array $path
 	 * @param DiffOp $op
-	 * @param array $oldObject
-	 * @param array $newObject
 	 * @param bool $dropGroupHead Whether the top-level group key is already shown
 	 *   as a section heading and should be omitted from the breadcrumb
 	 * @return string
 	 */
 	private function renderEntry(
-		array $path, DiffOp $op, array $oldObject, array $newObject, bool $dropGroupHead
+		array $path, DiffOp $op, bool $dropGroupHead
 	): string {
 		$type = $op->getType();
 
@@ -201,7 +211,7 @@ class ZObjectDiffVisualiser {
 		// Any leaf change, or addition/removal of a single string, that sits
 		// inside a monolingual value (e.g. one alias in a set) is headed by its
 		// language rather than by the raw list index.
-		$context = $this->languageContext( $path, $oldObject, $newObject );
+		$context = $this->languageContext( $path );
 		if ( $context !== null ) {
 			$header = $this->generateDiffHeaderHtml(
 				$this->labelWithLanguage( $context['fieldPath'], $context['languageZid'], $dropGroupHead )
@@ -289,11 +299,9 @@ class ZObjectDiffVisualiser {
 	 * change can be headed "<field> (<language>)" instead of by list index.
 	 *
 	 * @param array $path
-	 * @param array $oldObject
-	 * @param array $newObject
 	 * @return array{fieldPath:array,languageZid:string}|null
 	 */
-	private function languageContext( array $path, array $oldObject, array $newObject ): ?array {
+	private function languageContext( array $path ): ?array {
 		for ( $i = count( $path ) - 1; $i >= 0; $i-- ) {
 			$languageKey = match ( $path[$i] ) {
 				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE,
@@ -306,8 +314,8 @@ class ZObjectDiffVisualiser {
 
 			// The monolingual entry is at <container>/<index>; its language is a sibling.
 			$languagePath = array_merge( array_slice( $path, 0, $i + 2 ), [ $languageKey ] );
-			$languageZid = $this->navigate( $newObject, $languagePath )
-				?? $this->navigate( $oldObject, $languagePath );
+			$languageZid = $this->navigate( $this->newObject, $languagePath )
+				?? $this->navigate( $this->oldObject, $languagePath );
 			if ( !is_string( $languageZid ) ) {
 				// Not actually a monolingual container here; keep scanning
 				// outwards in case an enclosing one applies.
