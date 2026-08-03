@@ -1179,6 +1179,7 @@
 				"ContentRenderer",
 				"LanguageFactory",
 				"LanguageNameUtils",
+				"RevisionStore",
 				"UrlUtils",
 				"WikiLambdaWikidataEntityLookup"
 			]

@@ -21,11 +21,11 @@ use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\MainConfigNames;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\SpecialPage\UnlistedSpecialPage;
 use MediaWiki\Title\Title;
@@ -37,6 +37,7 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		private readonly ContentRenderer $contentRenderer,
 		private readonly LanguageFactory $languageFactory,
 		private readonly LanguageNameUtils $languageNameUtils,
+		private readonly RevisionStore $revisionStore,
 		private readonly UrlUtils $urlUtils,
 		private readonly WikidataEntityLookup $entityLookup
 	) {
@@ -163,10 +164,11 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 		// (T343594) Set the revision ID to the requested one or the latest, so the Permanent Link works
 		$latestRevId = $output->getTitle()->getLatestRevID();
 		$targetRevisionId = $this->getRequest()->getInt( 'oldid' ) ?: $latestRevId;
+		$output->setRevisionId( $targetRevisionId );
 
-		// FIXME inject revision store
-		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
-		$targetRevision = $revisionStore->getRevisionById( $targetRevisionId );
+		// Resolve via the title, not the bare revision ID, so an oldid belonging to some
+		// other page is treated as not found rather than rendered under this page's title.
+		$targetRevision = $this->revisionStore->getRevisionByTitle( $targetTitle, $targetRevisionId );
 
 		// If the revision does not exist, send to Main
 		if ( !$targetRevision ) {
@@ -186,17 +188,16 @@ class SpecialViewAbstract extends UnlistedSpecialPage {
 
 		// When requesting a specific revision...
 		if ( $this->getRequest()->getInt( 'oldid' ) > 0 ) {
-			// Build Article and call fetchRevisionRecord before all other Article methods
+			// Resolve the revision first: both setOldSubtitle() and showDeletedRevisionHeader()
+			// read Article::$mRevisionRecord, and the latter dereferences it without a guard.
 			$article = Article::newFromTitle( $targetTitle, $this->getContext() );
 			$article->fetchRevisionRecord();
 
 			// (T364318) Add the revision navigation bar if seeing an oldid
 			$article->setOldSubtitle( $targetRevisionId );
 
-			// (T430601) If performer can see RevisionDelete/supression,
-			// fall back to Article::showDeletedRevisionHeader
-			$this->getContext()->getRequest()->setVal( 'oldid', $targetRevisionId );
-			$article->fetchRevisionRecord();
+			// (T430601) A viewer who may see hidden text still gets core's 'unhide' gate:
+			// the header returns false until they confirm with unhide=1.
 			if ( !$article->showDeletedRevisionHeader() ) {
 				return;
 			}
