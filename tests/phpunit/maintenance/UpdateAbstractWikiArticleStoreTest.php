@@ -46,8 +46,14 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 
 		$this->mockWikidataEntityLookup( [ 'Q42' => [] ] );
 
-		$this->overrideConfigValue( 'WikiLambdaEnableAbstractMode', true );
-		$this->overrideConfigValue( 'WikiLambdaAbstractNamespaces', [ 2300 => 'Abstract_Wikipedia' ] );
+		$this->setUpAsAbstractMode();
+
+		// The script falls back to these when --topics / --langs are omitted, so leaving them
+		// to the host wiki would stop the missing-option cases fatalling as they should.
+		$this->overrideConfigValues( [
+			'WikiLambdaAbstractWikiArticleStoreTopics' => [],
+			'WikiLambdaAbstractWikiArticleStoreLangs' => [],
+		] );
 
 		ConvertibleTimestamp::setFakeTime( self::NOW );
 
