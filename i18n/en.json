@@ -199,6 +199,7 @@
 	"wikilambda-diff-group-name": "Name",
 	"wikilambda-diff-group-aliases": "Also known as",
 	"wikilambda-diff-group-description": "Description",
+	"wikilambda-diff-value-elided": "… and $1 more",
 	"wikilambda-discard-edits": "Discard edits",
 	"wikilambda-edit": "Edit",
 	"wikilambda-edit-monolingual-text-placeholder": "Enter text",

@@ -16,7 +16,6 @@ use Diff\DiffOp\DiffOpAdd;
 use Diff\DiffOp\DiffOpChange;
 use Diff\DiffOp\DiffOpRemove;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\MessageLocalizer;
 use UnexpectedValueException;
@@ -36,10 +35,8 @@ use Wikimedia\Diff\WordLevelDiff;
  * whole multilingual structure (Z12/Z32) are decomposed into one row per
  * language, matching how Wikibase presents term diffs.
  *
- * NOTE (T284473): This iteration localises the top-level group key and the
- * language of monolingual values. Contextual, type-relative key labels for
- * deeper Z2K2 (function body) paths are deferred to a follow-up, as they
- * require batched label lookups against ZObjectStore.
+ * Values are rendered by ZObjectValueRenderer, so that adding or removing a
+ * whole sub-tree shows its labelled structure rather than its JSON.
  */
 class ZObjectDiffVisualiser {
 
@@ -48,10 +45,14 @@ class ZObjectDiffVisualiser {
 	 * @param DiffLabelResolver $labels Resolves the keys, references and
 	 *   languages appearing in the diff to display text in the viewer's language.
 	 */
+	/** @var ZObjectValueRenderer Renders the values carried by the diff's operations */
+	private readonly ZObjectValueRenderer $values;
+
 	public function __construct(
 		private readonly MessageLocalizer $messageLocalizer,
 		private readonly DiffLabelResolver $labels
 	) {
+		$this->values = new ZObjectValueRenderer( $messageLocalizer, $labels );
 	}
 
 	/**
@@ -142,8 +143,8 @@ class ZObjectDiffVisualiser {
 
 	/**
 	 * Collect the strings held anywhere in a diff value, any of which may turn
-	 * out to be a reference. Keys are left alone: they are only labelled when
-	 * they appear in a path.
+	 * out to be a reference, along with its keys, which are labelled when the
+	 * value is rendered as a structure.
 	 *
 	 * @param mixed $value
 	 * @param string[] &$identifiers Accumulator, appended to in place
@@ -154,7 +155,8 @@ class ZObjectDiffVisualiser {
 			return;
 		}
 		if ( is_array( $value ) ) {
-			foreach ( $value as $item ) {
+			foreach ( $value as $key => $item ) {
+				$identifiers[] = (string)$key;
 				$this->collectValueIdentifiers( $item, $identifiers );
 			}
 		}
@@ -211,7 +213,7 @@ class ZObjectDiffVisualiser {
 			}
 			$line = $this->getChangedLine(
 				$type === 'add' ? 'ins' : 'del',
-				$this->stringifyValue( $this->sidedValue( $op ) )
+				$this->sidedValue( $op )
 			);
 			return $header . ( $type === 'add'
 				? $this->generateHtmlDiffTableRow( null, $line, $language )
@@ -515,13 +517,13 @@ class ZObjectDiffVisualiser {
 				'@phan-var DiffOpAdd $op';
 				return $this->generateHtmlDiffTableRow(
 					null,
-					$this->getChangedLine( 'ins', $this->stringifyValue( $op->getNewValue() ), $valueKey )
+					$this->getChangedLine( 'ins', $op->getNewValue(), $valueKey )
 				);
 
 			case 'remove':
 				'@phan-var DiffOpRemove $op';
 				return $this->generateHtmlDiffTableRow(
-					$this->getChangedLine( 'del', $this->stringifyValue( $op->getOldValue() ), $valueKey ),
+					$this->getChangedLine( 'del', $op->getOldValue(), $valueKey ),
 					null
 				);
 
@@ -547,20 +549,25 @@ class ZObjectDiffVisualiser {
 	private function generateChangeRowHtml(
 		DiffOpChange $op, ?string $valueKey = null, ?array $language = null
 	): string {
-		$old = $this->stringifyValue( $op->getOldValue() );
-		$new = $this->stringifyValue( $op->getNewValue() );
+		$oldValue = $op->getOldValue();
+		$newValue = $op->getNewValue();
 
-		// If either side is a reference, render both as links rather than
-		// character-diffing ZID strings against each other.
-		if ( $this->referenceLink( $old, $valueKey ) !== null
-			|| $this->referenceLink( $new, $valueKey ) !== null
+		// Show both sides whole, rather than word-diffing them against each other,
+		// when either is a structure — a value swapped for one of a different
+		// type, say — or a reference. Word-diffing those compares serialisations
+		// and ZID spellings, not meanings.
+		if ( $this->values->rendersWhole( $oldValue, $valueKey )
+			|| $this->values->rendersWhole( $newValue, $valueKey )
 		) {
 			return $this->generateHtmlDiffTableRow(
-				$this->getChangedLine( 'del', $old, $valueKey ),
-				$this->getChangedLine( 'ins', $new, $valueKey ),
+				$this->getChangedLine( 'del', $oldValue, $valueKey ),
+				$this->getChangedLine( 'ins', $newValue, $valueKey ),
 				$language
 			);
 		}
+
+		$old = $this->values->renderText( $oldValue );
+		$new = $this->values->renderText( $newValue );
 
 		// WordLevelDiff splits its input on newlines and returns one
 		// (already-escaped) HTML fragment per line; ZObject leaf values may be
@@ -593,74 +600,20 @@ class ZObjectDiffVisualiser {
 	}
 
 	/**
-	 * Coerce a diff value to a display string. ZObject leaves are strings, but
-	 * add/remove of a whole sub-tree carries an array; render that as compact
-	 * JSON for now (proper summarisation is deferred to a follow-up).
-	 *
-	 * @param mixed $value
-	 * @return string
-	 */
-	private function stringifyValue( $value ): string {
-		return is_string( $value )
-			? $value
-			: ( json_encode( $value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) ?: '' );
-	}
-
-	/**
-	 * Wrap a value in an inline diff-change element, escaping it and rendering
-	 * any newlines as visible breaks.
+	 * Wrap a value in an inline diff-change element, rendered as readable,
+	 * escaped HTML.
 	 *
 	 * @param string $tag 'ins' for additions, 'del' for removals
-	 * @param string $value
+	 * @param mixed $value
 	 * @param string|null $valueKey The key immediately holding the value
 	 * @return string
 	 */
-	private function getChangedLine( string $tag, string $value, ?string $valueKey = null ): string {
-		$inner = $this->referenceLink( $value, $valueKey ) ?? $this->escapeMultiline( $value );
+	private function getChangedLine( string $tag, $value, ?string $valueKey = null ): string {
 		return Html::rawElement(
 			$tag,
 			[ 'class' => 'diffchange diffchange-inline' ],
-			$inner
+			$this->values->render( $value, $valueKey )
 		);
-	}
-
-	/**
-	 * If a value is a ZObject reference in a labellable position, render it as a
-	 * link to the referenced object's page, labelled "<label> (<zid>)" (or just
-	 * the linked id when no label is known). Returns null for non-references,
-	 * literal positions, or ids with no valid target.
-	 *
-	 * @param string $value
-	 * @param string|null $valueKey The key immediately holding the value
-	 * @return string|null
-	 */
-	private function referenceLink( string $value, ?string $valueKey ): ?string {
-		// Only leaf values with a known key position are candidate references.
-		// Free-text values (monolingual strings, aliases) pass a null key and
-		// must never be linked, even when their text happens to look like a ZID.
-		// Likewise values under keys that hold literal content: Z6K1 (a string's
-		// value) is the key case and is not in the shared ignore list, so guard
-		// it explicitly alongside that list.
-		if ( $valueKey === null
-			|| $valueKey === ZTypeRegistry::Z_STRING_VALUE
-			|| in_array( $valueKey, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING, true )
-		) {
-			return null;
-		}
-		if ( !ZObjectUtils::isValidZObjectReference( $value ) ) {
-			return null;
-		}
-
-		$reference = $this->labels->getReference( $value );
-		if ( $reference === null ) {
-			return null;
-		}
-
-		$label = $reference['label'] ?? null;
-		$text = ( $label === null || $label === '' )
-			? $value
-			: $label . ' (' . $value . ')';
-		return Html::element( 'a', [ 'href' => $reference['url'] ], $text );
 	}
 
 	/**
@@ -672,16 +625,6 @@ class ZObjectDiffVisualiser {
 	 */
 	private function valueKeyOf( array $path ): ?string {
 		return $path === [] ? null : (string)$path[count( $path ) - 1];
-	}
-
-	/**
-	 * Escape text for HTML, turning newlines into visible line breaks.
-	 *
-	 * @param string $text
-	 * @return string
-	 */
-	private function escapeMultiline( string $text ): string {
-		return implode( '<br />', array_map( 'htmlspecialchars', explode( "\n", $text ) ) );
 	}
 
 	/**
