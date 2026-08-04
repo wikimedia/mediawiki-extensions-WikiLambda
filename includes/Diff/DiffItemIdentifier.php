@@ -11,7 +11,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
@@ -23,33 +22,16 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
  * argument, which key, which option — and that is derivable from the item's
  * own content.
  *
- * Which part of the content identifies an item depends on its type. For the
- * built-in types that make up most stored lists, the identifying key is stated
- * explicitly below; anything else falls back to the item's first key, which for
- * a record whose remaining keys qualify it — a function paired with the
- * languages it serves, say — is the right choice.
+ * Which part of the content identifies an item is DiffItemKeyer's business;
+ * this class turns that part into something a reader can read, resolving keys
+ * and references to their labels.
  *
- * The handles produced are plain text, never HTML, and are not localised beyond
- * the labels they are built from, so that the differ could one day use them to
- * match items across revisions rather than pairing them up by position
- * (T338250).
+ * The handles produced are plain text, never HTML. They are for display only:
+ * they are localised, and they may be shared by items a reader would not
+ * confuse, so they must never be used to pair items across revisions — that is
+ * what DiffItemKeyer::getJoinKey() is for.
  */
 class DiffItemIdentifier {
-
-	/**
-	 * Types whose items are identified by something other than their first key.
-	 *
-	 * For a key or argument declaration the first key is the type — which is
-	 * shared by every second key or string argument in the wiki — whereas the
-	 * key or argument id names precisely one, and labels well. For an
-	 * implementation or a tester it is the function they belong to.
-	 */
-	private const IDENTIFYING_KEYS = [
-		ZTypeRegistry::Z_KEY => ZTypeRegistry::Z_KEY_ID,
-		ZTypeRegistry::Z_ARGUMENTDECLARATION => ZTypeRegistry::Z_ARGUMENTDECLARATION_ID,
-		ZTypeRegistry::Z_IMPLEMENTATION => ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION,
-		ZTypeRegistry::Z_TESTER => ZTypeRegistry::Z_TESTER_FUNCTION,
-	];
 
 	/**
 	 * The longest plain string accepted as a handle. A handle stands in for an
@@ -77,110 +59,13 @@ class DiffItemIdentifier {
 
 		// A monolingual value is identified by its language, as a multilingual
 		// container holds at most one entry per language.
-		$type = $item[ZTypeRegistry::Z_OBJECT_TYPE] ?? null;
-		if ( $type === ZTypeRegistry::Z_MONOLINGUALSTRING
-			|| $type === ZTypeRegistry::Z_MONOLINGUALSTRINGSET
-		) {
-			$languageZid = $type === ZTypeRegistry::Z_MONOLINGUALSTRING
-				? ( $item[ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE] ?? null )
-				: ( $item[ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE] ?? null );
-			return is_string( $languageZid ) ? $this->labels->getLanguage( $languageZid )['name'] : null;
+		if ( DiffItemKeyer::isMonolingual( $item ) ) {
+			$languageZid = DiffItemKeyer::languageZidOf( $item );
+			return $languageZid === null ? null : $this->labels->getLanguage( $languageZid )['name'];
 		}
 
-		$key = $this->identifyingKey( $item );
+		$key = DiffItemKeyer::identifyingKey( $item );
 		return $key === null ? null : $this->describe( $item[$key] );
-	}
-
-	/**
-	 * Key an item for pairing against the other revision's items, or return null
-	 * where it cannot be keyed reliably.
-	 *
-	 * This is the raw counterpart of getHandle(): the same notion of what
-	 * identifies an item, but resolving nothing. A handle is for a reader, so it
-	 * is a label, it may be shared by items a reader would not confuse, and it
-	 * changes with the viewer's language — all of which make it useless as a key.
-	 * A key must be exact and stable, so it stays a ZID.
-	 *
-	 * Callers must not assume keys are unique; two implementations of one function
-	 * share theirs. Use uniqueJoinKeys() to get only the keys that name one item.
-	 *
-	 * @param mixed $item The item, as a nested array or a leaf
-	 * @return string|null
-	 */
-	public function getJoinKey( $item ): ?string {
-		if ( !is_array( $item ) ) {
-			// A reference item keys on the ZID itself, never on its label.
-			return is_string( $item ) && $item !== '' ? $item : null;
-		}
-
-		// A multilingual container holds at most one entry per language, so the
-		// language is an exact key for a monolingual value.
-		$type = $item[ZTypeRegistry::Z_OBJECT_TYPE] ?? null;
-		if ( $type === ZTypeRegistry::Z_MONOLINGUALSTRING
-			|| $type === ZTypeRegistry::Z_MONOLINGUALSTRINGSET
-		) {
-			$languageZid = $type === ZTypeRegistry::Z_MONOLINGUALSTRING
-				? ( $item[ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE] ?? null )
-				: ( $item[ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE] ?? null );
-			return is_string( $languageZid ) && $languageZid !== '' ? $languageZid : null;
-		}
-
-		$key = $this->identifyingKey( $item );
-		$value = $key === null ? null : $item[$key];
-		return is_string( $value ) && $value !== '' ? $value : null;
-	}
-
-	/**
-	 * The join keys of a list's items that name exactly one item, as a map of key
-	 * to index.
-	 *
-	 * Items sharing a key, and items with no key at all, are left out: they can
-	 * only be paired up by some other means. The list is taken as stored, so its
-	 * leading reference to the type of its items is keyed like any other item,
-	 * and pairs with the other revision's.
-	 *
-	 * @param array $items
-	 * @return array<string,int> Join key => index
-	 */
-	public function uniqueJoinKeys( array $items ): array {
-		$indices = [];
-		$shared = [];
-		foreach ( $items as $index => $item ) {
-			$key = $this->getJoinKey( $item );
-			if ( $key === null ) {
-				continue;
-			}
-			if ( array_key_exists( $key, $indices ) ) {
-				$shared[$key] = true;
-				continue;
-			}
-			$indices[$key] = $index;
-		}
-		return array_diff_key( $indices, $shared );
-	}
-
-	/**
-	 * The key of a record that says which one it is: the one stated for its type,
-	 * or failing that its first key other than the type itself.
-	 *
-	 * @param array $item
-	 * @return string|null
-	 */
-	private function identifyingKey( array $item ): ?string {
-		$type = $item[ZTypeRegistry::Z_OBJECT_TYPE] ?? null;
-		if ( is_string( $type ) && array_key_exists( $type, self::IDENTIFYING_KEYS ) ) {
-			$key = self::IDENTIFYING_KEYS[$type];
-			if ( array_key_exists( $key, $item ) ) {
-				return $key;
-			}
-		}
-
-		foreach ( $item as $candidate => $unused ) {
-			if ( (string)$candidate !== ZTypeRegistry::Z_OBJECT_TYPE ) {
-				return (string)$candidate;
-			}
-		}
-		return null;
 	}
 
 	/**
