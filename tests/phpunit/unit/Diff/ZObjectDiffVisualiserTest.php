@@ -213,6 +213,30 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		$this->assertStringContainsString( 'diff-addedline', $html );
 	}
 
+	public function testReorderedAliasShowsItsTextNotOnlyItsPosition() {
+		// A re-ordered alias is headed by its language, which every alias in the
+		// set shares, so the row itself has to carry the alias.
+		$aliases = static fn ( array $strings ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K4' => [
+				'Z1K1' => 'Z32',
+				'Z32K1' => [
+					'Z31',
+					[ 'Z1K1' => 'Z31', 'Z31K1' => 'Z1002', 'Z31K2' => [ 'Z6', ...$strings ] ],
+				],
+			],
+		];
+		$old = $aliases( [ 'a', 'b', 'c' ] );
+		$new = $aliases( [ 'a', 'c', 'b' ] );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		$this->assertStringContainsString( '(English)', $html );
+		$this->assertStringContainsString( 'wikilambda-diff-value-moved', $html );
+		// Both moved aliases are named, so the reader can tell which went where.
+		$this->assertStringContainsString( ']b', $html );
+		$this->assertStringContainsString( ']c', $html );
+	}
+
 	public function testLabelsArePrefetchedOnceForTheWholeDiff() {
 		$prefetched = [];
 		$labels = $this->createMock( DiffLabelResolver::class );

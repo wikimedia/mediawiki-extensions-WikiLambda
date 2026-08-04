@@ -243,18 +243,17 @@ class ZObjectAuthorizationTest extends MediaWikiUnitTestCase {
 	 */
 	public function testGetRequiredEditRights(
 		string $description,
-		array $oldImplementations,
-		array $newImplementations,
+		array $old,
+		array $new,
 		array $expectedRights
 	) {
-		$testers = [ ZTypeRegistry::Z_TESTER ];
 		$title = $this->createMock( Title::class );
 		// Outside the predefined range, so the built-in rules do not claim it.
 		$title->method( 'getText' )->willReturn( 'Z10001' );
 
 		$rights = $this->authorization->getRequiredEditRights(
-			$this->newMockFunction( $oldImplementations, $testers ),
-			$this->newMockFunction( $newImplementations, $testers ),
+			$this->newMockFunction( $old['implementations'], $old['testers'] ),
+			$this->newMockFunction( $new['implementations'], $new['testers'] ),
 			$title
 		);
 
@@ -265,12 +264,17 @@ class ZObjectAuthorizationTest extends MediaWikiUnitTestCase {
 	}
 
 	public static function provideEditRights(): iterable {
-		$running = static fn ( string ...$zids ): array => [ ZTypeRegistry::Z_IMPLEMENTATION, ...$zids ];
+		$impls = static fn ( string ...$zids ): array => [ ZTypeRegistry::Z_IMPLEMENTATION, ...$zids ];
+		$testers = static fn ( string ...$zids ): array => [ ZTypeRegistry::Z_TESTER, ...$zids ];
+		$function = static fn ( array $implementations, array $testerList ): array => [
+			'implementations' => $implementations,
+			'testers' => $testerList,
+		];
 
 		yield 're-order implementations of a running function' => [
 			're-order the implementations of a running function',
-			$running( 'Z10021', 'Z10023' ),
-			$running( 'Z10023', 'Z10021' ),
+			$function( $impls( 'Z10021', 'Z10023' ), $testers() ),
+			$function( $impls( 'Z10023', 'Z10021' ), $testers() ),
 			[
 				'edit',
 				'wikilambda-edit-user-function',
@@ -280,10 +284,23 @@ class ZObjectAuthorizationTest extends MediaWikiUnitTestCase {
 			],
 		];
 
+		yield 're-order testers of a running function' => [
+			're-order the testers of a running function',
+			$function( $impls( 'Z10021' ), $testers( 'Z10031', 'Z10032' ) ),
+			$function( $impls( 'Z10021' ), $testers( 'Z10032', 'Z10031' ) ),
+			[
+				'edit',
+				'wikilambda-edit-user-function',
+				'wikilambda-edit-running-function',
+				'wikilambda-connect-tester',
+				'wikilambda-disconnect-tester',
+			],
+		];
+
 		yield 'connect an implementation to a running function' => [
 			'connect an implementation to a running function',
-			$running( 'Z10021' ),
-			$running( 'Z10021', 'Z10023' ),
+			$function( $impls( 'Z10021' ), $testers() ),
+			$function( $impls( 'Z10021', 'Z10023' ), $testers() ),
 			[
 				'edit',
 				'wikilambda-edit-user-function',
@@ -294,8 +311,8 @@ class ZObjectAuthorizationTest extends MediaWikiUnitTestCase {
 
 		yield 'disconnect an implementation from a running function' => [
 			'disconnect an implementation from a running function',
-			$running( 'Z10021', 'Z10023' ),
-			$running( 'Z10021' ),
+			$function( $impls( 'Z10021', 'Z10023' ), $testers() ),
+			$function( $impls( 'Z10021' ), $testers() ),
 			[
 				'edit',
 				'wikilambda-edit-user-function',
@@ -306,8 +323,8 @@ class ZObjectAuthorizationTest extends MediaWikiUnitTestCase {
 
 		yield 'connect the first implementation to a non-running function' => [
 			'connect the first implementation to a non-running function',
-			$running(),
-			$running( 'Z10021' ),
+			$function( $impls(), $testers() ),
+			$function( $impls( 'Z10021' ), $testers() ),
 			[
 				'edit',
 				'wikilambda-edit-user-function',
