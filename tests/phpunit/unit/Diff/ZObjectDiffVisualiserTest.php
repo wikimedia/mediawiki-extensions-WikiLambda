@@ -9,7 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
+use Diff\DiffOp\Diff\Diff;
 use MediaWiki\Extension\WikiLambda\Diff\DiffLabelResolver;
+use MediaWiki\Extension\WikiLambda\Diff\DiffOpMove;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffVisualiser;
 use MediaWiki\Language\MessageLocalizer;
@@ -31,7 +33,21 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		$localizer = $this->createMock( MessageLocalizer::class );
 		$localizer->method( 'msg' )->willReturnCallback( function ( $key ) {
 			$message = $this->createMock( Message::class );
-			$message->method( 'text' )->willReturn( "[$key]" );
+			$raw = [];
+			$message->method( 'numParams' )->willReturnSelf();
+			// Raw parameters carry pre-rendered HTML, so echo them back after the
+			// key; tests can then see the value a message was given.
+			$message->method( 'rawParams' )->willReturnCallback(
+				static function ( ...$params ) use ( $message, &$raw ) {
+					$raw = array_merge( $raw, $params );
+					return $message;
+				}
+			);
+			$message->method( 'text' )->willReturnCallback(
+				static function () use ( $key, &$raw ): string {
+					return "[$key]" . implode( '', $raw );
+				}
+			);
 			return $message;
 		} );
 
@@ -171,6 +187,30 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
 
 		$this->assertStringContainsString( '<a href="/wiki/Z40">Boolean (Z40)</a>', $html );
+	}
+
+	public function testMovedItemIsNamedAndShownAsAChangeOfPosition() {
+		$attached = static fn ( array $zids ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K2' => [ 'Z1K1' => 'Z8', 'Z8K4' => [ 'Z14', ...$zids ] ],
+		];
+		$old = $attached( [ 'Z10023', 'Z10021' ] );
+		$new = $attached( [ 'Z10021', 'Z10023' ] );
+
+		// Built by hand: ZObjectListDiffer does not yet report moves.
+		$diff = new Diff( [
+			'Z2K2' => new Diff( [
+				'Z8K4' => new Diff( [ 1 => new DiffOpMove( 'Z10021', 2, 1 ) ], true ),
+			], true ),
+		], true );
+		$html = $this->newVisualiser()->visualiseDiff( $diff, $old, $new );
+
+		// Headed by the item that moved, not by a position.
+		$this->assertStringContainsString( 'Z8K4 (Z10021)', $html );
+		// One side per position, so the table reads as a move.
+		$this->assertStringContainsString( 'wikilambda-diff-value-moved', $html );
+		$this->assertStringContainsString( 'diff-deletedline', $html );
+		$this->assertStringContainsString( 'diff-addedline', $html );
 	}
 
 	public function testLabelsArePrefetchedOnceForTheWholeDiff() {

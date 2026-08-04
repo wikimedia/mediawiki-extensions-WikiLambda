@@ -223,6 +223,10 @@ class ZObjectDiffVisualiser {
 				$this->labelWithLanguage( $context['fieldPath'], $context['languageZid'], $dropGroupHead )
 			);
 			$language = $this->languageAttributes( $context['languageZid'] );
+			// A move reports itself as a change, so test for it first.
+			if ( $op instanceof DiffOpMove ) {
+				return $header . $this->generateMoveRowHtml( $op, null, $language );
+			}
 			if ( $type === 'change' ) {
 				'@phan-var DiffOpChange $op';
 				return $header . $this->generateChangeRowHtml( $op, null, $language );
@@ -527,10 +531,13 @@ class ZObjectDiffVisualiser {
 	 */
 	private function itemHandle( array $path, int $position, ?DiffOp $op ): ?string {
 		// The operation carries the whole item only when the path stops at it.
-		if ( $op !== null && $position === count( $path ) - 1
-			&& ( $op instanceof DiffOpAdd || $op instanceof DiffOpRemove )
-		) {
-			return $this->items->getHandle( $this->sidedValue( $op ) );
+		if ( $op !== null && $position === count( $path ) - 1 ) {
+			if ( $op instanceof DiffOpMove ) {
+				return $this->items->getHandle( $op->getValue() );
+			}
+			if ( $op instanceof DiffOpAdd || $op instanceof DiffOpRemove ) {
+				return $this->items->getHandle( $this->sidedValue( $op ) );
+			}
 		}
 
 		$itemPath = array_slice( $path, 0, $position + 1 );
@@ -573,6 +580,11 @@ class ZObjectDiffVisualiser {
 	 * @return string
 	 */
 	private function generateOpRowHtml( DiffOp $op, ?string $valueKey = null ): string {
+		// A move reports itself as a change, so test for it before the type.
+		if ( $op instanceof DiffOpMove ) {
+			return $this->generateMoveRowHtml( $op, $valueKey );
+		}
+
 		switch ( $op->getType() ) {
 			case 'add':
 				'@phan-var DiffOpAdd $op';
@@ -639,6 +651,53 @@ class ZObjectDiffVisualiser {
 			implode( '<br />', $wordLevelDiff->orig() ),
 			implode( '<br />', $wordLevelDiff->closing() ),
 			$language
+		);
+	}
+
+	/**
+	 * Render a re-ordered item as the position it left against the position it
+	 * now holds, showing the item on both sides.
+	 *
+	 * The item has to be shown even though its content did not change, because
+	 * the row's header does not always say which item this is: a re-ordered
+	 * alias, for instance, is headed by its language, which every alias in the
+	 * set shares. Positions alone would leave the reader nothing to go on.
+	 *
+	 * Positions are shown as they are in the list, where the first item is at
+	 * index 1, index 0 being the reference to the type of the items.
+	 *
+	 * @param DiffOpMove $op
+	 * @param string|null $valueKey The key immediately holding the item
+	 * @param array{code:string,dir:string}|null $language
+	 * @return string
+	 */
+	private function generateMoveRowHtml(
+		DiffOpMove $op, ?string $valueKey = null, ?array $language = null
+	): string {
+		$value = $this->values->render( $op->getValue(), $valueKey );
+		return $this->generateHtmlDiffTableRow(
+			$this->generateMovedLine( 'del', $op->getOldIndex(), $value ),
+			$this->generateMovedLine( 'ins', $op->getNewIndex(), $value ),
+			$language
+		);
+	}
+
+	/**
+	 * One side of a re-ordering: the item, and where it sits on this side.
+	 *
+	 * @param string $tag 'ins' or 'del'
+	 * @param int $index
+	 * @param string $valueHtml The rendered item, already escaped
+	 * @return string
+	 */
+	private function generateMovedLine( string $tag, int $index, string $valueHtml ): string {
+		return Html::rawElement(
+			$tag,
+			[ 'class' => 'diffchange diffchange-inline' ],
+			$this->messageLocalizer->msg( 'wikilambda-diff-value-moved' )
+				->numParams( $index )
+				->rawParams( $valueHtml )
+				->text()
 		);
 	}
 

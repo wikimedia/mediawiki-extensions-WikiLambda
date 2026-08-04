@@ -216,6 +216,7 @@
 	"wikilambda-diff-group-aliases": "Header labelling a change to an Object's aliases (Z2K4) on a diff page.",
 	"wikilambda-diff-group-description": "Header labelling a change to an Object's description (Z2K5) on a diff page.",
 	"wikilambda-diff-value-elided": "Marker shown on a diff page in place of the part of a changed value that was too large or too deeply nested to display. Parameters:\n* $1 - the number of list items or keys not shown at this point (not a total of everything below them).",
+	"wikilambda-diff-value-moved": "Shown on a diff page for a list item that was re-ordered, once on the removed side for where it was and once on the added side for where it now is. Parameters:\n* $1 - the item's position in the list on this side, where the first item is 1.\n* $2 - the item itself, as rendered HTML; do not escape it.",
 	"wikilambda-discard-edits": "Label for the discard edits button",
 	"wikilambda-edit": "Page heading for editing a ZObject page. Very similar in its function to {{msg-mw|editing}}, but doesn't have a parameter; see [https://phabricator.wikimedia.org/T359781 bug T359781].\n{{identical|Edit}}",
 	"wikilambda-edit-monolingual-text-placeholder": "Placeholder text for a monolingual string input during edit",
