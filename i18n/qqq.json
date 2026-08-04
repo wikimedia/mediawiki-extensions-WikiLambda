@@ -376,7 +376,7 @@
 	"wikilambda-publish-successful": "Message indicating that the user's changes were successfully saved.",
 	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
 	"wikilambda-publishnew": "Label for the submit button when creating a ZObject on a public wiki\n{{identical|Publish}}",
-	"wikilambda-reference": "Label for the word [[:meta:Abstract Wikipedia/Glossary#reference|reference]].\n\n{{doc-wikilambda}}\n\n{{identical|Reference}}",
+	"wikilambda-reference": "Appears at the top of the popover shown when hovering on a footnote number in a rendered abstract article.\n\n(Note: unlike in some other WikiLambda messages, this doesn't refer to a Wikifunctions [[:meta:Abstract Wikipedia/Glossary#reference|reference]], but to a reference in the sense of Wikipedia \"footnote\" or \"citation\".)\n\n{{doc-wikilambda}}\n\n{{identical|Reference}}",
 	"wikilambda-renderer-api-error": "Error message for unexpected api or server errors when running parser or render functions",
 	"wikilambda-renderer-error-footer-project-chat": "Error message footer to invite contributors to leave a message at the Wikifunctions Project chat page. Please do not change the target of the link.",
 	"wikilambda-renderer-unexpected-result-error": "Error message for the string renderer function returning an unexpected Type as a result\n\nParams:\n* $1 – The Wikifunctions Function that is the string renderer for the given Type.\n\n{{Doc-wikilambda}}",
