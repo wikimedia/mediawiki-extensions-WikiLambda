@@ -13,6 +13,7 @@ use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Title\Title;
 use MediaWikiUnitTestCase;
 use Psr\Log\NullLogger;
@@ -188,6 +189,130 @@ class ZObjectAuthorizationTest extends MediaWikiUnitTestCase {
 			'predefined wikidata enum',
 			[ 'functionCallContent', ZTypeRegistry::Z_WIKIDATA_ENUM, 'Z404' ],
 			[ 'edit', 'wikilambda-create', 'wikilambda-create-predefined', 'wikilambda-create-generic-enum' ],
+		];
+	}
+
+	/**
+	 * Build a mock ZObjectContent for a user-contributed function whose attached
+	 * implementations and testers are the lists given.
+	 *
+	 * Enough is mocked for the rules to be matched without touching the service
+	 * container: Z8 is in EXCLUDE_TYPES_FROM_ENUMS, so ZObjectFilterIsEnumValue
+	 * answers without a database read, and ZObjectFilterIsRunnable needs only the
+	 * attached implementations.
+	 *
+	 * @param array $implementations The Z8K4 value, as a benjamin array
+	 * @param array $testers The Z8K3 value, as a benjamin array
+	 * @return ZObjectContent
+	 */
+	private function newMockFunction( array $implementations, array $testers ): ZObjectContent {
+		$attached = $this->createMock( ZTypedList::class );
+		// A function is "running" when it has implementations attached.
+		$attached->method( 'isEmpty' )->willReturn( count( $implementations ) < 2 );
+		$inner = $this->createMock( ZObject::class );
+		$inner->method( 'getValueByKey' )->with( 'Z8K4' )->willReturn( $attached );
+
+		$mock = $this->createMock( ZObjectContent::class );
+		$mock->method( 'getZType' )->willReturn( ZTypeRegistry::Z_FUNCTION );
+		$mock->method( 'getInnerZObject' )->willReturn( $inner );
+		$mock->method( 'getObject' )->willReturn( [
+			'Z1K1' => ZTypeRegistry::Z_PERSISTENTOBJECT,
+			'Z2K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'Z10001' ],
+			'Z2K2' => [
+				'Z1K1' => ZTypeRegistry::Z_FUNCTION,
+				'Z8K3' => $testers,
+				'Z8K4' => $implementations,
+				'Z8K5' => 'Z10001',
+			],
+		] );
+		return $mock;
+	}
+
+	/**
+	 * Characterises the rights an edit to a user-contributed function's attached
+	 * implementations and testers requires today, so that changing how
+	 * ZObjectListDiffer pairs list items across revisions (T338250) cannot quietly
+	 * reduce them.
+	 *
+	 * Re-ordering is the case that matters: because items are currently paired by
+	 * position, moving one reports as a change to every position it passed, and a
+	 * change is mapped to both the connect and the disconnect right. Pairing items
+	 * by identity instead must not drop that.
+	 *
+	 * @dataProvider provideEditRights
+	 */
+	public function testGetRequiredEditRights(
+		string $description,
+		array $oldImplementations,
+		array $newImplementations,
+		array $expectedRights
+	) {
+		$testers = [ ZTypeRegistry::Z_TESTER ];
+		$title = $this->createMock( Title::class );
+		// Outside the predefined range, so the built-in rules do not claim it.
+		$title->method( 'getText' )->willReturn( 'Z10001' );
+
+		$rights = $this->authorization->getRequiredEditRights(
+			$this->newMockFunction( $oldImplementations, $testers ),
+			$this->newMockFunction( $newImplementations, $testers ),
+			$title
+		);
+
+		sort( $rights );
+		$expected = $expectedRights;
+		sort( $expected );
+		$this->assertSame( $expected, $rights, "Rights required to $description" );
+	}
+
+	public static function provideEditRights(): iterable {
+		$running = static fn ( string ...$zids ): array => [ ZTypeRegistry::Z_IMPLEMENTATION, ...$zids ];
+
+		yield 're-order implementations of a running function' => [
+			're-order the implementations of a running function',
+			$running( 'Z10021', 'Z10023' ),
+			$running( 'Z10023', 'Z10021' ),
+			[
+				'edit',
+				'wikilambda-edit-user-function',
+				'wikilambda-edit-running-function',
+				'wikilambda-connect-implementation',
+				'wikilambda-disconnect-implementation',
+			],
+		];
+
+		yield 'connect an implementation to a running function' => [
+			'connect an implementation to a running function',
+			$running( 'Z10021' ),
+			$running( 'Z10021', 'Z10023' ),
+			[
+				'edit',
+				'wikilambda-edit-user-function',
+				'wikilambda-edit-running-function',
+				'wikilambda-connect-implementation',
+			],
+		];
+
+		yield 'disconnect an implementation from a running function' => [
+			'disconnect an implementation from a running function',
+			$running( 'Z10021', 'Z10023' ),
+			$running( 'Z10021' ),
+			[
+				'edit',
+				'wikilambda-edit-user-function',
+				'wikilambda-edit-running-function',
+				'wikilambda-disconnect-implementation',
+			],
+		];
+
+		yield 'connect the first implementation to a non-running function' => [
+			'connect the first implementation to a non-running function',
+			$running(),
+			$running( 'Z10021' ),
+			[
+				'edit',
+				'wikilambda-edit-user-function',
+				'wikilambda-connect-implementation',
+			],
 		];
 	}
 }
