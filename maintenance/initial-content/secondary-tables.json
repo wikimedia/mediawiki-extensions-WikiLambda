@@ -2764,6 +2764,24 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z553",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Disallowed root type",
+            "wlzl_label_normalised": "disallowed root type",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z553",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z553",
+            "wlzl_label_normalised": "z553",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z554",
             "wlzl_type": "Z50",
             "wlzl_language": "Z1002",
@@ -3250,6 +3268,24 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z583",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Reached callback limit in evaluator",
+            "wlzl_label_normalised": "reached callback limit in evaluator",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z583",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z583",
+            "wlzl_label_normalised": "z583",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z590",
             "wlzl_type": "Z50",
             "wlzl_language": "Z1002",
@@ -3300,6 +3336,24 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "Z592",
             "wlzl_label_normalised": "z592",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z593",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Code output discarded: was not valid UTF-8",
+            "wlzl_label_normalised": "code output discarded: was not valid utf-8",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z593",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z593",
+            "wlzl_label_normalised": "z593",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -4726,6 +4780,150 @@
             "wlzl_return_type": "Z40"
         },
         {
+            "wlzl_zobject_zid": "Z899",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Unquote",
+            "wlzl_label_normalised": "unquote",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": "Z1"
+        },
+        {
+            "wlzl_zobject_zid": "Z899",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z899",
+            "wlzl_label_normalised": "z899",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": "Z1"
+        },
+        {
+            "wlzl_zobject_zid": "Z901",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Echo",
+            "wlzl_label_normalised": "built-in implementation of echo",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z901",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z901",
+            "wlzl_label_normalised": "z901",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z902",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of If",
+            "wlzl_label_normalised": "built-in implementation of if",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z902",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z902",
+            "wlzl_label_normalised": "z902",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z903",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Value by key",
+            "wlzl_label_normalised": "built-in implementation of value by key",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z903",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z903",
+            "wlzl_label_normalised": "z903",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z904",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Values by keys",
+            "wlzl_label_normalised": "built-in implementation of values by keys",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z904",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z904",
+            "wlzl_label_normalised": "z904",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z905",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Reify",
+            "wlzl_label_normalised": "built-in implementation of reify",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z905",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z905",
+            "wlzl_label_normalised": "z905",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z908",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Abstract",
+            "wlzl_label_normalised": "built-in implementation of abstract",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z908",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z908",
+            "wlzl_label_normalised": "z908",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z910",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Prepend element to list",
+            "wlzl_label_normalised": "built-in implementation of prepend element to list",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z910",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z910",
+            "wlzl_label_normalised": "z910",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z911",
             "wlzl_type": "Z14",
             "wlzl_language": "Z1002",
@@ -5028,132 +5226,6 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "Z961",
             "wlzl_label_normalised": "z961",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z899",
-            "wlzl_type": "Z8",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Unquote",
-            "wlzl_label_normalised": "unquote",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": "Z1"
-        },
-        {
-            "wlzl_zobject_zid": "Z899",
-            "wlzl_type": "Z8",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z899",
-            "wlzl_label_normalised": "z899",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": "Z1"
-        },
-        {
-            "wlzl_zobject_zid": "Z901",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Built-in implementation of Echo",
-            "wlzl_label_normalised": "built-in implementation of echo",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z901",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z901",
-            "wlzl_label_normalised": "z901",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z902",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Built-in implementation of If",
-            "wlzl_label_normalised": "built-in implementation of if",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z902",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z902",
-            "wlzl_label_normalised": "z902",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z903",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Built-in implementation of Value by key",
-            "wlzl_label_normalised": "built-in implementation of value by key",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z903",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z903",
-            "wlzl_label_normalised": "z903",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z904",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Built-in implementation of Values by keys",
-            "wlzl_label_normalised": "built-in implementation of values by keys",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z904",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z904",
-            "wlzl_label_normalised": "z904",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z905",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Built-in implementation of Reify",
-            "wlzl_label_normalised": "built-in implementation of reify",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z905",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z905",
-            "wlzl_label_normalised": "z905",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z908",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Built-in implementation of Abstract",
-            "wlzl_label_normalised": "built-in implementation of abstract",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z908",
-            "wlzl_type": "Z14",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z908",
-            "wlzl_label_normalised": "z908",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -8821,6 +8893,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z1108",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Tigrinya",
+            "wlzl_label_normalised": "tigrinya",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1108",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1108",
+            "wlzl_label": "ትግርኛ",
+            "wlzl_label_normalised": "ትግርኛ",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1108",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1108",
+            "wlzl_label_normalised": "z1108",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1108",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ti",
+            "wlzl_label_normalised": "ti",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z1109",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -9924,6 +10032,33 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "ik",
             "wlzl_label_normalised": "ik",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1142",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Kera",
+            "wlzl_label_normalised": "kera",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1142",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1142",
+            "wlzl_label_normalised": "z1142",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1142",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ker",
+            "wlzl_label_normalised": "ker",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -12097,6 +12232,501 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z1209",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Dogri",
+            "wlzl_label_normalised": "dogri",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1209",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1209",
+            "wlzl_label_normalised": "z1209",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1209",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "doi",
+            "wlzl_label_normalised": "doi",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1210",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Sinte Romani",
+            "wlzl_label_normalised": "sinte romani",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1210",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1210",
+            "wlzl_label_normalised": "z1210",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1210",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "rmo",
+            "wlzl_label_normalised": "rmo",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1211",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Bashkir",
+            "wlzl_label_normalised": "bashkir",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1211",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1211",
+            "wlzl_label": "башҡортса",
+            "wlzl_label_normalised": "башҡортса",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1211",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1211",
+            "wlzl_label_normalised": "z1211",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1211",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ba",
+            "wlzl_label_normalised": "ba",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1212",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Atsam",
+            "wlzl_label_normalised": "atsam",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1212",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1212",
+            "wlzl_label_normalised": "z1212",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1212",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "cch",
+            "wlzl_label_normalised": "cch",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1213",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Mapuche",
+            "wlzl_label_normalised": "mapuche",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1213",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1213",
+            "wlzl_label": "mapudungun",
+            "wlzl_label_normalised": "mapudungun",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1213",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1213",
+            "wlzl_label_normalised": "z1213",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1213",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "arn",
+            "wlzl_label_normalised": "arn",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1214",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Saisiyat",
+            "wlzl_label_normalised": "saisiyat",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1214",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1214",
+            "wlzl_label": "saisiyat",
+            "wlzl_label_normalised": "saisiyat",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1214",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1214",
+            "wlzl_label_normalised": "z1214",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1214",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "xsy",
+            "wlzl_label_normalised": "xsy",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1215",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Carpathian Romani",
+            "wlzl_label_normalised": "carpathian romani",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1215",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1215",
+            "wlzl_label_normalised": "z1215",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1215",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "rmc",
+            "wlzl_label_normalised": "rmc",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1216",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Western Frisian",
+            "wlzl_label_normalised": "western frisian",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1216",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1216",
+            "wlzl_label": "Frysk",
+            "wlzl_label_normalised": "frysk",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1216",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1216",
+            "wlzl_label_normalised": "z1216",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1216",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "fy",
+            "wlzl_label_normalised": "fy",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1217",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Chamorro",
+            "wlzl_label_normalised": "chamorro",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1217",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1217",
+            "wlzl_label": "Chamoru",
+            "wlzl_label_normalised": "chamoru",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1217",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1217",
+            "wlzl_label_normalised": "z1217",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1217",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ch",
+            "wlzl_label_normalised": "ch",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1218",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Faroese",
+            "wlzl_label_normalised": "faroese",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1218",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1218",
+            "wlzl_label": "føroyskt",
+            "wlzl_label_normalised": "føroyskt",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1218",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1218",
+            "wlzl_label_normalised": "z1218",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1218",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "fo",
+            "wlzl_label_normalised": "fo",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1219",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Kachin",
+            "wlzl_label_normalised": "kachin",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1219",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1219",
+            "wlzl_label_normalised": "z1219",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1219",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "kac",
+            "wlzl_label_normalised": "kac",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1220",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Khmer",
+            "wlzl_label_normalised": "khmer",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1220",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1220",
+            "wlzl_label": "ភាសាខ្មែរ",
+            "wlzl_label_normalised": "ភាសាខមែរ",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1220",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1220",
+            "wlzl_label_normalised": "z1220",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1220",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "km",
+            "wlzl_label_normalised": "km",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1221",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Minnan",
+            "wlzl_label_normalised": "minnan",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1221",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1221",
+            "wlzl_label": "閩南語 / Bân-lâm-gú",
+            "wlzl_label_normalised": "閩南語 / ban-lam-gu",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1221",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1221",
+            "wlzl_label_normalised": "z1221",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1221",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "nan",
+            "wlzl_label_normalised": "nan",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1221",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "zh-min-nan",
+            "wlzl_label_normalised": "zh-min-nan",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1222",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Kinaray-a",
+            "wlzl_label_normalised": "kinaray-a",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1222",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1222",
+            "wlzl_label": "Kinaray-a",
+            "wlzl_label_normalised": "kinaray-a",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1222",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1222",
+            "wlzl_label_normalised": "z1222",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1222",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "krj",
+            "wlzl_label_normalised": "krj",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1223",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Luo",
+            "wlzl_label_normalised": "luo",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1223",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1223",
+            "wlzl_label_normalised": "z1223",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1223",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "luo",
+            "wlzl_label_normalised": "luo",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z1224",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -14086,443 +14716,29 @@
             "wlzl_return_type": null
         },
         {
-            "wlzl_zobject_zid": "Z1210",
+            "wlzl_zobject_zid": "Z1287",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
-            "wlzl_label": "Sinte Romani",
-            "wlzl_label_normalised": "sinte romani",
+            "wlzl_label": "Zarma",
+            "wlzl_label_normalised": "zarma",
             "wlzl_label_primary": "1",
             "wlzl_return_type": null
         },
         {
-            "wlzl_zobject_zid": "Z1210",
+            "wlzl_zobject_zid": "Z1287",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1360",
-            "wlzl_label": "Z1210",
-            "wlzl_label_normalised": "z1210",
+            "wlzl_label": "Z1287",
+            "wlzl_label_normalised": "z1287",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
         {
-            "wlzl_zobject_zid": "Z1210",
+            "wlzl_zobject_zid": "Z1287",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1360",
-            "wlzl_label": "rmo",
-            "wlzl_label_normalised": "rmo",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1211",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Bashkir",
-            "wlzl_label_normalised": "bashkir",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1211",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1211",
-            "wlzl_label": "башҡортса",
-            "wlzl_label_normalised": "башҡортса",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1211",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1211",
-            "wlzl_label_normalised": "z1211",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1211",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "ba",
-            "wlzl_label_normalised": "ba",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1212",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Atsam",
-            "wlzl_label_normalised": "atsam",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1212",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1212",
-            "wlzl_label_normalised": "z1212",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1212",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "cch",
-            "wlzl_label_normalised": "cch",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1213",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Mapuche",
-            "wlzl_label_normalised": "mapuche",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1213",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1213",
-            "wlzl_label": "mapudungun",
-            "wlzl_label_normalised": "mapudungun",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1213",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1213",
-            "wlzl_label_normalised": "z1213",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1213",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "arn",
-            "wlzl_label_normalised": "arn",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1214",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Saisiyat",
-            "wlzl_label_normalised": "saisiyat",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1214",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1214",
-            "wlzl_label": "saisiyat",
-            "wlzl_label_normalised": "saisiyat",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1214",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1214",
-            "wlzl_label_normalised": "z1214",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1214",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "xsy",
-            "wlzl_label_normalised": "xsy",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1215",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Carpathian Romani",
-            "wlzl_label_normalised": "carpathian romani",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1215",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1215",
-            "wlzl_label_normalised": "z1215",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1215",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "rmc",
-            "wlzl_label_normalised": "rmc",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1216",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Western Frisian",
-            "wlzl_label_normalised": "western frisian",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1216",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1216",
-            "wlzl_label": "Frysk",
-            "wlzl_label_normalised": "frysk",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1216",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1216",
-            "wlzl_label_normalised": "z1216",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1216",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "fy",
-            "wlzl_label_normalised": "fy",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1217",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Chamorro",
-            "wlzl_label_normalised": "chamorro",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1217",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1217",
-            "wlzl_label": "Chamoru",
-            "wlzl_label_normalised": "chamoru",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1217",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1217",
-            "wlzl_label_normalised": "z1217",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1217",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "ch",
-            "wlzl_label_normalised": "ch",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1218",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Faroese",
-            "wlzl_label_normalised": "faroese",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1218",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1218",
-            "wlzl_label": "føroyskt",
-            "wlzl_label_normalised": "føroyskt",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1218",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1218",
-            "wlzl_label_normalised": "z1218",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1218",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "fo",
-            "wlzl_label_normalised": "fo",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1219",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Kachin",
-            "wlzl_label_normalised": "kachin",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1219",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1219",
-            "wlzl_label_normalised": "z1219",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1219",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "kac",
-            "wlzl_label_normalised": "kac",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1220",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Khmer",
-            "wlzl_label_normalised": "khmer",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1220",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1220",
-            "wlzl_label": "ភាសាខ្មែរ",
-            "wlzl_label_normalised": "ភាសាខមែរ",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1220",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1220",
-            "wlzl_label_normalised": "z1220",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1220",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "km",
-            "wlzl_label_normalised": "km",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1221",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Minnan",
-            "wlzl_label_normalised": "minnan",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1221",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1221",
-            "wlzl_label": "閩南語 / Bân-lâm-gú",
-            "wlzl_label_normalised": "閩南語 / ban-lam-gu",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1221",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1221",
-            "wlzl_label_normalised": "z1221",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1221",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "nan",
-            "wlzl_label_normalised": "nan",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1221",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "zh-min-nan",
-            "wlzl_label_normalised": "zh-min-nan",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1222",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Kinaray-a",
-            "wlzl_label_normalised": "kinaray-a",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1222",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1222",
-            "wlzl_label": "Kinaray-a",
-            "wlzl_label_normalised": "kinaray-a",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1222",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z1222",
-            "wlzl_label_normalised": "z1222",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z1222",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "krj",
-            "wlzl_label_normalised": "krj",
+            "wlzl_label": "dje",
+            "wlzl_label_normalised": "dje",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -22132,6 +22348,33 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z1522",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Western Cham (Arabic script)",
+            "wlzl_label_normalised": "western cham (arabic script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1522",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1522",
+            "wlzl_label_normalised": "z1522",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1522",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "cja-arab",
+            "wlzl_label_normalised": "cja-arab",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z1523",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -22245,6 +22488,42 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "mid",
             "wlzl_label_normalised": "mid",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1527",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Tibetan",
+            "wlzl_label_normalised": "tibetan",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1527",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1527",
+            "wlzl_label": "བོད་ཡིག",
+            "wlzl_label_normalised": "བད་ཡག",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1527",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1527",
+            "wlzl_label_normalised": "z1527",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1527",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "bo",
+            "wlzl_label_normalised": "bo",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -23316,6 +23595,42 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "non",
             "wlzl_label_normalised": "non",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1561",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Kashmiri",
+            "wlzl_label_normalised": "kashmiri",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1561",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1561",
+            "wlzl_label": "कॉशुर / کٲشُر",
+            "wlzl_label_normalised": "कॉशर / کٲشر",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1561",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1561",
+            "wlzl_label_normalised": "z1561",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1561",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ks",
+            "wlzl_label_normalised": "ks",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -30406,6 +30721,15 @@
             "wlzl_zobject_zid": "Z1782",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1360",
+            "wlzl_label": "cbk",
+            "wlzl_label_normalised": "cbk",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1782",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
             "wlzl_label": "cbk-zam",
             "wlzl_label_normalised": "cbk-zam",
             "wlzl_label_primary": "0",
@@ -31857,6 +32181,33 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "el",
             "wlzl_label_normalised": "el",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1828",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Langi",
+            "wlzl_label_normalised": "langi",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1828",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1828",
+            "wlzl_label_normalised": "z1828",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1828",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "lag",
+            "wlzl_label_normalised": "lag",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -35866,6 +36217,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z1943",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Batak Dairi",
+            "wlzl_label_normalised": "batak dairi",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1943",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1943",
+            "wlzl_label": "Batak Dairi",
+            "wlzl_label_normalised": "batak dairi",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1943",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z1943",
+            "wlzl_label_normalised": "z1943",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z1943",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "btd",
+            "wlzl_label_normalised": "btd",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z1944",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -37954,6 +38341,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z2002",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Eleme",
+            "wlzl_label_normalised": "eleme",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2002",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2002",
+            "wlzl_label": "Eleme",
+            "wlzl_label_normalised": "eleme",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2002",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2002",
+            "wlzl_label_normalised": "z2002",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2002",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "elm",
+            "wlzl_label_normalised": "elm",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z2003",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -38530,6 +38953,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z2019",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Pothwari",
+            "wlzl_label_normalised": "pothwari",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2019",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2019",
+            "wlzl_label": "پوٹھواری",
+            "wlzl_label_normalised": "پوٹھواری",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2019",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2019",
+            "wlzl_label_normalised": "z2019",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2019",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "phr",
+            "wlzl_label_normalised": "phr",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z2020",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -38742,6 +39201,42 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "rcf",
             "wlzl_label_normalised": "rcf",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2026",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Rejang",
+            "wlzl_label_normalised": "rejang",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2026",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2026",
+            "wlzl_label": "Jang",
+            "wlzl_label_normalised": "jang",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2026",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2026",
+            "wlzl_label_normalised": "z2026",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2026",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "rej",
+            "wlzl_label_normalised": "rej",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -38994,6 +39489,42 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "ale-cyrl",
             "wlzl_label_normalised": "ale-cyrl",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2034",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Mindong (Han script)",
+            "wlzl_label_normalised": "mindong (han script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2034",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2034",
+            "wlzl_label": "閩東語（漢字）",
+            "wlzl_label_normalised": "閩東語（漢字）",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2034",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2034",
+            "wlzl_label_normalised": "z2034",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2034",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "cdo-hani",
+            "wlzl_label_normalised": "cdo-hani",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -39322,6 +39853,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z2044",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Hmong Daw",
+            "wlzl_label_normalised": "hmong daw",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2044",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2044",
+            "wlzl_label": "Hmoob Dawb",
+            "wlzl_label_normalised": "hmoob dawb",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2044",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2044",
+            "wlzl_label_normalised": "z2044",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2044",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "mww",
+            "wlzl_label_normalised": "mww",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z2045",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -39606,6 +40173,762 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "uzs",
             "wlzl_label_normalised": "uzs",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2053",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Lorrain",
+            "wlzl_label_normalised": "lorrain",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2053",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2053",
+            "wlzl_label": "Lorrain",
+            "wlzl_label_normalised": "lorrain",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2053",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2053",
+            "wlzl_label_normalised": "z2053",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2053",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "qqa-x-lor",
+            "wlzl_label_normalised": "qqa-x-lor",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2054",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Hausa (Arabic script)",
+            "wlzl_label_normalised": "hausa (arabic script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2054",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2054",
+            "wlzl_label": "هَوُسَ",
+            "wlzl_label_normalised": "هوس",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2054",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2054",
+            "wlzl_label_normalised": "z2054",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2054",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ha-arab",
+            "wlzl_label_normalised": "ha-arab",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2055",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Rohingya",
+            "wlzl_label_normalised": "rohingya",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2055",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2055",
+            "wlzl_label": "𐴌𐴟𐴇𐴥𐴝𐴚𐴒𐴙𐴝",
+            "wlzl_label_normalised": "𐴌𐴟𐴇𐴝𐴚𐴒𐴙𐴝",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2055",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2055",
+            "wlzl_label_normalised": "z2055",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2055",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "rhg",
+            "wlzl_label_normalised": "rhg",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2056",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Adyghe (Latin script)",
+            "wlzl_label_normalised": "adyghe (latin script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2056",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2056",
+            "wlzl_label": "Adygabze",
+            "wlzl_label_normalised": "adygabze",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2056",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2056",
+            "wlzl_label_normalised": "z2056",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2056",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ady-latn",
+            "wlzl_label_normalised": "ady-latn",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2057",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Levantine Arabic (Latin script)",
+            "wlzl_label_normalised": "levantine arabic (latin script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2057",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2057",
+            "wlzl_label": "šāmi",
+            "wlzl_label_normalised": "sami",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2057",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2057",
+            "wlzl_label_normalised": "z2057",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2057",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "apc-latn",
+            "wlzl_label_normalised": "apc-latn",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2058",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Moroccan Arabic (Latin script)",
+            "wlzl_label_normalised": "moroccan arabic (latin script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2058",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2058",
+            "wlzl_label": "ed-dārija",
+            "wlzl_label_normalised": "ed-darija",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2058",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2058",
+            "wlzl_label_normalised": "z2058",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2058",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ary-latn",
+            "wlzl_label_normalised": "ary-latn",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2059",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Azerbaijani (Cyrillic script)",
+            "wlzl_label_normalised": "azerbaijani (cyrillic script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2059",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2059",
+            "wlzl_label": "азәрбајҹанҹа",
+            "wlzl_label_normalised": "азәрбајҹанҹа",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2059",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2059",
+            "wlzl_label_normalised": "z2059",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2059",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "az-cyrl",
+            "wlzl_label_normalised": "az-cyrl",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2060",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Batak Toba (Batak script)",
+            "wlzl_label_normalised": "batak toba (batak script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2060",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2060",
+            "wlzl_label": "ᯅᯖᯂ᯲ ᯖᯬᯅ",
+            "wlzl_label_normalised": "ᯅᯖᯂ᯲ ᯖᯬᯅ",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2060",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2060",
+            "wlzl_label_normalised": "z2060",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2060",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "bbc-batk",
+            "wlzl_label_normalised": "bbc-batk",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2061",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Cree (Latin script)",
+            "wlzl_label_normalised": "cree (latin script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2061",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2061",
+            "wlzl_label": "Nēhiyawēwin",
+            "wlzl_label_normalised": "nehiyawewin",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2061",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2061",
+            "wlzl_label_normalised": "z2061",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2061",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "cr-latn",
+            "wlzl_label_normalised": "cr-latn",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2062",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Nicaraguan Spanish",
+            "wlzl_label_normalised": "nicaraguan spanish",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2062",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2062",
+            "wlzl_label": "español nicaragüense",
+            "wlzl_label_normalised": "espanol nicaraguense",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2062",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2062",
+            "wlzl_label_normalised": "z2062",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2062",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "es-ni",
+            "wlzl_label_normalised": "es-ni",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2063",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Kabardian (Latin script)",
+            "wlzl_label_normalised": "kabardian (latin script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2063",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2063",
+            "wlzl_label": "Qabardjajəbza",
+            "wlzl_label_normalised": "qabardjajəbza",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2063",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2063",
+            "wlzl_label_normalised": "z2063",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2063",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "kbd-latn",
+            "wlzl_label_normalised": "kbd-latn",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2064",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Ladino (Latin script)",
+            "wlzl_label_normalised": "ladino (latin script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2064",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2064",
+            "wlzl_label": "Ladino",
+            "wlzl_label_normalised": "ladino",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2064",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2064",
+            "wlzl_label_normalised": "z2064",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2064",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "lad-latn",
+            "wlzl_label_normalised": "lad-latn",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2065",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Manipuri (Bengali script)",
+            "wlzl_label_normalised": "manipuri (bengali script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2065",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2065",
+            "wlzl_label": "মেইতেই লোন্",
+            "wlzl_label_normalised": "মেইতেই লোন",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2065",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2065",
+            "wlzl_label_normalised": "z2065",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2065",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "mni-beng",
+            "wlzl_label_normalised": "mni-beng",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2066",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Sylheti (Bengali script)",
+            "wlzl_label_normalised": "sylheti (bengali script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2066",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2066",
+            "wlzl_label": "সিলেটি",
+            "wlzl_label_normalised": "সিলেটি",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2066",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2066",
+            "wlzl_label_normalised": "z2066",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2066",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "syl-beng",
+            "wlzl_label_normalised": "syl-beng",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2067",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Uyghur (Cyrillic script)",
+            "wlzl_label_normalised": "uyghur (cyrillic script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2067",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2067",
+            "wlzl_label": "уйғурчә",
+            "wlzl_label_normalised": "уиғурчә",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2067",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2067",
+            "wlzl_label_normalised": "z2067",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2067",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ug-cyrl",
+            "wlzl_label_normalised": "ug-cyrl",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2068",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Jewish Babylonian Aramaic",
+            "wlzl_label_normalised": "jewish babylonian aramaic",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2068",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2068",
+            "wlzl_label": "ארמית בבלית",
+            "wlzl_label_normalised": "ארמית בבלית",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2068",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2068",
+            "wlzl_label_normalised": "z2068",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2068",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "tmr",
+            "wlzl_label_normalised": "tmr",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2069",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Chippewa",
+            "wlzl_label_normalised": "chippewa",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2069",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2069",
+            "wlzl_label": "Anishinaabemowin",
+            "wlzl_label_normalised": "anishinaabemowin",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2069",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2069",
+            "wlzl_label_normalised": "z2069",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2069",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "ciw",
+            "wlzl_label_normalised": "ciw",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2070",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Ludic",
+            "wlzl_label_normalised": "ludic",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2070",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2070",
+            "wlzl_label": "lüüdi",
+            "wlzl_label_normalised": "luudi",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2070",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2070",
+            "wlzl_label_normalised": "z2070",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2070",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "lud",
+            "wlzl_label_normalised": "lud",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2071",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Lushootseed",
+            "wlzl_label_normalised": "lushootseed",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2071",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2071",
+            "wlzl_label": "dxʷləšucid",
+            "wlzl_label_normalised": "dxʷləsucid",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2071",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2071",
+            "wlzl_label_normalised": "z2071",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2071",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "lut",
+            "wlzl_label_normalised": "lut",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2072",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Xibe",
+            "wlzl_label_normalised": "xibe",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2072",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2072",
+            "wlzl_label": "ᠰᡞᠪᡝ ᡤᡞᠰᡠᠨ",
+            "wlzl_label_normalised": "ᠰᡞᠪᡝ ᡤᡞᠰᡠᠨ",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2072",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2072",
+            "wlzl_label_normalised": "z2072",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2072",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "sjo",
+            "wlzl_label_normalised": "sjo",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2073",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Songhay",
+            "wlzl_label_normalised": "songhay",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2073",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2073",
+            "wlzl_label": "soŋay",
+            "wlzl_label_normalised": "soŋay",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2073",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2073",
+            "wlzl_label_normalised": "z2073",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2073",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "son",
+            "wlzl_label_normalised": "son",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -42391,6 +43714,24 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z13532",
+            "wlzl_type": "Z64",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "[CI testing only] Python converter to natural number",
+            "wlzl_label_normalised": "[ci testing only] python converter to natural number",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z13532",
+            "wlzl_type": "Z64",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z13532",
+            "wlzl_label_normalised": "z13532",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z16098",
             "wlzl_type": "Z4",
             "wlzl_language": "Z1002",
@@ -43341,42 +44682,6 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "Z20739",
             "wlzl_label_normalised": "z20739",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z2053",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Lorrain",
-            "wlzl_label_normalised": "lorrain",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z2053",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z2053",
-            "wlzl_label": "Lorrain",
-            "wlzl_label_normalised": "lorrain",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z2053",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z2053",
-            "wlzl_label_normalised": "z2053",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z2053",
-            "wlzl_type": "Z60",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "qqa-x-lor",
-            "wlzl_label_normalised": "qqa-x-lor",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         }
@@ -46608,6 +47913,41 @@
             "wlzf_type": "Z14"
         },
         {
+            "wlzf_ref_zid": "Z901",
+            "wlzf_zfunction_zid": "Z801",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z902",
+            "wlzf_zfunction_zid": "Z802",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z903",
+            "wlzf_zfunction_zid": "Z803",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z904",
+            "wlzf_zfunction_zid": "Z804",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z905",
+            "wlzf_zfunction_zid": "Z805",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z908",
+            "wlzf_zfunction_zid": "Z808",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z910",
+            "wlzf_zfunction_zid": "Z810",
+            "wlzf_type": "Z14"
+        },
+        {
             "wlzf_ref_zid": "Z911",
             "wlzf_zfunction_zid": "Z811",
             "wlzf_type": "Z14"
@@ -46690,36 +48030,6 @@
         {
             "wlzf_ref_zid": "Z961",
             "wlzf_zfunction_zid": "Z861",
-            "wlzf_type": "Z14"
-        },
-        {
-            "wlzf_ref_zid": "Z901",
-            "wlzf_zfunction_zid": "Z801",
-            "wlzf_type": "Z14"
-        },
-        {
-            "wlzf_ref_zid": "Z902",
-            "wlzf_zfunction_zid": "Z802",
-            "wlzf_type": "Z14"
-        },
-        {
-            "wlzf_ref_zid": "Z903",
-            "wlzf_zfunction_zid": "Z803",
-            "wlzf_type": "Z14"
-        },
-        {
-            "wlzf_ref_zid": "Z904",
-            "wlzf_zfunction_zid": "Z804",
-            "wlzf_type": "Z14"
-        },
-        {
-            "wlzf_ref_zid": "Z905",
-            "wlzf_zfunction_zid": "Z805",
-            "wlzf_type": "Z14"
-        },
-        {
-            "wlzf_ref_zid": "Z908",
-            "wlzf_zfunction_zid": "Z808",
             "wlzf_type": "Z14"
         },
         {
@@ -47540,6 +48850,10 @@
             "wlzlangs_language": "zh-tw"
         },
         {
+            "wlzlangs_zid": "Z1108",
+            "wlzlangs_language": "ti"
+        },
+        {
             "wlzlangs_zid": "Z1109",
             "wlzlangs_language": "qug"
         },
@@ -47698,6 +49012,10 @@
         {
             "wlzlangs_zid": "Z1141",
             "wlzlangs_language": "ik"
+        },
+        {
+            "wlzlangs_zid": "Z1142",
+            "wlzlangs_language": "ker"
         },
         {
             "wlzlangs_zid": "Z1143",
@@ -47988,6 +49306,70 @@
             "wlzlangs_language": "el-cy"
         },
         {
+            "wlzlangs_zid": "Z1209",
+            "wlzlangs_language": "doi"
+        },
+        {
+            "wlzlangs_zid": "Z1210",
+            "wlzlangs_language": "rmo"
+        },
+        {
+            "wlzlangs_zid": "Z1211",
+            "wlzlangs_language": "ba"
+        },
+        {
+            "wlzlangs_zid": "Z1212",
+            "wlzlangs_language": "cch"
+        },
+        {
+            "wlzlangs_zid": "Z1213",
+            "wlzlangs_language": "arn"
+        },
+        {
+            "wlzlangs_zid": "Z1214",
+            "wlzlangs_language": "xsy"
+        },
+        {
+            "wlzlangs_zid": "Z1215",
+            "wlzlangs_language": "rmc"
+        },
+        {
+            "wlzlangs_zid": "Z1216",
+            "wlzlangs_language": "fy"
+        },
+        {
+            "wlzlangs_zid": "Z1217",
+            "wlzlangs_language": "ch"
+        },
+        {
+            "wlzlangs_zid": "Z1218",
+            "wlzlangs_language": "fo"
+        },
+        {
+            "wlzlangs_zid": "Z1219",
+            "wlzlangs_language": "kac"
+        },
+        {
+            "wlzlangs_zid": "Z1220",
+            "wlzlangs_language": "km"
+        },
+        {
+            "wlzlangs_zid": "Z1221",
+            "wlzlangs_language": "nan"
+        },
+        {
+            "wlzlangs_zid": "Z1221",
+            "wlzlangs_language": "zh-min-nan"
+        },
+        {
+            "wlzlangs_zid": "Z1222",
+            "wlzlangs_language": "krj"
+        },
+        {
+            "wlzlangs_zid": "Z1223",
+            "wlzlangs_language": "luo"
+        },
+        {
             "wlzlangs_zid": "Z1224",
             "wlzlangs_language": "kgp"
         },
@@ -48252,60 +49634,8 @@
             "wlzlangs_language": "sty"
         },
         {
-            "wlzlangs_zid": "Z1210",
-            "wlzlangs_language": "rmo"
-        },
-        {
-            "wlzlangs_zid": "Z1211",
-            "wlzlangs_language": "ba"
-        },
-        {
-            "wlzlangs_zid": "Z1212",
-            "wlzlangs_language": "cch"
-        },
-        {
-            "wlzlangs_zid": "Z1213",
-            "wlzlangs_language": "arn"
-        },
-        {
-            "wlzlangs_zid": "Z1214",
-            "wlzlangs_language": "xsy"
-        },
-        {
-            "wlzlangs_zid": "Z1215",
-            "wlzlangs_language": "rmc"
-        },
-        {
-            "wlzlangs_zid": "Z1216",
-            "wlzlangs_language": "fy"
-        },
-        {
-            "wlzlangs_zid": "Z1217",
-            "wlzlangs_language": "ch"
-        },
-        {
-            "wlzlangs_zid": "Z1218",
-            "wlzlangs_language": "fo"
-        },
-        {
-            "wlzlangs_zid": "Z1219",
-            "wlzlangs_language": "kac"
-        },
-        {
-            "wlzlangs_zid": "Z1220",
-            "wlzlangs_language": "km"
-        },
-        {
-            "wlzlangs_zid": "Z1221",
-            "wlzlangs_language": "nan"
-        },
-        {
-            "wlzlangs_zid": "Z1221",
-            "wlzlangs_language": "zh-min-nan"
-        },
-        {
-            "wlzlangs_zid": "Z1222",
-            "wlzlangs_language": "krj"
+            "wlzlangs_zid": "Z1287",
+            "wlzlangs_language": "dje"
         },
         {
             "wlzlangs_zid": "Z1288",
@@ -49276,6 +50606,10 @@
             "wlzlangs_language": "peo"
         },
         {
+            "wlzlangs_zid": "Z1522",
+            "wlzlangs_language": "cja-arab"
+        },
+        {
             "wlzlangs_zid": "Z1523",
             "wlzlangs_language": "na"
         },
@@ -49290,6 +50624,10 @@
         {
             "wlzlangs_zid": "Z1526",
             "wlzlangs_language": "mid"
+        },
+        {
+            "wlzlangs_zid": "Z1527",
+            "wlzlangs_language": "bo"
         },
         {
             "wlzlangs_zid": "Z1528",
@@ -49430,6 +50768,10 @@
         {
             "wlzlangs_zid": "Z1560",
             "wlzlangs_language": "non"
+        },
+        {
+            "wlzlangs_zid": "Z1561",
+            "wlzlangs_language": "ks"
         },
         {
             "wlzlangs_zid": "Z1562",
@@ -50365,6 +51707,10 @@
         },
         {
             "wlzlangs_zid": "Z1782",
+            "wlzlangs_language": "cbk"
+        },
+        {
+            "wlzlangs_zid": "Z1782",
             "wlzlangs_language": "cbk-zam"
         },
         {
@@ -50554,6 +51900,10 @@
         {
             "wlzlangs_zid": "Z1827",
             "wlzlangs_language": "el"
+        },
+        {
+            "wlzlangs_zid": "Z1828",
+            "wlzlangs_language": "lag"
         },
         {
             "wlzlangs_zid": "Z1829",
@@ -51032,6 +52382,10 @@
             "wlzlangs_language": "akb"
         },
         {
+            "wlzlangs_zid": "Z1943",
+            "wlzlangs_language": "btd"
+        },
+        {
             "wlzlangs_zid": "Z1944",
             "wlzlangs_language": "bts"
         },
@@ -51332,6 +52686,10 @@
             "wlzlangs_language": "pbb"
         },
         {
+            "wlzlangs_zid": "Z2019",
+            "wlzlangs_language": "phr"
+        },
+        {
             "wlzlangs_zid": "Z2020",
             "wlzlangs_language": "pis"
         },
@@ -51354,6 +52712,10 @@
         {
             "wlzlangs_zid": "Z2025",
             "wlzlangs_language": "rcf"
+        },
+        {
+            "wlzlangs_zid": "Z2026",
+            "wlzlangs_language": "rej"
         },
         {
             "wlzlangs_zid": "Z2027",
@@ -51382,6 +52744,10 @@
         {
             "wlzlangs_zid": "Z2033",
             "wlzlangs_language": "ale-cyrl"
+        },
+        {
+            "wlzlangs_zid": "Z2034",
+            "wlzlangs_language": "cdo-hani"
         },
         {
             "wlzlangs_zid": "Z2035",
@@ -51420,6 +52786,10 @@
             "wlzlangs_language": "mak-bugi"
         },
         {
+            "wlzlangs_zid": "Z2044",
+            "wlzlangs_language": "mww"
+        },
+        {
             "wlzlangs_zid": "Z2045",
             "wlzlangs_language": "mww-latn"
         },
@@ -51454,6 +52824,86 @@
         {
             "wlzlangs_zid": "Z2053",
             "wlzlangs_language": "qqa-x-lor"
+        },
+        {
+            "wlzlangs_zid": "Z2054",
+            "wlzlangs_language": "ha-arab"
+        },
+        {
+            "wlzlangs_zid": "Z2055",
+            "wlzlangs_language": "rhg"
+        },
+        {
+            "wlzlangs_zid": "Z2056",
+            "wlzlangs_language": "ady-latn"
+        },
+        {
+            "wlzlangs_zid": "Z2057",
+            "wlzlangs_language": "apc-latn"
+        },
+        {
+            "wlzlangs_zid": "Z2058",
+            "wlzlangs_language": "ary-latn"
+        },
+        {
+            "wlzlangs_zid": "Z2059",
+            "wlzlangs_language": "az-cyrl"
+        },
+        {
+            "wlzlangs_zid": "Z2060",
+            "wlzlangs_language": "bbc-batk"
+        },
+        {
+            "wlzlangs_zid": "Z2061",
+            "wlzlangs_language": "cr-latn"
+        },
+        {
+            "wlzlangs_zid": "Z2062",
+            "wlzlangs_language": "es-ni"
+        },
+        {
+            "wlzlangs_zid": "Z2063",
+            "wlzlangs_language": "kbd-latn"
+        },
+        {
+            "wlzlangs_zid": "Z2064",
+            "wlzlangs_language": "lad-latn"
+        },
+        {
+            "wlzlangs_zid": "Z2065",
+            "wlzlangs_language": "mni-beng"
+        },
+        {
+            "wlzlangs_zid": "Z2066",
+            "wlzlangs_language": "syl-beng"
+        },
+        {
+            "wlzlangs_zid": "Z2067",
+            "wlzlangs_language": "ug-cyrl"
+        },
+        {
+            "wlzlangs_zid": "Z2068",
+            "wlzlangs_language": "tmr"
+        },
+        {
+            "wlzlangs_zid": "Z2069",
+            "wlzlangs_language": "ciw"
+        },
+        {
+            "wlzlangs_zid": "Z2070",
+            "wlzlangs_language": "lud"
+        },
+        {
+            "wlzlangs_zid": "Z2071",
+            "wlzlangs_language": "lut"
+        },
+        {
+            "wlzlangs_zid": "Z2072",
+            "wlzlangs_language": "sjo"
+        },
+        {
+            "wlzlangs_zid": "Z2073",
+            "wlzlangs_language": "son"
         }
     ]
 }
