@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"AhmedG612"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "API-ga Wikifunctions",
+	"wikifunctions-rest-module-v0-desc": "API-yada la falgalka Wikifunctions",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "Soo qaado ZObjects",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Soo qaado noocyadii hore ee ZObjects",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "Liiska ZID-yada la kala saaray calaamadda dhuunta ee la soo qaadanayo, ugu badnaan 50 codsi kasta",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Liiska Aqoonsiyada dib u eegista ee lagu kala saaray calaamadda dhuunta , mid kasta oo u dhigma ZID la codsaday, si loo soo qaato noocyadii hore; haddii la dhaafo, waxaa la soo celinayaa dib u eegistii ugu dambeysay ee ZID kasta.",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "Koodhka luqadda BCP-47 ee loo isticmaalo marka la xallinayo summadaha luqadaha badan ee ZObjects-ka la soo celiyay; haddii la dhaafo, dhammaan luqadaha ayaa la soo celinayaa.",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "Haddii sidoo kale la soo celinayo ZObjects-ka loo tixraacay inay yihiin noocyo ku jira furayaasha ama doodaha ZObjects-ka la codsaday",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "Khariidad ka kooban ZID kasta oo la codsaday (iyo, haddii getDependencies la dejiyay, ZID-yada ku tiirsanaanta) iyo ZObject-giisa oo loo kaydiyay sidii xadhig JSON ah",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "ZObject loo kaydiyay sidii xadhig JSON ah, sida lagu soo celiyay barta dhammaadka matalaadda nuxurka bogga",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Wac Shaq",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Wac Shaqo, oo leh luqadaha kala-soocidda iyo soo-bandhigista ee gaarka ah",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID-ga shaqada la wacayo",
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "Liiska doodaha lagu kala saaray calaamadda dhuunta ee loo gudbinayo shaqada, sida ay u kala horreeyaan doodaha shaqada loo qeexay, iyadoo dood kasta lagu sameeyay URL encoding.",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "Koodhka luqadda BCP-47 ee loo isticmaalo kala soocidda doodaha qiimahoodu yahay xadhigga ee leh shaqo kala-soocid; asal ahaan waa 'en'",
+	"wikifunctions-rest-module-v0-call-param-renderlang-desc": "Koodhka luqadda BCP-47 ee loo isticmaalo soo bandhigidda natiijada shaqada iyo farriimaha khaladaadka; asal ahaan waa 'en'",
+	"wikifunctions-rest-module-v0-call-response-desc": "Natiijada qiimeynta wicitaanka shaqada",
+	"wikifunctions-rest-module-v0-call-response-value-desc": "Natiijada la qiimeeyay ee loo beddelay xadhig; waxay noqon kartaa xadhig caadi ah (Z6) ama qayb HTML ah (Z89)",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "ZID-ga nooca natiijada la qiimeeyay: 'Z6' oo ah xadhig caadi ah, 'Z89' oo ah qayb HTML ah"
+}

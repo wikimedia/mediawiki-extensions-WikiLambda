@@ -1,0 +1,35 @@
+{
+	"@metadata": {
+		"authors": [
+			"AhmedG612"
+		]
+	},
+	"apierror-abstractwiki_fetch_section-bad-content": "Lama soo heli karo nuxurka Qid-ka mawduuca la bixiyay.",
+	"apierror-abstractwiki_fetch_section-bad-fragments": "Liiska jajabyada la bixiyay si sax ah looma qaabayn.",
+	"apierror-abstractwiki_fetch_section-bad-section": "Qaybta Qid ee la bixiyay ma aha mid sax ah ama kama jirto boggan Abstract Wikipedia.",
+	"apierror-abstractwiki_fetch_section-bad-topic": "Qid-ka mawduuca la bixiyay ma aha mid sax ah ama kama jiro Abstract Wikipedia.",
+	"apierror-abstractwiki_fetch_section-not-enabled": "Lama soo bandhigi karo qaybaha Abstract Wikipedia: sifadan lama hawlgelin.",
+	"apihelp-abstractwiki_fetch_section-summary": "Codso qaybaha la soo bandhigay ee Abstract Wikipedia ee hadda la heli karo ee mawduuca Qid (Aqoonsiga Shayga Wikidata), qaybta Qid, luqadda Zid iyo taariikhda la bixiyay. Haddii kale (oo keliya leh xuquuqo gaar ah), codso natiijada la soo bandhigay ee hadda la heli karo ee taxane qaybo ah oo lagu gudbiyay codsiga, kuwaas oo ka duwanaan kara nooca hadda la kaydiyay.\n\nCodsigan waligiis ma xannibna. Marka mid ka mid ah qaybaha la codsaday aanu diyaar ahayn, qiimaha qaybtaas lagu soo celiyay wuxuu yeelan doonaa calanka \"pending\" oo loo dejiyay run.\n\nJawaabtu mar walba waxay dammaanad qaadaysaa inay soo celiso inta natiijo ee la codsaday — tusaale ahaan, haddii cabbirka \"fragments\" uu madhan yahay oo qaybta la codsaday ay leedahay N qaybood, dhammaan N waa la soo celinayaa; sidoo kale, haddii M qaybood lagu codsado cabbirka \"fragments\", jawaabtu waxay soo celin doontaa M walxood.",
+	"apihelp-abstractwiki_fetch_section-param-topic": "Aqoonsiga Shayga Wikidata ee loo adeegsaday soo bandhigista qaybaha. Waa inuu noqdaa Qid sax ah.",
+	"apihelp-abstractwiki_fetch_section-param-section": "Aqoonsiga Shayga Wikidata ee tilmaamaya qaybta la codsaday. Waa inuu noqdaa Qid sax ah.",
+	"apihelp-abstractwiki_fetch_section-param-language": "Aqoonsiga Shayga Luuqadda (Language ZObject Id) ee loo adeegsaday soo bandhigista qaybaha. Waa inuu noqdaa Zid sax ah.",
+	"apihelp-abstractwiki_fetch_section-param-date": "Xargaha taariikhda ee loo adeegsaday soo bandhigista qaybaha.",
+	"apihelp-abstractwiki_fetch_section-param-fragments": "Tix ikhtiyaari ah oo qaybo ah oo loo soo celinayo qiimayaashooda la soo bandhigay. Haddii tixdu madhan tahay, qaybaha la soo celinayo waxay noqon doonaan kuwa lagu kaydiyay qaybta Qid ee la bixiyay sida ku cad dib u eegista hadda jirta. Marka tixdu aanay madhnayn, waa inay ka koobnaataa liis wicitaanno shaqo oo qaybo ah. Kuwani way ka duwanaan karaan kuwa lagu kaydiyay qaybta (tusaale ahaan, haddii si firfircoon wax looga beddelayo oo xaaladdooda hadda aan la kaydin), codsiyadanina waxay u baahan yihiin xuquuqo dheeraad ah.",
+	"apihelp-abstractwiki_fetch_section-example-lede": "Soo qaado qaybaha la soo bandhigay ee qayb la bixiyay.",
+	"apihelp-abstractwiki_fetch_section-example-unsaved": "Soo qaado qiimayaasha la soo bandhigay ee liiska qaybaha aan la kaydin.",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "Qaybtu ma aha wicitaan shaqo oo sax ah.",
+	"apierror-abstractwiki_run_fragment-bad-response": "Qaybtu waxay soo celisay nooc khaldan.",
+	"apierror-abstractwiki_run_fragment-forbidden": "Ma lihid oggolaanshaha lagama maarmaanka ah si aad u soo bandhigto qaybtan.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Lama soo bandhigi karo qaybaha nuxurka Abstract Wikipedia: sifadan lama hawlgelin.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions waxay soo celisay jawaab fashilantay: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "Adeegga soo bandhigista si ku meel gaar ah looma heli karo. Fadlan isku day mar kale goor dambe.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "Lama soo bandhigi karo qaybtan sababo la xiriira qalad aan la garanayn.",
+	"apihelp-abstractwiki_run_fragment-summary": "Soo bandhig qayb nuxur ah oo Abstract Wikipedia ah oo loogu talagalay Aqoonsiga Shayga Wikidata, Zid-ka luqadda iyo taariikhda la bixiyay",
+	"apihelp-abstractwiki_run_fragment-param-async": "Haddii wicitaankan loo socodsiinayo si aan is waafaqsanayn ama si is waafaqsan. Haddii loo wado si aan is waafaqsanayn, wuxuu soo celin doonaa pending=true haddii qiimuhu aanu diyaar ahayn. Marka loo wado si is waafaqsan, wuxuu sugi doonaa in qaybta lagu soo bandhigo Wikifunctions, ka dibna wuxuu soo celin doonaa qiimaha natiijada ah.",
+	"apihelp-abstractwiki_run_fragment-param-qid": "Aqoonsiga Shayga Wikidata ee loo adeegsaday soo bandhigista qaybta. Waa inuu noqdaa Qid sax ah.",
+	"apihelp-abstractwiki_run_fragment-param-language": "Aqoonsiga Shayga Luuqadda (Language ZObject Id) ee loo adeegsaday soo bandhigista qaybta. Waa inuu noqdaa Zid sax ah.",
+	"apihelp-abstractwiki_run_fragment-param-date": "Xargaha taariikhda ee loo adeegsaday soo bandhigista qaybta.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "JSON-ka isku-dhafka qaybta. Waa inuu noqdaa ZObject sax ah oo uu soo saaraa walax nooca Z89/qayb HTML ah",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "Ku socodsii qayb leh walax HTML ah oo sugan",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Ku socodsii qayb leh isku dhis isticmaala doodaha qid iyo luuqad"
+}
