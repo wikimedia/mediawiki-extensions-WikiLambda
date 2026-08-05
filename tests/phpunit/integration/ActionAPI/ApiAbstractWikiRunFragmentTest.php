@@ -69,6 +69,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 				$args['topicQid'],
 				$args['language'],
 				$args['date'],
+				$args['revalidate'] ?? false
 			)
 			->willReturn( $output );
 
@@ -261,6 +262,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'language' => $language,
 			'date' => $date,
 			'fragment' => $fragment,
+			'revalidate' => true
 		], $missingFragment );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 

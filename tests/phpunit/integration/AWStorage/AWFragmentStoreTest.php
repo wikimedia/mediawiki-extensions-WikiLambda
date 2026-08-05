@@ -237,6 +237,38 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		$this->assertSame( [], $result->getValue() );
 	}
 
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::getRenderedAWFragment
+	 */
+	public function testGetterMissingValue_noRevalidate(): void {
+		$fragment = [ 'Z1K1' => 'Z89' ];
+		$qid = 'Q42';
+		$language = new WikifunctionsLanguage( $this->makeLanguage( 'en' ), 'Z1002' );
+		$date = '2026-05-15';
+
+		// Mock for MemcachedWrapper; no value is available
+		$objectCache = $this->createMockMemcachedGetter();
+
+		// Mock for JobQueueGroup; no job is ever queued
+		$jobQueueGroup = $this->createMockJobQueueGroup();
+
+		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+
+		$result = $fragmentStore->getRenderedAWFragment(
+			$fragment,
+			$qid,
+			$language,
+			$date,
+			/* revalidate= */ false
+		);
+
+		$this->assertInstanceOf( AWFragment::class, $result );
+		$this->assertTrue( $result->isMissing() );
+		$this->assertFalse( $result->isFresh() );
+		$this->assertFalse( $result->isStale() );
+		$this->assertSame( [], $result->getValue() );
+	}
+
 	// AWFragmentStore Setter
 	// ======================
 

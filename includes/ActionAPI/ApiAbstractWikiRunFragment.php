@@ -154,6 +154,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			$qid,
 			$language,
 			$date,
+			/* revalidate= */ $async
 		);
 
 		// Stale or fresh, return the payload and be done

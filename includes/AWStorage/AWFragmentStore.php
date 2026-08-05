@@ -93,6 +93,7 @@ class AWFragmentStore {
 	 * @param string $topicQid
 	 * @param WikifunctionsLanguage $language
 	 * @param string $date
+	 * @param bool $revalidate
 	 * @return AWFragment
 	 */
 	public function getRenderedAWFragment(
@@ -100,6 +101,7 @@ class AWFragmentStore {
 		string $topicQid,
 		WikifunctionsLanguage $language,
 		string $date,
+		bool $revalidate = true
 	): AWFragment {
 		// Fragment key, used for both fresh and stale cache keys
 		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
@@ -135,16 +137,19 @@ class AWFragmentStore {
 		$staleValue = json_decode( $this->objectCache->get( $cacheKeyStale ) ?: '', true );
 
 		// Create and queue the job CacheAbstractContentFragmentJob;
-		// at this point we know that we want to generate the fragment in any case.
-		$refreshJob = new CacheAbstractContentFragmentJob( [
-			'fragment' => $fragment,
-			'qid' => $topicQid,
-			'language' => $language->getZid(),
-			'date' => $date,
-			'fragmentKey' => $fragmentKey,
-		] );
+		// at this point we know that we want to generate the fragment
+		// unless the revalidate flag is false
+		if ( $revalidate ) {
+			$refreshJob = new CacheAbstractContentFragmentJob( [
+				'fragment' => $fragment,
+				'qid' => $topicQid,
+				'language' => $language->getZid(),
+				'date' => $date,
+				'fragmentKey' => $fragmentKey,
+			] );
 
-		$this->jobQueueGroup->lazyPush( $refreshJob );
+			$this->jobQueueGroup->lazyPush( $refreshJob );
+		}
 
 		if ( is_array( $staleValue ) ) {
 			// Set stale value and return
