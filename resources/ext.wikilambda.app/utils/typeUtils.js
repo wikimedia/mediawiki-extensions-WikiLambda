@@ -659,6 +659,30 @@ const typeUtils = {
 	},
 
 	/**
+	 * Return the value to set in the type parameter slot of a
+	 * generic type. For example, the item type of a typed list,
+	 * or the two member types of a typed pair.
+	 *
+	 * A function call gives a generic type, so set it directly.
+	 * All other types are Zids, so set them in a Reference/Z9.
+	 * A Reference/Z9 can only hold a string.
+	 *
+	 * Always return a copy of a generic type. The same type can go
+	 * into more than one slot, and each slot must be independent.
+	 *
+	 * @param {Object|string|undefined} type
+	 * @return {Object}
+	 */
+	getTypeDeclaration: function ( type ) {
+		if ( typeUtils.isGenericType( type ) ) {
+			return JSON.parse( JSON.stringify( type ) );
+		}
+		const reference = typeUtils.getScaffolding( Constants.Z_REFERENCE );
+		reference[ Constants.Z_REFERENCE_ID ] = type || '';
+		return reference;
+	},
+
+	/**
 	 * Given the canonical representation of a type,
 	 * it generates the payload that will be passed to the
 	 * createObjectByType method that will create an initial

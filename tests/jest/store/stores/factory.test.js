@@ -11,6 +11,10 @@ const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.j
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const { mockWindowLocation, restoreWindowLocation } = require( '../../fixtures/location.js' );
 const { buildUrl } = require( '../../helpers/urlHelpers.js' );
+const {
+	canonicalToHybrid,
+	hybridToCanonical
+} = require( '../../../../resources/ext.wikilambda.app/utils/schemata.js' );
 
 describe( 'factory Pinia store', () => {
 	let store;
@@ -671,6 +675,22 @@ describe( 'factory Pinia store', () => {
 					const result = store.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
+
+				it( 'creates a blank typed list of typed lists', () => {
+					const payload = {
+						type: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z881',
+							Z881K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z11' }
+						}
+					};
+					const expected = [
+						{ Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z11' }
+					];
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
 			} );
 
 			describe( 'createZTypedPair', () => {
@@ -719,6 +739,26 @@ describe( 'factory Pinia store', () => {
 						},
 						K1: '',
 						K2: { Z1K1: 'Z11', Z11K1: { Z1K1: 'Z9', Z9K1: '' }, Z11K2: '' }
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a typed pair of typed lists', () => {
+					const listOfStrings = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+					const payload = {
+						type: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: listOfStrings, Z882K2: listOfStrings }
+					};
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: listOfStrings,
+							Z882K2: listOfStrings
+						},
+						K1: [ { Z1K1: 'Z9', Z9K1: 'Z6' } ],
+						K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' } ]
 					};
 
 					const result = store.createObjectByType( payload );
@@ -788,6 +828,71 @@ describe( 'factory Pinia store', () => {
 
 					const result = store.createObjectByType( payload );
 					expect( result ).toEqual( expected );
+				} );
+
+				it( 'creates a typed map with a typed list value type', () => {
+					const listOfStrings = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+					const payload = {
+						type: { Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: listOfStrings }
+					};
+					const expected = {
+						Z1K1: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z883',
+							Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z883K2: listOfStrings
+						},
+						K1: [ {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z882K2: listOfStrings
+						} ]
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+					// The map type and its pairs must get independent copies
+					expect( result.Z1K1.Z883K2 ).not.toBe( result.K1[ 0 ].Z882K2 );
+				} );
+			} );
+
+			describe( 'generic type parameters (T417266, T433745)', () => {
+				// A type parameter can be a function call. A Reference/Z9 can only
+				// hold a string. If a function call goes into a Reference, the
+				// conversion to canonical form discards it and the type goes blank.
+				const listOfStrings = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' };
+
+				/**
+				 * Build the blank object and then convert it to the store form
+				 * and back, as the interface does.
+				 *
+				 * @param {Object} type
+				 * @return {Object|Array}
+				 */
+				const roundTrip = ( type ) => hybridToCanonical(
+					canonicalToHybrid( store.createObjectByType( { type } ) )
+				);
+
+				it( 'keep the item type of a typed list', () => {
+					const type = { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: listOfStrings };
+					expect( roundTrip( type )[ 0 ] ).toEqual( listOfStrings );
+				} );
+
+				it( 'keep both member types of a typed pair', () => {
+					const type = {
+						Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: listOfStrings, Z882K2: listOfStrings
+					};
+					expect( roundTrip( type ).Z1K1 ).toEqual( type );
+				} );
+
+				it( 'keep the value type of a typed map, and of its pairs', () => {
+					const type = {
+						Z1K1: 'Z7', Z7K1: 'Z883', Z883K1: 'Z6', Z883K2: listOfStrings
+					};
+					const result = roundTrip( type );
+					expect( result.Z1K1 ).toEqual( type );
+					expect( result.K1[ 0 ].Z882K2 ).toEqual( listOfStrings );
 				} );
 			} );
 

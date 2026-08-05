@@ -10,6 +10,7 @@ const Constants = require( '../../Constants.js' );
 const { getParameterByName } = require( '../../utils/urlUtils.js' );
 const {
 	getScaffolding,
+	getTypeDeclaration,
 	initializePayloadForType,
 	isGenericType,
 	isTruthyOrEqual,
@@ -729,8 +730,8 @@ module.exports = {
 			const generateZTypedList = ( payload ) => {
 				// Get scaffolding
 				const value = getScaffolding( Constants.Z_TYPED_LIST );
-				// Initialize function zid from the url parameters
-				value[ 0 ][ Constants.Z_REFERENCE_ID ] = payload.value || Constants.Z_OBJECT;
+				// Initialize the item type in the benjamin item
+				value[ 0 ] = getTypeDeclaration( payload.value || Constants.Z_OBJECT );
 				return value;
 			};
 			return generateZTypedList;
@@ -766,8 +767,8 @@ module.exports = {
 				// Initialize typed pair type
 				const type1 = payload.values ? payload.values[ 0 ] : '';
 				const type2 = payload.values ? payload.values[ 1 ] : '';
-				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
-				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
+				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE1 ] = getTypeDeclaration( type1 );
+				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_PAIR_TYPE2 ] = getTypeDeclaration( type2 );
 
 				// K1 contains initialized object ot type1
 				// K2 contains initialized object ot type2
@@ -809,13 +810,13 @@ module.exports = {
 				// Initialize typed map type
 				const type1 = payload.values ? payload.values[ 0 ] : '';
 				const type2 = payload.values ? payload.values[ 1 ] : '';
-				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
-				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
+				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE1 ] = getTypeDeclaration( type1 );
+				value[ Constants.Z_OBJECT_TYPE ][ Constants.Z_TYPED_MAP_TYPE2 ] = getTypeDeclaration( type2 );
 
 				// K1 contains a typed list of pairs ( type1, type2 )
 				const benjamin = value[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ][ 0 ];
-				benjamin[ Constants.Z_TYPED_PAIR_TYPE1 ][ Constants.Z_REFERENCE_ID ] = type1;
-				benjamin[ Constants.Z_TYPED_PAIR_TYPE2 ][ Constants.Z_REFERENCE_ID ] = type2;
+				benjamin[ Constants.Z_TYPED_PAIR_TYPE1 ] = getTypeDeclaration( type1 );
+				benjamin[ Constants.Z_TYPED_PAIR_TYPE2 ] = getTypeDeclaration( type2 );
 
 				return value;
 			};

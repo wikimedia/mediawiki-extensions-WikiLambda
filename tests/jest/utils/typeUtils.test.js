@@ -16,6 +16,7 @@ const {
 	isLocalKey,
 	getZidOfGlobalKey,
 	getScaffolding,
+	getTypeDeclaration,
 	getKeyFromKeyList,
 	getArgFromArgList,
 	isKeyTypedListType,
@@ -301,6 +302,36 @@ describe( 'typeUtils', () => {
 				const result = getScaffolding( 'Z123' );
 				expect( result ).toBeUndefined();
 			} );
+		} );
+	} );
+
+	describe( 'getTypeDeclaration', () => {
+		it( 'returns a reference if type is a zid', () => {
+			const result = getTypeDeclaration( Constants.Z_MONOLINGUALSTRING );
+			expect( result ).toStrictEqual( {
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+				[ Constants.Z_REFERENCE_ID ]: Constants.Z_MONOLINGUALSTRING
+			} );
+		} );
+
+		it( 'returns a blank reference if type is undefined', () => {
+			const result = getTypeDeclaration( undefined );
+			expect( result ).toStrictEqual( {
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+				[ Constants.Z_REFERENCE_ID ]: ''
+			} );
+		} );
+
+		it( 'returns the function call if type is generic', () => {
+			const type = {
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+				[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+				[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
+			};
+			const result = getTypeDeclaration( type );
+			expect( result ).toStrictEqual( type );
+			// Each slot must get an independent copy
+			expect( result ).not.toBe( type );
 		} );
 	} );
 
