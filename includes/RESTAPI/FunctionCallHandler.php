@@ -887,6 +887,12 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			true
 		);
 
+		// Propagate request origin header if present in the REST headers
+		$origin = $this->getRequest()->getHeaderLine( 'X-WikiLambda-Request-Origin' );
+		if ( $origin ) {
+			$request->setHeader( 'X-WikiLambda-Request-Origin', $origin );
+		}
+
 		$context = new DerivativeContext( RequestContext::getMain() );
 		$context->setRequest( $request );
 		$api->setContext( $context );

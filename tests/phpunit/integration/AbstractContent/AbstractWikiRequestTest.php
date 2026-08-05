@@ -550,6 +550,10 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$httpRequest->method( 'execute' )->willReturn( $status );
 		$httpRequest->method( 'getContent' )->willReturn( $content );
 		$httpRequest->method( 'getStatus' )->willReturn( $httpStatusCode );
+		$httpRequest
+			->expects( $this->once() )
+			->method( 'setHeader' )
+			->with( 'X-WikiLambda-Request-Origin', 'aw-fragment' );
 
 		$factory = $this->createMock( HttpRequestFactory::class );
 		$factory->method( 'create' )

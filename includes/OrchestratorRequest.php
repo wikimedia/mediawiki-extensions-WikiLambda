@@ -41,6 +41,8 @@ class OrchestratorRequest {
 	protected TracerInterface $tracer;
 	protected LoggerInterface $logger;
 
+	public const AW_FRAGMENT_ORIGIN_HEADER = 'aw-fragment';
+	public const WF_CLIENT_ORIGIN_HEADER = 'wf-client';
 	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
 
 	/**
@@ -92,6 +94,7 @@ class OrchestratorRequest {
 	 * @param bool $evaluateOnMiss - Whether to make an http request to the evaluate endpoint on cache miss.
 	 *   Default behavior is true, but we can disable this flag if we want to orchestrate asynchronous
 	 *   calls when there's no cached result (e.g. with bulk requests).
+	 * @param string $origin - Content of the X-WikiLambda-Request-Origin header from the caller request
 	 * @return array|false containing Response object (Z22) returned by orchestrator, down-cast to a string
 	 *   and the actual http status code from the Orchestrator
 	 * @throws OrchestratorException on any transport failure
@@ -99,7 +102,8 @@ class OrchestratorRequest {
 	public function orchestrate(
 		array $query,
 		$bypassCache = false,
-		$evaluateOnMiss = true
+		$evaluateOnMiss = true,
+		$origin = ''
 	): array|false {
 		// (T365053) Propagate request tracing headers
 		$requestHeaders = $this->tracer->getRequestHeaders();
@@ -145,13 +149,18 @@ class OrchestratorRequest {
 			$httpStatus = $response['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
 			$loggerArgs = [ __METHOD__ . ' evaluated response for {key} returned HTTP {status}', [
 				'key' => $requestKey,
-				'status' => $httpStatus
+				'status' => $httpStatus,
+				'source' => $origin ?: 'null'
 			] ];
 
 			// Default: All possible bad request status, set to TTL_WEEK
 			$exptime = $this->objectCache::TTL_WEEK;
 
-			if (
+			if ( self::isAWFragmentRequest( $origin ) || self::isWikifunctionsClientRequest( $origin ) ) {
+				// (T432869) Set all values to a minute TTL when the request
+				// is for rendering an Abstract Wiki or an Embedded fragment.
+				$exptime = $this->objectCache::TTL_MINUTE;
+			} elseif (
 				( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
 				( $httpStatus === HttpStatus::TOO_MANY_REQUESTS ) ||
 				( $httpStatus === HttpStatus::REQUEST_TIMEOUT )
@@ -674,5 +683,27 @@ class OrchestratorRequest {
 	private function getFailedResponseEnvelope( $zErrorObject ): ZResponseEnvelope {
 		$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
 		return new ZResponseEnvelope( null, $zResponseMap );
+	}
+
+	/**
+	 * Returns whether the value of the X-WikiLambda-Request-Origin header (passed as
+	 * parameter) identifies this request as coming from an Abstract Wiki fragment call.
+	 *
+	 * @param string $origin
+	 * @return bool
+	 */
+	private static function isAWFragmentRequest( string $origin ): bool {
+		return $origin === self::AW_FRAGMENT_ORIGIN_HEADER;
+	}
+
+	/**
+	 * Returns whether the value of the X-WikiLambda-Request-Origin header (passed as parameter)
+	 * parameter) identifies this request as coming from a Wikifunctions Client embedded fragment.
+	 *
+	 * @param string $origin
+	 * @return bool
+	 */
+	private static function isWikifunctionsClientRequest( string $origin ): bool {
+		return $origin === self::WF_CLIENT_ORIGIN_HEADER;
 	}
 }

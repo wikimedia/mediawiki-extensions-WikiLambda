@@ -14,6 +14,7 @@ use JsonException;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
@@ -292,6 +293,9 @@ class AbstractWikiRequest {
 			],
 			__METHOD__
 		);
+
+		// Set request origin header
+		$request->setHeader( 'X-WikiLambda-Request-Origin', OrchestratorRequest::AW_FRAGMENT_ORIGIN_HEADER );
 
 		$status = $request->execute();
 		$apiHttpStatusCode = $request->getStatus();

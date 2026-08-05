@@ -366,6 +366,88 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$orchestrator->orchestrate( [ 'Z1K1' => 'Z7' ] );
 	}
 
+	public function testOrchestrate_awFragmentOrigin_ttlMinute(): void {
+		$value = '{"Z1K1":"Z6","Z6K1":"some result"}';
+		$envelopeString = '{"Z1K1":"Z22","Z22K1":' . $value . ',"Z22K2":"Z24"}';
+
+		// AW fragment requests must always cache with TTL_MINUTE, even on 200
+		$this->mockMemcachedWrapper( false, [ $this->anything(), MemcachedWrapper::TTL_MINUTE ] );
+
+		$guzzleResponse = new Response( HttpStatus::OK, [], $envelopeString );
+		$orchestrator = $this->getOrchestratorWithMockResponse( $guzzleResponse );
+		$call = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10000","Z10000K1":"input"}', true );
+
+		$response = $orchestrator->orchestrate(
+			$call,
+			/* bypassCache= */ false,
+			/* evaluateOnMiss= */ true,
+			/* origin= */ OrchestratorRequest::AW_FRAGMENT_ORIGIN_HEADER
+		);
+
+		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
+	}
+
+	public function testOrchestrate_wfClientOrigin_ttlMinute(): void {
+		$value = '{"Z1K1":"Z6","Z6K1":"some result"}';
+		$envelopeString = '{"Z1K1":"Z22","Z22K1":' . $value . ',"Z22K2":"Z24"}';
+
+		// Embedded fragment requests must always cache with TTL_MINUTE, even on 200
+		$this->mockMemcachedWrapper( false, [ $this->anything(), MemcachedWrapper::TTL_MINUTE ] );
+
+		$guzzleResponse = new Response( HttpStatus::OK, [], $envelopeString );
+		$orchestrator = $this->getOrchestratorWithMockResponse( $guzzleResponse );
+		$call = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10000","Z10000K1":"input"}', true );
+
+		$response = $orchestrator->orchestrate(
+			$call,
+			/* bypassCache= */ false,
+			/* evaluateOnMiss= */ true,
+			/* origin= */ OrchestratorRequest::WF_CLIENT_ORIGIN_HEADER
+		);
+
+		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
+	}
+
+	// OrchestratorRequest::isAWFragmentRequest
+	// ========================================
+
+	/**
+	 * @dataProvider provideIsAWFragmentRequest
+	 */
+	public function testIsAWFragmentRequest( $origin, bool $expected ): void {
+		$wrapper = $this->getOrchestratorWrapper();
+		$this->assertSame( $expected, $wrapper->isAWFragmentRequest( $origin ) );
+	}
+
+	public static function provideIsAWFragmentRequest(): array {
+		return [
+			'aw-fragment returns true' => [ OrchestratorRequest::AW_FRAGMENT_ORIGIN_HEADER, true ],
+			'wf-client returns false' => [ OrchestratorRequest::WF_CLIENT_ORIGIN_HEADER, false ],
+			'empty string returns false' => [ '', false ],
+			'arbitrary string is false' => [ 'something-else', false ],
+		];
+	}
+
+	// OrchestratorRequest::isWikifunctionsClientRequest
+	// ================================================
+
+	/**
+	 * @dataProvider provideIsWikifunctionsClientRequest
+	 */
+	public function testIsWikifunctionsClientRequest( $origin, bool $expected ): void {
+		$wrapper = $this->getOrchestratorWrapper();
+		$this->assertSame( $expected, $wrapper->isWikifunctionsClientRequest( $origin ) );
+	}
+
+	public static function provideIsWikifunctionsClientRequest(): array {
+		return [
+			'wf-client returns true' => [ OrchestratorRequest::WF_CLIENT_ORIGIN_HEADER, true ],
+			'aw-fragment returns false' => [ OrchestratorRequest::AW_FRAGMENT_ORIGIN_HEADER, false ],
+			'empty string returns false' => [ '', false ],
+			'arbitrary string is false' => [ 'something-else', false ],
+		];
+	}
+
 	// OrchestratorRequest::orchestrateTestExecution
 	// =============================================
 

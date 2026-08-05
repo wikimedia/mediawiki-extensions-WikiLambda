@@ -37,7 +37,8 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 	public function orchestrate(
 		array $query,
 		$bypassCache = false,
-		$evaluateOnMiss = true
+		$evaluateOnMiss = true,
+		$origin = ''
 	): array {
 		$key = ZObjectUtils::makeCacheKeyFromZObject( $query );
 

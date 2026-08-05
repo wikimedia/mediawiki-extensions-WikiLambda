@@ -141,10 +141,11 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 *
 	 * @param ZFunctionCall|stdClass $zObject - Function call, either canonical or normal form.
 	 * @param array $flags - Array with the boolean flags 'validate', 'bypassCache' and 'isUnsavedCode'
+	 * @param string $origin - Content of the X-WikiLambda-Request-Origin header; empty string if missing
 	 * @return array - Response from the orchestrator, with the keys 'result' and 'httpStatusCode'
 	 * @throws ApiUsageException
 	 */
-	protected function executeFunctionCall( $zObject, $flags ) {
+	protected function executeFunctionCall( $zObject, $flags, $origin = '' ) {
 		// Extract flags and set their default values
 		$validate = (bool)( $flags[ 'validate' ] ?? true );
 		$bypassCache = (bool)( $flags[ 'bypassCache' ] ?? false );
@@ -207,7 +208,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$poolAcquireStart = microtime( true );
 			$work = new PoolCounterWorkViaCallback( self::FUNCTIONCALL_POOL_COUNTER_TYPE, $userName, [
 				'doWork' => function () use (
-					$queryArguments, $bypassCache, $method, $statsFactory, $poolAcquireStart
+					$queryArguments, $bypassCache, $method, $statsFactory, $poolAcquireStart, $origin
 				) {
 					// (T405554) Time spent waiting for a free worker slot ('observe' takes milliseconds).
 					$statsFactory->getTiming( 'functioncall_pool_wait_seconds' )
@@ -228,7 +229,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					// OrchestratorException) is still measured -- those are the slow calls we care about.
 					$orchestrateStart = microtime( true );
 					try {
-						return $this->orchestrator->orchestrate( $queryArguments, $bypassCache );
+						return $this->orchestrator->orchestrate( $queryArguments, $bypassCache, true, $origin );
 					} finally {
 						$statsFactory->getTiming( 'orchestrator_call_seconds' )
 							->observe( 1000 * ( microtime( true ) - $orchestrateStart ) );

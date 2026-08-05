@@ -98,8 +98,13 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		$expectedUri = 'test.wikifunctions.org/rest.php/wikifunctions/v0/call/Z10000/' . $base64args . '/en/en';
 
 		// Set mock with call expectations:
-		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 		$mockMWHttpRequest = $this->createMock( MWHttpRequest::class );
+		$mockMWHttpRequest
+			->expects( $this->once() )
+			->method( 'setHeader' )
+			->with( 'X-WikiLambda-Request-Origin', 'wf-client' );
+
+		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 		$mockHttpRequestFactory->expects( $this->once() )
 			->method( 'create' )
 			->with( $expectedUri )

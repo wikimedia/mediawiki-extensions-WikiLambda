@@ -44,6 +44,14 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$params = $this->extractRequestParams();
 		$zObjectString = $params[ 'zobject' ];
 
+		// (T432869) Get origin from header, which can be
+		// * aw-fragment: set by AbstractWikiRequest before requesting an AW fragment render
+		// * wp-fragment: set by WikifunctionsClientRequestJob, and propagated through the
+		//   RESTAPI FunctionCallHandler, before requesting the execution of an embedded
+		//   function call with the parser function {{#function:Z*}}
+		$origin = $this->getRequest()->getHeader( 'X-WikiLambda-Request-Origin' );
+		$origin = is_string( $origin ) ? $origin : '';
+
 		// Initialize output
 		$pageResult = $this->getResult();
 
@@ -103,7 +111,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		}
 
 		try {
-			$response = $this->executeFunctionCall( $zObjectAsStdClass, $flags );
+			$response = $this->executeFunctionCall( $zObjectAsStdClass, $flags, $origin );
 
 			$result = [
 				'success' => true,

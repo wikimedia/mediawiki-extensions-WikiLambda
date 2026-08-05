@@ -13,6 +13,7 @@ use Exception;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
@@ -521,7 +522,12 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	 * @param string $renderLang
 	 * @return MWHttpRequest
 	 */
-	private function buildRequest( string $target, array $args, string $parseLang, string $renderLang ): MWHttpRequest {
+	private function buildRequest(
+		string $target,
+		array $args,
+		string $parseLang,
+		string $renderLang
+	): MWHttpRequest {
 		// This is a slightly hacky way to ensure that user inputs are transmit-safe, and that e.g.
 		// inputs with '|'s in them can be ferried across the network without
 		$encodedArguments = implode(
@@ -541,6 +547,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		// https://doc.wikimedia.org/mediawiki-core/master/php/classGuzzleHttpRequest.html
 		// https://doc.wikimedia.org/mediawiki-core/master/php/classMWHttpRequest.html
 		$request = $this->httpRequestFactory->create( $requestUri, [ 'method' => 'GET' ], __METHOD__ );
+
+		// Set request origin header
+		$request->setHeader( 'X-WikiLambda-Request-Origin', OrchestratorRequest::WF_CLIENT_ORIGIN_HEADER );
 
 		return $request;
 	}
