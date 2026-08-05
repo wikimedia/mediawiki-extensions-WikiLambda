@@ -490,6 +490,122 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->assertSame( "<p>Outdated</p>", $section->getPayload() );
 		// French is still pending section in metadata
 		$this->assertArrayNotHasKey( 'ru', $newPending );
+
+		// The section list is the manifest of the whole article, so it survives a --pending run
+		$this->assertSame( [ $sectionQid ], $metadata->getPayload()[ 'sections' ] );
+	}
+
+	/**
+	 * A --pending run must not drop the sections it skips from the metadata section list.
+	 * The list is the manifest that readers walk to assemble the article, so a section
+	 * missing from it is invisible even though its stored content is intact.
+	 */
+	public function testUpdatePendingKeepsSkippedSectionsInManifest(): void {
+		$topicQid = 'Q42';
+		$ledeQid = AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE;
+		$otherQid = 'Q102';
+
+		$fragment = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400' ];
+		$value = [ 'success' => true, 'value' => '<p>Updated</p>' ];
+		$oldValue = '<p>Outdated</p>';
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $ledeQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment ) . ' ] },'
+			. ' "' . $otherQid . '": { "index": 1,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment ) . ' ] } } }';
+
+		ConvertibleTimestamp::setFakeTime( self::PAST );
+
+		// SETUP: both sections are stored, but only the lede is pending
+		$this->loadAWContent( $topicQid, $awJson );
+		$this->articleStore->setSection( new AWSection( $topicQid, $ledeQid, 'en', $oldValue ) );
+		$this->articleStore->setSection( new AWSection( $topicQid, $otherQid, 'en', $oldValue ) );
+		$oldMetadata = [
+			'sections' => [ $ledeQid, $otherQid ],
+			'pendingSections' => [ 'en' => [ $ledeQid ] ],
+			'lastRendered' => self::PAST,
+		];
+		$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $oldMetadata ) );
+
+		ConvertibleTimestamp::setFakeTime( self::NOW );
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', $date, $value );
+
+		// EXECUTE:
+		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en', '--pending' ] );
+		$this->maintenance->execute();
+
+		// ASSERT: both sections are still listed, even though only the lede was re-generated
+		$metadata = $this->articleStore->getArticleMetadata( $topicQid );
+		$this->assertSame( [ $ledeQid, $otherQid ], $metadata->getPayload()[ 'sections' ] );
+		$this->assertSame( [ $ledeQid, $otherQid ], $metadata->getSectionQids() );
+
+		// The pending lede was re-generated, and nothing is left pending
+		$section = $this->articleStore->getSection( $topicQid, $ledeQid, 'en' );
+		$this->assertSame( self::NOW, $section->getLastUpdated()->getTimestamp( TS::MW ) );
+		$this->assertSame( '<p>Updated</p>', $section->getPayload() );
+		$this->assertSame( [], $metadata->getPayload()[ 'pendingSections' ] );
+
+		// The non-pending section was left alone
+		$section = $this->articleStore->getSection( $topicQid, $otherQid, 'en' );
+		$this->assertSame( self::PAST, $section->getLastUpdated()->getTimestamp( TS::MW ) );
+		$this->assertSame( $oldValue, $section->getPayload() );
+	}
+
+	/**
+	 * The steady state that the hourly --pending cron converges to: nothing is pending
+	 * any more, so every section is skipped. The manifest must survive intact.
+	 */
+	public function testUpdatePendingWithNothingPendingKeepsManifest(): void {
+		$topicQid = 'Q42';
+		$ledeQid = AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE;
+		$otherQid = 'Q102';
+
+		$fragment = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400' ];
+		$oldValue = '<p>Rendered</p>';
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $ledeQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment ) . ' ] },'
+			. ' "' . $otherQid . '": { "index": 1,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment ) . ' ] } } }';
+
+		ConvertibleTimestamp::setFakeTime( self::PAST );
+
+		// SETUP: everything is rendered and nothing is pending
+		$this->loadAWContent( $topicQid, $awJson );
+		$this->articleStore->setSection( new AWSection( $topicQid, $ledeQid, 'en', $oldValue ) );
+		$this->articleStore->setSection( new AWSection( $topicQid, $otherQid, 'en', $oldValue ) );
+		$oldMetadata = [
+			'sections' => [ $ledeQid, $otherQid ],
+			'pendingSections' => [],
+			'renderedLangs' => [ 'en' ],
+			'lastRendered' => self::PAST,
+		];
+		$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $oldMetadata ) );
+
+		ConvertibleTimestamp::setFakeTime( self::NOW );
+
+		// EXECUTE:
+		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en', '--pending' ] );
+		$this->maintenance->execute();
+
+		// ASSERT: the metadata was re-written by this run, and not just left behind
+		// by a topic that the script silently passed over
+		$metadata = $this->articleStore->getArticleMetadata( $topicQid );
+		$this->assertSame( self::NOW, $metadata->getLastUpdated()->getTimestamp( TS::MW ) );
+
+		// …with the manifest untouched, so the article still renders
+		$this->assertSame( [ $ledeQid, $otherQid ], $metadata->getPayload()[ 'sections' ] );
+		$this->assertSame( [], $metadata->getPayload()[ 'pendingSections' ] );
+
+		// …and no section was re-written
+		foreach ( [ $ledeQid, $otherQid ] as $sectionQid ) {
+			$section = $this->articleStore->getSection( $topicQid, $sectionQid, 'en' );
+			$this->assertSame( self::PAST, $section->getLastUpdated()->getTimestamp( TS::MW ) );
+			$this->assertSame( $oldValue, $section->getPayload() );
+		}
 	}
 
 	public function testSectionPayloadContainsStatusMetadata(): void {

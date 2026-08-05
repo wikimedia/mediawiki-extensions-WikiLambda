@@ -226,7 +226,12 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 
 			// For each section...
 			foreach ( $sections as $sectionQid => $section ) {
-				$this->output( "\n> Generating section $sectionQid for all languages:\n" );
+				// We compile all the section indices and qids for the metadata object.
+				// Do this for every section of the content, including the ones that the
+				// --pending check below skips: the metadata section list is the manifest
+				// of the article, not a record of what this run re-generated.
+				$sectionIndex = intval( $section['index'] ?? 0 );
+				$sectionIds[ $sectionIndex ] = $sectionQid;
 
 				// Skip if --pending is set and there are no pending languages for this section
 				if ( $doPending && !isset( $pendingBySection[ $sectionQid ] ) ) {
@@ -235,9 +240,8 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 					continue;
 				}
 
-				// We compile all the section indices and qids for the metadata object
-				$sectionIndex = intval( $section['index'] ?? 0 );
-				$sectionIds[ $sectionIndex ] = $sectionQid;
+				$this->output( "\n> Generating section $sectionQid for all languages:\n" );
+
 				// Get the section fragment function calls; remove benjamin item
 				$sectionFragments = array_slice( $section['fragments'], 1 );
 
