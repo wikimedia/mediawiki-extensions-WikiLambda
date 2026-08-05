@@ -95,7 +95,7 @@ module.exports = exports = defineComponent( {
 			if ( props.expanded ) {
 				return [
 					'ext-wikilambda-app-object-key-value-set',
-					`ext-wikilambda-app-key-level--${ depth || 0 }`
+					`ext-wikilambda-app-key-level--${ depth.value || 0 }`
 				];
 			}
 			return [];

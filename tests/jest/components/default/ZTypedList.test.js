@@ -147,4 +147,27 @@ describe( 'ZTypedList', () => {
 			} );
 		} );
 	} );
+
+	describe( 'nesting level class', () => {
+		// The class must end with the numeric level, because the styles set
+		// the --levelColor custom property for the levels 0 to 6 only.
+		it( 'sets the level from the depth of the key path', () => {
+			const wrapper = renderZTypedList( { expanded: true } );
+
+			expect( wrapper.classes() ).toContain( 'ext-wikilambda-app-key-level--2' );
+		} );
+
+		it( 'sets a deeper level for a longer key path', () => {
+			const wrapper = renderZTypedList( { keyPath: 'main.Z2K2.Z6K1.0', expanded: true } );
+
+			expect( wrapper.classes() ).toContain( 'ext-wikilambda-app-key-level--4' );
+		} );
+
+		it( 'sets no level class when not expanded', () => {
+			const wrapper = renderZTypedList();
+
+			expect( wrapper.classes().some( ( c ) => c.startsWith( 'ext-wikilambda-app-key-level--' ) ) )
+				.toBe( false );
+		} );
+	} );
 } );
