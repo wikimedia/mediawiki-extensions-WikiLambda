@@ -10,6 +10,7 @@ use MediaWiki\Extension\WikiLambda\HookHandler\AbstractPageRenderingHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaAbstractClientIntegrationTestCase;
 use MediaWiki\Interwiki\Interwiki;
 use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -155,6 +156,20 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->mockOptedInArticles();
 
 		$title = Title::makeTitle( NS_MAIN, 'Pangolin' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onShowMissingArticle( $article );
+
+		$this->assertSame( '', $article->getContext()->getOutput()->getHTML() );
+	}
+
+	public function testOnShowMissingArticle_subpageOfOptedInTitle_doesNothing(): void {
+		// Opting a title in must not opt in everything below it: a subpage is its own article, and
+		// there is no AW topic behind it.
+		$this->overrideConfigValue( MainConfigNames::NamespacesWithSubpages, [ NS_MAIN => true ] );
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams/Draft' );
 		$article = $this->makeArticle( $title );
 
 		$handler = $this->buildHandler();
@@ -332,6 +347,25 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		// never a hand-built "/wiki/" . $title string with a raw space in it.
 		$this->assertSame( $title->getCanonicalURL(), $output->getCanonicalUrl() );
 		$this->assertStringNotContainsString( 'Douglas Adams', $output->getCanonicalUrl() );
+	}
+
+	public function testOnBeforeDisplayNoArticleText_talkPageOfOptedInTitle_addsNoMetadata(): void {
+		// An empty talk page is not the integrated article, so it must keep core's 404 and noindex
+		// rather than inherit its subject article's indexability signals.
+		$title = Title::makeTitle( NS_TALK, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$output = $article->getContext()->getOutput();
+		$output->getMetadata()->setIndexPolicy( 'noindex' );
+		$response = $article->getContext()->getRequest()->response();
+		$response->statusHeader( 404 );
+
+		$handler = $this->buildHandler();
+		$this->assertTrue( $handler->onBeforeDisplayNoArticleText( $article ) );
+
+		$this->assertFalse( $output->getCanonicalUrl() );
+		$this->assertSame( 'noindex', $output->getMetadata()->getIndexPolicy() );
+		$this->assertSame( 404, $response->getStatusCode() );
 	}
 
 	public function testOnBeforeDisplayNoArticleText_optedIn_setsIndexableRobotPolicy(): void {

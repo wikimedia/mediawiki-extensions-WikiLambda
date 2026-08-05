@@ -195,7 +195,10 @@ class AbstractPageRenderingHandler implements
 
 		// We need to see if this page has opted-in AW content in the local wiki (CommunityConfiguration)
 		// If so, we need to render the Special:Preview page content
-		$titleText = $title->getBaseText();
+		// Opted-in articles are keyed by their full title, so the lookup must use the prefixed text.
+		// getBaseText() drops the last subpage segment, which would let 'Hello/Draft' inherit the
+		// content of 'Hello' on a wiki with main-namespace subpages enabled.
+		$titleText = $title->getPrefixedText();
 		$optedIn = $this->awConfigProvider->provideOptedIn();
 
 		if ( !array_key_exists( $titleText, $optedIn ) ) {
@@ -305,9 +308,10 @@ class AbstractPageRenderingHandler implements
 			return;
 		}
 
-		// Exit if this page doesn't contain AW content
+		// Exit if this page doesn't contain AW content. The prefixed text also keeps the namespace,
+		// so a talk page cannot match its subject article's configuration.
 		$optedIn = $this->awConfigProvider->provideOptedIn();
-		if ( !array_key_exists( $title->getBaseText(), $optedIn ) ) {
+		if ( !array_key_exists( $title->getPrefixedText(), $optedIn ) ) {
 			// True or no return to continue
 			return;
 		}
@@ -348,7 +352,7 @@ class AbstractPageRenderingHandler implements
 		}
 
 		$optedIn = $this->awConfigProvider->provideOptedIn();
-		if ( !array_key_exists( $title->getBaseText(), $optedIn ) ) {
+		if ( !array_key_exists( $title->getPrefixedText(), $optedIn ) ) {
 			return;
 		}
 
@@ -374,8 +378,10 @@ class AbstractPageRenderingHandler implements
 		}
 
 		// For AbstractClient mode:
-		// See if this page is opt-in for an AW article, and remove page footer
-		$titleText = $article->getTitle()->getBaseText();
+		// See if this page is opt-in for an AW article, and remove page footer. The prefixed text
+		// also keeps the namespace, so an empty talk page cannot pick up the indexability metadata
+		// below from its subject article.
+		$titleText = $article->getTitle()->getPrefixedText();
 		$optedIn = $this->awConfigProvider->provideOptedIn();
 
 		if ( !array_key_exists( $titleText, $optedIn ) ) {
