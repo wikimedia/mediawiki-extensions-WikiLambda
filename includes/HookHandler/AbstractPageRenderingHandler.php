@@ -17,9 +17,10 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
+use MediaWiki\Hook\LinkTargetIsAlwaysKnownBatchHook;
 use MediaWiki\Hook\SidebarBeforeOutputHook;
-use MediaWiki\Hook\TitleIsAlwaysKnownHook;
 use MediaWiki\Html\Html;
+use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
@@ -45,7 +46,7 @@ class AbstractPageRenderingHandler implements
 	SkinAddFooterLinksHook,
 	SkinTemplateNavigation__UniversalHook,
 	SidebarBeforeOutputHook,
-	TitleIsAlwaysKnownHook
+	LinkTargetIsAlwaysKnownBatchHook
 {
 
 	private LoggerInterface $logger;
@@ -128,36 +129,45 @@ class AbstractPageRenderingHandler implements
 	}
 
 	/**
-	 * Treat an opted-in integrated Abstract Wikipedia article as a known page, so that wiki links
-	 * to it (e.g. [[Douglas Adams]]) and the subject tab on its talk page render blue rather than
-	 * as redlinks — even though no local revision exists. Its content is synthesised from the
+	 * Treat opted-in integrated Abstract Wikipedia articles as known pages, so that wiki links to
+	 * them (e.g. [[Douglas Adams]]) and the subject tab on their talk pages render blue rather than
+	 * as redlinks — even though no local revision exists. Their content is synthesised from the
 	 * remote topic by onShowMissingArticle(), so "known but not existing" is the correct state:
 	 * the page reads as present, while action=edit still offers local creation.
 	 *
-	 * This hook fires for every title whose known-ness is tested (notably once per link via
-	 * LinkBatch), so the body must stay cheap: integrationEnabled() is two config reads and
-	 * provideOptedIn() is process-cached, leaving an O(1) array lookup on the hot path.
+	 * Core calls this once for a whole batch of link targets, but the per-link body must still stay
+	 * cheap: integrationEnabled() is two config reads, the namespace guard rejects most of a page's
+	 * links, and the opted-in map is only loaded if some link survives the guards.
 	 *
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/TitleIsAlwaysKnown
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/LinkTargetIsAlwaysKnownBatch
 	 *
-	 * @param Title $title
-	 * @param bool|null &$isKnown Set to true to force the title to be considered known
+	 * @param LinkTarget[] $links
+	 * @param (bool|null)[] &$isAlwaysKnown Decision for each link, keyed as $links
 	 */
-	public function onTitleIsAlwaysKnown( $title, &$isKnown ): void {
-		// Respect a decision already made by core or another handler.
-		if ( $isKnown !== null || !$this->integrationEnabled() ) {
+	public function onLinkTargetIsAlwaysKnownBatch( array $links, array &$isAlwaysKnown ): void {
+		if ( !$this->integrationEnabled() ) {
 			return;
 		}
 
-		// Integrated content only lives in the main namespace; this guard also cheaply rejects the
-		// Talk:/File:/Template: etc. links that make up much of a page's link set before consulting
-		// the opted-in map.
-		if ( !$title->inNamespace( NS_MAIN ) ) {
-			return;
-		}
+		$optedIn = null;
+		foreach ( $links as $index => $link ) {
+			// Respect a decision already made by another handler.
+			if ( ( $isAlwaysKnown[$index] ?? null ) !== null ) {
+				continue;
+			}
 
-		if ( array_key_exists( $title->getPrefixedText(), $this->awConfigProvider->provideOptedIn() ) ) {
-			$isKnown = true;
+			// Integrated content only lives in this wiki's main namespace; this guard also cheaply
+			// rejects the Talk:/File:/Template: etc. links that make up much of a page's link set.
+			if ( $link->isExternal() || $link->getNamespace() !== NS_MAIN ) {
+				continue;
+			}
+
+			// Opted-in articles are keyed by prefixed text. In the main namespace there is no
+			// prefix, so that is the DB key with the underscores turned back into spaces.
+			$optedIn ??= $this->awConfigProvider->provideOptedIn();
+			if ( array_key_exists( strtr( $link->getDBkey(), '_', ' ' ), $optedIn ) ) {
+				$isAlwaysKnown[$index] = true;
+			}
 		}
 	}
 

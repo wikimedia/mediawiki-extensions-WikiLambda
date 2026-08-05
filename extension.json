@@ -282,7 +282,7 @@
 		"ShowMissingArticle": "AbstractPageRenderingHandler",
 		"Article::MissingArticleConditions": "AbstractPageRenderingHandler",
 		"InitializeArticleMaybeRedirect": "AbstractPageRenderingHandler",
-		"TitleIsAlwaysKnown": "AbstractPageRenderingHandler"
+		"LinkTargetIsAlwaysKnownBatch": "AbstractPageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
