@@ -18,7 +18,7 @@ const INSTRUMENT_NAME = 'wikifunctions-ui-actions';
 // drops the events for failing validation (T433550). This mirrors the PHP
 // instrument's setSchema() call in WikiLambdaApiBase::submitMetricsEvent().
 // TODO (T433550): drop this once TestKitchen serves schema_id to the JS SDK.
-const SCHEMA_ID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0';
+const SCHEMA_ID = '/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.1.0';
 
 const eventLogUtils = {
 	/**

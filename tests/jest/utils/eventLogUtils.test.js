@@ -81,7 +81,7 @@ describe( 'eventLogUtils', () => {
 			// Test Kitchen validates events against its generic base schema and
 			// EventGate drops them (T433550).
 			expect( instrument.setSchema ).toHaveBeenCalledWith(
-				'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.0.0'
+				'/analytics/mediawiki/product_metrics/wikilambda/ui_actions/1.1.0'
 			);
 			expect( instrument.send ).toHaveBeenCalledWith(
 				'test-action',
