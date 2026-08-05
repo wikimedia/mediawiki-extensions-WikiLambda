@@ -33,6 +33,14 @@
 				@keydown.enter="showMetadata = !showMetadata"
 			>
 				{{ i18n( 'wikilambda-function-evaluator-result-details' ).text() }}
+				<span
+					v-if="warningCount"
+					class="ext-wikilambda-app-evaluation-result__warnings"
+					data-testid="evaluation-result-warnings"
+				>
+					<cdx-icon :icon="iconAlert" size="small"></cdx-icon>
+					{{ i18n( 'wikilambda-functioncall-metadata-warnings-count', warningCount ).text() }}
+				</span>
 			</cdx-button>
 			<cdx-button
 				v-if="showShareButton"
@@ -65,7 +73,11 @@ const useMainStore = require( '../../../store/index.js' );
 const useClipboard = require( '../../../composables/useClipboard.js' );
 const useEventLog = require( '../../../composables/useEventLog.js' );
 const { hybridToCanonical } = require( '../../../utils/schemata.js' );
-const { getZFunctionCallFunctionId, getZReferenceTerminalValue } = require( '../../../utils/zobjectUtils.js' );
+const {
+	countMetadataWarnings,
+	getZFunctionCallFunctionId,
+	getZReferenceTerminalValue
+} = require( '../../../utils/zobjectUtils.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const icons = require( '../../../../lib/icons.json' );
 
@@ -104,6 +116,7 @@ module.exports = exports = defineComponent( {
 		// Constants
 		const iconLink = icons.cdxIconLink;
 		const iconCheck = icons.cdxIconCheck;
+		const iconAlert = icons.cdxIconAlert;
 		const responseKey = Constants.Z_RESPONSEENVELOPE_VALUE;
 		const responseKeyPath = [
 			Constants.STORED_OBJECTS.RESPONSE,
@@ -151,6 +164,14 @@ module.exports = exports = defineComponent( {
 		const metadata = computed( () => hasMetadata.value ?
 			hybridToCanonical( responseObject.value[ Constants.Z_RESPONSEENVELOPE_METADATA ] ) :
 			undefined );
+
+		/**
+		 * Returns how many warnings the function call raised, counting the
+		 * ones raised by its nested function calls.
+		 *
+		 * @return {number}
+		 */
+		const warningCount = computed( () => countMetadataWarnings( metadata.value ) );
 
 		// Function call data
 		/**
@@ -248,6 +269,7 @@ module.exports = exports = defineComponent( {
 			hasMetadata,
 			isVoidResult,
 			hasChosenImplementation,
+			iconAlert,
 			iconLink,
 			iconCheck,
 			implementationName,
@@ -258,7 +280,8 @@ module.exports = exports = defineComponent( {
 			responseObject,
 			showMetadata,
 			showShareButton,
-			shareFunction
+			shareFunction,
+			warningCount
 		};
 	}
 } );
@@ -278,6 +301,17 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-evaluation-result__error {
 		margin-bottom: @spacing-100;
 		margin-top: @spacing-50;
+	}
+
+	.ext-wikilambda-app-evaluation-result__warnings {
+		display: inline-flex;
+		align-items: center;
+		gap: @spacing-25;
+		color: @color-warning;
+
+		.cdx-icon {
+			color: inherit;
+		}
 	}
 }
 </style>

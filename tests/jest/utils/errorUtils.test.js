@@ -131,4 +131,47 @@ describe( 'errorUtils', () => {
 			expect( errorUtils.extractErrorData( customError ) ).toEqual( expectedErrorStructure );
 		} );
 	} );
+
+	describe( 'extractWarningsData', () => {
+		const warning = ( zid, args = {} ) => ( {
+			Z1K1: 'Z5',
+			Z5K1: zid,
+			Z5K2: Object.assign( { Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: zid } }, args )
+		} );
+
+		it( 'returns an empty array if there are no warnings', () => {
+			expect( errorUtils.extractWarningsData( undefined ) ).toEqual( [] );
+		} );
+
+		it( 'returns an empty array if the list of warnings is empty', () => {
+			expect( errorUtils.extractWarningsData( [ 'Z5' ] ) ).toEqual( [] );
+		} );
+
+		it( 'returns an empty array if the value is not an error', () => {
+			expect( errorUtils.extractWarningsData( 'Z24' ) ).toEqual( [] );
+		} );
+
+		it( 'extracts the data of every warning in the list', () => {
+			const warnings = [ 'Z5', warning( 'Z591', { Z591K1: '480 MiB' } ), warning( 'Z593' ) ];
+
+			expect( errorUtils.extractWarningsData( warnings ) ).toEqual( [
+				{ errorType: 'Z591', children: [], stringArgs: [ { key: 'Z591K1', value: '480 MiB' } ] },
+				{ errorType: 'Z593', children: [], stringArgs: [] }
+			] );
+		} );
+
+		it( 'ignores the items of the list which are not errors', () => {
+			const warnings = [ 'Z5', warning( 'Z591' ), 'Z24', { Z1K1: 'Z6', Z6K1: 'not a warning' } ];
+
+			expect( errorUtils.extractWarningsData( warnings ) ).toEqual( [
+				{ errorType: 'Z591', children: [], stringArgs: [] }
+			] );
+		} );
+
+		it( 'extracts the data of a single warning which is not in a list', () => {
+			expect( errorUtils.extractWarningsData( warning( 'Z591' ) ) ).toEqual( [
+				{ errorType: 'Z591', children: [], stringArgs: [] }
+			] );
+		} );
+	} );
 } );

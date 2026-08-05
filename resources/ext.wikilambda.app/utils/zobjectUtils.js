@@ -15,7 +15,8 @@
  * @license MIT
  */
 const Constants = require( '../Constants.js' );
-const { hybridToCanonical } = require( './schemata.js' );
+const { extractWarningsData } = require( './errorUtils.js' );
+const { getValueFromCanonicalZMap, hybridToCanonical } = require( './schemata.js' );
 const { isValidZidFormat, getScaffolding } = require( './typeUtils.js' );
 
 // Stable, position-independent identity for typed-list items. A list item's
@@ -897,6 +898,33 @@ const zobjectUtils = {
 		}
 
 		return keys.slice( 1 ).some( ( entry ) => entry.K1 === 'pending' );
+	},
+
+	/**
+	 * Returns how many warnings the given function call metadata contains,
+	 * counting the warnings raised by every nested function call too. The
+	 * orchestrator does not necessarily merge the warnings of the nested
+	 * calls into the parent metadata, so callers which must tell whether a
+	 * function call raised any warning have to look at the whole tree.
+	 *
+	 * @param {Object} metadata a Z883/Typed map, in canonical form
+	 * @return {number}
+	 */
+	countMetadataWarnings: function ( metadata ) {
+		if ( !metadata || !Array.isArray( metadata[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] ) ) {
+			return 0;
+		}
+
+		let count = extractWarningsData( getValueFromCanonicalZMap( metadata, 'warnings' ) ).length;
+
+		const nested = getValueFromCanonicalZMap( metadata, 'nestedMetadata' );
+		if ( Array.isArray( nested ) ) {
+			for ( const child of nested.slice( 1 ) ) {
+				count += zobjectUtils.countMetadataWarnings( child );
+			}
+		}
+
+		return count;
 	}
 };
 

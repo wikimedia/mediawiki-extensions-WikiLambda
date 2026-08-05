@@ -2444,4 +2444,64 @@ describe( 'zobjectUtils', () => {
 			expect( zobjectUtils.hasPendingMetadata( pendingMetadata ) ).toBe( true );
 		} );
 	} );
+
+	describe( 'countMetadataWarnings', () => {
+		const warning = {
+			Z1K1: 'Z5',
+			Z5K1: 'Z591',
+			Z5K2: { Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z591' }, Z591K1: '480 MiB' }
+		};
+		const metadataWith = ( entries ) => ( { Z1K1: 'Z883', K1: [ { Z1K1: 'Z882' } ].concat(
+			entries.map( ( [ key, value ] ) => ( { Z1K1: 'Z882', K1: key, K2: value } ) )
+		) } );
+
+		it( 'returns zero when there is no metadata', () => {
+			expect( zobjectUtils.countMetadataWarnings( undefined ) ).toBe( 0 );
+		} );
+
+		it( 'returns zero when the metadata is not a map', () => {
+			expect( zobjectUtils.countMetadataWarnings( 'Z24' ) ).toBe( 0 );
+		} );
+
+		it( 'returns zero when the metadata has no warnings key', () => {
+			expect( zobjectUtils.countMetadataWarnings( metadataWith( [
+				[ 'orchestrationDuration', '70 ms' ]
+			] ) ) ).toBe( 0 );
+		} );
+
+		it( 'returns zero when the list of warnings is empty', () => {
+			expect( zobjectUtils.countMetadataWarnings( metadataWith( [
+				[ 'warnings', [ 'Z5' ] ]
+			] ) ) ).toBe( 0 );
+		} );
+
+		it( 'counts the warnings of the function call', () => {
+			expect( zobjectUtils.countMetadataWarnings( metadataWith( [
+				[ 'warnings', [ 'Z5', warning, warning ] ]
+			] ) ) ).toBe( 2 );
+		} );
+
+		it( 'counts the warnings of the nested function calls too', () => {
+			const child = metadataWith( [ [ 'warnings', [ 'Z5', warning ] ] ] );
+			const grandChild = metadataWith( [ [ 'warnings', [ 'Z5', warning, warning ] ] ] );
+			const parent = metadataWith( [
+				[ 'warnings', [ 'Z5', warning ] ],
+				[ 'nestedMetadata', [ { Z1K1: 'Z883' }, child, metadataWith( [
+					[ 'nestedMetadata', [ { Z1K1: 'Z883' }, grandChild ] ]
+				] ) ] ]
+			] );
+
+			expect( zobjectUtils.countMetadataWarnings( parent ) ).toBe( 4 );
+		} );
+
+		it( 'counts the warnings of the nested function calls when the parent raised none', () => {
+			const child = metadataWith( [ [ 'warnings', [ 'Z5', warning ] ] ] );
+			const parent = metadataWith( [
+				[ 'orchestrationDuration', '70 ms' ],
+				[ 'nestedMetadata', [ { Z1K1: 'Z883' }, child ] ]
+			] );
+
+			expect( zobjectUtils.countMetadataWarnings( parent ) ).toBe( 1 );
+		} );
+	} );
 } );

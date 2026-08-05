@@ -78,6 +78,23 @@ const errorUtils = {
 	},
 
 	/**
+	 * Extract the data of every warning/Z5 raised by a function call, given
+	 * the value of the 'warnings' key of its metadata. This value is a typed
+	 * list of errors: the first item gives the type of the list, so this
+	 * method removes it. This method also removes each item that is not a
+	 * well formed error.
+	 *
+	 * @param {Mixed} value
+	 * @return {Array} of objects, with the structure returned by extractErrorData
+	 */
+	extractWarningsData: function ( value ) {
+		const warnings = Array.isArray( value ) ? value.slice( 1 ) : [ value ];
+		return warnings
+			.map( ( warning ) => errorUtils.extractErrorData( warning ) )
+			.filter( ( data ) => !!data );
+	},
+
+	/**
 	 * Sanitize a string for safe HTML rendering.
 	 * Escapes dangerous characters for HTML injection: & < > " ' / ` =
 	 * Safer than DOM cleanup option.

@@ -87,6 +87,29 @@ const metadataChild2 = convertSetToMap( {
 	evaluationEndTime: "2024-02-16T12:25:19.252Z",
 } );
 
+const metadataChild4 = convertSetToMap( {
+	zObjectKey: 'Z801("warned")',
+	implementationId: { Z1K1: "Z6", Z6K1: "Z901" },
+	implementationType: 'Evaluated',
+	// warnings:
+	warnings: [
+		"Z5",
+		{
+			Z1K1: "Z5",
+			Z5K1: "Z590",
+			Z5K2: {
+				Z1K1: {
+					Z1K1: "Z7",
+					Z7K1: "Z885",
+					Z885K1: "Z590"
+				},
+				Z590K1: "900000",
+				Z590K2: "1000000"
+			}
+		}
+	]
+} );
+
 const metadataChild3 = convertSetToMap( {
 	zObjectKey: 'Z42',
 	// incomplete metadata to test how the system handles minimal data
@@ -111,6 +134,51 @@ const metadataNested = convertSetToMap( {
 	evaluationDuration: "10 ms",
 	evaluationStartTime: "2024-02-16T12:25:19.240Z",
 	evaluationEndTime: "2024-02-16T12:25:19.250Z",
+} );
+
+const metadataChild5 = convertSetToMap( {
+	zObjectKey: 'Z801("failed")',
+	// errors, alongside warnings raised before the failure:
+	errors: {
+		Z1K1: "Z5",
+		Z5K1: "Z500",
+		Z5K2: {
+			Z1K1: {
+				Z1K1: "Z7",
+				Z7K1: "Z885",
+				Z885K1: "Z500"
+			},
+			Z500K1: "some error in child function call"
+		}
+	},
+	warnings: [
+		"Z5",
+		{
+			Z1K1: "Z5",
+			Z5K1: "Z590",
+			Z5K2: {
+				Z1K1: {
+					Z1K1: "Z7",
+					Z7K1: "Z885",
+					Z885K1: "Z590"
+				},
+				Z590K1: "900000",
+				Z590K2: "1000000"
+			}
+		}
+	]
+} );
+
+const metadataNestedWarnings = convertSetToMap( {
+	zObjectKey: 'Z802(Z801("warned"),Z801("failed"))',
+	implementationId: { Z1K1: "Z6", Z6K1: "Z902" },
+	implementationType: 'Evaluated',
+	// nestedMetadata:
+	nestedMetadata: [
+		{ Z1K1: "Z7", Z7K1: "Z883", Z883K1: "Z6", Z883K2: "Z1" }, // Represents Typed Map
+		metadataChild4, // Represents a child function call which raised warnings
+		metadataChild5 // Represents a child function call which failed after a warning
+	]
 } );
 
 const metadataEmpty = convertSetToMap( {
@@ -201,6 +269,61 @@ const metadataDebugLogs = convertSetToMap( {
 	]
 } );
 
+const metadataWarnings = convertSetToMap( {
+	warnings: [
+		"Z5",
+		{
+			Z1K1: "Z5",
+			Z5K1: "Z591",
+			Z5K2: {
+				Z1K1: {
+					Z1K1: "Z7",
+					Z7K1: "Z885",
+					Z885K1: "Z591"
+				},
+				Z591K1: "480 MiB",
+				Z591K2: "512 MiB"
+			}
+		},
+		{
+			Z1K1: "Z5",
+			Z5K1: "Z593",
+			Z5K2: {
+				Z1K1: {
+					Z1K1: "Z7",
+					Z7K1: "Z885",
+					Z885K1: "Z593"
+				},
+				Z593K1: "1024",
+				Z593K2: "<button onmouseover=\"window.location = '//www.example.com'\">"
+			}
+		}
+	]
+} );
+
+const metadataEmptyWarnings = convertSetToMap( {
+	warnings: [ "Z5" ]
+} );
+
+const metadataOddWarnings = convertSetToMap( {
+	// The value of the warnings key is not a list, and the type of the
+	// only warning is a literal error type instead of a reference
+	warnings: {
+		Z1K1: "Z5",
+		Z5K1: {
+			Z1K1: "Z50",
+			Z50K2: "Z591"
+		},
+		Z5K2: {
+			Z1K1: {
+				Z1K1: "Z7",
+				Z7K1: "Z885",
+				Z885K1: "Z591"
+			}
+		}
+	}
+} );
+
 const metadataCaching = convertSetToMap( {
 	functionCallCachedOn: '2026-06-01T00:00:00Z',
 	testCallCachedOn: '2026-06-02T00:00:00Z',
@@ -215,8 +338,12 @@ module.exports = {
 	metadataMaliciousError,
 	metadataEmpty,
 	metadataNested,
+	metadataNestedWarnings,
 	metadataDifferButNoErrors,
 	metadataDebugLogs,
+	metadataWarnings,
+	metadataEmptyWarnings,
+	metadataOddWarnings,
 	metadataCaching,
 	convertSetToMap
 };

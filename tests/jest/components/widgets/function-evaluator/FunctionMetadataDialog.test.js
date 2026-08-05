@@ -417,6 +417,99 @@ describe( 'dialog', () => {
 		} );
 	} );
 
+	describe( 'with warning metadata', () => {
+		beforeEach( () => {
+			store.getLabelData = createLabelDataMock( {
+				Z591: 'Used a large portion of the available memory.',
+				Z591K1: 'memory used',
+				Z591K2: 'memory limit',
+				Z593: 'Code output discarded: was not valid UTF-8',
+				Z593K1: 'total bytes discarded across the run',
+				Z593K2: 'first discarded line, lossily converted to UTF-8'
+			} );
+		} );
+
+		it( 'does not render the warning section when there are no warnings', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			const titles = sections.map( ( section ) => section.find( '.cdx-accordion__header__title' ).text() );
+
+			expect( titles ).not.toContain( 'Warnings' );
+		} );
+
+		it( 'does not render the warning section when the list of warnings is empty', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataEmptyWarnings } );
+
+			expect( wrapper.findAllComponents( { name: 'cdx-accordion' } ).length ).toBe( 0 );
+		} );
+
+		it( 'renders the warning section', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataWarnings } );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const section = sections[ 0 ];
+
+			// Check header
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Warnings' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe(
+				'Used a large portion of the available memory., Code output discarded: was not valid UTF-8'
+			);
+
+			// Check content
+			const content = section.find( '.cdx-accordion__content' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+			expect( keys.length ).toBe( 1 );
+			expect( keys[ 0 ].text() ).toContain( 'Warnings raised:' );
+
+			// One item per raised warning, each linked to its type
+			const warnings = keys[ 0 ].findAll( 'span > ul > li' );
+			expect( warnings.length ).toBe( 2 );
+
+			expect( warnings[ 0 ].find( 'a' ).text() ).toBe( 'Used a large portion of the available memory.' );
+			expect( warnings[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z591' );
+			let args = warnings[ 0 ].findAll( 'ul > li' ).map( ( li ) => li.text() );
+			expect( args ).toEqual( [ 'memory used: "480 MiB"', 'memory limit: "512 MiB"' ] );
+
+			expect( warnings[ 1 ].find( 'a' ).text() ).toBe( 'Code output discarded: was not valid UTF-8' );
+			expect( warnings[ 1 ].find( 'a' ).attributes().href ).toContain( 'Z593' );
+			args = warnings[ 1 ].findAll( 'ul > li' ).map( ( li ) => li.text() );
+			expect( args ).toEqual( [
+				'total bytes discarded across the run: "1024"',
+				'first discarded line, lossily converted to UTF-8: "<button onmouseover="window.location = \'//www.example.com\'">"'
+			] );
+		} );
+
+		it( 'renders the warning section, but escapes bad stuff', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataWarnings } );
+			const section = wrapper.findAllComponents( { name: 'cdx-accordion' } )[ 0 ];
+
+			expect( section.find( '.cdx-accordion__content' ).html() ).not.toContain( '<button' );
+		} );
+
+		it( 'renders a warning which is neither in a list nor has a referenced type', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataOddWarnings } );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const section = sections[ 0 ];
+
+			// Check header
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Warnings' );
+
+			// The warning type is not linked, and there are no arguments to show
+			const content = section.find( '.cdx-accordion__content' );
+			const warnings = content.findAll( 'span > ul > li' );
+			expect( warnings.length ).toBe( 1 );
+			expect( warnings[ 0 ].find( 'a' ).exists() ).toBe( false );
+			expect( warnings[ 0 ].findAll( 'ul > li' ).length ).toBe( 0 );
+		} );
+
+		it( 'does not show the debug hint for warnings alone', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataWarnings } );
+
+			expect( wrapper.findAllComponents( { name: 'cdx-message' } ).length ).toBe( 0 );
+		} );
+	} );
+
 	describe( 'with nested metadata', () => {
 		it( 'renders function call selector correctly', () => {
 			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataNested } );
@@ -484,6 +577,39 @@ describe( 'dialog', () => {
 			// The accordion description renders as plain text (not HTML), so the text value should show raw characters.
 			expect( sections[ 0 ].find( '.cdx-accordion__header__description' ).text() )
 				.toContain( '"some error in child function call: <button onmouseover="window.location = \'//www.example.com\'">"' );
+		} );
+
+		it( 'flags the function calls which raised warnings in the selector', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataNestedWarnings } );
+			const menuItems = wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems;
+			expect( menuItems.length ).toBe( 3 );
+
+			// The parent function call raised no warnings of its own
+			expect( menuItems[ 0 ].state ).toBe( 'pass' );
+			expect( menuItems[ 0 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconSuccess"/>' );
+
+			// The first child only raised warnings
+			expect( menuItems[ 1 ].state ).toBe( 'warn' );
+			expect( menuItems[ 1 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconAlert"/>' );
+			expect( menuItems[ 1 ].class ).toContain( 'ext-wikilambda-app-function-metadata-dialog__menu-item--warn' );
+
+			// The second child raised a warning and then failed, so errors take precedence
+			expect( menuItems[ 2 ].state ).toBe( 'fail' );
+			expect( menuItems[ 2 ].icon ).toBe( '<path data-testid="mock-icon-cdxIconError"/>' );
+		} );
+
+		it( 'flags the selected function call which raised warnings', async () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataNestedWarnings } );
+			const selector = wrapper.findComponent( { name: 'cdx-select' } );
+			expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--pass' );
+
+			// Select the child which raised warnings
+			selector.vm.$emit( 'update:selected', '0-0' );
+
+			await waitFor( () => {
+				expect( selector.html() ).toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--warn' );
+			} );
+			expect( selector.html() ).not.toContain( 'ext-wikilambda-app-function-metadata-dialog__selected--pass' );
 		} );
 	} );
 } );

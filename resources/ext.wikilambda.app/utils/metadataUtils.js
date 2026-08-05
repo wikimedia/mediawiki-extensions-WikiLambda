@@ -26,6 +26,14 @@ const metadataUtils = {
 				{ key: 'executorDebugLogs', title: 'wikilambda-functioncall-metadata-execution-debug-logs', transform: 'getDebugLogs' }
 			]
 		},
+		warnings: {
+			title: 'wikilambda-functioncall-metadata-warnings',
+			description: 'getWarningsSummary',
+			open: true,
+			keys: [
+				{ key: 'warnings', title: 'wikilambda-functioncall-metadata-warnings-list', transform: 'getWarningsList' }
+			]
+		},
 		implementation: {
 			title: 'wikilambda-functioncall-metadata-implementation',
 			description: 'getImplementationSummary',

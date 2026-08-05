@@ -12,7 +12,7 @@
 const { computed, inject } = require( 'vue' );
 const Constants = require( '../Constants.js' );
 const useMainStore = require( '../store/index.js' );
-const { hasPendingMetadata } = require( '../utils/zobjectUtils.js' );
+const { countMetadataWarnings, hasPendingMetadata } = require( '../utils/zobjectUtils.js' );
 
 /**
  * Composable for test result status logic shared between the Function Report
@@ -72,6 +72,16 @@ module.exports = function useTestResults( {
 	 * was executed and returned a final response, not a pending state.
 	 */
 	const hasMetadata = computed( () => ( testResult.value !== undefined && !isPending.value ) );
+
+	/**
+	 * Returns how many warnings the test run raised, counting the ones
+	 * raised by its nested function calls.
+	 *
+	 * @return {number}
+	 */
+	const warningCount = computed( () => ( hasMetadata.value ?
+		countMetadataWarnings( testMetadata.value ) :
+		0 ) );
 
 	/**
 	 * Whether the perform test API returned an error.
@@ -161,6 +171,7 @@ module.exports = function useTestResults( {
 		isPending,
 		statusFlag,
 		statusMessage,
-		statusIcon
+		statusIcon,
+		warningCount
 	};
 };

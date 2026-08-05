@@ -22,7 +22,8 @@
 			@click.stop="handleMessageIconClick"
 		>
 			<wl-status-icon
-				status="info"
+				:status="infoFlag"
+				:status-icon="infoIcon"
 			></wl-status-icon>
 		</button>
 		<!-- Refresh button if pending -->
@@ -109,7 +110,8 @@ module.exports = exports = defineComponent( {
 			isPending,
 			statusFlag,
 			statusMessage,
-			statusIcon
+			statusIcon,
+			warningCount
 		} = useTestResults( {
 			functionZid: computed( () => props.zFunctionId ),
 			testerZid: computed( () => props.zTesterId ),
@@ -121,6 +123,9 @@ module.exports = exports = defineComponent( {
 				pending: icons.cdxIconAlert
 			}
 		} );
+
+		const infoFlag = computed( () => warningCount.value ? 'warning' : 'info' );
+		const infoIcon = computed( () => warningCount.value ? icons.cdxIconAlert : icons.cdxIconInfo );
 
 		/**
 		 * Refreshes test execution by calling the perform test
@@ -174,6 +179,8 @@ module.exports = exports = defineComponent( {
 			hasApiErrors,
 			hasMetadata,
 			iconReload,
+			infoFlag,
+			infoIcon,
 			implementationLabelData,
 			isPending,
 			isRunning,

@@ -20,6 +20,14 @@ const implementationZid = 'Z10002';
 // NOTE: minimal and not strictly valid metadata, just to test the pending key exists
 const someMetadata = { K1: [ { Z1K1: 'Z882' }, { Z1K2: 'Z882', K1: 'someData', K2: 'woho!' } ] };
 const pendingMetadata = { K1: [ { Z1K1: 'Z882' }, { Z1K2: 'Z882', K1: 'pending', K2: 'Z41' } ] };
+const warning = {
+	Z1K1: 'Z5',
+	Z5K1: 'Z591',
+	Z5K2: { Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z591' }, Z591K1: '480 MiB' }
+};
+const warningsMetadata = { K1: [ { Z1K1: 'Z882' },
+	{ Z1K2: 'Z882', K1: 'warnings', K2: [ 'Z5', warning, warning ] }
+] };
 
 describe( 'FunctionTesterTable', () => {
 	let store;
@@ -142,6 +150,24 @@ describe( 'FunctionTesterTable', () => {
 			zImplementations: [ implementationZid ],
 			clearPreviousResults: true
 		} );
+	} );
+
+	it( 'does not display the warnings hint when the test raised no warnings', () => {
+		store.getZTesterResult = createGettersWithFunctionsMock( true );
+		store.getZTesterMetadata = createGettersWithFunctionsMock( someMetadata );
+
+		const wrapper = renderFunctionTesterTable();
+		expect( wrapper.find( '[data-testid="function-tester-table-warnings"]' ).exists() ).toBe( false );
+	} );
+
+	it( 'displays the warnings hint when the test raised warnings', () => {
+		store.getZTesterResult = createGettersWithFunctionsMock( true );
+		store.getZTesterMetadata = createGettersWithFunctionsMock( warningsMetadata );
+
+		const wrapper = renderFunctionTesterTable();
+		const button = wrapper.find( '.ext-wikilambda-app-function-tester-table__info-button' );
+		const statusIcon = button.findComponent( { name: 'wl-status-icon' } );
+		expect( statusIcon.props( 'status' ) ).toBe( 'warning' );
 	} );
 
 	it( 'toggles the metadata dialog when the details button is clicked', async () => {

@@ -112,7 +112,7 @@ const Constants = require( '../../../Constants.js' );
 const { metadataKeys } = require( '../../../utils/metadataUtils.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
-const { extractErrorData, escapeHtml } = require( '../../../utils/errorUtils.js' );
+const { extractErrorData, extractWarningsData, escapeHtml } = require( '../../../utils/errorUtils.js' );
 const { isValidZidFormat } = require( '../../../utils/typeUtils.js' );
 const { extractZIDs } = require( '../../../utils/schemata.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
@@ -182,6 +182,11 @@ module.exports = exports = defineComponent( {
 		// Constants
 		const iconHelpNotice = icons.cdxIconHelpNotice;
 		const iconLinkExternal = icons.cdxIconLinkExternal || icons.cdxIconLink;
+		const stateIcons = {
+			pass: icons.cdxIconSuccess,
+			warn: icons.cdxIconAlert,
+			fail: icons.cdxIconError
+		};
 
 		// State
 		const selectedMetadataPath = ref( '0' );
@@ -346,7 +351,35 @@ module.exports = exports = defineComponent( {
 			return false;
 		}
 
+		/**
+		 * Returns if there are any warnings in the metadata
+		 *
+		 * @param {Map} kv The keyValues map to check
+		 * @return {boolean}
+		 */
+		function hasWarnings( kv ) {
+			return extractWarningsData( kv.get( 'warnings' ) ).length > 0;
+		}
+
 		// Menu items
+		/**
+		 * Returns the state of the function call that the given metadata
+		 * describes: 'fail' if it has errors, 'warn' if it only raised
+		 * warnings, or else 'pass'.
+		 *
+		 * @param {Map} kv The keyValues map to check
+		 * @return {string}
+		 */
+		function getCallState( kv ) {
+			if ( hasExplicitErrors( kv ) || hasTestFailure( kv ) ) {
+				return 'fail';
+			}
+			if ( hasWarnings( kv ) ) {
+				return 'warn';
+			}
+			return 'pass';
+		}
+
 		/**
 		 * Returns the array of menu items to feed the CdxSelect
 		 * component. Each menu item identifies the metadata collection
@@ -394,8 +427,7 @@ module.exports = exports = defineComponent( {
 			const uniqueId = path.join( '-' );
 
 			const nestedMetadata = metadataKeyValues.get( 'nestedMetadata' );
-			const hasErrors = hasExplicitErrors( metadataKeyValues ) || hasTestFailure( metadataKeyValues );
-			const state = !hasErrors ? 'pass' : 'fail';
+			const state = getCallState( metadataKeyValues );
 
 			const menuItems = [ {
 				label: labelizedFunctionCall,
@@ -403,7 +435,7 @@ module.exports = exports = defineComponent( {
 				style: `--menuItemLevel: ${ depth };`,
 				class: 'ext-wikilambda-app-function-metadata-dialog__menu-item ' +
 					`ext-wikilambda-app-function-metadata-dialog__menu-item--${ state }`,
-				icon: !hasErrors ? icons.cdxIconSuccess : icons.cdxIconError,
+				icon: stateIcons[ state ],
 				state
 			} ];
 
@@ -533,6 +565,20 @@ module.exports = exports = defineComponent( {
 			}
 			const argblock = i18n( 'parentheses', args.join( comma ) ).text();
 			return `${ title } ${ argblock }`;
+		}
+
+		/**
+		 * Returns the warning section summary, which consists of the
+		 * labelized type of every raised warning:
+		 * <1st warning type label>, ..., <nth warning type label>
+		 *
+		 * @return {string}
+		 */
+		function getWarningsSummary() {
+			const comma = i18n( 'comma-separator' ).text();
+			return extractWarningsData( keyValues.value.get( 'warnings' ) )
+				.map( ( warning ) => store.getLabelData( warning.errorType ).label )
+				.join( comma );
 		}
 
 		/**
@@ -697,24 +743,37 @@ module.exports = exports = defineComponent( {
 		function getErrorStringArgs( value ) {
 			const data = extractErrorData( value );
 			if ( data && data.stringArgs && data.stringArgs.length ) {
-				const list = [];
-				const colon = i18n( 'colon-separator' ).text();
-				for ( const arg of data.stringArgs ) {
-					const key = store.getLabelData( arg.key );
-					// SECURITY: Escape any HTML in the argument label
-					const escapedLabel = escapeHtml( key.labelOrUntitled );
-					const keySpan = `<span dir="${ key.langDir }" lang="${ key.langCode }">${ escapedLabel }</span>`;
-					// SECURITY: Escape any HTML in the argument value
-					const escapedArg = escapeHtml( arg.value );
-					const quotedArg = i18n( 'quotation-marks', escapedArg ).text();
-					list.push( `<li>${ keySpan }${ colon }${ quotedArg }</li>` );
-				}
+				const list = buildStringArgItems( data.stringArgs );
 				return {
 					type: Constants.METADATA_CONTENT_TYPE.HTML,
 					value: `<ul>${ list.join( '' ) }</ul>`
 				};
 			}
 			return undefined;
+		}
+
+		/**
+		 * Returns the safe HTML list items for the given error or warning
+		 * string arguments. Each item contains the labelized key, followed
+		 * by the quoted value.
+		 *
+		 * @param {Array} stringArgs
+		 * @return {Array}
+		 */
+		function buildStringArgItems( stringArgs ) {
+			const list = [];
+			const colon = i18n( 'colon-separator' ).text();
+			for ( const arg of stringArgs ) {
+				const key = store.getLabelData( arg.key );
+				// SECURITY: Escape any HTML in the argument label
+				const escapedLabel = escapeHtml( key.labelOrUntitled );
+				const keySpan = `<span dir="${ key.langDir }" lang="${ key.langCode }">${ escapedLabel }</span>`;
+				// SECURITY: Escape any HTML in the argument value
+				const escapedArg = escapeHtml( arg.value );
+				const quotedArg = i18n( 'quotation-marks', escapedArg ).text();
+				list.push( `<li>${ keySpan }${ colon }${ quotedArg }</li>` );
+			}
+			return list;
 		}
 
 		/**
@@ -745,6 +804,42 @@ module.exports = exports = defineComponent( {
 				};
 			}
 			return undefined;
+		}
+
+		/**
+		 * Transform method.
+		 * Returns a safe HTML fragment with the content for the raised
+		 * warnings. If there are any, the returned html will contain an
+		 * unnumbered list, where each item contains the labelized warning
+		 * type, linked to its page, followed by the list of its string
+		 * arguments (if any).
+		 * If there are no warnings to list, returns undefined.
+		 *
+		 * @param {Mixed} value
+		 * @return {Object | undefined}
+		 */
+		function getWarningsList( value ) {
+			const items = [];
+			for ( const warning of extractWarningsData( value ) ) {
+				const labelData = store.getLabelData( warning.errorType );
+				// SECURITY: Escape any HTML in the warning type label
+				const escapedLabel = escapeHtml( labelData.label );
+				const langAttrs = `dir="${ labelData.langDir }" lang="${ labelData.langCode }"`;
+				// Only link the warning type if it identifies a page
+				const type = isValidZidFormat( warning.errorType ) ?
+					`<a href="${ getUrl( warning.errorType ) }" ${ langAttrs }>${ escapedLabel }</a>` :
+					`<span ${ langAttrs }>${ escapedLabel }</span>`;
+				const args = buildStringArgItems( warning.stringArgs );
+				const argList = args.length ? `<ul>${ args.join( '' ) }</ul>` : '';
+				items.push( `<li>${ type }${ argList }</li>` );
+			}
+			if ( !items.length ) {
+				return undefined;
+			}
+			return {
+				type: Constants.METADATA_CONTENT_TYPE.HTML,
+				value: `<ul>${ items.join( '' ) }</ul>`
+			};
 		}
 
 		/**
@@ -836,6 +931,7 @@ module.exports = exports = defineComponent( {
 			getLinksOfTestKey,
 			getStringValue,
 			getTestResultValue,
+			getWarningsList,
 			toRelativeTime
 		};
 
@@ -865,6 +961,7 @@ module.exports = exports = defineComponent( {
 		// Section compilation
 		const descriptionMethods = {
 			getErrorSummary,
+			getWarningsSummary,
 			getImplementationSummary,
 			getCachingSummary,
 			getDurationSummary,
@@ -891,6 +988,7 @@ module.exports = exports = defineComponent( {
 				const section = {
 					// possible message keys:
 					// * wikilambda-functioncall-metadata-errors
+					// * wikilambda-functioncall-metadata-warnings
 					// * wikilambda-functioncall-metadata-implementation
 					// * wikilambda-functioncall-metadata-duration
 					// * wikilambda-functioncall-metadata-orchestration
@@ -946,6 +1044,7 @@ module.exports = exports = defineComponent( {
 						// * wikilambda-functioncall-metadata-expected-result
 						// * wikilambda-functioncall-metadata-actual-result
 						// * wikilambda-functioncall-metadata-execution-debug-logs
+						// * wikilambda-functioncall-metadata-warnings-list
 						// * wikilambda-functioncall-metadata-implementation-name
 						// * wikilambda-functioncall-metadata-implementation-id
 						// * wikilambda-functioncall-metadata-implementation-type
@@ -1041,6 +1140,12 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		&--warn {
+			.cdx-icon {
+				color: @color-warning;
+			}
+		}
+
 		&--fail {
 			.cdx-icon {
 				color: @color-destructive;
@@ -1055,6 +1160,12 @@ module.exports = exports = defineComponent( {
 		&--pass {
 			.cdx-icon {
 				color: @color-success;
+			}
+		}
+
+		&--warn {
+			.cdx-icon {
+				color: @color-warning;
 			}
 		}
 

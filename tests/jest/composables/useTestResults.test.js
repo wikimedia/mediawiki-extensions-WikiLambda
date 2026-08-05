@@ -200,4 +200,45 @@ describe( 'useTestResults', () => {
 			expect( statusIcon.value ).toBe( icons.failed );
 		} );
 	} );
+
+	describe( 'warningCount', () => {
+		const warning = {
+			Z1K1: 'Z5',
+			Z5K1: 'Z591',
+			Z5K2: { Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z591' }, Z591K1: '480 MiB' }
+		};
+		const warningsMetadata = { Z1K1: 'Z883', K1: [ { Z1K1: 'Z882' },
+			{ Z1K2: 'Z882', K1: 'warnings', K2: [ 'Z5', warning, warning ] }
+		] };
+
+		it( 'returns zero when the test has not run', () => {
+			const { warningCount } = loadTestResults();
+			expect( warningCount.value ).toBe( 0 );
+		} );
+
+		it( 'returns zero when the test raised no warnings', () => {
+			store.getZTesterResult = createGettersWithFunctionsMock( true );
+			store.getZTesterMetadata = createGettersWithFunctionsMock( someMetadata );
+			const { warningCount } = loadTestResults();
+			expect( warningCount.value ).toBe( 0 );
+		} );
+
+		it( 'returns the number of warnings the test raised', () => {
+			store.getZTesterResult = createGettersWithFunctionsMock( true );
+			store.getZTesterMetadata = createGettersWithFunctionsMock( warningsMetadata );
+			const { warningCount } = loadTestResults();
+			expect( warningCount.value ).toBe( 2 );
+		} );
+
+		it( 'returns zero while the result is still pending', () => {
+			store.getZTesterResult = createGettersWithFunctionsMock( true );
+			store.getZTesterMetadata = createGettersWithFunctionsMock( { Z1K1: 'Z883', K1: [
+				{ Z1K1: 'Z882' },
+				{ Z1K2: 'Z882', K1: 'pending', K2: 'Z41' },
+				{ Z1K2: 'Z882', K1: 'warnings', K2: [ 'Z5', warning ] }
+			] } );
+			const { warningCount } = loadTestResults();
+			expect( warningCount.value ).toBe( 0 );
+		} );
+	} );
 } );

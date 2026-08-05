@@ -27,6 +27,14 @@
 					<span class="ext-wikilambda-app-function-report-item__footer-status">
 						{{ statusMessage }}
 					</span>
+					<span
+						v-if="warningCount"
+						class="ext-wikilambda-app-function-report-item__footer-warnings"
+						data-testid="function-report-item-warnings"
+					>
+						<cdx-icon :icon="iconAlert" size="small"></cdx-icon>
+						{{ i18n( 'wikilambda-functioncall-metadata-warnings-count', warningCount ).text() }}
+					</span>
 					<button
 						v-if="( hasMetadata || hasApiErrors ) && !isRunning"
 						type="button"
@@ -60,10 +68,13 @@ const useTestResults = require( '../../../composables/useTestResults.js' );
 
 // Base components
 const StatusIcon = require( '../../base/StatusIcon.vue' );
+// Codex components
+const { CdxIcon } = require( '../../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-report-item',
 	components: {
+		'cdx-icon': CdxIcon,
 		'wl-status-icon': StatusIcon
 	},
 	props: {
@@ -89,6 +100,9 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 
+		// Constants
+		const iconAlert = icons.cdxIconAlert;
+
 		// Test results and status
 		/**
 		 * Whether the test for this function,
@@ -109,7 +123,8 @@ module.exports = exports = defineComponent( {
 			isPending,
 			statusFlag,
 			statusMessage,
-			statusIcon
+			statusIcon,
+			warningCount
 		} = useTestResults( {
 			functionZid: computed( () => props.functionZid ),
 			testerZid: computed( () => props.testerZid ),
@@ -169,6 +184,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			emitTesterKeys,
+			iconAlert,
 			isPending,
 			isRunning,
 			hasApiErrors,
@@ -179,6 +195,7 @@ module.exports = exports = defineComponent( {
 			statusMessage,
 			titleLabelData,
 			titleLink,
+			warningCount,
 			i18n
 		};
 	}
@@ -229,6 +246,18 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-function-report-item__footer-status {
 		color: @color-subtle;
 		margin-right: @spacing-50;
+	}
+
+	.ext-wikilambda-app-function-report-item__footer-warnings {
+		display: inline-flex;
+		align-items: baseline;
+		gap: @spacing-25;
+		margin-right: @spacing-50;
+		color: @color-warning;
+
+		.cdx-icon {
+			color: inherit;
+		}
 	}
 
 	.ext-wikilambda-app-function-report-item__footer-button {

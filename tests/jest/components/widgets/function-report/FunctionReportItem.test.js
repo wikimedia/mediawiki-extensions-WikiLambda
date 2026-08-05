@@ -102,6 +102,32 @@ describe( 'FunctionReportItem', () => {
 			.text() ).toBe( 'Details' );
 	} );
 
+	it( 'does not display the warnings hint when the test raised no warnings', () => {
+		store.getZTesterResult = createGettersWithFunctionsMock( true );
+		store.getZTesterMetadata = createGettersWithFunctionsMock( {
+			K1: [ { Z1K1: 'Z882' }, { Z1K2: 'Z882', K1: 'someData', K2: 'woho!' } ]
+		} );
+
+		const wrapper = renderFunctionReportItem();
+		expect( wrapper.find( '[data-testid="function-report-item-warnings"]' ).exists() ).toBe( false );
+	} );
+
+	it( 'displays the warnings hint when the test raised warnings', () => {
+		store.getZTesterResult = createGettersWithFunctionsMock( true );
+		store.getZTesterMetadata = createGettersWithFunctionsMock( {
+			K1: [ { Z1K1: 'Z882' }, { Z1K2: 'Z882', K1: 'warnings', K2: [ 'Z5', {
+				Z1K1: 'Z5',
+				Z5K1: 'Z591',
+				Z5K2: { Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z591' }, Z591K1: '480 MiB' }
+			} ] } ]
+		} );
+
+		const wrapper = renderFunctionReportItem();
+		const hint = wrapper.find( '[data-testid="function-report-item-warnings"]' );
+		expect( hint.exists() ).toBe( true );
+		expect( hint.text() ).toContain( '1' );
+	} );
+
 	it( 'displays the refresh button when test returned in a pending state', () => {
 		store.getZTesterResult = createGettersWithFunctionsMock( false );
 		store.hasFlyingPromise = createGettersWithFunctionsMock( false );

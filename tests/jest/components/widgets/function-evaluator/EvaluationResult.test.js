@@ -20,6 +20,16 @@ const responseObject = {
 	Z22K2: {}
 };
 
+const warningsResponseObject = {
+	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z22' },
+	Z22K1: { Z1K1: 'Z6', Z6K1: 'one two' },
+	Z22K2: { K1: [ { Z1K1: 'Z882' }, { Z1K2: 'Z882', K1: 'warnings', K2: [ 'Z5', {
+		Z1K1: 'Z5',
+		Z5K1: 'Z591',
+		Z5K2: { Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z591' }, Z591K1: '480 MiB' }
+	} ] } ] }
+};
+
 const voidResponseObject = {
 	Z1K1: { Z1K1: 'Z9', Z9K1: 'Z22' },
 	Z22K1: { Z1K1: 'Z9', Z9K1: 'Z24' },
@@ -145,6 +155,21 @@ describe( 'EvaluationResult', () => {
 		it( 'renders metadata dialog', () => {
 			const wrapper = renderEvaluationResult();
 			expect( wrapper.findComponent( { name: 'wl-function-metadata-dialog' } ).exists() ).toBe( true );
+		} );
+
+		it( 'does not render the warnings hint when the function call raised no warnings', () => {
+			const wrapper = renderEvaluationResult();
+			expect( wrapper.find( '[data-testid="evaluation-result-warnings"]' ).exists() ).toBe( false );
+		} );
+
+		it( 'renders the warnings hint in the details button when the function call raised warnings', () => {
+			store.getZObjectByKeyPath = createGettersWithFunctionsMock( warningsResponseObject );
+
+			const wrapper = renderEvaluationResult();
+			const details = wrapper.find( '.ext-wikilambda-app-evaluation-result__action-details' );
+			const hint = details.find( '[data-testid="evaluation-result-warnings"]' );
+			expect( hint.exists() ).toBe( true );
+			expect( hint.text() ).toContain( '1' );
 		} );
 	} );
 

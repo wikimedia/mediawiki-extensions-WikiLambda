@@ -89,6 +89,7 @@ module.exports = exports = defineComponent( {
 		color: @color-error;
 	}
 
+	&.ext-wikilambda-app-status-icon--warning,
 	&.ext-wikilambda-app-status-icon--running {
 		color: @color-warning;
 	}
