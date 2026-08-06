@@ -659,6 +659,43 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 	}
 
 	/**
+	 * @dataProvider provideTargetsThatAreNotZids
+	 */
+	public function testSourceToFragment_doesNotTrackUsageForTargetThatIsNotAZid( string $target ) {
+		// (T434194) `{{#function:join}}` — the Function's name instead of its ZID — is a plausible
+		// editor error, and `Z0` is the placeholder ZID of an unsaved Function. Both render an error
+		// for the reader. Neither is a reference, so neither can key a usage row or a page property.
+		$pushedJobs = [];
+		[ $handler, $extApi ] = $this->buildHandlerWithCachedValue(
+			[ 'success' => true, 'value' => 'cached answer' ],
+			$pushedJobs
+		);
+
+		$handler->sourceToFragment( $extApi, $this->getMockArguments( [ $target, 'foo' ] ), false );
+
+		$this->assertSame(
+			[], $pushedJobs,
+			'A target that is not a ZID must not queue the usage-tracking job'
+		);
+		$this->assertNull(
+			$extApi->getMetadata()->getPageProperty( 'wikilambda-' . $target ),
+			'A target that is not a ZID must not become the name of a page property'
+		);
+		$this->assertNull(
+			$extApi->getMetadata()->getPageProperty( 'wikilambda' ),
+			'The count of calls on the page does not count this call, as it does not trigger work'
+		);
+	}
+
+	public static function provideTargetsThatAreNotZids() {
+		return [
+			'a Function name rather than its ZID' => [ 'join' ],
+			'the placeholder ZID of an unsaved Function' => [ 'Z0' ],
+			'a lowercase reference' => [ 'z802' ],
+		];
+	}
+
+	/**
 	 * Regression test for the "stop() called before start()" Stats warning.
 	 *
 	 * The timing metric is a process-global object; sourceToFragment() can re-enter itself when a

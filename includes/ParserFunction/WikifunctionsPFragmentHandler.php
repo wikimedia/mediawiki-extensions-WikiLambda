@@ -140,34 +140,38 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			]
 		);
 
-		// Schedule a job to update the usage tracking to say that we use this function on this page.
-		// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
+		// (T434194) Don't track for invalid ZIDs, `{{#function:foo}}` doesn't trigger orchestrator load
+		if ( ZObjectUtils::isValidZObjectReference( $expansion['target'] ) ) {
+			// Schedule a job to update the usage tracking to say that we use this function on this page.
+			// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
 
-		// FIXME: This will run whether or not we're a saved edit, or just a stash/edit preview. Fix by moving
-		// to page properties, which are only stored for the current revision?
-		$usageJob = new WikifunctionsClientUsageUpdateJob( [
-			'targetFunction' => $expansion['target'],
-			'targetPageText' => $extApi->getPageConfig()->getLinkTarget()->getDBkey(),
-			'targetPageNamespace' => $extApi->getPageConfig()->getLinkTarget()->getNamespace()
-		] );
-		$this->jobQueueGroup->lazyPush( $usageJob );
+			// FIXME: This will run whether or not we're a saved edit, or just a stash/edit preview. Fix by checking
+			// the page properties at run time, which are only stored for the current revision?
+			$usageJob = new WikifunctionsClientUsageUpdateJob( [
+				'targetFunction' => $expansion['target'],
+				'targetPageText' => $extApi->getPageConfig()->getLinkTarget()->getDBkey(),
+				'targetPageNamespace' => $extApi->getPageConfig()->getLinkTarget()->getNamespace()
+			] );
+			$this->jobQueueGroup->lazyPush( $usageJob );
 
-		// (T414848) Set a special flag on the page, so that we can track usage of pages with function calls, and find
-		// pages that use a lot of them.
-		// Note: Page properties must be strings for Parsoid's StubMetadataCollector to be happy; this also works IRL.
-		$newWikifunctionsUseCount = strval( intval(
-			// @phan-suppress-next-line PhanUndeclaredMethod — ContentMetadataCollector interface lacks, but we have it
-			$extApi->getMetadata()->getPageProperty( 'wikilambda' ) ?? 0
-		) + 1 );
-		$extApi->getMetadata()->setNumericPageProperty( 'wikilambda', $newWikifunctionsUseCount );
+			// (T414848) Set a special flag on the page, so that we can track usage of pages with function calls, and
+			// find pages that use a lot of them.
 
-		// (T414848) Also track specifically usage of our target ZID
-		$targetFunctionPageProp = 'wikilambda-' . $expansion['target'];
-		$newTargetUseCount = strval( intval(
-			// @phan-suppress-next-line PhanUndeclaredMethod — ContentMetadataCollector interface lacks, but we have it
-			$extApi->getMetadata()->getPageProperty( $targetFunctionPageProp ) ?? 0
-		 ) + 1 );
-		$extApi->getMetadata()->setNumericPageProperty( $targetFunctionPageProp, $newTargetUseCount );
+			// Note: Page properties must be strings for Parsoid's StubMetadataCollector to be happy; this also works
+			$newWikifunctionsUseCount = strval( intval(
+				// @phan-suppress-next-line PhanUndeclaredMethod — not in ContentMetadataCollector interface, but exists
+				$extApi->getMetadata()->getPageProperty( 'wikilambda' ) ?? 0
+			) + 1 );
+			$extApi->getMetadata()->setNumericPageProperty( 'wikilambda', $newWikifunctionsUseCount );
+
+			// (T414848) Also track specifically usage of our target ZID
+			$targetFunctionPageProp = 'wikilambda-' . $expansion['target'];
+			$newTargetUseCount = strval( intval(
+				// @phan-suppress-next-line PhanUndeclaredMethod — not in ContentMetadataCollector interface, but exists
+				$extApi->getMetadata()->getPageProperty( $targetFunctionPageProp ) ?? 0
+			 ) + 1 );
+			$extApi->getMetadata()->setNumericPageProperty( $targetFunctionPageProp, $newTargetUseCount );
+		}
 
 		// Add content and style modules to the page, we know they're likely to be used somewhere
 		$extApi->getMetadata()->addModules( [ 'ext.wikilambda.content' ] );

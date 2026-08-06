@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
@@ -78,6 +79,19 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 			);
 
 			// Nothing for us to do.
+			return true;
+		}
+
+		// (T434194) Don't run for invalid ZIDs, `{{#function:foo}}` can't be added to the DB
+		if ( !ZObjectUtils::isValidZObjectReference( $this->targetFunction ) ) {
+			$this->logger->info(
+				__CLASS__ . ' got {targetFunction}, which is not a Function ZID; not recording usage.',
+				[
+					'targetFunction' => $this->targetFunction,
+					'targetPage' => $this->targetPageText,
+					'targetPageNS' => $this->targetPageNamespace,
+				]
+			);
 			return true;
 		}
 

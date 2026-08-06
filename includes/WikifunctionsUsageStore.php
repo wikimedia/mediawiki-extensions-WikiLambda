@@ -129,6 +129,7 @@ class WikifunctionsUsageStore {
 	 *   null for the main namespace; stored because the foreign namespaces may not match
 	 *   the repo's own
 	 * @param string $title The using page's title (DBkey, without the namespace)
+	 * @throws InvalidArgumentException if $function is not a valid ZID reference
 	 */
 	public function insertUsage(
 		string $function,
@@ -138,13 +139,17 @@ class WikifunctionsUsageStore {
 		?string $namespaceText,
 		string $title
 	): void {
+		// Convert the ZID first: acquireWikiId() writes a dimension row on a miss, so a bad
+		// ZID must throw before that, or it leaves a row behind that no fact row points to.
+		$functionId = self::functionToId( $function );
+
 		$wikiId = $this->acquireWikiId( $wiki, $namespaceId, $namespaceText );
 
 		$dbw = $this->getPrimaryDB();
 		$dbw->newInsertQueryBuilder()
 			->insertInto( 'wikifunctions_usage' )
 			->row( [
-				'wfu_function' => self::functionToId( $function ),
+				'wfu_function' => $functionId,
 				'wfu_wiki_id' => $wikiId,
 				'wfu_page_id' => $pageId,
 				'wfu_title' => $title,
@@ -243,6 +248,7 @@ class WikifunctionsUsageStore {
 	 * @param int $limit Maximum rows to return
 	 * @param int $offset Rows to skip, for pagination
 	 * @return array<int,array{wiki:string,pageId:int,namespaceId:int,namespaceText:?string,title:string}>
+	 * @throws InvalidArgumentException if $function is not a valid ZID reference
 	 */
 	public function fetchUsage(
 		string $function,
@@ -291,6 +297,7 @@ class WikifunctionsUsageStore {
 	 * @param string $function The target Function's ZID, e.g. 'Z12345'
 	 * @param ?int $namespaceId Restrict to this namespace ID, or null for all namespaces
 	 * @return int
+	 * @throws InvalidArgumentException if $function is not a valid ZID reference
 	 */
 	public function countUsage( string $function, ?int $namespaceId = null ): int {
 		$dbr = $this->getReplicaDB();

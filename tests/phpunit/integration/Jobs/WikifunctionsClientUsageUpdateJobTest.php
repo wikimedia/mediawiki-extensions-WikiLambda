@@ -138,4 +138,46 @@ class WikifunctionsClientUsageUpdateJobTest extends WikiLambdaClientIntegrationT
 			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( 'Z10082' )
 		);
 	}
+
+	// ------------------------------------------------------------------
+	// Targets that are not Function ZIDs (T434194)
+	// ------------------------------------------------------------------
+
+	/**
+	 * @dataProvider provideTargetsThatAreNotZids
+	 */
+	public function testRun_skipsUsageForTargetThatIsNotAZid( string $target ) {
+		// The shared table keys on the numeric part of the ZID, so a target that is not a
+		// reference has nothing to record. Discard the job rather than let it throw: the
+		// target comes straight from wikitext, so any editor can otherwise fail the job.
+		$page = $this->getExistingTestPage( 'Help:Target that is not a ZID' );
+
+		$job = $this->buildJob( $target, $page->getTitle()->getDBkey(), NS_HELP );
+
+		$this->assertTrue( $job->run(), 'The job must succeed, and must not throw' );
+
+		$this->assertSame(
+			[],
+			WikiLambdaServices::getWikifunctionsClientStore()->fetchWikifunctionsUsage( $target ),
+			'A target that is not a ZID must not reach the local usage table'
+		);
+		// fetchUsage() would itself reject the target, so count the rows directly.
+		$this->assertSame(
+			0,
+			$this->newSelectQueryBuilder()
+				->from( 'wikifunctions_usage' )
+				->caller( __METHOD__ )
+				->fetchRowCount(),
+			'A target that is not a ZID must not reach the shared usage table'
+		);
+	}
+
+	public static function provideTargetsThatAreNotZids() {
+		return [
+			'a Function name rather than its ZID' => [ 'join' ],
+			'the placeholder ZID of an unsaved Function' => [ 'Z0' ],
+			'a lowercase reference' => [ 'z802' ],
+			'an empty target' => [ '' ],
+		];
+	}
 }
