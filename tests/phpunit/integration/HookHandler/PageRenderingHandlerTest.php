@@ -67,20 +67,28 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
 		$mockUserOptionsLookup->method( 'getOption' )->willReturn( 'de' );
 
+		// The handler asks this service if the page language is supported, and falls back to 'en' if
+		// it is not. Delegate to the real service, so that the tests use real language support.
+		$realLanguageNameUtils = $this->getServiceContainer()->getLanguageNameUtils();
 		$mockLanguageNameUtils = $this->createMock( LanguageNameUtils::class );
 		$mockLanguageNameUtils->method( 'getLanguageName' )->willReturn( '' );
+		$mockLanguageNameUtils->method( 'isSupportedLanguage' )->willReturnCallback(
+			static fn ( string $code ): bool => $realLanguageNameUtils->isSupportedLanguage( $code )
+		);
 
 		$mockLanguageFactory = $this->createMock( LanguageFactory::class );
 		$mockWikidataEntityLookup = $this->mockWikidataEntityLookup( [ 'Q1234' => [] ] );
 
 		$this->pageRenderingHandler = new PageRenderingHandler(
 			$mockHashConfigRepoMode,
+			$this->getServiceContainer()->getContentLanguage(),
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
 			$mockWikidataEntityLookup,
-			new WikiLambdaMode( $mockHashConfigRepoMode )
+			new WikiLambdaMode( $mockHashConfigRepoMode ),
+			$this->getServiceContainer()->getWikiPageFactory()
 		);
 
 		$mockHashConfigNotRepoMode = $this->createMock( HashConfig::class );
@@ -92,12 +100,14 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 		$this->pageRenderingHandlerRepoModeOff = new PageRenderingHandler(
 			$mockHashConfigNotRepoMode,
+			$this->getServiceContainer()->getContentLanguage(),
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
 			$mockWikidataEntityLookup,
-			new WikiLambdaMode( $mockHashConfigNotRepoMode )
+			new WikiLambdaMode( $mockHashConfigNotRepoMode ),
+			$this->getServiceContainer()->getWikiPageFactory()
 		);
 
 		$mockHashConfigAbstractMode = $this->createMock( HashConfig::class );
@@ -109,12 +119,14 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 		$this->pageRenderingHandlerAbstractMode = new PageRenderingHandler(
 			$mockHashConfigAbstractMode,
+			$this->getServiceContainer()->getContentLanguage(),
 			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
 			$mockWikidataEntityLookup,
-			new WikiLambdaMode( $mockHashConfigAbstractMode )
+			new WikiLambdaMode( $mockHashConfigAbstractMode ),
+			$this->getServiceContainer()->getWikiPageFactory()
 		);
 	}
 

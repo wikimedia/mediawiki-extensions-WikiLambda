@@ -28,9 +28,9 @@ use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
+use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
@@ -52,12 +52,14 @@ class PageRenderingHandler implements
 {
 	public function __construct(
 		private readonly Config $config,
+		private readonly Language $contentLanguage,
 		private readonly UserOptionsLookup $userOptionsLookup,
 		private readonly LanguageNameUtils $languageNameUtils,
 		private readonly LanguageFactory $languageFactory,
 		private readonly ZObjectStore $zObjectStore,
 		private readonly WikidataEntityLookup $entityLookup,
-		private readonly WikiLambdaMode $mode
+		private readonly WikiLambdaMode $mode,
+		private readonly WikiPageFactory $wikiPageFactory,
 	) {
 	}
 
@@ -304,8 +306,7 @@ class PageRenderingHandler implements
 				!ZLangRegistry::singleton()->isLanguageKnownGivenCode( $currentPageContentLanguageCode )
 			) ||
 			// If we're not, just use MediaWiki's language support check
-			!MediaWikiServices::getInstance()->getLanguageNameUtils()
-				->isSupportedLanguage( $currentPageContentLanguageCode )
+			!$this->languageNameUtils->isSupportedLanguage( $currentPageContentLanguageCode )
 		) {
 			$currentPageContentLanguageCode = 'en';
 		}
@@ -359,7 +360,7 @@ class PageRenderingHandler implements
 		// Unlike makeBrokenLink(), makeKnownLink() does not set class="new", so we add it here.
 		$isEmptyAbstractPage = false;
 		if ( $isKnown && $targetTitle->hasContentModel( CONTENT_MODEL_ABSTRACT ) ) {
-			$wikiPage = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $targetTitle );
+			$wikiPage = $this->wikiPageFactory->newFromTitle( $targetTitle );
 			$content = $wikiPage->getContent();
 			if ( $content instanceof AbstractWikiContent ) {
 				$isEmptyAbstractPage = $content->isEmpty();
@@ -593,25 +594,23 @@ class PageRenderingHandler implements
 			return;
 		}
 
-		$contentLanguage = MediaWikiServices::getInstance()->getContentLanguage();
-
 		$extraStats['wikilambda-statistics-header'] = [
-			'wikilambda-statistics-label-allobjects' => $contentLanguage->formatNum(
+			'wikilambda-statistics-label-allobjects' => $this->contentLanguage->formatNum(
 				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_OBJECT )
 			),
-			'wikilambda-statistics-label-types' => $contentLanguage->formatNum(
+			'wikilambda-statistics-label-types' => $this->contentLanguage->formatNum(
 				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TYPE )
 			),
-			'wikilambda-statistics-label-languages' => $contentLanguage->formatNum(
+			'wikilambda-statistics-label-languages' => $this->contentLanguage->formatNum(
 				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_LANGUAGE )
 			),
-			'wikilambda-statistics-label-functions' => $contentLanguage->formatNum(
+			'wikilambda-statistics-label-functions' => $this->contentLanguage->formatNum(
 				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_FUNCTION )
 			),
-			'wikilambda-statistics-label-implementations' => $contentLanguage->formatNum(
+			'wikilambda-statistics-label-implementations' => $this->contentLanguage->formatNum(
 				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_IMPLEMENTATION )
 			),
-			'wikilambda-statistics-label-testers' => $contentLanguage->formatNum(
+			'wikilambda-statistics-label-testers' => $this->contentLanguage->formatNum(
 				$this->zObjectStore->getCountOfTypeInstances( ZTypeRegistry::Z_TESTER )
 			),
 		];

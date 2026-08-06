@@ -203,12 +203,14 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler",
 			"services": [
 				"MainConfig",
+				"ContentLanguage",
 				"UserOptionsLookup",
 				"LanguageNameUtils",
 				"LanguageFactory",
 				"WikiLambdaZObjectStore",
 				"WikiLambdaWikidataEntityLookup",
-				"WikiLambdaMode"
+				"WikiLambdaMode",
+				"WikiPageFactory"
 			]
 		},
 		"WikiLambdaCommunityConfigurationHooks": {
