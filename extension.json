@@ -164,6 +164,9 @@
 			"services": [
 				"MainConfig",
 				"WikiLambdaMode"
+			],
+			"optional_services": [
+				"CommunityConfiguration.ProviderFactory"
 			]
 		},
 		"WikiLambdaClientChangeHooks": {

@@ -12,11 +12,11 @@
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\CommunityConfiguration\Provider\ConfigurationProviderFactory;
 use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\WikiPage;
@@ -44,7 +44,8 @@ class ClientHooks implements
 
 	public function __construct(
 		private readonly Config $config,
-		private readonly WikiLambdaMode $mode
+		private readonly WikiLambdaMode $mode,
+		private readonly ?ConfigurationProviderFactory $providerFactory,
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
@@ -235,13 +236,11 @@ class ClientHooks implements
 	 * @return string[]
 	 */
 	private function loadProviderList( string $providerId ): array {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
+		if ( !$this->providerFactory ) {
 			return [];
 		}
 		try {
-			$provider = MediaWikiServices::getInstance()
-				->getService( 'CommunityConfiguration.ProviderFactory' )
-				->newProvider( $providerId );
+			$provider = $this->providerFactory->newProvider( $providerId );
 			$status = $provider->loadValidConfiguration();
 			if ( $status->isOK() ) {
 				$value = $status->getValue();

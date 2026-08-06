@@ -37,7 +37,8 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 	private function newClientHooks(): ClientHooks {
 		return new ClientHooks(
 			$this->getServiceContainer()->getMainConfig(),
-			$this->getServiceContainer()->getService( 'WikiLambdaMode' )
+			$this->getServiceContainer()->getService( 'WikiLambdaMode' ),
+			null
 		);
 	}
 
