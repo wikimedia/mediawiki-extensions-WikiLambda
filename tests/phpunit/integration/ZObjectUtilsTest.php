@@ -1857,14 +1857,14 @@ EOT;
 	}
 
 	/**
-	 * @dataProvider provideSetMetadataValue
+	 * @dataProvider provideSetMetaDataValue
 	 */
 	public function testSetMetadataValue( $response, string $key, $value, $expected ): void {
-		$actual = ZObjectUtils::setMetadataValue( $response, $key, $value );
+		$actual = ZObjectUtils::setMetaDataValue( $response, $key, $value );
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public static function provideSetMetadataValue(): iterable {
+	public static function provideSetMetaDataValue(): iterable {
 		$error = '{ "Z1K1": "Z5", "Z5K1": "Z555" }';
 		$newError = '{ "Z1K1": "Z5", "Z5K1": "Z999" }';
 

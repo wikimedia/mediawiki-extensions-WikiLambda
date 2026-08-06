@@ -1191,7 +1191,7 @@ class ZObjectUtils {
 	 * @param stdClass|string|array $value
 	 * @return stdClass|null
 	 */
-	public static function setMetadataValue( $response, string $key, $value ) {
+	public static function setMetaDataValue( $response, string $key, $value ) {
 		if ( !$response || !property_exists( $response, 'Z22K2' ) ) {
 			return null;
 		}
