@@ -26,7 +26,7 @@ class WikifunctionsFragmentImageRenderer {
 
 	private const COMMONS_API_URL = 'https://commons.wikimedia.org/w/api.php';
 	private const THUMB_SIZE_THUMB = 250;
-	private const COMMONS_IMAGE_DATA_CACHE_KEY_PREFIX = 'WikiLambdaCommonsImageData';
+	private const COMMONS_FILE_DATA_CACHE_KEY_PREFIX = 'WikiLambdaCommonsFileData';
 	private const ALLOWED_THUMB_HOSTS = [ 'upload.wikimedia.org' ];
 	private const SUPPORTED_SIZES = [ 'thumb' ];
 
@@ -121,8 +121,8 @@ class WikifunctionsFragmentImageRenderer {
 	 * Returns a data array on success, the FETCH_NOT_FOUND sentinel when the Commons page
 	 * does not exist, or null on a transient API/network failure.
 	 *
-	 * Successful results are cached in MemcachedWrapper; failures are not cached so they
-	 * self-heal on the next request.
+	 * Successful results are cached in MemcachedWrapper for one day; failures are not cached
+	 * so that they self-heal on the next request.
 	 *
 	 * @param string $mid e.g. "M68960758"
 	 * @param string $size e.g. "thumb"
@@ -130,7 +130,7 @@ class WikifunctionsFragmentImageRenderer {
 	 */
 	private function fetchCommonsImageData( string $mid, string $size ): array|string|null {
 		$thumbWidth = $this->thumbWidthForSize( $size );
-		$cacheKey = $this->objectCache->makeKey( self::COMMONS_IMAGE_DATA_CACHE_KEY_PREFIX, $mid, $size );
+		$cacheKey = $this->objectCache->makeKey( self::COMMONS_FILE_DATA_CACHE_KEY_PREFIX, $mid, $size );
 
 		$cached = $this->objectCache->get( $cacheKey );
 		if ( $cached !== false ) {
@@ -142,7 +142,7 @@ class WikifunctionsFragmentImageRenderer {
 		$result = $this->doFetchCommonsImageData( $pageId, $thumbWidth );
 
 		if ( is_array( $result ) ) {
-			$this->objectCache->set( $cacheKey, $result, MemcachedWrapper::TTL_MONTH );
+			$this->objectCache->set( $cacheKey, $result, MemcachedWrapper::TTL_DAY );
 		}
 
 		return $result;

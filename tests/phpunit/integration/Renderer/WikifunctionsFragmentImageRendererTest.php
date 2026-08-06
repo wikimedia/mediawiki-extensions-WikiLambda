@@ -316,6 +316,7 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 
 		// Simulate a real cache: set() stores the value, get() returns it on the next call.
 		$cacheStore = [];
+		$cacheTTLs = [];
 		$cache = $this->createMock( MemcachedWrapper::class );
 		$cache->method( 'makeKey' )->willReturnCallback(
 			static fn ( string ...$parts ) => implode( ':', $parts )
@@ -326,8 +327,9 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 			}
 		);
 		$cache->method( 'set' )->willReturnCallback(
-			static function ( string $key, mixed $value ) use ( &$cacheStore ): bool {
+			static function ( string $key, mixed $value, int $ttl ) use ( &$cacheStore, &$cacheTTLs ): bool {
 				$cacheStore[$key] = $value;
+				$cacheTTLs[$key] = $ttl;
 				return true;
 			}
 		);
@@ -336,6 +338,15 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		$renderer->render( 'M68960758', 'thumb', null );
 		// Second call must hit cache, not make a new HTTP request.
 		$renderer->render( 'M68960758', 'thumb', null );
+
+		// (T433448) A Commons rename or deletion keeps the M-ID but changes the thumbnail
+		// URL, and nothing purges this key, so the TTL is the only limit on how long we
+		// show a URL that is not there any more.
+		$this->assertSame(
+			[ MemcachedWrapper::TTL_DAY ],
+			array_values( $cacheTTLs ),
+			'Commons image data is cached for one day only'
+		);
 	}
 
 	public function testRender_doesNotCacheApiErrors() {
