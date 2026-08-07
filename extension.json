@@ -125,6 +125,10 @@
 			"description": "Storage backend for the Abstract Wikipedia article store. Either 'db' (RDBMS-backed; aw_article_sections on the virtual-awstorage domain) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T426873).",
 			"value": "mainstash"
 		},
+		"WikiLambdaAWFragmentStoreBackend": {
+			"description": "Storage backend for the Abstract Wikipedia fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T426873).",
+			"value": "memcached"
+		},
 		"WikiLambdaAbstractWikiArticleStoreTopics": {
 			"description": "Default list of Abstract Wikipedia Topic QIDs to update when the updateAbstractWikiArticleStore.php maintenance script is run without --topics. Overridden by --topics when that option is given.",
 			"value": []

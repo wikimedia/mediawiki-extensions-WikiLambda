@@ -10,16 +10,16 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
-use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
+use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\JobQueue\JobQueueGroup;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore
+ * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore
  */
-class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
+class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	/**
 	 * makeKey returns fresh and stale cache keys
@@ -129,11 +129,11 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		return $jobQueueGroup;
 	}
 
-	// AWFragmentStore Getter
-	// ======================
+	// MemcachedAWFragmentStore Getter
+	// ===============================
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::getRenderedAWFragment
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::getRenderedAWFragment
 	 */
 	public function testGetterFreshValue(): void {
 		$fragment = [ 'Z1K1' => 'Z89' ];
@@ -148,7 +148,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		// Mock for JobQueueGroup; no job is ever queued
 		$jobQueueGroup = $this->createMockJobQueueGroup();
 
-		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
 
 		$result = $fragmentStore->getRenderedAWFragment(
 			$fragment,
@@ -165,7 +165,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::getRenderedAWFragment
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::getRenderedAWFragment
 	 */
 	public function testGetterStaleValue(): void {
 		$fragment = [ 'Z1K1' => 'Z89' ];
@@ -185,7 +185,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 			'date' => $date
 		] );
 
-		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
 
 		$result = $fragmentStore->getRenderedAWFragment(
 			$fragment,
@@ -202,7 +202,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::getRenderedAWFragment
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::getRenderedAWFragment
 	 */
 	public function testGetterMissingValue(): void {
 		$fragment = [ 'Z1K1' => 'Z89' ];
@@ -221,7 +221,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 			'date' => $date
 		] );
 
-		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
 
 		$result = $fragmentStore->getRenderedAWFragment(
 			$fragment,
@@ -238,7 +238,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::getRenderedAWFragment
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::getRenderedAWFragment
 	 */
 	public function testGetterMissingValue_noRevalidate(): void {
 		$fragment = [ 'Z1K1' => 'Z89' ];
@@ -252,7 +252,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		// Mock for JobQueueGroup; no job is ever queued
 		$jobQueueGroup = $this->createMockJobQueueGroup();
 
-		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
 
 		$result = $fragmentStore->getRenderedAWFragment(
 			$fragment,
@@ -269,11 +269,11 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		$this->assertSame( [], $result->getValue() );
 	}
 
-	// AWFragmentStore Setter
-	// ======================
+	// MemcachedAWFragmentStore Setter
+	// ===============================
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::setRenderedAWFragment
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::setRenderedAWFragment
 	 */
 	public function testSetterSuccessfulFragment(): void {
 		$qid = 'Q42';
@@ -292,7 +292,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		// Mock for JobQueueGroup; no job is ever queued
 		$jobQueueGroup = $this->createMockJobQueueGroup();
 
-		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
 
 		$fragmentStore->setRenderedAWFragment(
 			$qid,
@@ -304,7 +304,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::setRenderedAWFragment
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::setRenderedAWFragment
 	 */
 	public function testSetterFailedFragment_http400(): void {
 		$qid = 'Q42';
@@ -323,7 +323,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		// Mock for JobQueueGroup; no job is ever queued
 		$jobQueueGroup = $this->createMockJobQueueGroup();
 
-		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
 
 		$fragmentStore->setRenderedAWFragment(
 			$qid,
@@ -335,7 +335,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore::setRenderedAWFragment
+	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::setRenderedAWFragment
 	 */
 	public function testSetterFailedFragment_http500(): void {
 		$qid = 'Q42';
@@ -354,7 +354,7 @@ class AWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {
 		// Mock for JobQueueGroup; no job is ever queued
 		$jobQueueGroup = $this->createMockJobQueueGroup();
 
-		$fragmentStore = new AWFragmentStore( $jobQueueGroup, $objectCache );
+		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
 
 		$fragmentStore->setRenderedAWFragment(
 			$qid,

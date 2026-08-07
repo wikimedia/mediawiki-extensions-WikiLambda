@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\DBAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
+use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
@@ -192,9 +193,22 @@ class WikiLambdaServices {
 	 * @internal For use in Service Wiring and early setup on RepoHooks
 	 */
 	public static function buildAWFragmentStore( MediaWikiServices $services ): AWFragmentStore {
-		return new AWFragmentStore(
-			$services->getJobQueueGroup(),
-			self::buildMemcachedWrapper( $services )
-		);
+		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
+		$backend = $extensionConfig->get( 'WikiLambdaAWFragmentStoreBackend' );
+
+		switch ( $backend ) {
+			case 'memcached':
+				return new MemcachedAWFragmentStore(
+					$services->getJobQueueGroup(),
+					self::buildMemcachedWrapper( $services )
+				);
+			// TODO T432875:
+			// case 'mainstash':
+			//   return new MainStashAWFragmentStore();
+			default:
+				throw new InvalidArgumentException(
+					"Unknown WikiLambdaAWFragmentStoreBackend value: '$backend'"
+				);
+		}
 	}
 }
