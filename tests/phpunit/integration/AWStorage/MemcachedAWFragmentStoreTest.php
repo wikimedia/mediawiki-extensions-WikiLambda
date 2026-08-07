@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\JobQueue\JobQueueGroup;
 
 /**
+ * @covers \MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore
  * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore
  */
 class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTestCase {

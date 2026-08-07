@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\DBAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
+use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
@@ -190,6 +191,12 @@ class WikiLambdaServices {
 	/**
 	 * Constructs a new instance of the AWFragmentStore.
 	 *
+	 * The concrete backend is selected by $wgWikiLambdaAWFragmentStoreBackend:
+	 * * 'memcached': Store backed by the Wikifunctions Memcached instance
+	 *   using the MemcachedWrapper interface.
+	 * * 'mainstash': Store backed by MediaWiki MainStash (T431428), a durable
+	 * 	 key/value substrate with TTL cleanup and x2 replication, using th.
+	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
 	 */
 	public static function buildAWFragmentStore( MediaWikiServices $services ): AWFragmentStore {
@@ -202,9 +209,11 @@ class WikiLambdaServices {
 					$services->getJobQueueGroup(),
 					self::buildMemcachedWrapper( $services )
 				);
-			// TODO T432875:
-			// case 'mainstash':
-			//   return new MainStashAWFragmentStore();
+			case 'mainstash':
+				return new MainStashAWFragmentStore(
+					$services->getJobQueueGroup(),
+					$services->getMainObjectStash()
+				);
 			default:
 				throw new InvalidArgumentException(
 					"Unknown WikiLambdaAWFragmentStoreBackend value: '$backend'"

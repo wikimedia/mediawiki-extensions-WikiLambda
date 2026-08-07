@@ -94,8 +94,17 @@ abstract class AWFragmentStore {
 	): AWFragment;
 
 	/**
-	 * Stores a given AWFragment data in the AWFragmentStore.
+	 * Stores a given AWFragment data in the AWFragmentStore, given its
+	 * topicQid, languageZid, the render date and time, the serialized
+	 * fragment used to build the cache key, and the rendered value.
 	 *
+	 * Value contains an array with the keys success and value. Value contains
+	 * either the successfully rendered html fragment, or the error information:
+	 *
+	 * E.g.: [
+	 *   'success' => true,
+	 *   'value' => '<b>sanitized html</b>'
+	 * ]
 	 *
 	 * @param string $topicQid
 	 * @param string $languageZid
