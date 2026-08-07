@@ -7,6 +7,8 @@
 	},
 	"wikilambda-fragment-disabled": "Le chiamate a Wikifunctions sono attualmente disabilitate. Potresti voler sostituire questa chiamata.",
 	"wikilambda-fragment-pending": "⏳ Funzione in esecuzione…",
+	"wikilambda-rc-hide-wikifunctions-hide": "Nascondi",
+	"wikilambda-rc-hide-wikifunctions-show": "Mostra",
 	"wikilambda-recentchanges-edit-legend": "Modifica da Wikifunzioni",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Modifica di Wikifunctions",
