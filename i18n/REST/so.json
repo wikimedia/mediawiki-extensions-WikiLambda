@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"AhmedG612"
+		]
+	},
+	"wikifunctions-rest-module-v0-title": "API-ga Wikifunctions",
+	"wikifunctions-rest-module-v0-desc": "API-yada la falgalka Wikifunctions",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "Soo qaado ZObjects",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Soo qaado noocyadii hore ee ZObjects",
+	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Wac Shaq",
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Wac Shaqo, oo leh luqadaha kala-soocidda iyo soo-bandhigista ee gaarka ah"
+}

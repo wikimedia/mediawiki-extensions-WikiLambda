@@ -458,7 +458,7 @@
 	"wikilambda-publish-successful": "Ваши изменения успешно опубликованы!",
 	"wikilambda-publishchanges": "Опубликовать изменения",
 	"wikilambda-publishnew": "Опубликовать",
-	"wikilambda-reference": "Ссылка на объект",
+	"wikilambda-reference": "Примечание",
 	"wikilambda-renderer-api-error": "Что-то пошло не так. Пожалуйста, попробуйте снова.",
 	"wikilambda-renderer-error-footer-project-chat": "Оставьте сообщение в [[Wikifunctions:Project chat|Форуме]].",
 	"wikilambda-renderer-unexpected-result-error": "[[$1|Функция отображения]] вернула неожиданный результат.",

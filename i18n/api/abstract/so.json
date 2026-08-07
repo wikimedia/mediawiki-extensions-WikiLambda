@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"AhmedG612"
+		]
+	},
+	"apihelp-abstractwiki_run_fragment-summary": "Soo bandhig qayb nuxur ah oo Abstract Wikipedia ah oo loogu talagalay Aqoonsiga Shayga Wikidata, Zid-ka luqadda iyo taariikhda la bixiyay",
+	"apihelp-abstractwiki_run_fragment-param-async": "Haddii wicitaankan loo socodsiinayo si aan is waafaqsanayn ama si is waafaqsan. Haddii loo wado si aan is waafaqsanayn, wuxuu soo celin doonaa pending=true haddii qiimuhu aanu diyaar ahayn. Marka loo wado si is waafaqsan, wuxuu sugi doonaa in qaybta lagu soo bandhigo Wikifunctions, ka dibna wuxuu soo celin doonaa qiimaha natiijada ah.",
+	"apihelp-abstractwiki_run_fragment-param-qid": "Aqoonsiga Shayga Wikidata ee loo adeegsaday soo bandhigista qaybta. Waa inuu noqdaa Qid sax ah.",
+	"apihelp-abstractwiki_run_fragment-param-language": "Aqoonsiga Shayga Luuqadda (Language ZObject Id) ee loo adeegsaday soo bandhigista qaybta. Waa inuu noqdaa Zid sax ah.",
+	"apihelp-abstractwiki_run_fragment-param-date": "Xargaha taariikhda ee loo adeegsaday soo bandhigista qaybta.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "JSON-ka isku-dhafka qaybta. Waa inuu noqdaa ZObject sax ah oo uu soo saaraa walax nooca Z89/qayb HTML ah",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "Ku socodsii qayb leh walax HTML ah oo sugan",
+	"apihelp-abstractwiki_run_fragment-example-composition": "Ku socodsii qayb leh isku dhis isticmaala doodaha qid iyo luuqad",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "Qaybtu ma aha wicitaan shaqo oo sax ah.",
+	"apierror-abstractwiki_run_fragment-bad-response": "Qaybtu waxay soo celisay nooc khaldan.",
+	"apierror-abstractwiki_run_fragment-forbidden": "Ma lihid oggolaanshaha lagama maarmaanka ah si aad u soo bandhigto qaybtan.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "Lama soo bandhigi karo qaybaha nuxurka Abstract Wikipedia: sifadan lama hawlgelin.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions waxay soo celisay jawaab fashilantay: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "Adeegga soo bandhigista si ku meel gaar ah looma heli karo. Fadlan isku day mar kale goor dambe.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "Lama soo bandhigi karo qaybtan sababo la xiriira qalad aan la garanayn."
+}

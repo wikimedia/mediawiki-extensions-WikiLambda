@@ -9,6 +9,7 @@
 	"action-wikilambda-abstract-edit": "تعديل المقالات المجردة الموجودة",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "قائمة وظائف ويكي التي تُرجع HTML (حسب ZID) والمتاحة في قائمة \"إضافة جزء\" في المقالة الموجزة. حتى عشرة عناصر.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "وظائف ويكي المقترحة",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "ما يصل إلى عشرة وظائف ويكي تُرجع HTML بواسطة معرفها ZID (على سبيل المثال <code>Z20756</code> ) لتظهر في قائمة أجزاء المقالة الموجزة.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "وظيفة ويكي مقترحة $1",
 	"content-model-abstractwiki": "مقالة مجردة",
 	"right-wikilambda-abstract-create": "إنشاء مقالات مجردة جديدة",
