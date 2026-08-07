@@ -24,6 +24,7 @@ use MediaWiki\Request\FauxRequest;
 use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiAbstractWikiFetchSection
@@ -103,8 +104,8 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	// Helper functions
 	// ================
 
-	private function makeFragment( $qid, $date, $lang, $value = null, $availability = null ): AWFragment {
-		$fragment = new AWFragment( 'arbitrary-key', $qid, $lang, $date );
+	private function makeFragment( $qid, $lang, $value = null, $availability = null ): AWFragment {
+		$fragment = new AWFragment( 'arbitrary-key', $qid, $lang );
 		if ( $value ) {
 			$fragment->setValue( $value, $availability ?? AWFragment::AVAILABILITY_FRESH );
 		}
@@ -172,7 +173,7 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$mockTitleFactory = $this->createMockTitleFactory( $qid );
 		$this->setService( 'TitleFactory', $mockTitleFactory );
 
-		$storedFragment = $this->makeFragment( $qid, $date, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $storedFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
@@ -181,7 +182,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 
 		$this->assertCount( 1, $result );
@@ -214,9 +214,9 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$mockTitleFactory = $this->createMockTitleFactory( $qid );
 		$this->setService( 'TitleFactory', $mockTitleFactory );
 
-		$staleOk = $this->makeFragment( $qid, $date, $lang, $value1, AWFragment::AVAILABILITY_STALE );
-		$freshBad = $this->makeFragment( $qid, $date, $lang, $value2, AWFragment::AVAILABILITY_FRESH );
-		$missing = $this->makeFragment( $qid, $date, $lang );
+		$staleOk = $this->makeFragment( $qid, $lang, $value1, AWFragment::AVAILABILITY_STALE );
+		$freshBad = $this->makeFragment( $qid, $lang, $value2, AWFragment::AVAILABILITY_FRESH );
+		$missing = $this->makeFragment( $qid, $lang );
 		$fragmentStore = $this->createMockFragmentStore( [
 			[ $fragment1, $staleOk ],
 			[ $fragment2, $freshBad ],
@@ -229,7 +229,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 
 		$this->assertCount( 3, $result );
@@ -255,7 +254,7 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$fragmentsJson = json_encode( [ $fragment ] );
 		$value = [ 'success' => true, 'value' => '<b>fresh content</b>' ];
 
-		$storedFragment = $this->makeFragment( $qid, $date, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $storedFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
@@ -264,7 +263,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => $fragmentsJson
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 
@@ -282,7 +280,7 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$fragmentsJson = json_encode( [ $fragment ] );
 		$value = [ 'success' => true, 'value' => '<b>stale content</b>' ];
 
-		$storedFragment = $this->makeFragment( $qid, $date, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $storedFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
@@ -291,7 +289,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => $fragmentsJson
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 
@@ -308,7 +305,7 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
 		$fragmentsJson = json_encode( [ $fragment ] );
 
-		$missingFragment = $this->makeFragment( $qid, $date, $lang );
+		$missingFragment = $this->makeFragment( $qid, $lang );
 
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $missingFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
@@ -318,7 +315,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => $fragmentsJson
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 
@@ -338,8 +334,8 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$fragmentsJson = json_encode( [ $fragment1, $fragment2 ] );
 		$value = [ 'success' => true, 'value' => '<b>first</b>' ];
 
-		$storedFragment = $this->makeFragment( $qid, $date, $lang, $value, AWFragment::AVAILABILITY_FRESH );
-		$missingFragment = $this->makeFragment( $qid, $date, $lang );
+		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+		$missingFragment = $this->makeFragment( $qid, $lang );
 
 		$fragmentStore = $this->createMockFragmentStore( [
 			[ $fragment1, $storedFragment ],
@@ -352,7 +348,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => $fragmentsJson
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 
@@ -367,6 +362,8 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$qid = 'Q42';
 		$date = '2024-12-25';
 		$lang = 'en';
+
+		ConvertibleTimestamp::setFakeTime( '2024-12-25T00:00:00Z' );
 
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
 		$fragmentsJson = json_encode( [ $fragment ] );
@@ -383,11 +380,11 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			->method( 'getRenderedAWFragment' )
 			->willReturnCallback(
 				function ( $f, $topicQid, $language, $d )
-				use ( &$capturedTopic, &$capturedLanguage, &$capturedDate, $qid, $date, $lang, $value ) {
+				use ( &$capturedTopic, &$capturedLanguage, &$capturedDate, $qid, $lang, $value ) {
 					$capturedTopic = $topicQid;
 					$capturedLanguage = $language;
 					$capturedDate = $d;
-					return $this->makeFragment( $qid, $date, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+					return $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
 				}
 			);
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
@@ -397,7 +394,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => $qid,
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => $date,
 			'abstractwiki_fetch_section_fragments' => $fragmentsJson
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 
@@ -411,6 +407,9 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		// And the stored value is surfaced unchanged.
 		$this->assertCount( 1, $result );
 		$this->assertSame( '<b>content</b>', $result[0][ 'value' ] );
+
+		// Reset timer
+		ConvertibleTimestamp::setFakeTime( false );
 	}
 
 	// HTTP method
@@ -426,7 +425,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 		];
 
 		$readModule = $this->getFetchSectionModuleForParams( $baseParams );
@@ -452,7 +450,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 		] );
 	}
 
@@ -464,7 +461,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => 'not-valid-json{{{',
 		] );
 	}
@@ -477,7 +473,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => '{"not": "a list"}',
 		] );
 	}
@@ -492,7 +487,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => '5',
 		] );
 	}
@@ -508,7 +502,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			'abstractwiki_fetch_section_topic' => 'Q42',
 			'abstractwiki_fetch_section_section' => 'Q8776414',
 			'abstractwiki_fetch_section_language' => 'Z1002',
-			'abstractwiki_fetch_section_date' => '2026-01-01',
 			'abstractwiki_fetch_section_fragments' => '[ "not-an-array" ]',
 		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
 

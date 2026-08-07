@@ -36,7 +36,6 @@ class AWFragment {
 		private readonly string $key,
 		private readonly string $topicQid,
 		private readonly string $locale,
-		private readonly string $date,
 		private readonly int $schemaVersion = AWArticleStore::AW_STORAGE_SCHEMA_VERSION,
 	) {
 	}

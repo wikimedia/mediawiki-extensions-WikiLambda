@@ -106,11 +106,6 @@ module.exports = exports = defineComponent( {
 			store.getLanguageIsoCodeOfZLang( props.language )
 		) );
 
-		// Date for today in a standard format that can be
-		// parsed by the default date reading function:
-		// See: https://www.wikifunctions.org/view/en/Z23997
-		const dateForToday = computed( () => new Date().toISOString().slice( 0, 10 ) );
-
 		// Show when section has 2 or more pending fragments; when it has only one
 		// pending fragment, no point on requesting the whole section.
 		// TODO we should think of a more proportionate logic: when a section is 100
@@ -135,17 +130,16 @@ module.exports = exports = defineComponent( {
 				sectionPath: sectionPath.value,
 				fragments: fragmentList.value,
 				fragmentHashes: fragmentHashes.value,
-				language: props.language,
-				date: dateForToday.value
+				language: props.language
 			} );
 		}
 
 		/**
-		 * Renders the preview of the given fragment for the current
-		 * preview language: qid, language and today's date.
+		 * Renders the preview of the given fragment for the current topic qid and
+		 * preview language.
 		 *
-		 * This is called every time that the AbstractPreviewFragment emits
-		 * a 'retry' event, which can happen:
+		 * This is called every time that the AbstractPreviewFragment emits a 'retry'
+		 * event, which can happen:
 		 * * When the user manually clicks the "Retry" button for a wanted fragment.
 		 * * When a change in the fragment hash causes the FragmentPreview to find
 		 *   a blank preview object for that hash (so the function call has never
@@ -158,7 +152,6 @@ module.exports = exports = defineComponent( {
 				qid: store.getAbstractWikiId,
 				fragment: fragmentList.value[ index ],
 				fragmentHash: fragmentHashes.value[ index ],
-				date: dateForToday.value,
 				language: store.getPreviewLanguageZid
 			} );
 		}

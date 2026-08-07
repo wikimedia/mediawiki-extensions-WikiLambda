@@ -25,6 +25,7 @@ use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class ApiAbstractWikiFetchSection extends ApiBase {
 
@@ -67,8 +68,10 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		$topicQid = $params[ 'topic' ];
 		$sectionQid = $params[ 'section' ];
 		$languageZid = $params[ 'language' ];
-		$date = $params[ 'date' ];
 		$fragmentsStr = $params[ 'fragments' ];
+
+		// Today's date, needed for the fragmentStore getter
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		// Get Wikifunctions language mapping for given language Zid
 		$language = $this->wfLanguageFactory->getLanguageFromZid( $languageZid );
@@ -254,10 +257,6 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true,
 			],
-			'date' => [
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_REQUIRED => true,
-			],
 			'fragments' => [
 				ParamValidator::PARAM_TYPE => 'text',
 				ParamValidator::PARAM_REQUIRED => false,
@@ -271,17 +270,15 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 	 * @param string $topic
 	 * @param string $section
 	 * @param string $language
-	 * @param string $date
 	 * @param null|string $fragments
 	 * @return string URL-encoded contents
 	 * @codeCoverageIgnore
 	 */
-	private function buildExampleCallFor( $topic, $section, $language, $date, $fragments = null ): string {
+	private function buildExampleCallFor( $topic, $section, $language, $fragments = null ): string {
 		$url = 'action=abstractwiki_fetch_section&'
 			. 'abstractwiki_fetch_section_topic=' . $topic . '&'
 			. 'abstractwiki_fetch_section_section=' . $section . '&'
-			. 'abstractwiki_fetch_section_language=' . $language . '&'
-			. 'abstractwiki_fetch_section_date=' . $date;
+			. 'abstractwiki_fetch_section_language=' . $language;
 
 		if ( $fragments !== null ) {
 			$url .= '&abstractwiki_fetch_section_fragments=' . $fragments;
@@ -302,12 +299,12 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		] ) );
 
 		return [
-			// Fetch an Abstract Wiki lede section for a given topic, language and date
-			$this->buildExampleCallFor( 'Q319', 'Q8776414', 'Z1002', '26-7-2023' )
+			// Fetch an Abstract Wiki lede section for a given topic and language
+			$this->buildExampleCallFor( 'Q319', 'Q8776414', 'Z1002' )
 				=> 'apihelp-abstractwiki_fetch_section-example-lede',
 
 			// Fetch a non-saved array of fragments
-			$this->buildExampleCallFor( 'Q319', 'Q8776414', 'Z1002', '26-7-2023', $fragmentList )
+			$this->buildExampleCallFor( 'Q319', 'Q8776414', 'Z1002', $fragmentList )
 				=> 'apihelp-abstractwiki_fetch_section-example-unsaved',
 		];
 	}

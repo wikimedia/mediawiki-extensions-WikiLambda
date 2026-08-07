@@ -593,7 +593,6 @@ const apiUtils = {
 	 * @param {string} payload.topic
 	 * @param {string} payload.section
 	 * @param {string} payload.language
-	 * @param {string} payload.date
 	 * @param {Array|undefined} payload.fragments
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
@@ -608,7 +607,6 @@ const apiUtils = {
 			abstractwiki_fetch_section_topic: payload.topic,
 			abstractwiki_fetch_section_section: payload.section,
 			abstractwiki_fetch_section_language: payload.language,
-			abstractwiki_fetch_section_date: payload.date,
 			abstractwiki_fetch_section_fragments: payload.fragments
 		};
 		const options = { signal: payload.signal };
@@ -639,7 +637,6 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {string} payload.qid
 	 * @param {string} payload.language
-	 * @param {string} payload.date
 	 * @param {Object} payload.fragment
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
@@ -656,7 +653,6 @@ const apiUtils = {
 				formatversion: '2',
 				abstractwiki_run_fragment_qid: payload.qid,
 				abstractwiki_run_fragment_language: payload.language,
-				abstractwiki_run_fragment_date: payload.date,
 				abstractwiki_run_fragment_fragment: canonicalJson
 			}, {
 				signal: payload.signal

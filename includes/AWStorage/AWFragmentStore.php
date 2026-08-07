@@ -96,10 +96,6 @@ abstract class AWFragmentStore {
 	/**
 	 * Stores a given AWFragment data in the AWFragmentStore.
 	 *
-	 * Currently the AWFragmentStore consists on a MemcachedWrapper layer,
-	 * and every AWFragment is stored under two keys:
-	 * * fresh key, which contains qid, language, date and fragmentKey
-	 * * stale key, with contains qid, language and fragmentKey
 	 *
 	 * @param string $topicQid
 	 * @param string $languageZid

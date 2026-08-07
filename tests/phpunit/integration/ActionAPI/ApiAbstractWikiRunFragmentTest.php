@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Tests\Api\ApiTestCase;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiAbstractWikiRunFragment
@@ -36,6 +37,16 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		// Mock language service and wire up
 		$this->langFactory = $this->createWikifunctionsLanguageFactoryMock();
 		$this->setService( 'WikifunctionsLanguageFactory', $this->langFactory );
+
+		// Set fake timestamp
+		ConvertibleTimestamp::setFakeTime( '2023-07-26T00:00:00Z' );
+	}
+
+	protected function tearDown(): void {
+		parent::tearDown();
+
+		// Reset timestamp
+		ConvertibleTimestamp::setFakeTime( false );
 	}
 
 	private function createWikifunctionsLanguageFactoryMock(): WikifunctionsLanguageFactory {
@@ -84,7 +95,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	public function testStoredFreshAWFragment() {
 		// Parameters for abstractwiki_run_fragment
 		$qid = 'Q42';
-		$date = '26-7-2023';
+		$date = '2023-07-26';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -98,7 +109,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns fresh value
-		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
 		$storedFragment->setValue( $storedValue, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
@@ -118,7 +129,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
 			'abstractwiki_run_fragment_language' => $languageZid,
-			'abstractwiki_run_fragment_date' => $date,
 			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 		] )[0][ 'abstractwiki_run_fragment' ];
 
@@ -136,7 +146,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testStoredStaleAWFragment() {
 		$qid = 'Q42';
-		$date = '26-7-2023';
+		$date = '2023-07-26';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -150,7 +160,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns stale value
-		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
 		$storedFragment->setValue( $storedValue, AWFragment::AVAILABILITY_STALE );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
@@ -170,7 +180,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
 			'abstractwiki_run_fragment_language' => $languageZid,
-			'abstractwiki_run_fragment_date' => $date,
 			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 		] )[0][ 'abstractwiki_run_fragment' ];
 
@@ -188,7 +197,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testMissingAWFragmentSync() {
 		$qid = 'Q42';
-		$date = '26-7-2023';
+		$date = '2023-07-26';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -202,7 +211,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns missing fragment value
-		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
@@ -224,7 +233,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
 			'abstractwiki_run_fragment_language' => $languageZid,
-			'abstractwiki_run_fragment_date' => $date,
 			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 		] )[0][ 'abstractwiki_run_fragment' ];
 
@@ -242,7 +250,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testMissingAWFragmentAsync() {
 		$qid = 'Q42';
-		$date = '26-7-2023';
+		$date = '2023-07-26';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -256,7 +264,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns missing fragment value
-		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
@@ -276,7 +284,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
 			'abstractwiki_run_fragment_language' => $languageZid,
-			'abstractwiki_run_fragment_date' => $date,
 			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 			'abstractwiki_run_fragment_async' => true,
 		] )[0][ 'abstractwiki_run_fragment' ];
@@ -303,7 +310,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => 'Q42',
 			'abstractwiki_run_fragment_language' => 'Z1002',
-			'abstractwiki_run_fragment_date' => '26-7-2023',
 			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89","Z89K1":"test"}',
 		] );
 	}
@@ -318,7 +324,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => 'Q42',
 			'abstractwiki_run_fragment_language' => 'Z1002',
-			'abstractwiki_run_fragment_date' => '26-7-2023',
 			'abstractwiki_run_fragment_fragment' => 'not-valid-json{{{',
 		] );
 	}
@@ -330,7 +335,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testExecute_diesWhenCachedResultIsFailure() {
 		$qid = 'Q42';
-		$date = '26-7-2023';
+		$date = '2023-07-26';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -349,7 +354,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns fresh value with error
-		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode(), $date );
+		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
 		$storedFragment->setValue( $failureValue, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
@@ -363,7 +368,6 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'action' => 'abstractwiki_run_fragment',
 			'abstractwiki_run_fragment_qid' => $qid,
 			'abstractwiki_run_fragment_language' => $languageZid,
-			'abstractwiki_run_fragment_date' => $date,
 			'abstractwiki_run_fragment_fragment' => $fragmentStr,
 		] )[0][ 'abstractwiki_run_fragment' ];
 

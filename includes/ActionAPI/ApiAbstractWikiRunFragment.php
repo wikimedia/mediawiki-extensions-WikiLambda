@@ -22,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class ApiAbstractWikiRunFragment extends ApiBase {
 
@@ -46,7 +47,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 * Implements Stale-While-Revalidate caching strategy:
 	 * * Returns cached HTML fragment for today,
 	 * * If fresh fragment is not available in the cache, it queues
-	 *   a job to regenerate the fragment with today's date and returns
+	 *   a job to regenerate the fragment for today's date and returns
 	 *   whatever is available.
 	 *
 	 * Implements synchronous or asynchronous behavior depending on the
@@ -105,7 +106,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		$params = $this->extractRequestParams();
 
 		$qid = $params[ 'qid' ];
-		$date = $params[ 'date' ];
 		$languageZid = $params[ 'language' ];
 		$fragmentStr = $params[ 'fragment' ];
 		$async = filter_var( $params[ 'async' ], FILTER_VALIDATE_BOOLEAN );
@@ -121,7 +121,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 		$language = $this->wfLanguageFactory->getLanguageFromZid( $languageZid );
 
-		$result = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $date, $async );
+		$result = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $async );
 
 		// Set response (fragment might be pending, successful or failed):
 		$pageResult = $this->getResult();
@@ -137,7 +137,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 * @param array $fragment
 	 * @param string $qid
 	 * @param WikifunctionsLanguage $language
-	 * @param string $date
 	 * @param bool $async
 	 * @return array
 	 */
@@ -145,9 +144,11 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		array $fragment,
 		string $qid,
 		WikifunctionsLanguage $language,
-		string $date,
 		bool $async
 	): array {
+		// Today's date, needed for the fragmentStore getter and for the regenerate request
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+
 		// Get stored fragment (if any)
 		$awFragment = $this->fragmentStore->getRenderedAWFragment(
 			$fragment,
@@ -203,10 +204,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true,
 			],
-			'date' => [
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_REQUIRED => true,
-			],
 			'fragment' => [
 				ParamValidator::PARAM_TYPE => 'text',
 				ParamValidator::PARAM_REQUIRED => true,
@@ -224,17 +221,15 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *
 	 * @param string $qid
 	 * @param string $language
-	 * @param string $date
 	 * @param string $fragmentFile
 	 * @return string URL-encoded contents
 	 * @codeCoverageIgnore
 	 */
-	private function buildExampleCallFor( $qid, $language, $date, $fragmentFile ): string {
+	private function buildExampleCallFor( $qid, $language, $fragmentFile ): string {
 		$fragment = ZObjectUtils::readTestFile( 'abstract/' . $fragmentFile );
 		return 'action=abstractwiki_run_fragment&'
 			. 'abstractwiki_run_fragment_qid=' . $qid . '&'
 			. 'abstractwiki_run_fragment_language=' . $language . '&'
-			. 'abstractwiki_run_fragment_date=' . $date . '&'
 			. 'abstractwiki_run_fragment_fragment=' . urlencode( $fragment );
 	}
 
@@ -245,11 +240,11 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	protected function getExamplesMessages(): array {
 		return [
 			// Run an Abstract Wiki content fragment that contains a simple literal HTML
-			$this->buildExampleCallFor( 'Q319', 'Z1002', '26-7-2023', 'fragment-literal-html.json' )
+			$this->buildExampleCallFor( 'Q319', 'Z1002', 'fragment-literal-html.json' )
 				=> 'apihelp-abstractwiki_run_fragment-example-literal-html',
 
 			// Run an Abstract Wiki content fragment that contains a composition with arguments
-			$this->buildExampleCallFor( 'Q319', 'Z1002', '26-7-2023', 'fragment-with-args.json' )
+			$this->buildExampleCallFor( 'Q319', 'Z1002', 'fragment-with-args.json' )
 				=> 'apihelp-abstractwiki_run_fragment-example-composition'
 		];
 	}

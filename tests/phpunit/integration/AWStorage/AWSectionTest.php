@@ -170,9 +170,8 @@ class AWSectionTest extends WikiLambdaAbstractClientIntegrationTestCase {
 		$topicQid = 'Q42';
 		$sectionQid = 'Q201';
 		$locale = 'en';
-		$date = '2026-05-15';
 
-		$fragment = new AWFragment( $topicQid, $sectionQid, $locale, $date );
+		$fragment = new AWFragment( $topicQid, $sectionQid, $locale );
 		if ( $payload !== null ) {
 			$availability = $fresh ? AWFragment::AVAILABILITY_FRESH : AWFragment::AVAILABILITY_STALE;
 			$fragment->setValue( $payload, $availability );

@@ -12,7 +12,6 @@ const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/in
 const ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
 
 const mockLang = 'Z1002';
-const mockDate = '26-7-2023';
 const mockQid = 'Q96807071';
 const ledeQid = 'Q8776414';
 
@@ -647,7 +646,13 @@ describe( 'abstractWiki Pinia store', () => {
 
 				store.fragments = { [ `hash1:${ mockLang }` ]: { isPending: false, html: 'rendered' } };
 
-				await store.fetchSectionPreview( { mockQid, section: ledeQid, language: mockLang, mockDate, fragments, fragmentHashes } );
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
 
 				expect( postMock ).not.toHaveBeenCalled();
 			} );
@@ -662,7 +667,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -675,7 +679,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -691,7 +694,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -705,8 +707,7 @@ describe( 'abstractWiki Pinia store', () => {
 					formatversion: '2',
 					abstractwiki_fetch_section_topic: mockQid,
 					abstractwiki_fetch_section_section: ledeQid,
-					abstractwiki_fetch_section_language: mockLang,
-					abstractwiki_fetch_section_date: mockDate
+					abstractwiki_fetch_section_language: mockLang
 				}, { signal: undefined } );
 			} );
 
@@ -715,7 +716,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -732,7 +732,6 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_fetch_section_topic: mockQid,
 					abstractwiki_fetch_section_section: ledeQid,
 					abstractwiki_fetch_section_language: mockLang,
-					abstractwiki_fetch_section_date: mockDate,
 					abstractwiki_fetch_section_token: 'csrf-token',
 					abstractwiki_fetch_section_fragments: expectedFragments
 				}, { signal: undefined } );
@@ -748,7 +747,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -763,7 +761,6 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_fetch_section_topic: mockQid,
 					abstractwiki_fetch_section_section: ledeQid,
 					abstractwiki_fetch_section_language: mockLang,
-					abstractwiki_fetch_section_date: mockDate,
 					abstractwiki_fetch_section_token: 'csrf-token',
 					abstractwiki_fetch_section_fragments: expectedFragments
 				}, { signal: undefined } );
@@ -774,7 +771,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -800,7 +796,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -817,7 +812,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -830,7 +824,6 @@ describe( 'abstractWiki Pinia store', () => {
 					topic: mockQid,
 					section: ledeQid,
 					language: mockLang,
-					date: mockDate,
 					fragments,
 					fragmentHashes
 				} );
@@ -1061,7 +1054,6 @@ describe( 'abstractWiki Pinia store', () => {
 				fragmentHash: 'suchgood#',
 				qid: mockQid,
 				language: mockLang,
-				date: mockDate,
 				fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
 			};
 
@@ -1125,7 +1117,6 @@ describe( 'abstractWiki Pinia store', () => {
 				fragmentHash: 'suchgood#',
 				qid: mockQid,
 				language: mockLang,
-				date: mockDate,
 				fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
 			};
 
@@ -1163,7 +1154,6 @@ describe( 'abstractWiki Pinia store', () => {
 					formatversion: '2',
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
-					abstractwiki_run_fragment_date: mockDate,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
@@ -1186,7 +1176,6 @@ describe( 'abstractWiki Pinia store', () => {
 					formatversion: '2',
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
-					abstractwiki_run_fragment_date: mockDate,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 
@@ -1208,7 +1197,6 @@ describe( 'abstractWiki Pinia store', () => {
 					formatversion: '2',
 					abstractwiki_run_fragment_qid: mockQid,
 					abstractwiki_run_fragment_language: mockLang,
-					abstractwiki_run_fragment_date: mockDate,
 					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] )
 				}, { signal: undefined } );
 

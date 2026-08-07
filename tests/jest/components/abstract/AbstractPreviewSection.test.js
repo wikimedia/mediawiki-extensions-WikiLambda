@@ -76,17 +76,12 @@ describe( 'AbstractPreviewSection', () => {
 		store.fetchSectionPreview = jest.fn();
 		store.renderFragmentPreview = jest.fn();
 		store.clearErrors = jest.fn();
-
-		// Use fake timer so that date is predictable
-		jest.useFakeTimers().setSystemTime( new Date( '2023-07-26T00:00:00Z' ) );
 	} );
 
 	afterEach( () => {
 		// Unmount component after running each test, so that there
 		// are no dangling unresolved promises that affect next test!
 		wrapper.unmount();
-		// Reset to real timer
-		jest.useRealTimers();
 	} );
 
 	it( 'renders without errors', () => {
@@ -192,8 +187,7 @@ describe( 'AbstractPreviewSection', () => {
 			sectionPath: `abstractwiki.sections.${ ledeQid }`,
 			fragments: mockLedeSection.fragments.slice( 1 ),
 			fragmentHashes: [ 'hash1', 'hash2' ],
-			language: mockLang,
-			date: '2023-07-26'
+			language: mockLang
 		} );
 	} );
 
@@ -219,7 +213,6 @@ describe( 'AbstractPreviewSection', () => {
 			qid: mockQid,
 			fragment: mockLedeSection.fragments[ 1 ],
 			fragmentHash: 'hash1',
-			date: '2023-07-26',
 			language: mockLang
 		} );
 	} );

@@ -38,8 +38,8 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 		// Fragment key, used for both fresh and stale cache keys
 		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
 
-		// Build AWFragment object with: key, qid, locale and date
-		$awFragment = new AWFragment( $fragmentKey, $topicQid, $language->getCode(), $date );
+		// Build AWFragment object with: key, qid and locale
+		$awFragment = new AWFragment( $fragmentKey, $topicQid, $language->getCode() );
 
 		// Get fresh value and exit if there's a hit
 		$cacheKeyFresh = $this->objectCache->makeKey(
@@ -95,6 +95,11 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 
 	/**
 	 * @inheritDoc
+	 *
+	 * This implementation of the AWFragmentStore consists on a MemcachedWrapper layer,
+	 * and every AWFragment is stored under two keys:
+	 * * fresh key, which contains qid, language, date and fragmentKey
+	 * * stale key, with contains qid, language and fragmentKey
 	 */
 	public function setRenderedAWFragment(
 		string $topicQid,

@@ -23,8 +23,7 @@ use Psr\Log\LoggerInterface;
  * Asynchronous job run on Abstract Wiki to refresh an Abstract Content
  * fragment which is only available in the cache in an older version.
  * This job requests Wikifunctions to re-render the fragment via the
- * wikilambda_function_call Action API and updates the cache key with
- * and without today's date.
+ * wikilambda_function_call Action API and updates the cached value
  *
  * Queued by:
  * * AWFragmentStore::getLatestRenderedAWFragment when fresh fragment

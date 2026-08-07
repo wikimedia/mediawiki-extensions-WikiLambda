@@ -428,7 +428,6 @@ const abstractWikiStore = {
 		 * @param {Array} payload.fragments
 		 * @param {Object} payload.fragmentHashes
 		 * @param {string} payload.language
-		 * @param {string} payload.date
 		 * @return {Promise}
 		 */
 		fetchSectionPreview: async function ( payload ) {
@@ -462,7 +461,6 @@ const abstractWikiStore = {
 
 			const sectionPromise = fetchAbstractWikiSection( {
 				topic: payload.topic,
-				date: payload.date,
 				section,
 				language,
 				fragments: neededFragments ? JSON.stringify( neededFragments ) : undefined
@@ -641,7 +639,6 @@ const abstractWikiStore = {
 		 * @param {string} payload.fragmentHash
 		 * @param {string} payload.qid
 		 * @param {string} payload.language
-		 * @param {string} payload.date
 		 * @param {Object} payload.fragment
 		 */
 		renderFragmentPreview: function ( payload ) {
@@ -676,7 +673,6 @@ const abstractWikiStore = {
 		 * @param {string} payload.fragmentHash
 		 * @param {string} payload.qid
 		 * @param {string} payload.language
-		 * @param {string} payload.date
 		 * @param {Object} payload.fragment
 		 * @param {Function} job
 		 * @return {Promise}
@@ -688,7 +684,6 @@ const abstractWikiStore = {
 			return runAbstractWikiFragment( {
 				language,
 				qid: payload.qid,
-				date: payload.date,
 				fragment: payload.fragment
 			} ).then( ( data ) => {
 				// Processes both successful and failed fragments

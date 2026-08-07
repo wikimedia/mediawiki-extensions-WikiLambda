@@ -17,7 +17,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 
 	public function testConstructor() {
-		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en', '2026-05-15' );
+		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en' );
 
 		$this->assertSame( 'some-fragment-key', $fragment->getKey() );
 
@@ -31,7 +31,7 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	public function testFragmentSetValue_Fresh_Success() {
-		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en', '2026-05-15' );
+		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en' );
 
 		$value = [ 'success' => true, 'value' => 'some fragment' ];
 		$fragment->setValue( $value, AWFragment::AVAILABILITY_FRESH );
@@ -52,7 +52,7 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	public function testFragmentSetValue_Stale_Success() {
-		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en', '2026-05-15' );
+		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en' );
 
 		$value = [ 'success' => true, 'value' => 'some fragment' ];
 		$fragment->setValue( $value, AWFragment::AVAILABILITY_STALE );
@@ -73,7 +73,7 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	public function testFragmentSetValue_Fresh_Failure() {
-		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en', '2026-05-15' );
+		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en' );
 
 		$value = [
 			'success' => false,
@@ -100,7 +100,7 @@ class AWFragmentTest extends WikiLambdaAbstractModeIntegrationTestCase {
 	}
 
 	public function testFragmentSetValue_Stale_Failure() {
-		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en', '2026-05-15' );
+		$fragment = new AWFragment( 'some-fragment-key', 'Q42', 'en' );
 
 		$value = [
 			'success' => false,
