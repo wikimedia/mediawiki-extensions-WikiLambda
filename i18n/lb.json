@@ -324,6 +324,8 @@
 	"wikilambda-functioncall-metadata-start-time": "Startzäit",
 	"wikilambda-functioncall-metadata-test-failure": "D'Resultat, dat erwaart gouf, ass net identesch mam tatsächleche Resultat.",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "Validéierungsfeelertyp",
+	"wikilambda-functioncall-metadata-warnings": "Warnungen",
+	"wikilambda-functioncall-metadata-warnings-count": "{{PLURAL:$1|Eng Warnung|$1 Warnungen}}",
 	"wikilambda-helplink-button": "Hëllef",
 	"wikilambda-helplink-tooltip": "Dir kënnt eng Hëllefssäit liesen, déi dës Metadonnéeën erklären",
 	"wikilambda-history-title": "Versiounshistorique vu(n) „$1“ ($2)",

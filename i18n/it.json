@@ -355,6 +355,8 @@
 	"wikilambda-functioncall-metadata-select-label": "Chiamate di funzione",
 	"wikilambda-functioncall-metadata-start-time": "Ora di inizio",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "Tipo di errore di convalida",
+	"wikilambda-functioncall-metadata-warnings": "Avvisi",
+	"wikilambda-functioncall-metadata-warnings-count": "{{PLURAL:$1|$1 avvertimento|$1 avvertimenti}}",
 	"wikilambda-helplink-button": "Aiuto",
 	"wikilambda-helplink-tooltip": "Puoi leggere una pagina di aiuto che spiega questi metadati",
 	"wikilambda-history-title": "Cronologia di \"$1\" ($2)",
