@@ -23,6 +23,10 @@ module.exports = {
 	],
 
 	moduleNameMapper: {
+		// Anchored ResourceLoader module names come first, because this map is first-match-wins
+		// and the patterns below are unanchored substrings.
+		'^ext\\.communityConfiguration\\.Editor\\.controls$':
+			'<rootDir>/tests/jest/helpers/communityConfigurationControls.js',
 		'codex.js': '<rootDir>/tests/jest/helpers/loadCodexComponents.js',
 		'icons.json': '<rootDir>/tests/jest/fixtures/icons.js',
 		'mediawiki.DateFormatter': '<rootDir>/tests/jest/helpers/mockDateFormatter.js'
@@ -62,6 +66,7 @@ module.exports = {
 		'resources/ext.wikilambda.app/components/index.js',
 		'resources/ext.wikilambda.app/Constants.js',
 		'resources/ext.wikilambda.languageselector/index.js',
+		'resources/ext.wikilambda.functionLookup/index.js',
 		// Ignore VisualEditor initialization scripts
 		'resources/ext.wikilambda.visualeditor/',
 		// Ignore references initialization scripts and trigger composable (might change)
@@ -83,6 +88,12 @@ module.exports = {
 			lines: 90,
 			functions: 90,
 			statements: 90
+		},
+		'./resources/ext.wikilambda.functionLookup/': {
+			branches: 90,
+			lines: 94,
+			functions: 90,
+			statements: 94
 		},
 		'./resources/ext.wikilambda.languageselector/': {
 			branches: 93,

@@ -394,6 +394,58 @@ class ClientHooks implements
 				],
 			] );
 		}
+
+		$this->registerFunctionLookupModule( $resourceLoader );
+	}
+
+	/**
+	 * Register the form control that CommunityConfiguration uses for our lists of functions.
+	 *
+	 * This has to happen here and not in extension.json, because the module depends on a module of
+	 * CommunityConfiguration, and CommunityConfiguration is a soft dependency of WikiLambda. A
+	 * static dependency would make this module fail to register on a wiki that does not have
+	 * CommunityConfiguration, which core's ResourcesTest reports as an error.
+	 *
+	 * The module registers whatever the feature modes are. CommunityConfigurationHooks hides each
+	 * of our providers on a wiki where its own mode is off, and two different modes each bring a
+	 * provider that wants this control, so tying the module to one mode would be wrong. A module
+	 * that nothing asks for costs nothing beyond its entry in the registry.
+	 *
+	 * @param ResourceLoader $resourceLoader
+	 * @return void
+	 */
+	private function registerFunctionLookupModule( ResourceLoader $resourceLoader ): void {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
+			return;
+		}
+
+		$resourceLoader->register( 'ext.wikilambda.functionLookup', [
+			'class' => CodexModule::class,
+			'localBasePath' => __DIR__ . '/../../resources/ext.wikilambda.functionLookup',
+			'remoteExtPath' => 'WikiLambda/resources/ext.wikilambda.functionLookup',
+			'codexComponents' => [
+				'CdxField',
+				'CdxMultiselectLookup',
+			],
+			'packageFiles' => [
+				'index.js',
+				'FunctionLookupControl.vue',
+				'functionLookupApi.js',
+			],
+			'dependencies' => [
+				'vue',
+				'mediawiki.api',
+				'mediawiki.ForeignApi',
+				'mediawiki.jqueryMsg',
+				'ext.communityConfiguration.Editor.controls',
+			],
+			'messages' => [
+				'wikilambda-functionlookup-placeholder',
+				'wikilambda-functionlookup-offline-placeholder',
+				'wikilambda-functionlookup-no-results',
+				'wikilambda-functionlookup-remove-button-label',
+			],
+		] );
 	}
 
 	/**

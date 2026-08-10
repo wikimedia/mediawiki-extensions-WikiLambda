@@ -290,4 +290,43 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 			'VE modules should not be registered when client mode is off'
 		);
 	}
+
+	public function testOnResourceLoaderRegisterModules_registersFunctionLookupWhenCommunityConfigurationLoaded() {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
+			$this->markTestSkipped( 'CommunityConfiguration is not loaded in this test environment' );
+		}
+
+		$hooks = $this->newClientHooks();
+		$rl = $this->getServiceContainer()->getResourceLoader();
+		$hooks->onResourceLoaderRegisterModules( $rl );
+
+		$this->assertTrue(
+			$rl->isModuleRegistered( 'ext.wikilambda.functionLookup' ),
+			'The CommunityConfiguration form control should be registered'
+		);
+	}
+
+	public function testOnResourceLoaderRegisterModules_registersFunctionLookupWhateverTheMode() {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
+			$this->markTestSkipped( 'CommunityConfiguration is not loaded in this test environment' );
+		}
+		// The client-mode list is not the only one that wants this control: the abstract-mode list
+		// wants it too. Tying the module to client mode would leave the abstract-mode form with a
+		// control it cannot load.
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
+
+		$hooks = $this->newClientHooks();
+		$rl = new ResourceLoader(
+			$this->getServiceContainer()->getMainConfig(),
+			null,
+			null,
+			[ 'loadScript' => '/w/load.php' ]
+		);
+		$hooks->onResourceLoaderRegisterModules( $rl );
+
+		$this->assertTrue(
+			$rl->isModuleRegistered( 'ext.wikilambda.functionLookup' ),
+			'The form control should not depend on client mode'
+		);
+	}
 }
