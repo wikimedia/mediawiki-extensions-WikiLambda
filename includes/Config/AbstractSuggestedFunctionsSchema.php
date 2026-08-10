@@ -18,6 +18,8 @@ use MediaWiki\Extension\CommunityConfiguration\Schema\JsonSchema;
 // phpcs:disable Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase
 class AbstractSuggestedFunctionsSchema extends JsonSchema {
 
+	public const UI_SCHEMA = AbstractSuggestedFunctionsUISchema::class;
+
 	public const SuggestedFunctions = [
 		self::TYPE => self::TYPE_ARRAY,
 		self::ITEMS => [
