@@ -1398,6 +1398,10 @@
 				"WikiLambda.FunctionLookup": {
 					"module": "ext.wikilambda.functionLookup",
 					"component": "FunctionLookupControl"
+				},
+				"WikiLambda.OptedInArticles": {
+					"module": "ext.wikilambda.itemLookup",
+					"component": "OptedInArticlesControl"
 				}
 			},
 			"Providers": {

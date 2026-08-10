@@ -29,6 +29,7 @@ module.exports = {
 			'<rootDir>/tests/jest/helpers/communityConfigurationControls.js',
 		'codex.js': '<rootDir>/tests/jest/helpers/loadCodexComponents.js',
 		'icons.json': '<rootDir>/tests/jest/fixtures/icons.js',
+		'itemLookupConfig.json': '<rootDir>/tests/jest/fixtures/itemLookupConfig.js',
 		'mediawiki.DateFormatter': '<rootDir>/tests/jest/helpers/mockDateFormatter.js'
 	},
 
@@ -63,8 +64,10 @@ module.exports = {
 		'resources/ext.wikilambda.app/index.js',
 		'resources/ext.wikilambda.app/components/index.js',
 		'resources/ext.wikilambda.app/Constants.js',
+		'resources/ext.wikilambda.content/index.js',
 		'resources/ext.wikilambda.languageselector/index.js',
 		'resources/ext.wikilambda.functionLookup/index.js',
+		'resources/ext.wikilambda.itemLookup/index.js',
 		// Ignore VisualEditor initialization scripts
 		'resources/ext.wikilambda.visualeditor/',
 		// Ignore references initialization scripts and trigger composable (might change)
@@ -92,6 +95,15 @@ module.exports = {
 			lines: 94,
 			functions: 90,
 			statements: 94
+		},
+		'./resources/ext.wikilambda.itemLookup/': {
+			// The branch floor is lower than elsewhere because the control guards every callback
+			// against a row that a removal took away while a search was in flight, and those
+			// guards are hard to reach on purpose.
+			branches: 80,
+			lines: 97,
+			functions: 95,
+			statements: 97
 		},
 		'./resources/ext.wikilambda.languageselector/': {
 			branches: 93,

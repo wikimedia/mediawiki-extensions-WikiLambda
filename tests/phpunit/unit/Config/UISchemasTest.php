@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WikiLambda unit test suite for the UI schemas of the suggested-function lists.
+ * WikiLambda unit test suite for the CommunityConfiguration UI schemas.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Config;
 use MediaWiki\Extension\CommunityConfiguration\Schema\UISchema;
 use MediaWiki\Extension\WikiLambda\Config\AbstractSuggestedFunctionsSchema;
 use MediaWiki\Extension\WikiLambda\Config\AbstractSuggestedFunctionsUISchema;
+use MediaWiki\Extension\WikiLambda\Config\AbstractWikiOptedInArticlesSchema;
+use MediaWiki\Extension\WikiLambda\Config\AbstractWikiOptedInArticlesUISchema;
 use MediaWiki\Extension\WikiLambda\Config\SuggestedFunctionsSchema;
 use MediaWiki\Extension\WikiLambda\Config\SuggestedFunctionsUISchema;
 use MediaWikiUnitTestCase;
@@ -20,11 +22,9 @@ use ReflectionClass;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Config\SuggestedFunctionsUISchema
  * @covers \MediaWiki\Extension\WikiLambda\Config\AbstractSuggestedFunctionsUISchema
+ * @covers \MediaWiki\Extension\WikiLambda\Config\AbstractWikiOptedInArticlesUISchema
  */
-class SuggestedFunctionsUISchemaTest extends MediaWikiUnitTestCase {
-
-	/** @var string The name that extension.json registers our control under. */
-	private const CONTROL_NAME = 'WikiLambda.FunctionLookup';
+class UISchemasTest extends MediaWikiUnitTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -33,12 +33,33 @@ class SuggestedFunctionsUISchemaTest extends MediaWikiUnitTestCase {
 		}
 	}
 
+	/**
+	 * The control names that extension.json says this extension supplies.
+	 *
+	 * @return string[]
+	 */
+	private static function getRegisteredControlNames(): array {
+		$extensionJson = json_decode(
+			file_get_contents( __DIR__ . '/../../../../extension.json' ), true
+		);
+		return array_keys(
+			$extensionJson['attributes']['CommunityConfiguration']['Controls'] ?? []
+		);
+	}
+
 	public static function provideUiSchema(): array {
 		return [
-			'client mode' => [ SuggestedFunctionsSchema::class, SuggestedFunctionsUISchema::class ],
-			'abstract mode' => [
+			'client mode functions' => [
+				SuggestedFunctionsSchema::class,
+				SuggestedFunctionsUISchema::class,
+			],
+			'abstract mode functions' => [
 				AbstractSuggestedFunctionsSchema::class,
 				AbstractSuggestedFunctionsUISchema::class,
+			],
+			'abstract client opted-in articles' => [
+				AbstractWikiOptedInArticlesSchema::class,
+				AbstractWikiOptedInArticlesUISchema::class,
 			],
 		];
 	}
@@ -60,15 +81,19 @@ class SuggestedFunctionsUISchemaTest extends MediaWikiUnitTestCase {
 	 * @param string $uiSchemaClass
 	 * @dataProvider provideUiSchema
 	 */
-	public function testAsksForOurControl( string $schemaClass, string $uiSchemaClass ): void {
-		$controls = [];
+	public function testEveryControlItAsksForIsRegistered( string $schemaClass, string $uiSchemaClass ): void {
+		// A name that no extension registers leaves the form falling back to a control of the data
+		// schema, which is a silent loss of the whole point of the UI schema.
+		$registered = self::getRegisteredControlNames();
+		$asked = [];
 		foreach ( UISchema::flattenElements( $uiSchemaClass::ROOT ) as $element ) {
 			if ( isset( $element[UISchema::CONTROL] ) ) {
-				$controls[] = $element[UISchema::CONTROL];
+				$asked[] = $element[UISchema::CONTROL];
 			}
 		}
 
-		$this->assertSame( [ self::CONTROL_NAME ], $controls );
+		$this->assertNotSame( [], $asked, 'the UI schema asks for at least one control' );
+		$this->assertSame( [], array_diff( $asked, $registered ) );
 	}
 
 	/**
@@ -117,17 +142,36 @@ class SuggestedFunctionsUISchemaTest extends MediaWikiUnitTestCase {
 		$this->assertSame( [], array_intersect( $options, $jsonSchemaKeywords ) );
 	}
 
-	public function testClientModeAsksForNoOutputType(): void {
+	/**
+	 * @param string $schemaClass
+	 * @param string $uiSchemaClass
+	 * @dataProvider provideUiSchema
+	 */
+	public function testEveryMessageAnOptionNamesIsAlsoInMessages(
+		string $schemaClass, string $uiSchemaClass
+	): void {
+		// A message that only an option names is never sent to the client, so the control would
+		// show the key instead of the text.
+		foreach ( UISchema::flattenElements( $uiSchemaClass::ROOT ) as $element ) {
+			foreach ( $element[UISchema::OPTIONS] ?? [] as $option => $value ) {
+				if ( str_ends_with( (string)$option, 'Message' ) ) {
+					$this->assertContains( $value, $element[UISchema::MESSAGES] ?? [] );
+				}
+			}
+		}
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function testClientModeFunctionsAskForNoOutputType(): void {
 		$options = SuggestedFunctionsUISchema::ROOT[UISchema::ELEMENTS][0][UISchema::OPTIONS] ?? [];
 
 		// The VisualEditor dialog can call a function of any return type.
 		$this->assertArrayNotHasKey( 'outputType', $options );
 	}
 
-	public function testAbstractModeAsksForHtmlReturningFunctionsOnly(): void {
-		$elements = UISchema::flattenElements( AbstractSuggestedFunctionsUISchema::ROOT );
+	public function testAbstractModeFunctionsAskForHtmlReturningFunctionsOnly(): void {
 		$control = null;
-		foreach ( $elements as $element ) {
+		foreach ( UISchema::flattenElements( AbstractSuggestedFunctionsUISchema::ROOT ) as $element ) {
 			if ( isset( $element[UISchema::CONTROL] ) ) {
 				$control = $element;
 			}
@@ -137,23 +181,39 @@ class SuggestedFunctionsUISchemaTest extends MediaWikiUnitTestCase {
 		$this->assertSame( 'Z89', $control[UISchema::OPTIONS]['outputType'] ?? null );
 	}
 
-	public function testAbstractModeAsksForTheMessagesItNames(): void {
-		// A message that the UI schema names in an option has to be in MESSAGES too, or the server
-		// never sends it and the control shows the key.
-		foreach ( UISchema::flattenElements( AbstractSuggestedFunctionsUISchema::ROOT ) as $element ) {
-			$hint = $element[UISchema::OPTIONS]['hintMessage'] ?? null;
-			if ( $hint !== null ) {
-				$this->assertContains( $hint, $element[UISchema::MESSAGES] ?? [] );
-			}
-		}
-	}
-
-	public function testAbstractModeGroupsTheFieldUnderAHeading(): void {
-		$root = AbstractSuggestedFunctionsUISchema::ROOT;
-		$group = $root[UISchema::ELEMENTS][0];
+	public function testAbstractModeFunctionsGroupTheFieldUnderAHeading(): void {
+		$group = AbstractSuggestedFunctionsUISchema::ROOT[UISchema::ELEMENTS][0];
 
 		$this->assertSame( UISchema::TYPE_GROUP, $group[UISchema::TYPE] );
 		$this->assertIsString( $group[UISchema::LABEL] );
 		$this->assertNotSame( '', $group[UISchema::LABEL] );
+	}
+
+	public function testOptedInArticlesTakesTheWholeList(): void {
+		$elements = AbstractWikiOptedInArticlesUISchema::ROOT[UISchema::ELEMENTS];
+
+		// The Qid of an entry sits below the top level, which a layout cannot name yet, so the
+		// control takes the whole list and draws the rows itself.
+		$this->assertCount( 1, $elements );
+		$this->assertSame( '#/properties/OptedInArticles', $elements[0][UISchema::SCOPE] );
+		$this->assertSame( 'WikiLambda.OptedInArticles', $elements[0][UISchema::CONTROL] );
+	}
+
+	public function testEachProviderAsksForItsOwnControl(): void {
+		// One module for each control, so a form only loads the control it uses.
+		$controls = [];
+		foreach ( self::provideUiSchema() as [ , $uiSchemaClass ] ) {
+			foreach ( UISchema::flattenElements( $uiSchemaClass::ROOT ) as $element ) {
+				if ( isset( $element[UISchema::CONTROL] ) ) {
+					$controls[$uiSchemaClass] = $element[UISchema::CONTROL];
+				}
+			}
+		}
+
+		$this->assertSame( [
+			SuggestedFunctionsUISchema::class => 'WikiLambda.FunctionLookup',
+			AbstractSuggestedFunctionsUISchema::class => 'WikiLambda.FunctionLookup',
+			AbstractWikiOptedInArticlesUISchema::class => 'WikiLambda.OptedInArticles',
+		], $controls );
 	}
 }

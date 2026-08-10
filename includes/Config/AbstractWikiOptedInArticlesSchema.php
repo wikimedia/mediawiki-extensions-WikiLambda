@@ -18,6 +18,9 @@ use MediaWiki\Extension\CommunityConfiguration\Schema\JsonSchema;
 
 // phpcs:disable Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase
 class AbstractWikiOptedInArticlesSchema extends JsonSchema {
+
+	public const UI_SCHEMA = AbstractWikiOptedInArticlesUISchema::class;
+
 	public const OptedInArticles = [
 		self::TYPE => self::TYPE_ARRAY,
 		self::ITEMS => [

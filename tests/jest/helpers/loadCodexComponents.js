@@ -20,10 +20,17 @@ function loadCodexComponents() {
 
 	// Collect all unique Codex components from all modules
 	const allComponents = new Set(
-		// ext.wikilambda.functionLookup registers in ClientHooks rather than in extension.json,
-		// because it depends on a module of CommunityConfiguration, which is a soft dependency.
-		// Its components therefore have to be named here.
-		[ 'CdxField', 'CdxMultiselectLookup' ]
+		// The CommunityConfiguration control modules register in ClientHooks rather than in
+		// extension.json, because they depend on a module of CommunityConfiguration, which is a
+		// soft dependency. Their components therefore have to be named here.
+		[
+			'CdxButton',
+			'CdxChipInput',
+			'CdxField',
+			'CdxIcon',
+			'CdxLookup',
+			'CdxMultiselectLookup'
+		]
 	);
 	modules.forEach( ( moduleName ) => {
 		const module = extensionJson.ResourceModules[ moduleName ];

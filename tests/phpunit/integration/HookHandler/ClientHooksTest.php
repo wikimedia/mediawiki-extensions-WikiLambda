@@ -399,7 +399,11 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 
 		$this->assertTrue(
 			$rl->isModuleRegistered( 'ext.wikilambda.functionLookup' ),
-			'The CommunityConfiguration form control should be registered'
+			'The function lookup form control should be registered'
+		);
+		$this->assertTrue(
+			$rl->isModuleRegistered( 'ext.wikilambda.itemLookup' ),
+			'The Wikidata item lookup form control should be registered'
 		);
 	}
 
@@ -418,6 +422,10 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 
 		$this->assertTrue(
 			$rl->isModuleRegistered( 'ext.wikilambda.functionLookup' ),
+			'The form control should not depend on client mode'
+		);
+		$this->assertTrue(
+			$rl->isModuleRegistered( 'ext.wikilambda.itemLookup' ),
 			'The form control should not depend on client mode'
 		);
 	}

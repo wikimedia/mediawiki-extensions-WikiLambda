@@ -21,6 +21,7 @@ use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Logging\ManualLogEntry;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Parser\ParserCache;
@@ -29,6 +30,7 @@ use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\CodexModule;
+use MediaWiki\ResourceLoader\Context;
 use MediaWiki\ResourceLoader\ImageModule;
 use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
@@ -439,57 +441,122 @@ class ClientHooks implements
 			] );
 		}
 
-		$this->registerFunctionLookupModule( $resourceLoader );
+		$this->registerCommunityConfigurationControls( $resourceLoader );
 	}
 
 	/**
-	 * Register the form control that CommunityConfiguration uses for our lists of functions.
+	 * Register the form controls that CommunityConfiguration uses for our providers.
 	 *
-	 * This has to happen here and not in extension.json, because the module depends on a module of
+	 * This has to happen here and not in extension.json, because each module depends on a module of
 	 * CommunityConfiguration, and CommunityConfiguration is a soft dependency of WikiLambda. A
-	 * static dependency would make this module fail to register on a wiki that does not have
+	 * static dependency would make the module fail to register on a wiki that does not have
 	 * CommunityConfiguration, which core's ResourcesTest reports as an error.
 	 *
-	 * The module registers whatever the feature modes are. CommunityConfigurationHooks hides each
-	 * of our providers on a wiki where its own mode is off, and two different modes each bring a
-	 * provider that wants this control, so tying the module to one mode would be wrong. A module
+	 * The modules register whatever the feature modes are. CommunityConfigurationHooks hides each
+	 * of our providers on a wiki where its own mode is off, and different modes bring different
+	 * providers that want these controls, so tying a module to one mode would be wrong. A module
 	 * that nothing asks for costs nothing beyond its entry in the registry.
+	 *
+	 * There is one module for each control rather than one for both. ResourceLoader gives each
+	 * Codex module its own copy of every Codex component it names, so a shared module would send
+	 * the components of both controls to every form that uses either.
 	 *
 	 * @param ResourceLoader $resourceLoader
 	 * @return void
 	 */
-	private function registerFunctionLookupModule( ResourceLoader $resourceLoader ): void {
+	private function registerCommunityConfigurationControls( ResourceLoader $resourceLoader ): void {
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'CommunityConfiguration' ) ) {
 			return;
 		}
 
-		$resourceLoader->register( 'ext.wikilambda.functionLookup', [
-			'class' => CodexModule::class,
-			'localBasePath' => __DIR__ . '/../../resources/ext.wikilambda.functionLookup',
-			'remoteExtPath' => 'WikiLambda/resources/ext.wikilambda.functionLookup',
-			'codexComponents' => [
-				'CdxField',
-				'CdxMultiselectLookup',
+		$controlModules = [
+			'ext.wikilambda.functionLookup' => [
+				'codexComponents' => [
+					'CdxField',
+					'CdxMultiselectLookup',
+				],
+				'packageFiles' => [
+					'index.js',
+					'FunctionLookupControl.vue',
+					'functionLookupApi.js',
+				],
+				'messages' => [
+					'wikilambda-functionlookup-placeholder',
+					'wikilambda-functionlookup-offline-placeholder',
+					'wikilambda-functionlookup-no-results',
+					'wikilambda-functionlookup-remove-button-label',
+				],
 			],
-			'packageFiles' => [
-				'index.js',
-				'FunctionLookupControl.vue',
-				'functionLookupApi.js',
+			'ext.wikilambda.itemLookup' => [
+				'codexComponents' => [
+					'CdxButton',
+					'CdxChipInput',
+					'CdxField',
+					'CdxIcon',
+					'CdxLookup',
+				],
+				'packageFiles' => [
+					'index.js',
+					'OptedInArticlesControl.vue',
+					'itemLookupApi.js',
+					[
+						'name' => 'icons.json',
+						'callback' => [ CodexModule::class, 'getIcons' ],
+						'callbackParam' => [
+							'cdxIconAdd',
+							'cdxIconLinkExternal',
+							'cdxIconTrash',
+						],
+					],
+					[
+						'name' => 'itemLookupConfig.json',
+						'callback' => static function ( Context $context, Config $config ): array {
+							// Link to topics the same way as the article integration does.
+							$interwiki = MediaWikiServices::getInstance()->getInterwikiLookup()->fetch( 'abstract' );
+							return [
+								'abstractUrl' => $interwiki ? $interwiki->getURL() : null,
+								// For now, only the topics that have generated articles.
+								'topics' => array_values(
+									$config->get( 'WikiLambdaAbstractWikiArticleStoreTopics' )
+								),
+							];
+						},
+					],
+				],
+				'messages' => [
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-label',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-help-text',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-placeholder',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-no-results',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-link-label',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-error-empty',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-help-text',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-placeholder',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-link-label',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-error-empty',
+					'communityconfiguration-abstractwikioptedinarticles-optedinarticles-add-element-button-label',
+					'communityconfiguration-editor-array-remove-element-label-screen-reader',
+				],
 			],
-			'dependencies' => [
-				'vue',
-				'mediawiki.api',
-				'mediawiki.ForeignApi',
-				'mediawiki.jqueryMsg',
-				'ext.communityConfiguration.Editor.controls',
-			],
-			'messages' => [
-				'wikilambda-functionlookup-placeholder',
-				'wikilambda-functionlookup-offline-placeholder',
-				'wikilambda-functionlookup-no-results',
-				'wikilambda-functionlookup-remove-button-label',
-			],
-		] );
+		];
+
+		foreach ( $controlModules as $name => $module ) {
+			$resourceLoader->register( $name, $module + [
+				'class' => CodexModule::class,
+				'localBasePath' => __DIR__ . '/../../resources/' . $name,
+				'remoteExtPath' => 'WikiLambda/resources/' . $name,
+				'dependencies' => [
+					'vue',
+					'mediawiki.api',
+					'mediawiki.ForeignApi',
+					'mediawiki.jqueryMsg',
+					'mediawiki.Title',
+					'mediawiki.util',
+					'ext.communityConfiguration.Editor.controls',
+				],
+			] );
+		}
 	}
 
 	/**

@@ -66,6 +66,7 @@ class Title {
 const upstreami18n = {
 	'colon-separator': ': ',
 	'comma-separator': ', ',
+	'communityconfiguration-editor-array-remove-element-label-screen-reader': 'Remove Element',
 	missingsummary: '<strong>Reminder:</strong> You have not provided an edit summary.\nIf you click "$1" again, your edit will be published without one.',
 	parentheses: '($1)',
 	'quotation-marks': '"$1"'
