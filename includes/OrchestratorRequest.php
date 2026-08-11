@@ -63,7 +63,9 @@ class OrchestratorRequest {
 		$this->tracer = MediaWikiServices::getInstance()->getTracer();
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 
-		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+		// Use a separate channel for the orchestrator. This class writes a message for each
+		// call, and those messages can hide the other messages on the WikiLambda channel.
+		$this->logger = LoggerFactory::getInstance( 'WikiLambdaOrchestrator' );
 	}
 
 	/**

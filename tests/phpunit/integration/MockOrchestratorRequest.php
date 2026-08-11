@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use GuzzleHttp\Psr7\Response;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Logger\LoggerFactory;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -53,7 +54,10 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 		}
 
 		// Add a debug log so it's easier to find the wrong test data in the file if it fails
-		wfDebugLog( 'WikiLambda', 'MockOrchestratorRequest: Found test data for key: "' . $key . '"' );
+		LoggerFactory::getInstance( 'WikiLambdaOrchestrator' )->debug(
+			__METHOD__ . ' found test data for {key}',
+			[ 'key' => $key ]
+		);
 
 		$entry = $this->fileData->$key;
 		$httpStatusCode = $entry->httpStatusCode;
