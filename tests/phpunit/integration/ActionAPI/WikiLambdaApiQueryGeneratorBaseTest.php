@@ -29,6 +29,7 @@ use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZObjectLabels;
 use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiQueryGeneratorBase;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Wikimedia\TestingAccessWrapper;
 
@@ -111,6 +112,24 @@ class WikiLambdaApiQueryGeneratorBaseTest extends WikiLambdaApiTestCase {
 			$logger,
 			$module->getLogger(),
 			'getLogger() returns whatever setLogger() last received'
+		);
+	}
+
+	/**
+	 * The $logger property is typed with no default, so before the base class set one in its
+	 * constructor a getLogger() call from a subclass that never called setLogger() was a fatal
+	 * "must not be accessed before initialization". Most subclasses never call setLogger().
+	 */
+	public function testLogger_defaultedByBaseConstructor() {
+		$query = $this->newApiQuery();
+
+		$module = new class( $query, 'wikilambda_test_generator' ) extends WikiLambdaApiQueryGeneratorBase {
+		};
+
+		$this->assertInstanceOf(
+			LoggerInterface::class,
+			$module->getLogger(),
+			'getLogger() works without a prior setLogger() call'
 		);
 	}
 

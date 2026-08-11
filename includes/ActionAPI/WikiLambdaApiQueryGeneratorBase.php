@@ -3,11 +3,13 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiPageSet;
+use MediaWiki\Api\ApiQuery;
 use MediaWiki\Api\ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
@@ -28,6 +30,19 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 	use WikiLambdaApiModeGuardTrait;
 
 	protected LoggerInterface $logger;
+
+	/**
+	 * Set a default logger for all subclasses. The $logger property has a type and no default
+	 * value, thus a getLogger() call before setLogger() is a fatal error. Subclasses can replace
+	 * the default logger with setLogger().
+	 *
+	 * @inheritDoc
+	 */
+	public function __construct( ApiQuery $query, string $moduleName, string $paramPrefix = '' ) {
+		parent::__construct( $query, $moduleName, $paramPrefix );
+
+		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
+	}
 
 	/**
 	 * @inheritDoc

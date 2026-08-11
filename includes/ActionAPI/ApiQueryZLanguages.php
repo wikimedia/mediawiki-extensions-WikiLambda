@@ -14,7 +14,6 @@ use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\Logger\LoggerFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryZLanguages extends WikiLambdaApiQueryGeneratorBase {
@@ -30,7 +29,6 @@ class ApiQueryZLanguages extends WikiLambdaApiQueryGeneratorBase {
 
 		$this->langRegistry = ZLangRegistry::singleton();
 		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
-		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 	}
 
 	/**

@@ -22,7 +22,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\LanguageFallback;
 use MediaWiki\Language\LanguageNameUtils;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
@@ -49,7 +48,6 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 
 		// Non-injected items
 		$this->typeRegistry = ZTypeRegistry::singleton();
-		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 	}
 
 	/**
