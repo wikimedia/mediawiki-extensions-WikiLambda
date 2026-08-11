@@ -242,7 +242,15 @@ class AbstractPageRenderingHandler implements
 		// <link rel="via"> companion in <head> (see onBeforeDisplayNoArticleText) covers consumers
 		// that read link relations but not RDFa.
 		$sourceUrl = $this->getAbstractSourceUrl( $topicQid );
-		$output->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
+
+		// $specialOutput is a temporary OutputPage: only its HTML goes into the real output below,
+		// so the styles and scripts that the special page registered for that HTML stay behind.
+		// Copy the lists across, rather than name the modules again here, to keep the special page
+		// the one place that declares what its own output needs. Without this the reference and
+		// Commons image markup in the sections gets no styles and no behaviour.
+		$output->addModuleStyles( $specialOutput->getModuleStyles() );
+		$output->addModules( $specialOutput->getModules() );
+
 		$output->addHTML( Html::rawElement(
 			'div',
 			[

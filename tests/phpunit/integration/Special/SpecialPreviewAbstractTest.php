@@ -364,6 +364,38 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 		$this->assertStringContainsString( '<b>some neutral but interesting text</b>', $sections[0] );
 	}
 
+	public function testSuccessRegistersContentModule(): void {
+		$this->mockArticleStoreWithSections( 'Q42', 'en', [
+			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		$this->executeSpecialPage(
+			/* subpage */ 'en/Q42',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		// The sections can hold reference and Commons image markup, so this page must ask for the
+		// content module. AbstractPageRenderingHandler copies these lists onto the article output
+		// when it embeds this page, so an integrated article gets them too.
+		$output = $context->getOutput();
+		$this->assertContains(
+			'ext.wikilambda.content.styles', $output->getModuleStyles(),
+			'We register ext.wikilambda.content.styles; make sure that\'s set'
+		);
+		$this->assertContains(
+			'ext.wikilambda.content', $output->getModules(),
+			'We register ext.wikilambda.content; make sure that\'s set'
+		);
+	}
+
 	public function testSuccessTwoSectionsAvailable(): void {
 		$this->mockArticleStoreWithSections( 'Q42', 'en', [
 			self::LEDE_SECTION => '<b>some neutral but interesting text</b>',

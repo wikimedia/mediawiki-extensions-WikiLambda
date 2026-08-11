@@ -72,7 +72,11 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->setService( 'AbstractWikiConfigProvider', $mockProvider );
 	}
 
-	private function mockSpecialPageFactory( string $expectedHtml ): void {
+	private function mockSpecialPageFactory(
+		string $expectedHtml,
+		array $moduleStyles = [],
+		array $modules = []
+	): void {
 		$mockSpecialPage = $this->createMock( SpecialPage::class );
 		$capturedContext = null;
 
@@ -84,9 +88,14 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 
 		$mockSpecialPage
 			->method( 'execute' )
-			->willReturnCallback( static function () use ( &$capturedContext, $expectedHtml ) {
-				$capturedContext->getOutput()->addHTML( $expectedHtml );
-			} );
+			->willReturnCallback(
+				static function () use ( &$capturedContext, $expectedHtml, $moduleStyles, $modules ) {
+					$specialOutput = $capturedContext->getOutput();
+					$specialOutput->addModuleStyles( $moduleStyles );
+					$specialOutput->addModules( $modules );
+					$specialOutput->addHTML( $expectedHtml );
+				}
+			);
 
 		$mockSpecialPageFactory = $this->createMock( SpecialPageFactory::class );
 		$mockSpecialPageFactory
@@ -223,6 +232,33 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertStringContainsString( 'abstract.wikipedia.org/wiki/Q42', $html );
 		// The provenance must not be emitted as an executable/script element.
 		$this->assertStringNotContainsString( 'ld+json', $html );
+	}
+
+	public function testOnShowMissingArticle_optedIn_replaysSpecialPageModules(): void {
+		$this->mockSpecialPageFactory(
+			'<p>body</p>',
+			[ 'ext.wikilambda.content.styles' ],
+			[ 'ext.wikilambda.content' ]
+		);
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onShowMissingArticle( $article );
+
+		// Only the HTML goes from the temporary OutputPage into the real one. Copy the modules that
+		// the special page registered for that HTML too. If you do not, the reference and Commons
+		// image markup in the sections gets no styles and no behaviour.
+		$output = $article->getContext()->getOutput();
+		$this->assertContains(
+			'ext.wikilambda.content.styles', $output->getModuleStyles(),
+			'We replay the special page\'s module styles onto the article output'
+		);
+		$this->assertContains(
+			'ext.wikilambda.content', $output->getModules(),
+			'We replay the special page\'s modules onto the article output'
+		);
 	}
 
 	// onBeforeDisplayNoArticleText: external-indexability metadata (T422707)

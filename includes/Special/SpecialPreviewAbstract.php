@@ -282,7 +282,11 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			$articleHtml .= HtmlArmor::getHtml( $sectionHtml );
 		}
 
-		// Set content html
+		// Set content html. The stored sections come from the same fragment renderer as the
+		// {{#function:…}} parser function. They can contain reference and Commons image markup.
+		// The content module gives that markup its styles and its behaviour.
+		$output->addModuleStyles( [ 'ext.wikilambda.content.styles' ] );
+		$output->addModules( [ 'ext.wikilambda.content' ] );
 		$output->addHTML( $articleHtml );
 
 		// Finally show AW provenance banner at the bottom of the article
