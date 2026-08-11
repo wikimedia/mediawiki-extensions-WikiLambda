@@ -33,7 +33,7 @@ class WikifunctionsClientFanOutQueueJob extends Job implements GenericParameterJ
 		parent::__construct( 'wikifunctionsClientFanOutQueue', $params );
 
 		// Non-injected items
-		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 		$this->jobQueueGroupFactory = MediaWikiServices::getInstance()->getJobQueueGroupFactory();
 
 		$this->logger->debug(
