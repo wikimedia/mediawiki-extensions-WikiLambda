@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\JobQueue\JobQueueGroup;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class MemcachedAWFragmentStore extends AWFragmentStore {
 
@@ -32,9 +33,12 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 		array $fragment,
 		string $topicQid,
 		WikifunctionsLanguage $language,
-		string $date,
+		string $datetime,
 		bool $revalidate = true
 	): AWFragment {
+		// Transform datetime ('YmdHis') into the date format needed by the cache key
+		$date = ( new ConvertibleTimestamp( $datetime ) )->format( 'Y-m-d' );
+
 		// Fragment key, used for both fresh and stale cache keys
 		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
 
@@ -76,7 +80,7 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 				'fragment' => $fragment,
 				'qid' => $topicQid,
 				'language' => $language->getZid(),
-				'date' => $date,
+				'datetime' => $datetime,
 				'fragmentKey' => $fragmentKey,
 			] );
 
@@ -104,10 +108,13 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 	public function setRenderedAWFragment(
 		string $topicQid,
 		string $languageZid,
-		string $date,
+		string $datetime,
 		string $fragmentKey,
 		array $value
 	): bool {
+		// Transform datetime ('YmdHis') into the date format needed by the cache key
+		$date = ( new ConvertibleTimestamp( $datetime ) )->format( 'Y-m-d' );
+
 		// Build fresh cache key (with today's date)
 		$cacheKeyFresh = $this->objectCache->makeKey(
 			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,

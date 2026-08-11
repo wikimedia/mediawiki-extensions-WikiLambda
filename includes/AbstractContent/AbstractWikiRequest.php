@@ -23,6 +23,7 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AbstractWikiRequest {
 
@@ -52,7 +53,7 @@ class AbstractWikiRequest {
 	 * @param array $fragment
 	 * @param string $topicQid
 	 * @param string $languageZid
-	 * @param string $date
+	 * @param string $datetime
 	 * @param string $fragmentKey
 	 * @return array
 	 */
@@ -60,7 +61,7 @@ class AbstractWikiRequest {
 		array $fragment,
 		string $topicQid,
 		string $languageZid,
-		string $date,
+		string $datetime,
 		string $fragmentKey
 	): array {
 		$renderedValue = [];
@@ -70,7 +71,7 @@ class AbstractWikiRequest {
 			$fragment,
 			$topicQid,
 			$languageZid,
-			$date
+			$datetime
 		);
 
 		try {
@@ -151,7 +152,7 @@ class AbstractWikiRequest {
 		$this->fragmentStore->setRenderedAWFragment(
 			$topicQid,
 			$languageZid,
-			$date,
+			$datetime,
 			$fragmentKey,
 			$renderedValue
 		);
@@ -173,15 +174,18 @@ class AbstractWikiRequest {
 	 * @param array $fragment
 	 * @param string $qid
 	 * @param string $language
-	 * @param string $date
+	 * @param string $datetime
 	 * @return array
 	 */
 	private function buildRenderAWFragmentCall(
 		array $fragment,
 		string $qid,
 		string $language,
-		string $date
+		string $datetime
 	): array {
+		// Transform datetime ('YmdHis') into the date format needed by the cache key
+		$date = ( new ConvertibleTimestamp( $datetime ) )->format( 'Y-m-d' );
+
 		// We get the function definition from schemata because:
 		// * it will be available in the Abstract repo
 		// * we don't need the user-contributed labels

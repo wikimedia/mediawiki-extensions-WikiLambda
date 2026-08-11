@@ -39,7 +39,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$this->setService( 'WikifunctionsLanguageFactory', $this->langFactory );
 
 		// Set fake timestamp
-		ConvertibleTimestamp::setFakeTime( '2023-07-26T00:00:00Z' );
+		ConvertibleTimestamp::setFakeTime( '2023-07-26T04:05:00Z' );
 	}
 
 	protected function tearDown(): void {
@@ -79,7 +79,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 				$args['fragment'],
 				$args['topicQid'],
 				$args['language'],
-				$args['date'],
+				$args['datetime'],
 				$args['revalidate'] ?? false
 			)
 			->willReturn( $output );
@@ -95,7 +95,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	public function testStoredFreshAWFragment() {
 		// Parameters for abstractwiki_run_fragment
 		$qid = 'Q42';
-		$date = '2023-07-26';
+		$datetime = '20230726040500';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -114,7 +114,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
-			'date' => $date,
+			'datetime' => $datetime,
 			'fragment' => $fragment,
 		], $storedFragment );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
@@ -146,7 +146,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testStoredStaleAWFragment() {
 		$qid = 'Q42';
-		$date = '2023-07-26';
+		$datetime = '20230726040500';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -165,7 +165,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
-			'date' => $date,
+			'datetime' => $datetime,
 			'fragment' => $fragment,
 		], $storedFragment );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
@@ -197,7 +197,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testMissingAWFragmentSync() {
 		$qid = 'Q42';
-		$date = '2023-07-26';
+		$datetime = '20230726040500';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -215,7 +215,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
-			'date' => $date,
+			'datetime' => $datetime,
 			'fragment' => $fragment,
 		], $missingFragment );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
@@ -224,7 +224,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$awRequest = $this->createMock( AbstractWikiRequest::class );
 		$awRequest->expects( $this->once() )
 			->method( 'fetchRenderedAWFragment' )
-			->with( $fragment, $qid, $languageZid, $date, $fragmentKey )
+			->with( $fragment, $qid, $languageZid, $datetime, $fragmentKey )
 			->willReturn( $renderedFragment );
 		$this->setService( 'AbstractWikiRequest', $awRequest );
 
@@ -250,7 +250,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testMissingAWFragmentAsync() {
 		$qid = 'Q42';
-		$date = '2023-07-26';
+		$datetime = '20230726040500';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -268,7 +268,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
-			'date' => $date,
+			'datetime' => $datetime,
 			'fragment' => $fragment,
 			'revalidate' => true
 		], $missingFragment );
@@ -335,7 +335,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 */
 	public function testExecute_diesWhenCachedResultIsFailure() {
 		$qid = 'Q42';
-		$date = '2023-07-26';
+		$datetime = '20230726040500';
 		$languageZid = 'Z1002';
 		$language = $this->langFactory->getLanguageFromZid( $languageZid );
 		// Fragment
@@ -359,7 +359,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
-			'date' => $date,
+			'datetime' => $datetime,
 			'fragment' => $fragment,
 		], $storedFragment );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );

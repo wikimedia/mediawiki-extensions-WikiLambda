@@ -25,6 +25,7 @@ use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\TitleFactory;
 use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
+use Wikimedia\Timestamp\TimestampFormat as TS;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
@@ -269,7 +270,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 						$topicQid,
 						$sectionQid,
 						$language,
-						$now,
+						$now->getTimestamp( TS::MW ),
 						$sectionFragments
 					);
 
@@ -322,7 +323,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 
 			// 4. Before being done with this topicQid, we compile and store the AWArticleMetadata
 			$payload[ 'sections' ] = $sectionIds;
-			$payload[ 'lastRendered' ] = ConvertibleTimestamp::now();
+			$payload[ 'lastRendered' ] = ConvertibleTimestamp::now( TS::MW );
 			$payload[ 'renderedLangs' ] = array_values(
 				array_unique( array_merge( $payload[ 'renderedLangs' ] ?? [], $langs ) )
 			);
@@ -352,7 +353,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 	 * @param string $topicQid
 	 * @param string $sectionQid
 	 * @param WikifunctionsLanguage $language
-	 * @param ConvertibleTimestamp $ts
+	 * @param string $datetime
 	 * @param array $fragments
 	 * @return AWSection
 	 */
@@ -360,7 +361,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		string $topicQid,
 		string $sectionQid,
 		WikifunctionsLanguage $language,
-		ConvertibleTimestamp $ts,
+		string $datetime,
 		array $fragments
 	): AWSection {
 		// Construct a blank AWSection with no payload
@@ -372,7 +373,7 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 				$fragment,
 				$topicQid,
 				$language,
-				$ts->format( 'Y-m-d' ),
+				$datetime
 			);
 
 			// Are fragments being rendered and cached successfully?

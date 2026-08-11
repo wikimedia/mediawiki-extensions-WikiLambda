@@ -325,7 +325,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$fragmentStore = $this->getMockFragmentStoreForSetter( [
 			'topicQid' => 'Q42',
 			'languageZid' => 'Z1002',
-			'date' => '2026-05-14',
+			'datetime' => '20260514040500',
 			'fragmentKey' => 'hashed-fragment',
 			'value' => [ 'success' => true, 'value' => $htmlContent ]
 		] );
@@ -336,7 +336,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			/* fragment= */ [ 'Z1K1' => 'Z7' ],
 			/* topicQid= */ 'Q42',
 			/* languageZid= */ 'Z1002',
-			/* date= */ '2026-05-14',
+			/* datetime= */ '20260514040500',
 			/* fragmentKey= */ 'hashed-fragment',
 		);
 
@@ -361,7 +361,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$fragmentStore = $this->getMockFragmentStoreForSetter( [
 			'topicQid' => 'Q42',
 			'languageZid' => 'Z1002',
-			'date' => '2026-05-14',
+			'datetime' => '20260514040500',
 			'fragmentKey' => 'hashed-fragment',
 			'value' => [
 				'success' => false,
@@ -380,7 +380,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			/* fragment= */ [ 'Z1K1' => 'Z7' ],
 			/* topicQid= */ 'Q42',
 			/* languageZid= */ 'Z1002',
-			/* date= */ '2026-05-14',
+			/* datetime= */ '20260514040500',
 			/* fragmentKey= */ 'hashed-fragment',
 		);
 
@@ -401,7 +401,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$fragmentStore = $this->getMockFragmentStoreForSetter( [
 			'topicQid' => 'Q42',
 			'languageZid' => 'Z1002',
-			'date' => '2026-05-14',
+			'datetime' => '20260514040500',
 			'fragmentKey' => 'hashed-fragment',
 			'value' => [
 				'success' => false,
@@ -420,7 +420,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			/* fragment= */ [ 'Z1K1' => 'Z7' ],
 			/* topicQid= */ 'Q42',
 			/* languageZid= */ 'Z1002',
-			/* date= */ '2026-05-14',
+			/* datetime= */ '20260514040500',
 			/* fragmentKey= */ 'hashed-fragment',
 		);
 
@@ -449,7 +449,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$fragmentStore = $this->getMockFragmentStoreForSetter( [
 			'topicQid' => 'Q42',
 			'languageZid' => 'Z1002',
-			'date' => '2026-05-14',
+			'datetime' => '20260514040500',
 			'fragmentKey' => 'hashed-fragment',
 			'value' => [
 				'success' => false,
@@ -468,7 +468,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			/* fragment= */ [ 'Z1K1' => 'Z7' ],
 			/* topicQid= */ 'Q42',
 			/* languageZid= */ 'Z1002',
-			/* date= */ '2026-05-14',
+			/* datetime= */ '20260514040500',
 			/* fragmentKey= */ 'hashed-fragment',
 		);
 
@@ -679,7 +679,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			->with(
 				$expected[ 'topicQid' ],
 				$expected[ 'languageZid' ],
-				$expected[ 'date' ],
+				$expected[ 'datetime' ],
 				$expected[ 'fragmentKey' ],
 				$expected[ 'value' ]
 			)

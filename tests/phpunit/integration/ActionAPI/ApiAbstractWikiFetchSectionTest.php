@@ -156,7 +156,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	public function testFetchSection_freshFragment(): void {
 		$qid = 'Q42';
 		$section = 'Q8776414';
-		$date = '2026-01-01';
 		$lang = 'en';
 
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
@@ -192,7 +191,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	public function testFetchSection_multipleFragments(): void {
 		$qid = 'Q42';
 		$section = 'Q8776414';
-		$date = '2026-01-01';
 		$lang = 'en';
 
 		$fragment1 = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal1</b>' ];
@@ -247,7 +245,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 	public function testFetchFragments_freshFragment(): void {
 		$qid = 'Q42';
-		$date = '2026-01-01';
 		$lang = 'en';
 
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
@@ -273,7 +270,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 	public function testFetchFragments_staleFragment(): void {
 		$qid = 'Q42';
-		$date = '2026-01-01';
 		$lang = 'en';
 
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
@@ -299,7 +295,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 	public function testFetchFragments_pendingFragment(): void {
 		$qid = 'Q42';
-		$date = '2026-01-01';
 		$lang = 'en';
 
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
@@ -326,7 +321,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 	public function testFetchFragments_multipleStates(): void {
 		$qid = 'Q42';
-		$date = '2026-01-01';
 		$lang = 'en';
 
 		$fragment1 = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>first</b>' ];
@@ -360,10 +354,10 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 	public function testFetchFragments_forwardsDateAndLanguage(): void {
 		$qid = 'Q42';
-		$date = '2024-12-25';
+		$datetime = '20241225040500';
 		$lang = 'en';
 
-		ConvertibleTimestamp::setFakeTime( '2024-12-25T00:00:00Z' );
+		ConvertibleTimestamp::setFakeTime( '2024-12-25T04:05:00Z' );
 
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
 		$fragmentsJson = json_encode( [ $fragment ] );
@@ -373,17 +367,17 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		// language plumbing (e.g. the makeFragment argument order) is caught.
 		$capturedTopic = null;
 		$capturedLanguage = null;
-		$capturedDate = null;
+		$capturedDatetime = null;
 
 		$fragmentStore = $this->createMock( AWFragmentStore::class );
 		$fragmentStore
 			->method( 'getRenderedAWFragment' )
 			->willReturnCallback(
-				function ( $f, $topicQid, $language, $d )
-				use ( &$capturedTopic, &$capturedLanguage, &$capturedDate, $qid, $lang, $value ) {
+				function ( $f, $topicQid, $language, $dt )
+				use ( &$capturedTopic, &$capturedLanguage, &$capturedDatetime, $qid, $lang, $value ) {
 					$capturedTopic = $topicQid;
 					$capturedLanguage = $language;
-					$capturedDate = $d;
+					$capturedDatetime = $dt;
 					return $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
 				}
 			);
@@ -399,7 +393,7 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 		// The request's topic, date and language reach the store verbatim.
 		$this->assertSame( $qid, $capturedTopic );
-		$this->assertSame( $date, $capturedDate );
+		$this->assertSame( $datetime, $capturedDatetime );
 		$this->assertInstanceOf( WikifunctionsLanguage::class, $capturedLanguage );
 		$this->assertSame( $lang, $capturedLanguage->getCode() );
 		$this->assertSame( 'Z1002', $capturedLanguage->getZid() );

@@ -42,7 +42,7 @@ abstract class AWFragmentStore {
 	 * * its topic Qid: the Wikidata Qid uniquely identifying the Abstract Wiki article,
 	 * * the language to render it in: a WikifunctionsLanguage object containing the Language
 	 *   and its Wikifunctions equivalent Zid, and
-	 * * today's date: as a string in 'Y-m-d' date format.
+	 * * today's date and time: as a string in TS::MW ('YmdHis') format.
 	 *
 	 * This getter ensures that:
 	 * * An AWFragment object is always returned.
@@ -81,7 +81,7 @@ abstract class AWFragmentStore {
 	 * @param array $fragment
 	 * @param string $topicQid
 	 * @param WikifunctionsLanguage $language
-	 * @param string $date
+	 * @param string $datetime
 	 * @param bool $revalidate
 	 * @return AWFragment
 	 */
@@ -89,7 +89,7 @@ abstract class AWFragmentStore {
 		array $fragment,
 		string $topicQid,
 		WikifunctionsLanguage $language,
-		string $date,
+		string $datetime,
 		bool $revalidate = true
 	): AWFragment;
 
@@ -99,7 +99,7 @@ abstract class AWFragmentStore {
 	 *
 	 * @param string $topicQid
 	 * @param string $languageZid
-	 * @param string $date
+	 * @param string $datetime
 	 * @param string $fragmentKey
 	 * @param array $value
 	 * @return bool
@@ -107,7 +107,7 @@ abstract class AWFragmentStore {
 	abstract public function setRenderedAWFragment(
 		string $topicQid,
 		string $languageZid,
-		string $date,
+		string $datetime,
 		string $fragmentKey,
 		array $value
 	): bool;

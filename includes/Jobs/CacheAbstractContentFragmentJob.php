@@ -18,6 +18,8 @@ use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use Psr\Log\LoggerInterface;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
+use Wikimedia\Timestamp\TimestampFormat as TS;
 
 /**
  * Asynchronous job run on Abstract Wiki to refresh an Abstract Content
@@ -49,12 +51,14 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 
 		$this->abstractWikiRequest = WikiLambdaServices::getAbstractWikiRequest();
 
+		// TODO (T434284) Remove date from the log once the old jobs have been drained
 		$this->logger->info(
 			__CLASS__ . ' created',
 			[
 				'qid' => $params['qid'],
 				'language' => $params['language'],
-				'date' => $params['date'],
+				'date' => $params['date'] ?? null,
+				'datetime' => $params['datetime'] ?? null,
 				'fragmentKey' => $params['fragmentKey']
 			]
 		);
@@ -72,15 +76,25 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 		$fragment = $this->params['fragment'];
 		$qid = $this->params['qid'];
 		$language = $this->params['language'];
-		$date = $this->params['date'];
 		$fragmentKey = $this->params['fragmentKey'];
 
+		// TODO (T434284) Transitional code: we should remove this when the
+		// old job queue drains, and we are ready to use datetime directly:
+		if ( isset( $this->params['datetime'] ) ) {
+			$datetime = $this->params['datetime'];
+		} else {
+			// Transform date 'Y-m-d' into compatible datetime if the
+			// job queue has any lingering job with the old parameters
+			$datetime = ( new ConvertibleTimestamp( $this->params['date'] . ' 00:00:00' ) )
+				->getTimestamp( TS::MW );
+		}
+
 		$this->logger->info(
-			__CLASS__ . ' initiated for qid:{qid} language:{language} and date:{date} ',
+			__CLASS__ . ' initiated for qid:{qid} language:{language} and datetime:{datetime} ',
 			[
 				'qid' => $qid,
 				'language' => $language,
-				'date' => $date,
+				'datetime' => $datetime,
 				'fragmentKey' => $fragmentKey
 			]
 		);
@@ -89,7 +103,7 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 			$fragment,
 			$qid,
 			$language,
-			$date,
+			$datetime,
 			$fragmentKey
 		);
 
@@ -101,12 +115,12 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 				$httpStatusCode === HttpStatus::TOO_MANY_REQUESTS ||
 				$httpStatusCode === HttpStatus::SERVICE_UNAVAILABLE
 			) {
-				$this->logger->warning(
-					__CLASS__ . ' rate limited ({httpStatusCode}) for qid:{qid} language:{language} and date:{date} ',
+				$this->logger->warning( __CLASS__
+					. ' rate limited ({httpStatusCode}) for qid:{qid} language:{language} and datetime:{datetime} ',
 					[
 						'qid' => $qid,
 						'language' => $language,
-						'date' => $date,
+						'datetime' => $datetime,
 						'fragmentKey' => $fragmentKey,
 						'httpStatusCode' => $httpStatusCode
 					]
@@ -116,12 +130,12 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 			}
 		}
 
-		$this->logger->info(
-			__CLASS__ . ' refresh fragment status:{httpStatusCode} for qid:{qid} language:{language} and date:{date} ',
+		$this->logger->info( __CLASS__
+			. ' refresh fragment status:{httpStatusCode} for qid:{qid} language:{language} and datetime:{datetime} ',
 			[
 				'qid' => $qid,
 				'language' => $language,
-				'date' => $date,
+				'datetime' => $datetime,
 				'fragmentKey' => $fragmentKey,
 				'httpStatusCode' => $httpStatusCode
 			]
@@ -144,11 +158,10 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 	 */
 	public function getDeduplicationInfo() {
 		$info = parent::getDeduplicationInfo();
-		// When deduplicating, only keep fragment-defining parameters
+		// When deduplicating, only keep fragment-defining parameters (qid, language and fragment)
 		$info[ 'params' ] = [
 			'qid' => $this->params['qid'],
 			'language' => $this->params['language'],
-			'date' => $this->params['date'],
 			'fragment' => $this->params['fragment']
 		];
 

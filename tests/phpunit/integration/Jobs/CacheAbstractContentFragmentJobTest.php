@@ -24,7 +24,7 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaAbstractModeIntegrat
 			'fragment' => [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z801' ],
 			'qid' => 'Q42',
 			'language' => 'Z1002',
-			'date' => '2026-04-10',
+			'datetime' => '20260410405000',
 			'fragmentKey' => 'some-fragment-key'
 		], $overrides ) );
 	}
@@ -37,7 +37,7 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaAbstractModeIntegrat
 				[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z801' ],
 				'Q42',
 				'Z1002',
-				'2026-04-10',
+				'20260410405000',
 				'some-fragment-key'
 			)
 			->willReturn( [ 'success' => true, 'value' => '<b>rendered</b>' ] );
@@ -45,6 +45,36 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaAbstractModeIntegrat
 		$this->setService( 'AbstractWikiRequest', $mockRequest );
 
 		$job = $this->buildJob();
+
+		$this->assertTrue( $job->run() );
+	}
+
+	// T434284 Make sure that any lingering jobs in the queue with the date
+	// parameter can be properly executed with the new signature.
+	public function testRun_success_dateParameter() {
+		$mockRequest = $this->createMock( AbstractWikiRequest::class );
+		$mockRequest->expects( $this->once() )
+			->method( 'fetchRenderedAWFragment' )
+			->with(
+				[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z801' ],
+				'Q42',
+				'Z1002',
+				// method is called with full datetime built from
+				// input date value and time set to 00:00:00
+				'20260410000000',
+				'some-fragment-key'
+			)
+			->willReturn( [ 'success' => true, 'value' => '<b>rendered</b>' ] );
+
+		$this->setService( 'AbstractWikiRequest', $mockRequest );
+
+		$job = new CacheAbstractContentFragmentJob( [
+			'fragment' => [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z801' ],
+			'qid' => 'Q42',
+			'language' => 'Z1002',
+			'date' => '2026-04-10',
+			'fragmentKey' => 'some-fragment-key'
+		] );
 
 		$this->assertTrue( $job->run() );
 	}
@@ -138,8 +168,11 @@ class CacheAbstractContentFragmentJobTest extends WikiLambdaAbstractModeIntegrat
 		// Deduplication should only keep fragment-defining parameters
 		$this->assertSame( 'Q42', $info[ 'params' ][ 'qid' ] );
 		$this->assertSame( 'Z1002', $info[ 'params' ][ 'language' ] );
-		$this->assertSame( '2026-04-10', $info[ 'params' ][ 'date' ] );
 		$this->assertArrayHasKey( 'fragment', $info[ 'params' ] );
+
+		// T434284 Assert that date and datetime are not part of the deduplication parameters
+		$this->assertArrayNotHasKey( 'date', $info[ 'params' ] );
+		$this->assertArrayNotHasKey( 'datetime', $info[ 'params' ] );
 	}
 
 	public function testDeduplication_identicalCollapses() {

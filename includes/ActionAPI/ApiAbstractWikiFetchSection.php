@@ -26,6 +26,7 @@ use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
+use Wikimedia\Timestamp\TimestampFormat as TS;
 
 class ApiAbstractWikiFetchSection extends ApiBase {
 
@@ -70,8 +71,8 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		$languageZid = $params[ 'language' ];
 		$fragmentsStr = $params[ 'fragments' ];
 
-		// Today's date, needed for the fragmentStore getter
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+		// Today's datetime, needed for the fragmentStore getter
+		$datetime = ConvertibleTimestamp::now( TS::MW );
 
 		// Get Wikifunctions language mapping for given language Zid
 		$language = $this->wfLanguageFactory->getLanguageFromZid( $languageZid );
@@ -128,7 +129,7 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 				$fragment,
 				$topicQid,
 				$language,
-				$date
+				$datetime
 			);
 
 			// 4.2. Add fragment (in any state) to the response array for the section

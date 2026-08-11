@@ -23,6 +23,7 @@ use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
+use Wikimedia\Timestamp\TimestampFormat as TS;
 
 class ApiAbstractWikiRunFragment extends ApiBase {
 
@@ -146,15 +147,15 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		WikifunctionsLanguage $language,
 		bool $async
 	): array {
-		// Today's date, needed for the fragmentStore getter and for the regenerate request
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
+		// Today's datetime, needed for the fragmentStore getter and for the regenerate request
+		$datetime = ConvertibleTimestamp::now( TS::MW );
 
 		// Get stored fragment (if any)
 		$awFragment = $this->fragmentStore->getRenderedAWFragment(
 			$fragment,
 			$qid,
 			$language,
-			$date,
+			$datetime,
 			/* revalidate= */ $async
 		);
 
@@ -177,7 +178,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			$fragment,
 			$qid,
 			$language->getZid(),
-			$date,
+			$datetime,
 			$awFragment->getKey()
 		);
 	}

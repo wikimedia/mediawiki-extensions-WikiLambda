@@ -105,8 +105,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$topicQid = 'Q42';
 		$sectionQid = 'Q8776414';
 		$langZid = 'Z1002';
-		$ts = new ConvertibleTimestamp();
-		$date = $ts->format( 'Y-m-d' );
+		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F1' ];
 		$fragment2 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F2' ];

@@ -121,7 +121,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 				$this->assertEquals( $jobParams['fragment'], $job->getParams()[ 'fragment' ] );
 				$this->assertSame( $jobParams['qid'], $job->getParams()[ 'qid' ] );
 				$this->assertSame( $jobParams['language'], $job->getParams()[ 'language' ] );
-				$this->assertSame( $jobParams['date'], $job->getParams()[ 'date' ] );
+				$this->assertSame( $jobParams['datetime'], $job->getParams()[ 'datetime' ] );
 
 				return true;
 			} ) );
@@ -139,7 +139,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		$fragment = [ 'Z1K1' => 'Z89' ];
 		$qid = 'Q42';
 		$language = new WikifunctionsLanguage( $this->makeLanguage( 'en' ), 'Z1002' );
-		$date = '2026-05-15';
+		$datetime = '20260515040500';
 
 		// Mock for MemcachedWrapper; fresh value is available
 		$cachedPayload = [ 'success' => true, 'value' => '<b>fresh</b>' ];
@@ -154,7 +154,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 			$fragment,
 			$qid,
 			$language,
-			$date
+			$datetime
 		);
 
 		$this->assertInstanceOf( AWFragment::class, $result );
@@ -171,7 +171,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		$fragment = [ 'Z1K1' => 'Z89' ];
 		$qid = 'Q42';
 		$language = new WikifunctionsLanguage( $this->makeLanguage( 'en' ), 'Z1002' );
-		$date = '2026-05-15';
+		$datetime = '20260515040500';
 
 		// Mock for MemcachedWrapper; stale value is available
 		$cachedPayload = [ 'success' => true, 'value' => '<b>stale</b>' ];
@@ -182,7 +182,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 			'fragment' => $fragment,
 			'qid'  => $qid,
 			'language' => 'Z1002',
-			'date' => $date
+			'datetime' => $datetime
 		] );
 
 		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
@@ -191,7 +191,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 			$fragment,
 			$qid,
 			$language,
-			$date
+			$datetime
 		);
 
 		$this->assertInstanceOf( AWFragment::class, $result );
@@ -208,7 +208,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		$fragment = [ 'Z1K1' => 'Z89' ];
 		$qid = 'Q42';
 		$language = new WikifunctionsLanguage( $this->makeLanguage( 'en' ), 'Z1002' );
-		$date = '2026-05-15';
+		$datetime = '20260515040500';
 
 		// Mock for MemcachedWrapper; no value is available
 		$objectCache = $this->createMockMemcachedGetter();
@@ -218,7 +218,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 			'fragment' => $fragment,
 			'qid'  => $qid,
 			'language' => 'Z1002',
-			'date' => $date
+			'datetime' => $datetime
 		] );
 
 		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
@@ -227,7 +227,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 			$fragment,
 			$qid,
 			$language,
-			$date
+			$datetime
 		);
 
 		$this->assertInstanceOf( AWFragment::class, $result );
@@ -244,7 +244,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		$fragment = [ 'Z1K1' => 'Z89' ];
 		$qid = 'Q42';
 		$language = new WikifunctionsLanguage( $this->makeLanguage( 'en' ), 'Z1002' );
-		$date = '2026-05-15';
+		$datetime = '20260515040500';
 
 		// Mock for MemcachedWrapper; no value is available
 		$objectCache = $this->createMockMemcachedGetter();
@@ -258,7 +258,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 			$fragment,
 			$qid,
 			$language,
-			$date,
+			$datetime,
 			/* revalidate= */ false
 		);
 
@@ -278,7 +278,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	public function testSetterSuccessfulFragment(): void {
 		$qid = 'Q42';
 		$languageZid = 'Z1002';
-		$date = '2026-05-15';
+		$datetime = '20260515040500';
 		$fragmentKey = 'some-fragment-key';
 		$value = [ 'success' => true, 'value' => '<b>fresh</b>' ];
 
@@ -297,7 +297,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		$fragmentStore->setRenderedAWFragment(
 			$qid,
 			$languageZid,
-			$date,
+			$datetime,
 			$fragmentKey,
 			$value
 		);
@@ -309,7 +309,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	public function testSetterFailedFragment_http400(): void {
 		$qid = 'Q42';
 		$languageZid = 'Z1002';
-		$date = '2026-05-15';
+		$datetime = '20260515040500';
 		$fragmentKey = 'some-fragment-key';
 		$value = [ 'success' => false, 'value' => [ 'httpStatusCode' => 400 ] ];
 
@@ -328,7 +328,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		$fragmentStore->setRenderedAWFragment(
 			$qid,
 			$languageZid,
-			$date,
+			$datetime,
 			$fragmentKey,
 			$value
 		);
@@ -340,7 +340,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	public function testSetterFailedFragment_http500(): void {
 		$qid = 'Q42';
 		$languageZid = 'Z1002';
-		$date = '2026-05-15';
+		$datetime = '20260515040500';
 		$fragmentKey = 'some-fragment-key';
 		$value = [ 'success' => false, 'value' => [ 'httpStatusCode' => 500 ] ];
 
@@ -359,7 +359,7 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		$fragmentStore->setRenderedAWFragment(
 			$qid,
 			$languageZid,
-			$date,
+			$datetime,
 			$fragmentKey,
 			$value
 		);
