@@ -45,7 +45,9 @@ class ApiWikifunctionsHTMLSanitiser extends ApiBase {
 			$this->getUser()->getName(),
 			[
 				'doWork' => static function () use ( $renderer, $userHTMLToClean ) {
-					return $renderer->render( $userHTMLToClean );
+					// The request contains only the HTML, thus we know the origin but not the
+					// function or the page. The label shows that the caller gave what it had.
+					return $renderer->render( $userHTMLToClean, [ 'origin' => 'htmlsanitiser-api' ] );
 				},
 				// The error callback fires when the pool counter reaches its concurrency limit (e.g. Redis
 				// is down or the slot can't be acquired). This requires real pool counter infrastructure

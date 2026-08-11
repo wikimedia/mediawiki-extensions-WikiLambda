@@ -36,6 +36,12 @@ class WikifunctionsFragmentImageRenderer {
 	 */
 	private const FETCH_NOT_FOUND = 'NOT_FOUND';
 
+	/**
+	 * Maximum bytes of a rejected M-ID to log. A malformed M-ID is arbitrary function output
+	 * and can be of any length, thus we shorten it to protect the logging system.
+	 */
+	private const MAX_LOGGED_MID_LENGTH = 100;
+
 	public function __construct(
 		private readonly LoggerInterface $logger,
 		private readonly HttpRequestFactory $httpRequestFactory,
@@ -53,33 +59,45 @@ class WikifunctionsFragmentImageRenderer {
 	 * @param string|null $mid Commons M-ID, e.g. "M68960758", or null when absent from the tag
 	 * @param string $size Image size hint; currently only "thumb" is supported
 	 * @param string|null $alt Explicit alt text; falls back to the Commons file title
+	 * @param array $logContext Log context that identifies what produced this element, e.g. the
+	 *   calling function and page. Empty if the caller has no such information.
 	 * @return string Trusted figure HTML
 	 */
-	public function render( ?string $mid, string $size, ?string $alt ): string {
+	public function render( ?string $mid, string $size, ?string $alt, array $logContext = [] ): string {
+		// A bad mid or size value comes from the function output, thus it is an authoring error
+		// and we log it at info. Commons API and policy failures stay at warning.
 		if ( $mid === null ) {
-			$this->logger->warning( __METHOD__ . ': No image selected', [ 'mid' => $mid ] );
+			$this->logger->info( __METHOD__ . ': No image selected', $logContext );
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-no-image', 'warning', $alt );
 		}
 
 		if ( !preg_match( '/^M\d+$/', $mid ) ) {
-			$this->logger->warning( __METHOD__ . ': Invalid M-ID format', [ 'mid' => $mid ] );
+			$this->logger->info( __METHOD__ . ': Invalid M-ID format: {mid}', [
+				// mb_strcut, not substr: the value is arbitrary function output, and a cut in the
+				// middle of a multi-byte character makes the field invalid UTF-8 for the log pipeline.
+				'mid' => mb_strcut( $mid, 0, self::MAX_LOGGED_MID_LENGTH ),
+				'midLength' => strlen( $mid ),
+			] + $logContext );
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-mid', 'error', $alt );
 		}
 
 		if ( !in_array( $size, self::SUPPORTED_SIZES, true ) ) {
-			$this->logger->warning( __METHOD__ . ': Unsupported size value', [ 'mid' => $mid, 'size' => $size ] );
+			$this->logger->info(
+				__METHOD__ . ': Unsupported size value',
+				[ 'mid' => $mid, 'size' => $size ] + $logContext
+			);
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-size', 'error', $alt );
 		}
 
 		$fetchResult = $this->fetchCommonsImageData( $mid, $size );
 
 		if ( $fetchResult === null ) {
-			$this->logger->warning( __METHOD__ . ': Commons API request failed', [ 'mid' => $mid ] );
+			$this->logger->warning( __METHOD__ . ': Commons API request failed', [ 'mid' => $mid ] + $logContext );
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-unavailable', 'error', $alt );
 		}
 
 		if ( $fetchResult === self::FETCH_NOT_FOUND ) {
-			$this->logger->warning( __METHOD__ . ': Commons page not found', [ 'mid' => $mid ] );
+			$this->logger->info( __METHOD__ . ': Commons page not found', [ 'mid' => $mid ] + $logContext );
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-not-found', 'error', $alt );
 		}
 
@@ -88,7 +106,7 @@ class WikifunctionsFragmentImageRenderer {
 			$this->logger->info( __METHOD__ . ': Skipping non-image MIME type', [
 				'mid' => $mid,
 				'mime' => $mime,
-			] );
+			] + $logContext );
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-mime', 'error', $alt );
 		}
 
@@ -98,7 +116,7 @@ class WikifunctionsFragmentImageRenderer {
 			$this->logger->warning( __METHOD__ . ': Thumbnail URL host not allowed', [
 				'mid' => $mid,
 				'thumbUrl' => $thumbUrl,
-			] );
+			] + $logContext );
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-not-commons', 'error', $alt );
 		}
 
@@ -108,7 +126,7 @@ class WikifunctionsFragmentImageRenderer {
 			$this->logger->info( __METHOD__ . ': Image is on bad file list', [
 				'mid' => $mid,
 				'title' => $title,
-			] );
+			] + $logContext );
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-blocked', 'error', $alt );
 		}
 

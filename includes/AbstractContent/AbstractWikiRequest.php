@@ -80,7 +80,12 @@ class AbstractWikiRequest {
 
 			// 2.1. If successful, render the Z89K1/Html fragment value
 			$sanitizedHtml = $this->fragmentRenderer->render(
-				$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ]
+				$htmlFragment[ ZTypeRegistry::Z_HTML_FRAGMENT_VALUE ],
+				[
+					'qid' => $topicQid,
+					'language' => $languageZid,
+					'fragmentKey' => $fragmentKey,
+				]
 			);
 
 			// ... and prepare rendered and sanitized response to be stored

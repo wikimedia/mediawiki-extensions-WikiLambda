@@ -189,7 +189,10 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 					isset( $cachedValue['type'] )
 					&& $cachedValue['type'] === ZTypeRegistry::Z_HTML_FRAGMENT
 				) {
-					$html = $this->getSanitisedHtmlFragment( $cachedValue['value'] ?? '' );
+					$html = $this->getSanitisedHtmlFragment( $cachedValue['value'] ?? '', [
+						'function' => $expansion['target'],
+						'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
+					] );
 					$timer->setLabel( 'response', 'cached' )->stop();
 					return HtmlPFragment::newFromHtmlString( $html, null );
 				}
@@ -517,11 +520,13 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 * Decode and sanitise a possibly JSON-encoded HTML fragment string.
 	 *
 	 * @param string $value
+	 * @param array $logContext Log context identifying the function and page, so that elements
+	 *   the sanitiser rejects can be traced back to what produced them
 	 * @return string
 	 */
-	private function getSanitisedHtmlFragment( string $value ): string {
+	private function getSanitisedHtmlFragment( string $value, array $logContext = [] ): string {
 		$html = $this->decodeHtmlFragmentValue( $value );
-		return $this->renderer->render( $html );
+		return $this->renderer->render( $html, $logContext );
 	}
 
 	/**

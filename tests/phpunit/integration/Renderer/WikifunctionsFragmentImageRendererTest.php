@@ -16,6 +16,7 @@ use MediaWiki\Http\MWHttpRequest;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\File\BadFileLookup;
 use MediaWikiIntegrationTestCase;
+use Psr\Log\LoggerInterface;
 use StatusValue;
 
 /**
@@ -52,11 +53,13 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 	 * @param HttpRequestFactory|null $httpFactory When null, creates a mock that returns no responses.
 	 * @param MemcachedWrapper|null $cache When null, creates a no-op mock (always cache miss, no writes).
 	 * @param BadFileLookup|null $badFileLookup When null, creates a mock where isBadFile returns false.
+	 * @param LoggerInterface|null $logger When null, uses the real WikiLambda channel logger.
 	 */
 	private function buildRenderer(
 		?HttpRequestFactory $httpFactory = null,
 		?MemcachedWrapper $cache = null,
-		?BadFileLookup $badFileLookup = null
+		?BadFileLookup $badFileLookup = null,
+		?LoggerInterface $logger = null
 	): WikifunctionsFragmentImageRenderer {
 		if ( $cache === null ) {
 			$cache = $this->createMock( MemcachedWrapper::class );
@@ -72,7 +75,7 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		}
 
 		return new WikifunctionsFragmentImageRenderer(
-			LoggerFactory::getInstance( 'WikiLambda' ),
+			$logger ?? LoggerFactory::getInstance( 'WikiLambda' ),
 			$httpFactory ?? $this->createMock( HttpRequestFactory::class ),
 			$cache,
 			$badFileLookup
@@ -136,6 +139,74 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		$result = $this->buildRenderer()->render( 'M68960758', 'large', null );
 		$this->assertStringContainsString( 'ext-wikilambda-image--error', $result );
 		$this->assertStringNotContainsString( '<img', $result );
+	}
+
+	// ------------------------------------------------------------------
+	// Logging of authoring problems
+	// ------------------------------------------------------------------
+
+	/**
+	 * A malformed M-ID is a function-authoring mistake, not a system fault, so it must stay at
+	 * info — it was previously a warning and made up most of this class's production log volume.
+	 * The rejected value and the caller's context are both needed to trace which function
+	 * emitted it.
+	 */
+	public function testRender_invalidMidFormat_logsAtInfoWithValueAndCallerContext() {
+		$logger = $this->createMock( LoggerInterface::class );
+		$logger->expects( $this->never() )->method( 'warning' );
+		$logger->expects( $this->once() )
+			->method( 'info' )
+			->with(
+				$this->stringContains( 'Invalid M-ID format' ),
+				$this->logicalAnd(
+					$this->arrayHasKey( 'mid' ),
+					$this->arrayHasKey( 'function' ),
+					$this->arrayHasKey( 'page' )
+				)
+			);
+
+		$this->buildRenderer( null, null, null, $logger )->render(
+			'not-an-mid',
+			'thumb',
+			null,
+			[ 'function' => 'Z12345', 'page' => 'Main Page' ]
+		);
+	}
+
+	/**
+	 * A rejected M-ID is arbitrary function output, so its length is unbounded. Log a shortened
+	 * value, and the real length alongside it so truncation is never mistaken for the input.
+	 */
+	public function testRender_overlongInvalidMid_logsTruncatedValueAndRealLength() {
+		$logger = $this->createMock( LoggerInterface::class );
+		$logger->expects( $this->once() )
+			->method( 'info' )
+			->with(
+				$this->anything(),
+				$this->callback( static function ( array $logContext ): bool {
+					return strlen( $logContext['mid'] ) === 100 && $logContext['midLength'] === 5000;
+				} )
+			);
+
+		$this->buildRenderer( null, null, null, $logger )->render(
+			str_repeat( 'x', 5000 ),
+			'thumb',
+			null
+		);
+	}
+
+	/**
+	 * Commons being unreachable is a system fault, so it stays at warning whilst the authoring
+	 * problems above are demoted.
+	 */
+	public function testRender_commonsApiFailure_staysAtWarning() {
+		$logger = $this->createMock( LoggerInterface::class );
+		$logger->expects( $this->atLeastOnce() )
+			->method( 'warning' )
+			->with( $this->stringContains( 'Commons API request failed' ), $this->anything() );
+
+		$this->buildRenderer( $this->makeHttpFactory( '', false ), null, null, $logger )
+			->render( 'M68960758', 'thumb', null );
 	}
 
 	// ------------------------------------------------------------------

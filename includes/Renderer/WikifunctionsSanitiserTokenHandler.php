@@ -65,6 +65,8 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 	 * @param User|null $spamCheckUser Anonymous user for SpamBlacklist checks, or null if not loaded
 	 * @param WikifunctionsFragmentImageRenderer|null $imageRenderer Renderer for <ext-wikilambda-image>
 	 *   elements, or null to drop them (e.g. when image support is unavailable)
+	 * @param array $logContext Log context identifying what produced this fragment, e.g. the
+	 *   calling function and page. Empty when the caller knows nothing.
 	 */
 	public function __construct(
 		private readonly LoggerInterface $logger,
@@ -72,7 +74,8 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		private readonly string $source,
 		private readonly array $blockedDomains = [],
 		private readonly ?User $spamCheckUser = null,
-		private readonly ?WikifunctionsFragmentImageRenderer $imageRenderer = null
+		private readonly ?WikifunctionsFragmentImageRenderer $imageRenderer = null,
+		private readonly array $logContext = []
 	) {
 		$this->nextHandler = new Dispatcher( new TreeBuilder( $serializer, [
 			'ignoreErrors' => true,
@@ -274,7 +277,8 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		$figureHtml = $this->imageRenderer->render(
 			$values['mid'] ?? null,
 			$values['size'] ?? 'thumb',
-			$values['alt'] ?? null
+			$values['alt'] ?? null,
+			$this->logContext
 		);
 
 		$placeholder = 'WLIMG' . $this->placeholderSalt . $this->imageCount . 'WL';
@@ -562,6 +566,8 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 	 * @param User|null $spamCheckUser Anonymous user for SpamBlacklist checks, or null if not loaded
 	 * @param WikifunctionsFragmentImageRenderer|null $imageRenderer Renderer for image elements,
 	 *   or null to drop <ext-wikilambda-image> elements
+	 * @param array $logContext Log context identifying what produced this fragment, e.g. the
+	 *   calling function and page. Empty when the caller knows nothing.
 	 * @return string
 	 */
 	public static function sanitiseHtmlFragment(
@@ -569,14 +575,15 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		string $text,
 		array $blockedDomains = [],
 		?User $spamCheckUser = null,
-		?WikifunctionsFragmentImageRenderer $imageRenderer = null
+		?WikifunctionsFragmentImageRenderer $imageRenderer = null,
+		array $logContext = []
 	): string {
 		// Use RemexHtml to tokenize $text and remove the barred tags
 
 		$serializer = new RemexSerializer( new RemexCompatFormatter );
 
 		$handler = new WikifunctionsSanitiserTokenHandler(
-			$logger, $serializer, $text, $blockedDomains, $spamCheckUser, $imageRenderer
+			$logger, $serializer, $text, $blockedDomains, $spamCheckUser, $imageRenderer, $logContext
 		);
 		$tokenizer = new RemexTokenizer(
 			$handler,

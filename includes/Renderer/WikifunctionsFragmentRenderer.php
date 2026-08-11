@@ -36,19 +36,23 @@ class WikifunctionsFragmentRenderer {
 	 * sanitiser's allowed-element list and no string-level extraction round-trip is required.
 	 *
 	 * @param string $html Raw HTML fragment from a Wikifunctions function
+	 * @param array $logContext Log context that identifies what produced this fragment, e.g. the
+	 *   calling function and page. If you do not give it, a log entry for a rejected image
+	 *   element does not show its source.
 	 * @return string Sanitised HTML with image elements expanded to trusted HTML
 	 */
-	public function render( string $html ): string {
-		return $this->sanitiseFragment( $html );
+	public function render( string $html, array $logContext = [] ): string {
+		return $this->sanitiseFragment( $html, $logContext );
 	}
 
 	/**
 	 * Run the HTML sanitiser on the raw fragment, expanding image elements within the pass.
 	 *
 	 * @param string $html
+	 * @param array $logContext
 	 * @return string
 	 */
-	private function sanitiseFragment( string $html ): string {
+	private function sanitiseFragment( string $html, array $logContext = [] ): string {
 		$blockedDomains = $this->loadBlockedDomains();
 		$spamCheckUser = null;
 		if ( ExtensionRegistry::getInstance()->isLoaded( 'SpamBlacklist' ) ) {
@@ -60,7 +64,8 @@ class WikifunctionsFragmentRenderer {
 			$html,
 			$blockedDomains,
 			$spamCheckUser,
-			$this->imageRenderer
+			$this->imageRenderer,
+			$logContext
 		);
 	}
 
