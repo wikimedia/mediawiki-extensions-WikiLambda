@@ -28,23 +28,6 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
 class AbstractWikiRequest {
 
 	/**
-	 * HTTP status codes that tell us that the request or the fragment is wrong. The user
-	 * must correct the fragment, so we log these quietly. The orchestrator sets these codes
-	 * from the Z5/Error type, as listed in function-schemata's error status code mappings
-	 * (`test_data/errors/http_status_mappings.yaml`).
-	 */
-	private const USER_ERROR_STATUS_CODES = [
-		// e.g. Z518/ZObject type mismatch
-		HttpStatus::BAD_REQUEST,
-		// e.g. Z504/ZID not found
-		HttpStatus::NOT_FOUND,
-		// e.g. Z513/Resolved object without Z2K2
-		HttpStatus::CONFLICT,
-		// e.g. Z500/Unspecified error
-		HttpStatus::UNPROCESSABLE_ENTITY,
-	];
-
-	/**
 	 * HTTP status codes that we log at warning level when a fragment fails to render.
 	 *
 	 * These do not have one cause. Some are our fault, e.g. NOT_IMPLEMENTED, when the wiki has
@@ -52,7 +35,7 @@ class AbstractWikiRequest {
 	 * FORBIDDEN. Some can be load problems, e.g. TOO_MANY_REQUESTS and REQUEST_TIMEOUT. We log
 	 * all of them noisily for now, until we know how frequently each one occurs in production.
 	 *
-	 * Failures caused by the content are in self::USER_ERROR_STATUS_CODES, and we log those
+	 * Failures caused by the content are in HttpStatus::CONTENT_ERROR_CODES, and we log those
 	 * quietly. A code in neither list is one that we did not expect, and we log it as an error.
 	 */
 	private const WARNING_STATUS_CODES = [
@@ -148,8 +131,9 @@ class AbstractWikiRequest {
 
 			$httpStatusCode = $e->getHttpStatusCode();
 
-			if ( in_array( $httpStatusCode, self::USER_ERROR_STATUS_CODES, true ) ) {
-				// The user triggered the error. Log it with the extra data, but do not make noise.
+			if ( in_array( $httpStatusCode, HttpStatus::CONTENT_ERROR_CODES, true ) ) {
+				// The content caused the error, and an editor must correct it. Log it with the
+				// extra data, but do not make noise.
 				$logContext = [];
 				if ( $e->hasZError() ) {
 					$logContext[ 'zerror' ] = $e->getZError();

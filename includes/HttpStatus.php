@@ -32,4 +32,28 @@ class HttpStatus {
 	public const BAD_GATEWAY = 502;
 	public const SERVICE_UNAVAILABLE = 503;
 	public const GATEWAY_TIMEOUT = 504;
+
+	/**
+	 * Status codes for a function call that failed because the content is wrong: either the
+	 * request itself, or one of the ZObjects that it uses. The same call keeps giving the same
+	 * error until an editor changes the content, because nothing else can make it succeed.
+	 *
+	 * This is the only property that this list gives you. Callers decide what to do with it;
+	 * e.g. they can cache the failure for longer, or log it more quietly than a failure that
+	 * a retry can clear. This list says nothing about the other status codes: a code that is
+	 * not here can be a temporary failure, but it can also be a different permanent one.
+	 *
+	 * The orchestrator sets its status codes from the Z5/Error type; see the mappings in
+	 * function-schemata's `test_data/errors/http_status_mappings.yaml`.
+	 */
+	public const CONTENT_ERROR_CODES = [
+		// e.g. Z518/ZObject type mismatch
+		self::BAD_REQUEST,
+		// e.g. Z504/ZID not found
+		self::NOT_FOUND,
+		// e.g. Z513/Resolved object without Z2K2
+		self::CONFLICT,
+		// e.g. Z500/Unspecified error
+		self::UNPROCESSABLE_ENTITY,
+	];
 }

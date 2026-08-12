@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\JobQueue\JobQueueGroup;
@@ -304,18 +305,23 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	}
 
 	/**
+	 * A failure that the fragment caused repeats until the content changes, so we keep it for
+	 * the usual time. Every other failure can be transient, so the fresh value expires quickly
+	 * and the fragment is rendered again.
+	 *
+	 * @dataProvider provideFailedFragmentTTLs
 	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::setRenderedAWFragment
 	 */
-	public function testSetterFailedFragment_http400(): void {
+	public function testSetterFailedFragment( int $httpStatusCode, int $expectedFreshTTL ): void {
 		$qid = 'Q42';
 		$languageZid = 'Z1002';
 		$datetime = '20260515040500';
 		$fragmentKey = 'some-fragment-key';
-		$value = [ 'success' => false, 'value' => [ 'httpStatusCode' => 400 ] ];
+		$value = [ 'success' => false, 'value' => [ 'httpStatusCode' => $httpStatusCode ] ];
 
-		// Mock for MemcachedWrapper; set bad request failure for week and month
+		// Mock for MemcachedWrapper; the stale value always lives for a month
 		$expectCalls = [
-			'fresh-cache-key' => MemcachedWrapper::TTL_WEEK,
+			'fresh-cache-key' => $expectedFreshTTL,
 			'stale-cache-key' => MemcachedWrapper::TTL_MONTH
 		];
 		$objectCache = $this->createMockMemcachedSetter( $value, $expectCalls );
@@ -334,34 +340,18 @@ class MemcachedAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 		);
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore::setRenderedAWFragment
-	 */
-	public function testSetterFailedFragment_http500(): void {
-		$qid = 'Q42';
-		$languageZid = 'Z1002';
-		$datetime = '20260515040500';
-		$fragmentKey = 'some-fragment-key';
-		$value = [ 'success' => false, 'value' => [ 'httpStatusCode' => 500 ] ];
-
-		// Mock for MemcachedWrapper; set failure value for minute (only fresh)
-		$expectCalls = [
-			'fresh-cache-key' => MemcachedWrapper::TTL_MINUTE,
-			'stale-cache-key' => MemcachedWrapper::TTL_MONTH
+	public static function provideFailedFragmentTTLs(): array {
+		return [
+			// Failures that the fragment caused: keep them for a week
+			'http 400, bad request' => [ HttpStatus::BAD_REQUEST, MemcachedWrapper::TTL_WEEK ],
+			'http 404, ZID not found' => [ HttpStatus::NOT_FOUND, MemcachedWrapper::TTL_WEEK ],
+			'http 409, conflict' => [ HttpStatus::CONFLICT, MemcachedWrapper::TTL_WEEK ],
+			'http 422, unprocessable' => [ HttpStatus::UNPROCESSABLE_ENTITY, MemcachedWrapper::TTL_WEEK ],
+			// Failures that can be transient: try again in a minute
+			'http 403, forbidden' => [ HttpStatus::FORBIDDEN, MemcachedWrapper::TTL_MINUTE ],
+			'http 429, too many requests' => [ HttpStatus::TOO_MANY_REQUESTS, MemcachedWrapper::TTL_MINUTE ],
+			'http 500, internal server error' => [ HttpStatus::INTERNAL_SERVER_ERROR, MemcachedWrapper::TTL_MINUTE ],
+			'http 503, service unavailable' => [ HttpStatus::SERVICE_UNAVAILABLE, MemcachedWrapper::TTL_MINUTE ],
 		];
-		$objectCache = $this->createMockMemcachedSetter( $value, $expectCalls );
-
-		// Mock for JobQueueGroup; no job is ever queued
-		$jobQueueGroup = $this->createMockJobQueueGroup();
-
-		$fragmentStore = new MemcachedAWFragmentStore( $jobQueueGroup, $objectCache );
-
-		$fragmentStore->setRenderedAWFragment(
-			$qid,
-			$languageZid,
-			$datetime,
-			$fragmentKey,
-			$value
-		);
 	}
 }

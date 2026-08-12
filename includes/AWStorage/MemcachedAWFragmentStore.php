@@ -139,17 +139,19 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 		$freshTTL = $this->objectCache::TTL_WEEK;
 		$staleTTL = $this->objectCache::TTL_MONTH;
 
-		// If fragment failed due to a transient error (anything but a BAD_REQUEST), we set
-		// the fresh value with a TTL_MINUTE, to force re-renders in the future, but we keep
-		// the stale value as is so that we don't mark the fragment as infinitely pending
+		// If the fragment failed for a reason that a re-render can clear, we set the fresh value
+		// with a TTL_MINUTE, to force re-renders in the future, but we keep the stale value as is
+		// so that we don't mark the fragment as infinitely pending. A failure that the content
+		// caused is different: a re-render gives the same error until an editor changes the
+		// content, so we cache it for the usual time and do not ask the orchestrator each minute.
 		if ( $value['success'] === false ) {
 			$httpErrorCode = $value['value']['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
-			if ( (int)$httpErrorCode !== HttpStatus::BAD_REQUEST ) {
+			if ( !in_array( (int)$httpErrorCode, HttpStatus::CONTENT_ERROR_CODES, true ) ) {
 				$freshTTL = $this->objectCache::TTL_MINUTE;
 			}
 		}
 
-		// For successful renders or non-transient errors (BAD_REQUEST)
+		// For successful renders, or for errors that the content caused
 		// * cache fresh value for WEEK (at least 48 hours to ensure availability through timezones)
 		// * cache stale value for MONTH
 		$this->objectCache->set( $cacheKeyFresh, $encodedValue, $freshTTL );
