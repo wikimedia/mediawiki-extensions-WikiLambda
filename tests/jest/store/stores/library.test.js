@@ -26,7 +26,7 @@ describe( 'library Pinia store', () => {
 		store = useMainStore();
 		store.labels = {};
 		store.objects = {};
-		store.requests = {};
+		store.zidPromises = new Map();
 		store.enums = {};
 		store.languages = {};
 		getMock = jest.fn().mockResolvedValue( mockApiResponseFor( [ 'Z1', 'Z2', 'Z6' ] ) );
@@ -1068,6 +1068,35 @@ describe( 'library Pinia store', () => {
 					expect( store.performFetchZids ).toHaveBeenNthCalledWith( 1, { zids: first } );
 					expect( store.performFetchZids ).toHaveBeenNthCalledWith( 2, { zids: [ 'Z5', 'Z6' ] } );
 				} );
+			} );
+
+			it( 'never requests the new-object placeholder zid', async () => {
+				store.performFetchZids = jest.fn().mockResolvedValue( true );
+
+				await store.fetchZids( { zids: [ Constants.NEW_ZID_PLACEHOLDER, 'Z6' ] } );
+
+				expect( store.performFetchZids ).toHaveBeenCalledWith( { zids: [ 'Z6' ] } );
+			} );
+
+			it( 'clears the in-flight entries once the request settles', async () => {
+				store.performFetchZids = jest.fn().mockResolvedValue( true );
+
+				await store.fetchZids( { zids: [ 'Z6' ] } );
+
+				expect( store.zidPromises.size ).toBe( 0 );
+			} );
+
+			it( 'clears the in-flight entries when the request fails, so a later call retries', async () => {
+				store.performFetchZids = jest.fn()
+					.mockRejectedValueOnce( new Error( 'network' ) )
+					.mockResolvedValueOnce( true );
+
+				await expect( store.fetchZids( { zids: [ 'Z6' ] } ) ).rejects.toThrow( 'network' );
+				expect( store.zidPromises.size ).toBe( 0 );
+
+				await store.fetchZids( { zids: [ 'Z6' ] } );
+
+				expect( store.performFetchZids ).toHaveBeenCalledTimes( 2 );
 			} );
 
 			it( 'updates the languages state property when language is retrieved', () => {

@@ -30,6 +30,7 @@ const {
 	isTruthyOrEqual
 } = require( '../../utils/typeUtils.js' );
 const { hybridToCanonical } = require( '../../utils/schemata.js' );
+const storeUtils = require( '../../utils/storeUtils.js' );
 
 const DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 let debounceZObjectLookup = null;
@@ -47,13 +48,14 @@ module.exports = {
 		 */
 		labels: {},
 		/**
-		 * Collection of the requested zids and the resolving promises
-		 * zid: promise
+		 * Map of in-flight ZID requests. Written only by
+		 * `storeUtils.doDeduplicatedBatchFetch`.
+		 * Key: ZID
+		 * Value: Promise for the call that is fetching it
 		 *
-		 * TODO (T417384): move to `storeUtils.doDeduplicatedBatchFetch` and
-		 * rename to `zidPromises`, as `languages.js` does.
+		 * @type {Map<string, Promise>}
 		 */
-		requests: {},
+		zidPromises: new Map(),
 		/**
 		 * Collection of enum types with all their selectable values
 		 */
@@ -848,21 +850,6 @@ module.exports = {
 
 	actions: {
 		/**
-		 * Set request state for each zid
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.zid
-		 * @param {Promise} payload.request
-		 */
-		setZidRequest: function ( payload ) {
-			if ( payload.request ) {
-				this.requests[ payload.zid ] = payload.request;
-			} else {
-				delete this.requests[ payload.zid ];
-			}
-		},
-
-		/**
 		 * Add zid info to the state
 		 *
 		 * @param {Object} payload
@@ -1020,18 +1007,19 @@ module.exports = {
 		 * a given set of ZIDs. This method takes care of the following requirements:
 		 *
 		 * * Zids are requested in batches of max 50 items.
-		 * * Zids are only requested once.
-		 * * Every zid is stored along with their request while it's being fetched.
-		 * * Once it's fetched, the request is cleared.
+		 * * Zids are only requested once. Deduplication is handled by
+		 *   `storeUtils.doDeduplicatedBatchFetch`, against the objects already
+		 *   in state and the requests already running.
 		 * * The returning promise only resolves when all of the batches have returned.
+		 *
+		 * `performFetchZids` stores the objects, labels, renderers and parsers
+		 * itself as it walks the response, so this passes no `setCached`.
 		 *
 		 * @param {Object} payload
 		 * @param {Array} payload.zids array of zids to fetch
 		 * @return {Promise}
 		 */
 		fetchZids: function ( payload ) {
-			let requestZids = [];
-			const allPromises = [];
 			const zids = payload.zids || [];
 
 			// Expand every zid with its dependencies (for function and type)
@@ -1043,54 +1031,22 @@ module.exports = {
 				}
 			} );
 
-			// Select the zids to request by excluding those already fetched
-			expanded.forEach( ( zid ) => {
-				// Ignore if:
-				// * Zid is Z0
-				// * Zid has already been fetched (success or failure)
-				if (
-					zid &&
-					zid !== Constants.NEW_ZID_PLACEHOLDER &&
-					!( zid in this.objects ) &&
-					!( zid in this.requests )
-				) {
-					requestZids.push( zid );
-				}
-
-				// Capture pending promise to await if:
-				// * Zid is waiting to be fetched
-				if ( zid in this.requests ) {
-					allPromises.push( this.requests[ zid ] );
+			return storeUtils.doDeduplicatedBatchFetch( {
+				inFlight: this.zidPromises,
+				// Z0 stands for the object being created, which is not on the wiki
+				keys: expanded.filter( ( zid ) => zid !== Constants.NEW_ZID_PLACEHOLDER ),
+				// A zid counts as fetched whether it succeeded or failed, so that
+				// a missing zid is not asked for again
+				getCached: ( zid ) => this.objects[ zid ],
+				run: ( newZids ) => {
+					// Batch zids in groups of max 50 items
+					const batches = [];
+					for ( let i = 0; i < newZids.length; i += Constants.API_REQUEST_ITEMS_LIMIT ) {
+						batches.push( newZids.slice( i, i + Constants.API_REQUEST_ITEMS_LIMIT ) );
+					}
+					return Promise.all( batches.map( ( batch ) => this.performFetchZids( { zids: batch } ) ) );
 				}
 			} );
-
-			// Keep only unique values
-			requestZids = [ ...new Set( requestZids ) ];
-
-			// Batch zids in groups of max 50 items
-			const batches = [];
-			for ( let i = 0; i < requestZids.length; i += Constants.API_REQUEST_ITEMS_LIMIT ) {
-				batches.push( requestZids.slice( i, i + Constants.API_REQUEST_ITEMS_LIMIT ) );
-			}
-
-			// For each batch, generate a Promise
-			for ( const batch of batches ) {
-				const batchPromise = this.performFetchZids( { zids: batch } ).then( () => {
-					// Once it's back, unset active request
-					batch.forEach( ( zid ) => {
-						this.setZidRequest( { zid, request: null } );
-					} );
-				} );
-				// Set active request
-				batch.forEach( ( zid ) => {
-					this.setZidRequest( { zid, request: batchPromise } );
-				} );
-				// Collect batch promises
-				allPromises.push( batchPromise );
-			}
-
-			// Return pending and new promises for all the requested zids
-			return Promise.all( allPromises );
 		},
 
 		/**

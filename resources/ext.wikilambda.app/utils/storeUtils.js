@@ -50,8 +50,8 @@
  *
  * TODO (T417384): the stores below still track in-flight requests their own
  * way and should move to these helpers, one patch each:
- * * `library.js` (`requests`), `testResults.js`, `ztype.js`
- *   (`rendererPromises`), `abstractWiki.js` (`fragmentPromises`)
+ * * `testResults.js`, `ztype.js` (`rendererPromises`), `abstractWiki.js`
+ *   (`fragmentPromises`)
  * * `wikidata/{items,lexemes,properties}.js` and `commons/media.js`, which
  *   put the promise in the same slot as the data and then use
  *   `typeof value.then` to tell them apart. These must be reconciled with
@@ -121,8 +121,8 @@ const storeUtils = {
 	 * What `run` resolves with matters only if you pass `setCached`. In that
 	 * case it must be a plain object that maps each of those keys to its value,
 	 * and keys it leaves out are not cached. A store that writes its own cache
-	 * while it reads the response can leave `setCached` out and resolve with
-	 * anything.
+	 * while it reads the response, as `library.js` does, can leave `setCached`
+	 * out and resolve with anything.
 	 *
 	 * The returned promise resolves once every requested key has settled, both
 	 * the ones this call fetched and the ones it waited for. What it resolves
