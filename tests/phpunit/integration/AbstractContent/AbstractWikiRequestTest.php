@@ -16,7 +16,9 @@ use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Http\MWHttpRequest;
+use Psr\Log\LogLevel;
 use StatusValue;
+use TestLogger;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest
@@ -428,6 +430,61 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$this->assertFalse( $result[ 'success' ] );
 		$this->assertNotNull( $result[ 'value' ][ 'zerror' ] );
 		$this->assertSame( $zerrorType, $result[ 'value' ][ 'zerror' ]->Z5K1 );
+	}
+
+	/**
+	 * The log level of a failed render depends on who is at fault: the fragment (quiet),
+	 * our services (noisy), or nobody we know of (an error, so that we triage it).
+	 *
+	 * @dataProvider provideErrorLogLevels
+	 */
+	public function testFetchRenderedAWFragment_errorLogLevel(
+		string $zerrorType,
+		int $httpStatusCode,
+		string $expectedLogLevel
+	) {
+		$logger = new TestLogger( true );
+		$this->setLogger( 'WikiLambdaAbstract', $logger );
+
+		$factory = $this->getMockHttpFactoryForVoidZError( $zerrorType, $httpStatusCode );
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		$request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* datetime= */ '20260514040500',
+			/* fragmentKey= */ 'hashed-fragment',
+		);
+
+		$this->assertSame(
+			[ $expectedLogLevel ],
+			array_column( $logger->getBuffer(), 0 ),
+			"An http $httpStatusCode failure must be logged as '$expectedLogLevel'"
+		);
+	}
+
+	public static function provideErrorLogLevels(): array {
+		return [
+			// Errors that the fragment caused: quiet
+			'error_in_evaluation (Z507) -> http 400' => [ 'Z507', 400, LogLevel::INFO ],
+			// (T434117) A missing ZID is the fragment's fault, not ours
+			'zid_not_found (Z504) -> http 404' => [ 'Z504', 404, LogLevel::INFO ],
+			'resolved_object_without_z2k2 (Z513) -> http 409' => [ 'Z513', 409, LogLevel::INFO ],
+			'unknown_error (Z500) -> http 422' => [ 'Z500', 422, LogLevel::INFO ],
+			// Errors that our services caused, or load problems: noisy
+			'user_not_permitted_to_evaluate_function (Z559) -> http 401' => [ 'Z559', 401, LogLevel::WARNING ],
+			'disallowed_root_object (Z553) -> http 403' => [ 'Z553', 403, LogLevel::WARNING ],
+			'orchestrator_time_limit (Z574) -> http 408' => [ 'Z574', 408, LogLevel::WARNING ],
+			'orchestrator_rate_limit (Z570) -> http 429' => [ 'Z570', 429, LogLevel::WARNING ],
+			'api_failure (Z530) -> http 500' => [ 'Z530', 500, LogLevel::WARNING ],
+			'not configured -> http 501' => [ 'Z530', 501, LogLevel::WARNING ],
+			'invalid_orchestrator_result (Z577) -> http 502' => [ 'Z577', 502, LogLevel::WARNING ],
+			'service unavailable -> http 503' => [ 'Z530', 503, LogLevel::WARNING ],
+			'evaluator_wasm_limit (Z576) -> http 504' => [ 'Z576', 504, LogLevel::WARNING ],
+			// A status code that no mapping emits: we must notice it
+			'unmapped http 418' => [ 'Z500', 418, LogLevel::ERROR ],
+		];
 	}
 
 	/**

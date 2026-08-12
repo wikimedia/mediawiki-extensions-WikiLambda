@@ -27,6 +27,55 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AbstractWikiRequest {
 
+	/**
+	 * HTTP status codes that tell us that the request or the fragment is wrong. The user
+	 * must correct the fragment, so we log these quietly. The orchestrator sets these codes
+	 * from the Z5/Error type, as listed in function-schemata's error status code mappings
+	 * (`test_data/errors/http_status_mappings.yaml`).
+	 */
+	private const USER_ERROR_STATUS_CODES = [
+		// e.g. Z518/ZObject type mismatch
+		HttpStatus::BAD_REQUEST,
+		// e.g. Z504/ZID not found
+		HttpStatus::NOT_FOUND,
+		// e.g. Z513/Resolved object without Z2K2
+		HttpStatus::CONFLICT,
+		// e.g. Z500/Unspecified error
+		HttpStatus::UNPROCESSABLE_ENTITY,
+	];
+
+	/**
+	 * HTTP status codes that we log at warning level when a fragment fails to render.
+	 *
+	 * These do not have one cause. Some are our fault, e.g. NOT_IMPLEMENTED, when the wiki has
+	 * no configuration for a target API. Some are permission problems, e.g. UNAUTHORIZED and
+	 * FORBIDDEN. Some can be load problems, e.g. TOO_MANY_REQUESTS and REQUEST_TIMEOUT. We log
+	 * all of them noisily for now, until we know how frequently each one occurs in production.
+	 *
+	 * Failures caused by the content are in self::USER_ERROR_STATUS_CODES, and we log those
+	 * quietly. A code in neither list is one that we did not expect, and we log it as an error.
+	 */
+	private const WARNING_STATUS_CODES = [
+		// e.g. Z559/User not permitted to evaluate function
+		HttpStatus::UNAUTHORIZED,
+		// e.g. Wikifunctions refused our request
+		HttpStatus::FORBIDDEN,
+		// e.g. Z574/Orchestrator time limit
+		HttpStatus::REQUEST_TIMEOUT,
+		// e.g. Z570/Orchestrator rate limit
+		HttpStatus::TOO_MANY_REQUESTS,
+		// e.g. Z530/API failure
+		HttpStatus::INTERNAL_SERVER_ERROR,
+		// e.g. this wiki has no Wikifunctions target API
+		HttpStatus::NOT_IMPLEMENTED,
+		// e.g. Z577/Invalid orchestrator result
+		HttpStatus::BAD_GATEWAY,
+		// e.g. we cannot reach Wikifunctions
+		HttpStatus::SERVICE_UNAVAILABLE,
+		// e.g. Z576/Evaluator WASM limit
+		HttpStatus::GATEWAY_TIMEOUT,
+	];
+
 	private LoggerInterface $logger;
 
 	public function __construct(
@@ -97,59 +146,44 @@ class AbstractWikiRequest {
 			$renderedValue[ 'success' ] = false;
 			$renderedValue[ 'value' ] = $e->toArray();
 
-			// First, check if it's a user-triggered error. If so, debug-log with the extra data
-			// but don't make noise; use the default TTL for a request.
-			if ( $e->getHttpStatusCode() === HttpStatus::BAD_REQUEST ) {
+			$httpStatusCode = $e->getHttpStatusCode();
+
+			if ( in_array( $httpStatusCode, self::USER_ERROR_STATUS_CODES, true ) ) {
+				// The user triggered the error. Log it with the extra data, but do not make noise.
 				$logContext = [];
 				if ( $e->hasZError() ) {
 					$logContext[ 'zerror' ] = $e->getZError();
 				}
 				$this->logger->info(
-					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall failed with http 400: {error}',
+					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall failed with a user error: {error}',
 					[
 						'error' => $e->getMessage(),
 						'fragmentKey' => $fragmentKey,
-						'httpStatusCode' => (string)$e->getHttpStatusCode(),
+						'httpStatusCode' => (string)$httpStatusCode,
 					] + $logContext
 				);
+			} elseif ( in_array( $httpStatusCode, self::WARNING_STATUS_CODES, true ) ) {
+				$this->logger->warning(
+					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall got a server issue: {error}',
+					[
+						'error' => $e->getMessage(),
+						'exception' => $e,
+						'fragmentKey' => $fragmentKey,
+						'httpStatusCode' => (string)$httpStatusCode,
+					]
+				);
 			} else {
-				// Possible error cases that are "our fault" and should be logged noisily:
-				// - HttpStatus::NOT_IMPLEMENTED (server not configured)
-				// - HttpStatus::INTERNAL_SERVER_ERROR
-				// Possible error cases that might be load issues, but log anyway for now:
-				// - HttpStatus::SERVICE_UNAVAILABLE
-				// - HttpStatus::FORBIDDEN
-				// - HttpStatus::TOO_MANY_REQUESTS (not currently emitted below)
-				// - HttpStatus::REQUEST_TIMEOUT
-				if (
-					$e->getHttpStatusCode() === HttpStatus::NOT_IMPLEMENTED ||
-					$e->getHttpStatusCode() === HttpStatus::INTERNAL_SERVER_ERROR ||
-					$e->getHttpStatusCode() === HttpStatus::SERVICE_UNAVAILABLE ||
-					$e->getHttpStatusCode() === HttpStatus::FORBIDDEN ||
-					$e->getHttpStatusCode() === HttpStatus::TOO_MANY_REQUESTS ||
-					$e->getHttpStatusCode() === HttpStatus::REQUEST_TIMEOUT
-				) {
-					$this->logger->warning(
-						__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall got a server issue: {error}',
-						[
-							'error' => $e->getMessage(),
-							'exception' => $e,
-							'fragmentKey' => $fragmentKey,
-							'httpStatusCode' => (string)$e->getHttpStatusCode(),
-						]
-					);
-				} else {
-					// Something's gone wrong as an unpected error state, log as an error:
-					$this->logger->error(
-						__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall got unhandled error: {error}',
-						[
-							'error' => $e->getMessage(),
-							'exception' => $e,
-							'fragmentKey' => $fragmentKey,
-							'httpStatusCode' => (string)$e->getHttpStatusCode(),
-						]
-					);
-				}
+				// We do not know this status code, so we cannot tell who caused the failure.
+				// Log it as an error, so that we can find it and add it to a list above.
+				$this->logger->error(
+					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall got unhandled error: {error}',
+					[
+						'error' => $e->getMessage(),
+						'exception' => $e,
+						'fragmentKey' => $fragmentKey,
+						'httpStatusCode' => (string)$httpStatusCode,
+					]
+				);
 			}
 		}
 

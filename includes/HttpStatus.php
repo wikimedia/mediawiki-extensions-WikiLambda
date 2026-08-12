@@ -22,6 +22,7 @@ class HttpStatus {
 	public const FORBIDDEN = 403;
 	public const NOT_FOUND = 404;
 	public const REQUEST_TIMEOUT = 408;
+	public const CONFLICT = 409;
 	public const UNPROCESSABLE_ENTITY = 422;
 	public const TOO_MANY_REQUESTS = 429;
 
