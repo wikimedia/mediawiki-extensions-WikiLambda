@@ -13,6 +13,7 @@
 const Constants = require( '../../Constants.js' );
 const LabelData = require( '../classes/LabelData.js' );
 const apiUtils = require( '../../utils/apiUtils.js' );
+const storeUtils = require( '../../utils/storeUtils.js' );
 
 module.exports = {
 	state: {
@@ -21,10 +22,14 @@ module.exports = {
 		 */
 		languages: {},
 		/**
-		 * Collection of in-flight language-code-to-ZID requests
-		 * code: promise
+		 * Map of in-flight language-code-to-ZID requests. Written only by
+		 * `storeUtils.doDeduplicatedBatchFetch`.
+		 * Key: language code
+		 * Value: Promise for the batch that is fetching it
+		 *
+		 * @type {Map<string, Promise>}
 		 */
-		languageCodeRequests: {}
+		languageCodePromises: new Map()
 	},
 
 	getters: {
@@ -121,21 +126,6 @@ module.exports = {
 
 	actions: {
 		/**
-		 * Set or clear the in-flight request promise for a language code.
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.code Language code
-		 * @param {Promise|null} payload.request Promise for the in-flight request, or null to clear
-		 */
-		setLanguageCodeRequest: function ( payload ) {
-			if ( payload.request ) {
-				this.languageCodeRequests[ payload.code ] = payload.request;
-			} else {
-				delete this.languageCodeRequests[ payload.code ];
-			}
-		},
-
-		/**
 		 * @param {Object} payload
 		 * @param {string} payload.code
 		 * @param {string} payload.zid
@@ -146,76 +136,49 @@ module.exports = {
 
 		/**
 		 * Orchestrates the call to the language-zids API to map language codes to ZLanguage ZIDs,
-		 * then fetches those ZObjects. Codes already in state or in-flight are not requested again.
+		 * then fetches those ZObjects. Deduplication is handled by
+		 * `storeUtils.doDeduplicatedBatchFetch`: codes already in state, or already
+		 * being fetched by another call, are not requested again.
 		 *
-		 * * Codes are requested only once.
-		 * * Every code is stored along with its request while it's being fetched.
-		 * * Once it's fetched, the request is cleared.
-		 * * The returning promise resolves when all requested codes have been handled.
+		 * The returned promise resolves when every requested code has been handled,
+		 * whether this call fetched it or waited for another one.
 		 *
 		 * @param {Object} payload
 		 * @param {string[]} payload.codes Array of language codes to ensure are fetched
 		 * @return {Promise}
 		 */
 		ensureLanguageCodes: function ( payload ) {
-			let requestCodes = [];
-			const allPromises = [];
 			const { codes = [] } = payload;
+			// Collected inside `run`, so it holds only the ZIDs that this call
+			// fetched. Codes handled by another in-flight batch are that
+			// batch's job.
+			const newZids = [];
 
-			codes.forEach( ( code ) => {
-				// Ignore if:
-				// * Language code is empty
-				// * Language code is already known (ZID stored)
-				// * Language code is already being fetched
-				if ( code && !this.languages[ code ] && !this.languageCodeRequests[ code ] ) {
-					requestCodes.push( code );
-				}
-				// Capture pending promise to await if:
-				// * Language code is waiting to be fetched
-				if ( code in this.languageCodeRequests ) {
-					allPromises.push( this.languageCodeRequests[ code ] );
-				}
-			} );
-
-			// Keep only unique values
-			requestCodes = [ ...new Set( requestCodes ) ];
-
-			if ( !requestCodes.length ) {
-				return Promise.all( allPromises );
-			}
-
-			// Fetch the language codes
-			const batchPromise = apiUtils.fetchLanguageZids( { codes: requestCodes } ).then( ( entries ) => {
-				const newZids = [];
-				entries.forEach( ( entry ) => {
-					if ( !entry || !entry.code || !entry.zid ) {
-						return;
-					}
-					this.setLanguageCode( { code: entry.code, zid: entry.zid } );
-					newZids.push( entry.zid );
-				} );
-				// Once it's back, unset active request for these codes
-				requestCodes.forEach( ( code ) => {
-					this.setLanguageCodeRequest( { code, request: null } );
-				} );
-				// Fetch the ZObjects for the new ZIDs
+			return storeUtils.doDeduplicatedBatchFetch( {
+				inFlight: this.languageCodePromises,
+				keys: codes,
+				getCached: ( code ) => this.languages[ code ],
+				setCached: ( code, zid ) => this.setLanguageCode( { code, zid } ),
+				run: ( newCodes ) => apiUtils.fetchLanguageZids( { codes: newCodes } )
+					.then( ( entries ) => {
+						const zidsByCode = {};
+						entries.forEach( ( entry ) => {
+							if ( !entry || !entry.code || !entry.zid ) {
+								return;
+							}
+							zidsByCode[ entry.code ] = entry.zid;
+							newZids.push( entry.zid );
+						} );
+						return zidsByCode;
+					} )
+			} ).then( () => {
+				// Fetch the ZObjects for the new ZIDs. This runs after the
+				// codes are in state, so anything that resolves a ZID from a
+				// code while fetching sees the new mappings.
 				if ( newZids.length > 0 ) {
 					this.fetchZids( { zids: newZids } );
 				}
-			} ).catch( ( error ) => {
-				requestCodes.forEach( ( code ) => {
-					this.setLanguageCodeRequest( { code, request: null } );
-				} );
-				throw error;
 			} );
-
-			// Set active request for each code in this batch
-			requestCodes.forEach( ( code ) => {
-				this.setLanguageCodeRequest( { code, request: batchPromise } );
-			} );
-			allPromises.push( batchPromise );
-
-			return Promise.all( allPromises );
 		}
 	}
 };

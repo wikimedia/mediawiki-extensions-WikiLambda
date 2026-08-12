@@ -11,6 +11,7 @@ const { isWikidataPropertyId } = require( '../../../utils/wikidataUtils.js' );
 
 module.exports = {
 	state: {
+		// TODO (T417384): data-or-promise slot; see the note in `items.js`.
 		properties: {},
 		scheduledProps: [],
 		scheduledPropsPromise: null

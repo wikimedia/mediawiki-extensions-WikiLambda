@@ -43,6 +43,8 @@ const abstractWikiStore = {
 		 * }
 		 */
 		fragments: {},
+		// TODO (T417384): move to `storeUtils.doDeduplicatedFetch` with
+		// `fragments` as the cache, as `zhtml.js` does.
 		fragmentPromises: {},
 		sectionHashes: {},
 		qid: undefined,

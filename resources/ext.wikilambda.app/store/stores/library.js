@@ -49,6 +49,9 @@ module.exports = {
 		/**
 		 * Collection of the requested zids and the resolving promises
 		 * zid: promise
+		 *
+		 * TODO (T417384): move to `storeUtils.doDeduplicatedBatchFetch` and
+		 * rename to `zidPromises`, as `languages.js` does.
 		 */
 		requests: {},
 		/**

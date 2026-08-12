@@ -122,7 +122,7 @@ describe( 'Languages Pinia store', () => {
 
 			beforeEach( () => {
 				store.languages = {};
-				store.languageCodeRequests = {};
+				store.languageCodePromises = new Map();
 				store.fetchZids = jest.fn().mockResolvedValue();
 				getMock = jest.fn( ( params ) => {
 					if ( params.action === 'query' && params.list === 'wikilambdaload_zlanguages' ) {
@@ -181,12 +181,33 @@ describe( 'Languages Pinia store', () => {
 
 			it( 'reuses in-flight requests for codes already being fetched', async () => {
 				const inFlight = Promise.resolve();
-				store.languageCodeRequests = { es: inFlight };
+				store.languageCodePromises = new Map( [ [ 'es', inFlight ] ] );
 
 				await store.ensureLanguageCodes( { codes: [ 'es', 'fr' ] } );
 
-				// Should only issue a single API call for the batch
+				// Should only issue a single API call, for 'fr' alone
 				expect( getMock ).toHaveBeenCalledTimes( 1 );
+				expect( getMock ).toHaveBeenCalledWith(
+					expect.objectContaining( { wikilambdaload_zlanguages_codes: [ 'fr' ] } ),
+					expect.anything()
+				);
+			} );
+
+			it( 'clears the in-flight entry once the request settles', async () => {
+				await store.ensureLanguageCodes( { codes: [ 'es' ] } );
+
+				expect( store.languageCodePromises.size ).toBe( 0 );
+			} );
+
+			it( 'clears the in-flight entry and rejects when the API fails', async () => {
+				getMock.mockRejectedValue( new Error( 'network' ) );
+
+				await expect( store.ensureLanguageCodes( { codes: [ 'es' ] } ) ).rejects.toThrow();
+
+				// Nothing cached, so a later call can retry
+				expect( store.languageCodePromises.size ).toBe( 0 );
+				expect( store.languages.es ).toBeUndefined();
+				expect( store.fetchZids ).not.toHaveBeenCalled();
 			} );
 		} );
 	} );

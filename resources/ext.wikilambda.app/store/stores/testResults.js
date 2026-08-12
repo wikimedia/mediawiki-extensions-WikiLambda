@@ -19,6 +19,8 @@ module.exports = {
 	state: {
 		zTesterResults: {},
 		zTesterMetadata: {},
+		// TODO (T417384): move to `storeUtils.doDeduplicatedFetch`, as
+		// `zhtml.js` does.
 		testResultsPromises: {}
 	},
 

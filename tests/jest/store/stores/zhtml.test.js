@@ -19,7 +19,7 @@ describe( 'zhtml store', () => {
 		store = useMainStore();
 		// Initialize Maps in store state
 		store.sanitizationCache = new Map();
-		store.pendingPromises = new Map();
+		store.sanitizationPromises = new Map();
 
 		// Mock mw.Api's postWithEditToken method
 		mockPostWithEditToken = jest.fn().mockResolvedValue( {

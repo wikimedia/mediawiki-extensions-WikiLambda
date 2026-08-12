@@ -13,6 +13,11 @@ const { fetchWikidataEntities } = require( '../../../utils/apiUtils.js' );
 
 module.exports = {
 	state: {
+		// TODO (T417384): `items` holds either the data or the in-flight
+		// promise, which is why the getters below test `typeof value.then`.
+		// Split it into data and promises and move to
+		// `storeUtils.doDeduplicatedBatchFetch`. Do this for items, lexemes and
+		// properties together, and keep the request window from T429766.
 		items: {},
 		scheduledItems: [],
 		scheduledItemsPromise: null

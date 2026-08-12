@@ -8,6 +8,7 @@
 
 const apiUtils = require( '../../utils/apiUtils.js' );
 const miscUtils = require( '../../utils/miscUtils.js' );
+const storeUtils = require( '../../utils/storeUtils.js' );
 
 module.exports = {
 	state: {
@@ -21,13 +22,14 @@ module.exports = {
 		sanitizationCache: new Map(),
 
 		/**
-		 * Map of in-flight sanitization promises.
+		 * Map of in-flight sanitization promises. Written only by
+		 * `storeUtils.doDeduplicatedFetch`.
 		 * Key: SHA-256 hash of raw HTML string
 		 * Value: Promise resolving to sanitized HTML string
 		 *
 		 * @type {Map<string, Promise<string>>}
 		 */
-		pendingPromises: new Map()
+		sanitizationPromises: new Map()
 	},
 
 	getters: {},
@@ -47,48 +49,28 @@ module.exports = {
 			}
 
 			// Hash the HTML to use as cache key
-			return miscUtils.sha256( html ).then( ( hash ) => {
-				// Check if we already have a cached sanitized result
-				if ( this.sanitizationCache.has( hash ) ) {
-					return this.sanitizationCache.get( hash );
-				}
-
-				// Check if there's already an in-flight sanitization request for this hash
-				if ( this.pendingPromises.has( hash ) ) {
-					return this.pendingPromises.get( hash );
-				}
-
-				// Not in cache or pending, create new API request
-				const requestPromise = apiUtils.sanitiseHtmlFragment( { html, signal } )
-					.then( ( data ) => {
-						const sanitised = data.html || '';
-						// Cache the result
-						this.sanitizationCache.set( hash, sanitised );
-						// Remove from pending promises
-						this.pendingPromises.delete( hash );
-						return sanitised;
-					} )
-					.catch( () => {
-						// Do not cache failures: Map.has() is key-existence, so a cached ''
-						// would short-circuit every subsequent call for the same hash and
-						// turn any transient failure into a permanent session failure.
-						this.pendingPromises.delete( hash );
-						return '';
-					} );
-
-				// Store the pending promise
-				this.pendingPromises.set( hash, requestPromise );
-				return requestPromise;
-			} );
+			return miscUtils.sha256( html ).then( ( hash ) => storeUtils.doDeduplicatedFetch( {
+				inFlight: this.sanitizationPromises,
+				key: hash,
+				getCached: ( key ) => this.sanitizationCache.get( key ),
+				setCached: ( key, value ) => this.sanitizationCache.set( key, value ),
+				run: () => apiUtils.sanitiseHtmlFragment( { html, signal } )
+					.then( ( data ) => data.html || '' )
+			} )
+				// Give the caller an empty fragment on failure, but let the helper
+				// leave the cache untouched: a cached '' would short-circuit every
+				// later call for the same hash, and turn any transient failure into
+				// a permanent one for the rest of the session.
+				.catch( () => '' ) );
 		},
 
 		/**
-		 * Clears the sanitization cache and pending promises.
+		 * Clears the sanitization cache and in-flight promises.
 		 * Useful for testing or when cache needs to be invalidated.
 		 */
 		clearSanitizationCache: function () {
 			this.sanitizationCache.clear();
-			this.pendingPromises.clear();
+			this.sanitizationPromises.clear();
 		}
 	}
 };

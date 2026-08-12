@@ -17,6 +17,7 @@ const {
 
 module.exports = {
 	state: {
+		// TODO (T417384): data-or-promise slot; see the note in `items.js`.
 		lexemes: {},
 		senses: {},
 		scheduledLexemes: [],

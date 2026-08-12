@@ -10,6 +10,9 @@ const { searchCommonsMedia, fetchCommonsMediaByIds } = require( '../../../utils/
 
 module.exports = {
 	state: {
+		// TODO (T417384): data-or-promise slot; see the note in
+		// `wikidata/items.js`. This store has no request window, so it can move
+		// to `storeUtils.doDeduplicatedFetch` on its own.
 		commonsMedia: {}
 	},
 

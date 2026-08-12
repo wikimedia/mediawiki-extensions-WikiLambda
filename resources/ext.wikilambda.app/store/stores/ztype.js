@@ -58,6 +58,9 @@ module.exports = {
 		 * {
 		 *  <cacheKey>: <Promise>
 		 * }
+		 *
+		 * TODO (T417384): move to `storeUtils.doDeduplicatedFetch` with
+		 * `rendererData` as the cache, as `zhtml.js` does.
 		 */
 		rendererPromises: {}
 	},
