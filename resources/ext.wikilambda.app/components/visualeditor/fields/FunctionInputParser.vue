@@ -183,6 +183,7 @@ module.exports = exports = defineComponent( {
 					const error = ErrorData.buildErrorData( { errorMessageKey } );
 					reject( error );
 				}
+				return;
 			}
 
 			// Cancel previous parser request if any

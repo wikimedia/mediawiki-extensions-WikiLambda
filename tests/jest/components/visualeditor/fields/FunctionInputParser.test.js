@@ -84,7 +84,7 @@ describe( 'FunctionInputParser', () => {
 		} );
 	} );
 
-	it( 'validates on mount with empty value', async () => {
+	it( 'validates on mount with empty value without calling the parser', async () => {
 		const wrapper = renderFunctionInputParser( {
 			value: ''
 		} );
@@ -92,14 +92,8 @@ describe( 'FunctionInputParser', () => {
 		// Wait for validation to complete
 		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
 
-		// Should call the parser
-		expect( store.runParser ).toHaveBeenCalledWith( {
-			parserZid: 'Z30020',
-			wait: true,
-			zlang: 'Z1002',
-			zobject: '',
-			signal: expect.any( Object )
-		} );
+		// Should not call the parser for an empty value
+		expect( store.runParser ).not.toHaveBeenCalled();
 	} );
 
 	it( 'on model update, debounces validation and emits validate event if succeeds', async () => {
@@ -213,7 +207,7 @@ describe( 'FunctionInputParser', () => {
 	} );
 
 	describe( 'allowed empty types', () => {
-		it( 'validates successfully an empty value for gregorian calendar date', async () => {
+		it( 'validates successfully an empty value for gregorian calendar date without calling the parser', async () => {
 			const wrapper = renderFunctionInputParser( {
 				inputType: gregorianCalendarDateZid,
 				value: ''
@@ -222,11 +216,11 @@ describe( 'FunctionInputParser', () => {
 			// Wait for validation to complete
 			await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
 
-			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+			expect( store.runParser ).not.toHaveBeenCalled();
 			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: true } ] );
 		} );
 
-		it( 'fails validation on any other empty values', async () => {
+		it( 'fails validation on any other empty values without calling the parser', async () => {
 			const wrapper = renderFunctionInputParser( {
 				inputType: typeZid,
 				value: ''
@@ -235,7 +229,7 @@ describe( 'FunctionInputParser', () => {
 			// Wait for validation to complete
 			await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
 
-			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+			expect( store.runParser ).not.toHaveBeenCalled();
 			expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false, error: errorParser } ] );
 		} );
 	} );
