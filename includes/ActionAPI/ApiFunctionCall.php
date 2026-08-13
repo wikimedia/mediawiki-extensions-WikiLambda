@@ -18,16 +18,17 @@ use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
+use Wikimedia\Telemetry\TracerInterface;
 
 class ApiFunctionCall extends WikiLambdaApiBase {
 
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
-		OrchestratorRequest $orchestrator
+		private readonly TracerInterface $tracer,
+		OrchestratorRequest $orchestrator,
 	) {
 		parent::__construct( $mainModule, $moduleName, 'wikilambda_function_call_' );
 
@@ -56,8 +57,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$pageResult = $this->getResult();
 
 		// Initialize span
-		$tracer = MediaWikiServices::getInstance()->getTracer();
-		$span = $tracer->createSpan( 'WikiLambda ApiFunctionCall' )
+		$span = $this->tracer->createSpan( 'WikiLambda ApiFunctionCall' )
 			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
 			->start();
 		$span->activate();

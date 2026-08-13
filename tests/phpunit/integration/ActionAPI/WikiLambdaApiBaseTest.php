@@ -39,7 +39,12 @@ class WikiLambdaApiBaseTest extends WikiLambdaApiTestCase {
 		$context = RequestContext::getMain();
 		$main = new ApiMain( $context );
 		$orchestrator = new MockOrchestratorRequest();
-		$module = new ApiFunctionCall( $main, 'wikilambda_function_call', $orchestrator );
+		$module = new ApiFunctionCall(
+			$main,
+			'wikilambda_function_call',
+			$this->getServiceContainer()->getTracer(),
+			$orchestrator
+		);
 		$wrapper = TestingAccessWrapper::newFromObject( $module );
 		$wrapper->setUp();
 		return $wrapper;
