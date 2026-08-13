@@ -42,6 +42,7 @@ class WikiLambdaApiBaseTest extends WikiLambdaApiTestCase {
 		$module = new ApiFunctionCall(
 			$main,
 			'wikilambda_function_call',
+			$this->getServiceContainer()->getStatsFactory(),
 			$this->getServiceContainer()->getTracer(),
 			$orchestrator
 		);

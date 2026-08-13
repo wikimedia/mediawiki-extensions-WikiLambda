@@ -23,6 +23,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use Wikimedia\RequestTimeout\TimeoutException;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * WikiLambda Base API util
@@ -50,8 +51,9 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
+		private readonly StatsFactory $statsFactory,
 		string $modulePrefix = '',
-		protected readonly bool $isPublicApi = false
+		protected readonly bool $isPublicApi = false,
 	) {
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
 	}
@@ -200,7 +202,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 		try {
 			$method = __METHOD__;
-			$statsFactory = MediaWikiServices::getInstance()->getStatsFactory()->withComponent( 'WikiLambda' );
+			$statsFactory = $this->statsFactory->withComponent( 'WikiLambda' );
 			// (T405554) Capture the moment we start contending for a PoolCounter worker slot. The
 			// existing 'mw_to_orchestrator_api_call_seconds' timer spans the whole handler, so both
 			// the queue-wait and the orchestrator call are hidden inside it; record them separately
@@ -355,7 +357,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		// Note: There is already a metric stream provided out-of-the-box from us being part of the Action API,
 		// mediawiki_api_executeTiming_seconds{module="wikilambda_function_call",…}, but that does not include
 		// the HTTP status code, so we have to track our own.
-		MediaWikiServices::getInstance()->getStatsFactory()->withComponent( 'WikiLambda' )
+		$this->statsFactory->withComponent( 'WikiLambda' )
 			// Will end up as 'mediawiki.WikiLambda.mw_to_orchestrator_api_call_seconds{status=…}'
 			->getTiming( 'mw_to_orchestrator_api_call_seconds' )
 			// Note: We intentionally don't log the function here, for cardinality reasons

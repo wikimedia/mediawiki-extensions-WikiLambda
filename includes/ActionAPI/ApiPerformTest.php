@@ -34,6 +34,7 @@ use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Stats\StatsFactory;
 
 class ApiPerformTest extends WikiLambdaApiBase {
 
@@ -51,9 +52,15 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		string $moduleName,
 		OrchestratorRequest $orchestrator,
 		private readonly ZObjectStore $zObjectStore,
-		private readonly JobQueueGroup $jobQueueGroup
+		private readonly JobQueueGroup $jobQueueGroup,
+		StatsFactory $statsFactory,
 	) {
-		parent::__construct( $mainModule, $moduleName, 'wikilambda_perform_test_' );
+		parent::__construct(
+			$mainModule,
+			$moduleName,
+			$statsFactory,
+			'wikilambda_perform_test_'
+		);
 
 		$this->setUp( $orchestrator );
 	}

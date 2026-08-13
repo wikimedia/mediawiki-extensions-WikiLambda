@@ -17,11 +17,16 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Stats\StatsFactory;
 
 class ApiZObjectEditor extends WikiLambdaApiBase {
 
-	public function __construct( ApiMain $mainModule, string $moduleName ) {
-		parent::__construct( $mainModule, $moduleName );
+	public function __construct(
+		ApiMain $mainModule,
+		string $moduleName,
+		StatsFactory $statsFactory,
+	) {
+		parent::__construct( $mainModule, $moduleName, $statsFactory );
 
 		$this->setUp();
 	}

@@ -20,15 +20,22 @@ use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Status\Status;
+use Wikimedia\Stats\StatsFactory;
 
 class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
+		StatsFactory $statsFactory,
 		OrchestratorRequest $orchestrator,
 	) {
-		parent::__construct( $mainModule, $moduleName, 'wikilambda_supported_programming_languages_' );
+		parent::__construct(
+			$mainModule,
+			$moduleName,
+			$statsFactory,
+			'wikilambda_supported_programming_languages_'
+		);
 
 		$this->setUp( $orchestrator );
 	}

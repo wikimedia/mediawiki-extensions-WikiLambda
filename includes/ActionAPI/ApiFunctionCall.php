@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Telemetry\SpanInterface;
 use Wikimedia\Telemetry\TracerInterface;
 
@@ -27,10 +28,16 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
+		StatsFactory $statsFactory,
 		private readonly TracerInterface $tracer,
 		OrchestratorRequest $orchestrator,
 	) {
-		parent::__construct( $mainModule, $moduleName, 'wikilambda_function_call_' );
+		parent::__construct(
+			$mainModule,
+			$moduleName,
+			$statsFactory,
+			'wikilambda_function_call_'
+		);
 
 		$this->setUp( $orchestrator );
 	}

@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Stats\StatsFactory;
 
 class PublicApiRun extends WikiLambdaApiBase {
 
@@ -29,9 +30,10 @@ class PublicApiRun extends WikiLambdaApiBase {
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
-		OrchestratorRequest $orchestrator
+		OrchestratorRequest $orchestrator,
+		StatsFactory $statsFactory,
 	) {
-		parent::__construct( $mainModule, $moduleName, '', true );
+		parent::__construct( $mainModule, $moduleName, $statsFactory, '', true );
 
 		$this->setUp( $orchestrator );
 	}

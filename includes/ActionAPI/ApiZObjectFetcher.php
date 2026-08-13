@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Telemetry\SpanInterface;
 use Wikimedia\Telemetry\TracerInterface;
 
@@ -28,9 +29,10 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
+		StatsFactory $statsFactory,
 		private readonly TracerInterface $tracer,
 	) {
-		parent::__construct( $mainModule, $moduleName );
+		parent::__construct( $mainModule, $moduleName, $statsFactory );
 
 		$this->setUp();
 	}
