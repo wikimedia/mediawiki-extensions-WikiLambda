@@ -49,6 +49,7 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 			$this->getServiceContainer()->getTitleFactory(),
 			$this->getServiceContainer()->get( 'AbstractWikiArticleStore' ),
 			$this->getServiceContainer()->get( 'AbstractWikiConfigProvider' ),
+			$this->getServiceContainer()->getConnectionProvider(),
 		);
 	}
 

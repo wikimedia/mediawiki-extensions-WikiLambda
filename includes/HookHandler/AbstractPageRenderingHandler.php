@@ -21,7 +21,6 @@ use MediaWiki\Hook\SidebarBeforeOutputHook;
 use MediaWiki\Hook\TitleIsAlwaysKnownHook;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Page\Hook\Article__MissingArticleConditionsHook;
@@ -36,6 +35,7 @@ use MediaWiki\SpecialPage\SpecialPageFactory;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
+use Wikimedia\Rdbms\IConnectionProvider;
 
 class AbstractPageRenderingHandler implements
 	ShowMissingArticleHook,
@@ -58,7 +58,8 @@ class AbstractPageRenderingHandler implements
 		private readonly SpecialPageFactory $specialPageFactory,
 		private readonly TitleFactory $titleFactory,
 		private readonly AWArticleStore $articleStore,
-		private readonly AbstractWikiConfigProvider $awConfigProvider
+		private readonly AbstractWikiConfigProvider $awConfigProvider,
+		private readonly IConnectionProvider $dbProvider,
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstractClient' );
@@ -327,7 +328,7 @@ class AbstractPageRenderingHandler implements
 			return;
 		}
 
-		$dbr = MediaWikiServices::getInstance()->getConnectionProvider()->getReplicaDatabase();
+		$dbr = $this->dbProvider->getReplicaDatabase();
 		foreach ( $logTypes as $logType ) {
 			if ( $logType === 'delete' ) {
 				$conds[] = $dbr->expr( 'log_action', '!=', 'delete' );
