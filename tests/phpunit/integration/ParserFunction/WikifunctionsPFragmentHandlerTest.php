@@ -111,6 +111,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 
 		// Build Fragment Handler:
 		$fragmentHandler = new WikifunctionsPFragmentHandler(
+			$this->getServiceContainer()->getStatsFactory(),
 			$mainConfig,
 			$mockJobQueueGroup,
 			$mockHttpRequestFactory,
@@ -432,6 +433,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 
 		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
 		$fragmentHandler = new WikifunctionsPFragmentHandler(
+			$this->getServiceContainer()->getStatsFactory(),
 			$mainConfig,
 			$mockJobQueueGroup,
 			$mockHttpRequestFactory,
@@ -546,6 +548,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			} );
 
 		$handler = new WikifunctionsPFragmentHandler(
+			$this->getServiceContainer()->getStatsFactory(),
 			$mainConfig,
 			$mockJobQueueGroup,
 			$this->createMock( HttpRequestFactory::class ),

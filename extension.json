@@ -1364,6 +1364,7 @@
 					"handler": {
 						"class": "MediaWiki\\Extension\\WikiLambda\\ParserFunction\\WikifunctionsPFragmentHandler",
 						"services": [
+							"StatsFactory",
 							"MainConfig",
 							"JobQueueGroup",
 							"HttpRequestFactory",

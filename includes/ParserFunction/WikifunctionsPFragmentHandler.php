@@ -25,7 +25,6 @@ use MediaWiki\Html\Html;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\WikiMap\WikiMap;
@@ -37,6 +36,7 @@ use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\PFragment;
 use Wikimedia\Stats\Metrics\NullMetric;
 use Wikimedia\Stats\Metrics\TimingMetric;
+use Wikimedia\Stats\StatsFactory;
 
 class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
@@ -47,6 +47,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	private $statsFactoryTimer;
 
 	public function __construct(
+		StatsFactory $statsFactory,
 		private readonly Config $config,
 		private readonly JobQueueGroup $jobQueueGroup,
 		private readonly HttpRequestFactory $httpRequestFactory,
@@ -57,7 +58,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 
-		$this->statsFactoryTimer = MediaWikiServices::getInstance()->getStatsFactory()
+		$this->statsFactoryTimer = $statsFactory
 			// Will end up as 'mediawiki.WikiLambdaClient.parsoid_to_fragment_handler_seconds{response=…}'
 			->withComponent( 'WikiLambdaClient' )
 			->getTiming( 'parsoid_to_fragment_handler_seconds' )
