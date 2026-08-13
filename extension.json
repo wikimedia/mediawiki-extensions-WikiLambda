@@ -1157,7 +1157,12 @@
 		}
 	},
 	"APIListModules": {
-		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZObjectLabels",
+		"wikilambdasearch_labels": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZObjectLabels",
+			"services": [
+				"LanguageNameUtils"
+			]
+		},
 		"wikilambdaload_zobjects": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZObjects",
 			"services": [

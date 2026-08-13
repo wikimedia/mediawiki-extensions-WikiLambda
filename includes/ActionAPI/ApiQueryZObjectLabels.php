@@ -14,7 +14,7 @@ use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiQuery;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
@@ -24,7 +24,11 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 	/**
 	 * @codeCoverageIgnore
 	 */
-	public function __construct( ApiQuery $query, string $moduleName ) {
+	public function __construct(
+		ApiQuery $query,
+		string $moduleName,
+		private readonly LanguageNameUtils $languageNameUtils,
+	) {
 		parent::__construct( $query, $moduleName, 'wikilambdasearch_' );
 	}
 
@@ -140,8 +144,7 @@ class ApiQueryZObjectLabels extends WikiLambdaApiQueryGeneratorBase {
 			],
 			'language' => [
 				ParamValidator::PARAM_TYPE => array_keys(
-					// TODO (T330033): Consider injecting this service rather than just fetching from main
-					MediaWikiServices::getInstance()->getLanguageNameUtils()->getLanguageNames()
+					$this->languageNameUtils->getLanguageNames()
 				),
 				ParamValidator::PARAM_REQUIRED => true,
 			],

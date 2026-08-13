@@ -60,7 +60,11 @@ class WikiLambdaApiQueryGeneratorBaseTest extends WikiLambdaApiTestCase {
 	 * to exercise the *base* class's guards; subclass behaviour is tested elsewhere.
 	 */
 	private function newConcreteModule(): ApiQueryZObjectLabels {
-		return new ApiQueryZObjectLabels( $this->newApiQuery(), 'wikilambdasearch_labels' );
+		return new ApiQueryZObjectLabels(
+			$this->newApiQuery(),
+			'wikilambdasearch_labels',
+			$this->getServiceContainer()->getLanguageNameUtils()
+		);
 	}
 
 	public function testExecute_diesWhenRepoModeDisabled() {
