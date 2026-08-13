@@ -36,7 +36,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\Response;
@@ -45,6 +44,7 @@ use stdClass;
 use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
+use Wikimedia\Telemetry\TracerInterface;
 
 /**
  * Simple REST API to call a ZFunction with text arguments for cross-wiki embedding
@@ -55,7 +55,10 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 
 	private ZLangRegistry $langRegistry;
 
-	public function __construct( private readonly ZObjectStore $zObjectStore ) {
+	public function __construct(
+		private readonly TracerInterface $tracer,
+		private readonly ZObjectStore $zObjectStore
+	) {
 		// Non-injected items
 		$this->langRegistry = ZLangRegistry::singleton();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
@@ -75,8 +78,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		$renderLang = 'en'
 	) {
 		// Initial setup; logging and instrumentation
-		$tracer = MediaWikiServices::getInstance()->getTracer();
-		$span = $tracer->createSpan( 'WikiLambda FunctionCallHandler' )
+		$span = $this->tracer->createSpan( 'WikiLambda FunctionCallHandler' )
 			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
 			->start();
 		$span->activate();

@@ -16,6 +16,7 @@ use MediaWiki\Rest\RequestData;
 use MediaWiki\Tests\Rest\Handler\HandlerTestTrait;
 use Wikimedia\Message\MessageValue;
 use Wikimedia\Telemetry\SpanInterface;
+use Wikimedia\Telemetry\TracerInterface;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -33,11 +34,13 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	/** @var array */
 	private $standardCall;
 	private ZObjectStore $zobjectStore;
+	private TracerInterface $tracer;
 
 	protected function setUp(): void {
 		parent::setUp();
 
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
+		$this->tracer = $this->getServiceContainer()->getTracer();
 
 		$mock = new MockOrchestratorRequest();
 		$this->setService( 'WikiLambdaOrchestratorRequest', $mock );
@@ -83,7 +86,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
 
 		$request = new RequestData( $this->standardCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$response = $this->executeHandler( $handler, $request );
 
@@ -99,7 +102,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
 
 		$request = new RequestData( $this->standardCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$this->expectExceptionObject(
 			new LocalizedHttpException(
@@ -127,7 +130,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 				base64_encode( 'Z41' ), base64_encode( 'true' ), base64_encode( 'false' )
 			] );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$response = $this->executeHandler( $handler, $request );
 
@@ -139,7 +142,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 				base64_encode( 'Z42' ), base64_encode( 'true' ), base64_encode( 'false' )
 			] );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$response = $this->executeHandler( $handler, $request );
 		$this->assertEquals( '{"value":"false","type":"Z6"}', $response->getBody()->getContents() );
@@ -164,7 +167,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		] );
 
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -190,7 +193,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			base64_encode( 'true' )
 		] );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -218,7 +221,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			base64_encode( 'hello' )
 		] );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -238,7 +241,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['zid'] = '{Z1K1:Z8,…}';
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -258,7 +261,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['zid'] = 'Z0';
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -280,7 +283,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['zid'] = 'Z1';
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -304,7 +307,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		// This is not base64-encoded, so it should throw an error
 		$ourCall['pathParams']['arguments'] = 'foo';
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -335,7 +338,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall['pathParams']['arguments'] = implode( '|', [ base64_encode( 'a' ), base64_encode( 'b' ) ] );
 
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -362,7 +365,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall['pathParams']['arguments'] = implode( '|', [ base64_encode( 'Z41' ), base64_encode( 'Z42' ) ] );
 
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -384,7 +387,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['parselang'] = 'madeuplanguage';
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -406,7 +409,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall = $this->standardCall;
 		$ourCall['pathParams']['renderlang'] = 'madeuplang';
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		try {
 			$this->executeHandler( $handler, $request );
@@ -428,7 +431,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall['pathParams']['zid'] = 'Z16005';
 		$ourCall['pathParams']['arguments'] = base64_encode( $lexemeId );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$response = $this->executeHandler( $handler, $request );
 		$this->assertEquals( '{"value":"mocked lexeme result","type":"Z6"}', $response->getBody()->getContents() );
@@ -446,7 +449,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall['pathParams']['zid'] = 'Z16001';
 		$ourCall['pathParams']['arguments'] = base64_encode( $itemId );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$response = $this->executeHandler( $handler, $request );
 		$this->assertEquals( '{"value":"mocked item result","type":"Z6"}', $response->getBody()->getContents() );
@@ -464,7 +467,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall['pathParams']['zid'] = 'Z16095';
 		$ourCall['pathParams']['arguments'] = base64_encode( $lexemeId );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$response = $this->executeHandler( $handler, $request );
 
@@ -483,7 +486,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$ourCall['pathParams']['zid'] = 'Z16091';
 		$ourCall['pathParams']['arguments'] = base64_encode( $itemId );
 		$request = new RequestData( $ourCall );
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$response = $this->executeHandler( $handler, $request );
 
@@ -520,7 +523,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	) {
 		$this->insertZids( $dependencies );
 
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
 		$wrapper = TestingAccessWrapper::newFromObject( $handler );
 
@@ -586,7 +589,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$expectedLangZid,
 		$expectedError = []
 	) {
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
 		$wrapper = TestingAccessWrapper::newFromObject( $handler );
 
@@ -633,7 +636,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	) {
 		$this->insertZids( $dependencies );
 
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 
 		$spanMock = $this->getSpanMock();
 		$wrapper = TestingAccessWrapper::newFromObject( $handler );
@@ -770,7 +773,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	) {
 		$this->insertZids( $dependencies );
 
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
 		$wrapper = TestingAccessWrapper::newFromObject( $handler );
 		$callArgs = [ ...$args, $spanMock ];
@@ -878,7 +881,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	) {
 		$this->insertZids( $dependencies );
 
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
 		$wrapper = TestingAccessWrapper::newFromObject( $handler );
 		$callArgs = [ ...$args, $spanMock ];
@@ -953,7 +956,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	) {
 		$this->insertZids( $dependencies );
 
-		$handler = new FunctionCallHandler( $this->zobjectStore );
+		$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
 		$spanMock = $this->getSpanMock();
 		$wrapper = TestingAccessWrapper::newFromObject( $handler );
 		$callArgs = [ ...$args, $spanMock ];

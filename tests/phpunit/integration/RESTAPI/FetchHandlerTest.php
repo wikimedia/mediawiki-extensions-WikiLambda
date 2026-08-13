@@ -47,7 +47,7 @@ class FetchHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			'pathParams' => [ 'zids' => 'Z8' ],
 			'queryParams' => []
 		] );
-		$handler = new FetchHandler();
+		$handler = new FetchHandler( $this->getServiceContainer()->getTracer() );
 
 		$response = $this->executeHandler( $handler, $request );
 
@@ -71,7 +71,7 @@ class FetchHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			'pathParams' => [ 'zids' => 'Z8|Z2' ],
 			'queryParams' => []
 		] );
-		$handler = new FetchHandler();
+		$handler = new FetchHandler( $this->getServiceContainer()->getTracer() );
 
 		$response = $this->executeHandler( $handler, $request );
 

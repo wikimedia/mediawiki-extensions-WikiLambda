@@ -13,7 +13,9 @@
 				"x-i18n-description": "wikifunctions-rest-module-v0-fetch-zids-desc",
 				"handler": {
 					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FetchHandler",
-					"services": []
+					"services": [
+						"Tracer"
+					]
 				}
 			}
 		},
@@ -22,7 +24,9 @@
 				"x-i18n-description": "wikifunctions-rest-module-v0-fetch-zids-revisions-desc",
 				"handler": {
 					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FetchHandler",
-					"services": []
+					"services": [
+						"Tracer"
+					]
 				}
 			}
 		},
@@ -32,6 +36,7 @@
 				"handler": {
 					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler",
 					"services": [
+						"Tracer",
 						"WikiLambdaZObjectStore"
 					]
 				}
@@ -43,6 +48,7 @@
 				"handler": {
 					"class": "MediaWiki\\Extension\\WikiLambda\\RESTAPI\\FunctionCallHandler",
 					"services": [
+						"Tracer",
 						"WikiLambdaZObjectStore"
 					]
 				}

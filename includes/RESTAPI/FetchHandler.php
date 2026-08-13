@@ -19,12 +19,12 @@ use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Rest\ResponseInterface;
 use MediaWiki\Title\Title;
 use Wikimedia\Message\MessageValue;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
+use Wikimedia\Telemetry\TracerInterface;
 
 /**
  * Simple REST API to fetch the latest versions of one or more ZObjects
@@ -34,6 +34,9 @@ class FetchHandler extends WikiLambdaRESTHandler {
 
 	public const MAX_REQUESTED_ZIDS = 50;
 	private ZTypeRegistry $typeRegistry;
+
+	public function __construct( private readonly TracerInterface $tracer ) {
+	}
 
 	/** @inheritDoc */
 	public function run( $ZIDs, $revisions = [] ) {
@@ -45,8 +48,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 		$this->typeRegistry = ZTypeRegistry::singleton();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 
-		$tracer = MediaWikiServices::getInstance()->getTracer();
-		$span = $tracer->createSpan( 'WikiLambda FetchHandler' )
+		$span = $this->tracer->createSpan( 'WikiLambda FetchHandler' )
 			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
 			->start();
 		$span->activate();
