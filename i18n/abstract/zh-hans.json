@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"GuoPC",
 			"Ouclie"
 		]
 	},
@@ -40,7 +41,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "片段操作菜单",
 	"wikilambda-abstract-fragment-failing": "内容不可用",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "仅列出返回$2（$1）的函数。",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:Jow to create an article|如何使用具有不同返回类型的函数]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|如何使用具有不同返回类型的函数]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "选择一个输出为$2（$1）的函数",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "此字段需要一个返回值为$2（$1）的函数。搜索结果中仅显示具有此返回类型的函数。",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "为什么有些函数没有列出",
