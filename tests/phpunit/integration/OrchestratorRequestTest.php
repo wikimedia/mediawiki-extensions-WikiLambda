@@ -40,7 +40,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 	public function testGetHost() {
 		$client = new Client( [ 'base_uri' => 'http://some.test.host:1234' ] );
-		$orchestrator = new OrchestratorRequest( $client );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
 		$this->assertEquals( 'http://some.test.host:1234', $orchestrator->getHost() );
 	}
 
@@ -50,7 +50,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 	private function getOrchestratorWithMockResponse( Response $response ): OrchestratorRequest {
 		$mock = new MockHandler( [ $response ] );
 		$client = new Client( [ 'handler' => HandlerStack::create( $mock ) ] );
-		return new OrchestratorRequest( $client );
+		return new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
 	}
 
 	private function mockMemcachedWrapper( $cachedResponse = false, ?array $setProps = null ) {
@@ -345,7 +345,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 			new ConnectException( 'Connection refused', new Request( 'POST', '/1/v2/evaluate/' ) )
 		] );
 		$client = new Client( [ 'handler' => HandlerStack::create( $mock ) ] );
-		$orchestrator = new OrchestratorRequest( $client );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
 
 		$this->mockNoMemcachedWrapper();
 
@@ -358,7 +358,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 			new TooManyRedirectsException( 'Too many redirects', new Request( 'POST', '/1/v2/evaluate/' ) )
 		] );
 		$client = new Client( [ 'handler' => HandlerStack::create( $mock ) ] );
-		$orchestrator = new OrchestratorRequest( $client );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
 
 		$this->mockNoMemcachedWrapper();
 
@@ -539,7 +539,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 		$mock->append( new Response( HttpStatus::OK, [], $expectedString ) );
 
-		$orchestrator = new OrchestratorRequest( $client );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
 		$result = $orchestrator->getSupportedProgrammingLanguages()->getBody();
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
 	}
@@ -572,7 +572,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$Z2String = file_get_contents( $inputFile );
 		$Z2ForZ6 = json_decode( $Z2String );
 
-		$orchestrator = new OrchestratorRequest( $client );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
 		$result = $orchestrator->persistToCache( $Z2ForZ6 );
 		$this->assertEquals( HttpStatus::OK, $result->getStatusCode() );
 	}
@@ -590,7 +590,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$mock = new MockHandler();
 		$handler = HandlerStack::create( $mock );
 		$client = new Client( [ 'handler' => $handler ] );
-		$orchestrator = new OrchestratorRequest( $client );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
 		$wrapper = TestingAccessWrapper::newFromObject( $orchestrator );
 		return $wrapper;
 	}

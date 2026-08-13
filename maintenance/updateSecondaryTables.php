@@ -160,7 +160,7 @@ class UpdateSecondaryTables extends Maintenance {
 
 				$orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
 				$client = new Client( [ "base_uri" => $orchestratorHost ] );
-				$orchestrator = new OrchestratorRequest( $client );
+				$orchestrator = new OrchestratorRequest( $services->getTracer(), $client );
 			} else {
 				$this->output( "ERROR: Cannot send cache updates to the function-orchestrator as it is disabled.\n" );
 				$cache = false;

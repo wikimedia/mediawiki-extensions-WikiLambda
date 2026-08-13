@@ -26,7 +26,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\GitInfo;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -38,7 +37,6 @@ class OrchestratorRequest {
 
 	protected string $userAgentString;
 	protected MemcachedWrapper $objectCache;
-	protected TracerInterface $tracer;
 	protected LoggerInterface $logger;
 
 	public const AW_FRAGMENT_ORIGIN_HEADER = 'aw-fragment';
@@ -48,9 +46,13 @@ class OrchestratorRequest {
 	/**
 	 * The specialised request interface to control all network access to the function-orchestrator.
 	 *
+	 * @param TracerInterface $tracer Telemetry tracer used to propagate the trace context
 	 * @param Client $guzzleClient GuzzleHttp Client used for requests
 	 */
-	public function __construct( protected readonly Client $guzzleClient ) {
+	public function __construct(
+		protected readonly TracerInterface $tracer,
+		protected readonly Client $guzzleClient
+	) {
 		// We generate a user agent string for better traceability of requests
 		$this->userAgentString = 'wikifunctions-request/' . MW_VERSION;
 		$gitInfo = new GitInfo( MW_INSTALL_PATH . '/extensions/WikiLambda' );
@@ -60,7 +62,6 @@ class OrchestratorRequest {
 		}
 
 		// Non-injected items
-		$this->tracer = MediaWikiServices::getInstance()->getTracer();
 		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 
 		// Use a separate channel for the orchestrator. This class writes a message for each

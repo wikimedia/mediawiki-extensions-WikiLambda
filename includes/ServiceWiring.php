@@ -43,7 +43,7 @@ return [
 			$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
 			$host = $config->get( 'WikiLambdaOrchestratorLocation' );
 			$client = new Client( [ 'base_uri' => $host ] );
-			return new OrchestratorRequest( $client );
+			return new OrchestratorRequest( $services->getTracer(), $client );
 	},
 
 	// For both repo and client wikis
