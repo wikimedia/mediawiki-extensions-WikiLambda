@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Repakr"
+			"Repakr",
+			"Ата"
 		]
 	},
+	"wikilambda-fragment-disabled": "Виклики Вікіфункцій наразі вимкнено. Можливо, ви захочете замінити цей виклик.",
 	"wikilambda-fragment-pending": "⏳ Функція викликається…",
 	"wikilambda-recentchanges-edit-letter": "Ф",
 	"wikilambda-recentchanges-entry-function": "Функція",

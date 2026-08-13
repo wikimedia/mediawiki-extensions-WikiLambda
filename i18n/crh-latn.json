@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"TayfunEt.",
-			"Zolgoyo"
+			"Zolgoyo",
+			"Don Alessandro"
 		]
 	},
+	"wikilambda-monolingual-string-list-dialog-search-placeholder": "Bir til qıdır",
 	"wikilambda-function-implementation-language-label": "Til",
 	"wikilambda-helplink-button": "Yardım"
 }
