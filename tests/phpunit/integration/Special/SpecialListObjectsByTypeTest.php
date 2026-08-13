@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\Pagers\BasicZObjectPager;
 use MediaWiki\Extension\WikiLambda\Special\SpecialListObjectsByType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Tests\Specials\SpecialPageTestBase;
 
@@ -67,7 +66,7 @@ class SpecialListObjectsByTypeTest extends SpecialPageTestBase {
 	}
 
 	protected function newSpecialPage(): SpecialListObjectsByType {
-		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$languageFallback = $this->getServiceContainer()->getLanguageFallback();
 		return new SpecialListObjectsByType( $this->zObjectStore, $languageFallback );
 	}
 

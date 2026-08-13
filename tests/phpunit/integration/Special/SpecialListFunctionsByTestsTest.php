@@ -15,7 +15,6 @@ use MediaWiki\Extension\WikiLambda\Pagers\FunctionsByTestsPager;
 use MediaWiki\Extension\WikiLambda\Special\SpecialListFunctionsByTests;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Tests\Specials\SpecialPageTestBase;
 use Wikimedia\Rdbms\IDBAccessObject;
@@ -123,7 +122,7 @@ class SpecialListFunctionsByTestsTest extends SpecialPageTestBase {
 	}
 
 	protected function newSpecialPage(): SpecialListFunctionsByTests {
-		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$languageFallback = $this->getServiceContainer()->getLanguageFallback();
 		return new SpecialListFunctionsByTests( $this->zObjectStore, $languageFallback );
 	}
 

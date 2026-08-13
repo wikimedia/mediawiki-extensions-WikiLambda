@@ -14,7 +14,6 @@ use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaRepoModeIntegrati
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\TestingAccessWrapper;
 
@@ -203,7 +202,7 @@ class ZLangRegistryTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->registry->register( 'Z1003', 'es' );
 		$this->registry->register( 'Z1002', 'en' );
 
-		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$languageFallback = $this->getServiceContainer()->getLanguageFallback();
 		$fallbackZids = $this->registry->getListOfFallbackLanguageZids( $languageFallback, 'ext' );
 		$this->assertSame( [ 'Z1841', 'Z1003', 'Z1002' ], $fallbackZids );
 	}

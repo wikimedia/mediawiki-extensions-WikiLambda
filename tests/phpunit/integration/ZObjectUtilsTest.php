@@ -21,7 +21,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Json\FormatJson;
-use MediaWiki\MediaWikiServices;
 use stdClass;
 use Wikimedia\TestingAccessWrapper;
 
@@ -2044,7 +2043,7 @@ EOT;
 	}
 
 	public function testGetFallbackLanguageCodes_includesRequestedLanguageFallbacksAndMul(): void {
-		$languageFallback = MediaWikiServices::getInstance()->getLanguageFallback();
+		$languageFallback = $this->getServiceContainer()->getLanguageFallback();
 		$codes = ZObjectUtils::getFallbackLanguageCodes( $languageFallback, 'fr' );
 
 		$this->assertSame( 'fr', $codes[0], 'First code should be the requested language' );

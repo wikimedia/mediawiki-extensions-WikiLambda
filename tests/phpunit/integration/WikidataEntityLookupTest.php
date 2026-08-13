@@ -17,7 +17,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWikiIntegrationTestCase;
 
@@ -28,7 +27,7 @@ use MediaWikiIntegrationTestCase;
 class WikidataEntityLookupTest extends MediaWikiIntegrationTestCase {
 
 	private function getService(): WikidataEntityLookup {
-		return new WikidataEntityLookup( MediaWikiServices::getInstance()->getLanguageFallback() );
+		return new WikidataEntityLookup( $this->getServiceContainer()->getLanguageFallback() );
 	}
 
 	private function skipIfNoWikibaseClient(): void {
