@@ -22,12 +22,12 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Language\LanguageFallback;
 use MediaWiki\Language\LanguageNameUtils;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
+use Wikimedia\Telemetry\TracerInterface;
 
 class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 
@@ -42,7 +42,8 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 		string $moduleName,
 		protected readonly LanguageFallback $languageFallback,
 		protected readonly LanguageNameUtils $languageNameUtils,
-		protected readonly TitleFactory $titleFactory
+		protected readonly TitleFactory $titleFactory,
+		private readonly TracerInterface $tracer,
 	) {
 		parent::__construct( $query, $moduleName, 'wikilambdaload_' );
 
@@ -225,8 +226,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 		$getDependencies = $params[ 'get_dependencies' ];
 		$revisionMap = [];
 
-		$tracer = MediaWikiServices::getInstance()->getTracer();
-		$span = $tracer->createSpan( 'WikiLambda ApiQueryZObjects' )
+		$span = $this->tracer->createSpan( 'WikiLambda ApiQueryZObjects' )
 			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
 			->start();
 		$span->activate();

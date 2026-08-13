@@ -1109,7 +1109,12 @@
 	},
 	"ForeignResourcesDir": "resources/lib",
 	"APIModules": {
-		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectFetcher",
+		"wikilambda_fetch": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectFetcher",
+			"services": [
+				"Tracer"
+			]
+		},
 		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectEditor",
 		"wikilambda_function_call": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiFunctionCall",
@@ -1170,7 +1175,8 @@
 			"services": [
 				"LanguageFallback",
 				"LanguageNameUtils",
-				"TitleFactory"
+				"TitleFactory",
+				"Tracer"
 			]
 		},
 		"wikilambdaload_zlanguages": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZLanguages",

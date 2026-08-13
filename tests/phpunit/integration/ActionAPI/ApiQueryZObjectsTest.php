@@ -335,7 +335,8 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 			'wikilambdaload_zobjects',
 			$this->getServiceContainer()->getLanguageFallback(),
 			$this->getServiceContainer()->getLanguageNameUtils(),
-			$this->getServiceContainer()->getTitleFactory()
+			$this->getServiceContainer()->getTitleFactory(),
+			$this->getServiceContainer()->getTracer()
 		);
 		return TestingAccessWrapper::newFromObject( $instance );
 	}

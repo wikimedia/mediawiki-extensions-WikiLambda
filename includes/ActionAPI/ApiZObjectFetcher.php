@@ -18,14 +18,18 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Telemetry\SpanInterface;
+use Wikimedia\Telemetry\TracerInterface;
 
 class ApiZObjectFetcher extends WikiLambdaApiBase {
 
-	public function __construct( ApiMain $mainModule, string $moduleName ) {
+	public function __construct(
+		ApiMain $mainModule,
+		string $moduleName,
+		private readonly TracerInterface $tracer,
+	) {
 		parent::__construct( $mainModule, $moduleName );
 
 		$this->setUp();
@@ -41,8 +45,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 
 		$revisions = $params[ 'revisions' ];
 
-		$tracer = MediaWikiServices::getInstance()->getTracer();
-		$span = $tracer->createSpan( 'WikiLambda ApiZObjectFetcher' )
+		$span = $this->tracer->createSpan( 'WikiLambda ApiZObjectFetcher' )
 			->setSpanKind( SpanInterface::SPAN_KIND_CLIENT )
 			->start();
 		$span->activate();
