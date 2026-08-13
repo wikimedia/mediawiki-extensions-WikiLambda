@@ -33,9 +33,16 @@ class PublicApiRun extends WikiLambdaApiBase {
 		OrchestratorRequest $orchestrator,
 		StatsFactory $statsFactory,
 	) {
-		parent::__construct( $mainModule, $moduleName, $statsFactory, '', true );
+		parent::__construct( $mainModule, $moduleName, $statsFactory );
 
 		$this->setUp( $orchestrator );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function isPublicApi(): bool {
+		return true;
 	}
 
 	/**

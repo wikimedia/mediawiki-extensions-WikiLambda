@@ -53,9 +53,12 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		string $moduleName,
 		private readonly StatsFactory $statsFactory,
 		string $modulePrefix = '',
-		protected readonly bool $isPublicApi = false,
 	) {
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
+	}
+
+	protected function isPublicApi(): bool {
+		return false;
 	}
 
 	/**
@@ -176,7 +179,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 		// 2. Check that the user has the appropriate permissions to run the function call
 		// 2.a. User can execute functions from public or internal API
-		$executionRight = $this->isPublicApi ? 'wikifunctions-run' : 'wikilambda-execute';
+		$executionRight = $this->isPublicApi() ? 'wikifunctions-run' : 'wikilambda-execute';
 		if ( !$userAuthority->isAllowed( $executionRight ) ) {
 			$this->failWithPermissionDenied( $executionRight, $zObjectAsStdClass );
 		}
@@ -184,7 +187,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		// 2.b. If user is trying to run unsaved code (a literal function with a literal implementation)
 		// from the internal API, check for special right. From public API, always deny.
 		if ( $isUnsavedCode &&
-			( $this->isPublicApi || !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) ) {
+			( $this->isPublicApi() || !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) ) {
 			$this->failWithPermissionDenied( 'wikilambda-execute-unsaved-code', $zObjectAsStdClass );
 		}
 
