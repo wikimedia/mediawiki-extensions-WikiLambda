@@ -78,7 +78,7 @@ describe( 'errorUtils', () => {
 			expect( errorUtils.extractErrorData( nestedErrorObject ) ).toEqual( expectedErrorStructure );
 		} );
 
-		it( 'extracts error structure from nested error object with local keys', () => {
+		it( 'extracts error structure from nested error object with local keys, and returns global keys', () => {
 			const expectedErrorStructure = {
 				errorType: 'Z502',
 				children: [ {
@@ -98,7 +98,7 @@ describe( 'errorUtils', () => {
 					} ],
 					stringArgs: []
 				} ],
-				stringArgs: [ { key: 'K1', value: 'Z509' } ]
+				stringArgs: [ { key: 'Z502K1', value: 'Z509' } ]
 			};
 			expect( errorUtils.extractErrorData( nestedErrorObjectLocalKeys ) ).toEqual( expectedErrorStructure );
 		} );
@@ -130,6 +130,33 @@ describe( 'errorUtils', () => {
 			};
 			expect( errorUtils.extractErrorData( customError ) ).toEqual( expectedErrorStructure );
 		} );
+
+		it( 'keeps the local keys of an error object with a literal error type', () => {
+			const literalTypeError = {
+				Z1K1: 'Z5',
+				Z5K1: {
+					Z1K1: 'Z50',
+					Z50K2: 'Z500'
+				},
+				Z5K2: {
+					Z1K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z885',
+						Z885K1: 'Z500'
+					},
+					K1: 'Arbitrary handcrafted message'
+				}
+			};
+
+			const expectedErrorStructure = {
+				errorType: { Z1K1: 'Z50', Z50K2: 'Z500' },
+				children: [],
+				stringArgs: [
+					{ key: 'K1', value: 'Arbitrary handcrafted message' }
+				]
+			};
+			expect( errorUtils.extractErrorData( literalTypeError ) ).toEqual( expectedErrorStructure );
+		} );
 	} );
 
 	describe( 'extractWarningsData', () => {
@@ -158,6 +185,30 @@ describe( 'errorUtils', () => {
 				{ errorType: 'Z591', children: [], stringArgs: [ { key: 'Z591K1', value: '480 MiB' } ] },
 				{ errorType: 'Z593', children: [], stringArgs: [] }
 			] );
+		} );
+
+		it( 'returns global keys for the warnings which use local keys', () => {
+			const warnings = [
+				'Z5',
+				warning( 'Z591', { K1: '480 MiB', K2: '512 MiB' } ),
+				warning( 'Z592', { Z592K1: '88212', Z592K2: '10240' } )
+			];
+
+			expect( errorUtils.extractWarningsData( warnings ) ).toEqual( [ {
+				errorType: 'Z591',
+				children: [],
+				stringArgs: [
+					{ key: 'Z591K1', value: '480 MiB' },
+					{ key: 'Z591K2', value: '512 MiB' }
+				]
+			}, {
+				errorType: 'Z592',
+				children: [],
+				stringArgs: [
+					{ key: 'Z592K1', value: '88212' },
+					{ key: 'Z592K2', value: '10240' }
+				]
+			} ] );
 		} );
 
 		it( 'ignores the items of the list which are not errors', () => {

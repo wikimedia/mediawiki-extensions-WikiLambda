@@ -269,6 +269,9 @@ const metadataDebugLogs = convertSetToMap( {
 	]
 } );
 
+// The two warnings show the two forms of the keys of an error value: the
+// orchestrator sends local keys (K1, K2…), but it can also send global keys
+// (Z591K1, Z591K2…), so both must give the same labels.
 const metadataWarnings = convertSetToMap( {
 	warnings: [
 		"Z5",
@@ -281,8 +284,8 @@ const metadataWarnings = convertSetToMap( {
 					Z7K1: "Z885",
 					Z885K1: "Z591"
 				},
-				Z591K1: "480 MiB",
-				Z591K2: "512 MiB"
+				K1: "480 MiB",
+				K2: "512 MiB"
 			}
 		},
 		{

@@ -8,15 +8,34 @@
 
 const Constants = require( '../Constants.js' );
 const { hybridToCanonical } = require( './schemata.js' );
+const { isLocalKey, isValidZidFormat } = require( './typeUtils.js' );
 
 const errorUtils = {
+	/**
+	 * Returns the global key that identifies an error value key.
+	 * The value of an error is an instance of the generic type Z885/Errortype to
+	 * type, so its keys can arrive in local form (K1, K2…). The labels are stored
+	 * with the global keys of the error type (Z592K1, Z592K2…), so add the error
+	 * type to the local keys. Keys that are already global stay unchanged.
+	 *
+	 * @param {string} key
+	 * @param {string|Object} errorType
+	 * @return {string}
+	 */
+	getGlobalErrorKey: function ( key, errorType ) {
+		return ( isLocalKey( key ) && isValidZidFormat( errorType ) ) ?
+			`${ errorType }${ key }` :
+			key;
+	},
+
 	/**
 	 * Extract error information and nested error children form a parent error/Z5 object.
 	 * Returns an object with the following structure/error description:
 	 * * errorType: zid of the error type/Z50 object
 	 * * errorMessage: string built with the error type label and the string arguments
 	 * * children: nested errors found in the error value
-	 * * stringArgs: string arguments found in the error value
+	 * * stringArgs: string arguments found in the error value, with their keys
+	 *   in global form (Z592K1) even if the error value uses local keys (K1)
 	 * Children contains an array which can have zero or N items of this same structure.
 	 *
 	 * @param {Object} zobject
@@ -49,7 +68,7 @@ const errorUtils = {
 				const value = error[ Constants.Z_ERROR_VALUE ][ key ];
 				// value is a string: add it to string arguments
 				if ( typeof value === 'string' ) {
-					stringArgs.push( { key, value } );
+					stringArgs.push( { key: errorUtils.getGlobalErrorKey( key, errorType ), value } );
 					continue;
 				}
 				// value is an array of errors: extract nested errors for each one
