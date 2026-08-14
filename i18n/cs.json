@@ -4,7 +4,8 @@
 			"Adam N.",
 			"Fraxinus.cs",
 			"Matěj Suchánek",
-			"Mormegil"
+			"Mormegil",
+			"Comfyquiettree"
 		]
 	},
 	"wikilambda-desc": "Umožňuje psát, spravovat a vyhodnocovat funkce na ústřední wiki.",
@@ -31,6 +32,8 @@
 	"action-wikilambda-edit-running-function-definition": "editovat vstupy/výstupy Funkce, která má připojenou Implementaci",
 	"action-wikilambda-execute": "spouštět Funkce",
 	"content-model-zobject": "ZObjekt WikiLambda",
+	"group-functionmaintainer": "Správci",
+	"group-functionmaintainer-member": "{{GENDER:$1|správce|správkyně}}",
 	"right-wikilambda-create": "Vytváření nějakých nových Objektů",
 	"right-wikilambda-create-arbitrary-zid": "Vytváření nových Objektů na libovolném ZIDu",
 	"right-wikilambda-create-boolean": "Vytváření nových Objektů typu Logická hodnota",
@@ -230,6 +233,9 @@
 	"wikilambda-functioncall-metadata-hostname": "Server",
 	"wikilambda-functioncall-metadata-implementation": "Implementace",
 	"wikilambda-functioncall-metadata-implementation-how-chosen": "O výběru implementace",
+	"wikilambda-functioncall-metadata-implementation-id": "ID",
+	"wikilambda-functioncall-metadata-implementation-name": "Název",
+	"wikilambda-functioncall-metadata-implementation-type": "Typ",
 	"wikilambda-functioncall-metadata-memory-usage": "Využití paměti",
 	"wikilambda-functioncall-metadata-orchestration": "Orchestrace",
 	"wikilambda-functioncall-metadata-programming-language": "Programovací jazyk",

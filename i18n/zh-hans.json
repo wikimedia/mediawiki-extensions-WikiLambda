@@ -113,7 +113,7 @@
 	"right-wikilambda-create-converter": "创建新的序列化器或反序列化器",
 	"right-wikilambda-create-enum-value": "创建枚举类型的新实例",
 	"right-wikilambda-create-function": "创建新的函数对象",
-	"right-wikilambda-create-function-call": "创建新的持久化函数调用",
+	"right-wikilambda-create-function-call": "创建新的持久函数调用",
 	"right-wikilambda-create-generic-enum": "创建新的通用枚举类型",
 	"right-wikilambda-create-implementation": "创建新的实现对象",
 	"right-wikilambda-create-language": "创建新的自然语言对象",
