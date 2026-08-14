@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Extension\TestKitchen\Sdk\InstrumentManagerInterface;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -31,12 +32,14 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		StatsFactory $statsFactory,
 		private readonly TracerInterface $tracer,
 		OrchestratorRequest $orchestrator,
+		?InstrumentManagerInterface $instrumentManager = null,
 	) {
 		parent::__construct(
 			$mainModule,
 			$moduleName,
 			$statsFactory,
-			'wikilambda_function_call_'
+			'wikilambda_function_call_',
+			$instrumentManager
 		);
 
 		$this->setUp( $orchestrator );

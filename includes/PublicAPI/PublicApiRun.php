@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\PublicAPI;
 use JsonException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Extension\TestKitchen\Sdk\InstrumentManagerInterface;
 use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
@@ -32,8 +33,9 @@ class PublicApiRun extends WikiLambdaApiBase {
 		string $moduleName,
 		OrchestratorRequest $orchestrator,
 		StatsFactory $statsFactory,
+		?InstrumentManagerInterface $instrumentManager = null,
 	) {
-		parent::__construct( $mainModule, $moduleName, $statsFactory );
+		parent::__construct( $mainModule, $moduleName, $statsFactory, '', $instrumentManager );
 
 		$this->setUp( $orchestrator );
 	}

@@ -1155,6 +1155,9 @@
 				"StatsFactory",
 				"Tracer",
 				"WikiLambdaOrchestratorRequest"
+			],
+			"optional_services": [
+				"TestKitchen.InstrumentManager"
 			]
 		},
 		"wikifunctions_run": {
@@ -1162,6 +1165,9 @@
 			"services": [
 				"WikiLambdaOrchestratorRequest",
 				"StatsFactory"
+			],
+			"optional_services": [
+				"TestKitchen.InstrumentManager"
 			]
 		},
 		"wikifunctions_html_sanitiser": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiWikifunctionsHTMLSanitiser",

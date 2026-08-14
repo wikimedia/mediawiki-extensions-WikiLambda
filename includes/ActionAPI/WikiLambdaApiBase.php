@@ -5,6 +5,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Extension\TestKitchen\Sdk\InstrumentManagerInterface;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorException;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
@@ -61,11 +62,19 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 */
 	private const MAX_CODE_SCAN_NODES = 100000;
 
+	/**
+	 * @param ApiMain $mainModule
+	 * @param string $moduleName
+	 * @param StatsFactory $statsFactory
+	 * @param string $modulePrefix
+	 * @param ?InstrumentManagerInterface $instrumentManager Null if TestKitchen is not installed
+	 */
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
 		private readonly StatsFactory $statsFactory,
 		string $modulePrefix = '',
+		protected readonly ?InstrumentManagerInterface $instrumentManager = null,
 	) {
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
 	}
@@ -428,13 +437,14 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 * @return void
 	 */
 	protected function submitMetricsEvent( $action, $eventData ): void {
-		$services = MediaWikiServices::getInstance();
-		if ( $services->hasService( 'TestKitchen.InstrumentManager' ) ) {
-			$instrumentManager = $services->getService( 'TestKitchen.InstrumentManager' );
-			$instrument = $instrumentManager->getInstrument( self::INSTRUMENT_NAME );
-			$instrument->setSchema( self::SCHEMA_ID );
-			$instrument->send( $action, $eventData );
+		// TestKitchen is not installed, so there is nowhere to send this
+		if ( $this->instrumentManager === null ) {
+			return;
 		}
+
+		$instrument = $this->instrumentManager->getInstrument( self::INSTRUMENT_NAME );
+		$instrument->setSchema( self::SCHEMA_ID );
+		$instrument->send( $action, $eventData );
 	}
 
 	/**
