@@ -65,7 +65,7 @@ ve.ce.WikifunctionsCallNode.prototype.getLoadingState = function () {
 
 	const $loadingSpan = $( '<span>' )
 		.addClass( 'ext-wikilambda-visualeditor-chip__msg' )
-		.append( OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-loading' ) );
+		.text( OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-loading' ) );
 
 	const $spinner = $( '<div>' )
 		.addClass( 'cdx-progress-indicator' )
