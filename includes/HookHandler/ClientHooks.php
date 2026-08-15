@@ -293,13 +293,13 @@ class ClientHooks implements
 				've.ui.WikifunctionsCallDialog.js',
 			];
 
-			array_push( $files, [
+			$files[] = [
 				'name' => 'init.js',
 				'main' => true,
 				'content' => array_reduce( $files, static function ( $carry, $file ) {
 					return "$carry\nrequire('./$file');\n";
 				}, '' ),
-			] );
+			];
 
 			$visualEditorWfConfig = [
 				'dependencies' => [

@@ -116,55 +116,55 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 		// 2. Detect special right for builtin objects
 		$zObjectId = $content->getZid();
 		if ( substr( $zObjectId, 1 ) < 10000 ) {
-			array_push( $userRights, 'wikilambda-create-predefined' );
+			$userRights[] = 'wikilambda-create-predefined';
 		}
 
 		// 3. Detect special rights per type
 		switch ( $type ) {
 			case ZTypeRegistry::Z_TYPE:
-				array_push( $userRights, 'wikilambda-create-type' );
+				$userRights[] = 'wikilambda-create-type';
 				break;
 
 			case ZTypeRegistry::Z_FUNCTION:
-				array_push( $userRights, 'wikilambda-create-function' );
+				$userRights[] = 'wikilambda-create-function';
 				break;
 
 			case ZTypeRegistry::Z_FUNCTIONCALL:
 				$functionZid = $content->getInnerZObject()->getZValue();
 				if ( $functionZid === ZTypeRegistry::Z_WIKIDATA_ENUM ) {
-					array_push( $userRights, 'wikilambda-create-generic-enum' );
+					$userRights[] = 'wikilambda-create-generic-enum';
 				} else {
-					array_push( $userRights, 'wikilambda-create-function-call' );
+					$userRights[] = 'wikilambda-create-function-call';
 				}
 				break;
 
 			case ZTypeRegistry::Z_LANGUAGE:
-				array_push( $userRights, 'wikilambda-create-language' );
+				$userRights[] = 'wikilambda-create-language';
 				break;
 
 			case ZTypeRegistry::Z_PROGRAMMINGLANGUAGE:
-				array_push( $userRights, 'wikilambda-create-programming' );
+				$userRights[] = 'wikilambda-create-programming';
 				break;
 
 			case ZTypeRegistry::Z_IMPLEMENTATION:
-				array_push( $userRights, 'wikilambda-create-implementation' );
+				$userRights[] = 'wikilambda-create-implementation';
 				break;
 
 			case ZTypeRegistry::Z_TESTER:
-				array_push( $userRights, 'wikilambda-create-tester' );
+				$userRights[] = 'wikilambda-create-tester';
 				break;
 
 			case ZTypeRegistry::Z_BOOLEAN:
-				array_push( $userRights, 'wikilambda-create-boolean' );
+				$userRights[] = 'wikilambda-create-boolean';
 				break;
 
 			case ZTypeRegistry::Z_UNIT:
-				array_push( $userRights, 'wikilambda-create-unit' );
+				$userRights[] = 'wikilambda-create-unit';
 				break;
 
 			case ZTypeRegistry::Z_DESERIALISER:
 			case ZTypeRegistry::Z_SERIALISER:
-				array_push( $userRights, 'wikilambda-create-converter' );
+				$userRights[] = 'wikilambda-create-converter';
 				break;
 
 			default:
@@ -175,7 +175,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 				if ( $typeObject ) {
 					$typeInnerObject = $typeObject->getInnerZObject();
 					if ( ( $typeInnerObject instanceof ZType ) && $typeInnerObject->isEnumType() ) {
-						array_push( $userRights, 'wikilambda-create-enum-value' );
+						$userRights[] = 'wikilambda-create-enum-value';
 					}
 				}
 		}

@@ -888,7 +888,7 @@ class RepoHooks implements
 		);
 
 		if ( $pageUpdater->wasSuccessful() ) {
-			array_push( $inserted, $zid );
+			$inserted[] = $zid;
 			$updater->insertUpdateRow( $updateRowName );
 			if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
 				// Don't log this during unit testing, quibble thinks it means we're broken.

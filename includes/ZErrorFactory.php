@@ -85,7 +85,7 @@ class ZErrorFactory {
 		$components = [];
 		foreach ( $pathComponents as $component ) {
 			$component = rtrim( $component, DIRECTORY_SEPARATOR );
-			array_push( $components, $component );
+			$components[] = $component;
 		}
 		return implode( DIRECTORY_SEPARATOR, $components );
 	}

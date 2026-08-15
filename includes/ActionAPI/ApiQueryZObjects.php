@@ -262,7 +262,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 		$fetchedZids = [];
 		while ( count( $zids ) > 0 ) {
 			$zid = array_shift( $zids );
-			array_push( $fetchedZids, $zid );
+			$fetchedZids[] = $zid;
 
 			try {
 				// We try to fetch the content and transform it according to params
@@ -276,7 +276,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 				// We queue the type dependencies
 				foreach ( $dependencies as $dep ) {
 					if ( !in_array( $dep, $fetchedZids ) && !in_array( $dep, $zids ) ) {
-						array_push( $zids, $dep );
+						$zids[] = $dep;
 					}
 				}
 

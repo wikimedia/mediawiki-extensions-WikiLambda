@@ -182,7 +182,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 			foreach ( array_slice( $keys, 1 ) as $key ) {
 				$keyType = $key->{ ZTypeRegistry::Z_KEY_TYPE };
 				if ( is_string( $keyType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $keyType ) ) ) {
-					array_push( $dependencies, $keyType );
+					$dependencies[] = $keyType;
 				}
 			}
 		} elseif ( $type === ZTypeRegistry::Z_FUNCTION ) {
@@ -190,7 +190,7 @@ class FetchHandler extends WikiLambdaRESTHandler {
 			foreach ( array_slice( $args, 1 ) as $arg ) {
 				$argType = $arg->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE };
 				if ( is_string( $argType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $argType ) ) ) {
-					array_push( $dependencies, $argType );
+					$dependencies[] = $argType;
 				}
 			}
 		}
