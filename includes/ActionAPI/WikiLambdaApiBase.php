@@ -48,6 +48,15 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	public const INSTRUMENT_NAME = 'WikiLambdaApi';
 	public const SCHEMA_ID = '/analytics/mediawiki/product_metrics/wikilambda/api/2.0.0';
 
+	/**
+	 * Maximum number of objects and lists that containsCodeLiteral() looks at.
+	 *
+	 * A real function call is much smaller than this. If a request has more nodes,
+	 * we stop the walk and report unsaved code, so that a very large request cannot
+	 * hide code behind the limit.
+	 */
+	private const MAX_CODE_SCAN_NODES = 100000;
+
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
@@ -388,22 +397,37 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	/**
 	 * Determines whether the input function call might execute unsaved code.
 	 *
-	 * To do this, we look at the function called by the function call (Z7K1)
-	 * and, if the function is a literal, we explore its implementations.
-	 * If any of the implementations is a literal, we consider it unsaved
-	 * code, unless it's implementing Run Abstract Fragment/Z825 function.
+	 * The first test looks for the property that matters: does the request hold a
+	 * literal code object, at any depth? Code is unsaved code whatever calls it. It
+	 * can sit in the implementation list of the function called, below a Run
+	 * Abstract Fragment/Z825 composition, or in the value of an argument.
 	 *
-	 * TODO figure out a better way to allow execution of fragments, which
-	 * are unsaved code in the strict sense, but should be allowed to run:
-	 * * E.g. if the implementation is literal, but is a composition, we can
-	 *   allow it, but if any nested implementation has code, we should stop it.
-	 * * E.g. if the literal implementation implements Z825, but does it by
-	 *   a code implementation, we should mark it as unsaved code.
+	 * That last shape needs no literal function of its own. A saved higher-order
+	 * function, e.g. Map Function/Z873, Filter Function/Z872 or Reduce
+	 * Function/Z876, takes a function as an argument and applies it. A reference in
+	 * Z7K1 therefore tells us nothing about what the request will run, which is why
+	 * we look at the whole request and not only at the function called.
+	 *
+	 * The second test is structural, and it is wider than code: if the function
+	 * called (Z7K1) is a literal, and one of its implementations is a literal too,
+	 * we refuse the request even when it holds no code. There is one exception, an
+	 * implementation of the Run Abstract Fragment/Z825 function. Abstract Wikipedia
+	 * renders its fragments with such an implementation, and it makes that request
+	 * with no user account, so we must let it through. The code test above makes
+	 * sure that the fragment itself carries no code.
 	 *
 	 * @param stdClass $functionCall
 	 * @return bool
 	 */
 	protected function hasUnsavedCode( $functionCall ): bool {
+		// If the request holds code anywhere, danger! mark as unsaved code. This
+		// covers code below a Z825/Run Abstract Fragment composition, which the
+		// implementation loop below permits, and code in an argument value, which
+		// the loop never looks at.
+		if ( self::containsCodeLiteral( $functionCall ) ) {
+			return true;
+		}
+
 		// If function is not an object, no danger; exit early
 		if (
 			!property_exists( $functionCall, ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ) ||
@@ -434,8 +458,10 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				continue;
 			}
 
-			// If implementation is a literal, danger! mark as unsaved code,
-			// except when implementing Run Abstract Fragment/Z825 function.
+			// If implementation is a literal, danger! mark as unsaved code, except
+			// when implementing Run Abstract Fragment/Z825 function. Such a literal
+			// can only be a composition here, because containsCodeLiteral() above
+			// already refused the request if it held any code.
 			if (
 				property_exists( $implementation, ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION ) &&
 				$implementation->{ ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION } !== ZTypeRegistry::Z_RUN_ABSTRACT_FRAGMENT
@@ -445,6 +471,65 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		}
 
 		// All checks passed, no danger
+		return false;
+	}
+
+	/**
+	 * Tells whether the given value holds a literal code object at any depth.
+	 *
+	 * A value holds code when it has:
+	 * * an object of the type Code/Z16, or
+	 * * an implementation with a code key/Z14K3.
+	 *
+	 * The callers canonicalize the request before this method sees it, so a type
+	 * here is a string, and not a Reference/Z9 object.
+	 *
+	 * The walk keeps its own stack, and it stops at the first code object it finds.
+	 * If the value has more nodes than MAX_CODE_SCAN_NODES, the walk stops and
+	 * returns true, because we cannot show that the request holds no code.
+	 *
+	 * @param mixed $value Decoded and canonicalized JSON value
+	 * @return bool
+	 */
+	private static function containsCodeLiteral( $value ): bool {
+		$stack = ( is_object( $value ) || is_array( $value ) ) ? [ $value ] : [];
+		$nodes = 0;
+
+		while ( $stack ) {
+			// Fail closed if the request is too big to walk
+			if ( ++$nodes > self::MAX_CODE_SCAN_NODES ) {
+				return true;
+			}
+
+			$current = array_pop( $stack );
+
+			if ( is_array( $current ) ) {
+				$children = $current;
+			} else {
+				// An implementation that gives code, e.g. below a Z825 composition
+				if ( property_exists( $current, ZTypeRegistry::Z_IMPLEMENTATION_CODE ) ) {
+					return true;
+				}
+
+				// A literal code object, wherever it sits in the request
+				if (
+					property_exists( $current, ZTypeRegistry::Z_OBJECT_TYPE ) &&
+					$current->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_CODE
+				) {
+					return true;
+				}
+
+				$children = get_object_vars( $current );
+			}
+
+			// Only objects and lists can hold code, so we do not walk into strings
+			foreach ( $children as $child ) {
+				if ( is_object( $child ) || is_array( $child ) ) {
+					$stack[] = $child;
+				}
+			}
+		}
+
 		return false;
 	}
 

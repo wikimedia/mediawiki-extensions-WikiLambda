@@ -108,6 +108,55 @@ class PublicApiRunTest extends WikiLambdaApiTestCase {
 			}
 		];
 
+		// A Z825/Run Abstract Fragment implementation is exempt from the unsaved-code
+		// check, because Abstract Wikipedia renders its fragments that way with no user
+		// account. Code below that composition must not inherit the exemption.
+		$nestedCode = [
+			'Z1K1' => 'Z14',
+			'Z14K1' => 'Z999',
+			'Z14K3' => [
+				'Z1K1' => 'Z16',
+				'Z16K1' => [ 'Z1K1' => 'Z61', 'Z61K1' => 'python-3' ],
+				'Z16K2' => 'def Z999():\n\treturn "pwned"',
+			],
+		];
+		$nestedFunction = [
+			'Z1K1' => 'Z8',
+			'Z8K1' => [ 'Z17' ],
+			'Z8K2' => 'Z6',
+			'Z8K3' => [ 'Z20' ],
+			'Z8K4' => [ 'Z14', $nestedCode ],
+			'Z8K5' => 'Z999',
+		];
+		$z825Wrapper = [
+			'Z1K1' => 'Z7',
+			'Z7K1' => [
+				'Z1K1' => 'Z8',
+				'Z8K1' => [ 'Z17' ],
+				'Z8K2' => 'Z89',
+				'Z8K3' => [ 'Z20' ],
+				'Z8K4' => [
+					'Z14',
+					[
+						'Z1K1' => 'Z14',
+						'Z14K1' => 'Z825',
+						'Z14K2' => [ 'Z1K1' => 'Z7', 'Z7K1' => $nestedFunction ],
+					],
+				],
+				'Z8K5' => 'Z825',
+			],
+			'Z825K1' => [ 'Z1K1' => 'Z6091', 'Z6091K1' => 'Q42' ],
+			'Z825K2' => [ 'Z1K1' => 'Z9', 'Z9K1' => 'Z100' ],
+			'Z825K3' => [ 'Z1K1' => 'Z6', 'Z6K1' => '2026-08-15' ],
+		];
+		yield 'Reject code nested below a Z825 composition' => [
+			json_encode( $z825Wrapper ),
+			null,
+			null,
+			null,
+			'Error of type Z559'
+		];
+
 		// TODO (T325593): Call the example-timeout example; ensure the correct error is returned.
 	}
 }
