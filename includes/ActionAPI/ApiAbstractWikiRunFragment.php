@@ -135,6 +135,10 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 * make a synchronous call to render and sanitize the fragment and
 	 * return whatever results of that call.
 	 *
+	 * The synchronous call needs the wikilambda-abstract-run-unsaved-fragment
+	 * right, because it runs a fragment that the caller supplies. The other two
+	 * paths do not need it: see the comment on the check below.
+	 *
 	 * @param array $fragment
 	 * @param string $qid
 	 * @param WikifunctionsLanguage $language
@@ -173,7 +177,15 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			];
 		}
 
-		// else, synchronously run and return value
+		// else, synchronously run and return value.
+		//
+		// Only this branch runs the caller's fragment here and now, so only this branch
+		// needs the right. A stored fragment above sends nothing, and the async branch
+		// above queues a job, which a page view does as well, so both stay available to
+		// every reader. Any code inside the fragment is refused at the other end, where
+		// the unsaved-code check runs on the function call we send.
+		$this->checkUserRightsAny( 'wikilambda-abstract-run-unsaved-fragment' );
+
 		return $this->abstractWikiRequest->fetchRenderedAWFragment(
 			$fragment,
 			$qid,

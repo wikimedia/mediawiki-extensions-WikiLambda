@@ -15,7 +15,9 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
+use MediaWiki\Permissions\SimpleAuthority;
 use MediaWiki\Tests\Api\ApiTestCase;
+use MediaWiki\User\UserIdentityValue;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 /**
@@ -312,6 +314,132 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'abstractwiki_run_fragment_language' => 'Z1002',
 			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89","Z89K1":"test"}',
 		] );
+	}
+
+	// ------------------------------------------------------------------
+	// Authorization of the synchronous render
+	// ------------------------------------------------------------------
+
+	/**
+	 * An anonymous authority, as in the report.
+	 *
+	 * @return SimpleAuthority
+	 */
+	private function anonymousAuthority(): SimpleAuthority {
+		return new SimpleAuthority( new UserIdentityValue( 0, '127.0.0.1' ), [] );
+	}
+
+	/**
+	 * Running a missing fragment here and now needs the
+	 * wikilambda-abstract-run-unsaved-fragment right, so an authority without it is
+	 * refused and nothing is sent to render.
+	 */
+	public function testExecute_diesWithoutRightWhenRenderingSynchronously() {
+		$qid = 'Q42';
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$fragment = json_decode( $fragmentStr, true );
+
+		// Mock fragment store: returns a missing fragment, so the API would render it
+		$missingFragment = new AWFragment( 'some-fragment-key', $qid, $language->getCode() );
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'datetime' => '20230726040500',
+			'fragment' => $fragment,
+		], $missingFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
+
+		// Mock AbstractWikiRequest to assert that we send nothing to render
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'fetchRenderedAWFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$this->expectApiErrorCode( 'permissiondenied' );
+
+		$this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => $qid,
+			'abstractwiki_run_fragment_language' => $languageZid,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
+		], null, false, $this->anonymousAuthority() );
+	}
+
+	/**
+	 * Reading a stored fragment sends nothing, so it stays available to an authority
+	 * with no rights. An article view renders through this path.
+	 */
+	public function testExecute_storedFragmentIsAllowedWithoutRight() {
+		$qid = 'Q42';
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$fragment = json_decode( $fragmentStr, true );
+
+		$storedFragment = new AWFragment( 'some-fragment-key', $qid, $language->getCode() );
+		$storedFragment->setValue(
+			[ 'success' => true, 'value' => '<b>fresh content</b>' ],
+			AWFragment::AVAILABILITY_FRESH
+		);
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'datetime' => '20230726040500',
+			'fragment' => $fragment,
+		], $storedFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
+
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'fetchRenderedAWFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$result = $this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => $qid,
+			'abstractwiki_run_fragment_language' => $languageZid,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
+		], null, false, $this->anonymousAuthority() )[0][ 'abstractwiki_run_fragment' ];
+
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '<b>fresh content</b>', $result[ 'value' ] );
+	}
+
+	/**
+	 * The asynchronous path only queues a job, which an article view does as well, so
+	 * it stays available to an authority with no rights.
+	 */
+	public function testExecute_asyncRequestIsAllowedWithoutRight() {
+		$qid = 'Q42';
+		$languageZid = 'Z1002';
+		$language = $this->langFactory->getLanguageFromZid( $languageZid );
+		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+		$fragment = json_decode( $fragmentStr, true );
+
+		$missingFragment = new AWFragment( 'some-fragment-key', $qid, $language->getCode() );
+		$fragmentStore = $this->createMockFragmentStoreForGetter( [
+			'topicQid' => $qid,
+			'language' => $language,
+			'datetime' => '20230726040500',
+			'fragment' => $fragment,
+			'revalidate' => true,
+		], $missingFragment );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
+
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'fetchRenderedAWFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$result = $this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => $qid,
+			'abstractwiki_run_fragment_language' => $languageZid,
+			'abstractwiki_run_fragment_fragment' => $fragmentStr,
+			'abstractwiki_run_fragment_async' => true,
+		], null, false, $this->anonymousAuthority() )[0][ 'abstractwiki_run_fragment' ];
+
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertTrue( $result[ 'pending' ] );
 	}
 
 	/**
