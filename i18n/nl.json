@@ -12,7 +12,8 @@
 			"Robin van der Vliet",
 			"Romaine",
 			"Siebrand",
-			"Sjoerddebruin"
+			"Sjoerddebruin",
+			"Sumurai8"
 		]
 	},
 	"wikilambda-desc": "Zorgt ervoor dat functies op een centrale wiki kunnen worden geschreven, beheerd en geëvalueerd.",
@@ -203,6 +204,7 @@
 	"wikilambda-diff-group-name": "Naam",
 	"wikilambda-diff-group-aliases": "Ook bekend als",
 	"wikilambda-diff-group-description": "Beschrijving",
+	"wikilambda-diff-value-elided": "… en $1 meer",
 	"wikilambda-discard-edits": "Wijzigingen niet opslaan",
 	"wikilambda-edit": "Bewerken",
 	"wikilambda-edit-monolingual-text-placeholder": "Voer tekst in",

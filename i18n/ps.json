@@ -251,7 +251,7 @@
 	"wikilambda-tester-status-apierror": "تېروتنه",
 	"wikilambda-tester-status-cancel": "ناگارل",
 	"wikilambda-tester-status-failed": "نابريال شو",
-	"wikilambda-tester-status-passed": "درول‌شوی",
+	"wikilambda-tester-status-passed": "پاس شو",
 	"wikilambda-tester-status-pending": "په تمه",
 	"wikilambda-tester-status-ready": "چمتو",
 	"wikilambda-tester-status-run": "چلول",

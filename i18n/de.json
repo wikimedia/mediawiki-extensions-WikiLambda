@@ -195,6 +195,7 @@
 	"wikilambda-diff-group-name": "Name",
 	"wikilambda-diff-group-aliases": "Auch bekannt als",
 	"wikilambda-diff-group-description": "Beschreibung",
+	"wikilambda-diff-value-elided": "… und $1 weitere",
 	"wikilambda-discard-edits": "Bearbeitungen verwerfen",
 	"wikilambda-edit": "Bearbeiten",
 	"wikilambda-edit-monolingual-text-placeholder": "Text eingeben",

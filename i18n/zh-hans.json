@@ -224,6 +224,7 @@
 	"wikilambda-diff-group-name": "名称",
 	"wikilambda-diff-group-aliases": "别名",
 	"wikilambda-diff-group-description": "描述",
+	"wikilambda-diff-value-elided": "…还有另外$1个",
 	"wikilambda-discard-edits": "放弃编辑",
 	"wikilambda-edit": "编辑",
 	"wikilambda-edit-monolingual-text-placeholder": "输入文字",
