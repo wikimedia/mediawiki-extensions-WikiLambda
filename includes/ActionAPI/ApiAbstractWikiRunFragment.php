@@ -199,6 +199,13 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		// 3.a. If we are running a sync call and there's no cached value (fresh or stale),
 		// regenerate the value synchronously and return it.
 		if ( !( $async ) && !is_array( $staleValue ) ) {
+			// Only this branch runs the caller's fragment here and now, so only this branch
+			// needs the right. A cached fragment above sends nothing, and the async branch
+			// below queues a job, which a page view does as well, so both stay available to
+			// every reader. Any code inside the fragment is refused at the other end, where
+			// the unsaved-code check runs on the function call we send.
+			$this->checkUserRightsAny( 'wikilambda-abstract-run-unsaved-fragment' );
+
 			$cachedValue = $this->abstractWikiRequest->generateSafeFragment(
 				$functionCall,
 				$cacheKeyFresh,

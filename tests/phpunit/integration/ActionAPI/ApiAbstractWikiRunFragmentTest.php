@@ -16,7 +16,9 @@ use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Http\MWHttpRequest;
 use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Permissions\SimpleAuthority;
 use MediaWiki\Tests\Api\ApiTestCase;
+use MediaWiki\User\UserIdentityValue;
 use StatusValue;
 
 /**
@@ -393,6 +395,132 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 			'abstractwiki_run_fragment_date' => '26-7-2023',
 			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89","Z89K1":"test"}',
 		] );
+	}
+
+	// ------------------------------------------------------------------
+	// Authorization of the synchronous render
+	// ------------------------------------------------------------------
+
+	/**
+	 * An anonymous authority, as in the report.
+	 *
+	 * @return SimpleAuthority
+	 */
+	private function anonymousAuthority(): SimpleAuthority {
+		return new SimpleAuthority( new UserIdentityValue( 0, '127.0.0.1' ), [] );
+	}
+
+	/**
+	 * Mock the fragment cache so that makeKey() returns 'fresh-cache-key' for the
+	 * dated key and 'stale-cache-key' otherwise, and get() returns the given values.
+	 *
+	 * @param string $date
+	 * @param string|false $freshValue
+	 * @param string|false $staleValue
+	 */
+	private function mockFragmentCache( string $date, $freshValue, $staleValue ): void {
+		$cache = $this->createMock( MemcachedWrapper::class );
+		$cache->method( 'makeKey' )
+			->willReturnCallback( static function ( ...$args ) use ( $date ) {
+				return ( count( $args ) === 5 ) && ( $args[3] === $date )
+					? 'fresh-cache-key'
+					: 'stale-cache-key';
+			} );
+		$cache->method( 'get' )
+			->willReturnCallback( static function ( $key ) use ( $freshValue, $staleValue ) {
+				return ( $key === 'fresh-cache-key' ) ? $freshValue : $staleValue;
+			} );
+		$this->setService( 'WikiLambdaMemcachedWrapper', $cache );
+	}
+
+	/**
+	 * Running a missing fragment here and now needs the
+	 * wikilambda-abstract-run-unsaved-fragment right, so an authority without it is
+	 * refused and nothing is sent to render.
+	 */
+	public function testExecute_diesWithoutRightWhenRenderingSynchronously() {
+		$date = '26-7-2023';
+		$this->mockFragmentCache( $date, false, false );
+
+		$queue = $this->createMock( JobQueueGroup::class );
+		$queue->expects( $this->never() )->method( 'lazyPush' );
+		$this->setService( 'JobQueueGroup', $queue );
+
+		// Mock AbstractWikiRequest to assert that we send nothing to render
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'generateSafeFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$this->expectApiErrorCode( 'permissiondenied' );
+
+		$this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => 'Q42',
+			'abstractwiki_run_fragment_language' => 'Z1002',
+			'abstractwiki_run_fragment_date' => $date,
+			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}',
+		], null, false, $this->anonymousAuthority() );
+	}
+
+	/**
+	 * Reading a cached fragment sends nothing, so it stays available to an authority
+	 * with no rights, even for a synchronous request that only finds a stale value.
+	 */
+	public function testExecute_storedFragmentIsAllowedWithoutRight() {
+		$date = '26-7-2023';
+		$this->mockFragmentCache( $date, false, json_encode( [
+			'success' => true,
+			'value' => '<b>stale content</b>'
+		] ) );
+
+		// The stale value is revalidated by a job, as for any reader
+		$queue = $this->createMock( JobQueueGroup::class );
+		$queue->expects( $this->once() )->method( 'lazyPush' );
+		$this->setService( 'JobQueueGroup', $queue );
+
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'generateSafeFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$result = $this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => 'Q42',
+			'abstractwiki_run_fragment_language' => 'Z1002',
+			'abstractwiki_run_fragment_date' => $date,
+			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}',
+		], null, false, $this->anonymousAuthority() )[0][ 'abstractwiki_run_fragment' ];
+
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '<b>stale content</b>', $result[ 'value' ] );
+	}
+
+	/**
+	 * The asynchronous path only queues a job, which an article view does as well, so
+	 * it stays available to an authority with no rights.
+	 */
+	public function testExecute_asyncRequestIsAllowedWithoutRight() {
+		$date = '26-7-2023';
+		$this->mockFragmentCache( $date, false, false );
+
+		$queue = $this->createMock( JobQueueGroup::class );
+		$queue->expects( $this->once() )->method( 'lazyPush' );
+		$this->setService( 'JobQueueGroup', $queue );
+
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'generateSafeFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$result = $this->doApiRequest( [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => 'Q42',
+			'abstractwiki_run_fragment_language' => 'Z1002',
+			'abstractwiki_run_fragment_date' => $date,
+			'abstractwiki_run_fragment_fragment' => '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}',
+			'abstractwiki_run_fragment_async' => true,
+		], null, false, $this->anonymousAuthority() )[0][ 'abstractwiki_run_fragment' ];
+
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertTrue( $result[ 'pending' ] );
 	}
 
 	// ------------------------------------------------------------------
