@@ -36,6 +36,9 @@ abstract class AWFragmentStore {
 
 	public const ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX = 'WikiLambdaAbstractFragment';
 
+	/** Metrics 'store' label shared by every AWFragmentStore backend. */
+	protected const METRIC_STORE = 'aw_fragment';
+
 	/**
 	 * Returns the AWFragment rendered given:
 	 * * the fragment composition, as stored in its AW Content object,

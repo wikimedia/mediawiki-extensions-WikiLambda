@@ -198,7 +198,7 @@ class WikiLambdaServices {
 	 */
 	public static function buildMemcachedWrapper( MediaWikiServices $services ): MemcachedWrapper {
 		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-		return new MemcachedWrapper( $extensionConfig );
+		return new MemcachedWrapper( $extensionConfig, $services->getStatsFactory() );
 	}
 
 	/**
@@ -222,7 +222,8 @@ class WikiLambdaServices {
 				);
 			case 'mainstash':
 				return new MainStashAWArticleStore(
-					$services->getMainObjectStash()
+					$services->getMainObjectStash(),
+					$services->getStatsFactory()
 				);
 			default:
 				throw new InvalidArgumentException(
@@ -250,12 +251,14 @@ class WikiLambdaServices {
 			case 'memcached':
 				return new MemcachedAWFragmentStore(
 					$services->getJobQueueGroup(),
-					self::buildMemcachedWrapper( $services )
+					self::buildMemcachedWrapper( $services ),
+					$services->getStatsFactory()
 				);
 			case 'mainstash':
 				return new MainStashAWFragmentStore(
 					$services->getJobQueueGroup(),
-					$services->getMainObjectStash()
+					$services->getMainObjectStash(),
+					$services->getStatsFactory()
 				);
 			default:
 				throw new InvalidArgumentException(

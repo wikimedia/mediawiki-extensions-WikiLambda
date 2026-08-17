@@ -19,9 +19,11 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
+use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
 use MediaWiki\JobQueue\JobQueueGroup;
 use OverflowException;
 use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class MainStashAWFragmentStore extends AWFragmentStore {
@@ -49,10 +51,14 @@ class MainStashAWFragmentStore extends AWFragmentStore {
 	 */
 	public const MAX_AGE_VARIANCE_MINUTES = 360;
 
+	private readonly StoreOpsMetrics $metrics;
+
 	public function __construct(
 		private readonly JobQueueGroup $jobQueueGroup,
-		private readonly BagOStuff $stash
+		private readonly BagOStuff $stash,
+		?StatsFactory $statsFactory = null
 	) {
+		$this->metrics = new StoreOpsMetrics( 'mainstash', $statsFactory );
 	}
 
 	/**
@@ -223,15 +229,19 @@ class MainStashAWFragmentStore extends AWFragmentStore {
 
 		// Get fresh value and exit if there's a hit
 		$stashKey = $this->makeGlobalKey( $topicQid, $language->getZid(), $fragmentKey );
+		$startTime = hrtime( true );
 		$stashedValue = $this->stash->get( $stashKey );
 
 		// If fragment isn't stashed; queue job if revalidate=true and return empty fragment
 		if ( !is_array( $stashedValue ) ) {
+			$this->metrics->recordOp( self::METRIC_STORE, 'get', 'miss', $startTime );
 			if ( $revalidate ) {
 				$this->queueRevalidateJob( $fragment, $topicQid, $language, $datetime, $fragmentKey );
 			}
+			$this->metrics->recordFragmentStatus( self::METRIC_STORE, $awFragment->getStatus() );
 			return $awFragment;
 		}
+		$this->metrics->recordOp( self::METRIC_STORE, 'get', 'hit', $startTime );
 
 		// If fragment is stashed:
 		// * look at the stash date in the value
@@ -243,6 +253,7 @@ class MainStashAWFragmentStore extends AWFragmentStore {
 			$this->queueRevalidateJob( $fragment, $topicQid, $language, $datetime, $fragmentKey );
 		}
 
+		$this->metrics->recordFragmentStatus( self::METRIC_STORE, $awFragment->getStatus() );
 		return $awFragment;
 	}
 
@@ -296,9 +307,14 @@ class MainStashAWFragmentStore extends AWFragmentStore {
 
 		// If fragment contains a transient error and is uncacheable, exit
 		if ( $stashTTL === BagOStuff::TTL_UNCACHEABLE ) {
+			$this->metrics->recordOp( self::METRIC_STORE, 'set', 'skipped', hrtime( true ) );
 			return false;
 		}
 
-		return $this->stash->set( $stashKey, $value, $stashTTL );
+		$startTime = hrtime( true );
+		$success = $this->stash->set( $stashKey, $value, $stashTTL );
+		$this->metrics->recordOp( self::METRIC_STORE, 'set', $success ? 'success' : 'failure', $startTime );
+
+		return $success;
 	}
 }

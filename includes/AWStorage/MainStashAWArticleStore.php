@@ -25,13 +25,17 @@
 
 namespace MediaWiki\Extension\WikiLambda\AWStorage;
 
+use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
 use OverflowException;
 use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class MainStashAWArticleStore extends AWArticleStore {
 
 	public const KEY_PREFIX = 'WikiLambdaAWArticleStore';
+
+	private const METRIC_STORE = 'aw_article';
 
 	/**
 	 * TTL for stored sections and metadata. Picked to comfortably outlive
@@ -51,9 +55,13 @@ class MainStashAWArticleStore extends AWArticleStore {
 	 */
 	public const MAX_PAYLOAD_BYTES = 1 * 1024 * 1024;
 
+	private readonly StoreOpsMetrics $metrics;
+
 	public function __construct(
-		private readonly BagOStuff $stash
+		private readonly BagOStuff $stash,
+		?StatsFactory $statsFactory = null
 	) {
+		$this->metrics = new StoreOpsMetrics( 'mainstash', $statsFactory );
 	}
 
 	private function makeSectionKey(
@@ -86,12 +94,15 @@ class MainStashAWArticleStore extends AWArticleStore {
 			return null;
 		}
 
+		$startTime = hrtime( true );
 		$raw = $this->stash->get(
 			$this->makeSectionKey( $topicQid, $sectionQid, $locale, $schemaVersion )
 		);
 		if ( !is_array( $raw ) ) {
+			$this->metrics->recordOp( self::METRIC_STORE, 'get', 'miss', $startTime );
 			return null;
 		}
+		$this->metrics->recordOp( self::METRIC_STORE, 'get', 'hit', $startTime );
 
 		return new AWSection(
 			$raw['topicQid'],
@@ -163,8 +174,9 @@ class MainStashAWArticleStore extends AWArticleStore {
 		}
 
 		$now = ConvertibleTimestamp::now();
+		$startTime = hrtime( true );
 
-		return $this->stash->set(
+		$success = $this->stash->set(
 			$this->makeSectionKey(
 				$section->getTopicQid(),
 				$section->getSectionQid(),
@@ -181,6 +193,9 @@ class MainStashAWArticleStore extends AWArticleStore {
 			],
 			self::ENTRY_TTL
 		);
+		$this->metrics->recordOp( self::METRIC_STORE, 'set', $success ? 'success' : 'failure', $startTime );
+
+		return $success;
 	}
 
 	/**
@@ -192,9 +207,11 @@ class MainStashAWArticleStore extends AWArticleStore {
 		string $locale,
 		int $schemaVersion = self::AW_STORAGE_SCHEMA_VERSION
 	): void {
-		$this->stash->delete(
+		$startTime = hrtime( true );
+		$success = $this->stash->delete(
 			$this->makeSectionKey( $topicQid, $sectionQid, $locale, $schemaVersion )
 		);
+		$this->metrics->recordOp( self::METRIC_STORE, 'delete', $success ? 'success' : 'failure', $startTime );
 	}
 
 	/**
@@ -204,6 +221,7 @@ class MainStashAWArticleStore extends AWArticleStore {
 		string $topicQid,
 		int $schemaVersion = self::AW_STORAGE_SCHEMA_VERSION
 	): ?AWArticleMetadata {
+		$startTime = hrtime( true );
 		$raw = $this->stash->get(
 			$this->makeSectionKey(
 				$topicQid,
@@ -213,8 +231,10 @@ class MainStashAWArticleStore extends AWArticleStore {
 			)
 		);
 		if ( !is_array( $raw ) ) {
+			$this->metrics->recordOp( self::METRIC_STORE, 'get', 'miss', $startTime );
 			return null;
 		}
+		$this->metrics->recordOp( self::METRIC_STORE, 'get', 'hit', $startTime );
 
 		// The payload is JSON-encoded on write, matching DBAWArticleStore.
 		$payload = json_decode( $raw['payload'], true ) ?? [];
@@ -250,8 +270,9 @@ class MainStashAWArticleStore extends AWArticleStore {
 		}
 
 		$now = ConvertibleTimestamp::now();
+		$startTime = hrtime( true );
 
-		return $this->stash->set(
+		$success = $this->stash->set(
 			$this->makeSectionKey(
 				$topicQid,
 				self::AW_STORAGE_METADATA_KEY,
@@ -268,6 +289,9 @@ class MainStashAWArticleStore extends AWArticleStore {
 			],
 			self::ENTRY_TTL
 		);
+		$this->metrics->recordOp( self::METRIC_STORE, 'set', $success ? 'success' : 'failure', $startTime );
+
+		return $success;
 	}
 
 	/**
@@ -277,7 +301,8 @@ class MainStashAWArticleStore extends AWArticleStore {
 		string $topicQid,
 		int $schemaVersion = self::AW_STORAGE_SCHEMA_VERSION
 	): void {
-		$this->stash->delete(
+		$startTime = hrtime( true );
+		$success = $this->stash->delete(
 			$this->makeSectionKey(
 				$topicQid,
 				self::AW_STORAGE_METADATA_KEY,
@@ -285,5 +310,6 @@ class MainStashAWArticleStore extends AWArticleStore {
 				$schemaVersion
 			)
 		);
+		$this->metrics->recordOp( self::METRIC_STORE, 'delete', $success ? 'success' : 'failure', $startTime );
 	}
 }

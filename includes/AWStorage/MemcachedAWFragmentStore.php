@@ -15,15 +15,21 @@ use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
+use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
 use MediaWiki\JobQueue\JobQueueGroup;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class MemcachedAWFragmentStore extends AWFragmentStore {
 
+	private readonly StoreOpsMetrics $metrics;
+
 	public function __construct(
 		private readonly JobQueueGroup $jobQueueGroup,
-		private readonly MemcachedWrapper $objectCache
+		private readonly MemcachedWrapper $objectCache,
+		?StatsFactory $statsFactory = null
 	) {
+		$this->metrics = new StoreOpsMetrics( 'memcached', $statsFactory );
 	}
 
 	/**
@@ -54,11 +60,12 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 			$fragmentKey
 		);
 
-		$freshValue = json_decode( $this->objectCache->get( $cacheKeyFresh ) ?: '', true );
+		$freshValue = json_decode( $this->objectCache->get( $cacheKeyFresh, self::METRIC_STORE ) ?: '', true );
 
 		if ( is_array( $freshValue ) ) {
 			// Set stale value and return
 			$awFragment->setValue( $freshValue, AWFragment::AVAILABILITY_FRESH );
+			$this->metrics->recordFragmentStatus( self::METRIC_STORE, $awFragment->getStatus() );
 			return $awFragment;
 		}
 
@@ -70,7 +77,7 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 			$fragmentKey
 		);
 
-		$staleValue = json_decode( $this->objectCache->get( $cacheKeyStale ) ?: '', true );
+		$staleValue = json_decode( $this->objectCache->get( $cacheKeyStale, self::METRIC_STORE ) ?: '', true );
 
 		// Create and queue the job CacheAbstractContentFragmentJob;
 		// at this point we know that we want to generate the fragment
@@ -90,10 +97,12 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 		if ( is_array( $staleValue ) ) {
 			// Set stale value and return
 			$awFragment->setValue( $staleValue, AWFragment::AVAILABILITY_STALE );
+			$this->metrics->recordFragmentStatus( self::METRIC_STORE, $awFragment->getStatus() );
 			return $awFragment;
 		}
 
 		// No value, return AWFragment with missing status
+		$this->metrics->recordFragmentStatus( self::METRIC_STORE, $awFragment->getStatus() );
 		return $awFragment;
 	}
 
@@ -154,8 +163,8 @@ class MemcachedAWFragmentStore extends AWFragmentStore {
 		// For successful renders, or for errors that the content caused
 		// * cache fresh value for WEEK (at least 48 hours to ensure availability through timezones)
 		// * cache stale value for MONTH
-		$this->objectCache->set( $cacheKeyFresh, $encodedValue, $freshTTL );
-		$this->objectCache->set( $cacheKeyStale, $encodedValue, $staleTTL );
+		$this->objectCache->set( $cacheKeyFresh, $encodedValue, $freshTTL, self::METRIC_STORE );
+		$this->objectCache->set( $cacheKeyStale, $encodedValue, $staleTTL, self::METRIC_STORE );
 
 		return true;
 	}

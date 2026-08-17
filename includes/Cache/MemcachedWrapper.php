@@ -12,11 +12,13 @@ namespace MediaWiki\Extension\WikiLambda\Cache;
 
 use InvalidArgumentException;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use Memcached;
 use Psr\Log\LoggerInterface;
 use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\Stats\StatsFactory;
 
 class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAwareness {
 
@@ -29,6 +31,8 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 
 	private LoggerInterface $logger;
 
+	private readonly StoreOpsMetrics $metrics;
+
 	/**
 	 * This is a simple direct wrapper around Memcached that allows us to use multiple configured memcached services,
 	 * with different assumptions to those that MediaWiki's BagO'Stuff (and especially WANObjectCache) make. It will
@@ -38,10 +42,12 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 	 * cache penetration while allowing the key to eventually be fully removed from the cache.
 	 *
 	 * @param Config $config
+	 * @param ?StatsFactory $statsFactory
 	 */
-	public function __construct( private readonly Config $config ) {
+	public function __construct( private readonly Config $config, ?StatsFactory $statsFactory = null ) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaCache' );
+		$this->metrics = new StoreOpsMetrics( 'memcached', $statsFactory );
 
 		$configuredCaches = $this->config->get( 'WikiLambdaObjectCaches' );
 
@@ -96,14 +102,33 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 	}
 
 	/**
+	 * Records a store operation's outcome and latency for observability.
+	 *
+	 * Unlabelled calls (empty $storeLabel) are skipped.
+	 *
+	 * @param string $storeLabel Identifies the calling store, e.g. 'aw_fragment'
+	 * @param string $op One of 'get', 'set', 'delete'
+	 * @param string $outcome One of 'hit', 'miss', 'success', 'failure'
+	 * @param int $startTimeNs As returned by hrtime( true ) at the start of the operation
+	 */
+	private function recordOp( string $storeLabel, string $op, string $outcome, int $startTimeNs ): void {
+		if ( $storeLabel === '' ) {
+			return;
+		}
+		$this->metrics->recordOp( $storeLabel, $op, $outcome, $startTimeNs );
+	}
+
+	/**
 	 * Checks the local memcached service and returns the value for the given key.
 	 *
 	 * @param string $key The key to retrieve
+	 * @param string $storeLabel Identifies the calling store, for observability (e.g. 'aw_fragment')
 	 * @return mixed The value associated with the key from the DC-local memcached service, or false if the key
 	 *   is not found.
 	 */
-	public function get( string $key ): mixed {
+	public function get( string $key, string $storeLabel = '' ): mixed {
 		$this->logger->debug( __METHOD__ . ': cache check for {key}', [ 'key' => $key ] );
+		$startTime = hrtime( true );
 
 		// Get only our DC local service.
 		$localServiceName = array_key_first( $this->services );
@@ -123,18 +148,21 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 					__METHOD__ . ': cache tombstone found for prefixed {key} from {service}, setting as cache miss',
 					[ 'key' => $targetKey, 'service' => $localServiceName ]
 				);
+				$this->recordOp( $storeLabel, 'get', 'miss', $startTime );
 				return false;
 			}
 			$this->logger->debug(
 				__METHOD__ . ': cache hit for prefixed {key} from {service}',
 				[ 'key' => $targetKey, 'service' => $localServiceName ]
 			);
+			$this->recordOp( $storeLabel, 'get', 'hit', $startTime );
 			return $value;
 		}
 		$this->logger->debug(
 			__METHOD__ . ': cache miss for prefixed {key} from {service}',
 			[ 'key' => $targetKey, 'service' => $localServiceName ]
 		);
+		$this->recordOp( $storeLabel, 'get', 'miss', $startTime );
 		return false;
 	}
 
@@ -144,11 +172,15 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 	 * @param string $key The key to set
 	 * @param mixed $value The value to set
 	 * @param int $ttl Time to live in seconds (default 60*60*24*30 seconds = 30 days)
+	 * @param string $storeLabel Identifies the calling store, for observability (e.g. 'aw_fragment')
 	 * @return bool Whether the set operation succeeded
 	 */
-	public function set( string $key, mixed $value, int $ttl = self::TTL_MONTH ): bool {
+	public function set( string $key, mixed $value, int $ttl = self::TTL_MONTH, string $storeLabel = '' ): bool {
+		$startTime = hrtime( true );
+
 		if ( $this->broadcastRoute === '' ) {
 			$this->logger->warning( __METHOD__ . ': no broadcast cache configured!' );
+			$this->recordOp( $storeLabel, 'set', 'failure', $startTime );
 			return false;
 		}
 
@@ -195,6 +227,8 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 				]
 			);
 		}
+
+		$this->recordOp( $storeLabel, 'set', $success ? 'success' : 'failure', $startTime );
 
 		return $success;
 	}
@@ -290,11 +324,15 @@ class MemcachedWrapper implements \Wikimedia\LightweightObjectStore\ExpirationAw
 	 * Attempt to delete the given key via the broadcast route (setting a tombstone value)
 	 *
 	 * @param string $key The key to delete
+	 * @param string $storeLabel Identifies the calling store, for observability (e.g. 'aw_fragment')
 	 * @return bool Whether the delete operation succeeded on the broadcast cache.
 	 */
-	public function delete( string $key ): bool {
+	public function delete( string $key, string $storeLabel = '' ): bool {
 		$this->logger->debug( __METHOD__ . ': deleting {key} by setting a tombstone value', [ 'key' => $key ] );
-		return $this->set( $key, self::TOMBSTONE, self::TTL_MINUTE );
+		$startTime = hrtime( true );
+		$success = $this->set( $key, self::TOMBSTONE, self::TTL_MINUTE, $storeLabel );
+		$this->recordOp( $storeLabel, 'delete', $success ? 'success' : 'failure', $startTime );
+		return $success;
 	}
 
 	/**
