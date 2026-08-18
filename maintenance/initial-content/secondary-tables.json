@@ -3358,6 +3358,114 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z594",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Function call approached the recursion depth limit",
+            "wlzl_label_normalised": "function call approached the recursion depth limit",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z594",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z594",
+            "wlzl_label_normalised": "z594",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z595",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Result may be incomplete: recursion depth limit reached while building the result",
+            "wlzl_label_normalised": "result may be incomplete: recursion depth limit reached while building the result",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z595",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z595",
+            "wlzl_label_normalised": "z595",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z596",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Function call approached the limit on calls to the evaluator",
+            "wlzl_label_normalised": "function call approached the limit on calls to the evaluator",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z596",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z596",
+            "wlzl_label_normalised": "z596",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z597",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Function call used most of its time limit",
+            "wlzl_label_normalised": "function call used most of its time limit",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z597",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z597",
+            "wlzl_label_normalised": "z597",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z598",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Wikidata value discarded: not recognised",
+            "wlzl_label_normalised": "wikidata value discarded: not recognised",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z598",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z598",
+            "wlzl_label_normalised": "z598",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z599",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Text repaired: output was not valid UTF-16",
+            "wlzl_label_normalised": "text repaired: output was not valid utf-16",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z599",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z599",
+            "wlzl_label_normalised": "z599",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z600",
             "wlzl_type": "Z61",
             "wlzl_language": "Z1002",
@@ -40933,6 +41041,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z2074",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Izere",
+            "wlzl_label_normalised": "izere",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2074",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2074",
+            "wlzl_label": "Izere",
+            "wlzl_label_normalised": "izere",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2074",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2074",
+            "wlzl_label_normalised": "z2074",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2074",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "izr",
+            "wlzl_label_normalised": "izr",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z6001",
             "wlzl_type": "Z4",
             "wlzl_language": "Z1002",
@@ -44682,6 +44826,24 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "Z20739",
             "wlzl_label_normalised": "z20739",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z96",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Wikifunctions Object Reference",
+            "wlzl_label_normalised": "wikifunctions object reference",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z96",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z96",
+            "wlzl_label_normalised": "z96",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         }
@@ -52904,6 +53066,10 @@
         {
             "wlzlangs_zid": "Z2073",
             "wlzlangs_language": "son"
+        },
+        {
+            "wlzlangs_zid": "Z2074",
+            "wlzlangs_language": "izr"
         }
     ]
 }
