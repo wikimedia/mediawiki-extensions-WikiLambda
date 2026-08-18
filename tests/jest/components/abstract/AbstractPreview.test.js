@@ -121,6 +121,25 @@ describe( 'AbstractPreview', () => {
 		expect( fragments[ 2 ].props( 'keyPath' ) ).toBe( `abstractwiki.sections.${ biblioQid }.fragments.1` );
 	} );
 
+	it( 'makes the preview scroller reachable and named for assistive technology', () => {
+		const wrapper = renderPreview();
+		const scroller = wrapper.find( '.ext-wikilambda-app-abstract-preview__scroller' );
+
+		expect( scroller.exists() ).toBe( true );
+		expect( scroller.attributes( 'tabindex' ) ).toBe( '0' );
+		expect( scroller.attributes( 'role' ) ).toBe( 'group' );
+		expect( scroller.attributes( 'aria-label' ) ).toBe( 'Generated text' );
+	} );
+
+	it( 'keeps the preview body inside the scroller, so the highlight overlay spans its full height', () => {
+		const wrapper = renderPreview();
+		const body = wrapper.find(
+			'.ext-wikilambda-app-abstract-preview__scroller > .ext-wikilambda-app-abstract-preview__body'
+		);
+
+		expect( body.exists() ).toBe( true );
+	} );
+
 	it( 'sets lang and dir attributes in preview body from selected preview language', () => {
 		store.getPreviewLanguageZid = 'Z11926';
 		store.getLabelDataForLangCode = jest.fn().mockReturnValue( {

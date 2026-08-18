@@ -19,20 +19,30 @@
 			></wl-z-object-selector>
 		</template>
 		<template #main>
+			<!-- The scroller gets its own scrollbar, so it needs the keyboard
+			focus and an accessible name. The body inside it must stay at its
+			full height, because the highlight overlay is positioned in it. -->
 			<div
-				ref="bodyRef"
-				class="ext-wikilambda-app-abstract-preview__body"
-				:lang="previewLanguageLabelData.langCode"
-				:dir="previewLanguageLabelData.langDir"
+				class="ext-wikilambda-app-abstract-preview__scroller"
+				role="group"
+				tabindex="0"
+				:aria-label="i18n( 'wikilambda-abstract-preview-in-language' ).text()"
 			>
-				<wl-abstract-preview-section
-					v-for="section in sections"
-					:key="`${section.index}-${section.qid}-${previewLanguageZid}`"
-					:section="section"
-					:language="previewLanguageZid"
-					class="ext-wikilambda-app-abstract-preview__section"
-				></wl-abstract-preview-section>
-				<wl-abstract-preview-highlight-layer></wl-abstract-preview-highlight-layer>
+				<div
+					ref="bodyRef"
+					class="ext-wikilambda-app-abstract-preview__body"
+					:lang="previewLanguageLabelData.langCode"
+					:dir="previewLanguageLabelData.langDir"
+				>
+					<wl-abstract-preview-section
+						v-for="section in sections"
+						:key="`${section.index}-${section.qid}-${previewLanguageZid}`"
+						:section="section"
+						:language="previewLanguageZid"
+						class="ext-wikilambda-app-abstract-preview__section"
+					></wl-abstract-preview-section>
+					<wl-abstract-preview-highlight-layer></wl-abstract-preview-highlight-layer>
+				</div>
 			</div>
 		</template>
 	</wl-widget-base>
@@ -132,12 +142,59 @@ module.exports = exports = defineComponent( {
 .ext-wikilambda-app-abstract-preview {
 	position: sticky;
 	top: @spacing-50;
-	// Clear the float after the preview
-	display: flow-root;
+	// The preview must not be taller than the screen. A taller preview sticks
+	// at the top offset, and then its bottom part stays below the screen for
+	// as long as the preview is sticky. The user cannot read it. To prevent
+	// this, keep the preview inside the screen and let the scroller inside it
+	// move its own content. See T429214.
+	display: flex;
+	flex-direction: column;
+	// The widget has a border and padding, and MediaWiki has no global
+	// `border-box` rule. Without `box-sizing`, the maximum height applies to
+	// the content box only, and the widget gets taller than the screen again.
+	box-sizing: border-box;
+	max-height: calc( 100vh - @spacing-100 );
 
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+	// Let the scroller use all the height that the header does not use.
+	// `min-height: 0` is necessary, or the flex items refuse to get smaller
+	// than their content and the scroller never gets a scrollbar.
+	.ext-wikilambda-app-widget-base__main {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.ext-wikilambda-app-abstract-preview__scroller {
+		min-height: 0;
+		// The scroller goes to the border of the widget. The scrollbar then
+		// stays in the padding of the widget, and does not cover the text or
+		// the reload button. The padding keeps the content in its position.
+		margin-right: -@spacing-75;
+		padding-right: @spacing-75;
+		// This also makes a block formatting context, which keeps the floats
+		// in the generated text inside the preview.
+		overflow-y: auto;
+	}
+
+	// The grid stacks the two columns below the desktop breakpoint. The
+	// preview is then a full-width block below the content, so it must scroll
+	// with the page and must not have a scrollbar of its own.
+	@media screen and ( max-width: @max-width-breakpoint-tablet ) {
 		position: static;
 		top: 0;
+		// Clear the float after the preview
+		display: flow-root;
+		max-height: none;
+
+		.ext-wikilambda-app-widget-base__main {
+			display: block;
+		}
+
+		.ext-wikilambda-app-abstract-preview__scroller {
+			margin-right: 0;
+			padding-right: 0;
+			overflow-y: visible;
+		}
 	}
 
 	.ext-wikilambda-app-abstract-preview__body {
