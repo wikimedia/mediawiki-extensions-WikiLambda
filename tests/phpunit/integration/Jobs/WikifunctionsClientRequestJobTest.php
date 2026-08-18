@@ -10,10 +10,10 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
-use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
@@ -23,7 +23,7 @@ use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob
- * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
+ * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore
  * @group API
  * @group Database
  */

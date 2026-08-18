@@ -12,7 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\AbstractContent;
 
 use MediaWiki\Deferred\DataUpdate;
-use MediaWiki\Extension\WikiLambda\WikifunctionsUsageStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;

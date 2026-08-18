@@ -20,11 +20,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\WikifunctionsUsageStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsUsageStore
+ * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore
  *
  * @group Database
  */

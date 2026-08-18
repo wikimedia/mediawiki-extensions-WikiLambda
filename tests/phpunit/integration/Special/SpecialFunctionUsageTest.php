@@ -10,8 +10,8 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Special;
 
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\Special\SpecialFunctionUsage;
-use MediaWiki\Extension\WikiLambda\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Tests\Specials\SpecialPageTestBase;

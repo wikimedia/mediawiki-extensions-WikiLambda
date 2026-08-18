@@ -8,9 +8,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ClientStorage;
 
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 

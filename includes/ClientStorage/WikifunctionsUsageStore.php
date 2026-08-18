@@ -17,9 +17,10 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ClientStorage;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IReadableDatabase;

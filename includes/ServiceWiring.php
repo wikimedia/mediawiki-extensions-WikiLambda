@@ -17,6 +17,8 @@ use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentImageRenderer;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;

@@ -11,12 +11,12 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
-use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 
 /**
- * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
+ * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore
  *
  * @group Database
  */

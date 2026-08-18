@@ -21,6 +21,8 @@ use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Logger\LoggerFactory;

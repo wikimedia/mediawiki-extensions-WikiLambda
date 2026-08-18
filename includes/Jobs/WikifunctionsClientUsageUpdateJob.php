@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use MediaWiki\Config\Config;
-use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\GenericParameterJob;
@@ -27,7 +26,6 @@ use Psr\Log\LoggerInterface;
 class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJob {
 
 	private LoggerInterface $logger;
-	private WikifunctionsClientStore $wikifunctionsClientStore;
 	private Config $config;
 
 	private string $targetFunction;

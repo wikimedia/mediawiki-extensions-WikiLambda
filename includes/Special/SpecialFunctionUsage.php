@@ -15,7 +15,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Special;
 
-use MediaWiki\Extension\WikiLambda\WikifunctionsUsageStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;

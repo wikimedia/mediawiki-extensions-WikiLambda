@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ParserFunction;
 
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPendingFragment;
@@ -16,7 +17,6 @@ use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
-use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
@@ -30,7 +30,7 @@ use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler
  * @covers \MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsCallDefaultValues
- * @covers \MediaWiki\Extension\WikiLambda\WikifunctionsClientStore
+ * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore
  * @group API
  * @group Database
  */

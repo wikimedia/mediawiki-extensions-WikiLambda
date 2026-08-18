@@ -12,12 +12,12 @@
 namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Extension\WikiLambda\UIUtils;
-use MediaWiki\Extension\WikiLambda\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
