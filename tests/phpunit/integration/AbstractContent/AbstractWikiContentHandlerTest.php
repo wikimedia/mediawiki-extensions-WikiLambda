@@ -25,6 +25,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Page\Article;
+use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
@@ -255,6 +256,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 		$params = $this->createMock( ContentParseParams::class );
 		$params->method( 'getGenerateHtml' )->willReturn( true );
 		$params->method( 'getPage' )->willReturn( $title->toPageReference() );
+		$params->method( 'getParserOptions' )->willReturn( ParserOptions::newFromAnon() );
 
 		$output = new ParserOutput();
 
@@ -276,6 +278,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 		$params = $this->createMock( ContentParseParams::class );
 		$params->method( 'getGenerateHtml' )->willReturn( false );
 		$params->method( 'getPage' )->willReturn( $title->toPageReference() );
+		$params->method( 'getParserOptions' )->willReturn( ParserOptions::newFromAnon() );
 
 		$output = new ParserOutput();
 
@@ -296,6 +299,7 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 		$params = $this->createMock( ContentParseParams::class );
 		$params->method( 'getGenerateHtml' )->willReturn( true );
 		$params->method( 'getPage' )->willReturn( $title->toPageReference() );
+		$params->method( 'getParserOptions' )->willReturn( ParserOptions::newFromAnon() );
 
 		$output = new ParserOutput();
 

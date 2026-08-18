@@ -257,7 +257,9 @@ class AbstractWikiContentHandler extends ContentHandler {
 		ContentParseParams $cpoParams,
 		ParserOutput &$parserOutput
 	) {
-		$userLang = RequestContext::getMain()->getLanguage();
+		// read via ParserOptions::getUserLangObj(), which tells ParserCache that this render
+		// depends on the user's language, so it stores a separate cache entry per requested language.
+		$userLang = $cpoParams->getParserOptions()->getUserLangObj();
 		$logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 
 		// Ensure the stored content is a valid AbstractWikiContent

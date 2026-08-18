@@ -14,6 +14,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
+use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Title\Title;
 
@@ -55,6 +56,7 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$params = $this->createMock( ContentParseParams::class );
 		$params->method( 'getGenerateHtml' )->willReturn( true );
 		$params->method( 'getPage' )->willReturn( $title->toPageReference() );
+		$params->method( 'getParserOptions' )->willReturn( ParserOptions::newFromAnon() );
 
 		$output = new ParserOutput();
 
