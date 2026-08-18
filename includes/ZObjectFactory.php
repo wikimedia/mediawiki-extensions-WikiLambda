@@ -156,17 +156,14 @@ class ZObjectFactory {
 			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ ZTypeRegistry::Z_MONOLINGUALSTRING ]
 		] );
 
-		// 4.2 Track self-reference if Z_PERSISTENT_ID is present
-		self::trackSelfReference( $persistentId->getZValue(), self::SET_SELF_ZID );
-
-		// 4.3. Create and validate inner ZObject: can throw Z502/Not wellformed
+		// 4.2. Create and validate inner ZObject: can throw Z502/Not wellformed
 		$zObject = self::create( $object );
 
-		// 4.5. Construct ZPersistentObject()
+		// 4.3. Construct ZPersistentObject()
 		$persistentObject = new ZPersistentObject( $persistentId, $zObject, $persistentLabel,
 			$persistentAliases, $persistentDescription );
 
-		// 4.6. Check validity, to make sure that ID, label and aliases have the right format
+		// 4.4. Check validity, to make sure that ID, label and aliases have the right format
 		if ( !$persistentObject->isValid() ) {
 			self::getLogger()->info( __METHOD__ . ': ZPersistentObject keys failed validation' );
 			throw new ZErrorException(
@@ -180,8 +177,6 @@ class ZObjectFactory {
 			);
 		}
 
-		// 4.6. Untrack self-reference
-		self::trackSelfReference( $persistentId->getZValue(), self::UNSET_SELF_ZID );
 		return $persistentObject;
 	}
 
@@ -669,39 +664,5 @@ class ZObjectFactory {
 				]
 			)
 		);
-	}
-
-	/**
-	 * @const bool
-	 */
-	private const SET_SELF_ZID = 1;
-	private const UNSET_SELF_ZID = 2;
-	private const CHECK_SELF_ZID = 3;
-
-	/**
-	 * Tracks Zids that appear in the ZObject validation context, which might referenced again from
-	 * another key of the same ZObject. Depending on the mode flag, it sets a newly observed Zid,
-	 * unsets it or just checks its presence.
-	 *
-	 * @param string $zid
-	 * @param int $mode
-	 * @return bool
-	 */
-	private static function trackSelfReference( $zid, $mode = self::CHECK_SELF_ZID ): bool {
-		static $context = [];
-		$isObserved = array_key_exists( $zid, $context );
-
-		switch ( $mode ) {
-			case self::CHECK_SELF_ZID:
-				return $isObserved;
-			case self::SET_SELF_ZID:
-				$context[ $zid ] = true;
-				return $isObserved;
-			case self::UNSET_SELF_ZID:
-				unset( $context[ $zid ] );
-				return $isObserved;
-			default:
-				return false;
-		}
 	}
 }

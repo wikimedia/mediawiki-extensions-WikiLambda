@@ -355,12 +355,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_TYPE_IDENTITY,
 	];
 
-	public const SELF_REFERENTIAL_KEYS = [
-		self::Z_TYPE_IDENTITY,
-		self::Z_PERSISTENTOBJECT_ID,
-		self::Z_FUNCTION_IDENTITY
-	];
-
 	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.
 	public const Z_CODE = 'Z16';
 	public const Z_CODE_LANGUAGE = 'Z16K1';
