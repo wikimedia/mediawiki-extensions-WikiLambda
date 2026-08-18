@@ -21,6 +21,19 @@
 				height: rect.height
 			}"
 		></div>
+		<!-- The selection comes last, so it paints over the pointer highlight -->
+		<div
+			v-for="( rect, index ) in selectedRects"
+			:key="`selected-${index}`"
+			class="ext-wikilambda-app-abstract-preview__highlight-layer-rect
+				ext-wikilambda-app-abstract-preview__highlight-layer-rect--selected"
+			:style="{
+				top: rect.top,
+				left: rect.left,
+				width: rect.width,
+				height: rect.height
+			}"
+		></div>
 	</div>
 </template>
 
@@ -38,6 +51,7 @@ module.exports = exports = defineComponent( {
 		const containerRef = inject( 'previewBodyRef', null );
 
 		const highlightedKeyPath = computed( () => store.getHighlightedFragment );
+		const selectedKeyPath = computed( () => store.getSelectedFragment );
 
 		function getFragmentNodes( keyPath ) {
 			if ( !registry || !registry.getFragmentNodes ) {
@@ -52,8 +66,17 @@ module.exports = exports = defineComponent( {
 			getFragmentNodes
 		);
 
+		// The selection is drawn with the same geometry as the pointer
+		// highlight, because a fragment can be inline, block or table content.
+		const { rects: selectedRects } = useFragmentHighlightRects(
+			containerRef,
+			selectedKeyPath,
+			getFragmentNodes
+		);
+
 		return {
-			rects
+			rects,
+			selectedRects
 		};
 	}
 } );
@@ -78,5 +101,12 @@ module.exports = exports = defineComponent( {
 	// These values come from the overlay that Visual Editor uses and is hardcoded in their codebase
 	background: rgba( 109, 169, 247, 0.15 ); // #6da9f7
 	box-shadow: inset 0 0 0 1px rgba( 76, 118, 172, 0.15 ); // #4c76ac
+}
+
+// The selection stays after the pointer goes away, and it can be visible at
+// the same time as the pointer highlight, so it must look different.
+.ext-wikilambda-app-abstract-preview__highlight-layer-rect--selected {
+	background: transparent;
+	box-shadow: inset 0 0 0 2px @border-color-progressive;
 }
 </style>

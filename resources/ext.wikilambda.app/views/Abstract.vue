@@ -27,7 +27,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, onMounted, watch } = require( 'vue' );
+const { computed, defineComponent, onMounted, onUnmounted, watch } = require( 'vue' );
 
 const useMainStore = require( '../store/index.js' );
 const usePageTitle = require( '../composables/usePageTitle.js' );
@@ -88,10 +88,28 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Clear the fragment selection when the user presses Escape. The
+		 * listener is on the document, because the selection can be set from
+		 * either column and the focus can be anywhere.
+		 *
+		 * @param {KeyboardEvent} event
+		 */
+		function onKeyDown( event ) {
+			if ( event.key === 'Escape' && store.getSelectedFragment ) {
+				store.setSelectedFragment( undefined );
+			}
+		}
+
+		/**
 		 * Lifecycle hook to emit the mounted event.
 		 */
 		onMounted( () => {
+			document.addEventListener( 'keydown', onKeyDown );
 			emit( 'mounted' );
+		} );
+
+		onUnmounted( () => {
+			document.removeEventListener( 'keydown', onKeyDown );
 		} );
 
 		return {

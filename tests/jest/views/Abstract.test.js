@@ -15,8 +15,13 @@ const { createJQueryAbstractCreateTitleMocks } = require( '../helpers/jqueryHelp
 describe( 'Abstract view', () => {
 	let store;
 
+	// The view attaches a listener to the document, so every mounted view must
+	// be taken down again. Otherwise a view from an earlier test still answers
+	// events and makes later tests fail.
+	let mountedWrappers = [];
+
 	function renderAbstractView( options = {} ) {
-		return shallowMount( AbstractView, {
+		const wrapper = shallowMount( AbstractView, {
 			global: {
 				stubs: {
 					'wl-abstract-title': true,
@@ -26,6 +31,19 @@ describe( 'Abstract view', () => {
 			},
 			...options
 		} );
+		mountedWrappers.push( wrapper );
+		return wrapper;
+	}
+
+	/**
+	 * Take a view down and stop tracking it.
+	 *
+	 * @param {Object} wrapper
+	 * @return {undefined}
+	 */
+	function unmountAbstractView( wrapper ) {
+		mountedWrappers = mountedWrappers.filter( ( tracked ) => tracked !== wrapper );
+		wrapper.unmount();
 	}
 
 	beforeEach( () => {
@@ -42,6 +60,13 @@ describe( 'Abstract view', () => {
 		store.getLabelData = jest.fn();
 		store.getZObjectByKeyPath = jest.fn();
 		store.getZPersistentName = jest.fn();
+
+		store.getSelectedFragment = undefined;
+		store.setSelectedFragment = jest.fn();
+	} );
+
+	afterEach( () => {
+		mountedWrappers.splice( 0 ).forEach( ( wrapper ) => wrapper.unmount() );
 	} );
 
 	it( 'renders without errors', () => {
@@ -129,5 +154,54 @@ describe( 'Abstract view', () => {
 		expect( store.isAbstractCreatePage ).toHaveBeenCalled();
 		expect( $titleSpan.text ).not.toHaveBeenCalled();
 		expect( wrapper.exists() ).toBe( true );
+	} );
+
+	describe( 'clearing the fragment selection', () => {
+		/**
+		 * Send a key to the document, as the browser does when the focus is
+		 * anywhere on the page.
+		 *
+		 * @param {string} key
+		 * @return {undefined}
+		 */
+		function pressKey( key ) {
+			document.dispatchEvent( new KeyboardEvent( 'keydown', { key: key } ) );
+		}
+
+		it( 'clears the selection on Escape', () => {
+			store.getSelectedFragment = 'abstractwiki.sections.Q8776414.fragments.1';
+			renderAbstractView();
+
+			pressKey( 'Escape' );
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( undefined );
+		} );
+
+		it( 'ignores Escape when no fragment is selected', () => {
+			renderAbstractView();
+
+			pressKey( 'Escape' );
+
+			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'ignores other keys', () => {
+			store.getSelectedFragment = 'abstractwiki.sections.Q8776414.fragments.1';
+			renderAbstractView();
+
+			pressKey( 'Enter' );
+
+			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'stops listening after unmount', () => {
+			store.getSelectedFragment = 'abstractwiki.sections.Q8776414.fragments.1';
+			const wrapper = renderAbstractView();
+
+			unmountAbstractView( wrapper );
+			pressKey( 'Escape' );
+
+			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
+		} );
 	} );
 } );

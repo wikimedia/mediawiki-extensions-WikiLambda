@@ -43,6 +43,8 @@ describe( 'AbstractContentFragment', () => {
 		store.getParentListCount = jest.fn().mockReturnValue( 3 );
 		store.getHighlightedFragment = undefined;
 		store.setHighlightedFragment = jest.fn();
+		store.getSelectedFragment = undefined;
+		store.setSelectedFragment = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
@@ -138,11 +140,19 @@ describe( 'AbstractContentFragment', () => {
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( undefined );
 		} );
 
-		it( 'unsets highlight on focus and blur', async () => {
+		it( 'sets highlight when the focus moves into the fragment', async () => {
 			const wrapper = renderFragment();
 
-			await wrapper.trigger( 'focus' );
-			await wrapper.trigger( 'blur' );
+			await wrapper.trigger( 'focusin' );
+
+			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'unsets highlight when the focus leaves the fragment', async () => {
+			const wrapper = renderFragment();
+
+			await wrapper.trigger( 'focusin' );
+			await wrapper.trigger( 'focusout' );
 
 			expect( store.setHighlightedFragment ).toHaveBeenLastCalledWith( undefined );
 		} );
@@ -153,6 +163,85 @@ describe( 'AbstractContentFragment', () => {
 			wrapper.unmount();
 
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( undefined );
+		} );
+	} );
+
+	describe( 'fragment selection', () => {
+		it( 'is not selected when another fragment is selected', () => {
+			store.getSelectedFragment = 'abstractwiki.sections.Q8776414.fragments.1';
+
+			const wrapper = renderFragment();
+
+			expect( wrapper.classes() ).not.toContain( 'ext-wikilambda-app-abstract-content-fragment__selected' );
+			expect( wrapper.attributes( 'aria-current' ) ).toBeUndefined();
+		} );
+
+		it( 'marks itself as selected and current when it is the selected fragment', () => {
+			store.getSelectedFragment = keyPath;
+
+			const wrapper = renderFragment();
+
+			expect( wrapper.classes() ).toContain( 'ext-wikilambda-app-abstract-content-fragment__selected' );
+			expect( wrapper.attributes( 'aria-current' ) ).toBe( 'true' );
+		} );
+
+		it( 'selects the fragment on click', async () => {
+			const wrapper = renderFragment();
+
+			await wrapper.trigger( 'click' );
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'selects the fragment when the focus moves into it', async () => {
+			const wrapper = renderFragment();
+
+			await wrapper.trigger( 'focusin' );
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'moves itself into view when it becomes the selected fragment', async () => {
+			const wrapper = renderFragment();
+			const scrollIntoView = jest.fn();
+			wrapper.element.scrollIntoView = scrollIntoView;
+
+			store.getSelectedFragment = keyPath;
+			await wrapper.vm.$nextTick();
+
+			expect( scrollIntoView ).toHaveBeenCalledWith( expect.objectContaining( {
+				block: 'nearest',
+				inline: 'nearest'
+			} ) );
+		} );
+
+		it( 'does not move itself into view while it is not selected', async () => {
+			const wrapper = renderFragment();
+			const scrollIntoView = jest.fn();
+			wrapper.element.scrollIntoView = scrollIntoView;
+
+			store.getSelectedFragment = 'abstractwiki.sections.Q8776414.fragments.1';
+			await wrapper.vm.$nextTick();
+
+			expect( scrollIntoView ).not.toHaveBeenCalled();
+		} );
+
+		it( 'gives up the selection on unmount, so it cannot point at a gone fragment', () => {
+			store.getSelectedFragment = keyPath;
+			const wrapper = renderFragment();
+
+			wrapper.unmount();
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( undefined );
+		} );
+
+		it( 'keeps the selection of another fragment on unmount', () => {
+			store.getSelectedFragment = 'abstractwiki.sections.Q8776414.fragments.1';
+			const wrapper = renderFragment();
+
+			wrapper.unmount();
+
+			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
 		} );
 	} );
 

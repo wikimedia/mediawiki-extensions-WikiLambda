@@ -46,6 +46,8 @@ describe( 'AbstractPreviewFragment', () => {
 
 		store.getHighlightedFragment = undefined;
 		store.setHighlightedFragment = jest.fn();
+		store.getSelectedFragment = undefined;
+		store.setSelectedFragment = jest.fn();
 	} );
 
 	it( 'renders without errors', () => {
@@ -292,12 +294,21 @@ describe( 'AbstractPreviewFragment', () => {
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( undefined );
 		} );
 
-		it( 'unsets highlight on focus and blur', async () => {
+		it( 'sets highlight when the focus moves into the fragment', async () => {
 			wrapper = renderFragment();
 			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
 
-			await fragment.trigger( 'focus' );
-			await fragment.trigger( 'blur' );
+			await fragment.trigger( 'focusin' );
+
+			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'unsets highlight when the focus leaves the fragment', async () => {
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+
+			await fragment.trigger( 'focusin' );
+			await fragment.trigger( 'focusout' );
 
 			expect( store.setHighlightedFragment ).toHaveBeenLastCalledWith( undefined );
 		} );
@@ -308,6 +319,53 @@ describe( 'AbstractPreviewFragment', () => {
 			wrapper.unmount();
 
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( undefined );
+		} );
+	} );
+
+	// Selection
+	// =========
+
+	describe( 'fragment selection', () => {
+		it( 'marks itself as current when it is the selected fragment', () => {
+			store.getSelectedFragment = keyPath;
+
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+
+			expect( fragment.attributes( 'aria-current' ) ).toBe( 'true' );
+		} );
+
+		it( 'is not current when another fragment is selected', () => {
+			store.getSelectedFragment = 'abstractwiki.sections.Q8776414.fragments.99';
+
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+
+			expect( fragment.attributes( 'aria-current' ) ).toBeUndefined();
+		} );
+
+		it( 'selects the fragment on click', async () => {
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+
+			await fragment.trigger( 'click' );
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'moves itself into view when it becomes the selected fragment', async () => {
+			wrapper = renderFragment();
+			const scrollIntoView = jest.fn();
+			wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' )
+				.element.scrollIntoView = scrollIntoView;
+
+			store.getSelectedFragment = keyPath;
+			await wrapper.vm.$nextTick();
+
+			expect( scrollIntoView ).toHaveBeenCalledWith( expect.objectContaining( {
+				block: 'nearest',
+				inline: 'nearest'
+			} ) );
 		} );
 	} );
 } );

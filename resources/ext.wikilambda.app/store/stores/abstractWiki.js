@@ -49,6 +49,12 @@ const abstractWikiStore = {
 		sectionHashes: {},
 		qid: undefined,
 		highlight: undefined,
+		/**
+		 * KeyPath of the fragment that the user selected. Unlike `highlight`,
+		 * which follows the pointer, this stays set until the user selects
+		 * another fragment or clears the selection.
+		 */
+		selection: undefined,
 		previewLanguageZid: undefined,
 		suggestedHtmlFunctions: [],
 		fragmentQueue: [],
@@ -146,6 +152,15 @@ const abstractWikiStore = {
 		 */
 		getHighlightedFragment: function ( state ) {
 			return state.highlight;
+		},
+		/**
+		 * Returns the keyPath of the selected fragment
+		 *
+		 * @param {Object} state
+		 * @return {string|undefined}
+		 */
+		getSelectedFragment: function ( state ) {
+			return state.selection;
 		},
 		/**
 		 * Returns the array with suggested html functions
@@ -807,6 +822,15 @@ const abstractWikiStore = {
 		 */
 		setHighlightedFragment: function ( keyPath ) {
 			this.highlight = keyPath;
+		},
+		/**
+		 * Set a given fragment keyPath as selected. Pass undefined to clear
+		 * the selection.
+		 *
+		 * @param {string|undefined} keyPath
+		 */
+		setSelectedFragment: function ( keyPath ) {
+			this.selection = keyPath;
 		},
 		/**
 		 * Sets a list of zids as suggested functions that return HTML fragments

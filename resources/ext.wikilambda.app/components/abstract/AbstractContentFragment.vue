@@ -6,12 +6,18 @@
 -->
 <template>
 	<div
+		ref="rootRef"
 		class="ext-wikilambda-app-abstract-content-fragment"
-		:class="{ 'ext-wikilambda-app-abstract-content-fragment__highlight': isHighlighted }"
+		:class="{
+			'ext-wikilambda-app-abstract-content-fragment__highlight': isHighlighted,
+			'ext-wikilambda-app-abstract-content-fragment__selected': isSelected
+		}"
+		:aria-current="isSelected ? 'true' : undefined"
 		@pointerenter="setHighlight"
 		@pointerleave="unsetHighlight"
-		@focus="setHighlight"
-		@blur="unsetHighlight"
+		@focusin="onFocusIn"
+		@focusout="unsetHighlight"
+		@click="selectFragment"
 	>
 		<cdx-menu-button
 			v-if="edit"
@@ -41,9 +47,10 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onUnmounted, watch } = require( 'vue' );
+const { computed, defineComponent, inject, onUnmounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useFragmentSelection = require( '../../composables/useFragmentSelection.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
@@ -188,6 +195,24 @@ module.exports = exports = defineComponent( {
 			unsetHighlight();
 		} );
 
+		// Fragment selection
+		// ==================
+
+		const rootRef = ref( null );
+		const { isSelected, selectFragment } = useFragmentSelection(
+			() => props.keyPath,
+			rootRef
+		);
+
+		/**
+		 * Highlight the fragment and select it when the keyboard moves the
+		 * focus into it, so that the generated text follows the focus.
+		 */
+		function onFocusIn() {
+			setHighlight();
+			selectFragment();
+		}
+
 		// Fragment hashing
 		// ================
 
@@ -214,6 +239,10 @@ module.exports = exports = defineComponent( {
 			i18n,
 			icon,
 			isHighlighted,
+			isSelected,
+			onFocusIn,
+			rootRef,
+			selectFragment,
 			setHighlight,
 			unsetHighlight,
 			htmlFragmentType,
@@ -240,6 +269,14 @@ module.exports = exports = defineComponent( {
 		// These values come from the overlay that Visual Editor uses and is hardcoded in their codebase
 		background-color: rgba( 109, 169, 247, 0.15 ); // #6da9f7
 		box-shadow: inset 0 0 0 1px rgba( 76, 118, 172, 0.15 ); // #4c76ac
+	}
+
+	// The selection stays after the pointer goes away, and it can be visible
+	// at the same time as the pointer highlight. It must look different, so
+	// use a marker on the start edge.
+	&.ext-wikilambda-app-abstract-content-fragment__selected {
+		background-color: @background-color-progressive-subtle;
+		box-shadow: inset 2px 0 0 0 @border-color-progressive;
 	}
 
 	.ext-wikilambda-app-abstract-content-fragment-menu__icon {

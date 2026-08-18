@@ -6,11 +6,14 @@
 -->
 <template>
 	<div
+		ref="rootRef"
 		class="ext-wikilambda-app-abstract-preview-fragment"
+		:aria-current="isSelected ? 'true' : undefined"
 		@pointerenter="setHighlight"
 		@pointerleave="unsetHighlight"
-		@focus="setHighlight"
-		@blur="unsetHighlight"
+		@focusin="onFocusIn"
+		@focusout="unsetHighlight"
+		@click="selectFragment"
 	>
 		<!-- Fragment exists but was not initialized in this language -->
 		<div
@@ -79,6 +82,7 @@
 const { computed, defineComponent, inject, onUnmounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useFragmentSelection = require( '../../composables/useFragmentSelection.js' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useInitImages = require( '../../composables/useInitImages.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -181,6 +185,7 @@ module.exports = exports = defineComponent( {
 
 		// Highlight fragments
 		// ====================
+		const rootRef = ref( null );
 		const contentRef = ref( null );
 		const errorRef = ref( null );
 
@@ -201,6 +206,23 @@ module.exports = exports = defineComponent( {
 		 */
 		function unsetHighlight() {
 			store.setHighlightedFragment( undefined );
+		}
+
+		// Fragment selection
+		// ==================
+
+		const { isSelected, selectFragment } = useFragmentSelection(
+			() => props.keyPath,
+			rootRef
+		);
+
+		/**
+		 * Highlight the fragment and select it when the keyboard moves the
+		 * focus into it, so that the definition follows the focus.
+		 */
+		function onFocusIn() {
+			setHighlight();
+			selectFragment();
 		}
 
 		/**
@@ -261,8 +283,12 @@ module.exports = exports = defineComponent( {
 			contentRef,
 			errorRef,
 			isMissing,
+			isSelected,
 			missingCanRetry,
 			missingLabel,
+			onFocusIn,
+			rootRef,
+			selectFragment,
 			setHighlight,
 			unsetHighlight,
 			iconRetry,

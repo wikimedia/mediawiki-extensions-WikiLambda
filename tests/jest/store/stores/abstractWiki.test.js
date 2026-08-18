@@ -186,6 +186,18 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getSelectedFragment', () => {
+			it( 'returns undefined if no selected fragment', () => {
+				expect( store.getSelectedFragment ).toBeUndefined();
+			} );
+
+			it( 'returns the keyPath of the selected fragment', () => {
+				const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+				store.selection = keyPath;
+				expect( store.getSelectedFragment ).toBe( keyPath );
+			} );
+		} );
+
 		describe( 'getSuggestedHtmlFunctions', () => {
 			it( 'returns empty list if nothing set', () => {
 				expect( store.getSuggestedHtmlFunctions ).toEqual( [] );
@@ -1435,6 +1447,31 @@ describe( 'abstractWiki Pinia store', () => {
 				store.setHighlightedFragment( undefined );
 
 				expect( store.highlight ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'setSelectedFragment', () => {
+			it( 'sets keyPath as selected fragment', () => {
+				const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+				store.setSelectedFragment( keyPath );
+
+				expect( store.selection ).toBe( keyPath );
+			} );
+
+			it( 'clears the selected fragment', () => {
+				store.selection = 'abstractwiki.sections.Q8776414.fragments.1';
+
+				store.setSelectedFragment( undefined );
+
+				expect( store.selection ).toBeUndefined();
+			} );
+
+			it( 'does not disturb the pointer highlight', () => {
+				store.highlight = 'abstractwiki.sections.Q8776414.fragments.2';
+
+				store.setSelectedFragment( 'abstractwiki.sections.Q8776414.fragments.1' );
+
+				expect( store.highlight ).toBe( 'abstractwiki.sections.Q8776414.fragments.2' );
 			} );
 		} );
 

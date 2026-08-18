@@ -95,7 +95,35 @@ module.exports = function useFragmentHighlightRects( containerRef, highlightedKe
 		updateRects();
 	}, { flush: 'post' } );
 
+	// A selected fragment keeps its rectangles for as long as the selection
+	// stays, so the rectangles must follow the content when it moves. This
+	// happens when the window changes size, when an image loads, or when a
+	// fragment renders again. A hover highlight is too short to see this.
+	let resizeObserver = null;
+
+	// `containerRef` can be a plain null when the overlay has no container to
+	// inject, and `watch` rejects that as a source.
+	if ( containerRef ) {
+		watch( containerRef, ( container ) => {
+			if ( resizeObserver ) {
+				resizeObserver.disconnect();
+				resizeObserver = null;
+			}
+			if ( !container || typeof ResizeObserver !== 'function' ) {
+				return;
+			}
+			resizeObserver = new ResizeObserver( () => {
+				updateRects();
+			} );
+			resizeObserver.observe( container );
+		}, { immediate: true } );
+	}
+
 	onBeforeUnmount( () => {
+		if ( resizeObserver ) {
+			resizeObserver.disconnect();
+			resizeObserver = null;
+		}
 		rects.value = [];
 	} );
 

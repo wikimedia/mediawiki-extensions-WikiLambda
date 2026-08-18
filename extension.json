@@ -527,6 +527,7 @@
 				"ext.wikilambda.app/composables/useLeaveEditorDialog.js",
 				"ext.wikilambda.app/composables/useFragmentHighlightRegistry.js",
 				"ext.wikilambda.app/composables/useFragmentHighlightRects.js",
+				"ext.wikilambda.app/composables/useFragmentSelection.js",
 				"ext.wikilambda.app/composables/useInitImages.js",
 				"ext.wikilambda.app/composables/useInitReferences.js",
 				"ext.wikilambda.app/composables/useMenuAction.js",
