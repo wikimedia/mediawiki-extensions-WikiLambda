@@ -1,13 +1,18 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jérémy-Günther-Heinz Jähnick"
+			"Jérémy-Günther-Heinz Jähnick",
+			"Wladek92"
 		]
 	},
 	"wikifunctions-rest-module-v0-title": "API Wikifonctions",
 	"wikifunctions-rest-module-v0-desc": "API pour interagir avec les Wikifonctions",
 	"wikifunctions-rest-module-v0-fetch-zids-desc": "Aller chercher des ZObjets",
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Aller chercher des versions historiques de ZObjets",
+	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "Liste des ZID à récupérer (maximum 50 par requête) séparés par '|'",
+	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Liste des ID de révision (un par ZID demandé) à récupérer dans l'historique des versions, séparés par '|'. Si omis, la révision la plus récente de chaque ZID est renvoyée.",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Appeler une fonction",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appeler une fonction, avec des langues de partage et de rendu personnalisés"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appeler une fonction, avec des langues de partage et de rendu personnalisés",
+	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID de la fonction à appeler",
+	"wikifunctions-rest-module-v0-call-response-desc": "Résultat de l'évaluation de l'appel de fonction"
 }

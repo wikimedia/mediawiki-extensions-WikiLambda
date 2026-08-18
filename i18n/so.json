@@ -193,6 +193,7 @@
 	"wikilambda-diff-group-aliases": "Sidoo kale loo yaqaan",
 	"wikilambda-diff-group-description": "Sharaxaad",
 	"wikilambda-diff-value-elided": "… iyo $1 kale",
+	"wikilambda-diff-value-moved": "Booska $1: $2",
 	"wikilambda-discard-edits": "Iska tuur wax ka beddellada",
 	"wikilambda-edit": "Wax ka badal",
 	"wikilambda-edit-monolingual-text-placeholder": "Geli qoraal",

@@ -9,11 +9,15 @@
 			"Jdforrester",
 			"McDutchie",
 			"TimHBD",
-			"VIGNERON"
+			"VIGNERON",
+			"Wladek92"
 		]
 	},
 	"wikilambda-fragment-disabled": "Les appels à Wikifunctions sont actuellement désactivés. Vous voudrez peut-être remplacer cet appel.",
 	"wikilambda-fragment-pending": "⏳ La fonction est en exécution…",
+	"wikilambda-rc-hide-wikifunctions": "$1 les modifications de Wikifunctions",
+	"wikilambda-rc-hide-wikifunctions-hide": "Masquer",
+	"wikilambda-rc-hide-wikifunctions-show": "Afficher",
 	"wikilambda-recentchanges-edit-legend": "Modifier depuis Wikifunctions",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Wikifunctions modifier",

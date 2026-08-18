@@ -194,6 +194,7 @@
 	"wikilambda-diff-group-aliases": "Tamén coñecido como",
 	"wikilambda-diff-group-description": "Descrición",
 	"wikilambda-diff-value-elided": "… e $1 máis",
+	"wikilambda-diff-value-moved": "Posición $1: $2",
 	"wikilambda-discard-edits": "Desbotar as edicións",
 	"wikilambda-edit": "Editar",
 	"wikilambda-edit-monolingual-text-placeholder": "Escribe o texto",

@@ -205,6 +205,7 @@
 	"wikilambda-diff-group-aliases": "Ook bekend als",
 	"wikilambda-diff-group-description": "Beschrijving",
 	"wikilambda-diff-value-elided": "… en $1 meer",
+	"wikilambda-diff-value-moved": "Positie $1: $2",
 	"wikilambda-discard-edits": "Wijzigingen niet opslaan",
 	"wikilambda-edit": "Bewerken",
 	"wikilambda-edit-monolingual-text-placeholder": "Voer tekst in",

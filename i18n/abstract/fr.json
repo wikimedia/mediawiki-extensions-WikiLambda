@@ -2,12 +2,13 @@
 	"@metadata": {
 		"authors": [
 			"Jérémy-Günther-Heinz Jähnick",
-			"VIGNERON"
+			"VIGNERON",
+			"Wladek92"
 		]
 	},
 	"action-wikilambda-abstract-create": "créer de nouveaux articles résumés",
 	"action-wikilambda-abstract-edit": "modifier les articles résumés existants",
-	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Wikifunctions suggérées pour Abstract Wikipedia",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Wikifunctions suggérées pour la Wikipedia abstraite",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "La liste des Wikifunctions renvoyant du HTML (par Zid) sont proposées dans le menu « Ajouter un fragment » de l'article résumé. Jusqu'à dix entrées.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Wikifonctions suggérées",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "Jusqu'à dix Wikifunctions renvoyant du HTML par leur Zid (par exemple <code>Z20756</code>) peuvent être présentées dans le menu de fragments d'article résumé.",
@@ -18,6 +19,7 @@
 	"specialpages-group-abstractwiki": "pages d'Abstract Wikipedia",
 	"wikilambda-abstract-content-object": "Article résumé",
 	"wikilambda-abstract-content-history-title": "Historique des versions de « $1 » ($2)",
+	"wikilambda-abstract-content-history-title-no-label": "Historique des versions pour $1",
 	"wikilambda-abstract-edit-title-with-label": "Modifier l'article résumé pour « $1 » ($2)",
 	"wikilambda-abstract-edit-title": "Modifier l'article résumé pour $1",
 	"wikilambda-abstract-error-bad-fragments-type": "La section avec la clé « $1 » contient une liste de fragments mal typée.",
@@ -33,6 +35,12 @@
 	"wikilambda-abstract-error-missing-sections": "L'article résumé doit comporter au moins une section.",
 	"wikilambda-abstract-error-unmatching-qid": "La valeur de la propriété Qid (« $1 ») ne correspond pas au titre de la page « $2 »",
 	"wikilambda-abstract-fragment-actions-menu": "Menu des actions du fragment",
+	"wikilambda-abstract-fragment-failing": "Contenu non disponible",
+	"wikilambda-abstract-fragment-function-selector-popover-title": "Pourquoi certaines fonctions ne sont pas listées",
+	"wikilambda-abstract-fragment-pending": "Contenu en attente",
+	"wikilambda-abstract-lastupdatedat": "Dernière mise à jour de cette page : le $1 à $2.",
+	"wikilambda-abstract-log-action-optin": "$1 {{GENDER:$2|a activé}} l'affichage de l'article $4 de la Wikipedia abstraite sur la page $3",
+	"wikilambda-abstract-log-name": "Journal des activités sur la Wikipedia abstraite",
 	"wikilambda-abstract-menu-fragments-accessible-label": "Menu permettant de sélectionner et d'ajouter un nouveau fragment",
 	"wikilambda-abstract-menu-group-basic-fragments": "Actions de base sur les fragments",
 	"wikilambda-abstract-menu-group-insert-fragments": "Insérer des fragments",
@@ -47,6 +55,8 @@
 	"wikilambda-abstract-menu-option-move-after": "Déplacer le fragment après",
 	"wikilambda-abstract-menu-option-move-before": "Déplacer le fragment avant",
 	"wikilambda-abstract-preview-fragment-max-retries": "Nombre maximal de tentatives atteint. Veuillez réessayer plus tard.",
+	"wikilambda-abstract-preview-fragment-missing": "Absent",
+	"wikilambda-abstract-preview-fragment-pending": "En attente",
 	"wikilambda-abstract-preview-fragment-retry": "Réessayer",
 	"wikilambda-abstract-preview-in-language": "Texte généré",
 	"wikilambda-abstract-special-create": "Créer un nouvel article résumé",
@@ -57,5 +67,16 @@
 	"wikilambda-abstract-special-create-not-enabled": "La création d'articles résumés n'est pas activée pour le moment. Veuillez réessayer plus tard.",
 	"wikilambda-abstract-special-create-not-enabled-title": "La création d'articles résumés n'est pas activée",
 	"wikilambda-abstract-special-create-qid": "Créer un nouvel article résumé pour $1",
-	"wikilambda-abstract-special-view": "Consulter un article résumé"
+	"wikilambda-abstract-special-preview": "Aperçu d'un article abstrait",
+	"wikilambda-abstract-special-preview-bad-lang-title": "Code de langue non valide",
+	"wikilambda-abstract-special-preview-bad-qid-title": "Qid d'article non valide",
+	"wikilambda-abstract-special-preview-empty-section-title": "Le rendu de cette section n'a pas encore été réalisé",
+	"wikilambda-abstract-special-preview-list-item-details": "($1, a généré $2)",
+	"wikilambda-abstract-special-preview-list-none": "Il n'existe pas encore d'articles abstraits en $1.",
+	"wikilambda-abstract-special-preview-list-other-langs": "Ils sont disponibles dans d'autres langues : $1.",
+	"wikilambda-abstract-special-preview-list-title": "Articles abstraits disponibles en $1",
+	"wikilambda-abstract-special-preview-unsupported-lang-title": "Cette langue n'est pas encore supportée.",
+	"wikilambda-abstract-special-view": "Consulter un article résumé",
+	"wikilambda-abstract-tab-createlocal": "Créer un article local",
+	"wikilambda-abstract-tab-history": "Historique abstraite"
 }

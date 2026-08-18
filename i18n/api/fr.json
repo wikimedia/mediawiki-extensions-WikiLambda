@@ -118,6 +118,7 @@
 	"apihelp-wikilambda_perform_test-param-nocache": "S’il faut ou non utiliser le cache",
 	"apihelp-wikifunctions_html_sanitiser-summary": "API pour sanitifier une chaîne de HTML pour l'affichage face à l'utilisateur sur Wikifunctions.org et les wikis client Wikimédia.",
 	"apierror-wikifunctions_html_sanitiser-concurrency-limit": "Vous avez actuellement trop d’appels de fonctions en cours d’exécution.",
+	"apierror-wikifunctions_html_sanitiser-length-limit": "La chaîne HTML d'entrée est trop longue.",
 	"apihelp-wikifunctions_html_sanitiser-param-html": "La chaîne HTML sanitaire adaptée à l'affichage face à l'utilisateur.",
 	"apihelp-wikifunctions_html_sanitiser-example-untouched": "Exemple d'appel sans opération.",
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Exemple d'appel avec du code HTML interdit.",
