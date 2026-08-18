@@ -16,7 +16,7 @@
 				v-if="hasSomePendingFragments"
 				type="button"
 				class="ext-wikilambda-app-button-reset ext-wikilambda-app-abstract-preview-section__button"
-				:aria-label="i18n( 'wikilambda-abstract-prefiew-fragment-retry' ).text()"
+				:aria-label="i18n( 'wikilambda-abstract-preview-fragment-retry' ).text()"
 				@click.stop="renderSectionPreview"
 			>
 				<cdx-icon :icon="iconRetry"></cdx-icon>
