@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ParserFunction;
 
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPendingFragment;
@@ -31,6 +32,7 @@ use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
  * @covers \MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsCallDefaultValues
  * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore
+ * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore
  * @group API
  * @group Database
  */
@@ -85,13 +87,18 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 
-		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
-		$mockClientStore->method( 'fetchFromZObjectCache' )->with( 'Z10000' )->willReturn( $cachedFunction );
-		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
+		$mockClientObjectStore = $this->createMock( WikifunctionsClientStore::class );
+		$mockClientObjectStore
+			->method( 'fetchFromZObjectCache' )
+			->with( 'Z10000' )
+			->willReturn( $cachedFunction );
+
+		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
+		$mockClientFragmentStore
+			->method( 'makeFragmentKey' )
+			->willReturn( 'mock-cache-key' );
 
 		$this->mockWikidataSiteLinkLookup( $linkedItem );
-
-		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
 
 		$pushedJobs = [];
 		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
@@ -107,7 +114,9 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$mainConfig,
 			$mockJobQueueGroup,
 			$mockHttpRequestFactory,
-			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' )
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' ),
+			$mockClientObjectStore,
+			$mockClientFragmentStore
 		);
 
 		// Build mock arguments for sourceToFragment:
@@ -380,9 +389,9 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 
-		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
-		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
-		$mockClientStore->method( 'fetchFromFunctionCallCache' )->willReturn( [
+		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
+		$mockClientFragmentStore->method( 'makeFragmentKey' )->willReturn( 'mock-cache-key' );
+		$mockClientFragmentStore->method( 'getRenderedFragment' )->willReturn( [
 			'success' => true,
 			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
 			'value' => '
@@ -420,14 +429,15 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 				. 'Dabin-Unicorn-Main-Product-Image.jpg/1200px-Dabin-Unicorn-Main-Product-Image.jpg" alt="unicorns"/>
 			'
 		] );
-		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
 
 		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
 		$fragmentHandler = new WikifunctionsPFragmentHandler(
 			$mainConfig,
 			$mockJobQueueGroup,
 			$mockHttpRequestFactory,
-			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' )
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' ),
+			$this->getServiceContainer()->get( 'WikifunctionsClientStore' ),
+			$mockClientFragmentStore
 		);
 
 		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
@@ -523,10 +533,9 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 	private function buildHandlerWithCachedValue( $cacheValue, array &$pushedJobs ): array {
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 
-		$mockClientStore = $this->createMock( WikifunctionsClientStore::class );
-		$mockClientStore->method( 'makeFunctionCallCacheKey' )->willReturn( 'mock-cache-key' );
-		$mockClientStore->method( 'fetchFromFunctionCallCache' )->willReturn( $cacheValue );
-		$this->setService( 'WikifunctionsClientStore', $mockClientStore );
+		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
+		$mockClientFragmentStore->method( 'makeFragmentKey' )->willReturn( 'mock-cache-key' );
+		$mockClientFragmentStore->method( 'getRenderedFragment' )->willReturn( $cacheValue );
 
 		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
 		$mockJobQueueGroup
@@ -540,7 +549,9 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$mainConfig,
 			$mockJobQueueGroup,
 			$this->createMock( HttpRequestFactory::class ),
-			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' )
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' ),
+			$this->getServiceContainer()->get( 'WikifunctionsClientStore' ),
+			$mockClientFragmentStore
 		);
 
 		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );

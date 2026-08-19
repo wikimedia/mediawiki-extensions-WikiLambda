@@ -126,7 +126,7 @@
 			"value": "mainstash"
 		},
 		"WikiLambdaAWFragmentStoreBackend": {
-			"description": "Storage backend for the Abstract Wikipedia fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T426873).",
+			"description": "Storage backend for the Abstract Wikipedia fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T432849).",
 			"value": "memcached"
 		},
 		"WikiLambdaAbstractWikiArticleStoreTopics": {
@@ -140,6 +140,10 @@
 		"WikiLambdaAbstractWikiIconUrl": {
 			"description": "URL of the Abstract Wikipedia SVG icon uploaded to commons, to use it as decorator in the Abstract Wikipedia notice boxes",
 			"value": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Abstract-Wikipedia-favicon.svg"
+		},
+		"WikiLambdaClientFragmentStoreBackend": {
+			"description": "Storage backend for the Wikifunctions Client fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T432849).",
+			"value": "memcached"
 		}
 	},
 	"ConfigRegistry": {
@@ -1363,7 +1367,9 @@
 							"MainConfig",
 							"JobQueueGroup",
 							"HttpRequestFactory",
-							"WikiLambdaPFragmentRenderer"
+							"WikiLambdaPFragmentRenderer",
+							"WikifunctionsClientStore",
+							"WikifunctionsFragmentStore"
 						]
 					},
 					"options": {

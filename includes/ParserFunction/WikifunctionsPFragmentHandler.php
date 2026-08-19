@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -39,10 +40,6 @@ use Wikimedia\Stats\Metrics\TimingMetric;
 
 class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
-	/**
-	 * @var WikifunctionsClientStore (but not explicitly typed, as this is a service mocked in tests)
-	 */
-	private $wikifunctionsClientStore;
 	private LoggerInterface $logger;
 	/**
 	 * @var TimingMetric|NullMetric (might be a NullMetric in some circumstances)
@@ -53,10 +50,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		private readonly Config $config,
 		private readonly JobQueueGroup $jobQueueGroup,
 		private readonly HttpRequestFactory $httpRequestFactory,
-		private readonly WikifunctionsFragmentRenderer $renderer
+		private readonly WikifunctionsFragmentRenderer $renderer,
+		private readonly WikifunctionsClientStore $clientObjectStore,
+		private readonly WikifunctionsFragmentStore $clientFragmentStore,
 	) {
 		// Non-injected items
-		$this->wikifunctionsClientStore = WikiLambdaServices::getWikifunctionsClientStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 
 		$this->statsFactoryTimer = MediaWikiServices::getInstance()->getStatsFactory()
@@ -129,7 +127,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		}
 
 		// (T362256): This is the key we use to cache on the client wiki code here, rather than only at the repo wiki.
-		$clientCacheKey = $this->wikifunctionsClientStore->makeFunctionCallCacheKey( $expansion );
+		$clientCacheKey = $this->clientFragmentStore->makeFragmentKey( $expansion );
 
 		$this->logger->debug(
 			'WikiLambda client call made for {function} on {page}',
@@ -177,7 +175,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$extApi->getMetadata()->addModules( [ 'ext.wikilambda.content' ] );
 		$extApi->getMetadata()->addModuleStyles( [ 'ext.wikilambda.content.styles' ] );
 
-		$cachedValue = $this->wikifunctionsClientStore->fetchFromFunctionCallCache( $clientCacheKey );
+		$cachedValue = $this->clientFragmentStore->getRenderedFragment( $clientCacheKey );
 
 		if ( $cachedValue ) {
 			// Good news, this request has already been cached; examine what it is
@@ -288,7 +286,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			}
 
 			// 2.1. Fetch Function Zid from Memcached
-			$zobject = $this->wikifunctionsClientStore->fetchFromZObjectCache( $functionCall[ 'target' ] );
+			$zobject = $this->clientObjectStore->fetchFromZObjectCache( $functionCall[ 'target' ] );
 			if ( !$zobject ) {
 				// 2.2. Fetch Function Zid from Wikifunctions
 				$this->logger->info(

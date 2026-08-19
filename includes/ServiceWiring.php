@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentImageRenderer;
@@ -73,6 +74,10 @@ return [
 
 	'WikifunctionsClientStore' => static function ( MediaWikiServices $services ): WikifunctionsClientStore {
 		return new WikifunctionsClientStore();
+	},
+
+	'WikifunctionsFragmentStore' => static function ( MediaWikiServices $services ): WikifunctionsFragmentStore {
+		return WikiLambdaServices::buildWikifunctionsFragmentStore( $services );
 	},
 
 	// For cross-wiki Function-usage tracking (written by client wikis, read by the repo);

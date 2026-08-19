@@ -21,8 +21,6 @@ class WikifunctionsClientStore {
 	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
-	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
-
 	public function __construct() {
 		// Non-injected items
 		// This can't be injected, as the service container runs before the extension is loaded
@@ -57,96 +55,5 @@ class WikifunctionsClientStore {
 
 		// Return successfully parsed JSON, or null
 		return $json;
-	}
-
-	/**
-	 * Requests the given Function call from the ZObject cache, given its cache key.
-	 * Returns null if the Function call is not available in the cache.
-	 *
-	 * @param array $functionCall
-	 * @return string
-	 */
-	public function makeFunctionCallCacheKey( array $functionCall ): string {
-		// Note that we can't use ZObjectUtils::makeCacheKeyFromZObject here, as that's repo-mode only.
-		// This means that this cache key doesn't have the revision IDs of the referenced ZObjects.
-		return $this->objectCache->makeKey(
-			self::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-			json_encode( $functionCall )
-		);
-	}
-
-	/**
-	 * Fetch a Function call result from the cache, given its cache key, or delete it
-	 * if not properly set.
-	 *
-	 * @param string $clientCacheKey
-	 * @return ?array{success:bool, value:?string, type:?string, errorMessageKey:?string}
-	 */
-	public function fetchFromFunctionCallCache( string $clientCacheKey ): ?array {
-		$cachedValue = $this->objectCache->get( $clientCacheKey );
-
-		if ( !$cachedValue ) {
-			$this->logger->info( __METHOD__ . ' cache miss while fetching {key}', [ 'key' => $clientCacheKey ] );
-			return null;
-		}
-
-		// Check for corrupted/invalid cache entries and delete them rather than returning them
-		if ( !is_array( $cachedValue ) ) {
-			$this->logger->warning(
-				'WikiLambda client cache entry for {key} is mal-formed, deleting it',
-				[
-					'key' => $clientCacheKey
-				]
-			);
-			$this->objectCache->delete( $clientCacheKey );
-			return null;
-		}
-
-		if ( !array_key_exists( 'success', $cachedValue ) || !is_bool( $cachedValue['success'] ) ) {
-			// Corrupted/invalid cache entry; delete it
-			$this->logger->warning(
-				'WikiLambda client cache entry for {key} is missing success boolean, deleting it',
-				[
-					'key' => $clientCacheKey
-				]
-			);
-			$this->objectCache->delete( $clientCacheKey );
-			return null;
-		}
-
-		if ( $cachedValue['success'] ) {
-			if (
-				!array_key_exists( 'value', $cachedValue ) ||
-				!array_key_exists( 'type', $cachedValue ) ||
-				!is_string( $cachedValue['value'] ) ||
-				!is_string( $cachedValue['type'] )
-			) {
-				// Corrupted/invalid cache entry; delete it
-				$this->logger->warning(
-					'WikiLambda client cache entry for {key} is missing value or type, deleting it',
-					[
-						'key' => $clientCacheKey
-					]
-				);
-				$this->objectCache->delete( $clientCacheKey );
-				return null;
-			}
-			return $cachedValue;
-		}
-
-		// We know the success key is false, so we need to check the error message key
-
-		if ( !array_key_exists( 'errorMessageKey', $cachedValue ) || !is_string( $cachedValue['errorMessageKey'] ) ) {
-			$this->logger->warning(
-				'WikiLambda client cache entry for {key} is missing error message key string, deleting it',
-				[
-					'key' => $clientCacheKey
-				]
-			);
-			$this->objectCache->delete( $clientCacheKey );
-			return null;
-		}
-
-		return $cachedValue;
 	}
 }

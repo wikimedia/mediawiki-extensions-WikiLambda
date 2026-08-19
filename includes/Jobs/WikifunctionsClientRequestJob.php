@@ -11,7 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use Exception;
 use MediaWiki\Config\Config;
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -33,9 +33,10 @@ use Psr\Log\LoggerInterface;
  */
 class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
+	private WikifunctionsFragmentStore $clientFragmentStore;
+
 	private Config $config;
 	private HttpRequestFactory $httpRequestFactory;
-	private MemcachedWrapper $objectCache;
 	private LoggerInterface $logger;
 
 	private string $targetFunction;
@@ -55,8 +56,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		parent::__construct( 'wikifunctionsClientRequest', $params );
 
 		// Non-injected items
+		$this->clientFragmentStore = WikiLambdaServices::getWikifunctionsFragmentStore();
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
-		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
 		$this->config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->httpRequestFactory = MediaWikiServices::getInstance()->getHttpRequestFactory();
 
@@ -108,19 +109,20 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 		try {
 			$output = $this->remoteCall(
-				$this->targetFunction, $this->functionArguments, $this->parseLang, $this->renderLang
+				$this->targetFunction,
+				$this->functionArguments,
+				$this->parseLang,
+				$this->renderLang
 			);
-			// We don't actually use the return value immediately, we rely on Parsoid to re-trigger the request
-			// and so use the cached value, so we just set() it.
-			$this->objectCache->set(
+
+			$this->clientFragmentStore->setRenderedFragment(
 				$this->clientCacheKey,
 				[
 					'success' => true,
 					'value' => $output['value'],
 					'type' => $output['type'],
 				],
-				// (T338243) Set all successful responses with TTL_MONTH
-				$this->objectCache::TTL_MONTH
+				HttpStatus::OK
 			);
 
 			$this->logger->debug(
@@ -130,6 +132,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 					'clientCacheKey' => $this->clientCacheKey,
 				]
 			);
+
 			return true;
 		} catch ( WikifunctionCallException $callException ) {
 			// WikifunctionCallException: we know details of the error
@@ -151,27 +154,13 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			$httpStatusCode = HttpStatus::INTERNAL_SERVER_ERROR;
 		}
 
-		// (T338243) Set TTL conditionally, so that:
-		// * success (http 200)           TTL_MONTH
-		// * bad request (http 400-422)   TTL_WEEK
-		// * too many requests (http 429) TTL_MINUTE
-		// * server error (http >= 500)   TTL_MINUTE
-		// So if the request fails due to 400, we can still cache for
-		// a week, but if it failes due to system outages or timeouts,
-		// we would benefit from reducing the TTL to something very short.
-		$errorTTL = (
-			( $httpStatusCode >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
-			( $httpStatusCode === HttpStatus::TOO_MANY_REQUESTS ) ) ?
-			$this->objectCache::TTL_MINUTE :
-			$this->objectCache::TTL_WEEK;
-
-		$this->objectCache->set(
+		$this->clientFragmentStore->setRenderedFragment(
 			$this->clientCacheKey,
 			[
 				'success' => false,
 				'errorMessageKey' => $errorMessageKey,
 			],
-			$errorTTL
+			$httpStatusCode
 		);
 
 		$this->logger->debug(

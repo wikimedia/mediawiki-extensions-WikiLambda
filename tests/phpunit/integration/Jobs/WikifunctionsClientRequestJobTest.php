@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
-use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
@@ -23,7 +23,7 @@ use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob
- * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore
+ * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore
  * @group API
  * @group Database
  */
@@ -61,7 +61,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 			'renderLang' => $renderLang,
 		];
 		$cacheKey = $this->cache->makeKey(
-			WikifunctionsClientStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
+			WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
 			json_encode( $request )
 		);
 		return new WikifunctionsClientRequestJob( [

@@ -21,7 +21,9 @@ use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
+use MediaWiki\Extension\WikiLambda\ClientStorage\MemcachedWikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
@@ -68,6 +70,13 @@ class WikiLambdaServices {
 	 */
 	public static function getWikifunctionsUsageStore(): WikifunctionsUsageStore {
 		return MediaWikiServices::getInstance()->getService( 'WikifunctionsUsageStore' );
+	}
+
+	/**
+	 * @return WikifunctionsFragmentStore
+	 */
+	public static function getWikifunctionsFragmentStore(): WikifunctionsFragmentStore {
+		return MediaWikiServices::getInstance()->getService( 'WikifunctionsFragmentStore' );
 	}
 
 	/**
@@ -148,6 +157,38 @@ class WikiLambdaServices {
 			$services->getUserGroupManager(),
 			LoggerFactory::getInstance( 'WikiLambda' )
 		);
+	}
+
+	/**
+	 * Constructs a new instance of the WikifunctionsFragmentStore.
+	 *
+	 * The concrete backend is selected by $wgWikiLambdaClientFragmentStoreBackend:
+	 * * 'memcached': Store backed by the Wikifunctions Memcached instance
+	 *   using the MemcachedWrapper interface.
+	 * * 'mainstash': Store backed by MediaWiki MainStash (TODO T432849), a durable
+	 * 	 key/value substrate with TTL cleanup and x2 replication, using th.
+	 *
+	 * @internal For use in Service Wiring and early setup on RepoHooks
+	 */
+	public static function buildWikifunctionsFragmentStore( MediaWikiServices $services ): WikifunctionsFragmentStore {
+		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
+		$backend = $extensionConfig->get( 'WikiLambdaClientFragmentStoreBackend' );
+
+		switch ( $backend ) {
+			case 'memcached':
+				return new MemcachedWikifunctionsFragmentStore(
+					self::buildMemcachedWrapper( $services )
+				);
+			// TODO:
+			// case 'mainstash':
+			// 	return new MainStashWikifunctionsFragmentStore(
+			// 		$services->getMainObjectStash()
+			// 	);
+			default:
+				throw new InvalidArgumentException(
+					"Unknown WikiLambdaClientFragmentStoreBackend value: '$backend'"
+				);
+		}
 	}
 
 	/**
