@@ -14,6 +14,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\AWStorage;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWikiIntegrationTestCase;
@@ -37,6 +38,16 @@ class AWFragmentStoreWiringTest extends MediaWikiIntegrationTestCase {
 
 		$this->assertInstanceOf(
 			MemcachedAWFragmentStore::class,
+			WikiLambdaServices::getAWFragmentStore()
+		);
+	}
+
+	public function testResolvesToMainStashAWFragmentStoreWhenConfigured(): void {
+		$this->overrideConfigValue( 'WikiLambdaAWFragmentStoreBackend', 'mainstash' );
+		$this->resetCachedStore();
+
+		$this->assertInstanceOf(
+			MainStashAWFragmentStore::class,
 			WikiLambdaServices::getAWFragmentStore()
 		);
 	}
