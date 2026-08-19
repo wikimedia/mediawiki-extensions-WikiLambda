@@ -67,6 +67,7 @@ const useMainStore = require( '../../store/index.js' );
 const useError = require( '../../composables/useError.js' );
 const icons = require( '../../../lib/icons.json' );
 const { createLabelComparator } = require( '../../utils/sortUtils.js' );
+const { extractIdFromUrl } = require( '../../utils/urlUtils.js' );
 
 // Base components
 const SafeMessage = require( './SafeMessage.vue' );
@@ -565,7 +566,8 @@ module.exports = exports = defineComponent( {
 		function getLookupResults( input ) {
 			const signal = resetAbortController();
 			store.lookupZObjectLabels( {
-				input,
+				// Users often paste a link to an Object instead of typing its Zid
+				input: extractIdFromUrl( input ) || input,
 				types: lookupTypes.value,
 				returnTypes: lookupReturnTypes.value,
 				searchContinue: lookupConfig.value.searchContinue,

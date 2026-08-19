@@ -32,6 +32,7 @@ const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'v
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
 const wikidataIconSvg = require( './wikidataIconSvg.js' );
+const { extractIdFromUrl } = require( '../../../utils/urlUtils.js' );
 
 // Codex components
 const { CdxLookup } = require( '../../../../codex.js' );
@@ -197,7 +198,8 @@ module.exports = exports = defineComponent( {
 		function getLookupResults( searchTerm ) {
 			const signal = resetAbortController();
 			const payload = {
-				search: searchTerm,
+				// Users often paste a link to an entity instead of typing its Id
+				search: extractIdFromUrl( searchTerm ) || searchTerm,
 				type: Constants.WIKIDATA_API_TYPE_VALUES[ props.type ],
 				searchContinue: lookupConfig.value.searchContinue,
 				signal

@@ -185,6 +185,26 @@ describe( 'WikidataEntitySelector', () => {
 			} );
 		} );
 
+		it( 'searches for the Id when pasting a Wikidata URL', async () => {
+			store.lookupWikidataEntities.mockResolvedValue( mockLookupLexemes );
+
+			const wrapper = renderEntitySelector();
+
+			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:inputValue', 'https://www.wikidata.org/wiki/Lexeme:L290326' );
+
+			await waitFor( () => expect( store.lookupWikidataEntities ).toHaveBeenCalledWith( {
+				search: 'L290326',
+				type: 'lexeme',
+				searchContinue: null,
+				signal: expect.any( Object )
+			} ) );
+
+			// The pasted URL stays in the field, and the results are not discarded as stale
+			expect( lookup.props( 'inputValue' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L290326' );
+			expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+		} );
+
 		it( 'resets the lookup when fetch fails', async () => {
 			store.lookupWikidataEntities.mockRejectedValue( 'some error' );
 

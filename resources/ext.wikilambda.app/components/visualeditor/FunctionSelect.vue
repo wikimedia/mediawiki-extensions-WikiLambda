@@ -69,6 +69,7 @@ const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const useType = require( '../../composables/useType.js' );
 const useMainStore = require( '../../store/index.js' );
+const { extractIdFromUrl } = require( '../../utils/urlUtils.js' );
 const FunctionSelectItem = require( './FunctionSelectItem.vue' );
 
 module.exports = exports = defineComponent( {
@@ -190,7 +191,8 @@ module.exports = exports = defineComponent( {
 			}
 			lookupAbortController = new AbortController();
 			store.lookupFunctions( {
-				search: substring,
+				// Users often paste a link to a Function instead of typing its Zid
+				search: extractIdFromUrl( substring ) || substring,
 				renderable: true,
 				signal: lookupAbortController.signal
 			} ).then( ( data ) => {

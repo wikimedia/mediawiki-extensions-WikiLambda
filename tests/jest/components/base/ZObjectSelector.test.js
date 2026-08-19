@@ -79,6 +79,28 @@ describe( 'ZObjectSelector', () => {
 			} ) );
 		} );
 
+		it( 'on lookup, searches for the Zid when pasting a Wikifunctions URL', async () => {
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
+
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_STRING
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:input-value', 'https://www.wikifunctions.org/view/fr/Z801' );
+
+			await waitFor( () => expect( store.lookupZObjectLabels ).toHaveBeenLastCalledWith( {
+				input: 'Z801',
+				types: [ Constants.Z_STRING ],
+				returnTypes: undefined,
+				searchContinue: null,
+				signal: expect.any( Object )
+			} ) );
+
+			// The pasted URL stays in the field, and the results are not discarded as stale
+			expect( lookup.props( 'inputValue' ) ).toBe( 'https://www.wikifunctions.org/view/fr/Z801' );
+		} );
+
 		it( 'on lookup for types, sends type and return type in the payload', async () => {
 			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
 

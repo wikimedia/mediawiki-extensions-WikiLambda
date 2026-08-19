@@ -27,6 +27,55 @@ const urlUtils = {
 	},
 
 	/**
+	 * Extract an entity ID from a pasted URL.
+	 *
+	 * Users often paste a link instead of typing an ID, for example
+	 * https://www.wikifunctions.org/wiki/Z801,
+	 * https://www.wikifunctions.org/view/fr/Z801 or
+	 * https://www.wikidata.org/wiki/Lexeme:L29564#S1
+	 *
+	 * Only URLs are examined, so a search by label is not affected. The
+	 * caller decides whether the returned string is an ID that it accepts.
+	 *
+	 * @param {string} input
+	 * @return {string|null} The ID in the URL, or null if there is none
+	 */
+	extractIdFromUrl: function ( input ) {
+		if ( typeof input !== 'string' ) {
+			return null;
+		}
+
+		// Anything that is not a URL is a search term; leave it alone
+		const trimmed = input.trim();
+		if ( !/^(https?:)?\/\//.test( trimmed ) ) {
+			return null;
+		}
+
+		try {
+			const url = new URL( urlUtils.normalizeBaseUrl( trimmed ) );
+
+			// The page title is either the last part of the path, as in
+			// /wiki/Z801 and /view/fr/Z801, or the title parameter, as in
+			// /w/index.php?title=Z801
+			const segments = url.pathname.split( '/' ).filter( ( segment ) => !!segment );
+			const title = url.searchParams.get( 'title' ) || segments[ segments.length - 1 ];
+			if ( !title ) {
+				return null;
+			}
+
+			// Remove the namespace, if there is one, as in Lexeme:L29564
+			const id = decodeURIComponent( title ).replace( /^[^:]+:/, '' );
+
+			// Wikidata puts the Lexeme form or sense in the fragment, so the
+			// sense S1 of the Lexeme L29564 is at Lexeme:L29564#S1
+			const fragment = url.hash.slice( 1 );
+			return /^[FS]\d+$/.test( fragment ) ? `${ id }-${ fragment }` : id;
+		} catch ( error ) {
+			return null;
+		}
+	},
+
+	/**
 	 * Generate a URL for viewing a ZObject.
 	 *
 	 * @param {Object} payload - The options for generating the URL.

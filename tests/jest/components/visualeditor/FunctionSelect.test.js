@@ -55,6 +55,26 @@ describe( 'FunctionSelect', () => {
 		expect( items[ 1 ].props( 'description' ).label ).toBe( 'Description for Z2' );
 	} );
 
+	it( 'searches for the Zid when pasting a Wikifunctions URL', async () => {
+		const url = 'https://www.wikifunctions.org/wiki/Z801';
+		store.getSearchTerm = url;
+
+		const wrapper = renderFunctionSelect();
+
+		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
+		searchInput.vm.$emit( 'update:modelValue', url );
+
+		expect( store.lookupFunctions ).toHaveBeenCalledWith( {
+			search: 'Z801',
+			renderable: true,
+			signal: expect.any( Object )
+		} );
+		// The results are not discarded as stale, because the pasted URL stays in the field
+		await waitFor( () => expect( store.setLookupResults ).toHaveBeenCalledWith(
+			[ { zid: 'Z3', label: 'Function 3', language: 'en' } ]
+		) );
+	} );
+
 	it( 'shows lookup results when search term is not empty', async () => {
 		store.getSearchTerm = 'Function';
 		store.getLookupResults = [ { zid: 'Z3', label: 'Function 3', language: 'en' } ];

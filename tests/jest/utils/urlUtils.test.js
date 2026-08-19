@@ -14,7 +14,8 @@ const {
 	generateViewUrl,
 	generateEditUrl,
 	generateShareUrl,
-	buildAbstractWikiTitle
+	buildAbstractWikiTitle,
+	extractIdFromUrl
 } = require( '../../../resources/ext.wikilambda.app/utils/urlUtils.js' );
 const { mockWindowLocation } = require( '../fixtures/location.js' );
 
@@ -270,6 +271,60 @@ describe( 'urlUtils', () => {
 			const urlObj = new URL( url );
 			const decodedCall = urlObj.searchParams.get( 'call' );
 			expect( decodedCall ).toBe( JSON.stringify( functionCall ) );
+		} );
+	} );
+
+	describe( 'extractIdFromUrl', () => {
+		it( 'returns null for input that is not a URL', () => {
+			expect( extractIdFromUrl( 'echo' ) ).toBeNull();
+			expect( extractIdFromUrl( 'Z801' ) ).toBeNull();
+			expect( extractIdFromUrl( '' ) ).toBeNull();
+			expect( extractIdFromUrl( undefined ) ).toBeNull();
+			expect( extractIdFromUrl( 'wikifunctions.org/wiki/Z801' ) ).toBeNull();
+		} );
+
+		it( 'extracts a Zid from a Wikifunctions wiki URL', () => {
+			expect( extractIdFromUrl( 'https://www.wikifunctions.org/wiki/Z801' ) ).toBe( 'Z801' );
+			expect( extractIdFromUrl( 'https://wikifunctions.org/wiki/Z801' ) ).toBe( 'Z801' );
+			expect( extractIdFromUrl( 'http://localhost:8080/wiki/Z801' ) ).toBe( 'Z801' );
+		} );
+
+		it( 'extracts a Zid from a Wikifunctions view URL', () => {
+			expect( extractIdFromUrl( 'https://www.wikifunctions.org/view/fr/Z801' ) ).toBe( 'Z801' );
+		} );
+
+		it( 'extracts a Zid from the title parameter', () => {
+			expect( extractIdFromUrl( 'https://www.wikifunctions.org/w/index.php?title=Z801' ) ).toBe( 'Z801' );
+		} );
+
+		it( 'ignores the query, the trailing slash and the surrounding spaces', () => {
+			expect( extractIdFromUrl( '  https://www.wikifunctions.org/wiki/Z801?uselang=fr  ' ) ).toBe( 'Z801' );
+			expect( extractIdFromUrl( 'https://www.wikifunctions.org/wiki/Z801/' ) ).toBe( 'Z801' );
+		} );
+
+		it( 'accepts a protocol relative URL', () => {
+			expect( extractIdFromUrl( '//www.wikifunctions.org/wiki/Z801' ) ).toBe( 'Z801' );
+		} );
+
+		it( 'extracts an Item and a Property from a Wikidata URL', () => {
+			expect( extractIdFromUrl( 'https://www.wikidata.org/wiki/Q42' ) ).toBe( 'Q42' );
+			expect( extractIdFromUrl( 'https://www.wikidata.org/wiki/Property:P31' ) ).toBe( 'P31' );
+		} );
+
+		it( 'extracts a Lexeme, and its form or sense, from a Wikidata URL', () => {
+			expect( extractIdFromUrl( 'https://www.wikidata.org/wiki/Lexeme:L29564' ) ).toBe( 'L29564' );
+			expect( extractIdFromUrl( 'https://www.wikidata.org/wiki/Lexeme:L29564#F1' ) ).toBe( 'L29564-F1' );
+			expect( extractIdFromUrl( 'https://www.wikidata.org/wiki/Lexeme:L29564#S2' ) ).toBe( 'L29564-S2' );
+		} );
+
+		it( 'ignores a fragment that is not a form or a sense', () => {
+			expect( extractIdFromUrl( 'https://www.wikifunctions.org/wiki/Z801#Z801K1' ) ).toBe( 'Z801' );
+		} );
+
+		it( 'returns the last part of the path even if it is not an ID', () => {
+			// The caller decides whether the result is an ID that it accepts
+			expect( extractIdFromUrl( 'https://www.wikifunctions.org/wiki/Special:RunFunction' ) ).toBe( 'RunFunction' );
+			expect( extractIdFromUrl( 'https://www.wikifunctions.org/' ) ).toBeNull();
 		} );
 	} );
 
