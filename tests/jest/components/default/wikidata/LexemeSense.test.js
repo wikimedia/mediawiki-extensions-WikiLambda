@@ -93,6 +93,7 @@ describe( 'WikidataLexemeSense', () => {
 		store.getLexemeDataAsync = createGettersWithFunctionsMock();
 		store.getLexemeSensesData = createGettersWithFunctionsMock();
 		store.fetchLexemeSenses = jest.fn().mockResolvedValue();
+		store.getWikidataEntityFetchFailed = createGettersWithFunctionsMock( false );
 		store.getUserLangCode = 'en';
 	} );
 
@@ -254,6 +255,34 @@ describe( 'WikidataLexemeSense', () => {
 				const message = wrapper.findComponent( { name: 'cdx-message' } );
 				expect( message.exists() ).toBe( true );
 				expect( message.attributes().inline ).toBe( 'true' );
+			} );
+		} );
+
+		it( 'shows the failed request message instead of the no senses message', async () => {
+			store.getLexemeSensesData = createGettersWithFunctionsMock( [] );
+			store.getWikidataEntityFetchFailed = createGettersWithFunctionsMock( true );
+
+			const wrapper = renderWikidataLexemeSense( {
+				objectValue: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z6096' },
+					Z6096K1: { Z1K1: 'Z6', Z6K1: '' }
+				},
+				edit: true
+			} );
+
+			// Wait for component to initialize
+			await waitFor( () => {
+				expect( wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } ).exists() ).toBe( true );
+			} );
+
+			// Change lexeme
+			const lexemeSelector = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
+			lexemeSelector.vm.$emit( 'select-wikidata-entity', 'L444444' );
+
+			await waitFor( () => {
+				const messages = wrapper.findAllComponents( { name: 'cdx-message' } );
+				expect( messages ).toHaveLength( 1 );
+				expect( messages[ 0 ].attributes().type ).toBe( 'error' );
 			} );
 		} );
 

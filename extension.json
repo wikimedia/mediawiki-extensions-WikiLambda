@@ -1124,6 +1124,7 @@
 				"wikilambda-commons-media-empty-value-placeholder",
 				"wikilambda-wikidata-entity-selector-placeholder",
 				"wikilambda-wikidata-entity-empty-value-placeholder",
+				"wikilambda-wikidata-entity-fetch-error",
 				"wikilambda-wikidata-item-selector-placeholder",
 				"wikilambda-wikidata-lexeme-form-selector-placeholder",
 				"wikilambda-wikidata-lexeme-selector-placeholder",

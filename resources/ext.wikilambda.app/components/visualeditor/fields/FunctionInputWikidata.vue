@@ -134,10 +134,15 @@ module.exports = exports = defineComponent( {
 		 * Updates the validation state
 		 *
 		 * @param {boolean} isValid
+		 * @param {string|null} entityIdValue - The entity ID that was validated, if any
 		 */
-		function updateValidationState( isValid ) {
+		function updateValidationState( isValid, entityIdValue = null ) {
 			const simplifiedType = Constants.WIKIDATA_SIMPLIFIED_TYPES[ entityType.value ];
-			const errorMessageKey = Constants.WIKIDATA_INPUT_ERROR_MSG[ simplifiedType ];
+			// If the request to Wikidata failed, we cannot tell whether the entity is
+			// valid, so report the failed request instead of saying that the ID is wrong.
+			const errorMessageKey = store.getWikidataEntityFetchFailed( entityIdValue ) ?
+				'wikilambda-wikidata-entity-fetch-error' :
+				Constants.WIKIDATA_INPUT_ERROR_MSG[ simplifiedType ];
 			const error = !isValid ? ErrorData.buildErrorData( { errorMessageKey } ) : undefined;
 			emit( 'validate', { isValid, error } );
 		}
@@ -190,7 +195,7 @@ module.exports = exports = defineComponent( {
 				// If the entity data is found, validate and update
 				.then( validateAndUpdate )
 				// If the entity data is not found or there was an error, set the validation state to false
-				.catch( () => updateValidationState( false ) )
+				.catch( () => updateValidationState( false, entityIdValue ) )
 				.finally( () => {
 					isValidating.value = false;
 				} );

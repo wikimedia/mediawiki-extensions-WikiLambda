@@ -18,6 +18,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
 		store.zobject = [];
+		store.failedEntities = {};
 	} );
 
 	describe( 'Getters', () => {
@@ -250,6 +251,8 @@ describe( 'Wikidata Entities Pinia store', () => {
 				await store.fetchWikidataEntitiesBatched( payload );
 
 				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333', 'Q444444' ] } );
+				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( true );
+				expect( store.getWikidataEntityFetchFailed( 'Q444444' ) ).toBe( true );
 			} );
 
 			it( 'handles missing entities by resetting individual IDs', async () => {
@@ -276,6 +279,8 @@ describe( 'Wikidata Entities Pinia store', () => {
 					id: 'Q444444',
 					data: { title: 'Q444444', labels: {} }
 				} );
+				// A missing entity is not a failed request
+				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( false );
 			} );
 
 			it( 'handles network/fetch failures by resetting data', async () => {
@@ -292,6 +297,30 @@ describe( 'Wikidata Entities Pinia store', () => {
 				await store.fetchWikidataEntitiesBatched( payload );
 
 				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333', 'Q444444' ] } );
+				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( true );
+				expect( store.getWikidataEntityFetchFailed( 'Q444444' ) ).toBe( true );
+			} );
+
+			it( 'clears the failed state when the entity is requested again', async () => {
+				const payload = {
+					ids: [ 'Q333333' ],
+					getData: mockGetData,
+					setData: mockSetData,
+					resetData: mockResetData
+				};
+
+				getMock = jest.fn().mockRejectedValue( 'Network error' );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
+				await store.fetchWikidataEntitiesBatched( payload );
+				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( true );
+
+				getMock = jest.fn().mockResolvedValue( {
+					entities: { Q333333: { title: 'Q333333', labels: {} } }
+				} );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
+				await store.fetchWikidataEntitiesBatched( payload );
+
+				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( false );
 			} );
 
 			it( 'stores promises for in-flight requests', async () => {

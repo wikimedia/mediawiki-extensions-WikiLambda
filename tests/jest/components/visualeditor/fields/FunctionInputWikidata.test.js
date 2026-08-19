@@ -15,6 +15,7 @@ describe( 'FunctionInputWikidata', () => {
 	const entityData = { id: entityId, label };
 	const errorLexeme = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme', [], null, 'error' );
 	const errorItem = new ErrorData( 'wikilambda-visualeditor-wikifunctionscall-error-wikidata-item', [], null, 'error' );
+	const errorFetch = new ErrorData( 'wikilambda-wikidata-entity-fetch-error', [], null, 'error' );
 
 	let store;
 
@@ -46,6 +47,7 @@ describe( 'FunctionInputWikidata', () => {
 		store.fetchWikidataEntitiesByType = jest.fn().mockResolvedValue();
 		store.getDefaultValueForType = createGettersWithFunctionsMock( entityId );
 		store.hasDefaultValueForType = createGettersWithFunctionsMock( false );
+		store.getWikidataEntityFetchFailed = createGettersWithFunctionsMock( false );
 		// Mock isNewParameterSetup to false for tests that expect auto-checking behavior
 		store.isNewParameterSetup = false;
 	} );
@@ -157,6 +159,20 @@ describe( 'FunctionInputWikidata', () => {
 		expect( wrapper.emitted().validate[ 0 ] ).toEqual( [ { isValid: false } ] );
 		// Should emit invalid with error message after fetch fails
 		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false, error: errorItem } ] );
+	} );
+
+	it( 'reports the failed request, not an invalid ID, when the fetch failed', async () => {
+		store.getWikidataEntityDataAsync = jest.fn().mockRejectedValue( new Error( 'Not found' ) );
+		store.getWikidataEntityFetchFailed = createGettersWithFunctionsMock( true );
+
+		const wrapper = renderFunctionInputWikidata( {
+			value: 'Q123'
+		} );
+
+		// Wait for validation to finish
+		await waitFor( () => expect( wrapper.vm.isValidating ).toBe( false ) );
+
+		expect( wrapper.emitted().validate[ 1 ] ).toEqual( [ { isValid: false, error: errorFetch } ] );
 	} );
 
 	it( 'tries to fetch entity if not found, then validates again', async () => {

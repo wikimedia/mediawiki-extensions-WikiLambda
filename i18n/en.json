@@ -637,6 +637,7 @@
 	"wikilambda-commons-media-selector-placeholder": "Search Commons images",
 	"wikilambda-commons-media-empty-value-placeholder": "No image selected",
 	"wikilambda-wikidata-entity-selector-placeholder": "Select Wikidata entity",
+	"wikilambda-wikidata-entity-fetch-error": "Could not load the data from Wikidata.",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "No value",
 	"wikilambda-wikidata-item-selector-placeholder": "Select Wikidata item",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Select Wikidata lexeme form",

@@ -9,7 +9,9 @@ const { searchWikidataEntities, fetchWikidataEntities } = require( '../../../uti
 const Constants = require( '../../../Constants.js' );
 
 module.exports = {
-	state: {},
+	state: {
+		failedEntities: {}
+	},
 	getters: {
 		/**
 		 * Returns the batch size for Wikidata API requests
@@ -18,6 +20,22 @@ module.exports = {
 		 */
 		getWikidataBatchSize: function () {
 			return Constants.API_LIMIT_WIKIDATA;
+		},
+		/**
+		 * Returns whether the last request for a Wikidata entity failed.
+		 * This is only true when the request itself failed; an entity that
+		 * Wikidata reports as missing is not a failure.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getWikidataEntityFetchFailed: function ( state ) {
+			/**
+			 * @param {string} id
+			 * @return {boolean}
+			 */
+			const findWikidataEntityFetchFailed = ( id ) => !!state.failedEntities[ id ];
+			return findWikidataEntityFetchFailed;
 		},
 		/**
 		 * Returns the label data for a Wikidata entity by type and id.
@@ -173,6 +191,28 @@ module.exports = {
 
 	actions: {
 		/**
+		 * Marks the given entity IDs as having failed to fetch.
+		 *
+		 * @param {Object} payload
+		 * @param {Array<string>} payload.ids - An array of Wikidata entity IDs
+		 */
+		setWikidataEntityFetchFailed: function ( payload ) {
+			payload.ids.forEach( ( id ) => {
+				this.failedEntities[ id ] = true;
+			} );
+		},
+
+		/**
+		 * Clears the failed state of the given entity IDs.
+		 *
+		 * @param {Object} payload
+		 * @param {Array<string>} payload.ids - An array of Wikidata entity IDs
+		 */
+		clearWikidataEntityFetchFailed: function ( payload ) {
+			payload.ids.forEach( ( id ) => delete this.failedEntities[ id ] );
+		},
+
+		/**
 		 * Generic batching method for Wikidata entity fetching.
 		 * Splits IDs into batches and makes parallel requests.
 		 *
@@ -192,6 +232,9 @@ module.exports = {
 				return Promise.resolve();
 			}
 
+			// Clear the failed state so that a retry is not stuck on the previous failure
+			this.clearWikidataEntityFetchFailed( { ids: filteredIds } );
+
 			// Split into batches of up to Wikidata API limit
 			const BATCH_SIZE = this.getWikidataBatchSize;
 			const batches = [];
@@ -208,6 +251,7 @@ module.exports = {
 					.then( ( data ) => {
 						// It might return an error for invalid IDs
 						if ( data.error ) {
+							this.setWikidataEntityFetchFailed( { ids: batchIds } );
 							resetData( { ids: batchIds } );
 							return data;
 						}
@@ -231,6 +275,7 @@ module.exports = {
 					} )
 					.catch( () => {
 						// If fetch fails, remove the IDs from the state
+						this.setWikidataEntityFetchFailed( { ids: batchIds } );
 						resetData( { ids: batchIds } );
 					} );
 			} );

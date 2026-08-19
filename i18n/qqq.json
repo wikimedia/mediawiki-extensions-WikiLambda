@@ -653,6 +653,7 @@
 	"wikilambda-commons-media-selector-placeholder": "Placeholder text for the lookup component to search and select a Commons image file.\n\n{{doc-wikilambda}}",
 	"wikilambda-commons-media-empty-value-placeholder": "Placeholder text shown when no Commons image has been selected, in read mode.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-entity-selector-placeholder": "Placeholder text for the lookup component to search and select any kind of Wikidata entity.\n\n{{doc-wikilambda}}",
+	"wikilambda-wikidata-entity-fetch-error": "Error message shown when the request to fetch an entity from Wikidata failed. This is not shown when the entity does not exist, only when the request itself failed.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Placeholder text for an empty Wikidata entity value, in read mode.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-item-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Items.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Placeholder text for the lookup component to search and select from Wikidata Lexeme Forms.\n\n{{doc-wikilambda}}",

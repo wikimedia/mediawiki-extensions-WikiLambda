@@ -62,6 +62,13 @@
 					<!-- eslint-disable-next-line vue/no-v-html -->
 					<div v-html="noSensesMessage"></div>
 				</cdx-message>
+				<cdx-message
+					v-if="shouldShowFetchErrorMessage"
+					type="error"
+					inline
+				>
+					{{ i18n( 'wikilambda-wikidata-entity-fetch-error' ).text() }}
+				</cdx-message>
 			</div>
 		</template>
 		<wl-z-object-to-string
@@ -228,14 +235,33 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Returns true if the request for the selected lexeme failed.
+		 *
+		 * @return {boolean}
+		 */
+		const hasFetchFailed = computed( () => store.getWikidataEntityFetchFailed( lexemeId.value ) );
+
+		/**
 		 * Returns true if we should show the "no senses" message.
 		 * Only shows when lexeme is selected, not loading, and has no senses.
+		 * A failed request does not mean that the lexeme has no senses.
 		 *
 		 * @return {boolean}
 		 */
 		const shouldShowNoSensesMessage = computed( () => lexemeId.value &&
 			!isLexemeLoading.value &&
+			!hasFetchFailed.value &&
 			!lexemeSenseSelectMenuItems.value.length
+		);
+
+		/**
+		 * Returns true if we should show the failed request message.
+		 *
+		 * @return {boolean}
+		 */
+		const shouldShowFetchErrorMessage = computed( () => !!lexemeId.value &&
+			!isLexemeLoading.value &&
+			hasFetchFailed.value
 		);
 
 		/**
@@ -353,6 +379,7 @@ module.exports = exports = defineComponent( {
 			noSensesMessage,
 			onSelectLexeme,
 			onSelectLexemeSense,
+			shouldShowFetchErrorMessage,
 			shouldShowNoSensesMessage,
 			wikidataIcon
 		};
