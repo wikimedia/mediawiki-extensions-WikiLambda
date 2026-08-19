@@ -478,7 +478,9 @@ module.exports = {
 			// because the items are not part of the lexeme data
 			// eslint-disable-next-line arrow-body-style
 			const sensePromises = lexemeIds.map( ( id ) => {
+				// First try to get the lexeme data from cache, then fetch if needed
 				return this.getLexemeDataAsync( id )
+					.catch( () => this.fetchLexemes( { ids: [ id ] } ).then( () => this.getLexemeDataAsync( id ) ) )
 					.then( () => {
 						const lexemeData = this.getLexemeData( id );
 						if ( !lexemeData || !lexemeData.senses ) {
@@ -496,8 +498,8 @@ module.exports = {
 						} );
 					} )
 					.catch( () => {
-						// If getting the lexeme data fails, remove the Lexeme Ids from the senses
-						this.resetLexemeSensesData( { lexemeIds } );
+						// If getting the lexeme data fails, remove the Lexeme Id from the senses
+						this.resetLexemeSensesData( { lexemeIds: [ id ] } );
 					} );
 			} );
 

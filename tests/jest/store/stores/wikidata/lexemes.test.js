@@ -544,6 +544,50 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				store.setLexemeSensesData = jest.fn();
 			} );
 
+			// The LexemeSense component calls fetchLexemes and fetchLexemeSenses in the
+			// same tick, so the scheduled request window has not opened yet and the
+			// lexeme is neither cached nor in flight.
+			it( 'fetches the lexeme when the scheduled request has not run yet', async () => {
+				delete store.lexemes.L333333;
+				store.scheduledLexemes = [];
+				store.scheduledLexemesPromise = null;
+				mw.ForeignApi = jest.fn( () => ( {
+					get: jest.fn().mockResolvedValue( { entities: { L333333: lexemeData }, success: 1 } )
+				} ) );
+
+				store.fetchLexemes( { ids: [ 'L333333' ] } );
+				await store.fetchLexemeSenses( { lexemeIds: [ 'L333333' ] } );
+
+				expect( store.setLexemeSensesData ).not.toHaveBeenCalledWith( {
+					lexemeId: 'L333333',
+					data: []
+				} );
+				expect( store.setLexemeSensesData.mock.calls[ 0 ][ 0 ].data ).toHaveLength( 3 );
+			} );
+
+			it( 'stores an empty array for a lexeme that has no senses', async () => {
+				store.lexemes.L333333 = Object.assign( {}, lexemeData, { senses: undefined } );
+
+				await store.fetchLexemeSenses( { lexemeIds: [ 'L333333' ] } );
+
+				expect( store.setLexemeSensesData ).toHaveBeenCalledWith( {
+					lexemeId: 'L333333',
+					data: []
+				} );
+			} );
+
+			it( 'resets only the lexeme whose fetch failed', async () => {
+				delete store.lexemes.L333333;
+				store.lexemes.L444444 = lexemeData;
+				store.fetchLexemes = jest.fn( () => Promise.reject( new Error( 'network failure' ) ) );
+				store.resetLexemeSensesData = jest.fn();
+
+				await store.fetchLexemeSenses( { lexemeIds: [ 'L333333', 'L444444' ] } );
+
+				expect( store.resetLexemeSensesData ).toHaveBeenCalledTimes( 1 );
+				expect( store.resetLexemeSensesData ).toHaveBeenCalledWith( { lexemeIds: [ 'L333333' ] } );
+			} );
+
 			it( 'processes senses for fallback labels', async () => {
 				await store.fetchLexemeSenses( { lexemeIds: [ 'L333333' ] } );
 
