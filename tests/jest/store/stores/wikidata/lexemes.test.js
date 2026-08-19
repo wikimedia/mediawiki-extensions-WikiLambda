@@ -168,11 +168,26 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
 			} );
 
-			it( 'returns lexeme form label data in fallback language if user language not present when lexeme form data is available', () => {
+			it( 'returns lexeme form label data in a fallback language when the user language is not present', () => {
 				Object.defineProperty( store, 'getUserLangCode', {
 					value: 'de'
 				} );
 				store.lexemes.L333333 = lexemeData;
+				// English is in the fallback chain, French only comes first in the response
+				const expected = new LabelData( lexemeFormId, 'turtled', null, 'en' );
+				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
+			} );
+
+			it( 'returns any lexeme form label data when no fallback language is present', () => {
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'de'
+				} );
+				store.lexemes.L333333 = {
+					forms: [ {
+						id: lexemeFormId,
+						representations: { fr: { language: 'fr', value: 'tortue' } }
+					} ]
+				};
 				const expected = new LabelData( lexemeFormId, 'tortue', null, 'fr' );
 				expect( store.getLexemeFormLabelData( lexemeFormId ) ).toEqual( expected );
 			} );
@@ -290,6 +305,26 @@ describe( 'Wikidata Lexemes Pinia store', () => {
 
 				const result = store.getLexemeSenseLabelData( 'L333333-S1' );
 				expect( result ).toEqual( new LabelData( 'L333333-S1', 'english gloss', null, 'en' ) );
+			} );
+
+			it( 'returns the gloss in a fallback language, not the first one returned', () => {
+				// The Wikidata API returns glosses in every language and in its own
+				// order, so the first one is not the one the user can read
+				Object.defineProperty( store, 'getUserLangCode', {
+					value: 'en-gb'
+				} );
+				store.senses.L333333 = [ {
+					id: 'L333333-S2',
+					glosses: {
+						bn: { language: 'bn', value: 'বর্ণমালা-সংক্রান্ত' },
+						en: { language: 'en', value: 'arranged in alphabetical order' }
+					}
+				} ];
+
+				const result = store.getLexemeSenseLabelData( 'L333333-S2' );
+				expect( result ).toEqual(
+					new LabelData( 'L333333-S2', 'arranged in alphabetical order', null, 'en' )
+				);
 			} );
 
 			it( 'returns lexeme sense ID as label when no glosses available', () => {

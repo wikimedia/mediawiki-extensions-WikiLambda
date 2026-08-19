@@ -90,6 +90,22 @@ describe( 'Languages Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getFallbackLanguageCodes', () => {
+			it( 'puts the user language first, then the MediaWiki chain', () => {
+				mw.language.getFallbackLanguageChain = () => [ 'es', 'en' ];
+				Object.defineProperty( store, 'getUserLangCode', { value: 'ext' } );
+
+				expect( store.getFallbackLanguageCodes ).toEqual( [ 'ext', 'es', 'en' ] );
+			} );
+
+			it( 'does not repeat the user language when it is already in the chain', () => {
+				mw.language.getFallbackLanguageChain = () => [ 'es', 'en' ];
+				Object.defineProperty( store, 'getUserLangCode', { value: 'es' } );
+
+				expect( store.getFallbackLanguageCodes ).toEqual( [ 'es', 'en' ] );
+			} );
+		} );
+
 		describe( 'getFallbackLanguageZids', () => {
 			beforeAll( () => {
 				mw.language.getFallbackLanguageChain = () => [ 'ext', 'es', 'en' ];

@@ -105,6 +105,17 @@ module.exports = {
 		},
 
 		/**
+		 * Return the language codes to show terms in, best first: the
+		 * user's chosen language, then the MediaWiki fallback chain.
+		 *
+		 * @return {Array<string>}
+		 */
+		getFallbackLanguageCodes: function () {
+			const codes = [ this.getUserLangCode, ...mw.language.getFallbackLanguageChain() ];
+			return codes.filter( ( code, index ) => codes.indexOf( code ) === index );
+		},
+
+		/**
 		 * Return the list of fallback languages in their Zid representations.
 		 *
 		 * @return {Array}

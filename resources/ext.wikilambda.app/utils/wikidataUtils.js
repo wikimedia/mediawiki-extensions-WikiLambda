@@ -83,6 +83,29 @@ const wikidataUtils = {
 	isWikidataPropertyId: function ( str ) {
 		const regexp = /^P[1-9]\d*$/;
 		return regexp.test( str );
+	},
+
+	/**
+	 * Select the best term from a Wikidata multilingual term map, such as
+	 * the lemmas of a Lexeme, the representations of a Form or the glosses
+	 * of a Sense.
+	 *
+	 * The Wikidata API filters labels, descriptions and aliases by the
+	 * requested language, but it returns these maps in every language and
+	 * with no fallback applied. So walk the fallback chain here, and use
+	 * the first term of the map only if no language in the chain has one.
+	 *
+	 * @param {Object|undefined} terms Map of language code to { language, value }
+	 * @param {Array<string>} langCodes Language codes to look for, best first
+	 * @return {Object|undefined} The selected term, or undefined if there is none
+	 */
+	selectTermByLanguage: function ( terms, langCodes ) {
+		const available = Object.keys( terms || {} );
+		if ( available.length === 0 ) {
+			return undefined;
+		}
+		const match = ( langCodes || [] ).find( ( code ) => available.includes( code ) );
+		return terms[ match || available[ 0 ] ];
 	}
 };
 

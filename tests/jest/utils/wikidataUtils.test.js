@@ -168,4 +168,27 @@ describe( 'wikidataUtils', () => {
 			expect( wikidataUtils.isWikidataPropertyId( 'P123456' ) ).toBe( true );
 		} );
 	} );
+	describe( 'selectTermByLanguage', () => {
+		const terms = {
+			bn: { language: 'bn', value: 'bangla gloss' },
+			en: { language: 'en', value: 'english gloss' }
+		};
+
+		it( 'returns undefined when there are no terms', () => {
+			expect( wikidataUtils.selectTermByLanguage( undefined, [ 'en' ] ) ).toBeUndefined();
+			expect( wikidataUtils.selectTermByLanguage( {}, [ 'en' ] ) ).toBeUndefined();
+		} );
+
+		it( 'returns the term in the first language of the chain that has one', () => {
+			expect( wikidataUtils.selectTermByLanguage( terms, [ 'en' ] ) ).toEqual( terms.en );
+			expect( wikidataUtils.selectTermByLanguage( terms, [ 'bn', 'en' ] ) ).toEqual( terms.bn );
+			expect( wikidataUtils.selectTermByLanguage( terms, [ 'en-gb', 'en' ] ) ).toEqual( terms.en );
+		} );
+
+		it( 'returns the first term when no language of the chain has one', () => {
+			expect( wikidataUtils.selectTermByLanguage( terms, [ 'de', 'fr' ] ) ).toEqual( terms.bn );
+			expect( wikidataUtils.selectTermByLanguage( terms, [] ) ).toEqual( terms.bn );
+			expect( wikidataUtils.selectTermByLanguage( terms, undefined ) ).toEqual( terms.bn );
+		} );
+	} );
 } );

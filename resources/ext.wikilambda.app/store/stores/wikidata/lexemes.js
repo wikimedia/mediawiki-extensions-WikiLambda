@@ -12,7 +12,8 @@ const { getNestedProperty } = require( '../../../utils/miscUtils.js' );
 const {
 	isWikidataLexemeId,
 	isWikidataLexemeFormId,
-	isWikidataLexemeSenseId
+	isWikidataLexemeSenseId,
+	selectTermByLanguage
 } = require( '../../../utils/wikidataUtils.js' );
 
 module.exports = {
@@ -168,16 +169,15 @@ module.exports = {
 				// If no lexemeData yet, return Lexeme Id
 				// Get best label from lemmas (if any)
 				const lexemeData = this.getLexemeData( id );
-				const langs = lexemeData ? Object.keys( lexemeData.lemmas || {} ) : {};
-				if ( langs.length > 0 ) {
-					const lemma = langs.includes( this.getUserLangCode ) ?
-						lexemeData.lemmas[ this.getUserLangCode ] :
-						lexemeData.lemmas[ langs[ 0 ] ];
+				const lemma = selectTermByLanguage(
+					lexemeData ? lexemeData.lemmas : undefined,
+					this.getFallbackLanguageCodes
+				);
+				if ( lemma ) {
 					return new LabelData( id, lemma.value, null, lemma.language );
 				}
 				// Else, return Lexeme Id as label
 				return new LabelData( id, id, null );
-
 			};
 			return findLexemeLabelData;
 		},
@@ -204,11 +204,11 @@ module.exports = {
 				// If no lexemeFormData yet, return Lexeme Id
 				const lexemeFormData = this.getLexemeFormData( id );
 				// Get best label from representations (if any)
-				const langs = lexemeFormData ? Object.keys( lexemeFormData.representations || {} ) : {};
-				if ( langs.length > 0 ) {
-					const rep = langs.includes( this.getUserLangCode ) ?
-						lexemeFormData.representations[ this.getUserLangCode ] :
-						lexemeFormData.representations[ langs[ 0 ] ];
+				const rep = selectTermByLanguage(
+					lexemeFormData ? lexemeFormData.representations : undefined,
+					this.getFallbackLanguageCodes
+				);
+				if ( rep ) {
 					return new LabelData( id, rep.value, null, rep.language );
 				}
 				// Else, return Lexeme Id as label
@@ -298,13 +298,13 @@ module.exports = {
 				// If no lexemeSenseData yet, return Lexeme Sense Id
 				const lexemeSenseData = this.getLexemeSenseData( id );
 
-				// Get best label from representations (if any)
-				const langs = lexemeSenseData ? Object.keys( lexemeSenseData.glosses || {} ) : {};
-				if ( langs.length > 0 ) {
-					const rep = langs.includes( this.getUserLangCode ) ?
-						lexemeSenseData.glosses[ this.getUserLangCode ] :
-						lexemeSenseData.glosses[ langs[ 0 ] ];
-					return new LabelData( id, rep.value, null, rep.language );
+				// Get best label from glosses (if any)
+				const gloss = selectTermByLanguage(
+					lexemeSenseData ? lexemeSenseData.glosses : undefined,
+					this.getFallbackLanguageCodes
+				);
+				if ( gloss ) {
+					return new LabelData( id, gloss.value, null, gloss.language );
 				}
 				// Else, return Lexeme Id as label
 				return new LabelData( id, id, null );
@@ -398,10 +398,15 @@ module.exports = {
 			const claims = sense.claims;
 			const itemId = getNestedProperty( claims, 'P5137.0.mainsnak.datavalue.value.id' );
 
+			// Unlike the display getters, this must not accept a gloss in just any
+			// language: a gloss the user cannot read is what we are replacing here.
+			const hasReadableGloss = this.getFallbackLanguageCodes.some(
+				( code ) => code in sense.glosses );
+
 			// We do nothing if:
-			// - there is already a gloss in the user's language for this sense
+			// - there is already a gloss in one of the user's languages for this sense
 			// - there is no 'item for this sense' to fetch for this sense
-			if ( sense.glosses[ this.getUserLangCode ] || !itemId ) {
+			if ( hasReadableGloss || !itemId ) {
 				return Promise.resolve( sense );
 			}
 
