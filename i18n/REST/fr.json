@@ -11,8 +11,15 @@
 	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Aller chercher des versions historiques de ZObjets",
 	"wikifunctions-rest-module-v0-fetch-param-zids-desc": "Liste des ZID à récupérer (maximum 50 par requête) séparés par '|'",
 	"wikifunctions-rest-module-v0-fetch-param-revisions-desc": "Liste des ID de révision (un par ZID demandé) à récupérer dans l'historique des versions, séparés par '|'. Si omis, la révision la plus récente de chaque ZID est renvoyée.",
+	"wikifunctions-rest-module-v0-fetch-param-language-desc": "Code de langue BCP-47 à utiliser pour résoudre les libellés multilingues dans les ZObjects renvoyés; s'il est omis, toutes les langues sont fournies",
+	"wikifunctions-rest-module-v0-fetch-param-getdependencies-desc": "Indique s'il faut également renvoyer les ZObjects référencés comme des types dans les clés ou les arguments des ZObjects demandés.",
+	"wikifunctions-rest-module-v0-fetch-response-desc": "Une correspondance entre chaque ZID demandé (et, si getDependencies est défini, chaque dépendance) et son ZObject sérialisé sous forme de chaîne JSON",
+	"wikifunctions-rest-module-v0-fetch-response-zobject-desc": "Un ZObject sérialisé sous forme de chaîne JSON, tel que renvoyé par le point d'accès de la représentation du contenu de la page",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Appeler une fonction",
 	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appeler une fonction, avec des langues de partage et de rendu personnalisés",
 	"wikifunctions-rest-module-v0-call-param-zid-desc": "ZID de la fonction à appeler",
-	"wikifunctions-rest-module-v0-call-response-desc": "Résultat de l'évaluation de l'appel de fonction"
+	"wikifunctions-rest-module-v0-call-param-arguments-desc": "Liste d'arguments à passer à la fonction, séparés par des barres verticales et dans l'ordre de leur déclaration, chaque argument étant encodé en URL.",
+	"wikifunctions-rest-module-v0-call-param-parselang-desc": "Code de langue BCP-47 utilisé pour analyser les arguments à valeur de chaîne ayant une fonction d'analyse syntaxique; par défaut « en »",
+	"wikifunctions-rest-module-v0-call-response-desc": "Résultat de l'évaluation de l'appel de fonction",
+	"wikifunctions-rest-module-v0-call-response-type-desc": "ZID du type de la sortie évaluée : 'Z6' pour une chaîne simple, 'Z89' pour un fragment HTML"
 }

@@ -124,5 +124,6 @@
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "Exemple d'appel avec du code HTML interdit.",
 	"wikilambda-restapi-disabled-repo-mode-only": "Cette API n'est disponible que sur le wiki “repo” principal, Wikifunctions.org.",
 	"wikilambda-restapi-fetch-too-many": "Vous avez demandé $1 Objets, ce qui est trop en une seule fois ($2 au maximum)",
-	"wikilambda-restapi-revision-mismatch": "Vous avez demandé la révision $1 de l'objet « $2 », elle n'a pas été trouvée"
+	"wikilambda-restapi-revision-mismatch": "Vous avez demandé la révision $1 de l'objet « $2 », elle n'a pas été trouvée",
+	"wikilambda-api-disabled-repo-mode-only": "Cette API n'est pas disponible sauf dans le wiki du dépôt principal Wikifunctions.org ."
 }
