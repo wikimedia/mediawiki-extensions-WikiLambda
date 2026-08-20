@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const { nextTick } = require( 'vue' );
 const { shallowMount } = require( '@vue/test-utils' );
 const { dialogGlobalStubs } = require( '../../helpers/dialogTestHelpers.js' );
 const { createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
@@ -466,6 +467,77 @@ describe( 'ClipboardDialog', () => {
 			expect( mw.testKitchen.getInstrument ).toHaveBeenCalledWith( 'wikifunctions-ui-actions' );
 			expect( instrument.send ).toHaveBeenCalledWith( 'paste', interactionData );
 
+			expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy();
+		} );
+	} );
+
+	describe( 'links in the item preview', () => {
+		// The preview renders ZObject references as links (T433743). Stub the
+		// preview component so that the rendered item contains a real anchor.
+		const linkStub = {
+			name: 'wl-z-object-to-string',
+			template: '<a href="https://www.wikidata.org/wiki/Q42">Douglas Adams</a>'
+		};
+
+		function clickLink( wrapper, modifiers = {} ) {
+			const item = wrapper.findAll( '.ext-wikilambda-app-clipboard__item' )[ 0 ];
+			const event = new MouseEvent( 'click', Object.assign(
+				{ bubbles: true, cancelable: true },
+				modifiers
+			) );
+			item.find( 'a' ).element.dispatchEvent( event );
+			return event;
+		}
+
+		beforeEach( () => {
+			store.getClipboardItems = [ {
+				itemId: 'item#1',
+				originKey: '1',
+				value: 'Q42',
+				originSlotType: 'Z1',
+				objectType: 'Z7',
+				resolvingType: 'Z6'
+			} ];
+		} );
+
+		it( 'pastes and does not follow the link on a plain click', async () => {
+			const wrapper = renderClipboardDialog(
+				{ expectedType: 'Z6' },
+				{ stubs: { 'wl-z-object-to-string': linkStub } }
+			);
+
+			const event = clickLink( wrapper );
+			await nextTick();
+
+			expect( event.defaultPrevented ).toBe( true );
+			expect( wrapper.emitted( 'paste' ) ).toBeTruthy();
+			expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy();
+		} );
+
+		it( 'follows the link and does not paste on a click with a modifier key', async () => {
+			const wrapper = renderClipboardDialog(
+				{ expectedType: 'Z6' },
+				{ stubs: { 'wl-z-object-to-string': linkStub } }
+			);
+
+			const event = clickLink( wrapper, { metaKey: true } );
+			await nextTick();
+
+			expect( event.defaultPrevented ).toBe( false );
+			expect( wrapper.emitted( 'paste' ) ).toBeUndefined();
+			expect( wrapper.emitted( 'close-dialog' ) ).toBeUndefined();
+		} );
+
+		it( 'still pastes when the click is not on a link', async () => {
+			const wrapper = renderClipboardDialog(
+				{ expectedType: 'Z6' },
+				{ stubs: { 'wl-z-object-to-string': linkStub } }
+			);
+
+			const item = wrapper.findAll( '.ext-wikilambda-app-clipboard__item' )[ 0 ];
+			await item.trigger( 'click' );
+
+			expect( wrapper.emitted( 'paste' ) ).toBeTruthy();
 			expect( wrapper.emitted( 'close-dialog' ) ).toBeTruthy();
 		} );
 	} );

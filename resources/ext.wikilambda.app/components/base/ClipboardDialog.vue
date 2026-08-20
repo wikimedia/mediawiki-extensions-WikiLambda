@@ -45,7 +45,7 @@
 				:key="`${ index }-${ item.itemId }`"
 				class="ext-wikilambda-app-clipboard__item"
 				:class="{ 'ext-wikilambda-app-clipboard__item--disabled': !item.isCompatible }"
-				@click="selectClipboardItem( item )"
+				@click="selectClipboardItem( item, $event )"
 			>
 				<!-- Item header; item Id and resolving type (or object type if resolving is undefined) -->
 				<div class="ext-wikilambda-app-clipboard__item-head">
@@ -207,8 +207,19 @@ module.exports = exports = defineComponent( {
 		 * slot. Additionally, emits event to close the dialog.
 		 *
 		 * @param {Object} value
+		 * @param {MouseEvent} event
 		 */
-		function selectClipboardItem( value ) {
+		function selectClipboardItem( value, event ) {
+			// The preview shows links. A plain click on a link must paste the
+			// item, not go to the linked page. A click with a modifier key keeps
+			// the usual link behaviour, so that the page can open in a new tab.
+			if ( event.target.closest( 'a' ) ) {
+				if ( event.ctrlKey || event.metaKey || event.shiftKey || event.altKey ) {
+					return;
+				}
+				event.preventDefault();
+			}
+
 			if ( !value.isCompatible ) {
 				// Ignore if not compatible
 				return;
