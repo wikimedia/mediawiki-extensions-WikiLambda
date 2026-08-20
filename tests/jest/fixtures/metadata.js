@@ -253,6 +253,33 @@ const metadataMaliciousError = convertSetToMap( {
 	}
 } );
 
+// A sub-error whose type is not a Zid, so that it cannot become a link.
+const metadataMaliciousChildError = convertSetToMap( {
+	errors: {
+		Z1K1: "Z5",
+		Z5K1: "Z502",
+		Z5K2: {
+			Z1K1: {
+				Z1K1: "Z7",
+				Z7K1: "Z885",
+				Z885K1: "Z502"
+			},
+			Z502K1: "Z523",
+			Z502K2: {
+				Z1K1: "Z5",
+				Z5K1: "\" onmouseover=\"window.location = '//www.example.com'",
+				Z5K2: {
+					Z1K1: {
+						Z1K1: "Z7",
+						Z7K1: "Z885",
+						Z885K1: "Z523"
+					}
+				}
+			}
+		}
+	}
+} );
+
 const metadataDifferButNoErrors = convertSetToMap( {
 	expectedTestResult: 'ABC',
 	actualTestResult: 'CBA'
@@ -335,10 +362,17 @@ const metadataCaching = convertSetToMap( {
 	testResultCacheKey: 'Z10000#10:Z10001#11:Z10002#12'
 } );
 
+// A cache key with a part which is not a Zid, so that it cannot become a link.
+const metadataCachingOddKey = convertSetToMap( {
+	testResultCachedOn: '2026-06-04T00:00:00Z',
+	testResultCacheKey: 'Z10000#10:not a zid#11'
+} );
+
 module.exports = {
 	metadataBasic,
 	metadataErrors,
 	metadataMaliciousError,
+	metadataMaliciousChildError,
 	metadataEmpty,
 	metadataNested,
 	metadataNestedWarnings,
@@ -348,5 +382,6 @@ module.exports = {
 	metadataEmptyWarnings,
 	metadataOddWarnings,
 	metadataCaching,
+	metadataCachingOddKey,
 	convertSetToMap
 };

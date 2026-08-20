@@ -275,6 +275,24 @@ describe( 'dialog', () => {
 			expect( links[ 2 ].text() ).toBe( 'Z10002 (revision 12)' );
 			expect( links[ 2 ].attributes( 'href' ) ).toBe( '/view/en/Z10002?oldid=12' );
 		} );
+
+		it( 'does not link a cache key part which is not a Zid', () => {
+			jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
+
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachingOddKey } );
+			const section = wrapper.findAllComponents( { name: 'cdx-accordion' } )[ 0 ];
+			const content = section.find( '.cdx-accordion__content' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+
+			const tested = keys[ 1 ];
+			expect( tested.text() ).toContain( 'Tested for (zids and revisions):' );
+
+			// The valid part links, the other part shows as text
+			const links = tested.findAll( 'a' );
+			expect( links.length ).toBe( 1 );
+			expect( links[ 0 ].attributes( 'href' ) ).toBe( '/view/en/Z10000?oldid=10' );
+			expect( tested.text() ).toContain( 'not a zid (revision 11)' );
+		} );
 	} );
 
 	describe( 'with incomplete metadata', () => {
@@ -354,6 +372,26 @@ describe( 'dialog', () => {
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
 			const expectedHeaderDescription = 'Z500 (Z500K1: "<button onmouseover="window.location = \'//www.example.com\'">")';
 			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( expectedHeaderDescription );
+		} );
+
+		it( 'does not link a sub-error whose type is not a Zid', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataMaliciousChildError } );
+			const section = wrapper.findAllComponents( { name: 'cdx-accordion' } )[ 0 ];
+			const content = section.find( '.cdx-accordion__content' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+
+			// Error stack trace (key=errors): the sub-error type is not a Zid,
+			// so it must render as plain text and not as a link.
+			const stackTrace = keys[ 2 ];
+			expect( stackTrace.text() ).toContain( 'Stack trace:' );
+
+			const subError = stackTrace.element.querySelector( 'ul li' );
+			expect( subError.querySelector( 'a' ) ).toBeNull();
+
+			// The type shows as text, and it does not add an attribute
+			expect( subError.querySelector( 'span' ).textContent )
+				.toBe( '" onmouseover="window.location = \'//www.example.com\'' );
+			expect( stackTrace.element.querySelector( '[onmouseover]' ) ).toBeNull();
 		} );
 
 		it( 'renders the expected/actual values and shows test failure message when results differ', () => {

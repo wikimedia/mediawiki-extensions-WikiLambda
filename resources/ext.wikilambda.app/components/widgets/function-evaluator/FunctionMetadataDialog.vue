@@ -791,12 +791,15 @@ module.exports = exports = defineComponent( {
 			if ( data && data.children && data.children.length ) {
 				const children = [];
 				for ( const child of data.children ) {
-					const url = getUrl( child.errorType );
 					const e = store.getLabelData( child.errorType );
 					// SECURITY: Escape any HTML in the error type label
 					const escapedLabel = escapeHtml( e.label );
-					const a = `<a href="${ url }" dir="${ e.langDir }" lang="${ e.langCode }">${ escapedLabel }</a>`;
-					children.push( `<li>${ a }</li>` );
+					const langAttrs = `dir="${ e.langDir }" lang="${ e.langCode }"`;
+					// Only link the error type if it identifies a page
+					const type = isValidZidFormat( child.errorType ) ?
+						`<a href="${ getUrl( child.errorType ) }" ${ langAttrs }>${ escapedLabel }</a>` :
+						`<span ${ langAttrs }>${ escapedLabel }</span>`;
+					children.push( `<li>${ type }</li>` );
 				}
 				return {
 					type: Constants.METADATA_CONTENT_TYPE.HTML,
@@ -913,8 +916,14 @@ module.exports = exports = defineComponent( {
 		function getLinksOfTestKey( key ) {
 			const links = key.split( ':' ).map( ( part ) => {
 				const [ zid, revision ] = part.split( '#' );
-				const href = `${ getUrl( zid ) }?oldid=${ revision }`;
-				return `<a href="${ href }" target="_blank">${ zid } (revision ${ revision })</a>`;
+				// SECURITY: Escape any HTML in the zid and the revision Id
+				const text = escapeHtml( `${ zid } (revision ${ revision })` );
+				// Only link the part if the zid identifies a page
+				if ( !isValidZidFormat( zid ) ) {
+					return `<span>${ text }</span>`;
+				}
+				const href = `${ getUrl( zid ) }?oldid=${ encodeURIComponent( revision ) }`;
+				return `<a href="${ href }" target="_blank">${ text }</a>`;
 			} );
 			return {
 				type: Constants.METADATA_CONTENT_TYPE.HTML,
