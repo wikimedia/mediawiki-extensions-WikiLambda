@@ -21,11 +21,47 @@ namespace MediaWiki\Extension\WikiLambda\ClientStorage;
 
 use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IReadableDatabase;
 
 class WikifunctionsUsageStore {
+
+	/**
+	 * How long to cache a Function's usage summary for.
+	 *
+	 * The counts are read on the repo but written on the client wikis, so there is no
+	 * local edit to purge from and the TTL is the only invalidation available. The
+	 * numbers are informational, so a few minutes of staleness costs nothing.
+	 */
+	private const SUMMARY_CACHE_TTL = 15 * 60;
+
+	/**
+	 * How long past its TTL to keep a usage summary in the backend.
+	 *
+	 * This is what makes SUMMARY_CACHE_LOCK work: WANObjectCache only takes the
+	 * regeneration mutex when it still has a value to hand the threads that lose it, and
+	 * it only still has one if the entry outlives its logical TTL in the store. Must be at
+	 * least SUMMARY_CACHE_LOCK, or the value goes away part-way through the lock window.
+	 */
+	private const SUMMARY_CACHE_STALE_TTL = 60;
+
+	/**
+	 * How long after expiry to let just one thread per datacentre recompute a summary,
+	 * while the rest serve the stale value.
+	 */
+	private const SUMMARY_CACHE_LOCK = 30;
+
+	/**
+	 * The highest page count getUsageSummary() will report.
+	 *
+	 * Counting every row for a Function embedded on millions of pages is far more work
+	 * than a summary is worth, so stop there and let callers render "1,000+". This bounds
+	 * the query's cost, not just its answer. Special:FunctionUsage still counts in full,
+	 * because the total it prints has to match the list it is paginating.
+	 */
+	public const SUMMARY_PAGE_LIMIT = 1000;
 
 	/**
 	 * The virtual database domain on which the wikifunctions_usage table lives.
@@ -37,7 +73,10 @@ class WikifunctionsUsageStore {
 	 */
 	public const USAGE_VIRTUAL_DOMAIN = 'virtual-wikifunctions-usage';
 
-	public function __construct( private readonly IConnectionProvider $dbProvider ) {
+	public function __construct(
+		private readonly IConnectionProvider $dbProvider,
+		private readonly WANObjectCache $cache
+	) {
 	}
 
 	private function getReplicaDB(): IReadableDatabase {
@@ -297,10 +336,13 @@ class WikifunctionsUsageStore {
 	 *
 	 * @param string $function The target Function's ZID, e.g. 'Z12345'
 	 * @param ?int $namespaceId Restrict to this namespace ID, or null for all namespaces
+	 * @param ?int $limit Stop counting at this many rows, or null to count them all. The
+	 *   limit lands inside the COUNT's subquery, so it bounds the work done rather than
+	 *   just the number returned — for callers that only need "at least this many".
 	 * @return int
 	 * @throws InvalidArgumentException if $function is not a valid ZID reference
 	 */
-	public function countUsage( string $function, ?int $namespaceId = null ): int {
+	public function countUsage( string $function, ?int $namespaceId = null, ?int $limit = null ): int {
 		$dbr = $this->getReplicaDB();
 
 		$queryBuilder = $dbr->newSelectQueryBuilder()
@@ -315,7 +357,108 @@ class WikifunctionsUsageStore {
 				->andWhere( [ 'wfuw_namespace_id' => $namespaceId ] );
 		}
 
+		if ( $limit !== null ) {
+			$queryBuilder->limit( $limit );
+		}
+
 		return $queryBuilder->fetchRowCount();
+	}
+
+	/**
+	 * Count the wikis from which a Function is used.
+	 *
+	 * A wiki can hold several rows in the dimension table, one per namespace, so
+	 * counting wfu_wiki_id values directly would count a wiki once per namespace. The
+	 * naive fix — joining the dimension and counting distinct wfuw_wiki — reads every
+	 * one of the Function's usage rows, which is far too much work for a Function that
+	 * is used on millions of pages.
+	 *
+	 * So do it in two steps, the same fetch-then-filter shape as deleteUsageForPage(). The
+	 * first query reads the distinct (wiki, namespace) ids; wfu_wiki_id is the second
+	 * column of the primary key, so this can be answered from the index rather than by
+	 * reading every row. The second reduces those ids to wikis against the dimension
+	 * table, which holds one row per (wiki, namespace) pair across all Functions and so
+	 * stays small — bounding the id list too. Two queries rather than a subquery because
+	 * MariaDB optimises those poorly.
+	 *
+	 * @param string $function The target Function's ZID, e.g. 'Z12345'
+	 * @return int
+	 * @throws InvalidArgumentException if $function is not a valid ZID reference
+	 */
+	public function countUsageWikis( string $function ): int {
+		$dbr = $this->getReplicaDB();
+
+		$wikiIds = $dbr->newSelectQueryBuilder()
+			->distinct()
+			->select( 'wfu_wiki_id' )
+			->from( 'wikifunctions_usage' )
+			->where( [ 'wfu_function' => self::functionToId( $function ) ] )
+			->caller( __METHOD__ )
+			->fetchFieldValues();
+
+		if ( !$wikiIds ) {
+			return 0;
+		}
+
+		return count(
+			$dbr->newSelectQueryBuilder()
+				->distinct()
+				->select( 'wfuw_wiki' )
+				->from( 'wikifunctions_usage_wikis' )
+				->where( [ 'wfuw_id' => $wikiIds ] )
+				->caller( __METHOD__ )
+				->fetchFieldValues()
+		);
+	}
+
+	/**
+	 * Summarise a Function's usage: how many pages use it, and from how many wikis.
+	 *
+	 * Both counts scan the Function's usage rows, so this is cached. The key is global
+	 * because the usage table is shared, so the answer does not depend on which wiki
+	 * asks. staleTTL and lockTSE together mean that, for the first moments after a key
+	 * expires, one thread per datacentre recomputes while the rest serve the previous
+	 * value; without staleTTL there would be no stale value to serve and so no mutex,
+	 * and every concurrent request would scan the table at once.
+	 *
+	 * The page count stops at SUMMARY_PAGE_LIMIT; 'pagesLimited' says whether it did, so
+	 * callers can render "1,000+" rather than implying an exact figure. The wiki count
+	 * needs no such bound, as it cannot exceed the number of wikis in the farm.
+	 *
+	 * Because this is cached, capped and Special:FunctionUsage counts live and in full,
+	 * the two can differ. That is deliberate: the Special page paginates a live list, so
+	 * its total has to match the list it is printing, while this is a summary.
+	 *
+	 * @param string $function The target Function's ZID, e.g. 'Z12345'
+	 * @return array{pages:int,wikis:int,pagesLimited:bool}
+	 * @throws InvalidArgumentException if $function is not a valid ZID reference
+	 */
+	public function getUsageSummary( string $function ): array {
+		// Validate before the cache lookup, so a bad reference cannot make a cache key.
+		$functionId = self::functionToId( $function );
+
+		return $this->cache->getWithSetCallback(
+			$this->cache->makeGlobalKey( 'WikiLambda-usage-summary', (string)$functionId ),
+			self::SUMMARY_CACHE_TTL,
+			function () use ( $function ): array {
+				// The primary key is (function, wiki_id, page), so one row per page — as
+				// long as callers honour insertUsage()'s delete-first contract for
+				// namespace changes, which is also what Special:FunctionUsage's own total
+				// relies on. Reuse countUsage() so the two agree below the cap. Ask for one
+				// row past the cap, so we can tell "exactly the cap" from "more than it".
+				$pages = $this->countUsage( $function, null, self::SUMMARY_PAGE_LIMIT + 1 );
+
+				return [
+					'pages' => min( $pages, self::SUMMARY_PAGE_LIMIT ),
+					'wikis' => $this->countUsageWikis( $function ),
+					'pagesLimited' => $pages > self::SUMMARY_PAGE_LIMIT,
+				];
+			},
+			[
+				'staleTTL' => self::SUMMARY_CACHE_STALE_TTL,
+				'lockTSE' => self::SUMMARY_CACHE_LOCK,
+			]
+		);
 	}
 
 	/**

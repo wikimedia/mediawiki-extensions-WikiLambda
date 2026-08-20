@@ -660,6 +660,52 @@ const apiUtils = {
 				.then( ( data ) => resolve( data.abstractwiki_run_fragment ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );
+	},
+
+	/**
+	 * Calls the wikilambdafn_usage query API to get how many pages use a given
+	 * Function, and how many wikis they are on.
+	 *
+	 * The property is empty for a Function that nothing uses yet, so fall back to
+	 * zeroes rather than making the caller handle a missing object.
+	 *
+	 * @param {Object} payload
+	 * @param {string} payload.zid The Function's ZID
+	 * @param {AbortSignal} [payload.signal] Optional AbortSignal to cancel the request
+	 * @return {Promise<{pages: number, wikis: number, pagesLimited: boolean}>}
+	 *   pagesLimited is true when the real page count is higher than the API counts to,
+	 *   so pages is a floor rather than an exact figure.
+	 */
+	fetchFunctionUsage: function ( payload ) {
+		// Only the repo stores usage, so this must never work with a foreign API
+		const api = new mw.Api();
+
+		return new Promise( ( resolve, reject ) => {
+			api.get( {
+				action: 'query',
+				prop: 'wikilambdafn_usage',
+				titles: payload.zid,
+				format: 'json',
+				formatversion: '2',
+				// The counts are the same for everyone and are cached server-side anyway,
+				// so let the CDN and the browser absorb repeat views. The Action API only
+				// sends public cache headers when one of these is set.
+				maxage: 300,
+				smaxage: 300
+			}, {
+				signal: payload.signal
+			} )
+				.then( ( data ) => {
+					const page = data.query.pages[ 0 ] || {};
+					const usage = page.wikilambdafn_usage || {};
+					resolve( {
+						pages: usage.pages || 0,
+						wikis: usage.wikis || 0,
+						pagesLimited: !!usage.pagesLimited
+					} );
+				} )
+				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
+		} );
 	}
 };
 module.exports = apiUtils;

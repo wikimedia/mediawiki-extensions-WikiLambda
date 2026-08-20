@@ -329,4 +329,55 @@ describe( 'apiUtils', () => {
 			} ) ).rejects.toBeInstanceOf( ApiError );
 		} );
 	} );
+
+	describe( 'fetchFunctionUsage', () => {
+		it( 'returns the counts for the requested function', async () => {
+			apiGetMock.mockResolvedValue( {
+				query: { pages: [ { wikilambdafn_usage: { pages: 1000, wikis: 87, pagesLimited: true } } ] }
+			} );
+
+			await expect( apiUtils.fetchFunctionUsage( { zid: 'Z801' } ) ).resolves.toEqual( {
+				pages: 1000,
+				wikis: 87,
+				pagesLimited: true
+			} );
+
+			expect( apiGetMock ).toHaveBeenCalledWith( {
+				action: 'query',
+				prop: 'wikilambdafn_usage',
+				titles: 'Z801',
+				format: 'json',
+				formatversion: '2',
+				maxage: 300,
+				smaxage: 300
+			}, { signal: undefined } );
+		} );
+
+		it( 'returns zeroes when the function has no recorded usage', async () => {
+			apiGetMock.mockResolvedValue( { query: { pages: [ { title: 'Z801' } ] } } );
+
+			await expect( apiUtils.fetchFunctionUsage( { zid: 'Z801' } ) ).resolves.toEqual( {
+				pages: 0,
+				wikis: 0,
+				pagesLimited: false
+			} );
+		} );
+
+		it( 'returns zeroes when the query matched no page', async () => {
+			apiGetMock.mockResolvedValue( { query: { pages: [] } } );
+
+			await expect( apiUtils.fetchFunctionUsage( { zid: 'Z801' } ) ).resolves.toEqual( {
+				pages: 0,
+				wikis: 0,
+				pagesLimited: false
+			} );
+		} );
+
+		it( 'rejects with ApiError when the request fails', async () => {
+			apiGetMock.mockRejectedValue( 'internal_api_error' );
+
+			await expect( apiUtils.fetchFunctionUsage( { zid: 'Z801' } ) )
+				.rejects.toBeInstanceOf( ApiError );
+		} );
+	} );
 } );

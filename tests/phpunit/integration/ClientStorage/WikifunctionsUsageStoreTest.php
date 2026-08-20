@@ -20,6 +20,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 
@@ -139,6 +140,142 @@ class WikifunctionsUsageStoreTest extends WikiLambdaClientIntegrationTestCase {
 	public function testFetchUsage_returnsEmptyWhenNoRows() {
 		$this->assertSame( [], $this->store->fetchUsage( 'Z99999' ) );
 		$this->assertSame( 0, $this->store->countUsage( 'Z99999' ) );
+		$this->assertSame( 0, $this->store->countUsageWikis( 'Z99999' ) );
+	}
+
+	public function testCountUsageWikis_countsEachWikiOnce() {
+		// The (wiki, namespace) dimension gives one wiki several surrogate ids, so a wiki
+		// used from more than one namespace must still count as a single wiki.
+		$this->store->insertUsage( 'Z10040', 'enwiki', 1, NS_MAIN, null, 'Article' );
+		$this->store->insertUsage( 'Z10040', 'enwiki', 2, NS_TEMPLATE, 'Template', 'Tpl' );
+		$this->store->insertUsage( 'Z10040', 'enwiki', 3, NS_MAIN, null, 'Another' );
+		$this->store->insertUsage( 'Z10040', 'dewiki', 4, NS_MAIN, null, 'Artikel' );
+
+		$this->assertSame( 4, $this->store->countUsage( 'Z10040' ) );
+		$this->assertSame( 2, $this->store->countUsageWikis( 'Z10040' ) );
+	}
+
+	public function testCountUsageWikis_isScopedToTheGivenFunction() {
+		$this->store->insertUsage( 'Z10041', 'enwiki', 1, NS_MAIN, null, 'One' );
+		$this->store->insertUsage( 'Z10042', 'dewiki', 2, NS_MAIN, null, 'Zwei' );
+		$this->store->insertUsage( 'Z10042', 'frwiki', 3, NS_MAIN, null, 'Trois' );
+
+		$this->assertSame( 1, $this->store->countUsageWikis( 'Z10041' ) );
+		$this->assertSame( 2, $this->store->countUsageWikis( 'Z10042' ) );
+	}
+
+	public function testGetUsageSummary_reportsBothCounts() {
+		$this->store->insertUsage( 'Z10043', 'enwiki', 1, NS_MAIN, null, 'Article' );
+		$this->store->insertUsage( 'Z10043', 'enwiki', 2, NS_TEMPLATE, 'Template', 'Tpl' );
+		$this->store->insertUsage( 'Z10043', 'dewiki', 3, NS_MAIN, null, 'Artikel' );
+
+		$this->assertSame(
+			[ 'pages' => 3, 'wikis' => 2, 'pagesLimited' => false ],
+			$this->store->getUsageSummary( 'Z10043' )
+		);
+	}
+
+	public function testCountUsage_stopsAtTheGivenLimit() {
+		for ( $pageId = 1; $pageId <= 5; $pageId++ ) {
+			$this->store->insertUsage( 'Z10046', 'enwiki', $pageId, NS_MAIN, null, "Page $pageId" );
+		}
+
+		$this->assertSame( 5, $this->store->countUsage( 'Z10046' ) );
+		$this->assertSame(
+			3,
+			$this->store->countUsage( 'Z10046', null, 3 ),
+			'The limit bounds the count, not just the rows returned'
+		);
+		$this->assertSame(
+			5,
+			$this->store->countUsage( 'Z10046', null, 50 ),
+			'A limit above the real count does not inflate it'
+		);
+	}
+
+	public function testGetUsageSummary_capsThePageCountAndSaysSo() {
+		$limit = WikifunctionsUsageStore::SUMMARY_PAGE_LIMIT;
+
+		// One page more than the cap, so the summary has to report the cap and flag it.
+		for ( $pageId = 1; $pageId <= $limit + 1; $pageId++ ) {
+			$this->store->insertUsage( 'Z10047', 'enwiki', $pageId, NS_MAIN, null, "Page $pageId" );
+		}
+
+		$this->assertSame(
+			[ 'pages' => $limit, 'wikis' => 1, 'pagesLimited' => true ],
+			$this->store->getUsageSummary( 'Z10047' )
+		);
+		$this->assertSame(
+			$limit + 1,
+			$this->store->countUsage( 'Z10047' ),
+			'Special:FunctionUsage still gets the exact total'
+		);
+	}
+
+	public function testGetUsageSummary_doesNotFlagACountExactlyAtTheCap() {
+		$limit = WikifunctionsUsageStore::SUMMARY_PAGE_LIMIT;
+
+		for ( $pageId = 1; $pageId <= $limit; $pageId++ ) {
+			$this->store->insertUsage( 'Z10048', 'enwiki', $pageId, NS_MAIN, null, "Page $pageId" );
+		}
+
+		$this->assertSame(
+			[ 'pages' => $limit, 'wikis' => 1, 'pagesLimited' => false ],
+			$this->store->getUsageSummary( 'Z10048' )
+		);
+	}
+
+	public function testGetUsageSummary_reportsZeroesForAnUnusedFunction() {
+		$this->assertSame(
+			[ 'pages' => 0, 'wikis' => 0, 'pagesLimited' => false ],
+			$this->store->getUsageSummary( 'Z99998' )
+		);
+	}
+
+	public function testGetUsageSummary_isCached() {
+		$this->store->insertUsage( 'Z10044', 'enwiki', 1, NS_MAIN, null, 'One' );
+		$first = $this->store->getUsageSummary( 'Z10044' );
+
+		$this->store->insertUsage( 'Z10044', 'dewiki', 2, NS_MAIN, null, 'Zwei' );
+
+		$this->assertSame(
+			$first,
+			$this->store->getUsageSummary( 'Z10044' ),
+			'A new usage row is not visible until the cached summary expires'
+		);
+		$this->assertSame( 2, $this->store->countUsage( 'Z10044' ), 'The uncached count sees it' );
+		$this->assertSame( 2, $this->store->countUsageWikis( 'Z10044' ) );
+	}
+
+	public function testGetUsageSummary_outlivesItsTtlSoOneThreadCanRefreshIt() {
+		// WANObjectCache only takes the regeneration mutex when it still has a value for
+		// the threads that lose it, and it only has one if the entry outlives its logical
+		// TTL in the store. Were staleTTL dropped, the entry would vanish at expiry and
+		// every concurrent request would rescan the table at once.
+		$clock = microtime( true );
+		$cache = $this->getServiceContainer()->getMainWANObjectCache();
+		$cache->setMockTime( $clock );
+
+		$this->store->insertUsage( 'Z10045', 'enwiki', 1, NS_MAIN, null, 'One' );
+		$this->store->getUsageSummary( 'Z10045' );
+
+		// Step just past the logical TTL, but not past the stale window.
+		$clock += 15 * 60 + 1;
+
+		$curTTL = null;
+		$value = $cache->get( $cache->makeGlobalKey( 'WikiLambda-usage-summary', '10045' ), $curTTL );
+
+		$this->assertSame(
+			[ 'pages' => 1, 'wikis' => 1, 'pagesLimited' => false ],
+			$value,
+			'The expired summary is still in the store, ready to be served as stale'
+		);
+		$this->assertLessThanOrEqual( 0, $curTTL, 'and is reported as logically expired' );
+	}
+
+	public function testGetUsageSummary_rejectsAnInvalidReference() {
+		$this->expectException( InvalidArgumentException::class );
+		$this->store->getUsageSummary( 'not a ZID' );
 	}
 
 	public function testDeleteUsageForPage_removesEveryFunctionForThatPage() {

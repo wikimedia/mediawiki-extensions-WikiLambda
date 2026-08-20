@@ -590,6 +590,7 @@ Constants.PATHS = {
 	MAIN_PAGE: 'Wikifunctions:Main_Page',
 	CREATE_ABSTRACT_TITLE: 'Special:CreateAbstract',
 	CREATE_OBJECT_TITLE: 'Special:CreateObject',
+	FUNCTION_USAGE_TITLE: 'Special:FunctionUsage',
 	RUN_FUNCTION_TITLE: 'Special:RunFunction',
 	LIST_OBJECTS_BY_TYPE_TYPE: 'Special:ListObjectsByType/Z4',
 	ROUTE_FORMAT_ONE: '/w/index.php',

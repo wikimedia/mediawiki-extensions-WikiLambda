@@ -651,6 +651,7 @@
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataDialog.vue",
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataItem.vue",
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataTestResult.vue",
+				"ext.wikilambda.app/components/widgets/function-usage/FunctionUsage.vue",
 				"lib/ace/src/ace.js",
 				"lib/ace/src/ext-language_tools.js",
 				{
@@ -697,7 +698,9 @@
 						"cdxIconTableAddRowBefore",
 						"cdxIconCopy",
 						"cdxIconPaste",
-						"cdxIconImage"
+						"cdxIconImage",
+						"cdxIconArticle",
+						"cdxIconLogoWikimedia"
 					]
 				}
 			],
@@ -1051,6 +1054,12 @@
 				"wikilambda-function-explorer-copy-key",
 				"wikilambda-function-explorer-name-title",
 				"wikilambda-function-view-function-button-text",
+				"wikilambda-function-usage-widget-title",
+				"wikilambda-function-usage-widget-pages",
+				"wikilambda-function-usage-widget-wikis",
+				"wikilambda-function-usage-widget-count-limited",
+				"wikilambda-function-usage-widget-details",
+				"wikilambda-function-usage-widget-error",
 				"wikilambda-function-evaluator-title",
 				"wikilambda-function-evaluator-title-function",
 				"wikilambda-function-evaluator-title-implementation",
@@ -1205,6 +1214,14 @@
 			"services": [
 				"LanguageFallback",
 				"WikiLambdaZObjectStore"
+			]
+		}
+	},
+	"APIPropModules": {
+		"wikilambdafn_usage": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiQueryZFunctionUsage",
+			"services": [
+				"WikifunctionsUsageStore"
 			]
 		}
 	},

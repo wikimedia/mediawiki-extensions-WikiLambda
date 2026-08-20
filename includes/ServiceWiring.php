@@ -85,7 +85,8 @@ return [
 
 	'WikifunctionsUsageStore' => static function ( MediaWikiServices $services ): WikifunctionsUsageStore {
 		return new WikifunctionsUsageStore(
-			$services->getConnectionProvider()
+			$services->getConnectionProvider(),
+			$services->getMainWANObjectCache()
 		);
 	},
 

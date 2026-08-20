@@ -58,6 +58,14 @@ describe( 'FunctionViewer', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-function-viewer-view' ).exists() ).toBe( true );
 	} );
 
+	it( 'renders the usage widget for the current function', () => {
+		const wrapper = renderFunctionViewer();
+
+		const usageWidget = wrapper.findComponent( { name: 'wl-function-usage-widget' } );
+		expect( usageWidget.exists() ).toBe( true );
+		expect( usageWidget.props( 'functionZid' ) ).toBe( functionZid );
+	} );
+
 	it( 'does not show success toast by default', () => {
 		renderFunctionViewer();
 

@@ -14,6 +14,10 @@
 					:type="functionType"
 					@edit-metadata="dispatchAboutEvent"
 				></wl-about-widget>
+				<!-- Widget Function Usage -->
+				<wl-function-usage-widget
+					:function-zid="getCurrentZObjectId"
+				></wl-function-usage-widget>
 			</div>
 			<div class="ext-wikilambda-app-col ext-wikilambda-app-col-16 ext-wikilambda-app-col-tablet-24">
 				<!-- Share URL error message -->
@@ -49,6 +53,7 @@ const useMainStore = require( '../store/index.js' );
 // Widget components
 const AboutWidget = require( '../components/widgets/about/About.vue' );
 const FunctionEvaluatorWidget = require( '../components/widgets/function-evaluator/FunctionEvaluator.vue' );
+const FunctionUsageWidget = require( '../components/widgets/function-usage/FunctionUsage.vue' );
 // Function view components
 const FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
 // Codex components
@@ -59,6 +64,7 @@ module.exports = exports = defineComponent( {
 	components: {
 		'wl-about-widget': AboutWidget,
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget,
+		'wl-function-usage-widget': FunctionUsageWidget,
 		'wl-function-viewer-details': FunctionViewerDetails,
 		'cdx-message': CdxMessage
 	},
