@@ -44,7 +44,7 @@ class WikifunctionsClientStore {
 
 		$cachedObject = $this->objectCache->get( $cacheKey );
 		if ( !$cachedObject ) {
-			$this->logger->info( __METHOD__ . ' cache miss while fetching {zid}', [ 'zid' => $zid ] );
+			$this->logger->debug( __METHOD__ . ' cache miss while fetching {zid}', [ 'zid' => $zid ] );
 			return null;
 		}
 
