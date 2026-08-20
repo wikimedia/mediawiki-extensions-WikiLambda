@@ -257,9 +257,15 @@ class AbstractPageRenderingHandler implements
 		// so the styles and scripts that the special page registered for that HTML stay behind.
 		// Copy the lists across, rather than name the modules again here, to keep the special page
 		// the one place that declares what its own output needs. Without this the reference and
-		// Commons image markup in the sections gets no styles and no behaviour.
+		// Commons image markup in the sections gets no styles and no behaviour, and the
+		// abstractpreview submodule has no config vars to read.
 		$output->addModuleStyles( $specialOutput->getModuleStyles() );
 		$output->addModules( $specialOutput->getModules() );
+
+		// Merge instead of overwriting so any 'wgWikiLambda' keys already set on $output are kept.
+		$existingConfig = $output->getJsConfigVars()['wgWikiLambda'] ?? [];
+		$newConfig = $specialOutput->getJsConfigVars()['wgWikiLambda'] ?? [];
+		$output->addJsConfigVars( 'wgWikiLambda', array_merge( $existingConfig, $newConfig ) );
 
 		$output->addHTML( Html::rawElement(
 			'div',

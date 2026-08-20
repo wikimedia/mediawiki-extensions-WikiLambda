@@ -392,8 +392,35 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 		);
 		$this->assertContains(
 			'ext.wikilambda.content', $output->getModules(),
-			'We register ext.wikilambda.content; make sure that\'s set'
+			'We register ext.wikilambda.content; make sure that\'s set (it also includes '
+				. 'abstractpreview submodule that reads the config vars set along with it)'
 		);
+	}
+
+	public function testSuccessSetsAbstractPreviewJsConfigVars(): void {
+		$this->mockArticleStoreWithSections( 'Q42', 'en', [
+			self::LEDE_SECTION => '<b>some neutral but interesting text</b>'
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		$this->executeSpecialPage(
+			/* subpage */ 'en/Q42',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		// The abstractpreview module reads these to record reader-facing completeness telemetry
+		// via mw.track('stats.*', ...).
+		$config = $context->getOutput()->getJsConfigVars()['wgWikiLambda'] ?? [];
+		$this->assertSame( 'Q42', $config['abstractPreviewTopicQid'] ?? null );
+		$this->assertSame( 'en', $config['abstractPreviewLocale'] ?? null );
+		$this->assertSame( 'special_page', $config['abstractPreviewSource'] ?? null );
 	}
 
 	public function testSuccessTwoSectionsAvailable(): void {

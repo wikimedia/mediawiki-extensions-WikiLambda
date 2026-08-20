@@ -268,6 +268,7 @@ class AWSection {
 		$section = Html::rawElement( 'section', [
 			'data-mw-section-id' => (string)$sectionIndex,
 			'aria-labelledby' => $sectionTitle ?? $sectionQid,
+			'data-wikilambda-aw-section-status' => 'pending',
 		], $heading . $warningBox );
 
 		return new HtmlArmor( $section );

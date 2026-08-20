@@ -284,10 +284,20 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 
 		// Set content html. The stored sections come from the same fragment renderer as the
 		// {{#function:…}} parser function. They can contain reference and Commons image markup.
-		// The content module gives that markup its styles and its behaviour.
+		// The content module gives that markup its styles and its behaviour, also the
+		// abstractpreview submodule that reads config vars set below.
 		$output->addModuleStyles( [ 'ext.wikilambda.content.styles' ] );
 		$output->addModules( [ 'ext.wikilambda.content' ] );
 		$output->addHTML( $articleHtml );
+
+		// Reader-facing completeness metrics: the counters above only fire on a fresh render, so
+		// they miss a CDN/parser-cache hit. The abstractpreview submodule reads these to record the
+		// outcome actually seen by the reader per pageview.
+		$output->addJsConfigVars( 'wgWikiLambda', [
+			'abstractPreviewTopicQid' => $targetQid,
+			'abstractPreviewLocale' => $locale,
+			'abstractPreviewSource' => $source,
+		] );
 
 		// Finally show AW provenance banner at the bottom of the article
 		$this->showAbstractWikiBox(

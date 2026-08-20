@@ -91,6 +91,9 @@ class AWSectionTest extends WikiLambdaAbstractClientIntegrationTestCase {
 		$this->assertStringNotContainsString( '<h2', $html );
 		$this->assertStringContainsString( 'cdx-message--warning', $html );
 		$this->assertStringContainsString( 'This section is not yet rendered', $html );
+		// The client-side abstractpreview module scans for this marker to record reader-facing
+		// completeness telemetry.
+		$this->assertStringContainsString( 'data-wikilambda-aw-section-status="pending"', $html );
 	}
 
 	public function testEmptySection_otherSection(): void {
@@ -102,6 +105,7 @@ class AWSectionTest extends WikiLambdaAbstractClientIntegrationTestCase {
 		$this->assertStringContainsString( 'Other section</h2>', $html );
 		$this->assertStringContainsString( 'cdx-message--warning', $html );
 		$this->assertStringContainsString( 'This section is not yet rendered', $html );
+		$this->assertStringContainsString( 'data-wikilambda-aw-section-status="pending"', $html );
 	}
 
 	/**

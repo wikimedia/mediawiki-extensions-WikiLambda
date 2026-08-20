@@ -76,7 +76,8 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 	private function mockSpecialPageFactory(
 		string $expectedHtml,
 		array $moduleStyles = [],
-		array $modules = []
+		array $modules = [],
+		array $jsConfigVars = []
 	): void {
 		$mockSpecialPage = $this->createMock( SpecialPage::class );
 		$capturedContext = null;
@@ -90,10 +91,11 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$mockSpecialPage
 			->method( 'execute' )
 			->willReturnCallback(
-				static function () use ( &$capturedContext, $expectedHtml, $moduleStyles, $modules ) {
+				static function () use ( &$capturedContext, $expectedHtml, $moduleStyles, $modules, $jsConfigVars ) {
 					$specialOutput = $capturedContext->getOutput();
 					$specialOutput->addModuleStyles( $moduleStyles );
 					$specialOutput->addModules( $modules );
+					$specialOutput->addJsConfigVars( 'wgWikiLambda', $jsConfigVars );
 					$specialOutput->addHTML( $expectedHtml );
 				}
 			);
@@ -260,6 +262,52 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 			'ext.wikilambda.content', $output->getModules(),
 			'We replay the special page\'s modules onto the article output'
 		);
+	}
+
+	public function testOnShowMissingArticle_optedIn_replaysSpecialPageJsConfigVars(): void {
+		$this->mockSpecialPageFactory(
+			'<p>body</p>',
+			[],
+			[],
+			[ 'abstractPreviewTopicQid' => 'Q42' ]
+		);
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		$handler = $this->buildHandler();
+		$handler->onShowMissingArticle( $article );
+
+		$output = $article->getContext()->getOutput();
+		$this->assertSame(
+			'Q42',
+			$output->getJsConfigVars()['wgWikiLambda']['abstractPreviewTopicQid'] ?? null,
+			'We replay the special page\'s wgWikiLambda config vars onto the article output'
+		);
+	}
+
+	public function testOnShowMissingArticle_optedIn_mergesJsConfigVarsWithExisting(): void {
+		$this->mockSpecialPageFactory(
+			'<p>body</p>',
+			[],
+			[],
+			[ 'abstractPreviewTopicQid' => 'Q42' ]
+		);
+
+		$title = Title::makeTitle( NS_MAIN, 'Douglas Adams' );
+		$article = $this->makeArticle( $title );
+
+		// Simulate another feature having already set a wgWikiLambda config var to guard overwrite
+		$article->getContext()->getOutput()->addJsConfigVars( 'wgWikiLambda', [ 'someOtherFlag' => true ] );
+
+		$handler = $this->buildHandler();
+		$handler->onShowMissingArticle( $article );
+
+		$wikiLambdaConfig = $article->getContext()->getOutput()->getJsConfigVars()['wgWikiLambda'] ?? [];
+		$this->assertSame( true, $wikiLambdaConfig['someOtherFlag'] ?? null,
+			'A pre-existing wgWikiLambda config var must survive the merge' );
+		$this->assertSame( 'Q42', $wikiLambdaConfig['abstractPreviewTopicQid'] ?? null,
+			'The special page\'s wgWikiLambda config var must still be replayed' );
 	}
 
 	// onBeforeDisplayNoArticleText: external-indexability metadata (T422707)
