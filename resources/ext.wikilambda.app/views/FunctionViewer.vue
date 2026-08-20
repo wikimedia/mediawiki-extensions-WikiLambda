@@ -12,7 +12,7 @@
 				<wl-about-widget
 					:edit="false"
 					:type="functionType"
-					@edit-metadata="dispatchAboutEvent"
+					@edit-multilingual-data="dispatchAboutEvent"
 				></wl-about-widget>
 				<!-- Widget Function Usage -->
 				<wl-function-usage-widget

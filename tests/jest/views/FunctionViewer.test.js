@@ -24,6 +24,7 @@ const mockToast = {
 const codex = require( '../helpers/loadCodexComponents.js' );
 jest.spyOn( codex, 'useToast' ).mockReturnValue( mockToast );
 
+const About = require( '../../../resources/ext.wikilambda.app/components/widgets/about/About.vue' );
 const FunctionViewer = require( '../../../resources/ext.wikilambda.app/views/FunctionViewer.vue' );
 
 describe( 'FunctionViewer', () => {
@@ -78,11 +79,16 @@ describe( 'FunctionViewer', () => {
 		expect( store.checkPublishSuccess ).toHaveBeenCalledWith( functionZid );
 	} );
 
-	it( 'dispatches edit event when About widget emits edit-metadata', async () => {
+	it( 'dispatches edit event when About widget emits edit-multilingual-data', async () => {
 		const wrapper = renderFunctionViewer();
 
+		// The view is shallow-mounted, so About is a stub that would happily emit any name.
+		// Assert against the real component that this is an event it actually declares,
+		// or a listener for an event nobody emits would still pass here.
+		expect( About.emits ).toContain( 'edit-multilingual-data' );
+
 		const aboutWidget = wrapper.findComponent( { name: 'wl-about-widget' } );
-		aboutWidget.vm.$emit( 'edit-metadata' );
+		aboutWidget.vm.$emit( 'edit-multilingual-data' );
 
 		await waitFor( () => {
 			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
