@@ -6,6 +6,7 @@
 	},
 	"wikilambda-fragment-disabled": "Wywoływanie Wikifunkcji jest obecnie wyłączone. Być może chcesz zastąpić to wywołanie.",
 	"wikilambda-fragment-pending": "⏳ Funkcja jest wywoływana…",
+	"wikilambda-rc-hide-wikifunctions": "$1 edycje Wikifunkcji",
 	"wikilambda-recentchanges-edit-legend": "Edycja z Wikifunkcji",
 	"wikilambda-recentchanges-edit-letter": "F",
 	"wikilambda-recentchanges-edit-title": "Edycja Wikifunkcji",
