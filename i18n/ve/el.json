@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Fotis A."
+			"Fotis A.",
+			"Warudo"
 		]
 	},
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "Δεν βρέθηκε κανένα αποτέλεσμα",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "Αποτελέσματα",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Προτεινόμενες λειτουργίες"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "Προτεινόμενες συναρτήσεις"
 }

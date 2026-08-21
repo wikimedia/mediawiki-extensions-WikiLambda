@@ -1,13 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jérémy-Günther-Heinz Jähnick"
+			"Jérémy-Günther-Heinz Jähnick",
+			"Wladek92"
 		]
 	},
-	"wikifunctions-rest-module-v0-title": "API Wikifonctions",
-	"wikifunctions-rest-module-v0-desc": "API pour interagir avec les Wikifonctions",
-	"wikifunctions-rest-module-v0-fetch-zids-desc": "Aller chercher des ZObjets",
-	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Aller chercher des versions historiques de ZObjets",
+	"wikifunctions-rest-module-v0-title": "API Wikifunctions",
+	"wikifunctions-rest-module-v0-desc": "APIs pour interagir avec Wikifunctions",
+	"wikifunctions-rest-module-v0-fetch-zids-desc": "Chercher des ZObjects",
+	"wikifunctions-rest-module-v0-fetch-zids-revisions-desc": "Chercher des versions historiques de ZObjects",
 	"wikifunctions-rest-module-v0-call-zid-arguments-desc": "Appeler une fonction",
-	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appeler une fonction, avec des langues de partage et de rendu personnalisés"
+	"wikifunctions-rest-module-v0-call-zid-arguments-parselang-renderlang-desc": "Appeler une fonction, avec une analyse personnalisée et des langues de rendu"
 }
