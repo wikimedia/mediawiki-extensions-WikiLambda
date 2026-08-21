@@ -581,12 +581,14 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 
 		$config = $this->getServiceContainer()->getMainConfig();
 		$fragmentRenderer = WikiLambdaServices::getPFragmentRenderer();
+		$statsFactory = $this->getServiceContainer()->getStatsFactory();
 
 		return new AbstractWikiRequest(
 			$config,
 			$factory,
 			$fragmentStore,
-			$fragmentRenderer
+			$fragmentRenderer,
+			$statsFactory
 		);
 	}
 

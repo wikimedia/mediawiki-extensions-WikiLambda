@@ -97,7 +97,8 @@ return [
 			$services->getMainConfig(),
 			$services->getHttpRequestFactory(),
 			WikiLambdaServices::getAWFragmentStore(),
-			WikiLambdaServices::getPFragmentRenderer()
+			WikiLambdaServices::getPFragmentRenderer(),
+			$services->getStatsFactory()
 		);
 	},
 

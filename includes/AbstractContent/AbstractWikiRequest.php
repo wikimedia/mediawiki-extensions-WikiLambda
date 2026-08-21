@@ -23,6 +23,7 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class AbstractWikiRequest {
@@ -60,15 +61,18 @@ class AbstractWikiRequest {
 	];
 
 	private LoggerInterface $logger;
+	private StatsFactory $statsFactory;
 
 	public function __construct(
 		private readonly Config $config,
 		private readonly HttpRequestFactory $httpRequestFactory,
 		private readonly AWFragmentStore $fragmentStore,
-		private readonly WikifunctionsFragmentRenderer $fragmentRenderer
+		private readonly WikifunctionsFragmentRenderer $fragmentRenderer,
+		StatsFactory $statsFactory
 	) {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
+		$this->statsFactory = $statsFactory->withComponent( 'WikiLambda' );
 	}
 
 	/**
@@ -324,7 +328,12 @@ class AbstractWikiRequest {
 		// Set request origin header
 		$request->setHeader( 'X-WikiLambda-Request-Origin', OrchestratorRequest::AW_FRAGMENT_ORIGIN_HEADER );
 
+		// How long does the orchestrator take to respond per fragment?
+		// Grafana: mediawiki.WikiLambda.aw_orchestrator_call_seconds{}
+		$orchestratorCallStart = microtime( true );
 		$status = $request->execute();
+		$this->statsFactory->getTiming( 'aw_orchestrator_call_seconds' )
+			->observeSeconds( microtime( true ) - $orchestratorCallStart );
 		$apiHttpStatusCode = $request->getStatus();
 
 		// HTTP 503
@@ -419,6 +428,14 @@ class AbstractWikiRequest {
 
 		// Give phan some assistance on what we expect the envelope to look like
 		'@phan-var object{Z22K1:array<string,string|array>,Z22K2:array<string,string|array>} $responseEnvelope';
+
+		// How long did the orchestrator itself spend evaluating, excluding network time?
+		// Grafana: mediawiki.WikiLambda.aw_orchestration_duration_seconds{}
+		$orchestrationDuration = ZObjectUtils::getMetadataValue( $responseEnvelope, 'orchestrationDuration' );
+		if ( $orchestrationDuration !== null ) {
+			$this->statsFactory->getTiming( 'aw_orchestration_duration_seconds' )
+				->observe( floatval( $orchestrationDuration ) );
+		}
 
 		$htmlFragment = $responseEnvelope->{ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE };
 

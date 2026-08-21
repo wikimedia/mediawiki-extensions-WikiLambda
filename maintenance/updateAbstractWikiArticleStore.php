@@ -271,7 +271,8 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 						$sectionQid,
 						$language,
 						$now->getTimestamp( TS::MW ),
-						$sectionFragments
+						$sectionFragments,
+						$doPending
 					);
 
 					// How long did it take to fetch all fragments from cache and join them into a section?
@@ -362,7 +363,8 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 		string $sectionQid,
 		WikifunctionsLanguage $language,
 		string $datetime,
-		array $fragments
+		array $fragments,
+		bool $doPending = false
 	): AWSection {
 		// Construct a blank AWSection with no payload
 		$awSection = new AWSection( $topicQid, $sectionQid, $language->getCode() );
@@ -378,11 +380,13 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 
 			// Are fragments being rendered and cached successfully?
 			// Broken down by outcome so Grafana can show success, cache hit, freshness rates per section/locale
-			// Grafana: mediawiki.WikiLambda.aw_fragment_total{section=…, locale=…, outcome=…}
+			// run_type distinguishes regular runs from --pending re-runs so outcomes can be compared
+			// Grafana: mediawiki.WikiLambda.aw_fragment_total{section=…, locale=…, outcome=…, run_type=…}
 			$this->statsFactory->getCounter( 'aw_fragment_total' )
 				->setLabel( 'section', $sectionQid )
 				->setLabel( 'locale', $language->getCode() )
 				->setLabel( 'outcome', $awFragment->getStatus() )
+				->setLabel( 'run_type', $doPending ? 'pending' : 'regular' )
 				->increment();
 
 			// 3.2.2. Append the fragment to the section
