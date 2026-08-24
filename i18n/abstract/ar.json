@@ -89,6 +89,7 @@
 	"wikilambda-abstract-special-preview-not-enabled-title": "لم يتم تفعيل معاينة المقالة الموجزة",
 	"wikilambda-abstract-special-preview-not-ready-body": "لم يتم إنشاء معاينة المقال الخاص بموضوع $1 في $2 بعد. يرجى المحاولة مرة أخرى لاحقاً.",
 	"wikilambda-abstract-special-preview-not-ready-title": "لم يتم تجهيز معاينة هذه المقالة بعد.",
+	"wikilambda-abstract-special-preview-optedin-notice": "هذا الملخص هو أساس المقال [[$1]].",
 	"wikilambda-abstract-special-preview-optedout-notice": "لم يتم استخدام هذه المقالة الموجزة بعد في هذه الويكي.",
 	"wikilambda-abstract-special-preview-provenance-banner": "هذه المقالة مستندة إلى ويكيبيديا المختصرة، وتم تحديثها آخر مرة في $1 و $2 دولار. لتعديل هذه المقالة، سيتم نقلك إلى ويكيبيديا المختصرة.",
 	"wikilambda-abstract-special-preview-unsupported-lang-title": "هذه اللغة غير مدعومة بعد.",
