@@ -10,7 +10,11 @@
 			"Scratcheur-2020Send",
 			"Verdy p",
 			"Wladek92",
-			"Mahabarata"
+			"Mahabarata",
+			"EmDashUser002",
+			"JLTRY",
+			"Jérémy-Günther-Heinz Jähnick",
+			"Urhixidur"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON des Z-Objets.",
@@ -38,9 +42,9 @@
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "Invoque une fonction de validation définie par l’utilisateur et implémentée en Python.",
 	"apihelp-wikilambda_function_call-example-curry": "Invoquer une fonction curryfiée",
 	"apihelp-wikilambda_function_call-example-socket": "Invoquer une fonction qui utilise la réentrance pour rappeler l’orchestrateur",
-	"apihelp-wikilambda_function_call-example-timeout": "Invoquer une fonction qui tente de s’exécuter indéfiniment et donc expire son temps autorisé dans l’évaluateur",
-	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Invoquer une fonction qui tente de s’exécuter trop longtemps dans l’orchestrateur et donc expire son temps autorisé",
-	"apihelp-wikilambda_function_call-summary": "Invoquer une fonction en appelant l’orchestrateur de fonction",
+	"apihelp-wikilambda_function_call-example-timeout": "Invoquer une fonction qui s’exécute indéfiniment mais dont le temps d'exécution autorisé expire dans l’évaluateur",
+	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Invoquer une fonction qui tente de s’exécuter trop longtemps dans l’orchestrateur et dont le temps d'exécution autorisé expire",
+	"apihelp-wikilambda_function_call-summary": "Invoquer une fonction en appelant l’orchestrateur de fonctions",
 	"apihelp-wikifunctions_run-summary": "Exécuter un appel de fonction",
 	"apihelp-wikifunctions_run-param-function_call": "ZObject pour l'appel de fonction à exécuter",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Récupérer les langages de programmation pris en charge par l’évaluateur",
@@ -83,7 +87,7 @@
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Vous avez trop souvent demandé les langages de programmation.",
 	"apihelp-query+wikilambdafn_search-summary": "Cette liste de requêtes d’API cherche les identifiants de tous les Z-Objets associés à un identifiant de Z-Fonction.",
 	"apihelp-query+wikilambdafn_search-example-simple": "Rechercher les identifiants de Z-MiseEnŒuvre qui sont associés avec un identifiant de Z-Fonction donné",
-	"apihelp-query+wikilambdafn_search-param-zfunction_id": "L’ID de Z-Fonction à rechercher",
+	"apihelp-query+wikilambdafn_search-param-zfunction_id": "ID de Z-Fonction à rechercher",
 	"apihelp-query+wikilambdafn_search-param-type": "Le type de Z-Objet référencé par la Z-Fonction à rechercher",
 	"apihelp-query+wikilambdafn_search-param-limit": "Nombre maximum de résultats à renvoyer",
 	"apihelp-wikilambda_perform_test-example": "Passer les tests sur des Z-Fonctions, Z-MisesEnŒuvre et Z-Testeurs complètement fournis",
@@ -92,10 +96,10 @@
 	"apihelp-wikilambda_perform_test-z801-tester": "Exécuter les ZTesteurs « Z8010/Echo Tester for Strings » and « Z8011/Echo Tester for UTF8 Strings » pour toutes les ZMisesEnŒuvre de la ZFonction « Z801/Echo »",
 	"apihelp-wikilambda_perform_test-z801-implementation-and-testers": "Exécuter le ZTesteur « Z8010 » pour la ZMiseEnŒuvre intégrée « Z901/Built-in » de la ZFonction « Z801/Echo »",
 	"apihelp-wikilambda_perform_test-summary": "Point de terminaison pour interroger les résultats de test pour une Z-Fonction. Accepte une Z-Fonction, une liste de Z-MisesEnŒuvres, et une liste de Z-Testeurs. Accepte soit une liste de Z-ID ou le Z-Objet complet pour la fonction, les mises en œuvre et les testeurs. Accepte aussi une clé pour utiliser un cache de serveur ou non.",
-	"apihelp-wikilambda_perform_test-param-zfunction": "L’ID (ou objet) de la Z-Fonction à tester",
+	"apihelp-wikilambda_perform_test-param-zfunction": "ID de la Z-Fonction (ou objet) à tester",
 	"apihelp-wikilambda_perform_test-param-zimplementations": "La liste des identifiants de Z-MiseEnŒuvre (ou objets) à tester",
 	"apihelp-wikilambda_perform_test-param-ztesters": "La liste des identifiants des Z-Testeurs (ou objets) à tester",
-	"apihelp-wikilambda_perform_test-param-nocache": "S’il faut ou non utiliser le cache",
-	"wikilambda-restapi-fetch-too-many": "Vous avez demandé $1 Objets, ce qui est trop en une seule fois ($2 au maximum)",
-	"wikilambda-restapi-revision-mismatch": "Vous avez demandé la révision $1 de l'objet « $2 », elle n'a pas été trouvée"
+	"apihelp-wikilambda_perform_test-param-nocache": "Indique s’il faut ou non utiliser le cache",
+	"wikilambda-restapi-fetch-too-many": "Vous avez demandé $1 objets, ce qui est trop en une seule fois ($2 au maximum)",
+	"wikilambda-restapi-revision-mismatch": "Vous avez demandé la révision $1 de l'objet « $2 » mais elle n'a pas été trouvée"
 }
