@@ -348,7 +348,8 @@
 				"ext.wikilambda.content/init.js",
 				"ext.wikilambda.references/init.js",
 				"ext.wikilambda.image/init.js",
-				"ext.wikilambda.abstractpreview/init.js"
+				"ext.wikilambda.abstractpreview/init.js",
+				"ext.wikilambda.abstractpreview/testKitchen.js"
 			]
 		},
 		"ext.wikilambda.references.vue": {

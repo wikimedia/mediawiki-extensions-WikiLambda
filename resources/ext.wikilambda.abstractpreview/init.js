@@ -12,11 +12,16 @@
  *    rendered but still has pending fragments (AWSection::appendStatusMetadata,
  *    written by the pre-generation maintenance script).
  *
+ * The result is sent to two places: stats.* (Prometheus; aggregate ratio, no topicQid
+ * for cardinality reasons) and Test Kitchen (broken down per topic).
+ *
  * @module ext.wikilambda.abstractpreview
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
+
+const testKitchen = require( './testKitchen.js' );
 
 /**
  * Whether the rendered preview has any section that is missing or still has
@@ -73,7 +78,7 @@ function init() {
 	};
 
 	recordStatsOutcome( outcome, previewConfig );
-
+	testKitchen.recordTestKitchenOutcome( outcome, previewConfig, topicQid );
 }
 
 if ( document.readyState === 'loading' ) {

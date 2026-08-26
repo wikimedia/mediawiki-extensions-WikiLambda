@@ -70,7 +70,9 @@ module.exports = {
 		// Ignore search module index
 		'resources/ext.wikilambda.search/index.js',
 		// Ignore image initialization scripts
-		'resources/ext.wikilambda.image/init.js'
+		'resources/ext.wikilambda.image/init.js',
+		// Ignore abstractpreview initialization script
+		'resources/ext.wikilambda.abstractpreview/init.js'
 	],
 
 	coverageThreshold: {
