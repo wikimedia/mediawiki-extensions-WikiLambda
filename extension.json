@@ -459,13 +459,11 @@
 				"ext.wikilambda.content"
 			],
 			"codexComponents": [
-				"CdxImage",
 				"CdxIcon",
 				"CdxButton",
 				"CdxLookup",
 				"CdxMenuButton",
 				"CdxPopover",
-				"CdxProgressBar",
 				"CdxProgressIndicator",
 				"CdxCheckbox",
 				"CdxInfoChip",
