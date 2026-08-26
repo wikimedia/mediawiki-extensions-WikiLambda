@@ -676,6 +676,24 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z96",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Wikifunctions Object Reference",
+            "wlzl_label_normalised": "wikifunctions object reference",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z96",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z96",
+            "wlzl_label_normalised": "z96",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z99",
             "wlzl_type": "Z4",
             "wlzl_language": "Z1002",
@@ -4591,6 +4609,24 @@
             "wlzl_return_type": "Z881"
         },
         {
+            "wlzl_zobject_zid": "Z869",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Reference from ZID string",
+            "wlzl_label_normalised": "reference from zid string",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": "Z9"
+        },
+        {
+            "wlzl_zobject_zid": "Z869",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z869",
+            "wlzl_label_normalised": "z869",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": "Z9"
+        },
+        {
             "wlzl_zobject_zid": "Z872",
             "wlzl_type": "Z8",
             "wlzl_language": "Z1002",
@@ -5388,6 +5424,24 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "Z968",
             "wlzl_label_normalised": "z968",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z969",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Reference from ZID string",
+            "wlzl_label_normalised": "built-in implementation of reference from zid string",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z969",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z969",
+            "wlzl_label_normalised": "z969",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -44828,24 +44882,6 @@
             "wlzl_label_normalised": "z20739",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z96",
-            "wlzl_type": "Z4",
-            "wlzl_language": "Z1002",
-            "wlzl_label": "Wikifunctions Object Reference",
-            "wlzl_label_normalised": "wikifunctions object reference",
-            "wlzl_label_primary": "1",
-            "wlzl_return_type": null
-        },
-        {
-            "wlzl_zobject_zid": "Z96",
-            "wlzl_type": "Z4",
-            "wlzl_language": "Z1360",
-            "wlzl_label": "Z96",
-            "wlzl_label_normalised": "z96",
-            "wlzl_label_primary": "0",
-            "wlzl_return_type": null
         }
     ],
     "wikilambda_zobject_join": [
@@ -46422,6 +46458,27 @@
             "wlzo_main_type": "Z8",
             "wlzo_key": "Z8K4",
             "wlzo_related_zobject": "Z968",
+            "wlzo_related_type": "Z14"
+        },
+        {
+            "wlzo_main_zid": "Z869",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K1",
+            "wlzo_related_zobject": "Z6",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z869",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K2",
+            "wlzo_related_zobject": "Z9",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z869",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K4",
+            "wlzo_related_zobject": "Z969",
             "wlzo_related_type": "Z14"
         },
         {
@@ -48207,6 +48264,11 @@
         {
             "wlzf_ref_zid": "Z968",
             "wlzf_zfunction_zid": "Z868",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z969",
+            "wlzf_zfunction_zid": "Z869",
             "wlzf_type": "Z14"
         },
         {
