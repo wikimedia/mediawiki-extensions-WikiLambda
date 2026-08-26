@@ -33,66 +33,41 @@ abstract class WikifunctionsFragmentStore {
 		$this->logger = $logger;
 	}
 
-	/**
-	 * Builds the client storage key for a given function call.
+	/*
+	 * Builds the client storage key for a given fragment function call.
 	 *
 	 * Note that we can't use ZObjectUtils::makeCacheKeyFromZObject here, as
 	 * that's repo-mode only. This means that this cache key doesn't have the
 	 * revision IDs of the referenced ZObjects.
 	 *
+	 * The input object is an array with the necessary information to identify
+	 * the embedded fragment. Different cache implementations can choose to
+	 * use these differently. For example, the Memcached implementation uses
+	 * dynamic temporal arguments for the key, while the MainStash
+	 * implementation uses the original temporal input values to avoid
+	 * invalidating the cache entry daily.
+	 *
+	 * E.g.:
+	 * [
+	 *	 target: 'Z20744',
+	 *	 arguments: [
+	 *		 Z20744K1: '17-10-2014',
+	 *		 Z20744K2: '25-08-2026',
+	 *	 ],
+	 *	 parseLang: 'en',
+	 *	 renderLang: 'en',
+	 *	 temporalArgs: [ 'Z20744K2' ]
+	 * ]
+	 *
 	 * @param array $functionCall
 	 * @return string
 	 */
-	abstract public function makeFragmentKey( array $functionCall ): string;
-
-	/**
-	 * Read a raw value from the backend storage layer.
-	 * Returns array on a hit and null on a miss.
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	abstract protected function get( string $key ): mixed;
-
-	/**
-	 * Write a raw value to the backend.
-	 *
-	 * @param string $key
-	 * @param array $value
-	 * @param int $ttl Expiry in seconds. Must be a positive integer: MainStash
-	 *   does not evict, so an unbounded TTL would accumulate rows indefinitely.
-	 * @return bool
-	 */
-	abstract protected function set( string $key, array $value, int $ttl ): bool;
-
-	/**
-	 * Delete a value from the backend.
-	 *
-	 * @param string $key
-	 * @return bool
-	 */
-	abstract protected function delete( string $key ): bool;
-
-	/**
-	 * Returns the appropriate TTL depending on the rendered value and http
-	 * response code from Wikifunctions orchestrator service.
-	 *
-	 * Different TTLs might be more or less appropriate depending on the backend
-	 * storage layer, so this method should be implemented by the inheriting class
-	 *
-	 * @param array $value
-	 * @param int $httpStatusCode
-	 * @return int
-	 */
-	abstract protected function getFragmentTTL( array $value, int $httpStatusCode ): int;
+	abstract protected function makeFragmentKey( array $functionCall ): string;
 
 	/**
 	 * Returns the rendered and stored fragment result of running a Wikifunctions
-	 * parser function `{{#function:zid|...}}` from a client wiki, given its key.
+	 * parser function `{{#function:zid|...}}` from a client wiki.
 	 * This getter is called from the WikifunctionsPFragmentHandler::sourceToFragment.
-	 *
-	 * Uses the implementation of the nuclear operations get and delete provided
-	 * by each of the different storage backends.
 	 *
 	 * When miss, it returns null.
 	 *
@@ -118,19 +93,62 @@ abstract class WikifunctionsFragmentStore {
 	 *   'errorMessageKey' => 'error-message-key'
 	 * ]
 	 *
-	 * @param string $key
+	 * Different implementations may handle temporal arguments differently before
+	 * fetching from the backend and determine staleness before returning the stored
+	 * value.
+	 *
+	 * @param array $functionCall
 	 * @return ?array
 	 */
-	public function getRenderedFragment( string $key ): ?array {
-		$storedValue = $this->get( $key );
+	abstract public function getRenderedFragment( array $functionCall ): ?array;
 
-		// If value is false, that's a miss
+	/**
+	 * Store a rendered fragment.
+	 *
+	 * $value is either a successful render:
+	 *   [ 'success' => true, 'value' => '…', 'type' => 'Z89' ]
+	 * or a failure:
+	 *   [ 'success' => false, 'errorMessageKey' => 'some-error-msg-code' ]
+	 *
+	 * Different implementations may apply different TTL strategies or pre-process
+	 * the value before writing to the backend.
+	 *
+	 * @param array $functionCall
+	 * @param array $value
+	 * @param int $httpStatusCode
+	 * @return bool
+	 */
+	abstract public function setRenderedFragment( array $functionCall, array $value, int $httpStatusCode ): bool;
+
+	/**
+	 * Deletes a value from the backend. Different backends might have different
+	 * strategies for deletion. E.g. One backend might require the use of a store
+	 * deletion operation, while other backends might require setting the value to
+	 * a tombstone.
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	abstract protected function delete( string $key ): bool;
+
+	/**
+	 * Validates a raw value fetched from the backend.
+	 * Returns the fragment array if well-formed, or null on miss or corruption
+	 * (deleting corrupted entries as a side effect).
+	 *
+	 * Shared by all implementations so the structural contract of the stored
+	 * fragment is enforced consistently regardless of backend.
+	 *
+	 * @param string $key
+	 * @param mixed $storedValue
+	 * @return ?array
+	 */
+	protected function validateStoredFragment( string $key, mixed $storedValue ): ?array {
 		if ( $storedValue === false ) {
 			$this->logger->info( __METHOD__ . ' miss while fetching {key}', [ 'key' => $key ] );
 			return null;
 		}
 
-		// Check for corrupted/invalid cache entries and delete them rather than returning them
 		if ( !is_array( $storedValue ) ) {
 			return $this->warnDeleteAndExit( $key,
 				'WikiLambda client fragment for {key} is mal-formed, deleting it',
@@ -143,7 +161,6 @@ abstract class WikifunctionsFragmentStore {
 			);
 		}
 
-		// Check value and type keys for successful fragment
 		if ( $storedValue['success'] && (
 			!array_key_exists( 'value', $storedValue ) ||
 			!array_key_exists( 'type', $storedValue ) ||
@@ -155,7 +172,6 @@ abstract class WikifunctionsFragmentStore {
 			);
 		}
 
-		// Check errorMessageKey for failed fragment
 		if ( !$storedValue['success'] && (
 			!array_key_exists( 'errorMessageKey', $storedValue ) ||
 			!is_string( $storedValue['errorMessageKey'] )
@@ -165,29 +181,7 @@ abstract class WikifunctionsFragmentStore {
 			);
 		}
 
-		// Stored fragment has the right format
 		return $storedValue;
-	}
-
-	/**
-	 * Store a rendered fragment.
-	 *
-	 * $value is either a successful render:
-	 *   [ 'success' => true, 'value' => '…', 'type' => 'Z89' ]
-	 * or a failure:
-	 *   [ 'success' => false, 'errorMessageKey' => 'some-error-msg-code' ]
-	 *
-	 * @param string $key
-	 * @param array $value
-	 * @param int $httpStatusCode
-	 * @return bool
-	 */
-	public function setRenderedFragment( string $key, array $value, int $httpStatusCode ): bool {
-		return $this->set(
-		   $key,
-		   $value,
-		   $this->getFragmentTTL( $value, $httpStatusCode )
-		);
 	}
 
 	/**

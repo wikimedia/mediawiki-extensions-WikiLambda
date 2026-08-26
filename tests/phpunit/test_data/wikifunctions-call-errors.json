@@ -352,6 +352,7 @@
 			"parseLang": "en"
 		},
 		"status": 400,
+		"finalStatus": 500,
 		"error": "wikilambda-functioncall-error-unclear",
 		"body": {
 			"message": "Error: exception of type Error: Call to a member function bar() on null",
@@ -551,6 +552,7 @@
 			"parseLang": "en"
 		},
 		"status": 405,
+		"finalStatus": 500,
 		"error": "wikilambda-functioncall-error-unclear",
 		"body": {
 			"errorBodyStructure": "unknown",

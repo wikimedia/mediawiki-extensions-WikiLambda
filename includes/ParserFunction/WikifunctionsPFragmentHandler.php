@@ -12,6 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
@@ -108,11 +109,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				->newFromParserOutputProvider( $parserOutputProvider );
 
 			foreach ( $expansion['arguments'] as $key => $value ) {
-				if (
-					ZObjectUtils::isValidId( $value )
-					// Short-cut to skip ZObject references which are Wikidata-esque
-					&& !ZObjectUtils::isValidZObjectReference( $value )
-				) {
+				if ( AbstractContentUtils::isValidWikidataItemReference( $value ) ) {
 					try {
 						// Convert the string into a Wikidata `EntityId`
 						$itemId = $wikibaseEntityParser->parse( $value );
@@ -127,23 +124,10 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			}
 		}
 
-		// (T362256): This is the key we use to cache on the client wiki code here, rather than only at the repo wiki.
-		$clientCacheKey = $this->clientFragmentStore->makeFragmentKey( $expansion );
-
-		$this->logger->debug(
-			'WikiLambda client call made for {function} on {page}',
-			[
-				'function' => $expansion['target'],
-				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
-				'clientCacheKey' => $clientCacheKey,
-			]
-		);
-
+		// Schedule a job to update the usage tracking to say that we use this function on this page.
+		// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
 		// (T434194) Don't track for invalid ZIDs, `{{#function:foo}}` doesn't trigger orchestrator load
 		if ( ZObjectUtils::isValidZObjectReference( $expansion['target'] ) ) {
-			// Schedule a job to update the usage tracking to say that we use this function on this page.
-			// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
-
 			// FIXME: This will run whether or not we're a saved edit, or just a stash/edit preview. Fix by checking
 			// the page properties at run time, which are only stored for the current revision?
 			$usageJob = new WikifunctionsClientUsageUpdateJob( [
@@ -172,11 +156,20 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			$extApi->getMetadata()->setNumericPageProperty( $targetFunctionPageProp, $newTargetUseCount );
 		}
 
+		// Generalize log context
+		$logContext = [
+			'targetFunction' => $expansion['target'],
+			'params' => json_encode( $expansion ),
+			'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
+		];
+
+		$this->logger->debug( 'WikiLambda client call made for {targetFunction} on {page}', $logContext );
+
 		// Add content and style modules to the page, we know they're likely to be used somewhere
 		$extApi->getMetadata()->addModules( [ 'ext.wikilambda.content' ] );
 		$extApi->getMetadata()->addModuleStyles( [ 'ext.wikilambda.content.styles' ] );
 
-		$cachedValue = $this->clientFragmentStore->getRenderedFragment( $clientCacheKey );
+		$cachedValue = $this->clientFragmentStore->getRenderedFragment( $expansion );
 
 		if ( $cachedValue ) {
 			// Good news, this request has already been cached; examine what it is
@@ -207,12 +200,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 			$this->logger->info(
 				'WikiLambda client request failed, returned {error} for request to {targetFunction} on {page}',
-				[
-					'error' => $errorMessageKey,
-					'targetFunction' => $expansion['target'],
-					'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
-					'clientCacheKey' => $clientCacheKey,
-				]
+				$logContext + [ 'error' => $errorMessageKey ]
 			);
 
 			// Load ext.wikilambda.inlineerrors css. We pass the enum's string value because
@@ -233,11 +221,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		$this->logger->info(
 			'WikiLambda client request was uncached for request to {targetFunction} on {page}',
-			[
-				'targetFunction' => $expansion['target'],
-				'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
-				'clientCacheKey' => $clientCacheKey,
-			]
+			$logContext
 		);
 
 		// Check if SRE have set this wiki (probably all wikis) temporarily to not try to use Wikifunctions.
@@ -251,17 +235,24 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// This job triggers the request, will store the result in the cache. We don't pass in the location of
 		// the usage, as that's the responsibility of this class (to add tracking categories etc.) or of Parsoid
 		// (to purge the page once our fragment is available etc.).
-		$renderJob = new WikifunctionsClientRequestJob( [
-			'request' => $expansion,
-			'clientCacheKey' => $clientCacheKey,
-		] );
-		$this->jobQueueGroup->lazyPush( $renderJob );
+		$this->queueRevalidateJob( $expansion );
 
 		// As we're async, return a "sorry, no content yet" fragment
 		$timer->setLabel( 'response', 'pending' )->stop();
 		return new WikifunctionsPendingFragment(
 			$extApi->getPageConfig()->getPageLanguageBcp47(), null
 		);
+	}
+
+	/**
+	 * @param array $fragment
+	 */
+	private function queueRevalidateJob( array $fragment ): void {
+		$revalidateJob = new WikifunctionsClientRequestJob( [
+			'request' => $fragment
+		] );
+
+		$this->jobQueueGroup->lazyPush( $revalidateJob );
 	}
 
 	/**
@@ -279,7 +270,12 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		//  2.3. look into the argument key
 		//  2.4. check if it has a default value callback
 		//  2.5. generate default value
+		//  2.6. keep record of temporal arguments
 		// 3. Then proceed, with new arg set for cache key, etc.
+
+		// Initialize record of arguments that will always contain today's date
+		$functionCall[ 'temporalArgs' ] = [];
+
 		foreach ( $functionCall[ 'arguments' ] as $argKey => $argValue ) {
 			// If argValue is not empty, continue
 			if ( $argValue !== '' ) {
@@ -336,6 +332,10 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				];
 				// 2.5. Generate the default value
 				$functionCall[ 'arguments' ][ $argKey ] = $defaultValueCallback( $defaultValueContext );
+				// 2.6. Keep a record of those arguments with default values that change over time
+				if ( WikifunctionsCallDefaultValues::isTemporalType( $argType ) ) {
+					$functionCall[ 'temporalArgs' ][] = $argKey;
+				}
 			}
 		}
 

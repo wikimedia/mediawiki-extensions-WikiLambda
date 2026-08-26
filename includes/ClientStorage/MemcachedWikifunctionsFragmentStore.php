@@ -25,8 +25,16 @@ class MemcachedWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 
 	/**
 	 * @inheritDoc
+	 *
+	 * The cache key for the Memcached implementation contains today's
+	 * date whenever a date argument is set to a blank string and hence
+	 * replaced with its default value. For that reason, the key becomes
+	 * orphaned every new day and the getter returns a cache miss.
 	 */
-	public function makeFragmentKey( array $functionCall ): string {
+	protected function makeFragmentKey( array $functionCall ): string {
+		// Remove temporalArgs record for making the Memcached key
+		unset( $functionCall['temporalArgs'] );
+
 		return $this->objectCache->makeKey(
 			self::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
 			json_encode( $functionCall )
@@ -36,15 +44,26 @@ class MemcachedWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 	/**
 	 * @inheritDoc
 	 */
-	protected function get( string $key ): mixed {
-		return $this->objectCache->get( $key );
+	public function getRenderedFragment( array $functionCall ): ?array {
+		$key = $this->makeFragmentKey( $functionCall );
+
+		return $this->validateStoredFragment(
+			$key,
+			$this->objectCache->get( $key )
+		);
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	protected function set( string $key, array $value, int $ttl ): bool {
-		return $this->objectCache->set( $key, $value, $ttl );
+	public function setRenderedFragment( array $functionCall, array $value, int $httpStatusCode ): bool {
+		$key = $this->makeFragmentKey( $functionCall );
+
+		return $this->objectCache->set(
+			$key,
+			$value,
+			$this->getFragmentTTL( $httpStatusCode )
+		);
 	}
 
 	/**
@@ -55,7 +74,11 @@ class MemcachedWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 	}
 
 	/**
-	 * @inheritDoc
+	 * Returns the appropriate TTL depending on the rendered value and http
+	 * response code from Wikifunctions orchestrator service.
+	 *
+	 * Different TTLs might be more or less appropriate depending on the backend
+	 * storage layer, so this method should be implemented by the inheriting class.
 	 *
 	 * (T338243) Set TTL conditionally, so that:
 	 * * success (http 200)           TTL_MONTH
@@ -66,8 +89,11 @@ class MemcachedWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 	 * So if the request fails due to 400, we can still cache for
 	 * a week, but if it failes due to system outages or timeouts,
 	 * we would benefit from reducing the TTL to something very short.
+	 *
+	 * @param int $httpStatusCode
+	 * @return int
 	 */
-	protected function getFragmentTTL( array $value, int $httpStatusCode ): int {
+	private function getFragmentTTL( int $httpStatusCode ): int {
 		if ( $httpStatusCode === HttpStatus::OK ) {
 			return $this->objectCache::TTL_MONTH;
 		}

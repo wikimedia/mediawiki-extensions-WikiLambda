@@ -9,12 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Http\MWHttpRequest;
@@ -31,11 +30,8 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 
 	use MockHttpTrait;
 
-	private MemcachedWrapper $cache;
-
 	protected function setUp(): void {
 		parent::setUp();
-		$this->cache = WikiLambdaServices::getMemcachedWrapper();
 		$this->setUpAsClientMode();
 	}
 
@@ -44,6 +40,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 	 *
 	 * @param string $functionZid
 	 * @param array $arguments
+	 * @param array $temporalArgs
 	 * @param ?string $parseLang
 	 * @param ?string $renderLang
 	 * @return WikifunctionClientRequestJob
@@ -51,6 +48,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 	private function buildJob(
 		string $functionZid,
 		array $arguments,
+		array $temporalArgs = [],
 		string $parseLang = 'en',
 		string $renderLang = 'en'
 	): WikifunctionsClientRequestJob {
@@ -59,14 +57,10 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 			'arguments' => $arguments,
 			'parseLang' => $parseLang,
 			'renderLang' => $renderLang,
+			'temporalArgs' => []
 		];
-		$cacheKey = $this->cache->makeKey(
-			WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-			json_encode( $request )
-		);
 		return new WikifunctionsClientRequestJob( [
-			'request' => $request,
-			'clientCacheKey' => $cacheKey
+			'request' => $request
 		] );
 	}
 
@@ -154,14 +148,21 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 	 *
 	 * @dataProvider provideRemoteCall_errors
 	 */
-	public function testRemoteCall_error( $request, $responseStatus, $responseBody, $errorMessageKey ) {
-		// Mock successful/200 response
+	public function testRemoteCall_error(
+		$request,
+		$responseStatus,
+		$responseBody,
+		$expectedErrorMsg,
+		$expectedHttpStatus
+	) {
+		// Mock failed response
 		$this->installMockHttp( $this->makeFakeHttpRequest( json_encode( $responseBody ), $responseStatus ) );
 
 		// Build job:
 		$job = $this->buildJob(
 			$request['target'],
 			$request['arguments'],
+			[],
 			$request['parseLang'],
 			$request['renderLang']
 		);
@@ -177,7 +178,8 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 			// Capture failure to raise the exception:
 			$this->fail( 'Expected WikifunctionCallException was not thrown.' );
 		} catch ( WikifunctionCallException $e ) {
-			$this->assertSame( $e->getMessageKey(), $errorMessageKey );
+			$this->assertSame( $expectedErrorMsg, $e->getMessageKey() );
+			$this->assertSame( $expectedHttpStatus, $e->getHttpStatusCode() );
 		}
 	}
 
@@ -187,8 +189,101 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 
 		foreach ( $fileData as $call ) {
 			yield $call['description'] => [
-				$call['request'], $call['status'], $call['body'], $call['error']
+				$call['request'],
+				$call['status'],
+				$call['body'],
+				$call['error'],
+				$call['finalStatus'] ?? $call['status']
 			];
 		}
+	}
+
+	public function testRun_successCallsStoreSetter() {
+		// Call:
+		$functionZid = 'Z10000';
+		$arguments = [
+			'Z10000K1' => 'foo/',
+			'Z10000K2' => 'bar',
+		];
+		$functionCall = [
+			'target' => $functionZid,
+			'arguments' => $arguments,
+			'parseLang' => 'en',
+			'renderLang' => 'en',
+			'temporalArgs' => [],
+		];
+
+		// Successful response...
+		$body = [ 'value' => 'foo/bar', 'type' => 'Z6' ];
+
+		// ... plus additional fields to be stored:
+		$expectedStoredValue = $body + [ 'success' => true ];
+
+		// Mock Fragment Store to assert that the setter is called correctly
+		$mockStore = $this->createMock( WikifunctionsFragmentStore::class );
+		$mockStore
+			->expects( $this->once() )
+			->method( 'setRenderedFragment' )
+			->with(
+				$functionCall,
+				$expectedStoredValue,
+				HttpStatus::OK
+			);
+		$this->setService( 'WikifunctionsFragmentStore', $mockStore );
+
+		// Mock successful/200 response
+		$this->installMockHttp( $this->makeFakeHttpRequest( json_encode( $body ) ) );
+
+		// Build and run job:
+		$job = $this->buildJob( $functionZid, $arguments );
+		$status = $job->run();
+
+		$this->assertTrue( $status );
+	}
+
+	/**
+	 * @dataProvider provideRemoteCall_errors
+	 */
+	public function testRun_failureCallsStoreSetter(
+		$request,
+		$responseStatus,
+		$responseBody,
+		$expectedErrorMsg,
+		$expectedHttpStatus
+	) {
+		// Expected failure stored value:
+		$expectedStoredValue = [
+			'success' => false,
+			'errorMessageKey' => $expectedErrorMsg,
+
+		];
+
+		// Mock Fragment Store to assert that the setter is called correctly
+		$mockStore = $this->createMock( WikifunctionsFragmentStore::class );
+		$mockStore
+			->expects( $this->once() )
+			->method( 'setRenderedFragment' )
+			->with(
+				$request + [ 'temporalArgs' => [] ],
+				$expectedStoredValue,
+				$expectedHttpStatus
+			);
+		$this->setService( 'WikifunctionsFragmentStore', $mockStore );
+
+		// Mock failed response
+		$this->installMockHttp( $this->makeFakeHttpRequest( json_encode( $responseBody ), $responseStatus ) );
+
+		// Build and run job:
+		$job = $this->buildJob(
+			$request['target'],
+			$request['arguments'],
+			[],
+			$request['parseLang'],
+			$request['renderLang']
+		);
+		$status = $job->run();
+
+		// Job returns true even when fragment fails
+		$this->assertTrue( $status );
 	}
 }

@@ -94,9 +94,6 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			->willReturn( $cachedFunction );
 
 		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
-		$mockClientFragmentStore
-			->method( 'makeFragmentKey' )
-			->willReturn( 'mock-cache-key' );
 
 		$this->mockWikidataSiteLinkLookup( $linkedItem );
 
@@ -179,6 +176,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => []
 		];
 		yield 'normal function call with string arguments' => [ $simpleJoinArgs, $simpleJoinRequest ];
 
@@ -193,6 +191,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'ext',
 			'renderLang' => 'es',
+			'temporalArgs' => []
 		];
 		yield 'function call with named arguments' => [ $namedArgs, $namedArgsRequest ];
 
@@ -209,6 +208,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => []
 		];
 		yield 'function call with whitespaces' => [ $trimmedArgs, $trimmedArgsRequest ];
 
@@ -223,6 +223,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => []
 		];
 		// Empty args: will request function Zid from cache:
 		$emptyArgsFunction = [
@@ -261,6 +262,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => [ 'Z10000K2' ]
 		];
 		// Empty args: will request function Zid from cache:
 		$defaultValuesFunction = [
@@ -298,6 +300,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => []
 		];
 		yield 'Function call with Wikidata item reference arguments' => [ $itemRefArgs, $itemRefRequest ];
 
@@ -312,6 +315,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => []
 		];
 		yield 'Function call with Wikidata lexeme reference arguments' => [ $lexemeRefArgs, $lexemeRefRequest ];
 
@@ -327,6 +331,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => []
 		];
 		// Empty args: will request function Zid from cache:
 		$defaultItemFunction = [
@@ -364,6 +369,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',
+			'temporalArgs' => []
 		];
 		// Empty args: will request function Zid from cache:
 		$defaultLangFunction = [
@@ -391,7 +397,6 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 
 		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
-		$mockClientFragmentStore->method( 'makeFragmentKey' )->willReturn( 'mock-cache-key' );
 		$mockClientFragmentStore->method( 'getRenderedFragment' )->willReturn( [
 			'success' => true,
 			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
@@ -536,7 +541,6 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 
 		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
-		$mockClientFragmentStore->method( 'makeFragmentKey' )->willReturn( 'mock-cache-key' );
 		$mockClientFragmentStore->method( 'getRenderedFragment' )->willReturn( $cacheValue );
 
 		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );

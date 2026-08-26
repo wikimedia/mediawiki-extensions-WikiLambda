@@ -19,6 +19,11 @@ use Wikimedia\Parsoid\Core\LinkTarget;
 
 class WikifunctionsCallDefaultValues {
 
+	private const LANGUAGE = 'Z60';
+	private const WIKIDATA_ITEM = 'Z6001';
+	private const WIKIDATA_ITEM_REFERENCE = 'Z6091';
+	private const GREGORIAN_CALENDAR_DATE = 'Z20420';
+
 	/**
 	 * Returns the map of type IDs to default value callbacks.
 	 * Each callback should return a default value for the given type.
@@ -33,10 +38,10 @@ class WikifunctionsCallDefaultValues {
 	 */
 	private static function getDefaultValueCallbacks(): array {
 		return [
-			'Z60' => [ self::class, 'getDefaultLanguage' ],
-			'Z6001' => [ self::class, 'getWikidataItem' ],
-			'Z6091' => [ self::class, 'getWikidataItem' ],
-			'Z20420' => [ self::class, 'getDefaultDate' ],
+			self::LANGUAGE => [ self::class, 'getDefaultLanguage' ],
+			self::WIKIDATA_ITEM => [ self::class, 'getWikidataItem' ],
+			self::WIKIDATA_ITEM_REFERENCE => [ self::class, 'getWikidataItem' ],
+			self::GREGORIAN_CALENDAR_DATE => [ self::class, 'getDefaultDate' ],
 		];
 	}
 
@@ -58,6 +63,18 @@ class WikifunctionsCallDefaultValues {
 	 */
 	public static function getDefaultValueForType( string $type ): ?callable {
 		return self::getDefaultValueCallbacks()[ $type ] ?? null;
+	}
+
+	/**
+	 * Returns whether the given type has a default value that changes with
+	 * time; for example, now only "Gregorian calendar date", but there could
+	 * be more time-dependent types in the future with different granularities.
+	 *
+	 * @param string $type
+	 * @return bool
+	 */
+	public static function isTemporalType( string $type ): bool {
+		return $type === self::GREGORIAN_CALENDAR_DATE;
 	}
 
 	// Callables for each type:

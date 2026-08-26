@@ -39,11 +39,13 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	private HttpRequestFactory $httpRequestFactory;
 	private LoggerInterface $logger;
 
+	private array $logContext;
+
+	private array $functionCall;
 	private string $targetFunction;
 	private array $functionArguments;
 	private string $parseLang;
 	private string $renderLang;
-	private string $clientCacheKey;
 
 	/**
 	 * @inheritDoc
@@ -62,22 +64,18 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		$this->httpRequestFactory = MediaWikiServices::getInstance()->getHttpRequestFactory();
 
 		// These are the user input from the wikitext, as relayed from Parsoid
+		$this->functionCall = $params['request'];
 		$this->targetFunction = $params['request']['target'] ?? '';
 		$this->functionArguments = $params['request']['arguments'] ?? [];
 		$this->parseLang = $params['request']['parseLang'] ?? '';
 		$this->renderLang = $params['request']['renderLang'] ?? '';
 
-		// This comes from our fragment handler
-		$this->clientCacheKey = $params['clientCacheKey'];
-
-		$this->logger->debug(
-			__CLASS__ . ' created for {target} with {params}; to store as key {clientCacheKey}',
-			[
-				'target' => $this->targetFunction,
-				'params' => var_export( $this->functionArguments, true ),
-				'clientCacheKey' => $this->clientCacheKey
-			]
-		);
+		// Store general log context
+		$this->logContext = [
+			'targetFunction' => $this->targetFunction,
+			'params' => json_encode( $params['request'] ?? null ),
+		];
+		$this->logger->debug( __CLASS__ . ' created for {targetFunction} with {params}', $this->logContext );
 	}
 
 	/** @inheritDoc */
@@ -91,7 +89,10 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	public function getDeduplicationInfo() {
 		return [
 			'type' => 'wikifunctionsClientRequest',
-			'clientCacheKey' => $this->clientCacheKey,
+			'target' => $this->targetFunction,
+			'arguments' => $this->functionArguments,
+			'parseLang' => $this->parseLang,
+			'renderLang' => $this->renderLang
 		];
 	}
 
@@ -99,13 +100,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	 * @return bool
 	 */
 	public function run() {
-		$this->logger->debug(
-			__CLASS__ . ' initiated for {target}',
-			[
-				'target' => $this->targetFunction,
-				'clientCacheKey' => $this->clientCacheKey,
-			]
-		);
+		$this->logger->debug( __CLASS__ . ' initiated for {targetFunction}', $this->logContext );
 
 		try {
 			$output = $this->remoteCall(
@@ -116,7 +111,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			);
 
 			$this->clientFragmentStore->setRenderedFragment(
-				$this->clientCacheKey,
+				$this->functionCall,
 				[
 					'success' => true,
 					'value' => $output['value'],
@@ -125,15 +120,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 				HttpStatus::OK
 			);
 
-			$this->logger->debug(
-				__CLASS__ . ' success for {target}',
-				[
-					'target' => $this->targetFunction,
-					'clientCacheKey' => $this->clientCacheKey,
-				]
-			);
-
+			$this->logger->debug( __CLASS__ . ' success for {targetFunction}', $this->logContext );
 			return true;
+
 		} catch ( WikifunctionCallException $callException ) {
 			// WikifunctionCallException: we know details of the error
 			$errorMessageKey = $callException->getMessageKey();
@@ -142,11 +131,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			// Unhandled exception: we have no details on how the error happened
 			$this->logger->error(
 				__CLASS__ . '::remoteCall threw an unhandled Exception: {error}',
-				[
+				$this->logContext + [
 					'error' => $e->getMessage(),
 					'exception' => $e,
-					'target' => $this->targetFunction,
-					'clientCacheKey' => $this->clientCacheKey,
 				]
 			);
 			// Show unclear error or system failure
@@ -155,7 +142,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		}
 
 		$this->clientFragmentStore->setRenderedFragment(
-			$this->clientCacheKey,
+			$this->functionCall,
 			[
 				'success' => false,
 				'errorMessageKey' => $errorMessageKey,
@@ -164,12 +151,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		);
 
 		$this->logger->debug(
-			__CLASS__ . ' failure for {target}, error: {errorMessageKey}',
-			[
-				'target' => $this->targetFunction,
-				'errorMessageKey' => $errorMessageKey,
-				'clientCacheKey' => $this->clientCacheKey,
-			]
+			__CLASS__ . ' failure for {targetFunction}, error: {errorMessageKey}',
+			$this->logContext + [ 'errorMessageKey' => $errorMessageKey ]
 		);
 
 		// Our call has been triggered and has run, so return true so that our job isn't re-tried.
@@ -240,11 +223,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		} else {
 			$this->logger->warning(
 				__METHOD__ . ' encountered an error response {httpStatusCode} with a broken ZError: {response}',
-				[
+				$this->logContext + [
 					'httpStatusCode' => $httpStatusCode,
 					'response' => $request->getContent(),
-					'target' => $this->targetFunction,
-					'clientCacheKey' => $this->clientCacheKey,
 				]
 			);
 			// Triggers use of messages:
@@ -258,11 +239,9 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 
 		$this->logger->debug(
 			__METHOD__ . ' encountered an error response {httpStatusCode}: {zerrorCode}',
-			[
+			$this->logContext + [
 				'httpStatusCode' => $httpStatusCode,
 				'zerrorCode' => $zerrorCode,
-				'target' => $this->targetFunction,
-				'clientCacheKey' => $this->clientCacheKey,
 			]
 		);
 
@@ -428,13 +407,11 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 						// Non zerror, or Unknown zerror:
 						$this->logger->error(
 							__METHOD__ . ' encountered a {httpStatusCode} HTTP error with an unknown zerror',
-							[
+							$this->logContext + [
 								'zerror' => $zerror,
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
 								'response' => $request->getContent(),
-								'target' => $this->targetFunction,
-								'clientCacheKey' => $this->clientCacheKey,
 							]
 						);
 				}
@@ -461,13 +438,11 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 					default:
 						$this->logger->error(
 							__METHOD__ . ' encountered a {httpStatusCode} HTTP error with an unknown zerror',
-							[
+							$this->logContext + [
 								'zerror' => $zerror,
 								'zerrorCode' => $zerrorCode,
 								'httpStatusCode' => $httpStatusCode,
 								'response' => $request->getContent(),
-								'target' => $this->targetFunction,
-								'clientCacheKey' => $this->clientCacheKey,
 							]
 						);
 						// Fall-back to default handling, below.
@@ -478,13 +453,11 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			default:
 				$this->logger->warning(
 					__METHOD__ . ' encountered an unknown HTTP error code',
-					[
+					$this->logContext + [
 						'zerror' => $zerror,
 						'zerrorCode' => $zerrorCode,
 						'httpStatusCode' => $httpStatusCode,
 						'response' => $request->getContent(),
-						'target' => $this->targetFunction,
-						'clientCacheKey' => $this->clientCacheKey,
 					]
 				);
 				// Fall-back to default handling, below.
