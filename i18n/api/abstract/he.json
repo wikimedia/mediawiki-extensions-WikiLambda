@@ -1,13 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"YaronSh"
 		]
 	},
 	"apierror-abstractwiki_fetch_section-bad-content": "לא ניתן לאחזר את התוכן עבור ה־Qid של הנושא הנתון.",
 	"apierror-abstractwiki_fetch_section-bad-fragments": "רשימת המקטעים שסופקה אינה תקנית.",
 	"apierror-abstractwiki_fetch_section-bad-section": "ה־Qid של הפרק שסופק אינו תקין או שאינו קיים בדף הוויקיפדיה המופשטת הזה.",
-	"apierror-abstractwiki_fetch_section-bad-topic": "ה־Qid של הפרק שסופק אינו תקין או שאינו קיים בדף הוויקיפדיה המופשטת הזה.",
+	"apierror-abstractwiki_fetch_section-bad-topic": "ה־Qid של הנושא שסופק אינו תקין או שאינו קיים בדף הוויקיפדיה המופשטת הזה.",
 	"apierror-abstractwiki_fetch_section-not-enabled": "לא ניתן לתצג מקטעים של ויקיפדיה מופשטת: האפשרות הזאת עוד לא מופעלת.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "המקטע אינו קריאה תקינה לפונקציה.",
 	"apierror-abstractwiki_run_fragment-bad-response": "המקטע החזיר סוג שגוי.",

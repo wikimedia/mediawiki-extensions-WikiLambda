@@ -87,7 +87,7 @@
 	"wikilambda-abstract-special-preview-bad-qid-title": "מזהה Q שגוי של הנושא",
 	"wikilambda-abstract-special-preview-empty-section-body": "הערך הזה עודכן לאחרונה בתאריך $1, אבל הפרק הזה טרם תוצג עבור השפה הזאת. נא לנסות שוב מאוחר יותר. [[abstract:Special:MyLanguage/Help:Abstract articles#Abstract article rendering|למה זה לא מיידי?]]",
 	"wikilambda-abstract-special-preview-empty-section-title": "המקטע הזה עוד לא תוצג",
-	"wikilambda-abstract-special-preview-list-intro": "נא לבחור נושא כדי לצפות בתצוגה מקדימה של הערך המופשר שלו:",
+	"wikilambda-abstract-special-preview-list-intro": "נא לבחור נושא כדי לצפות בתצוגה מקדימה של הערך המופשט שלו:",
 	"wikilambda-abstract-special-preview-list-item-details": "($1, נוצר ב־$2)",
 	"wikilambda-abstract-special-preview-list-none": "אין עדיין ערכים מופשטים שזמינים ב{{GRAMMAR:תחילית|$1}}.",
 	"wikilambda-abstract-special-preview-list-other-langs": "הם כן זמינים בשפות אחרות: $1.",
