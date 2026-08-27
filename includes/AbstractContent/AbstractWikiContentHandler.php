@@ -38,6 +38,7 @@ use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 use StatusValue;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 class AbstractWikiContentHandler extends ContentHandler {
 
@@ -293,14 +294,18 @@ class AbstractWikiContentHandler extends ContentHandler {
 		$langCode = $userLang->getCode();
 		$label = $this->entityLookup->resolveAbstractLabel( $qid, $langCode );
 		if ( $label !== null ) {
-			$parserOutput->setDisplayTitle(
-				PageTitleBuilder::createAbstractViewPageTitle(
-					$label,
-					$langCode,
-					$userLang->getDir(),
-					$qid,
-				)
+			$titleHtml = PageTitleBuilder::createAbstractViewPageTitle(
+				$label,
+				$langCode,
+				$userLang->getDir(),
+				$qid,
 			);
+			// The title HTML is one wrapper span. We cannot split a namespace out of it,
+			// so we give an empty namespace part. Then the combined title is the main
+			// part only, and the H1 stays the same. See Parser::splitDisplayTitle().
+			$parserOutput->setDisplayTitleParts( '', '', new HtmlArmor( $titleHtml ) );
+			// Also write the page property, like the core DISPLAYTITLE code does.
+			$parserOutput->setUnsortedPageProperty( 'displaytitle', $titleHtml );
 		}
 
 		// (T426833) Set the browser <title> directly on the OutputPage ("Label (QID) -

@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Title\Title;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler
@@ -76,8 +77,17 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$title = Title::newFromText( 'Q34086', self::TEST_ABSTRACT_NS );
 		$output = $this->runFillParserOutput( $this->buildHandler(), $content, $title );
 
-		$displayTitle = $output->getDisplayTitle();
-		$this->assertNotNull( $displayTitle );
+		$titleParts = $output->getDisplayTitleParts();
+		$this->assertNotNull( $titleParts );
+
+		// The title HTML is one wrapper span, so the namespace and the separator parts
+		// are empty and the whole title is the main part. This keeps the H1 free of a
+		// namespace prefix, which these pages never show.
+		[ $nsText, $nsSeparator, $mainText ] = $titleParts;
+		$this->assertSame( '', HtmlArmor::getHtml( $nsText ) );
+		$this->assertSame( '', HtmlArmor::getHtml( $nsSeparator ) );
+
+		$displayTitle = HtmlArmor::getHtml( $mainText );
 		$this->assertStringContainsString( 'Justin Bieber', $displayTitle );
 		$this->assertStringContainsString( 'Q34086', $displayTitle );
 		$this->assertStringContainsString( 'ext-wikilambda-viewpage-header', $displayTitle );
@@ -91,6 +101,10 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$this->assertStringContainsString( '>Q34086</span>', $displayTitle );
 		$this->assertStringContainsString( 'lang="en"', $displayTitle );
 		$this->assertStringNotContainsString( 'lang="Q34086"', $displayTitle );
+
+		// setDisplayTitleParts() does not write the 'displaytitle' page property, so the
+		// handler writes it. The property must hold the same HTML as the title itself.
+		$this->assertSame( $displayTitle, $output->getPageProperty( 'displaytitle' ) );
 
 		// (T426833) The browser <title> is set directly on the OutputPage as
 		// "Justin Bieber (Q34086) - <sitename>".
@@ -107,7 +121,8 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
 		$output = $this->runFillParserOutput( $this->buildHandler(), $content, $title );
 
-		$this->assertFalse( $output->getDisplayTitle() );
+		$this->assertNull( $output->getDisplayTitleParts() );
+		$this->assertNull( $output->getPageProperty( 'displaytitle' ) );
 
 		// (T426833) Even without a label the browser <title> is set to "Q34086 - <sitename>"
 		// — no namespace prefix, no empty parens.
