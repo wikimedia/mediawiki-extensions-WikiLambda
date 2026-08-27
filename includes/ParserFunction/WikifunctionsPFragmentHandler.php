@@ -174,6 +174,11 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		if ( $cachedValue ) {
 			// Good news, this request has already been cached; examine what it is
 
+			// If the stored value is outdated, queue a rerender job
+			if ( $this->clientFragmentStore->isStaleFragment( $expansion, $cachedValue ) ) {
+				$this->queueRevalidateJob( $expansion );
+			}
+
 			if ( $cachedValue['success'] === true ) {
 				// It was a successful run!
 				// If output type is Z89, return as HTML fragment;

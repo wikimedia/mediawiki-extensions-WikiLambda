@@ -19,6 +19,7 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Http\MWHttpRequest;
 use MockHttpTrait;
 use Wikimedia\TestingAccessWrapper;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob
@@ -199,6 +200,10 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 	}
 
 	public function testRun_successCallsStoreSetter() {
+		// Mock the Now:
+		$now = '20220827050200';
+		ConvertibleTimestamp::setFakeTime( $now );
+
 		// Call:
 		$functionZid = 'Z10000';
 		$arguments = [
@@ -217,7 +222,7 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		$body = [ 'value' => 'foo/bar', 'type' => 'Z6' ];
 
 		// ... plus additional fields to be stored:
-		$expectedStoredValue = $body + [ 'success' => true ];
+		$expectedStoredValue = $body + [ 'success' => true, 'renderDate' => $now ];
 
 		// Mock Fragment Store to assert that the setter is called correctly
 		$mockStore = $this->createMock( WikifunctionsFragmentStore::class );
@@ -239,6 +244,9 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		$status = $job->run();
 
 		$this->assertTrue( $status );
+
+		// Reset timer
+		ConvertibleTimestamp::setFakeTime( false );
 	}
 
 	/**
@@ -251,11 +259,15 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 		$expectedErrorMsg,
 		$expectedHttpStatus
 	) {
+		// Mock the Now:
+		$now = '20220827050200';
+		ConvertibleTimestamp::setFakeTime( $now );
+
 		// Expected failure stored value:
 		$expectedStoredValue = [
 			'success' => false,
 			'errorMessageKey' => $expectedErrorMsg,
-
+			'renderDate' => $now,
 		];
 
 		// Mock Fragment Store to assert that the setter is called correctly
@@ -285,5 +297,8 @@ class WikifunctionsClientRequestJobTest extends WikiLambdaClientIntegrationTestC
 
 		// Job returns true even when fragment fails
 		$this->assertTrue( $status );
+
+		// Reset timer
+		ConvertibleTimestamp::setFakeTime( false );
 	}
 }

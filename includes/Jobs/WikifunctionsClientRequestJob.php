@@ -26,6 +26,8 @@ use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use Psr\Log\LoggerInterface;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
+use Wikimedia\Timestamp\TimestampFormat as TS;
 
 /**
  * Asynchronous job run on the client wiki to request a function call from the repo, turning
@@ -102,6 +104,8 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 	public function run() {
 		$this->logger->debug( __CLASS__ . ' initiated for {targetFunction}', $this->logContext );
 
+		$datetime = ConvertibleTimestamp::now( TS::MW );
+
 		try {
 			$output = $this->remoteCall(
 				$this->targetFunction,
@@ -116,6 +120,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 					'success' => true,
 					'value' => $output['value'],
 					'type' => $output['type'],
+					'renderDate' => $datetime,
 				],
 				HttpStatus::OK
 			);
@@ -146,6 +151,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			[
 				'success' => false,
 				'errorMessageKey' => $errorMessageKey,
+				'renderDate' => $datetime,
 			],
 			$httpStatusCode
 		);

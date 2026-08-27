@@ -78,19 +78,21 @@ abstract class WikifunctionsFragmentStore {
 	 * determines whether the fragment was successfully rendered or returned an error.
 	 * In the case of a successfully rendered fragment, the array contains the keys
 	 * 'value' and 'type', with the output and the output format (Z6 for plain text or
-	 * Z89 for html):
+	 * Z89 for html). Also contains the date time that this value was rendered:
 	 *
 	 * E.g.: [
 	 *   'success' => true,
 	 *   'value' => '<b>fragment result</b>',
-	 *   'type' => 'Z89'
+	 *   'type' => 'Z89',
+	 *   'renderDate' => '20220827050200'
 	 * ]
 	 *
 	 * When the fragment failed, it contains the key 'errorMessageKey'
 	 *
 	 * E.g.: [
 	 *   'success' => false,
-	 *   'errorMessageKey' => 'error-message-key'
+	 *   'errorMessageKey' => 'some-error-message-key',
+	 *   'renderDate' => '20220827050200'
 	 * ]
 	 *
 	 * Different implementations may handle temporal arguments differently before
@@ -103,12 +105,20 @@ abstract class WikifunctionsFragmentStore {
 	abstract public function getRenderedFragment( array $functionCall ): ?array;
 
 	/**
-	 * Store a rendered fragment.
+	 * Store a rendered fragment, either a successful or a failed one.
 	 *
-	 * $value is either a successful render:
-	 *   [ 'success' => true, 'value' => '…', 'type' => 'Z89' ]
-	 * or a failure:
-	 *   [ 'success' => false, 'errorMessageKey' => 'some-error-msg-code' ]
+	 * E.g.: [
+	 *   'success' => true,
+	 *   'value' => '<b>fragment result</b>',
+	 *   'type' => 'Z89',
+	 *   'renderDate' => '20220827050200'
+	 * ]
+	 *
+	 * E.g.: [
+	 *   'success' => false,
+	 *   'errorMessageKey' => 'some-error-message-key',
+	 *   'renderDate' => '20220827050200'
+	 * ]
 	 *
 	 * Different implementations may apply different TTL strategies or pre-process
 	 * the value before writing to the backend.
@@ -130,6 +140,39 @@ abstract class WikifunctionsFragmentStore {
 	 * @return bool
 	 */
 	abstract protected function delete( string $key ): bool;
+
+	/**
+	 * Determines if the stored fragment is stale and should be enqueued for
+	 * re-render. By default, fragments are never considered stale. Subclasses
+	 * may override this method to implement their own staleness logic.
+	 *
+	 * Input fragment contains the expanded call, E.g.:
+	 * [
+	 *	 target: 'Z20744',
+	 *	 arguments: [
+	 *		 Z20744K1: '17-10-2014',
+	 *		 Z20744K2: '25-08-2026',
+	 *	 ],
+	 *	 parseLang: 'en',
+	 *	 renderLang: 'en',
+	 *	 temporalArgs: [ 'Z20744K2' ]
+	 * ]
+	 *
+	 * Value contains the stored fragment response (sucessful or failed), E.g.:
+	 * [
+	 *   'success' => true,
+	 *   'value' => '<b>fragment result</b>',
+	 *   'type' => 'Z89',
+	 *   'renderDate' => '20220827050200'
+	 * ]
+	 *
+	 * @param array $fragment
+	 * @param array $value
+	 * @return bool
+	 */
+	public function isStaleFragment( array $fragment, array $value ): bool {
+		return false;
+	}
 
 	/**
 	 * Validates a raw value fetched from the backend.

@@ -9,22 +9,22 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
-use MediaWiki\Extension\WikiLambda\ClientStorage\MemcachedWikifunctionsFragmentStore;
+use MediaWiki\Extension\WikiLambda\ClientStorage\MainStashWikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\HashBagOStuff;
 use Wikimedia\TestingAccessWrapper;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore
- * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\MemcachedWikifunctionsFragmentStore
+ * @covers \MediaWiki\Extension\WikiLambda\ClientStorage\MainStashWikifunctionsFragmentStore
  */
-class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegrationTestCase {
+class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegrationTestCase {
 
 	private WikifunctionsFragmentStore $store;
-	private MemcachedWrapper $cache;
+	private HashBagOStuff $stash;
 	private TestingAccessWrapper $wrapper;
 
 	private array $functionCall;
@@ -33,8 +33,8 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 		parent::setUp();
 		$this->setUpAsClientMode();
 
-		$this->cache = WikiLambdaServices::getMemcachedWrapper();
-		$this->store = new MemcachedWikifunctionsFragmentStore( $this->cache );
+		$this->stash = new HashBagOStuff();
+		$this->store = new MainStashWikifunctionsFragmentStore( $this->stash );
 		$this->wrapper = TestingAccessWrapper::newFromObject( $this->store );
 
 		$this->functionCall = [
@@ -50,33 +50,88 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 	// ======
 
 	/**
-	 * Tests that the MemcachedWrapper methods are called with the right parameters
+	 * Tests that the MainStash methods are called with the right parameters
+	 *
+	 * @dataProvider provideMockMainStash
 	 */
-	public function testGetter_mockMemcached(): void {
-		$expectedInput = $this->functionCall;
-		unset( $expectedInput['temporalArgs'] );
-
+	public function testGetter_mockMainStash( $inputCall, $keyedCall ): void {
 		$expectedKey = 'mocked-cache-key';
-		$expectedValue = [ 'success' => true, 'value' => 'text', 'type' => 'Z6' ];
+		$expectedValue = [
+			'success' => true,
+			'value' => 'text',
+			'type' => 'Z6',
+			'renderDate' => '20260828121500'
+		];
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache
+		$stash = $this->createMock( BagOStuff::class );
+
+		// Assert that makeGlobalKey is called with the right parameters
+		$stash
 			->expects( $this->once() )
-			->method( 'makeKey' )
+			->method( 'makeGlobalKey' )
 			->with(
 				WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-				json_encode( $expectedInput )
+				json_encode( $keyedCall )
 			)
 			->willReturn( $expectedKey );
-		$cache
+
+		// Assert that get is called with the produced key
+		$stash
 			->expects( $this->once() )
 			->method( 'get' )
 			->with( $expectedKey )
 			->willReturn( $expectedValue );
 
-		$store = new MemcachedWikifunctionsFragmentStore( $cache );
+		$store = new MainStashWikifunctionsFragmentStore( $stash );
 
-		$this->assertSame( $expectedValue, $store->getRenderedFragment( $this->functionCall ) );
+		$this->assertSame( $expectedValue, $store->getRenderedFragment( $inputCall ) );
+	}
+
+	public static function provideMockMainStash() {
+		yield 'fragment with no temporal args builds key with all args' => [
+			[
+				'target' => 'Z10000',
+				'arguments' => [ 'Z10000K1' => 'foo' ],
+				'renderLang' => 'en',
+				'parseLang' => 'en',
+				'temporalArgs' => []
+			],
+			[
+				'target' => 'Z10000',
+				'arguments' => [ 'Z10000K1' => 'foo' ],
+				'renderLang' => 'en',
+				'parseLang' => 'en',
+			]
+		];
+
+		yield 'fragment with temporal args sets them to blank string for cache key' => [
+			[
+				'target' => 'Z10000',
+				'arguments' => [
+					'Z10000K1' => 'foo',
+					'Z10000K2' => '2026-08-28',
+					'Z10000K3' => '2025'
+				],
+				'renderLang' => 'en',
+				'parseLang' => 'en',
+				'temporalArgs' => [
+					'Z10000K2',
+					'Z10000K3',
+					// make sure a non-existing key isn't added
+					'Z10000K4'
+				]
+			],
+			[
+				'target' => 'Z10000',
+				'arguments' => [
+					'Z10000K1' => 'foo',
+					'Z10000K2' => '',
+					'Z10000K3' => ''
+				],
+				'renderLang' => 'en',
+				'parseLang' => 'en',
+			]
+		];
 	}
 
 	public function testGetter_returnsNullOnCacheMiss() {
@@ -84,19 +139,19 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 	}
 
 	public function testGetter_returnsWellFormedSuccessEntry() {
-		// Bypass the store setter and set the value in MemcachedWrapper directly
+		// Bypass the store setter and set the value in the stash directly
 		$cacheKey = $this->wrapper->makeFragmentKey( $this->functionCall );
 		$entry = [ 'success' => true, 'value' => 'hello', 'type' => 'Z6' ];
-		$this->cache->set( $cacheKey, $entry );
+		$this->stash->set( $cacheKey, $entry );
 
 		$this->assertSame( $entry, $this->store->getRenderedFragment( $this->functionCall ) );
 	}
 
 	public function testGetter_returnsWellFormedFailureEntry() {
-		// Bypass the store setter and set the value in MemcachedWrapper directly
+		// Bypass the store setter and set the value in the stash directly
 		$cacheKey = $this->wrapper->makeFragmentKey( $this->functionCall );
 		$entry = [ 'success' => false, 'errorMessageKey' => 'wikilambda-functioncall-error-message-eval' ];
-		$this->cache->set( $cacheKey, $entry );
+		$this->stash->set( $cacheKey, $entry );
 
 		$this->assertSame( $entry, $this->store->getRenderedFragment( $this->functionCall ) );
 	}
@@ -113,7 +168,7 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 		mixed $badEntry
 	) {
 		$cacheKey = $this->wrapper->makeFragmentKey( $this->functionCall );
-		$this->cache->set( $cacheKey, $badEntry );
+		$this->stash->set( $cacheKey, $badEntry );
 
 		$this->assertNull(
 			$this->store->getRenderedFragment( $this->functionCall ),
@@ -170,26 +225,34 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 	// ======
 
 	/**
-	 * Tests that the MemcachedWrapper methods are called with the right parameters
+	 * Tests that the MainStash methods are called with the right parameters
+	 *
+	 * @dataProvider provideMockMainStash
 	 */
-	public function testSetter_mockMemcached(): void {
-		$expectedInput = $this->functionCall;
-		unset( $expectedInput['temporalArgs'] );
-
-		$expectedKey = 'mocked-cache-key';
-		$expectedValue = [ 'success' => true, 'value' => 'text', 'type' => 'Z6' ];
+	public function testSetter_mockMainStash( $inputCall, $keyedCall ): void {
 		$httpStatusCode = 200;
+		$expectedKey = 'mocked-cache-key';
+		$expectedValue = [
+			'success' => true,
+			'value' => 'text',
+			'type' => 'Z6',
+			'renderDate' => '20260828121500'
+		];
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache
+		$stash = $this->createMock( BagOStuff::class );
+
+		// Assert that makeGlobalKey is called with the right parameters
+		$stash
 			->expects( $this->once() )
-			->method( 'makeKey' )
+			->method( 'makeGlobalKey' )
 			->with(
 				WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-				json_encode( $expectedInput )
+				json_encode( $keyedCall )
 			)
 			->willReturn( $expectedKey );
-		$cache
+
+		// Assert that get is called with the produced key
+		$stash
 			->expects( $this->once() )
 			->method( 'set' )
 			->with(
@@ -199,9 +262,9 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 			)
 			->willReturn( true );
 
-		$store = new MemcachedWikifunctionsFragmentStore( $cache );
+		$store = new MainStashWikifunctionsFragmentStore( $stash );
 
-		$this->assertTrue( $store->setRenderedFragment( $this->functionCall, $expectedValue, $httpStatusCode ) );
+		$this->assertTrue( $store->setRenderedFragment( $inputCall, $expectedValue, $httpStatusCode ) );
 	}
 
 	/**
@@ -211,21 +274,17 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 	 * @dataProvider provideSetter_TTL
 	 */
 	public function testSetter_TTL( array $value, int $httpStatusCode, int $expectedTTL ): void {
-		$expectedInput = $this->functionCall;
-		unset( $expectedInput['temporalArgs'] );
-
 		$expectedKey = 'mocked-cache-key';
+		$stash = $this->createMock( BagOStuff::class );
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache
+		// Assert that makeGlobalKey is called
+		$stash
 			->expects( $this->once() )
-			->method( 'makeKey' )
-			->with(
-				WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-				json_encode( $expectedInput )
-			)
+			->method( 'makeGlobalKey' )
 			->willReturn( $expectedKey );
-		$cache
+
+		// Assert that get is called with the produced key
+		$stash
 			->expects( $this->once() )
 			->method( 'set' )
 			->with(
@@ -235,7 +294,7 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 			)
 			->willReturn( true );
 
-		$store = new MemcachedWikifunctionsFragmentStore( $cache );
+		$store = new MainStashWikifunctionsFragmentStore( $stash );
 
 		$this->assertTrue( $store->setRenderedFragment( $this->functionCall, $value, $httpStatusCode ) );
 	}
@@ -256,32 +315,32 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 			'success (HTTP 200) caches for TTL_MONTH' => [
 				/* value= */ $goodValue,
 				/* httpStatusCode= */ HttpStatus::OK,
-				/* expectedTTL= */ MemcachedWrapper::TTL_MONTH,
+				/* expectedTTL= */ BagOStuff::TTL_MONTH,
 			],
 			'bad request (HTTP 400) caches for TTL_WEEK' => [
 				/* value= */ $badValue,
 				/* httpStatusCode= */ HttpStatus::BAD_REQUEST,
-				/* expectedTTL= */ MemcachedWrapper::TTL_WEEK,
+				/* expectedTTL= */ BagOStuff::TTL_WEEK,
 			],
 			'not found (HTTP 404) caches for TTL_WEEK' => [
 				/* value= */ $badValue,
 				/* httpStatusCode= */ HttpStatus::NOT_FOUND,
-				/* expectedTTL= */ MemcachedWrapper::TTL_WEEK,
+				/* expectedTTL= */ BagOStuff::TTL_WEEK,
 			],
 			'too many requests (HTTP 429) caches for TTL_MINUTE' => [
 				/* value= */ $badValue,
 				/* httpStatusCode= */ HttpStatus::TOO_MANY_REQUESTS,
-				/* expectedTTL= */ MemcachedWrapper::TTL_MINUTE,
+				/* expectedTTL= */ BagOStuff::TTL_MINUTE,
 			],
 			'server error (HTTP 500) caches for TTL_MINUTE' => [
 				/* value= */ $badValue,
 				/* httpStatusCode= */ HttpStatus::INTERNAL_SERVER_ERROR,
-				/* expectedTTL= */ MemcachedWrapper::TTL_MINUTE,
+				/* expectedTTL= */ BagOStuff::TTL_MINUTE,
 			],
 			'service unavailable (HTTP 503) caches for TTL_MINUTE' => [
 				/* value= */ $badValue,
 				/* httpStatusCode= */ HttpStatus::SERVICE_UNAVAILABLE,
-				/* expectedTTL= */ MemcachedWrapper::TTL_MINUTE,
+				/* expectedTTL= */ BagOStuff::TTL_MINUTE,
 			],
 		];
 	}
@@ -362,7 +421,7 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 				'temporalArgs' => [ 'Z10000K1' ]
 			] + $call,
 			$value,
-			false
+			true
 		];
 
 		yield 'call with fresh temporal/dynamic argument, but no render date' => [
@@ -380,7 +439,7 @@ class MemcachedWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 				'temporalArgs' => [ 'Z10000K1' ]
 			] + $call,
 			[ 'renderDate' => '20260826000000' ] + $value,
-			false
+			true
 		];
 
 		yield 'call with fresh temporal/dynamic argument, and fresh render date' => [

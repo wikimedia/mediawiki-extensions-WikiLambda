@@ -24,6 +24,8 @@ class WikifunctionsCallDefaultValues {
 	private const WIKIDATA_ITEM_REFERENCE = 'Z6091';
 	private const GREGORIAN_CALENDAR_DATE = 'Z20420';
 
+	public const GREGORIAN_CALENDAR_DATE_FORMAT = 'd-m-Y';
+
 	/**
 	 * Returns the map of type IDs to default value callbacks.
 	 * Each callback should return a default value for the given type.
@@ -114,7 +116,7 @@ class WikifunctionsCallDefaultValues {
 		}
 
 		$date = new DateTime( 'now', new DateTimeZone( $wgLocaltimezone ?? 'UTC' ) );
-		return $date->format( 'd-m-Y' );
+		return $date->format( self::GREGORIAN_CALENDAR_DATE_FORMAT );
 	}
 
 	/**

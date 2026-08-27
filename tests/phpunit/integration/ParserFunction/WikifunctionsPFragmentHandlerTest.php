@@ -771,4 +771,48 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'Nested function-call expansion must not unbalance the shared timing metric'
 		);
 	}
+
+	public function testSourceToFragment_queuesRenderJobWhenCachedValueIsStale() {
+		$mainConfig = $this->getServiceContainer()->getMainConfig();
+		$cachedValue = [
+			'success' => true,
+			'value' => 'cached fragment',
+			'type' => 'Z6',
+			'renderDate' => '20220827050200'
+		];
+
+		// Mock fragment store to return a valid but stale fragment
+		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
+		$mockClientFragmentStore->method( 'getRenderedFragment' )->willReturn( $cachedValue );
+		$mockClientFragmentStore->method( 'isStaleFragment' )->willReturn( true );
+
+		// Mock job queue group to capture lazyPush jobs
+		$pushedJobs = [];
+		$mockJobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$mockJobQueueGroup
+			->method( 'lazyPush' )
+			->willReturnCallback( static function ( $job ) use ( &$pushedJobs ) {
+				$pushedJobs[] = $job;
+				return true;
+			} );
+
+		// Build Fragment Handler:
+		$handler = new WikifunctionsPFragmentHandler(
+			$this->getServiceContainer()->getStatsFactory(),
+			$mainConfig,
+			$mockJobQueueGroup,
+			$this->createMock( HttpRequestFactory::class ),
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' ),
+			$this->getServiceContainer()->get( 'WikifunctionsClientStore' ),
+			$mockClientFragmentStore
+		);
+
+		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
+		$handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'Z10000', 'foo' ] ), false );
+
+		// Two jobs: usage tracking and re-render stale fragment
+		$this->assertCount( 2, $pushedJobs );
+		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
+		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $pushedJobs[1] );
+	}
 }
