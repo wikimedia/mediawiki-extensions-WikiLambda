@@ -1,8 +1,22 @@
 {
 	"@metadata": {
 		"authors": [
-			"RhAnish"
+			"RhAnish",
+			"Waki285"
 		]
 	},
-	"wikilambda-abstract-special-create-createbutton-label": "作成"
+	"action-wikilambda-abstract-create": "抽象記事の新規作成",
+	"action-wikilambda-abstract-edit": "既存の抽象記事の編集",
+	"content-model-abstractwiki": "抽象記事",
+	"right-wikilambda-abstract-create": "抽象記事を新規作成",
+	"right-wikilambda-abstract-edit": "既存の抽象記事を編集",
+	"specialpages-group-abstractwiki": "抽象ウィキぺディアのページ",
+	"wikilambda-abstract-content-object": "抽象記事",
+	"wikilambda-abstract-edit-title": "$1 の抽象記事を編集",
+	"wikilambda-abstract-preview-fragment-retry": "再試行",
+	"wikilambda-abstract-preview-in-language": "生成されたテキスト",
+	"wikilambda-abstract-special-create": "抽象記事の新規作成",
+	"wikilambda-abstract-special-create-createbutton-label": "作成",
+	"wikilambda-abstract-special-create-qid": "$1 の抽象記事を新規作成",
+	"wikilambda-abstract-special-view": "抽象記事を閲覧"
 }

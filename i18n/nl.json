@@ -272,7 +272,7 @@
 	"wikilambda-function-details-table-approve": "Verbinden",
 	"wikilambda-function-details-table-deactivate": "Loskoppelen",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Deze functie heeft geen verbonden implementaties.",
-	"wikilambda-function-evaluation-restriction-warning": "Het spijt ons. Op dit moment kunnen alleen ingelogde gebruikers functies uitvoeren.",
+	"wikilambda-function-evaluation-restriction-warning": "Het spijt ons. Op dit moment kunnen alleen aangemelde gebruikers functies uitvoeren.",
 	"wikilambda-function-evaluator-enter-inputs": "Voer invoer in",
 	"wikilambda-function-evaluator-no-function-selected": "Selecteer een functie om deze uit te proberen.",
 	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Selecteer een functie om deze implementatie uit te proberen.",
