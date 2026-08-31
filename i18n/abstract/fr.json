@@ -3,6 +3,7 @@
 		"authors": [
 			"Jérémy-Günther-Heinz Jähnick",
 			"VIGNERON",
+			"Wikipucine",
 			"Wladek92"
 		]
 	},
@@ -21,7 +22,7 @@
 	"right-wikilambda-abstract-optin": "Gérer la liste des articles locaux ayant souscrit au contenu de la Wikipedia abstraite",
 	"right-wikilambda-abstract-run-unsaved-fragment": "Faire le rendu des fragments non sauvegardées de la Wikipedia abstraite",
 	"specialpages-group-abstractwiki": "Pages de la Wikipedia abstraite",
-	"wikilambda-abstract-content-object": "Article de la Wikiupedia abstraite",
+	"wikilambda-abstract-content-object": "Article de la Wikipédia abstraite",
 	"wikilambda-abstract-content-history-title": "Historique des versions de « $1 » ($2)",
 	"wikilambda-abstract-content-history-title-no-label": "Historique des versions pour $1",
 	"wikilambda-abstract-edit-title-with-label": "Modifier l'article de la Wikipedia abstraite en « $1 » ($2)",
