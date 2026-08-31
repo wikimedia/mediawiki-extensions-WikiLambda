@@ -1040,6 +1040,7 @@
 				"wikilambda-abstract-preview-fragment-max-retries",
 				"wikilambda-abstract-preview-fragment-missing",
 				"wikilambda-abstract-preview-fragment-pending",
+				"wikilambda-abstract-preview-fragment-replicate",
 				"wikilambda-abstract-preview-fragment-retry",
 				"wikilambda-abstract-preview-in-language",
 				"wikilambda-abstract-special-create",

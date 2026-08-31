@@ -2407,6 +2407,252 @@ describe( 'zobjectUtils', () => {
 		} );
 	} );
 
+	describe( 'createParserCall', () => {
+		it( 'creates a function call to a given parser zid', () => {
+			const expectedCall = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z20808',
+				Z20808K1: '31-08-2026',
+				Z20808K2: 'Z1003'
+			};
+			expect( zobjectUtils.createParserCall( {
+				parserZid: 'Z20808',
+				zobject: '31-08-2026',
+				zlang: 'Z1003'
+			} ) ).toEqual( expectedCall );
+		} );
+	} );
+
+	describe( 'createRendererCall', () => {
+		it( 'creates a function call to a given render zid', () => {
+			const number = {
+				Z1K1: 'Z13518',
+				Z13518K1: '34'
+			};
+			const expectedCall = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z14280',
+				Z14280K1: number,
+				Z14280K2: 'Z1002'
+			};
+			expect( zobjectUtils.createParserCall( {
+				parserZid: 'Z14280',
+				zobject: number,
+				zlang: 'Z1002'
+			} ) ).toEqual( expectedCall );
+		} );
+	} );
+
+	describe( 'walkZObject', () => {
+		it( 'returns empty array when obj is undefined', () => {
+			const visitor = jest.fn().mockReturnValue( [] );
+			expect( zobjectUtils.walkZObject( undefined, [], visitor ) ).toEqual( [] );
+			expect( visitor ).not.toHaveBeenCalled();
+		} );
+
+		it( 'returns empty array when obj is a string', () => {
+			const visitor = jest.fn().mockReturnValue( [] );
+			expect( zobjectUtils.walkZObject( 'hello', [], visitor ) ).toEqual( [] );
+			expect( visitor ).not.toHaveBeenCalled();
+		} );
+
+		it( 'returns empty array when obj is null', () => {
+			const visitor = jest.fn().mockReturnValue( [] );
+			expect( zobjectUtils.walkZObject( null, [], visitor ) ).toEqual( [] );
+			expect( visitor ).not.toHaveBeenCalled();
+		} );
+
+		it( 'calls visitor on the root object with the initial path', () => {
+			const obj = { Z1K1: 'Z6', Z6K1: 'foo' };
+			const visitor = jest.fn().mockReturnValue( [ 'bar' ] );
+
+			const result = zobjectUtils.walkZObject( obj, [ 'main' ], visitor );
+
+			expect( visitor ).toHaveBeenCalledTimes( 1 );
+			expect( visitor ).toHaveBeenCalledWith( obj, [ 'main' ] );
+			expect( result ).toEqual( [ 'bar' ] );
+		} );
+
+		it( 'recurses into nested zobjects', () => {
+			const ref = { Z1K1: 'Z9', Z9K1: 'Z10000' };
+			const str = { Z1K1: 'Z6', Z6K1: 'foo' };
+			const call = {
+				Z1K1: 'Z7',
+				Z7K1: ref,
+				Z1000K1: str
+			};
+			const visitor = jest.fn().mockReturnValue( [] );
+
+			zobjectUtils.walkZObject( call, [ 'main' ], visitor );
+
+			// one for main call, one for reference, one for string
+			expect( visitor ).toHaveBeenCalledTimes( 3 );
+			expect( visitor ).toHaveBeenCalledWith( call, [ 'main' ] );
+			expect( visitor ).toHaveBeenCalledWith( ref, [ 'main', 'Z7K1' ] );
+			expect( visitor ).toHaveBeenCalledWith( str, [ 'main', 'Z1000K1' ] );
+		} );
+
+		it( 'recurses into array items with index appended to path', () => {
+			const en = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'in english' };
+			const es = { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'en español' };
+			const multi = {
+				Z1K1: 'Z12',
+				Z12K1: [ 'Z11', en, es ]
+			};
+			const visitor = jest.fn().mockReturnValue( [] );
+
+			zobjectUtils.walkZObject( multi, [ 'main', 'Z2K3' ], visitor );
+
+			expect( visitor ).toHaveBeenCalledTimes( 3 );
+			expect( visitor ).toHaveBeenCalledWith( multi, [ 'main', 'Z2K3' ] );
+			expect( visitor ).toHaveBeenCalledWith( en, [ 'main', 'Z2K3', 'Z12K1', 1 ] );
+			expect( visitor ).toHaveBeenCalledWith( es, [ 'main', 'Z2K3', 'Z12K1', 2 ] );
+		} );
+
+		it( 'accumulates results from the root zobject and all their children', () => {
+			const obj = {
+				Z1K1: 'Z7',
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z801' },
+				Z801K1: { Z1K1: 'Z6', Z6K1: 'booh!' }
+			};
+			const visitor = jest.fn()
+				.mockReturnValueOnce( [ 'call' ] )
+				.mockReturnValueOnce( [ 'ref' ] )
+				.mockReturnValueOnce( [ 'str' ] );
+
+			const result = zobjectUtils.walkZObject( obj, [], visitor );
+
+			expect( result ).toEqual( [ 'call', 'ref', 'str' ] );
+		} );
+	} );
+
+	describe( 'walkAndTransformZObject', () => {
+		it( 'returns a terminal value without matching or transforming', () => {
+			const matcher = jest.fn();
+			const transformer = jest.fn();
+
+			expect( zobjectUtils.walkAndTransformZObject( 'hello', matcher, transformer ) ).toBe( 'hello' );
+			expect( zobjectUtils.walkAndTransformZObject( undefined, matcher, transformer ) ).toBe( undefined );
+			expect( zobjectUtils.walkAndTransformZObject( null, matcher, transformer ) ).toBe( null );
+			expect( matcher ).not.toHaveBeenCalled();
+			expect( transformer ).not.toHaveBeenCalled();
+		} );
+
+		it( 'returns transformer result when root zobject matches', () => {
+			const initial = { Z1K1: 'Z6', Z6K1: 'foo' };
+			const transformed = { Z1K1: 'Z6', Z6K1: 'bar' };
+
+			const matcher = jest.fn().mockReturnValue( true );
+			const transformer = jest.fn().mockReturnValue( transformed );
+
+			const result = zobjectUtils.walkAndTransformZObject( initial, matcher, transformer );
+
+			expect( result ).toBe( transformed );
+			expect( transformer ).toHaveBeenCalledWith( initial );
+		} );
+
+		it( 'does not recurse into a matched node', () => {
+			const ref = { Z1K1: 'Z9', Z9K1: 'Z10000' };
+			const str = { Z1K1: 'Z6', Z6K1: 'foo' };
+			const call = {
+				Z1K1: 'Z7',
+				Z7K1: ref,
+				Z1000K1: str
+			};
+
+			const matcher = jest.fn()
+				.mockReturnValueOnce( true ) // root matches; stop here
+				.mockReturnValue( false );
+			const transformer = jest.fn().mockReturnValue( 'bar' );
+
+			zobjectUtils.walkAndTransformZObject( call, matcher, transformer );
+
+			// transformer is called once and inner is never visited
+			expect( transformer ).toHaveBeenCalledTimes( 1 );
+			expect( matcher ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'recurses into non-matching nested objects and transforms matching descendants', () => {
+			const ref = { Z1K1: 'Z9', Z9K1: 'Z10000' };
+			const foo = { Z1K1: 'Z6', Z6K1: 'foo' };
+			const bar = { Z1K1: 'Z6', Z6K1: 'bar' };
+
+			const initial = { Z1K1: 'Z7', Z7K1: ref, Z1000K1: foo };
+			const transformed = { Z1K1: 'Z7', Z7K1: ref, Z1000K1: bar };
+
+			const matcher = ( node ) => node.Z6K1 === 'foo';
+			const transformer = jest.fn().mockReturnValue( bar );
+
+			const result = zobjectUtils.walkAndTransformZObject( initial, matcher, transformer );
+
+			expect( result ).toEqual( transformed );
+			expect( transformer ).toHaveBeenCalledWith( foo );
+		} );
+
+		it( 'does not mutate the original object', () => {
+			const obj = { Z1K1: 'Z7', Z7K1: { Z1K1: 'Z9', Z9K1: '' } };
+			const original = JSON.parse( JSON.stringify( obj ) );
+			const matcher = ( node ) => node.Z9K1 === '';
+			const transformer = () => ( { Z1K1: 'Z9', Z9K1: 'Z10000' } );
+
+			zobjectUtils.walkAndTransformZObject( obj, matcher, transformer );
+
+			expect( obj ).toEqual( original );
+		} );
+
+		it( 'maps over array items and transforms matching ones', () => {
+			const en = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'in english' };
+			const es = { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'en español' };
+			const multi = { Z1K1: 'Z12', Z12K1: [ 'Z11', en, es ] };
+
+			const bigen = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'IN ENGLISH' };
+			const bigmulti = { Z1K1: 'Z12', Z12K1: [ 'Z11', bigen, es ] };
+
+			const matcher = ( node ) => node.Z11K1 === 'Z1002';
+			const transformer = ( node ) => {
+				node.Z11K2 = node.Z11K2.toUpperCase();
+				return node;
+			};
+
+			const result = zobjectUtils.walkAndTransformZObject( multi, matcher, transformer );
+
+			expect( result ).toEqual( bigmulti );
+		} );
+
+		it( 'applies matcher to the array itself before mapping its items', () => {
+			const en = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'in english' };
+			const es = { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'en español' };
+			const multi = { Z1K1: 'Z12', Z12K1: [ 'Z11', en, es ] };
+
+			const matcher = ( node ) => Array.isArray( node );
+			const transformer = ( node ) => node[ 0 ] === 'Z11' ? `${ node.length - 1 } items` : node;
+
+			const result = zobjectUtils.walkAndTransformZObject( multi, matcher, transformer );
+
+			expect( result ).toEqual( { Z1K1: 'Z12', Z12K1: '2 items' } );
+		} );
+
+		it( 'transforms all matching nodes in a deeply nested structure', () => {
+			const obj = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z881',
+				Z881K1: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z881' },
+					Z881K2: { Z1K1: 'Z9', Z9K1: '' }
+				}
+			};
+			const matcher = ( node ) => node && node.Z9K1 === '';
+			const transformer = () => ( { Z1K1: 'Z9', Z9K1: 'Z6' } );
+
+			const result = zobjectUtils.walkAndTransformZObject( obj, matcher, transformer );
+
+			expect( result.Z881K1.Z881K2 ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z6' } );
+			expect( result.Z1K1 ).toBe( 'Z7' );
+			expect( result.Z881K1.Z7K1.Z9K1 ).toBe( 'Z881' );
+		} );
+	} );
+
 	describe( 'hasPendingMetadata', () => {
 		it( 'returns false when no metadata', () => {
 			expect( zobjectUtils.hasPendingMetadata( undefined ) ).toBe( false );

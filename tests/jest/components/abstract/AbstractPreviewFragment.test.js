@@ -43,6 +43,15 @@ describe( 'AbstractPreviewFragment', () => {
 		store.getLabelData = createLabelDataMock( {
 			Z500: 'Some unknown error'
 		} );
+		store.getAbstractWikiId = 'Q42';
+		store.getUserLangCode = 'en';
+		store.getZObjectByKeyPath = jest.fn().mockReturnValue( {
+			Z1K1: 'Z7',
+			Z7K1: 'Z10000',
+			Z10000K1: { Z1K1: 'Z18', Z18K1: 'Z825K1' },
+			Z10000K2: { Z1K1: 'Z18', Z18K1: 'Z825K2' },
+			Z10000K3: { Z1K1: 'Z18', Z18K1: 'Z825K3' }
+		} );
 
 		store.getHighlightedFragment = undefined;
 		store.setHighlightedFragment = jest.fn();
@@ -219,10 +228,12 @@ describe( 'AbstractPreviewFragment', () => {
 
 		const message = wrapper.findComponent( { name: 'cdx-message' } );
 		await waitFor( () => expect( message.exists() ).toBe( true ) );
-		expect( message.find( 'button' ).text() ).toBe( 'Retry' );
+
+		const button = message.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		expect( button.text() ).toBe( 'Retry' );
 
 		// Click button and check emitted event
-		message.find( 'button' ).trigger( 'click' );
+		button.trigger( 'click' );
 		expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
 	} );
 
@@ -270,6 +281,56 @@ describe( 'AbstractPreviewFragment', () => {
 		} );
 
 		await waitFor( () => expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 ) );
+	} );
+
+	it( 'renders replicate in Wikifunctions link when fragment fails', async () => {
+
+		jest.useFakeTimers();
+		jest.setSystemTime( new Date( '2026-08-31T12:00:00Z' ) );
+
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			html: '',
+			hasError: true,
+			error: {
+				retry: true,
+				type: 'error',
+				text: 'Some error'
+			},
+			isLoading: false,
+			isPending: false
+		} );
+
+		wrapper = renderFragment();
+
+		const message = wrapper.findComponent( { name: 'cdx-message' } );
+		await waitFor( () => expect( message.exists() ).toBe( true ) );
+		const link = message.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' );
+		expect( link.text() ).toBe( 'View details in Wikifunctions' );
+
+		const href = link.attributes( 'href' );
+		const urlParams = new URLSearchParams( href.split( '?' )[ 1 ] );
+		const callObject = JSON.parse( urlParams.get( 'call' ) );
+
+		// Check url:
+		// language code from getUserLangCode, zid from fragment function call
+		expect( href ).toContain( '/view/en/Z10000' );
+		// Z825K1 has been replaced with reference to getAbstractWikiId
+		// Z825K2 has been replaced with getPreviewLanguageZid
+		// Z825K3 has been replaced with function call to date parser
+		expect( callObject ).toEqual( {
+			Z1K1: 'Z7',
+			Z7K1: 'Z10000',
+			Z10000K1: { Z1K1: 'Z6091', Z6091K1: 'Q42' },
+			Z10000K2: 'Z1002',
+			Z10000K3: {
+				Z1K1: 'Z7',
+				Z7K1: 'Z20808',
+				Z20808K1: '2026-08-31',
+				Z20808K2: 'Z1002'
+			}
+		} );
+
+		jest.useRealTimers();
 	} );
 
 	// Highlight

@@ -850,7 +850,8 @@ const zobjectUtils = {
 
 	/**
 	 * Generic recursive walker for ZObjects.
-	 * Calls a callback for every object visited.
+	 * Calls a callback for every object visited and returns the result of this
+	 * callback.
 	 *
 	 * @param {Object} obj - The current object
 	 * @param {Array} path - The current key path
@@ -878,7 +879,36 @@ const zobjectUtils = {
 
 		return results;
 	},
+	/**
+	 * Recursively walks a ZObject and replaces nodes that match a predicate.
+	 * Mutates the object in place.
+	 *
+	 * @param {Object} obj
+	 * @param {Function} matcher - (node) => boolean, true if the node should be replaced
+	 * @param {Function} transformer - (node) => Object, returns the transformed value
+	 * @return {Object}
+	 */
+	walkAndTransformZObject: function ( obj, matcher, transformer ) {
+		if ( !obj || typeof obj !== 'object' ) {
+			return obj;
+		}
 
+		// Check if the input object matches the criteria for transformation
+		if ( matcher( obj ) ) {
+			return transformer( obj );
+		}
+
+		// Else, walk array items or object key-values
+		if ( Array.isArray( obj ) ) {
+			return obj.map( ( item ) => zobjectUtils.walkAndTransformZObject( item, matcher, transformer ) );
+		}
+
+		const result = {};
+		for ( const [ key, value ] of Object.entries( obj ) ) {
+			result[ key ] = zobjectUtils.walkAndTransformZObject( value, matcher, transformer );
+		}
+		return result;
+	},
 	/**
 	 * Returns whether the given test metadata is in a pending state,
 	 * i.e. the given metadata map contains a 'pending' key

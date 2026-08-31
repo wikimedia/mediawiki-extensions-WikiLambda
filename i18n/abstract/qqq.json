@@ -69,6 +69,7 @@
 	"wikilambda-abstract-preview-fragment-max-retries": "Error message when an Abstract Wikipedia fragment tried to render too many times, requesting the user to try again later.",
 	"wikilambda-abstract-preview-fragment-missing": "Label for the tag shown in the Abstract Wikipedia interface preview section, to replace a fragment that has not been requested yet.",
 	"wikilambda-abstract-preview-fragment-pending": "Label for the tag shown in the Abstract Wikipedia interface preview section, to replace a fragment that has been requested but is still pending for rendering.",
+	"wikilambda-abstract-preview-fragment-replicate": "Text for a link to the Wikifunctions function page with the pre-configured fragment call in the Function Evaluator widget.",
 	"wikilambda-abstract-preview-fragment-retry": "Text for a link with a call to action to retry rendering an Abstract Wikipedia fragment that failed.",
 	"wikilambda-abstract-preview-in-language": "Label for the preview of the Abstract Article rendered into a user-specified language.",
 	"wikilambda-abstract-renderedwith": "This message is shown below each page, in the footer with the logos and links, when the page has been rendered from [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",
