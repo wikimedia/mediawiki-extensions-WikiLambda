@@ -27,7 +27,7 @@ class WikifunctionsFragmentImageRenderer {
 	private const COMMONS_API_URL = 'https://commons.wikimedia.org/w/api.php';
 	private const THUMB_SIZE_THUMB = 250;
 	private const COMMONS_FILE_DATA_CACHE_KEY_PREFIX = 'WikiLambdaCommonsFileData';
-	private const ALLOWED_THUMB_HOSTS = [ 'upload.wikimedia.org' ];
+	private const ALLOWED_THUMB_HOSTS = [ 'upload.wikimedia.org', 'thumb.wikimedia.org' ];
 	private const SUPPORTED_SIZES = [ 'thumb' ];
 
 	/**
