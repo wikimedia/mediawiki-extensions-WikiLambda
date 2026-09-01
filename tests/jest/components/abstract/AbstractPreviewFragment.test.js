@@ -28,6 +28,7 @@ describe( 'AbstractPreviewFragment', () => {
 			},
 			global: {
 				stubs: {
+					'wl-safe-message': false,
 					'cdx-message': false,
 					'cdx-progress-indicator': true
 				}
@@ -38,6 +39,8 @@ describe( 'AbstractPreviewFragment', () => {
 	beforeEach( () => {
 		store = useMainStore();
 
+		store.sanitiseHtml.mockImplementation( ( html ) => Promise.resolve( html ) );
+		store.getHtmlErrorMessage = jest.fn().mockReturnValue( null );
 		store.getFragmentPreview = jest.fn().mockReturnValue( undefined );
 		store.getPreviewLanguageZid = 'Z1002';
 		store.getLabelData = createLabelDataMock( {
@@ -190,6 +193,43 @@ describe( 'AbstractPreviewFragment', () => {
 		} );
 
 		expect( wrapper.text() ).toContain( 'some error happened' );
+	} );
+
+	it( 'renders html error message when error type has error message key', async () => {
+		const htmlErrorMessage = 'Some <b>error message</b>';
+		store.sanitiseHtml.mockResolvedValue( htmlErrorMessage );
+		store.getHtmlErrorMessage = jest.fn().mockReturnValue( htmlErrorMessage );
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			html: '',
+			hasError: true,
+			error: {
+				type: 'error',
+				retry: false,
+				code: 'apierror-abstractwiki_run_fragment-returned-zerror',
+				zid: 'Z30000',
+				zerror: {
+					Z1K1: 'Z5',
+					Z5K1: 'Z30000',
+					Z5K2: {
+						Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z30000' },
+						Z30000K1: 'first',
+						Z30000K2: 'second'
+					}
+				}
+			},
+			isLoading: false,
+			isPending: false
+		} );
+
+		wrapper = renderFragment();
+
+		await waitFor( () => {
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+		} );
+
+		await wrapper.vm.$nextTick();
+
+		expect( wrapper.text() ).toContain( 'Some error message' );
 	} );
 
 	it( 'renders warning message when preview has warning', async () => {

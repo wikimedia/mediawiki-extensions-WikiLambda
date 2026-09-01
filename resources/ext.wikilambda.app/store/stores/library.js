@@ -845,6 +845,59 @@ module.exports = {
 				return type;
 			};
 			return findResolvingType;
+		},
+
+		/**
+		 * Returns the error type message/Z50K3 string for the user language
+		 * or closest fallback from the error type/Z50 object given its zid.
+		 * If not found, the error type is not available or has no error
+		 * messages, returns undefined.
+		 *
+		 * @return {Function}
+		 */
+		getErrorMessageForUserLanguage: function () {
+			/**
+			 * @param {string} zid
+			 * @return {string|undefined}
+			 */
+			const findErrorMEssage = ( zid ) => {
+				const persisted = this.getStoredObject( zid );
+				if ( !persisted ) {
+					return undefined;
+				}
+
+				const zerrortype = persisted[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( zerrortype[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_ERRORTYPE ) {
+					return undefined;
+				}
+
+				if ( !zerrortype[ Constants.Z_ERRORTYPE_MESSAGE ] ) {
+					return undefined;
+				}
+
+				const messages = zerrortype[ Constants.Z_ERRORTYPE_MESSAGE ][
+					Constants.Z_MULTILINGUALHTML_VALUE ].slice( 1 );
+				if ( messages.length === 0 ) {
+					return undefined;
+				}
+
+				const fallbacks = this.getFallbackLanguageZids;
+				const candidates = {};
+				messages.forEach( ( msg ) => {
+					const lang = msg[ Constants.Z_MONOLINGUALHTML_LANGUAGE ];
+					if ( fallbacks.includes( lang ) ) {
+						candidates[ lang ] = msg;
+					}
+				} );
+
+				if ( Object.keys( candidates ).length === 0 ) {
+					return undefined;
+				}
+
+				const best = fallbacks.find( ( zlang ) => zlang in candidates );
+				return candidates[ best ][ Constants.Z_MONOLINGUALHTML_VALUE ][ Constants.Z_HTML_FRAGMENT_VALUE ];
+			};
+			return findErrorMEssage;
 		}
 	},
 
@@ -1279,6 +1332,8 @@ module.exports = {
 				Constants.Z_PERSISTENTOBJECT,
 				Constants.Z_MULTILINGUALSTRING,
 				Constants.Z_MONOLINGUALSTRING,
+				Constants.Z_MULTILINGUALHTML,
+				Constants.Z_MONOLINGUALHTML,
 				Constants.Z_KEY,
 				Constants.Z_TYPE,
 				Constants.Z_STRING,

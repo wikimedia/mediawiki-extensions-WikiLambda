@@ -61,7 +61,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			format: 'json',
 			formatversion: '2',
 			uselang: 'en',
-			summary: 'Added $1 to the approved list of implementations',
+			summary: 'Added list to the approved list of implementations',
 			zid: functionZid,
 			zobject:
 				JSON.stringify(

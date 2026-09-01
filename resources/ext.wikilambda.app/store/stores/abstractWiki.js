@@ -594,6 +594,7 @@ const abstractWikiStore = {
 				if ( result && result.value && result.value.msg ) {
 					// Predictable fragment failure information contains msg and params with zid
 					error.code = result.value.msg;
+					error.zerror = result.value.zerror;
 					error.zid = ( Array.isArray( result.value.params ) && result.value.params[ 0 ] ) ?
 						result.value.params[ 0 ] : '';
 					// Fetch in case it's a zid;

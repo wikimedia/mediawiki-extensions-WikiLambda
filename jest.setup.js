@@ -116,7 +116,8 @@ class Mocki18n {
 		return this.text();
 	}
 
-	params() {
+	params( params = [] ) {
+		this.paramsList = params;
 		return this;
 	}
 

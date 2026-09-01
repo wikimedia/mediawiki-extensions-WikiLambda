@@ -55,7 +55,7 @@
 					class="ext-wikilambda-app-abstract-preview-fragment-error"
 					:type="fragmentError.type"
 				>
-					{{ fragmentError.text }}
+					<wl-safe-message :error="fragmentError.message"></wl-safe-message>
 					<button
 						v-if="fragmentError.retry"
 						class="ext-wikilambda-app-button-reset
@@ -95,17 +95,21 @@ const useFragmentSelection = require( '../../composables/useFragmentSelection.js
 const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useInitImages = require( '../../composables/useInitImages.js' );
 const useMainStore = require( '../../store/index.js' );
+const ErrorData = require( '../../store/classes/ErrorData.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 const { hybridToCanonical } = require( '../../utils/schemata.js' );
 const { walkAndTransformZObject, createParserCall } = require( '../../utils/zobjectUtils.js' );
 const icons = require( '../../../lib/icons.json' );
 
+// Base components
+const SafeMessage = require( '../base/SafeMessage.vue' );
 // Codex components
 const { CdxMessage, CdxIcon, CdxProgressIndicator } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-preview-fragment',
 	components: {
+		'wl-safe-message': SafeMessage,
 		'cdx-message': CdxMessage,
 		'cdx-icon': CdxIcon,
 		'cdx-progress-indicator': CdxProgressIndicator
@@ -180,11 +184,27 @@ module.exports = exports = defineComponent( {
 				return null;
 			}
 			const error = fragmentPreview.value.error;
+
+			// Build best error message, in order of preference
+			// 1. parseable error message obtained from Z50K3 and the error arguments
+			// 2. if not available, use the error.code with the error type label as parameter
+			// 3. if not available, fall back to error.text
+			let errorData;
+			const parsedMessage = store.getHtmlErrorMessage( error.zid, error.zerror );
+			if ( parsedMessage ) {
+				errorData = ErrorData.buildErrorData( { errorMessage: parsedMessage } );
+			} else if ( error.code ) {
+				errorData = ErrorData.buildErrorData( {
+					errorMessageKey: error.code,
+					errorParams: [ store.getLabelData( error.zid ).label ]
+				} );
+			} else {
+				errorData = ErrorData.buildErrorData( { errorMessage: error.text } );
+			}
+
 			return Object.assign( {}, error, {
 				type: error.type || Constants.ERROR_TYPES.ERROR,
-				text: error.code ?
-					i18n( error.code, store.getLabelData( error.zid ).label ).text() :
-					error.text,
+				message: errorData,
 				replicateLink: getFragmentReplicateLink()
 			} );
 		} );

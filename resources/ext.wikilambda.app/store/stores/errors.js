@@ -109,6 +109,64 @@ module.exports = {
 				return errorPaths.filter( ( path ) => path.startsWith( keyPath + '.' ) );
 			};
 			return findChildErrors;
+		},
+
+		/**
+		 * Returns the parsed (not sanitised) html error message contained
+		 * in the Z50K3/error message field of the given error type Zid,
+		 * using the argument values of the Z5/error instance.
+		 *
+		 * When the error type doesn't have a html error message in the
+		 * user language (or fallbacks), returns null.
+		 *
+		 * When the error instance is not wellformed, returns null.
+		 *
+		 * Replaces all "$1" with the corresponding error Zid (local or
+		 * global) arguments. If an argument is not found the placeholder
+		 * "$1" is left intact.
+		 *
+		 * NOTE: Before rendering the output as html, it must be sanitized,
+		 * either by calling the async store action this.sanitiseHtml( message )
+		 * or by rendering via the safe message component.
+		 *
+		 * @return {Function}
+		 */
+		getHtmlErrorMessage: function () {
+			/**
+			 * @param {string} zid
+			 * @param {Object} zerror
+			 * @return {string|null}
+			 */
+			const getAndParseErrorMessage = ( zid, zerror ) => {
+				// Get the zerror message if available
+				const zerrormessage = this.getErrorMessageForUserLanguage( zid );
+				// If not available, fallback to basic behavior: error type label
+				if ( !zerrormessage ) {
+					return null;
+				}
+				// If there's no error instance, stop trying create a html message
+				if ( !zerror || !zerror.Z5K2 ) {
+					return null;
+				}
+
+				// Replace the message string parameters with the error argument values
+				const params = zerror.Z5K2;
+				const message = zerrormessage.replace( /\$(\d+)/g, ( match, n ) => {
+					const globalkey = `${ zid }K${ n }`;
+					if ( globalkey in params ) {
+						return params[ globalkey ];
+					}
+					const localkey = `K${ n }`;
+					if ( localkey in params ) {
+						return params[ localkey ];
+					}
+					return match;
+				} );
+
+				return message;
+			};
+
+			return getAndParseErrorMessage;
 		}
 	},
 

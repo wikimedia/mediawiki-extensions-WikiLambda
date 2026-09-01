@@ -96,7 +96,7 @@ describe( 'usePageTitle', () => {
 
 			pageTitle.updateAbstractPageTitle( 'Q42', 'Douglas Adams' );
 
-			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for $1' );
+			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for Douglas Adams' );
 			expect( $newSpan.addClass ).toHaveBeenCalledWith( 'ext-wikilambda-editpage-header__qid' );
 			expect( $newSpan.attr ).toHaveBeenCalledWith( { role: 'button', tabindex: '0', 'aria-live': 'polite' } );
 			expect( $wrapper.append ).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe( 'usePageTitle', () => {
 
 			pageTitle.updateAbstractPageTitle( 'Q42', 'Douglas Adams' );
 
-			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for $1' );
+			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for Douglas Adams' );
 			expect( $wrapper.append ).not.toHaveBeenCalled();
 			expect( $qidSpan.text ).toHaveBeenCalledWith( 'Q42' );
 		} );
@@ -118,7 +118,7 @@ describe( 'usePageTitle', () => {
 
 			pageTitle.updateAbstractPageTitle( 'Q42' );
 
-			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for $1' );
+			expect( $titleSpan.text ).toHaveBeenCalledWith( 'Create a New Abstract Article for Q42' );
 		} );
 	} );
 } );

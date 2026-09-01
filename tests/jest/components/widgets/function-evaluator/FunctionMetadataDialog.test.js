@@ -37,6 +37,9 @@ describe( 'dialog', () => {
 
 	beforeEach( () => {
 		store = useMainStore();
+
+		store.sanitiseHtml.mockImplementation( ( html ) => Promise.resolve( html ) );
+		store.getHtmlErrorMessage = jest.fn().mockReturnValue( null );
 		store.getFunctionZidOfImplementation = createGettersWithFunctionsMock( 'Z801' );
 		store.getUserLangCode = 'en';
 		store.getLabelData = createLabelDataMock( {
@@ -371,7 +374,29 @@ describe( 'dialog', () => {
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
 			const expectedHeaderDescription = 'Z500 (Z500K1: "<button onmouseover="window.location = \'//www.example.com\'">")';
+
 			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( expectedHeaderDescription );
+		} );
+
+		it( 'renders the error section with sanitized html error message', async () => {
+			const htmlErrorMessage = 'Some <b>error message</b>';
+			store.sanitiseHtml.mockResolvedValue( htmlErrorMessage );
+			store.getHtmlErrorMessage = jest.fn().mockReturnValue( htmlErrorMessage );
+
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataErrors } );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const section = sections[ 0 ];
+
+			// Check header
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
+			await wrapper.vm.$nextTick();
+
+			const safeMessage = section.findComponent( { name: 'wl-safe-message' } );
+			expect( safeMessage ).toBeDefined();
+
+			await wrapper.vm.$nextTick();
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Some error message' );
 		} );
 
 		it( 'does not link a sub-error whose type is not a Zid', () => {

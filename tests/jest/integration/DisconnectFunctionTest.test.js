@@ -58,7 +58,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			format: 'json',
 			formatversion: '2',
 			uselang: 'en',
-			summary: 'Removed $1 from the approved list of test cases',
+			summary: 'Removed list from the approved list of test cases',
 			zid: functionZid,
 			zobject:
 				JSON.stringify(

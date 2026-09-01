@@ -74,9 +74,13 @@
 					{{ section.title }}
 				</template>
 				<template #description>
-					<!-- Description can be string or LabelData -->
+					<!-- Description can be string, ErrorData, or LabelData -->
+					<wl-safe-message
+						v-if="isErrorData( section.description )"
+						:error="section.description"
+					></wl-safe-message>
 					<span
-						v-if="isLabelData( section.description )"
+						v-else-if="isLabelData( section.description )"
 						:lang="section.description.langCode"
 						:dir="section.description.langDir"
 					>{{ section.description.labelOrUntitled }}</span>
@@ -111,6 +115,7 @@ const { computed, defineComponent, inject, ref } = require( 'vue' );
 const Constants = require( '../../../Constants.js' );
 const { metadataKeys } = require( '../../../utils/metadataUtils.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
+const ErrorData = require( '../../../store/classes/ErrorData.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { extractErrorData, extractWarningsData, escapeHtml } = require( '../../../utils/errorUtils.js' );
 const { isValidZidFormat } = require( '../../../utils/typeUtils.js' );
@@ -506,6 +511,16 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Checks if the payload is an instance of ErrorData
+		 *
+		 * @param {*} payload
+		 * @return {boolean}
+		 */
+		function isErrorData( payload ) {
+			return payload instanceof ErrorData;
+		}
+
+		/**
 		 * Checks if the payload is an instance of LabelData
 		 *
 		 * @param {*} payload
@@ -522,7 +537,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * E.g. 'Bad input format (expected format: "dd/m/yyyy", current value: "boo")'
 		 *
-		 * @return {LabelData|string}
+		 * @return {ErrorData|string}
 		 */
 		function getErrorSummary() {
 			// Check for explicit errors first
@@ -532,21 +547,37 @@ module.exports = exports = defineComponent( {
 
 			// Check for test failure
 			if ( hasTestFailure( keyValues.value ) ) {
-				return i18n( 'wikilambda-functioncall-metadata-test-failure' ).text();
+				return ErrorData.buildErrorData( {
+					errorMessageKey: 'wikilambda-functioncall-metadata-test-failure'
+				} );
 			}
 
 			// Return None if there are no errors
-			return i18n( 'wikilambda-functioncall-metadata-errors-none' ).text();
+			return ErrorData.buildErrorData( {
+				errorMessageKey: 'wikilambda-functioncall-metadata-errors-none'
+			} );
 		}
 
 		/**
 		 * Returns the explicit error section summary
 		 *
-		 * @return {string}
+		 * @return {ErrorData|string}
 		 */
 		function getExplicitErrorSummary() {
 			const error = keyValues.value.get( 'errors' );
 			const errorData = extractErrorData( error );
+
+			// If Error message can be composed using the error type Z50K3 field,
+			// return ErrorData object so that it renders with SafeMessage and injects html
+			const parsedMessage = store.getHtmlErrorMessage( errorData.errorType, error );
+			if ( parsedMessage ) {
+				return ErrorData.buildErrorData( {
+					errorMessage: parsedMessage
+				} );
+			}
+
+			// Otherwise, build an ad-hoc error message using the error type label
+			// followed by the error arguments in parenthesis
 			const colon = i18n( 'colon-separator' ).text();
 			const comma = i18n( 'comma-separator' ).text();
 
@@ -1103,6 +1134,7 @@ module.exports = exports = defineComponent( {
 			hasNestedMetadata,
 			iconHelpNotice,
 			iconLinkExternal,
+			isErrorData,
 			isLabelData,
 			parsedMetaDataHelpLink,
 			sections,

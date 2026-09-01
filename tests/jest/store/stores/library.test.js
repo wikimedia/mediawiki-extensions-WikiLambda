@@ -822,6 +822,81 @@ describe( 'library Pinia store', () => {
 				expect( findDependencies( 'Z10000' ) ).toEqual( [ 'Z6', 'Z10002', 'Z40' ] );
 			} );
 		} );
+
+		describe( 'getErrorMessageForUserLanguage', () => {
+			const mockMonolingualMessage = ( lang, html ) => ( {
+				Z1K1: 'Z91',
+				Z91K1: lang,
+				Z91K2: { Z1K1: 'Z89', Z89K1: html }
+			} );
+
+			const mockStoredErrorType = ( messages ) => ( {
+				Z10000: { success: true, data: {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z10000' },
+					Z2K2: {
+						Z1K1: 'Z50',
+						Z50K1: [ 'Z3' ],
+						Z50K2: 'Z10000',
+						Z50K3: { Z1K1: 'Z92', Z92K1: [ 'Z91', ...messages ] }
+					}
+				} }
+			} );
+
+			beforeEach( () => {
+				Object.defineProperty( store, 'getFallbackLanguageZids', {
+					value: [ 'Z1003', 'Z1002' ]
+				} );
+			} );
+
+			it( 'returns undefined if the error type is not available in the state', () => {
+				expect( store.getErrorMessageForUserLanguage( 'Z10000' ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if the stored object is not an error type', () => {
+				store.objects = {
+					Z10000: { success: true, data: { Z1K1: 'Z2', Z2K2: { Z1K1: 'Z4' } } }
+				};
+				expect( store.getErrorMessageForUserLanguage( 'Z10000' ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if the error type has no error message', () => {
+				store.objects = {
+					Z10000: { success: true, data: { Z1K1: 'Z2', Z2K2: { Z1K1: 'Z50' } } }
+				};
+				expect( store.getErrorMessageForUserLanguage( 'Z10000' ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if the error type has an empty list of error messages', () => {
+				store.objects = mockStoredErrorType( [] );
+				expect( store.getErrorMessageForUserLanguage( 'Z10000' ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if there are no error messages in the fallback languages', () => {
+				store.objects = mockStoredErrorType( [
+					mockMonolingualMessage( 'Z1004', '<b>Fatalité</b>' )
+				] );
+				expect( store.getErrorMessageForUserLanguage( 'Z10000' ) ).toBeUndefined();
+			} );
+
+			it( 'returns the error message in the user language', () => {
+				store.objects = mockStoredErrorType( [
+					mockMonolingualMessage( 'Z1002', '<b>Fatality</b>' ),
+					mockMonolingualMessage( 'Z1003', '<b>Fatalidad</b>' )
+				] );
+				expect( store.getErrorMessageForUserLanguage( 'Z10000' ) )
+					.toEqual( '<b>Fatalidad</b>' );
+			} );
+
+			it( 'returns the error message in the closest fallback language', () => {
+				store.objects = mockStoredErrorType( [
+					mockMonolingualMessage( 'Z1004', '<b>Fatalité</b>' ),
+					mockMonolingualMessage( 'Z1002', '<b>Fatality</b>' )
+				] );
+				expect( store.getErrorMessageForUserLanguage( 'Z10000' ) )
+					.toEqual( '<b>Fatality</b>' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {

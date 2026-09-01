@@ -56,7 +56,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			format: 'json',
 			formatversion: '2',
 			uselang: 'en',
-			summary: 'Removed $1 from the approved list of implementations',
+			summary: 'Removed list from the approved list of implementations',
 			zid: functionZid,
 			zobject:
 				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
@@ -97,7 +97,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 				format: 'json',
 				formatversion: '2',
 				uselang: 'en',
-				summary: 'Removed $1 from the approved list of implementations',
+				summary: 'Removed list from the approved list of implementations',
 				zid: functionZid
 			} ), { signal: undefined }
 		);
@@ -138,7 +138,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			format: 'json',
 			formatversion: '2',
 			uselang: 'en',
-			summary: 'Removed $1 from the approved list of implementations',
+			summary: 'Removed list from the approved list of implementations',
 			zid: functionZid,
 			zobject:
 				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
@@ -170,7 +170,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 				format: 'json',
 				formatversion: '2',
 				uselang: 'en',
-				summary: 'Added $1 to the approved list of implementations',
+				summary: 'Added list to the approved list of implementations',
 				zid: functionZid
 			} ), { signal: undefined }
 		);

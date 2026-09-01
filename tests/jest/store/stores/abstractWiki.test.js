@@ -957,7 +957,8 @@ describe( 'abstractWiki Pinia store', () => {
 						type: Constants.ERROR_TYPES.ERROR,
 						retry: false,
 						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
-						zid: 'Z500'
+						zid: 'Z500',
+						zerror: { Z1K1: 'Z5' }
 					}
 				} );
 			} );

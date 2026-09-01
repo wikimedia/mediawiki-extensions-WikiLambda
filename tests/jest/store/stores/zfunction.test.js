@@ -363,7 +363,7 @@ describe( 'zFunction Pinia store', () => {
 					store.connectTests( { zids: [ 'Z777', 'Z888' ] } );
 
 					expect( store.submitZObject ).toHaveBeenCalledWith(
-						{ summary: 'Added $1 to the approved list of test cases' }
+						{ summary: 'Added list to the approved list of test cases' }
 					);
 					expect( store.getJsonObject( 'main' ) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
@@ -390,7 +390,7 @@ describe( 'zFunction Pinia store', () => {
 				it( 'connects given implementations', async () => {
 					store.connectImplementations( { zids: [ 'Z777', 'Z888' ] } );
 
-					expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Added $1 to the approved list of implementations' } );
+					expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Added list to the approved list of implementations' } );
 					expect( store.getJsonObject( 'main' ) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
 						Z2K2: {
@@ -422,7 +422,7 @@ describe( 'zFunction Pinia store', () => {
 				it( 'disconnects given testers', () => {
 					store.disconnectTests( { zids: [ 'Z10002', 'Z10003' ] } );
 
-					expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed $1 from the approved list of test cases' } );
+					expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed list from the approved list of test cases' } );
 					expect( store.getJsonObject( 'main' ) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
 						Z2K2: {
@@ -444,7 +444,7 @@ describe( 'zFunction Pinia store', () => {
 				it( 'disconnects given implementations', async () => {
 					store.disconnectImplementations( { zids: [ 'Z10004', 'Z10005' ] } );
 
-					expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed $1 from the approved list of implementations' } );
+					expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed list from the approved list of implementations' } );
 					expect( store.getJsonObject( 'main' ) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
 						Z2K2: {
@@ -495,7 +495,7 @@ describe( 'zFunction Pinia store', () => {
 						await store.connectTests( { zids: [ 'Z777', 'Z888' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Added $1 to the approved list of test cases' } );
+						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Added list to the approved list of test cases' } );
 						expect( store.setJsonObject ).toHaveBeenCalledWith( restorePayload );
 					}
 				} );
@@ -505,7 +505,7 @@ describe( 'zFunction Pinia store', () => {
 						await store.disconnectTests( { zids: [ 'Z111', 'Z333' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed $1 from the approved list of test cases' } );
+						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed list from the approved list of test cases' } );
 						expect( store.setJsonObject ).toHaveBeenCalledWith( restorePayload );
 					}
 				} );
@@ -515,7 +515,7 @@ describe( 'zFunction Pinia store', () => {
 						await store.connectImplementations( { zids: [ 'Z777', 'Z888' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Added $1 to the approved list of implementations' } );
+						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Added list to the approved list of implementations' } );
 						expect( store.updateStoredObject ).not.toHaveBeenCalled();
 						expect( store.setJsonObject ).toHaveBeenCalledWith( restorePayload );
 					}
@@ -526,7 +526,7 @@ describe( 'zFunction Pinia store', () => {
 						await store.disconnectImplementations( { zids: [ 'Z444', 'Z666' ] } );
 					} catch ( error ) {
 						expect( error ).toEqual( 'error' );
-						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed $1 from the approved list of implementations' } );
+						expect( store.submitZObject ).toHaveBeenCalledWith( { summary: 'Removed list from the approved list of implementations' } );
 						expect( store.updateStoredObject ).not.toHaveBeenCalled();
 						expect( store.setJsonObject ).toHaveBeenCalledWith( restorePayload );
 					}

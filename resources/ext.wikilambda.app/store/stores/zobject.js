@@ -1230,6 +1230,22 @@ const zobjectStore = {
 					}
 				}
 
+				// Initialize Message field in Error Type objects (Z50K3)
+				if (
+					!this.getViewMode &&
+					isTruthyOrEqual( zobject, [
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_OBJECT_TYPE ], Constants.Z_ERRORTYPE
+					) &&
+					!isTruthyOrEqual( zobject, [
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_ERRORTYPE_MESSAGE
+					] )
+				) {
+					const multi = this.createObjectByType( { type: Constants.Z_MULTILINGUALHTML } );
+					zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_ERRORTYPE_MESSAGE ] = multi;
+				}
+
 				// Save initial multilingual data values
 				// so that About widget knows how to reset to original
 				// state in the case of a publish cancelation action.

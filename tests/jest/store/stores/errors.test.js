@@ -90,6 +90,87 @@ describe( 'Errors Pinia store', () => {
 				expect( store.getChildErrorKeys( 'main.Z2K2' ) ).toEqual( [] );
 			} );
 		} );
+
+		describe( 'getHtmlErrorMessage', () => {
+			const errorMessage = '<b>Bad input format</b>: expected $1, got "$2"';
+			const errorZid = 'Z30000';
+			const errorBase = {
+				Z1K1: 'Z5',
+				Z5K1: 'Z30000',
+				Z5K2: {
+					Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z30000' },
+					Z30000K1: 'foo',
+					Z30000K2: 'bar'
+				}
+			};
+
+			beforeEach( () => {
+				// by default, returns undefined
+				Object.defineProperty( store, 'getErrorMessageForUserLanguage', {
+					value: jest.fn().mockReturnValue( undefined )
+				} );
+			} );
+
+			it( 'returns null if the error type has no error message', () => {
+				expect( store.getHtmlErrorMessage( errorZid, errorBase ) ).toBeNull();
+			} );
+
+			it( 'returns null if there is no error instance', () => {
+				expect( store.getHtmlErrorMessage( errorZid, undefined ) ).toBeNull();
+			} );
+
+			it( 'returns null if the error instance has no value', () => {
+				expect( store.getHtmlErrorMessage( errorZid, { Z1K1: 'Z5', Z5K1: 'Z30000' } ) ).toBeNull();
+			} );
+
+			it( 'returns the error message of the given error type', () => {
+				const simpleError = '<b>Bad input format</b>';
+				Object.defineProperty( store, 'getErrorMessageForUserLanguage', {
+					value: jest.fn().mockReturnValue( simpleError )
+				} );
+
+				expect( store.getHtmlErrorMessage( errorZid, errorBase ) ).toEqual( simpleError );
+				expect( store.getErrorMessageForUserLanguage ).toHaveBeenCalledWith( errorZid );
+			} );
+
+			it( 'replaces the message parameters with the global key arguments', () => {
+				Object.defineProperty( store, 'getErrorMessageForUserLanguage', {
+					value: jest.fn().mockReturnValue( errorMessage )
+				} );
+
+				expect( store.getHtmlErrorMessage( errorZid, errorBase ) )
+					.toEqual( '<b>Bad input format</b>: expected foo, got "bar"' );
+			} );
+
+			it( 'replaces the message parameters when error argumenst are local keys', () => {
+				Object.defineProperty( store, 'getErrorMessageForUserLanguage', {
+					value: jest.fn().mockReturnValue( errorMessage )
+				} );
+
+				const errorLocal = {
+					Z1K1: 'Z5',
+					Z5K1: 'Z30000',
+					Z5K2: {
+						Z1K1: { Z1K1: 'Z7', Z7K1: 'Z885', Z885K1: 'Z30000' },
+						K1: 'foo',
+						K2: 'bar'
+					}
+				};
+
+				expect( store.getHtmlErrorMessage( errorZid, errorLocal ) )
+					.toEqual( '<b>Bad input format</b>: expected foo, got "bar"' );
+			} );
+
+			it( 'leaves the placeholder intact when the argument is not found', () => {
+				const longerMessage = '<b>Bad input format</b>: expected $1, got "$2" and "$3"';
+				Object.defineProperty( store, 'getErrorMessageForUserLanguage', {
+					value: jest.fn().mockReturnValue( longerMessage )
+				} );
+
+				expect( store.getHtmlErrorMessage( errorZid, errorBase ) )
+					.toEqual( '<b>Bad input format</b>: expected foo, got "bar" and "$3"' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
