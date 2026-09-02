@@ -5,7 +5,6 @@ const { waitFor } = require( '@testing-library/vue' );
 const FunctionInputLanguage = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputLanguage.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
 const ErrorData = require( '../../../../../resources/ext.wikilambda.app/store/classes/ErrorData.js' );
-const Constants = require( '../../../../../resources/ext.wikilambda.app/Constants.js' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 
 describe( 'FunctionInputLanguage', () => {
@@ -50,6 +49,8 @@ describe( 'FunctionInputLanguage', () => {
 			return undefined;
 		} );
 		store.getDefaultValueForType = createGettersWithFunctionsMock( 'Z1002' );
+		store.getSuggestedLanguageZids = [ 'Z1002', 'Z1001' ];
+		store.getUserLangCode = 'en';
 		store.getLabelData = createLabelDataMock( { Z1002: 'English' } );
 		store.hasDefaultValueForType = createGettersWithFunctionsMock( false );
 		// Mock isNewParameterSetup to false for tests that expect auto-checking behavior
@@ -63,7 +64,12 @@ describe( 'FunctionInputLanguage', () => {
 
 	it( 'fetches suggested languages on initialization', () => {
 		renderFunctionInputLanguage( { value: '' } );
-		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: Constants.SUGGESTIONS.LANGUAGES } );
+		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1002', 'Z1001' ] } );
+	} );
+
+	it( 'resolves the user language zid on initialization', () => {
+		renderFunctionInputLanguage( { value: '' } );
+		expect( store.ensureLanguageCodes ).toHaveBeenCalledWith( { codes: [ 'en' ] } );
 	} );
 
 	it( 'triggers validation on initialization, emits validate and no update', async () => {

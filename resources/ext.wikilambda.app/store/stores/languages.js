@@ -83,6 +83,19 @@ module.exports = {
 		},
 
 		/**
+		 * Return the suggested language zids for the language selectors.
+		 * The user language is always the first item of the list.
+		 *
+		 * @return {Array}
+		 */
+		getSuggestedLanguageZids: function () {
+			return [ ...new Set( [
+				this.getUserLangZid,
+				...Constants.SUGGESTIONS.LANGUAGES
+			] ) ];
+		},
+
+		/**
 		 * Return user requested lang, which might not be a valid WF language.
 		 *
 		 * @return {string}

@@ -200,7 +200,11 @@ module.exports = exports = defineComponent( {
 		 * Fetches suggested languages
 		 */
 		function fetchSuggestedLangs() {
-			store.fetchZids( { zids: Constants.SUGGESTIONS.LANGUAGES } );
+			// Client pages do not get the user language zid in the config.
+			// Resolve the language code first. If you do not, the
+			// suggestions show English.
+			store.ensureLanguageCodes( { codes: [ store.getUserLangCode ] } );
+			store.fetchZids( { zids: store.getSuggestedLanguageZids } );
 		}
 
 		// Watch

@@ -9,6 +9,7 @@
 
 const { createPinia, setActivePinia } = require( 'pinia' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 
 describe( 'Languages Pinia store', () => {
 	let store;
@@ -28,6 +29,33 @@ describe( 'Languages Pinia store', () => {
 		describe( 'getUserLangZid', () => {
 			it( 'should return the user language zid as defined in wgWikiLambda config variables', () => {
 				expect( store.getUserLangZid ).toBe( 'Z1002' );
+			} );
+		} );
+
+		describe( 'getSuggestedLanguageZids', () => {
+			it( 'should return the suggested languages led by the user language', () => {
+				Object.defineProperty( store, 'getUserLangZid', {
+					value: Constants.Z_NATURAL_LANGUAGE_AFRIKAANS
+				} );
+				expect( store.getSuggestedLanguageZids ).toEqual( [
+					Constants.Z_NATURAL_LANGUAGE_AFRIKAANS,
+					...Constants.SUGGESTIONS.LANGUAGES
+				] );
+			} );
+
+			it( 'should not duplicate a user language that is already suggested', () => {
+				Object.defineProperty( store, 'getUserLangZid', {
+					value: Constants.Z_NATURAL_LANGUAGE_FRENCH
+				} );
+				expect( store.getSuggestedLanguageZids ).toEqual( [
+					Constants.Z_NATURAL_LANGUAGE_FRENCH,
+					Constants.Z_NATURAL_LANGUAGE_ARABIC,
+					Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+					Constants.Z_NATURAL_LANGUAGE_SPANISH,
+					Constants.Z_NATURAL_LANGUAGE_RUSSIAN,
+					Constants.Z_NATURAL_LANGUAGE_CHINESE_TRADITIONAL,
+					Constants.Z_NATURAL_LANGUAGE_CHINESE_SIMPLIFIED
+				] );
 			} );
 		} );
 

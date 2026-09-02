@@ -238,13 +238,13 @@ describe( 'ZObjectSelector', () => {
 				value: 'suggestion',
 				disabled: true
 			}, {
-				value: 'Z1001',
-				label: 'Arabic',
+				value: 'Z1002',
+				label: 'English',
 				description: 'Natural language',
 				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {
-				value: 'Z1002',
-				label: 'English',
+				value: 'Z1001',
+				label: 'Arabic',
 				description: 'Natural language',
 				class: 'ext-wikilambda-app-object-selector__suggestion'
 			}, {

@@ -1267,7 +1267,7 @@ module.exports = {
 					Constants.Z_TYPE,
 					// Needed to resolve typed list labels (e.g. Z881)
 					Constants.Z_TYPED_LIST,
-					... Constants.SUGGESTIONS.LANGUAGES,
+					... this.getSuggestedLanguageZids,
 					... Constants.SUGGESTIONS.TYPES
 				];
 				return this.fetchZids( { zids } );
@@ -1290,11 +1290,10 @@ module.exports = {
 				Constants.Z_BOOLEAN_FALSE,
 				Constants.Z_IMPLEMENTATION,
 				Constants.Z_HTML_FRAGMENT,
-				this.getUserLangZid,
 				Constants.Z_TYPED_LIST,
 				Constants.Z_ARGUMENT_REFERENCE,
 				Constants.Z_NATURAL_LANGUAGE,
-				... Constants.SUGGESTIONS.LANGUAGES,
+				... this.getSuggestedLanguageZids,
 				... Constants.SUGGESTIONS.TYPES
 			];
 			return this.fetchZids( { zids } );

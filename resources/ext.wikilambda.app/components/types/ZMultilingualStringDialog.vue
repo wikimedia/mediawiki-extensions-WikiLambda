@@ -329,7 +329,7 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {Array} Array of suggested language items
 		 */
-		const getSuggestedItems = computed( () => Constants.SUGGESTIONS.LANGUAGES
+		const getSuggestedItems = computed( () => store.getSuggestedLanguageZids
 			.map( ( langZid ) => {
 				const langLabelData = store.getLabelData( langZid );
 				const listItem = props.items.find(

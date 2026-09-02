@@ -305,7 +305,7 @@ module.exports = exports = defineComponent( {
 			switch ( props.type ) {
 				case Constants.Z_NATURAL_LANGUAGE:
 					title = i18n( 'wikilambda-object-selector-suggested-languages' ).text();
-					suggestedZids = Constants.SUGGESTIONS.LANGUAGES;
+					suggestedZids = store.getSuggestedLanguageZids;
 					break;
 				case Constants.Z_TYPE:
 					title = i18n( 'wikilambda-object-selector-suggested-types' ).text();

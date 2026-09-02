@@ -272,7 +272,7 @@ module.exports = exports = defineComponent( {
 			const candidates = [ ...new Set( [
 				store.getUserLangZid,
 				...store.getFallbackLanguageZids,
-				...Constants.SUGGESTIONS.LANGUAGES
+				...store.getSuggestedLanguageZids
 			] ) ];
 
 			// Filter items that match any of the candidate ZIDs
