@@ -42,7 +42,8 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 			CONTENT_MODEL_ABSTRACT,
 			$this->getServiceContainer()->getMainConfig(),
 			$this->createNoOpMock( AWArticleStore::class ),
-			$this->getServiceContainer()->get( 'WikiLambdaWikidataEntityLookup' )
+			$this->getServiceContainer()->get( 'WikiLambdaWikidataEntityLookup' ),
+			$this->getServiceContainer()->getRevisionLookup()
 		);
 	}
 

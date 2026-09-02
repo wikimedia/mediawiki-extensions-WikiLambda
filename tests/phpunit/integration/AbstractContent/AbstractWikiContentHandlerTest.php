@@ -55,7 +55,8 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 			$modelId ?? CONTENT_MODEL_ABSTRACT,
 			$this->getServiceContainer()->getMainConfig(),
 			$this->createNoOpMock( AWArticleStore::class ),
-			$mockWikidataEntityLookup
+			$mockWikidataEntityLookup,
+			$this->getServiceContainer()->getRevisionLookup()
 		);
 	}
 

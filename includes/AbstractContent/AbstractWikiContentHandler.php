@@ -30,6 +30,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Permissions\Authority;
+use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
@@ -50,12 +51,14 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * @param Config $config
 	 * @param AWArticleStore $articleStore
 	 * @param WikidataEntityLookup $entityLookup
+	 * @param RevisionLookup $revisionLookup
 	 */
 	public function __construct(
 		$modelId,
 		private readonly Config $config,
 		private readonly AWArticleStore $articleStore,
-		private readonly WikidataEntityLookup $entityLookup
+		private readonly WikidataEntityLookup $entityLookup,
+		private readonly RevisionLookup $revisionLookup
 	) {
 		if ( $modelId !== CONTENT_MODEL_ABSTRACT ) {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
@@ -178,7 +181,9 @@ class AbstractWikiContentHandler extends ContentHandler {
 	) {
 		$updates = parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput );
 		if ( $content instanceof AbstractWikiContent ) {
-			$updates[] = new AbstractContentDataUpdate( $title, $content, $this->articleStore );
+			$updates[] = new AbstractContentDataUpdate(
+				$title, $content, $this->articleStore, $this->revisionLookup
+			);
 			// (T390557) Record which Functions this Abstract article calls into the shared cross-wiki usage table.
 			$updates[] = new AbstractWikiUsageUpdate( $title, $content );
 		}

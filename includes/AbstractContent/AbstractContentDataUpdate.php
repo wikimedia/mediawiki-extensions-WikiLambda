@@ -15,6 +15,7 @@ use MediaWiki\Deferred\DataUpdate;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
 
@@ -26,11 +27,13 @@ class AbstractContentDataUpdate extends DataUpdate {
 	 * @param Title $title
 	 * @param AbstractWikiContent $awContent
 	 * @param AWArticleStore $articleStore
+	 * @param RevisionLookup $revisionLookup
 	 */
 	public function __construct(
 		private readonly Title $title,
 		private readonly AbstractWikiContent $awContent,
 		private readonly AWArticleStore $articleStore,
+		private readonly RevisionLookup $revisionLookup,
 	) {
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
@@ -80,8 +83,20 @@ class AbstractContentDataUpdate extends DataUpdate {
 		$payload[ 'sections' ] = $sectionIds;
 
 		// Set some info about the content object update and revision
-		$payload[ 'awLastUpdated' ] = $this->title->getTouched();
-		$payload[ 'awLatestRevID' ] = (string)$this->title->getLatestRevID();
+
+		// We read these values from the revision, not from the Title; Title::getTouched()
+		// gives page_touched, which will update on purges without an edit..
+		$revision = $this->revisionLookup->getKnownCurrentRevision( $this->title );
+		if ( $revision ) {
+			$payload[ 'awLastUpdated' ] = $revision->getTimestamp();
+			$payload[ 'awLatestRevID' ] = (string)$revision->getId();
+		} else {
+			// The page is gone, or the revision is not available; keep the stored values, if any.
+			$this->logger->warning(
+				__METHOD__ . ' found no current revision for {topicQid}',
+				[ 'topicQid' => $topicQid ]
+			);
+		}
 
 		// Store the metadata object in the article store
 		$metadata = new AWArticleMetadata( $topicQid, $payload );
