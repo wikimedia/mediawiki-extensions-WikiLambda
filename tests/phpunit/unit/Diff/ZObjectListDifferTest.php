@@ -146,4 +146,137 @@ class ZObjectListDifferTest extends MediaWikiUnitTestCase {
 		$this->assertSame( [ 1 ], $this->movedPathsOf( $old, $new ) );
 		$this->assertSame( 'change', $this->opTypesOf( $old, $new )['2.Z11K2'] );
 	}
+
+	/**
+	 * An alias set: a monolingual string set of one language.
+	 *
+	 * The tests below use alias sets rather than plain monolingual strings
+	 * because the edit-count guess only goes wrong where one item can differ
+	 * from the rest by much more than another does, and an item holding a list
+	 * of its own is what makes that possible. It is also where this was found.
+	 *
+	 * @param string $language
+	 * @param string[] $aliases
+	 * @return array
+	 */
+	private function aliasSet( string $language, array $aliases ): array {
+		return [
+			'Z1K1' => 'Z31',
+			'Z31K1' => $language,
+			'Z31K2' => array_merge( [ 'Z6' ], $aliases ),
+		];
+	}
+
+	public function testEditedItemIsNotMistakenForTheAddedOne() {
+		// The edit-count guess asks which item has no identical counterpart and
+		// differs most from the other side. An item edited in place answers that
+		// too, and being edited makes it differ more, so it wins over the item
+		// that really is new. Every item after it then shifts by one, and a
+		// change of one entry reports as a change of all of them.
+		$old = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'a', 'b', 'c' ] ),
+			$this->aliasSet( 'Z1004', [ 'f' ] ),
+		];
+		$new = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'x', 'y', 'z' ] ),
+			$this->aliasSet( 'Z1004', [ 'f' ] ),
+			$this->aliasSet( 'Z1732', [ 'h' ] ),
+		];
+
+		// Only the English aliases changed, and only the last entry is new. In
+		// particular no entry reports a change of language.
+		$this->assertSame(
+			[
+				'1.Z31K2.1' => 'change',
+				'1.Z31K2.2' => 'change',
+				'1.Z31K2.3' => 'change',
+				3 => 'add',
+			],
+			$this->opTypesOf( $old, $new )
+		);
+	}
+
+	public function testItemAddedInTheMiddleDoesNotShiftTheOnesAfterIt() {
+		$old = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'a', 'b', 'c' ] ),
+			$this->aliasSet( 'Z1004', [ 'f' ] ),
+		];
+		$new = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'x', 'y', 'z' ] ),
+			$this->aliasSet( 'Z1732', [ 'h' ] ),
+			$this->aliasSet( 'Z1004', [ 'f' ] ),
+		];
+
+		// The French entry is untouched even though it is now one place further
+		// down, so it must report nothing.
+		$this->assertSame(
+			[
+				'1.Z31K2.1' => 'change',
+				'1.Z31K2.2' => 'change',
+				'1.Z31K2.3' => 'change',
+				2 => 'add',
+			],
+			$this->opTypesOf( $old, $new )
+		);
+	}
+
+	public function testRemovedItemIsFoundByItsKeyNotByEditCount() {
+		$old = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'a', 'b', 'c' ] ),
+			$this->aliasSet( 'Z1004', [ 'f' ] ),
+			$this->aliasSet( 'Z1005', [ 'g' ] ),
+		];
+		$new = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'x', 'y', 'z' ] ),
+			$this->aliasSet( 'Z1005', [ 'g' ] ),
+		];
+
+		// The French entry went; the English one was edited, not removed.
+		$this->assertSame(
+			[
+				'1.Z31K2.1' => 'change',
+				'1.Z31K2.2' => 'change',
+				'1.Z31K2.3' => 'change',
+				2 => 'remove',
+			],
+			$this->opTypesOf( $old, $new )
+		);
+	}
+
+	public function testListThatBothGainedAndLostItemsFallsBackToPositions() {
+		// The keys leave two entries unpaired but the list only grew by one, so
+		// they do not account for the change on their own and the edit-count
+		// guess still has to decide. It must still report the addition.
+		$old = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'a', 'b', 'c' ] ),
+			$this->aliasSet( 'Z1004', [ 'f' ] ),
+		];
+		$new = [
+			'Z31',
+			$this->aliasSet( 'Z1002', [ 'a', 'b', 'c' ] ),
+			$this->aliasSet( 'Z1005', [ 'g' ] ),
+			$this->aliasSet( 'Z1732', [ 'h' ] ),
+		];
+
+		$this->assertContains( 'add', $this->opTypesOf( $old, $new ) );
+	}
+
+	public function testItemsSharingAJoinKeyStillFallBackToPositions() {
+		// Two implementations of one function cannot be told apart by identity,
+		// so which of them is the new one stays a guess.
+		$implementation = static fn ( string $function, string $code ): array => [
+			'Z1K1' => 'Z14', 'Z14K1' => $function, 'Z14K3' => $code,
+		];
+		$this->assertContains( 'add', $this->opTypesOf(
+			[ 'Z14', $implementation( 'Z10001', 'a' ) ],
+			[ 'Z14', $implementation( 'Z10001', 'a' ), $implementation( 'Z10001', 'b' ) ]
+		) );
+	}
 }

@@ -58,7 +58,7 @@ class ZObjectListDiffer implements Differ {
 		$listDiff = [];
 
 		/**
-		 * TODO (T338250): Re-ordering is only detected where the two lists hold the
+		 * TODO (T436773): Re-ordering is only detected where the two lists hold the
 		 * same identifiable items, which permutationDiff() has already handled by
 		 * the time we get here. Two gaps remain.
 		 *
@@ -71,9 +71,9 @@ class ZObjectListDiffer implements Differ {
 		 * ZObjectAuthorization, whose rules match paths containing those indices.
 		 *
 		 * And DiffMatrix below still diffs every old item against every new one,
-		 * O(n*m) full recursive diffs, to guess which items were added or removed.
-		 * Pairing the identifiable items first would leave it only the remainder to
-		 * guess at, which is both cheaper and more accurate.
+		 * O(n*m) full recursive diffs, even where unpairedIndices() has already
+		 * said which item was added or removed. Only its guess is skipped, not
+		 * its work.
 		 */
 
 		// If $newArray and $oldArray have the same number of items,
@@ -95,9 +95,11 @@ class ZObjectListDiffer implements Differ {
 			if ( count( $oldArray ) > count( $newArray ) ) {
 				// If $oldArray has more items than $newArray, the
 				// matrix has more rows than colums, so we need to
-				// find which rows have been deleted by finding the
-				// n ones with a larger number of edits.
-				$deletedIndices = $matrix->getIndicesOfRemovedItems();
+				// find which rows have been deleted. The join keys say so
+				// exactly where they can; failing that, fall back to the
+				// rows with a larger number of edits.
+				$deletedIndices = $this->unpairedIndices( $oldArray, $newArray )
+					?? $matrix->getIndicesOfRemovedItems();
 				for ( $index = 0; $index < count( $oldArray ); $index++ ) {
 					if ( in_array( $index, $deletedIndices ) ) {
 						// If this is one of the deleted items, create Remove operation:
@@ -115,9 +117,11 @@ class ZObjectListDiffer implements Differ {
 			} else {
 				// If $newArray has more items than $oldArray, the
 				// matrix has more colums than rows, and we need to
-				// find which columns have been added by finding the
-				// n ones with a larger number of edits.
-				$addedIndices = $matrix->getIndicesOfAddedItems();
+				// find which columns have been added. The join keys say so
+				// exactly where they can; failing that, fall back to the
+				// columns with a larger number of edits.
+				$addedIndices = $this->unpairedIndices( $newArray, $oldArray )
+					?? $matrix->getIndicesOfAddedItems();
 				for ( $index = 0; $index < count( $newArray ); $index++ ) {
 					if ( in_array( $index, $addedIndices ) ) {
 						// If this is one of the deleted items, create Add operation:
@@ -135,6 +139,41 @@ class ZObjectListDiffer implements Differ {
 			}
 		}
 		return $listDiff;
+	}
+
+	/**
+	 * The indices of the items one list holds that the other does not, by their
+	 * join keys, or null where the keys cannot say.
+	 *
+	 * DiffMatrix has to guess this from edit counts, and its guess is that the
+	 * added or removed item is whichever has no identical counterpart and differs
+	 * most from everything on the other side. An item edited in place answers that
+	 * description too, and being edited makes it differ more, so it wins: editing
+	 * one alias set of eight languages reports the language edited as newly added,
+	 * shifts every language after it by one, and turns a change of one entry into
+	 * a change of all of them. Join keys tell the two cases apart, because an item
+	 * keeps its key when its content changes.
+	 *
+	 * This answers only for lists whose every item carries a key of its own, since
+	 * an item that cannot be keyed might be the one that went, and only where the
+	 * keys account for the whole change of length. A list that both gained and lost
+	 * items needs a removal addressed in the old list's index space and an addition
+	 * in the new list's at once, which a Diff cannot hold; that is left to the guess
+	 * along with everything else the keys cannot settle.
+	 *
+	 * @param array $items The longer list: the one holding the unpaired items
+	 * @param array $others The shorter list
+	 * @return int[]|null Indices into $items, ascending
+	 */
+	private function unpairedIndices( array $items, array $others ): ?array {
+		$keys = DiffItemKeyer::uniqueJoinKeys( $items );
+		$otherKeys = DiffItemKeyer::uniqueJoinKeys( $others );
+		if ( count( $keys ) !== count( $items ) || count( $otherKeys ) !== count( $others ) ) {
+			return null;
+		}
+
+		$unpaired = array_values( array_diff_key( $keys, $otherKeys ) );
+		return ( count( $unpaired ) === count( $items ) - count( $others ) ) ? $unpaired : null;
 	}
 
 	/**
