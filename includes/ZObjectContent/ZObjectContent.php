@@ -89,10 +89,13 @@ class ZObjectContent extends AbstractContent {
 			);
 		}
 
-		// Save the object content (the string, a JSON stringification of the object model, is saved
-		// by the constructor, but this is an implementation detail, and in future might change; it
-		// should not be relied upon).
-		// TODO (T284473): We might not need the text content once we have proper diffs
+		// Save the parsed object. The constructor also saves the raw text, through
+		// property promotion.
+		//
+		// Keep both. MediaWiki writes the text to the revision store, and
+		// ZObjectContentHandler::preSaveTransform() compares the text with the
+		// canonical form, to find content that it must rewrite. The parsed object
+		// does not keep the original spacing, so it cannot replace the text.
 		$this->object = $parseStatus->getValue();
 	}
 
