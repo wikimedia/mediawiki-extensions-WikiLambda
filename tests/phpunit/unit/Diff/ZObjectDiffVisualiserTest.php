@@ -481,6 +481,97 @@ class ZObjectDiffVisualiserTest extends MediaWikiUnitTestCase {
 		$this->assertStringContainsString( 'dir="ltr"', $html );
 	}
 
+	/**
+	 * A name in one stated language, for edits that re-tag the language of a
+	 * value: each side of the row must then state the language it holds.
+	 *
+	 * @param string $languageZid
+	 * @param string $value
+	 * @return array
+	 */
+	private function namedIn( string $languageZid, string $value ): array {
+		return [
+			'Z1K1' => 'Z2',
+			'Z2K3' => [
+				'Z1K1' => 'Z12',
+				'Z12K1' => [
+					'Z11',
+					[ 'Z1K1' => 'Z11', 'Z11K1' => $languageZid, 'Z11K2' => $value ],
+				],
+			],
+		];
+	}
+
+	public function testChangedLanguageHeadsEachSideWithItsOwnLanguage() {
+		$old = $this->namedIn( 'Z1002', 'Mushroom' );
+		$new = $this->namedIn( 'Z1004', 'Champignon' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// The header names the language each side had, not the new one twice.
+		$this->assertStringContainsString(
+			'<td colspan="2" class="diff-lineno">[wikilambda-diff-group-name] (English)</td>'
+				. '<td colspan="2" class="diff-lineno">[wikilambda-diff-group-name] (French)</td>',
+			$html
+		);
+	}
+
+	public function testChangedLanguageTagsEachSideWithItsOwnLanguage() {
+		$old = $this->namedIn( 'Z1002', 'Mushroom' );
+		$new = $this->namedIn( 'Z1004', 'Champignon' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// The removed text stays English; only the added text is French.
+		$this->assertStringContainsString( '<td class="diff-deletedline"><div dir="ltr" lang="en">', $html );
+		$this->assertStringContainsString( '<td class="diff-addedline"><div dir="ltr" lang="fr">', $html );
+	}
+
+	public function testChangedLanguageKeepsEachSidesDirection() {
+		$old = $this->namedIn( 'Z1005', 'فطر' );
+		$new = $this->namedIn( 'Z1002', 'Mushroom' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// The removed Arabic keeps its direction; the added English is not forced rtl.
+		$this->assertStringContainsString( '<td class="diff-deletedline"><div dir="rtl" lang="ar">', $html );
+		$this->assertStringContainsString( '<td class="diff-addedline"><div dir="ltr" lang="en">', $html );
+	}
+
+	public function testChangedAliasLanguageHeadsEachSideWithItsOwnLanguage() {
+		$aliases = static fn ( string $languageZid, string $alias ): array => [
+			'Z1K1' => 'Z2',
+			'Z2K4' => [
+				'Z1K1' => 'Z32',
+				'Z32K1' => [
+					'Z31',
+					[ 'Z1K1' => 'Z31', 'Z31K1' => $languageZid, 'Z31K2' => [ 'Z6', $alias ] ],
+				],
+			],
+		];
+		$old = $aliases( 'Z1002', 'colour' );
+		$new = $aliases( 'Z1004', 'couleur' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		$this->assertStringContainsString(
+			'<td colspan="2" class="diff-lineno">[wikilambda-diff-group-aliases] (English)</td>'
+				. '<td colspan="2" class="diff-lineno">[wikilambda-diff-group-aliases] (French)</td>',
+			$html
+		);
+		$this->assertStringContainsString( '<td class="diff-deletedline"><div dir="ltr" lang="en">', $html );
+		$this->assertStringContainsString( '<td class="diff-addedline"><div dir="ltr" lang="fr">', $html );
+	}
+
+	public function testUnchangedLanguageHeadsBothSidesTheSame() {
+		$old = $this->monolingualField( 'Z2K3', 'Mushroom' );
+		$new = $this->monolingualField( 'Z2K3', 'Toadstool' );
+		$html = $this->newVisualiser()->visualiseDiff( $this->diffOf( $old, $new ), $old, $new );
+
+		// Where the language did not change, both header cells still match.
+		$this->assertStringContainsString(
+			'<td colspan="2" class="diff-lineno">[wikilambda-diff-group-name] (English)</td>'
+				. '<td colspan="2" class="diff-lineno">[wikilambda-diff-group-name] (English)</td>',
+			$html
+		);
+	}
+
 	public function testRightToLeftValueIsMarkedRtl() {
 		$arabicName = static fn ( string $value ): array => [
 			'Z1K1' => 'Z2',
