@@ -22,8 +22,7 @@ module.exports = {
 		 */
 		languages: {},
 		/**
-		 * Map of in-flight language-code-to-ZID requests. Written only by
-		 * `storeUtils.doDeduplicatedBatchFetch`.
+		 * Map of in-flight language-code-to-ZID requests, written by `storeUtils.doDeduplicatedBatchFetch`.
 		 * Key: language code
 		 * Value: Promise for the batch that is fetching it
 		 *

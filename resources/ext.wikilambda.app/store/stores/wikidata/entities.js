@@ -218,74 +218,53 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {Array<string>} payload.ids - Array of Wikidata entity IDs to fetch
-		 * @param {Function} payload.getData - Function to get cached data for an ID
-		 * @param {Function} payload.setData - Function to set data for an ID
-		 * @param {Function} payload.resetData - Function to reset data for IDs
-		 * @return {Promise} - A promise that resolves when all batches complete
+		 * @return {Promise<Object>} - Resolves with the entity data indexed by ID
 		 */
-		fetchWikidataEntitiesBatched: function ( { ids, getData, setData, resetData } ) {
-			// Filter out the fetched or fetching entity IDs
-			const filteredIds = ids.filter( ( id ) => getData( id ) === undefined );
-
-			if ( !filteredIds.length ) {
-				// If list is empty, do nothing
-				return Promise.resolve();
-			}
-
+		fetchWikidataEntitiesBatched: function ( { ids } ) {
 			// Clear the failed state so that a retry is not stuck on the previous failure
-			this.clearWikidataEntityFetchFailed( { ids: filteredIds } );
+			this.clearWikidataEntityFetchFailed( { ids } );
 
 			// Split into batches of up to Wikidata API limit
 			const BATCH_SIZE = this.getWikidataBatchSize;
 			const batches = [];
-			for ( let i = 0; i < filteredIds.length; i += BATCH_SIZE ) {
-				batches.push( filteredIds.slice( i, i + BATCH_SIZE ) );
+			for ( let i = 0; i < ids.length; i += BATCH_SIZE ) {
+				batches.push( ids.slice( i, i + BATCH_SIZE ) );
 			}
 
-			const batchRequests = batches.map( ( batchIds ) => {
-				const request = {
-					language: this.getUserLangCode,
-					ids: batchIds.join( '|' )
-				};
-				return fetchWikidataEntities( request )
-					.then( ( data ) => {
-						// It might return an error for invalid IDs
-						if ( data.error ) {
-							this.setWikidataEntityFetchFailed( { ids: batchIds } );
-							resetData( { ids: batchIds } );
-							return data;
-						}
-						// Once received, store entity IDs with their data
-						const fetched = data.entities ? Object.keys( data.entities ) : [];
-						fetched.forEach( ( id ) => {
-							const entity = data.entities[ id ];
-							// If entity is undefined, do nothing
-							if ( !entity ) {
-								return;
-							}
-							// If entity has a 'missing' property, reset the data
-							if ( typeof entity === 'object' && 'missing' in entity ) {
-								resetData( { ids: [ id ] } );
-								return;
-							}
-							// Otherwise, store the entity data
-							setData( { id, data: entity } );
-						} );
-						return data;
-					} )
-					.catch( () => {
-						// If fetch fails, remove the IDs from the state
+			const batchRequests = batches.map( ( batchIds ) => fetchWikidataEntities( {
+				language: this.getUserLangCode,
+				ids: batchIds.join( '|' )
+			} )
+				.then( ( data ) => {
+					// It might return an error for invalid IDs
+					if ( data.error ) {
 						this.setWikidataEntityFetchFailed( { ids: batchIds } );
-						resetData( { ids: batchIds } );
+						return {};
+					}
+					if ( !data.entities ) {
+						return {};
+					}
+					const entities = {};
+					Object.keys( data.entities ).forEach( ( id ) => {
+						const entity = data.entities[ id ];
+						// Leave out an entity which is undefined, and one which
+						// has a 'missing' property because Wikidata has no such ID
+						if ( !entity || ( typeof entity === 'object' && 'missing' in entity ) ) {
+							return;
+						}
+						entities[ id ] = entity;
 					} );
-			} );
+					return entities;
+				} )
+				// A batch which fails contributes no entities. Nothing is
+				// cached for its IDs, so a later call asks for them again.
+				.catch( () => {
+					this.setWikidataEntityFetchFailed( { ids: batchIds } );
+					return {};
+				} ) );
 
-			// If only one batch, return that directly, otherwise wait for all
-			const resultPromise = batchRequests.length === 1 ? batchRequests[ 0 ] : Promise.all( batchRequests );
-
-			// Store entity IDs with their resolving promise
-			filteredIds.forEach( ( id ) => setData( { id, data: resultPromise } ) );
-			return resultPromise;
+			return Promise.all( batchRequests )
+				.then( ( results ) => Object.assign( {}, ...results ) );
 		},
 
 		/**

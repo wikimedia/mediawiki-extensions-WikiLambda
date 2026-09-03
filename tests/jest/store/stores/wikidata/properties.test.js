@@ -27,6 +27,7 @@ describe( 'Wikidata Properties Pinia store', () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
 		store.properties = {};
+		store.propertyPromises = new Map();
 	} );
 
 	describe( 'Getters', () => {
@@ -101,11 +102,6 @@ describe( 'Wikidata Properties Pinia store', () => {
 
 	describe( 'Actions', () => {
 		describe( 'setPropertyData', () => {
-			it( 'stores a promise directly if data is a promise', () => {
-				const promise = Promise.resolve( 'foo' );
-				store.setPropertyData( { id: propertyId, data: promise } );
-				expect( store.properties[ propertyId ] ).toBe( promise );
-			} );
 			it( 'unwraps and stores only title and labels if data is an object', () => {
 				const data = { ...propertyData, extra: 'should not be stored' };
 				store.setPropertyData( { id: propertyId, data } );
@@ -113,49 +109,40 @@ describe( 'Wikidata Properties Pinia store', () => {
 			} );
 		} );
 
-		describe( 'resetPropertyData', () => {
-			it( 'removes property data for given IDs', () => {
-				store.properties = { P111111: 'foo', P222222: 'bar', P333333: 'baz' };
-				store.resetPropertyData( { ids: [ 'P111111', 'P333333' ] } );
-				expect( store.properties ).toEqual( { P222222: 'bar' } );
-			} );
-		} );
-
 		describe( 'fetchProperties', () => {
-			// NOTE: before T429766 test cases were duplicate between fetchItems/Lexemes/Properties
-			// and fetchWikidataEntitiesBatched. Now, fetchItems/Lexemes/Properties tests need to
-			// test that the time window behavior is correct, and the call to fetchWikidataEntitiesBatched
-			// happens with the right parameters. The internal behavior of the entities fetch method
-			// is fully tested in entities.js
+			// NOTE: the time window (T429766) collects the Ids of the calls which
+			// arrive close together into one request, and
+			// `storeUtils.doDeduplicatedBatchFetch` keeps the Ids which are cached
+			// or already being fetched out of it. The request itself, which splits
+			// the Ids into batches, is fully tested in entities.js
 			beforeEach( () => {
 				store.properties = {};
+				store.propertyPromises = new Map();
 				store.scheduledProps = [];
 				store.scheduledPropsPromise = null;
 				jest.useFakeTimers();
 				Object.defineProperty( store, 'getUserLangCode', { value: 'en' } );
-				store.fetchWikidataEntitiesBatched = jest.fn().mockReturnValue( Promise.resolve() );
+				store.fetchWikidataEntitiesBatched = jest.fn().mockResolvedValue( {} );
 			} );
 
 			afterEach( () => {
 				jest.useRealTimers();
 			} );
 
-			it( 'creates a new promise and initiates scheduledProps on first call', () => {
+			it( 'opens a window and schedules the ids on the first call', () => {
 				const promise = store.fetchProperties( { ids: [ 'P111111' ] } );
 
 				expect( store.scheduledProps ).toEqual( [ 'P111111' ] );
-				expect( store.scheduledPropsPromise ).toStrictEqual( promise );
+				expect( store.scheduledPropsPromise ).toBeInstanceOf( Promise );
 				expect( promise ).toBeInstanceOf( Promise );
 			} );
 
-			it( 'subsequent calls within the time window add to scheduledProps and return the same promise', () => {
-				const promise1 = store.fetchProperties( { ids: [ 'P111111' ] } );
-				const promise2 = store.fetchProperties( { ids: [ 'P222222' ] } );
-				const promise3 = store.fetchProperties( { ids: [ 'P111111', 'P333333' ] } );
+			it( 'subsequent calls within the time window add to scheduledProps', () => {
+				store.fetchProperties( { ids: [ 'P111111' ] } );
+				store.fetchProperties( { ids: [ 'P222222' ] } );
+				store.fetchProperties( { ids: [ 'P111111', 'P333333' ] } );
 
 				expect( store.scheduledProps ).toEqual( [ 'P111111', 'P222222', 'P333333' ] );
-				expect( promise2 ).toStrictEqual( promise1 );
-				expect( promise3 ).toStrictEqual( promise1 );
 			} );
 
 			it( 'deduplicates ids across concurrent calls', () => {
@@ -165,47 +152,51 @@ describe( 'Wikidata Properties Pinia store', () => {
 				expect( store.scheduledProps ).toEqual( [ 'P111111', 'P222222', 'P333333' ] );
 			} );
 
-			it( 'calls fetchWikidataEntitiesBatched with collected qids', () => {
+			it( 'does not schedule an id which is already cached', () => {
+				store.properties = { P111111: propertyData };
+
+				store.fetchProperties( { ids: [ 'P111111', 'P222222' ] } );
+
+				expect( store.scheduledProps ).toEqual( [ 'P222222' ] );
+			} );
+
+			it( 'calls fetchWikidataEntitiesBatched with collected pids', () => {
 				store.fetchProperties( { ids: [ 'P111111' ] } );
 				store.fetchProperties( { ids: [ 'P222222' ] } );
 
 				jest.runAllTimers();
 
 				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledWith( {
-					ids: [ 'P111111', 'P222222' ],
-					getData: expect.any( Function ),
-					setData: expect.any( Function ),
-					resetData: expect.any( Function )
+					ids: [ 'P111111', 'P222222' ]
 				} );
 			} );
 
-			it( 'calls fetchWikidataEntitiesBatched with the correct item setters and getters', () => {
-				// Mock getter, setter an resetter
-				const mockGetter = jest.fn();
-				const mockSetter = jest.fn();
-				const mockResetter = jest.fn();
+			it( 'caches the properties which the request returned', async () => {
+				store.fetchWikidataEntitiesBatched = jest.fn().mockResolvedValue( {
+					P111111: { ...propertyData, extra: 'should not be stored' }
+				} );
 
-				Object.defineProperty( store, 'getPropertyData', { value: mockGetter } );
-				store.setPropertyData = mockSetter;
-				store.resetPropertyData = mockResetter;
-
-				// Make call
-				store.fetchProperties( { ids: [ 'P111111' ] } );
+				const promise = store.fetchProperties( { ids: [ 'P111111' ] } );
 				jest.runAllTimers();
+				await promise;
 
-				const call = store.fetchWikidataEntitiesBatched.mock.calls[ 0 ][ 0 ];
+				expect( store.properties.P111111 ).toEqual( propertyData );
+				expect( store.propertyPromises.size ).toBe( 0 );
+			} );
 
-				// Check getter
-				call.getData( 'P111111' );
-				expect( mockGetter ).toHaveBeenCalledWith( 'P111111' );
+			it( 'does not cache an id which the request left out, and asks again', async () => {
+				const promise = store.fetchProperties( { ids: [ 'P111111' ] } );
+				jest.runAllTimers();
+				await promise;
 
-				// Check setter
-				call.setData( { id: 'P111111', data: propertyData } );
-				expect( mockSetter ).toHaveBeenCalledWith( { id: 'P111111', data: propertyData } );
+				expect( store.properties.P111111 ).toBeUndefined();
+				expect( store.propertyPromises.size ).toBe( 0 );
 
-				// Check resetter
-				call.resetData( { ids: [ 'P111111' ] } );
-				expect( mockResetter ).toHaveBeenCalledWith( { ids: [ 'P111111' ] } );
+				const retry = store.fetchProperties( { ids: [ 'P111111' ] } );
+				jest.runAllTimers();
+				await retry;
+
+				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledTimes( 2 );
 			} );
 
 			it( 'resolves the promise after the time window', async () => {
@@ -236,7 +227,6 @@ describe( 'Wikidata Properties Pinia store', () => {
 				jest.runAllTimers();
 				await promise2;
 
-				expect( promise2 ).not.toBe( promise1 );
 				expect( store.fetchWikidataEntitiesBatched ).toHaveBeenCalledTimes( 2 );
 			} );
 		} );

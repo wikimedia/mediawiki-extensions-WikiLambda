@@ -15,11 +15,24 @@ const {
 	isWikidataLexemeSenseId,
 	selectTermByLanguage
 } = require( '../../../utils/wikidataUtils.js' );
+const storeUtils = require( '../../../utils/storeUtils.js' );
 
 module.exports = {
 	state: {
-		// TODO (T417384): data-or-promise slot; see the note in `items.js`.
+		/**
+		 * Cache of Lexeme data indexed by Lexeme ID.
+		 *
+		 * @type {Object<string, Object>}
+		 */
 		lexemes: {},
+		/**
+		 * Map of in-flight Lexeme requests, written by `storeUtils.doDeduplicatedBatchFetch`.
+		 * Key: Lexeme ID
+		 * Value: Promise of the request which fetches it
+		 *
+		 * @type {Map<string, Promise>}
+		 */
+		lexemePromises: new Map(),
 		senses: {},
 		scheduledLexemes: [],
 		scheduledLexemesPromise: null
@@ -28,8 +41,7 @@ module.exports = {
 	getters: {
 		/**
 		 * Returns the Lexeme object of a given ID,
-		 * the fetch Promise if the fetch request is on the fly,
-		 * or undefined if it hasn't been requested yet.
+		 * or undefined if it has not been fetched yet.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -37,7 +49,7 @@ module.exports = {
 		getLexemeData: function ( state ) {
 			/**
 			 * @param {string} id
-			 * @return {Object|Promise|undefined}
+			 * @return {Object|undefined}
 			 */
 			const findLexemeData = ( id ) => state.lexemes[ id ];
 			return findLexemeData;
@@ -46,7 +58,7 @@ module.exports = {
 		/**
 		 * Returns a promise that resolves to the Lexeme data given its Id.
 		 * If the lexeme is already cached, returns a resolved promise.
-		 * If the lexeme is being fetched, returns the existing promise.
+		 * If the lexeme is being fetched, waits for that request.
 		 * If the lexeme hasn't been requested, returns a rejected promise.
 		 *
 		 * @param {Object} state
@@ -55,19 +67,23 @@ module.exports = {
 		getLexemeDataAsync: function () {
 			/**
 			 * @param {string} id
-			 * @return {Promise<Object>}
+			 * @return {Promise<Object|undefined>} The lexeme data, or undefined if
+			 *   the request which was fetching it did not return the lexeme
 			 */
 			const findLexemeDataAsync = ( id ) => {
 				const lexemeData = this.getLexemeData( id );
 
-				// If lexeme is already cached (not a promise), return resolved promise
-				if ( lexemeData && typeof lexemeData.then !== 'function' ) {
+				// If lexeme is already cached, return resolved promise
+				if ( lexemeData !== undefined ) {
 					return Promise.resolve( lexemeData );
 				}
 
-				// If lexeme is being fetched (is a promise), return that promise
-				if ( lexemeData && typeof lexemeData.then === 'function' ) {
-					return lexemeData;
+				// If lexeme is being fetched, wait for that request and then read
+				// the cache: the request resolves with every lexeme it asked for,
+				// not with this one
+				const request = this.lexemePromises.get( id );
+				if ( request ) {
+					return request.then( () => this.getLexemeData( id ) );
 				}
 
 				// If lexeme hasn't been requested, return rejected promise
@@ -77,8 +93,7 @@ module.exports = {
 		},
 		/**
 		 * Returns the processed senses data for a given lexeme ID,
-		 * the processing Promise if the processing is on the fly,
-		 * or undefined if it hasn't been requested yet.
+		 * or undefined if it has not been requested yet.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -86,7 +101,7 @@ module.exports = {
 		getLexemeSensesData: function ( state ) {
 			/**
 			 * @param {string} lexemeId
-			 * @return {Array|Promise|undefined}
+			 * @return {Array|undefined}
 			 */
 			const findLexemeSensesData = ( lexemeId ) => state.senses[ lexemeId ];
 			return findLexemeSensesData;
@@ -95,7 +110,6 @@ module.exports = {
 		/**
 		 * Returns a promise that resolves to the processed senses data for a given lexeme ID.
 		 * If the senses are already processed, returns a resolved promise.
-		 * If the senses are being processed, returns the existing promise.
 		 * If the senses haven't been requested, returns a rejected promise.
 		 *
 		 * @return {Function}
@@ -108,14 +122,9 @@ module.exports = {
 			const findLexemeSensesDataAsync = ( lexemeId ) => {
 				const sensesData = this.getLexemeSensesData( lexemeId );
 
-				// If senses are already processed (not a promise), return resolved promise
-				if ( sensesData && typeof sensesData.then !== 'function' ) {
+				// If senses are already processed, return resolved promise
+				if ( sensesData ) {
 					return Promise.resolve( sensesData );
-				}
-
-				// If senses are being processed (is a promise), return that promise
-				if ( sensesData && typeof sensesData.then === 'function' ) {
-					return sensesData;
 				}
 
 				// If senses haven't been requested, return rejected promise
@@ -343,27 +352,9 @@ module.exports = {
 		 * @return {undefined}
 		 */
 		setLexemeData: function ( payload ) {
-			// If payload.data is a promise, store it directly
-			if ( payload.data && typeof payload.data.then === 'function' ) {
-				this.lexemes[ payload.id ] = payload.data;
-				return;
-			}
-
-			// Otherwise, unwrap the data to select only subset of Lexeme data; title, forms, senses and lemmas
+			// Unwrap the data to select only subset of Lexeme data; title, forms, senses and lemmas
 			const unwrap = ( { title, forms, senses, lemmas } ) => ( { title, forms, senses, lemmas } );
 			this.lexemes[ payload.id ] = unwrap( payload.data );
-		},
-
-		/**
-		 * Removes the lexems for the given IDs
-		 *
-		 * @param {Object} payload
-		 * @param {Array<string>} payload.ids - An array of Wikidata Lexeme IDs
-		 */
-		resetLexemeData: function ( payload ) {
-			payload.ids.forEach( ( id ) => delete this.lexemes[ id ] );
-			// Also reset the corresponding senses data
-			this.resetLexemeSensesData( { lexemeIds: payload.ids } );
 		},
 
 		/**
@@ -439,19 +430,35 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {Array<string>} payload.ids - An array of Wikidata Lexeme IDs to fetch.
-		 * @return {Promise} - A promise that resolves to the fetched data.
+		 * @return {Promise} - A promise which resolves when every given Id has settled.
 		 */
 		fetchLexemes: function ( { ids } ) {
+			return storeUtils.doDeduplicatedBatchFetch( {
+				inFlight: this.lexemePromises,
+				keys: ids,
+				getCached: ( id ) => this.getLexemeData( id ),
+				setCached: ( id, data ) => this.setLexemeData( { id, data } ),
+				run: ( newIds ) => this.scheduleLexemesRequest( newIds )
+			} );
+		},
+
+		/**
+		 * Adds the given Lexeme Ids to the request which the open time window
+		 * sends, and opens a window if there is none. (T429766) A page shows
+		 * many Wikidata components, and each of them asks for one Id, so the
+		 * window collects them into one request instead of one request each.
+		 *
+		 * @param {Array<string>} ids - An array of Wikidata Lexeme IDs to fetch.
+		 * @return {Promise<Object>} - Resolves with the data of every Lexeme in the window
+		 */
+		scheduleLexemesRequest: function ( ids ) {
 			this.scheduledLexemes = [ ... new Set( [ ...this.scheduledLexemes, ...ids ] ) ];
 
 			if ( !this.scheduledLexemesPromise ) {
 				this.scheduledLexemesPromise = new Promise( ( resolve, reject ) => {
 					setTimeout( () => {
 						this.fetchWikidataEntitiesBatched( {
-							ids: this.scheduledLexemes,
-							getData: this.getLexemeData,
-							setData: this.setLexemeData,
-							resetData: this.resetLexemeData
+							ids: this.scheduledLexemes
 						} ).then( resolve, reject );
 						this.scheduledLexemes = [];
 						this.scheduledLexemesPromise = null;

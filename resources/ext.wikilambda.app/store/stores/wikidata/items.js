@@ -10,15 +10,24 @@ const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 const { isWikidataQid } = require( '../../../utils/wikidataUtils.js' );
 const { fetchWikidataEntities } = require( '../../../utils/apiUtils.js' );
+const storeUtils = require( '../../../utils/storeUtils.js' );
 
 module.exports = {
 	state: {
-		// TODO (T417384): `items` holds either the data or the in-flight
-		// promise, which is why the getters below test `typeof value.then`.
-		// Split it into data and promises and move to
-		// `storeUtils.doDeduplicatedBatchFetch`. Do this for items, lexemes and
-		// properties together, and keep the request window from T429766.
+		/**
+		 * Cache of Wikidata Item data indexed by Item ID.
+		 *
+		 * @type {Object<string, Object>}
+		 */
 		items: {},
+		/**
+		 * Map of in-flight Item requests, written by `storeUtils.doDeduplicatedBatchFetch`.
+		 * Key: Item ID
+		 * Value: Promise of the request which fetches it
+		 *
+		 * @type {Map<string, Promise>}
+		 */
+		itemPromises: new Map(),
 		scheduledItems: [],
 		scheduledItemsPromise: null
 	},
@@ -26,8 +35,7 @@ module.exports = {
 	getters: {
 		/**
 		 * Returns the Wikidata Item data given its Id,
-		 * the fetch Promise if the fetch request is on the fly,
-		 * or undefined if it hasn't been requested yet.
+		 * or undefined if it has not been fetched yet.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -35,7 +43,7 @@ module.exports = {
 		getItemData: function ( state ) {
 			/**
 			 * @param {string} id
-			 * @return {Object|Promise|undefined}
+			 * @return {Object|undefined}
 			 */
 			const findItemData = ( id ) => state.items[ id ];
 			return findItemData;
@@ -44,7 +52,7 @@ module.exports = {
 		/**
 		 * Returns a promise that resolves to the Wikidata Item data given its Id.
 		 * If the item is already cached, returns a resolved promise.
-		 * If the item is being fetched, returns the existing promise.
+		 * If the item is being fetched, waits for that request.
 		 * If the item hasn't been requested, returns a rejected promise.
 		 *
 		 * @param {Object} state
@@ -53,19 +61,23 @@ module.exports = {
 		getItemDataAsync: function () {
 			/**
 			 * @param {string} id
-			 * @return {Promise<Object>}
+			 * @return {Promise<Object|undefined>} The item data, or undefined if
+			 *   the request which was fetching it did not return the item
 			 */
 			const getItemDataAsync = ( id ) => {
 				const itemData = this.getItemData( id );
 
-				// If item is already cached (not a promise), return resolved promise
-				if ( itemData && typeof itemData.then !== 'function' ) {
+				// If item is already cached, return resolved promise
+				if ( itemData !== undefined ) {
 					return Promise.resolve( itemData );
 				}
 
-				// If item is being fetched (is a promise), return that promise
-				if ( itemData && typeof itemData.then === 'function' ) {
-					return itemData;
+				// If item is being fetched, wait for that request and then read
+				// the cache: the request resolves with every item it asked for,
+				// not with this one
+				const request = this.itemPromises.get( id );
+				if ( request ) {
+					return request.then( () => this.getItemData( id ) );
 				}
 
 				// If item hasn't been requested, return rejected promise
@@ -140,24 +152,9 @@ module.exports = {
 		 * @return {undefined}
 		 */
 		setItemData: function ( payload ) {
-			// If payload.data is a promise, store it directly
-			if ( payload.data && typeof payload.data.then === 'function' ) {
-				this.items[ payload.id ] = payload.data;
-				return;
-			}
-			// Otherwise, unwrap the data to select only subset of Wikidata Item data; title, labels and descriptions
+			// Unwrap the data to select only subset of Wikidata Item data; title, labels and descriptions
 			const unwrap = ( { title, labels, descriptions } ) => ( { title, labels, descriptions } );
 			this.items[ payload.id ] = unwrap( payload.data );
-		},
-
-		/**
-		 * Removes the items for the given IDs
-		 *
-		 * @param {Object} payload
-		 * @param {Array<string>} payload.ids - An array of Wikidata Item IDs
-		 */
-		resetItemData: function ( payload ) {
-			payload.ids.forEach( ( id ) => delete this.items[ id ] );
 		},
 
 		/**
@@ -202,9 +199,8 @@ module.exports = {
 					// Merge the newly fetched label into whatever is cached now,
 					// rather than replacing it, so labels already fetched for
 					// other languages are preserved.
-					const cached = this.getItemData( id );
-					const current = ( cached && typeof cached.then !== 'function' ) ?
-						cached : { title: id, labels: {}, descriptions: {} };
+					const current = this.getItemData( id ) ||
+						{ title: id, labels: {}, descriptions: {} };
 					this.items[ id ] = Object.assign( {}, current, {
 						labels: Object.assign( {}, current.labels, entity.labels )
 					} );
@@ -221,19 +217,35 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {Array<string>} payload.ids - An array of Wikidata Item IDs to fetch.
-		 * @return {Promise} - A promise that resolves to the fetched data.
+		 * @return {Promise} - A promise which resolves when every given Id has settled.
 		 */
 		fetchItems: function ( { ids } ) {
+			return storeUtils.doDeduplicatedBatchFetch( {
+				inFlight: this.itemPromises,
+				keys: ids,
+				getCached: ( id ) => this.getItemData( id ),
+				setCached: ( id, data ) => this.setItemData( { id, data } ),
+				run: ( newIds ) => this.scheduleItemsRequest( newIds )
+			} );
+		},
+
+		/**
+		 * Adds the given Item Ids to the request which the open time window
+		 * sends, and opens a window if there is none. (T429766) A page shows
+		 * many Wikidata components, and each of them asks for one Id, so the
+		 * window collects them into one request instead of one request each.
+		 *
+		 * @param {Array<string>} ids - An array of Wikidata Item IDs to fetch.
+		 * @return {Promise<Object>} - Resolves with the data of every Item in the window
+		 */
+		scheduleItemsRequest: function ( ids ) {
 			this.scheduledItems = [ ... new Set( [ ...this.scheduledItems, ...ids ] ) ];
 
 			if ( !this.scheduledItemsPromise ) {
 				this.scheduledItemsPromise = new Promise( ( resolve, reject ) => {
 					setTimeout( () => {
 						this.fetchWikidataEntitiesBatched( {
-							ids: this.scheduledItems,
-							getData: this.getItemData,
-							setData: this.setItemData,
-							resetData: this.resetItemData
+							ids: this.scheduledItems
 						} ).then( resolve, reject );
 						this.scheduledItems = [];
 						this.scheduledItemsPromise = null;

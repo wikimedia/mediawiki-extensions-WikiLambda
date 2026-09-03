@@ -8,19 +8,31 @@
 const Constants = require( '../../../Constants.js' );
 const LabelData = require( '../../classes/LabelData.js' );
 const { isWikidataPropertyId } = require( '../../../utils/wikidataUtils.js' );
+const storeUtils = require( '../../../utils/storeUtils.js' );
 
 module.exports = {
 	state: {
-		// TODO (T417384): data-or-promise slot; see the note in `items.js`.
+		/**
+		 * Cache of Wikidata Property data indexed by Property ID.
+		 *
+		 * @type {Object<string, Object>}
+		 */
 		properties: {},
+		/**
+		 * Map of in-flight Property requests, written by `storeUtils.doDeduplicatedBatchFetch`.
+		 * Key: Property ID
+		 * Value: Promise of the request which fetches it
+		 *
+		 * @type {Map<string, Promise>}
+		 */
+		propertyPromises: new Map(),
 		scheduledProps: [],
 		scheduledPropsPromise: null
 	},
 	getters: {
 		/**
 		 * Returns the Wikidata Property data given its Id,
-		 * the fetch Promise if the fetch request is on the fly,
-		 * or undefined if it hasn't been requested yet.
+		 * or undefined if it has not been fetched yet.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -28,7 +40,7 @@ module.exports = {
 		getPropertyData: function ( state ) {
 			/**
 			 * @param {string} id
-			 * @return {Object|Promise|undefined}
+			 * @return {Object|undefined}
 			 */
 			const findPropertyData = ( id ) => state.properties[ id ];
 			return findPropertyData;
@@ -37,7 +49,7 @@ module.exports = {
 		/**
 		 * Returns a promise that resolves to the Wikidata Property data given its Id.
 		 * If the property is already cached, returns a resolved promise.
-		 * If the property is being fetched, returns the existing promise.
+		 * If the property is being fetched, waits for that request.
 		 * If the property hasn't been requested, returns a rejected promise.
 		 *
 		 * @param {Object} state
@@ -46,19 +58,23 @@ module.exports = {
 		getPropertyDataAsync: function () {
 			/**
 			 * @param {string} id
-			 * @return {Promise<Object>}
+			 * @return {Promise<Object|undefined>} The property data, or undefined
+			 *   if the request which was fetching it did not return the property
 			 */
 			const getPropertyDataAsync = ( id ) => {
 				const propertyData = this.getPropertyData( id );
 
-				// If property is already cached (not a promise), return resolved promise
-				if ( propertyData && typeof propertyData.then !== 'function' ) {
+				// If property is already cached, return resolved promise
+				if ( propertyData !== undefined ) {
 					return Promise.resolve( propertyData );
 				}
 
-				// If property is being fetched (is a promise), return that promise
-				if ( propertyData && typeof propertyData.then === 'function' ) {
-					return propertyData;
+				// If property is being fetched, wait for that request and then
+				// read the cache: the request resolves with every property it
+				// asked for, not with this one
+				const request = this.propertyPromises.get( id );
+				if ( request ) {
+					return request.then( () => this.getPropertyData( id ) );
 				}
 
 				// If property hasn't been requested, return rejected promise
@@ -129,25 +145,9 @@ module.exports = {
 		 * @param {Object} payload.data
 		 */
 		setPropertyData: function ( payload ) {
-			// If payload.data is a promise, store it directly
-			if ( payload.data && typeof payload.data.then === 'function' ) {
-				this.properties[ payload.id ] = payload.data;
-				return;
-			}
-
 			// Select only subset of Wikidata Property data; title and labels
 			const unwrap = ( ( { title, labels } ) => ( { title, labels } ) );
 			this.properties[ payload.id ] = unwrap( payload.data );
-		},
-
-		/**
-		 * Removes the properties for the given IDs
-		 *
-		 * @param {Object} payload
-		 * @param {Array<string>} payload.ids - An array of Wikidata Property IDs
-		 */
-		resetPropertyData: function ( payload ) {
-			payload.ids.forEach( ( id ) => delete this.properties[ id ] );
 		},
 
 		/**
@@ -156,19 +156,35 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {Array} payload.ids - An array of Wikidata Property IDs to fetch.
-		 * @return {Promise | undefined} - A promise that resolves to the fetched data.
+		 * @return {Promise} - A promise which resolves when every given Id has settled.
 		 */
 		fetchProperties: function ( { ids } ) {
+			return storeUtils.doDeduplicatedBatchFetch( {
+				inFlight: this.propertyPromises,
+				keys: ids,
+				getCached: ( id ) => this.getPropertyData( id ),
+				setCached: ( id, data ) => this.setPropertyData( { id, data } ),
+				run: ( newIds ) => this.schedulePropertiesRequest( newIds )
+			} );
+		},
+
+		/**
+		 * Adds the given Property Ids to the request which the open time window
+		 * sends, and opens a window if there is none. (T429766) A page shows
+		 * many Wikidata components, and each of them asks for one Id, so the
+		 * window collects them into one request instead of one request each.
+		 *
+		 * @param {Array<string>} ids - An array of Wikidata Property IDs to fetch.
+		 * @return {Promise<Object>} - Resolves with the data of every Property in the window
+		 */
+		schedulePropertiesRequest: function ( ids ) {
 			this.scheduledProps = [ ... new Set( [ ...this.scheduledProps, ...ids ] ) ];
 
 			if ( !this.scheduledPropsPromise ) {
 				this.scheduledPropsPromise = new Promise( ( resolve, reject ) => {
 					setTimeout( () => {
 						this.fetchWikidataEntitiesBatched( {
-							ids: this.scheduledProps,
-							getData: this.getPropertyData,
-							setData: this.setPropertyData,
-							resetData: this.resetPropertyData
+							ids: this.scheduledProps
 						} ).then( resolve, reject );
 						this.scheduledProps = [];
 						this.scheduledPropsPromise = null;

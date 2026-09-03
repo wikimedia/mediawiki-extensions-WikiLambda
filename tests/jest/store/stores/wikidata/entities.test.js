@@ -154,14 +154,8 @@ describe( 'Wikidata Entities Pinia store', () => {
 
 		describe( 'fetchWikidataEntitiesBatched', () => {
 			let getMock;
-			let mockGetData;
-			let mockSetData;
-			let mockResetData;
 
 			beforeEach( () => {
-				mockGetData = jest.fn().mockReturnValue( undefined ); // No cached data
-				mockSetData = jest.fn();
-				mockResetData = jest.fn();
 				getMock = jest.fn().mockResolvedValue( {} );
 				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 				// Mock the getters
@@ -174,31 +168,7 @@ describe( 'Wikidata Entities Pinia store', () => {
 				} );
 			} );
 
-			it( 'exits early if all IDs are already fetched or in flight', () => {
-				mockGetData = jest.fn()
-					.mockReturnValueOnce( 'cached data' ) // Q111111 already cached
-					.mockReturnValueOnce( Promise.resolve() ); // Q222222 in flight
-
-				const payload = {
-					ids: [ 'Q111111', 'Q222222' ],
-					getData: mockGetData,
-					setData: mockSetData,
-					resetData: mockResetData
-				};
-
-				store.fetchWikidataEntitiesBatched( payload );
-
-				expect( mw.ForeignApi ).not.toHaveBeenCalled();
-			} );
-
 			it( 'batches requests when more than items then the limit(2) are requested', async () => {
-				const payload = {
-					ids: [ 'Q333333', 'Q444444', 'Q555555', 'Q666666', 'Q777777' ],
-					getData: mockGetData,
-					setData: mockSetData,
-					resetData: mockResetData
-				};
-
 				const batch1Response = { entities: { Q333333: 'data 1', Q444444: 'data 2' } };
 				const batch2Response = { entities: { Q555555: 'data 3', Q666666: 'data 4' } };
 				const batch3Response = { entities: { Q777777: 'data 5' } };
@@ -209,7 +179,9 @@ describe( 'Wikidata Entities Pinia store', () => {
 					.mockResolvedValueOnce( batch3Response );
 				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
-				await store.fetchWikidataEntitiesBatched( payload );
+				const entities = await store.fetchWikidataEntitiesBatched( {
+					ids: [ 'Q333333', 'Q444444', 'Q555555', 'Q666666', 'Q777777' ]
+				} );
 
 				// Should make 3 requests (batches of 2, 2, and 1)
 				expect( getMock ).toHaveBeenCalledTimes( 3 );
@@ -228,122 +200,88 @@ describe( 'Wikidata Entities Pinia store', () => {
 					{ signal: undefined }
 				);
 
-				// Check that all items were stored
-				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q333333', data: 'data 1' } );
-				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q444444', data: 'data 2' } );
-				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q555555', data: 'data 3' } );
-				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q666666', data: 'data 4' } );
-				expect( mockSetData ).toHaveBeenCalledWith( { id: 'Q777777', data: 'data 5' } );
+				// Every batch contributes its entities to one object
+				expect( entities ).toEqual( {
+					Q333333: 'data 1',
+					Q444444: 'data 2',
+					Q555555: 'data 3',
+					Q666666: 'data 4',
+					Q777777: 'data 5'
+				} );
 			} );
 
-			it( 'handles API errors by resetting data', async () => {
-				const payload = {
-					ids: [ 'Q333333', 'Q444444' ],
-					getData: mockGetData,
-					setData: mockSetData,
-					resetData: mockResetData
-				};
-
-				const errorResponse = { error: 'Some error' };
-				getMock = jest.fn().mockResolvedValue( errorResponse );
+			it( 'leaves out a whole batch when the API answers with an error', async () => {
+				getMock = jest.fn().mockResolvedValue( { error: 'Some error' } );
 				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
-				await store.fetchWikidataEntitiesBatched( payload );
+				const entities = await store.fetchWikidataEntitiesBatched( {
+					ids: [ 'Q333333', 'Q444444' ]
+				} );
 
-				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333', 'Q444444' ] } );
+				expect( entities ).toEqual( {} );
 				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( true );
 				expect( store.getWikidataEntityFetchFailed( 'Q444444' ) ).toBe( true );
 			} );
 
-			it( 'handles missing entities by resetting individual IDs', async () => {
-				const payload = {
-					ids: [ 'Q333333', 'Q444444' ],
-					getData: mockGetData,
-					setData: mockSetData,
-					resetData: mockResetData
-				};
-
-				const apiResponse = {
+			it( 'leaves out an entity which Wikidata does not have', async () => {
+				getMock = jest.fn().mockResolvedValue( {
 					entities: {
 						Q333333: { missing: '' }, // Simulate missing entity
 						Q444444: { title: 'Q444444', labels: {} }
 					}
-				};
-				getMock = jest.fn().mockResolvedValue( apiResponse );
+				} );
 				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
-				await store.fetchWikidataEntitiesBatched( payload );
+				const entities = await store.fetchWikidataEntitiesBatched( {
+					ids: [ 'Q333333', 'Q444444' ]
+				} );
 
-				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333' ] } );
-				expect( mockSetData ).toHaveBeenCalledWith( {
-					id: 'Q444444',
-					data: { title: 'Q444444', labels: {} }
+				expect( entities ).toEqual( {
+					Q444444: { title: 'Q444444', labels: {} }
 				} );
 				// A missing entity is not a failed request
 				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( false );
 			} );
 
-			it( 'handles network/fetch failures by resetting data', async () => {
-				const payload = {
-					ids: [ 'Q333333', 'Q444444' ],
-					getData: mockGetData,
-					setData: mockSetData,
-					resetData: mockResetData
-				};
-
+			it( 'leaves out a whole batch when the request fails', async () => {
 				getMock = jest.fn().mockRejectedValue( 'Network error' );
 				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
-				await store.fetchWikidataEntitiesBatched( payload );
+				const entities = await store.fetchWikidataEntitiesBatched( {
+					ids: [ 'Q333333', 'Q444444' ]
+				} );
 
-				expect( mockResetData ).toHaveBeenCalledWith( { ids: [ 'Q333333', 'Q444444' ] } );
+				expect( entities ).toEqual( {} );
 				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( true );
 				expect( store.getWikidataEntityFetchFailed( 'Q444444' ) ).toBe( true );
 			} );
 
 			it( 'clears the failed state when the entity is requested again', async () => {
-				const payload = {
-					ids: [ 'Q333333' ],
-					getData: mockGetData,
-					setData: mockSetData,
-					resetData: mockResetData
-				};
-
 				getMock = jest.fn().mockRejectedValue( 'Network error' );
 				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				await store.fetchWikidataEntitiesBatched( payload );
+				await store.fetchWikidataEntitiesBatched( { ids: [ 'Q333333' ] } );
 				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( true );
 
 				getMock = jest.fn().mockResolvedValue( {
 					entities: { Q333333: { title: 'Q333333', labels: {} } }
 				} );
 				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
-				await store.fetchWikidataEntitiesBatched( payload );
+				await store.fetchWikidataEntitiesBatched( { ids: [ 'Q333333' ] } );
 
 				expect( store.getWikidataEntityFetchFailed( 'Q333333' ) ).toBe( false );
 			} );
 
-			it( 'stores promises for in-flight requests', async () => {
-				const payload = {
-					ids: [ 'Q333333', 'Q444444' ],
-					getData: mockGetData,
-					setData: mockSetData,
-					resetData: mockResetData
-				};
+			it( 'keeps the entities of the batches which did work', async () => {
+				getMock = jest.fn()
+					.mockRejectedValueOnce( 'Network error' )
+					.mockResolvedValueOnce( { entities: { Q555555: 'data 3' } } );
+				mw.ForeignApi = jest.fn( () => ( { get: getMock } ) );
 
-				const promise = store.fetchWikidataEntitiesBatched( payload );
-
-				// Check that promises are stored for each ID
-				expect( mockSetData ).toHaveBeenCalledWith( {
-					id: 'Q333333',
-					data: promise
-				} );
-				expect( mockSetData ).toHaveBeenCalledWith( {
-					id: 'Q444444',
-					data: promise
+				const entities = await store.fetchWikidataEntitiesBatched( {
+					ids: [ 'Q333333', 'Q444444', 'Q555555' ]
 				} );
 
-				await promise;
+				expect( entities ).toEqual( { Q555555: 'data 3' } );
 			} );
 		} );
 
