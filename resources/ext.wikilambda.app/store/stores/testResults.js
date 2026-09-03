@@ -11,6 +11,7 @@ const { performTests } = require( '../../utils/apiUtils.js' );
 const { isTruthyOrEqual } = require( '../../utils/typeUtils.js' );
 const { extractZIDs, hybridToCanonical } = require( '../../utils/schemata.js' );
 const { hasPendingMetadata } = require( '../../utils/zobjectUtils.js' );
+const storeUtils = require( '../../utils/storeUtils.js' );
 
 const MAX_PENDING_RETRIES = 2;
 const PENDING_RETRY_DELAY_MS = 1000;
@@ -19,9 +20,21 @@ module.exports = {
 	state: {
 		zTesterResults: {},
 		zTesterMetadata: {},
-		// TODO (T417384): move to `storeUtils.doDeduplicatedFetch`, as
-		// `zhtml.js` does.
-		testResultsPromises: {}
+		/**
+		 * Keys of the test runs that have finished, read by `storeUtils.doDeduplicatedFetch`.
+		 * Key: `<function zid>:<test zid or *>:<implementation zid or *>`
+		 *
+		 * @type {Object<string, boolean>}
+		 */
+		completedTestRuns: {},
+		/**
+		 * Map of test runs that are going on, written by `storeUtils.doDeduplicatedFetch`.
+		 * Key: `<function zid>:<test zid or *>:<implementation zid or *>`
+		 * Value: Promise of the run
+		 *
+		 * @type {Map<string, Promise>}
+		 */
+		testResultsPromises: new Map()
 	},
 
 	getters: {
@@ -201,11 +214,8 @@ module.exports = {
 					`${ functionZid }:*:${ implementation }`,
 					`${ functionZid }:${ tester }:${ implementation }`
 				] ) ];
-				// If the key has a promise, return it's flying property
-				return keysToCheck.some( ( key ) => {
-					const promise = this.testResultsPromises[ key ];
-					return promise && promise.flying;
-				} );
+				// The helper holds a promise for as long as the run goes on
+				return keysToCheck.some( ( key ) => this.testResultsPromises.has( key ) );
 			};
 			return catchFlyingPromise;
 		}
@@ -223,11 +233,10 @@ module.exports = {
 		 *   Implementations to run
 		 * @param {boolean} payload.clearPreviousResults Whether to clear the previous results from the Pinia store
 		 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
-		 * @param {number} retryCount
 		 *
 		 * @return {Promise}
 		 */
-		getTestResults: function ( payload, retryCount = 0 ) {
+		getTestResults: function ( payload ) {
 			/**
 			 * Filter out empty or falsy items
 			 *
@@ -235,28 +244,6 @@ module.exports = {
 			 * @return {string[]}
 			 */
 			const removeEmpty = ( arr ) => ( arr || [] ).filter( ( i ) => !!i );
-
-			/**
-			 * Loop through the given array of ZIDs and if a ZID is for the object currently being edited
-			 * or created, replace it with its literal inner object.
-			 *
-			 * @param {Array} items - List of implementation or tester zids
-			 * @return {Array}
-			 */
-			const replaceCurrentZidWithLiteral = ( items ) => ( items || [] ).map( ( item ) => {
-				if ( item === this.getCurrentZObjectId ) {
-					const zobject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
-					// const inner = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-					// const serialized = JSON.stringify( inner );
-					// If new item, send inner object;
-					// else send whole persistent object, so that the API can know the zid
-					const serialized = JSON.stringify( item === Constants.NEW_ZID_PLACEHOLDER ?
-						zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : zobject );
-						// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
-					return serialized.replace( /\|/g, '🪈' );
-				}
-				return item;
-			} );
 
 			/**
 			 * Make a key to store the promise with:
@@ -283,8 +270,8 @@ module.exports = {
 			}
 
 			// Clear out possible empty or null items
-			let implementations = removeEmpty( payload.zImplementations || [] );
-			let testers = removeEmpty( payload.zTesters || [] );
+			const implementations = removeEmpty( payload.zImplementations || [] );
+			const testers = removeEmpty( payload.zTesters || [] );
 
 			// Make promise key
 			const promiseKey = makePromiseKey( payload.zFunctionId, implementations, testers );
@@ -296,22 +283,71 @@ module.exports = {
 				this.clearZTesterResults( promiseKey );
 			}
 
-			// If this API for this functionZid is already running, return promise
-			// Important for renderer-triggered test results, as multiple fields
-			// could fire N calls to the same perform_tests api request.
-			if ( promiseKey in this.testResultsPromises ) {
-				return this.testResultsPromises[ promiseKey ].promise;
-			}
+			return storeUtils.doDeduplicatedFetch( {
+				inFlight: this.testResultsPromises,
+				key: promiseKey,
+				getCached: ( key ) => this.completedTestRuns[ key ],
+				setCached: ( key ) => {
+					this.completedTestRuns[ key ] = true;
+				},
+				run: () => this.runTests( {
+					zFunctionId: payload.zFunctionId,
+					promiseKey,
+					implementations,
+					testers,
+					signal: payload.signal
+				} )
+			} );
+		},
+
+		/**
+		 * Runs one set of tests and stores the results. If the response says some are pending, this
+		 * waits and runs the tests again, up to `MAX_PENDING_RETRIES` times, for edit pages.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.zFunctionId The ZID of the Function to test
+		 * @param {string} payload.promiseKey The key that identifies this run
+		 * @param {string[]} payload.implementations The Implementations to run
+		 * @param {string[]} payload.testers The Testers to run
+		 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
+		 * @param {number} retryCount
+		 *
+		 * @return {Promise<boolean|undefined>} `true` when the tests have run,
+		 *   `undefined` when the request was aborted
+		 */
+		runTests: function ( payload, retryCount = 0 ) {
+			/**
+			 * Loop through the given array of ZIDs and if a ZID is for the object currently being edited
+			 * or created, replace it with its literal inner object.
+			 *
+			 * @param {Array} items - List of implementation or tester zids
+			 * @return {Array}
+			 */
+			const replaceCurrentZidWithLiteral = ( items ) => ( items || [] ).map( ( item ) => {
+				if ( item === this.getCurrentZObjectId ) {
+					const zobject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
+					// If new item, send inner object;
+					// else send whole persistent object, so that the API can know the zid
+					const serialized = JSON.stringify( item === Constants.NEW_ZID_PLACEHOLDER ?
+						zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] : zobject );
+						// (T358089) Encode any '|' characters of ZObjects so that they can be recovered after the API.
+					return serialized.replace( /\|/g, '🪈' );
+				}
+				return item;
+			} );
 
 			this.clearErrors( Constants.ERROR_IDS.TEST_RESULTS );
 
 			// Only for edit page, replace current zid with its encoded literal
-			if ( !this.getViewMode ) {
-				implementations = replaceCurrentZidWithLiteral( implementations );
-				testers = replaceCurrentZidWithLiteral( testers );
-			}
+			const viewMode = this.getViewMode;
+			const implementations = viewMode ?
+				payload.implementations :
+				replaceCurrentZidWithLiteral( payload.implementations );
+			const testers = viewMode ?
+				payload.testers :
+				replaceCurrentZidWithLiteral( payload.testers );
 
-			const testResultsPromise = performTests( {
+			return performTests( {
 				functionZid: payload.zFunctionId,
 				language: this.getUserLangCode,
 				implementations,
@@ -349,25 +385,26 @@ module.exports = {
 				// Make sure that all returned Zids are in library.js
 				this.fetchZids( { zids: [ ...new Set( zids ) ] } );
 
-				// We done;
+				// If we are in an edit page (testing an inline object), run the
+				// tests again if there are values still pending. The run counts
+				// as flying until the last try finishes, so the table keeps
+				// showing that the tests are running.
 				if ( !this.getViewMode && hasPending && retryCount < MAX_PENDING_RETRIES ) {
-					// If we are in an edit page (testing an inline object),
-					// retry again if there are values still pending
-					const retryPromise = new Promise( ( resolve ) => {
-						setTimeout( () => {
-							resolve( this.getTestResults( payload, retryCount + 1 ) );
-						}, PENDING_RETRY_DELAY_MS );
+					return new Promise( ( resolve ) => {
+						setTimeout(
+							() => resolve( this.runTests( payload, retryCount + 1 ) ),
+							PENDING_RETRY_DELAY_MS
+						);
 					} );
-					this.setTestResultsPromise( { promiseKey, promise: retryPromise } );
-				} else {
-					// Else resolve the promise with whatever we have
-					this.setTestResultsPromise( { promiseKey } );
 				}
 
+				// We done;
+				return true;
 			} ).catch( ( error ) => {
 				if ( error.code === 'abort' ) {
-					this.clearZTesterResults( promiseKey );
-					return;
+					this.clearZTesterResults( payload.promiseKey );
+					// Nothing is cached, so the next request runs the tests again
+					return undefined;
 				}
 
 				this.setError( {
@@ -376,40 +413,9 @@ module.exports = {
 					errorMessage: error.messageOrFallback( 'wikilambda-unknown-test-error-message' )
 				} );
 
-				// We also done; resolve stored promise
-				this.setTestResultsPromise( { promiseKey } );
+				// We also done; the caller must clear the results to try again
+				return true;
 			} );
-
-			// Initialize promise with key
-			this.setTestResultsPromise( {
-				promiseKey,
-				promise: testResultsPromise
-			} );
-
-			return testResultsPromise;
-		},
-
-		/**
-		 * Set or unset the promise to the testResults API call for a given functionZid.
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.promiseKey
-		 * @param {Promise} payload.promise
-		 */
-		setTestResultsPromise: function ( payload ) {
-			if ( 'promise' in payload ) {
-				// Set as a flying Promise while the request is ongoing
-				this.testResultsPromises[ payload.promiseKey ] = {
-					flying: true,
-					promise: payload.promise
-				};
-			} else {
-				// Set as a resolved Promise if the tests for this function have been fetched
-				this.testResultsPromises[ payload.promiseKey ] = {
-					flying: false,
-					promise: Promise.resolve()
-				};
-			}
 		},
 
 		/**
@@ -449,7 +455,10 @@ module.exports = {
 				}
 			} );
 
-			delete this.testResultsPromises[ promiseKey ];
+			delete this.completedTestRuns[ promiseKey ];
+			// Forget a run which is still going on, so that the next request
+			// makes a new one and does not wait for the results just cleared
+			this.testResultsPromises.delete( promiseKey );
 		}
 	}
 };

@@ -9,6 +9,7 @@
 const { setActivePinia, createPinia } = require( 'pinia' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
+const ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
 const metadata = require( '../../fixtures/metadata.js' );
 
 describe( 'testResults Pinia store', () => {
@@ -19,7 +20,8 @@ describe( 'testResults Pinia store', () => {
 		store = useMainStore();
 		store.zTesterResults = {};
 		store.zTesterMetadata = {};
-		store.testResultsPromises = {};
+		store.completedTestRuns = {};
+		store.testResultsPromises = new Map();
 		store.errors = {};
 	} );
 
@@ -154,52 +156,49 @@ describe( 'testResults Pinia store', () => {
 			} );
 
 			it( 'returns true when there is a flying promise for all tests of a function', () => {
-				store.testResultsPromises[ `${ functionZid }:*:*` ] = { flying: true, promise: Promise.resolve() };
+				store.testResultsPromises.set( `${ functionZid }:*:*`, Promise.resolve() );
 
 				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
 				expect( result ).toBe( true );
 			} );
 
 			it( 'returns true when there is a flying promise for a test against all implementations', () => {
-				store.testResultsPromises[ `${ functionZid }:${ testZid }:*` ] = { flying: true, promise: Promise.resolve() };
+				store.testResultsPromises.set( `${ functionZid }:${ testZid }:*`, Promise.resolve() );
 
 				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
 				expect( result ).toBe( true );
 			} );
 
 			it( 'returns true when there is a flying promise for an implementation against all tests', () => {
-				store.testResultsPromises[ `${ functionZid }:*:${ implementationZid }` ] = { flying: true, promise: Promise.resolve() };
+				store.testResultsPromises.set( `${ functionZid }:*:${ implementationZid }`, Promise.resolve() );
 
 				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
 				expect( result ).toBe( true );
 			} );
 
 			it( 'returns true when there is a flying promise for a specific test and implementation', () => {
-				store.testResultsPromises[ `${ functionZid }:${ testZid }:${ implementationZid }` ] = { flying: true, promise: Promise.resolve() };
+				store.testResultsPromises.set( `${ functionZid }:${ testZid }:${ implementationZid }`, Promise.resolve() );
 
 				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
 				expect( result ).toBe( true );
 			} );
 
-			it( 'returns false when the matching promise is done', () => {
-				store.testResultsPromises[ `${ functionZid }:*:*` ] = { flying: false, promise: Promise.resolve() };
+			it( 'returns false when the matching run has finished', () => {
+				store.completedTestRuns[ `${ functionZid }:*:*` ] = true;
 
 				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
 				expect( result ).toBe( false );
 			} );
 
 			it( 'returns false when the promise key does not match the given zids', () => {
-				store.testResultsPromises[ 'Z99999:*:*' ] = { flying: true, promise: Promise.resolve() };
+				store.testResultsPromises.set( 'Z99999:*:*', Promise.resolve() );
 
 				const result = store.hasFlyingPromise( functionZid, testZid, implementationZid );
 				expect( result ).toBe( false );
 			} );
 
 			it( 'returns false when testZid and implementationZid are absent and no wildcard key matches', () => {
-				store.testResultsPromises[ `${ functionZid }:${ testZid }:${ implementationZid }` ] = {
-					flying: true,
-					promise: Promise.resolve()
-				};
+				store.testResultsPromises.set( `${ functionZid }:${ testZid }:${ implementationZid }`, Promise.resolve() );
 
 				const result = store.hasFlyingPromise( functionZid, undefined, undefined );
 				expect( result ).toBe( false );
@@ -209,10 +208,12 @@ describe( 'testResults Pinia store', () => {
 
 	describe( 'Actions', () => {
 		let booleanReturn,
+			metadataReturn,
 			getMock;
 
 		beforeEach( () => {
 			booleanReturn = Constants.Z_BOOLEAN_TRUE;
+			metadataReturn = Constants.Z_VOID;
 			getMock = jest.fn( ( payload ) => {
 				const data = [];
 
@@ -226,7 +227,7 @@ describe( 'testResults Pinia store', () => {
 								Z1K1: Constants.Z_BOOLEAN,
 								Z40K1: booleanReturn
 							} ),
-							testMetadata: JSON.stringify( Constants.Z_VOID )
+							testMetadata: JSON.stringify( metadataReturn )
 						} );
 					} );
 				} );
@@ -262,33 +263,6 @@ describe( 'testResults Pinia store', () => {
 
 		} );
 
-		describe( 'setTestResultsPromise', () => {
-			const promiseKey = 'Z10000:*:*';
-
-			it( 'should set a flying promise with the given key', async () => {
-				store.setTestResultsPromise( {
-					promiseKey,
-					promise: Promise.resolve( 'done' )
-				} );
-
-				expect( store.testResultsPromises[ promiseKey ].flying ).toBe( true );
-				await store.testResultsPromises[ promiseKey ].promise.then( ( result ) => {
-					expect( result ).toBe( 'done' );
-				} );
-			} );
-
-			it( 'should set a resolved promise when no promise is provided', async () => {
-				store.setTestResultsPromise( {
-					promiseKey
-				} );
-
-				expect( store.testResultsPromises[ promiseKey ].flying ).toBe( false );
-				await store.testResultsPromises[ promiseKey ].promise.then( ( result ) => {
-					expect( result ).toBe( undefined );
-				} );
-			} );
-		} );
-
 		describe( 'clearZTesterResults', () => {
 			const functionZid = 'Z10000';
 			const implementationZid = 'Z10001';
@@ -308,7 +282,7 @@ describe( 'testResults Pinia store', () => {
 				store.zTesterMetadata[ key1 ] = metadata.metadataEmpty;
 				store.zTesterMetadata[ key2 ] = metadata.metadataEmpty;
 				store.zTesterMetadata[ key3 ] = metadata.metadataEmpty;
-				store.testResultsPromises[ promiseKey ] = { flying: false, promise: Promise.resolve() };
+				store.completedTestRuns[ promiseKey ] = true;
 
 				store.clearZTesterResults( promiseKey );
 
@@ -316,7 +290,7 @@ describe( 'testResults Pinia store', () => {
 				expect( store.zTesterResults[ key2 ] ).toBeUndefined();
 				expect( store.zTesterResults[ key3 ] ).toBeUndefined();
 				expect( store.zTesterResults[ otherKey ] ).toBe( 'Z41' );
-				expect( promiseKey in store.testResultsPromises ).toBe( false );
+				expect( store.completedTestRuns[ promiseKey ] ).toBeUndefined();
 			} );
 
 			it( 'should only clear results matching a specific tester wildcard key', () => {
@@ -328,7 +302,7 @@ describe( 'testResults Pinia store', () => {
 				store.zTesterResults[ nonMatchingKey ] = 'Z41';
 				store.zTesterMetadata[ matchingKey ] = metadata.metadataEmpty;
 				store.zTesterMetadata[ nonMatchingKey ] = metadata.metadataEmpty;
-				store.testResultsPromises[ promiseKey ] = { flying: false, promise: Promise.resolve() };
+				store.completedTestRuns[ promiseKey ] = true;
 
 				store.clearZTesterResults( promiseKey );
 
@@ -336,7 +310,7 @@ describe( 'testResults Pinia store', () => {
 				expect( store.zTesterMetadata[ matchingKey ] ).toBeUndefined();
 				expect( store.zTesterResults[ nonMatchingKey ] ).toBe( 'Z41' );
 				expect( store.zTesterMetadata[ nonMatchingKey ] ).toEqual( metadata.metadataEmpty );
-				expect( promiseKey in store.testResultsPromises ).toBe( false );
+				expect( store.completedTestRuns[ promiseKey ] ).toBeUndefined();
 			} );
 		} );
 
@@ -350,7 +324,6 @@ describe( 'testResults Pinia store', () => {
 
 			it( 'exits early if function Zid is not provided', async () => {
 				store.clearZTesterResults = jest.fn();
-				store.setTestResultsPromise = jest.fn();
 				store.setZTesterResult = jest.fn();
 
 				const zFunctionId = undefined;
@@ -360,7 +333,6 @@ describe( 'testResults Pinia store', () => {
 				expect( getMock ).not.toHaveBeenCalled();
 				expect( store.clearZTesterResults ).not.toHaveBeenCalled();
 				expect( store.clearErrors ).not.toHaveBeenCalled();
-				expect( store.setTestResultsPromise ).not.toHaveBeenCalled();
 				expect( store.fetchZids ).not.toHaveBeenCalled();
 				expect( store.setZTesterResult ).not.toHaveBeenCalled();
 				expect( store.setError ).not.toHaveBeenCalled();
@@ -505,9 +477,7 @@ describe( 'testResults Pinia store', () => {
 				const zFunctionId = 'Z10000';
 				const promiseKey = 'Z10000:*:*';
 
-				store.testResultsPromises = {
-					[ promiseKey ]: { flying: true, promise: Promise.resolve() }
-				};
+				store.testResultsPromises = new Map( [ [ promiseKey, Promise.resolve() ] ] );
 				store.clearZTesterResults = jest.fn();
 
 				store.getTestResults( { zFunctionId } );
@@ -515,6 +485,62 @@ describe( 'testResults Pinia store', () => {
 				expect( store.clearErrors ).not.toHaveBeenCalled();
 				expect( store.clearZTesterResults ).not.toHaveBeenCalled();
 				expect( store.fetchZids ).not.toHaveBeenCalled();
+			} );
+
+			it( 'should not perform the tests again once they have run', async () => {
+				const zFunctionId = 'Z10000';
+
+				await store.getTestResults( { zFunctionId } );
+				await store.getTestResults( { zFunctionId } );
+
+				expect( store.completedTestRuns[ 'Z10000:*:*' ] ).toBe( true );
+				expect( getMock ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			it( 'should perform the tests again after the previous results are cleared', async () => {
+				const zFunctionId = 'Z10000';
+
+				await store.getTestResults( { zFunctionId } );
+				await store.getTestResults( { zFunctionId, clearPreviousResults: true } );
+
+				expect( getMock ).toHaveBeenCalledTimes( 2 );
+			} );
+
+			it( 'should perform the tests again while some results are pending', async () => {
+				const zFunctionId = 'Z10000';
+
+				jest.useFakeTimers();
+				metadataReturn = metadata.convertSetToMap( { pending: 'true' } );
+				Object.defineProperty( store, 'getViewMode', {
+					value: false
+				} );
+
+				const promise = store.getTestResults( { zFunctionId } );
+
+				// The run stays flying until the last try has finished
+				await jest.advanceTimersByTimeAsync( 1000 );
+				expect( store.hasFlyingPromise( zFunctionId ) ).toBe( true );
+				await jest.advanceTimersByTimeAsync( 1000 );
+				await promise;
+
+				// One first try, and MAX_PENDING_RETRIES more
+				expect( getMock ).toHaveBeenCalledTimes( 3 );
+				expect( store.hasFlyingPromise( zFunctionId ) ).toBe( false );
+				expect( store.completedTestRuns[ 'Z10000:*:*' ] ).toBe( true );
+
+				jest.useRealTimers();
+			} );
+
+			it( 'should forget an aborted run, so that the tests can run again', async () => {
+				const zFunctionId = 'Z10000';
+
+				getMock = jest.fn().mockRejectedValue( new ApiError( 'abort', {} ) );
+
+				await store.getTestResults( { zFunctionId } );
+
+				expect( store.completedTestRuns[ 'Z10000:*:*' ] ).toBeUndefined();
+				expect( store.testResultsPromises.has( 'Z10000:*:*' ) ).toBe( false );
+				expect( store.setError ).not.toHaveBeenCalled();
 			} );
 
 			it( 'should pass JSON for the current object to the API, if implementation ID matches current ' +
