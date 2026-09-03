@@ -14,6 +14,7 @@ const {
 	createParserCall,
 	createRendererCall
 } = require( '../../utils/zobjectUtils.js' );
+const storeUtils = require( '../../utils/storeUtils.js' );
 
 module.exports = {
 	state: {
@@ -53,16 +54,14 @@ module.exports = {
 		 */
 		rendererData: {},
 		/**
-		 * Promises of pending renderer requests indexed by cache key.
-		 * Cache key format: `${JSON.stringify(canonicalZobject)}|${rendererZid}|${zlang}`
-		 * {
-		 *  <cacheKey>: <Promise>
-		 * }
+		 * Map of in-flight renderer requests. Written only by
+		 * `storeUtils.doDeduplicatedFetch`.
+		 * Key: `${JSON.stringify(canonicalZobject)}|${rendererZid}|${zlang}`
+		 * Value: Promise resolving to the renderer data
 		 *
-		 * TODO (T417384): move to `storeUtils.doDeduplicatedFetch` with
-		 * `rendererData` as the cache, as `zhtml.js` does.
+		 * @type {Map<string, Promise>}
 		 */
-		rendererPromises: {}
+		rendererPromises: new Map()
 	},
 
 	getters: {
@@ -252,22 +251,6 @@ module.exports = {
 		},
 
 		/**
-		 * Set or unset the unresolved promise to the renderer API call for a given cache key.
-		 *
-		 * @param {Object} payload
-		 * @param {string} payload.cacheKey
-		 * @param {Promise} payload.promise
-		 */
-		setRendererPromise: function ( payload ) {
-			if ( 'promise' in payload ) {
-				this.rendererPromises[ payload.cacheKey ] = payload.promise;
-			} else {
-				// Set as a resolved Promise if the tests for this function have been fetched
-				delete this.rendererPromises[ payload.cacheKey ];
-			}
-		},
-
-		/**
 		 * Returns the cache key for a given renderer.
 		 *
 		 * @param {Object} payload
@@ -294,43 +277,24 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		runRenderer: function ( payload ) {
-			// 1. Check cache first - if value is already cached, return a resolved promise immediately
-			const cacheKey = this.getRendererCacheKey( payload );
-			const cachedData = this.getRendererData( cacheKey );
-			if ( cachedData ) {
-				return Promise.resolve( cachedData );
-			}
-
-			// 2. If a renderer request is already in flight for this cache key, return that promise
-			if ( cacheKey in this.rendererPromises ) {
-				return this.rendererPromises[ cacheKey ];
-			}
-
-			// 3. Create a function call
-			const rendererCall = createRendererCall( payload );
-
-			// 4. Run this function call by calling wikilambda_function_call_zobject and return
-			const run = () => performFunctionCall( {
-				functionCall: rendererCall,
-				language: this.getUserLangCode,
-				signal: payload.signal
-			} ).then( ( data ) => {
-				this.setRendererData( {
-					cacheKey: cacheKey,
-					data
-				} );
-				this.setRendererPromise( { cacheKey } );
-				return data;
-			} ).catch( ( error ) => {
-				// Remove promise from store on error
-				this.setRendererPromise( { cacheKey } );
-				throw error;
+			// Run each object once for each renderer and language. Fields that
+			// show the same value wait for the request that the first one made.
+			return storeUtils.doDeduplicatedFetch( {
+				inFlight: this.rendererPromises,
+				key: this.getRendererCacheKey( payload ),
+				getCached: ( key ) => this.getRendererData( key ),
+				setCached: ( key, data ) => this.setRendererData( { cacheKey: key, data } ),
+				run: () => {
+					// Build the call now, because `payload.zobject` can change
+					// while the job waits in the queue.
+					const rendererCall = createRendererCall( payload );
+					return this.enqueue( () => performFunctionCall( {
+						functionCall: rendererCall,
+						language: this.getUserLangCode,
+						signal: payload.signal
+					} ) ).promise;
+				}
 			} );
-
-			const job = this.enqueue( run );
-			// Store the promise so other components can wait for the same request
-			this.setRendererPromise( { cacheKey, promise: job.promise } );
-			return job.promise;
 		},
 
 		/**

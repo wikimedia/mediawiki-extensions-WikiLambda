@@ -24,7 +24,7 @@ describe( 'ztype Pinia store', () => {
 		store.rendererExamples = {};
 		store.parserPromises = [];
 		store.rendererData = {};
-		store.rendererPromises = {};
+		store.rendererPromises = new Map();
 	} );
 
 	describe( 'Getters', () => {
@@ -295,8 +295,8 @@ describe( 'ztype Pinia store', () => {
 				const promise1 = store.runRenderer( payload );
 				expect( postMock ).toHaveBeenCalledTimes( 1 );
 				// Verify promise is stored
-				expect( cacheKey in store.rendererPromises ).toBe( true );
-				expect( store.rendererPromises[ cacheKey ] ).toEqual( promise1 );
+				expect( store.rendererPromises.has( cacheKey ) ).toBe( true );
+				expect( store.rendererPromises.get( cacheKey ) ).toEqual( promise1 );
 
 				// Start second request before first completes
 				const promise2 = store.runRenderer( payload );
@@ -338,11 +338,11 @@ describe( 'ztype Pinia store', () => {
 
 				const promise = store.runRenderer( payload );
 				// Verify promise is stored (key exists in rendererPromises)
-				expect( cacheKey in store.rendererPromises ).toBe( true );
+				expect( store.rendererPromises.has( cacheKey ) ).toBe( true );
 
 				await promise;
 				// After completion, the promise is deleted from rendererPromises
-				expect( cacheKey in store.rendererPromises ).toBe( false );
+				expect( store.rendererPromises.has( cacheKey ) ).toBe( false );
 			} );
 
 			it( 'clears promise from rendererPromises on error', async () => {
@@ -364,12 +364,12 @@ describe( 'ztype Pinia store', () => {
 
 				const promise = store.runRenderer( payload );
 				// Verify promise is stored (key exists in rendererPromises)
-				expect( cacheKey in store.rendererPromises ).toBe( true );
+				expect( store.rendererPromises.has( cacheKey ) ).toBe( true );
 
 				// Wait for promise to reject
 				await expect( promise ).rejects.toThrow();
 				// After error, the promise is deleted from rendererPromises
-				expect( cacheKey in store.rendererPromises ).toBe( false );
+				expect( store.rendererPromises.has( cacheKey ) ).toBe( false );
 			} );
 
 		} );

@@ -50,8 +50,7 @@
  *
  * TODO (T417384): the stores below still track in-flight requests their own
  * way and should move to these helpers, one patch each:
- * * `testResults.js`, `ztype.js` (`rendererPromises`), `abstractWiki.js`
- *   (`fragmentPromises`)
+ * * `testResults.js` and `abstractWiki.js` (`fragmentPromises`)
  * * `wikidata/{items,lexemes,properties}.js` and `commons/media.js`, which
  *   put the promise in the same slot as the data and then use
  *   `typeof value.then` to tell them apart. These must be reconciled with
