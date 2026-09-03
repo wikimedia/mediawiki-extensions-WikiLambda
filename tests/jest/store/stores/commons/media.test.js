@@ -34,6 +34,7 @@ describe( 'Commons Media Pinia store', () => {
 		setActivePinia( createPinia() );
 		store = useMainStore();
 		store.commonsMedia = {};
+		store.commonsMediaPromises = new Map();
 	} );
 
 	describe( 'Getters', () => {
@@ -50,11 +51,6 @@ describe( 'Commons Media Pinia store', () => {
 
 		describe( 'getCommonsMediaTitle', () => {
 			it( 'returns undefined when no data is cached', () => {
-				expect( store.getCommonsMediaTitle( MID ) ).toBeUndefined();
-			} );
-
-			it( 'returns undefined when data is still a promise', () => {
-				store.commonsMedia[ MID ] = Promise.resolve( mediaData );
 				expect( store.getCommonsMediaTitle( MID ) ).toBeUndefined();
 			} );
 
@@ -91,11 +87,6 @@ describe( 'Commons Media Pinia store', () => {
 				expect( store.getCommonsMediaThumbSize( MID ) ).toBeUndefined();
 			} );
 
-			it( 'returns undefined when data is still a promise', () => {
-				store.commonsMedia[ MID ] = Promise.resolve( mediaData );
-				expect( store.getCommonsMediaThumbSize( MID ) ).toBeUndefined();
-			} );
-
 			it( 'returns undefined when imageinfo has no thumb dimensions', () => {
 				store.commonsMedia[ MID ] = {
 					...mediaData,
@@ -113,30 +104,18 @@ describe( 'Commons Media Pinia store', () => {
 
 	describe( 'Actions', () => {
 		describe( 'setCommonsMediaData', () => {
-			it( 'stores a promise directly', () => {
-				const promise = Promise.resolve( mediaData );
-				store.setCommonsMediaData( { id: MID, data: promise } );
-				expect( store.commonsMedia[ MID ] ).toBe( promise );
-			} );
-
 			it( 'stores the raw page object', () => {
 				store.setCommonsMediaData( { id: MID, data: mediaData } );
 				expect( store.commonsMedia[ MID ] ).toStrictEqual( mediaData );
 			} );
 		} );
 
-		describe( 'resetCommonsMediaData', () => {
-			it( 'removes the specified M-IDs from state', () => {
-				store.commonsMedia[ MID ] = mediaData;
-				store.resetCommonsMediaData( { ids: [ MID ] } );
-				expect( store.commonsMedia[ MID ] ).toBeUndefined();
-			} );
-		} );
-
 		describe( 'fetchCommonsMedia', () => {
 			it( 'resolves immediately for already-cached M-IDs', async () => {
 				store.commonsMedia[ MID ] = mediaData;
-				await expect( store.fetchCommonsMedia( { ids: [ MID ] } ) ).resolves.toBeUndefined();
+
+				await store.fetchCommonsMedia( { ids: [ MID ] } );
+
 				expect( foreignApiGetMock ).not.toHaveBeenCalled();
 			} );
 
@@ -147,6 +126,49 @@ describe( 'Commons Media Pinia store', () => {
 
 				await store.fetchCommonsMedia( { ids: [ MID ] } );
 
+				expect( store.commonsMedia[ MID ] ).toMatchObject( mediaData );
+				expect( store.commonsMediaPromises.size ).toBe( 0 );
+			} );
+
+			it( 'sends one request when two callers ask for the same M-ID', async () => {
+				foreignApiGetMock.mockResolvedValue( {
+					query: { pages: { 68960758: mediaData } }
+				} );
+
+				const first = store.fetchCommonsMedia( { ids: [ MID ] } );
+				expect( store.commonsMediaPromises.has( MID ) ).toBe( true );
+				const second = store.fetchCommonsMedia( { ids: [ MID ] } );
+
+				await Promise.all( [ first, second ] );
+
+				expect( foreignApiGetMock ).toHaveBeenCalledTimes( 1 );
+				expect( store.commonsMedia[ MID ] ).toMatchObject( mediaData );
+			} );
+
+			it( 'does not cache an M-ID which the response leaves out', async () => {
+				foreignApiGetMock.mockResolvedValue( { query: { pages: {} } } );
+
+				await store.fetchCommonsMedia( { ids: [ MID ] } );
+
+				expect( store.commonsMedia[ MID ] ).toBeUndefined();
+				expect( store.commonsMediaPromises.size ).toBe( 0 );
+			} );
+
+			it( 'caches nothing when the request fails, and asks again', async () => {
+				foreignApiGetMock.mockRejectedValue( 'commons error' );
+
+				await store.fetchCommonsMedia( { ids: [ MID ] } );
+
+				expect( store.commonsMedia[ MID ] ).toBeUndefined();
+				expect( store.commonsMediaPromises.size ).toBe( 0 );
+
+				foreignApiGetMock.mockResolvedValue( {
+					query: { pages: { 68960758: mediaData } }
+				} );
+
+				await store.fetchCommonsMedia( { ids: [ MID ] } );
+
+				expect( foreignApiGetMock ).toHaveBeenCalledTimes( 2 );
 				expect( store.commonsMedia[ MID ] ).toMatchObject( mediaData );
 			} );
 		} );

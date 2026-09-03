@@ -51,10 +51,10 @@
  * TODO (T417384): the stores below still track in-flight requests their own
  * way and should move to these helpers, one patch each:
  * * `abstractWiki.js` (`fragmentPromises`)
- * * `wikidata/{items,lexemes,properties}.js` and `commons/media.js`, which
- *   put the promise in the same slot as the data and then use
- *   `typeof value.then` to tell them apart. These must be reconciled with
- *   the request window added in T429766, so agree the design first.
+ * * `wikidata/{items,lexemes,properties}.js`, which put the promise in the
+ *   same slot as the data and then use `typeof value.then` to tell them
+ *   apart. These must be reconciled with the request window added in
+ *   T429766, so agree the design first.
  * * `ztype.js` (`parserPromises`) is a plain array used to wait for all
  *   running parsers, not a keyed cache. It does not fit these helpers.
  *

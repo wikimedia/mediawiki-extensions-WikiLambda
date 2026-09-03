@@ -7,20 +7,32 @@
 'use strict';
 
 const { searchCommonsMedia, fetchCommonsMediaByIds } = require( '../../../utils/apiUtils.js' );
+const storeUtils = require( '../../../utils/storeUtils.js' );
 
 module.exports = {
 	state: {
-		// TODO (T417384): data-or-promise slot; see the note in
-		// `wikidata/items.js`. This store has no request window, so it can move
-		// to `storeUtils.doDeduplicatedFetch` on its own.
-		commonsMedia: {}
+		/**
+		 * Cache of Commons media data indexed by M-ID.
+		 * Key: M-ID (e.g. "M68960758")
+		 * Value: the page object which the API returned
+		 *
+		 * @type {Object<string, Object>}
+		 */
+		commonsMedia: {},
+		/**
+		 * Map of in-flight Commons media requests, written by `storeUtils.doDeduplicatedBatchFetch`.
+		 * Key: M-ID (e.g. "M68960758")
+		 * Value: Promise of the request which fetches it
+		 *
+		 * @type {Map<string, Promise>}
+		 */
+		commonsMediaPromises: new Map()
 	},
 
 	getters: {
 		/**
 		 * Returns the Commons media data for a given M-ID,
-		 * the fetch Promise if the request is in flight,
-		 * or undefined if it hasn't been requested yet.
+		 * or undefined if it has not been fetched yet.
 		 *
 		 * @param {Object} state
 		 * @return {Function}
@@ -28,7 +40,7 @@ module.exports = {
 		getCommonsMediaData: function ( state ) {
 			/**
 			 * @param {string} mid M-ID (e.g. "M68960758")
-			 * @return {Object|Promise|undefined}
+			 * @return {Object|undefined}
 			 */
 			const findCommonsMediaData = ( mid ) => state.commonsMedia[ mid ];
 			return findCommonsMediaData;
@@ -47,10 +59,7 @@ module.exports = {
 			 */
 			const findCommonsMediaTitle = ( mid ) => {
 				const data = this.getCommonsMediaData( mid );
-				if ( data && typeof data.then !== 'function' ) {
-					return data.title;
-				}
-				return undefined;
+				return data ? data.title : undefined;
 			};
 			return findCommonsMediaTitle;
 		},
@@ -68,10 +77,9 @@ module.exports = {
 			 */
 			const findCommonsMediaThumb = ( mid ) => {
 				const data = this.getCommonsMediaData( mid );
-				if ( data && typeof data.then !== 'function' ) {
-					return data.imageinfo && data.imageinfo[ 0 ] && data.imageinfo[ 0 ].thumburl;
-				}
-				return undefined;
+				return data && data.imageinfo && data.imageinfo[ 0 ] ?
+					data.imageinfo[ 0 ].thumburl :
+					undefined;
 			};
 			return findCommonsMediaThumb;
 		},
@@ -89,11 +97,9 @@ module.exports = {
 			 */
 			const findCommonsMediaThumbSize = ( mid ) => {
 				const data = this.getCommonsMediaData( mid );
-				if ( data && typeof data.then !== 'function' ) {
-					const imageinfo = data.imageinfo && data.imageinfo[ 0 ];
-					if ( imageinfo && imageinfo.thumbwidth && imageinfo.thumbheight ) {
-						return { width: imageinfo.thumbwidth, height: imageinfo.thumbheight };
-					}
+				const imageinfo = data && data.imageinfo && data.imageinfo[ 0 ];
+				if ( imageinfo && imageinfo.thumbwidth && imageinfo.thumbheight ) {
+					return { width: imageinfo.thumbwidth, height: imageinfo.thumbheight };
 				}
 				return undefined;
 			};
@@ -113,10 +119,9 @@ module.exports = {
 			 */
 			const findCommonsMediaDescriptionUrl = ( mid ) => {
 				const data = this.getCommonsMediaData( mid );
-				if ( data && typeof data.then !== 'function' ) {
-					return data.imageinfo && data.imageinfo[ 0 ] && data.imageinfo[ 0 ].descriptionurl;
-				}
-				return undefined;
+				return data && data.imageinfo && data.imageinfo[ 0 ] ?
+					data.imageinfo[ 0 ].descriptionurl :
+					undefined;
 			};
 			return findCommonsMediaDescriptionUrl;
 		}
@@ -128,20 +133,10 @@ module.exports = {
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.id M-ID (e.g. "M12345")
-		 * @param {Object|Promise} payload.data Resolved data or in-flight Promise
+		 * @param {Object} payload.data The page object which the API returned
 		 */
 		setCommonsMediaData: function ( payload ) {
 			this.commonsMedia[ payload.id ] = payload.data;
-		},
-
-		/**
-		 * Removes the cached data for the given M-IDs.
-		 *
-		 * @param {Object} payload
-		 * @param {Array<string>} payload.ids
-		 */
-		resetCommonsMediaData: function ( payload ) {
-			payload.ids.forEach( ( id ) => delete this.commonsMedia[ id ] );
 		},
 
 		/**
@@ -153,40 +148,32 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		fetchCommonsMedia: function ( { ids } ) {
-			const filteredIds = ids.filter(
-				( id ) => this.getCommonsMediaData( id ) === undefined
-			);
-
-			if ( !filteredIds.length ) {
-				return Promise.resolve();
-			}
-
-			// Strip the "M" prefix for the pageids parameter
-			const numericIds = filteredIds.map( ( id ) => id.replace( /^M/i, '' ) ).join( '|' );
-
-			const request = {
-				ids: numericIds
-			};
-
-			const resultPromise = fetchCommonsMediaByIds( request )
-				.then( ( data ) => {
+			return storeUtils.doDeduplicatedBatchFetch( {
+				inFlight: this.commonsMediaPromises,
+				keys: ids,
+				getCached: ( mid ) => this.getCommonsMediaData( mid ),
+				setCached: ( mid, data ) => this.setCommonsMediaData( { id: mid, data } ),
+				run: ( newIds ) => fetchCommonsMediaByIds( {
+					// Strip the "M" prefix for the pageids parameter
+					ids: newIds.map( ( mid ) => mid.replace( /^M/i, '' ) ).join( '|' )
+				} ).then( ( data ) => {
 					const pages = data.query ? data.query.pages : {};
 					const pageList = Array.isArray( pages ) ? pages : Object.values( pages );
+					const pagesByMid = {};
 					pageList.forEach( ( page ) => {
-						if ( !page.pageid ) {
-							return;
+						if ( page.pageid ) {
+							pagesByMid[ `M${ page.pageid }` ] = page;
 						}
-						const mid = `M${ page.pageid }`;
-						this.setCommonsMediaData( { id: mid, data: page } );
 					} );
+					// An M-ID which the response leaves out stays out of the
+					// cache, so a later call asks for it again
+					return pagesByMid;
 				} )
-				.catch( () => {
-					this.resetCommonsMediaData( { ids: filteredIds } );
-				} );
-
-			// Mark IDs as in-flight
-			filteredIds.forEach( ( id ) => this.setCommonsMediaData( { id, data: resultPromise } ) );
-			return resultPromise;
+					// Nothing waits for this fetch, so a failure must not
+					// reject. The helper then has no pages to cache, and a
+					// later call asks for these M-IDs again.
+					.catch( () => ( {} ) )
+			} );
 		},
 
 		/**
