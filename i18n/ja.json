@@ -491,7 +491,7 @@
 	"wikilambda-wikifunctionswiki-sidebar-functioncatalogue": "関数カタログ",
 	"wikilambda-wikifunctionswiki-sidebar-projectchat": "井戸端",
 	"wikilambda-wikifunctionswiki-sidebar-projectstatus": "現在のステータス",
-	"wikilambda-zerror": "型 $1 のエラー",
+	"wikilambda-zerror": "種類 $1 のエラー",
 	"wikilambda-zimplememntation-composition-missing": "合成が空です。関数を選択してください。",
 	"wikilambda-zimplementation-code-language-missing": "先にプログラミング言語を選択してください。",
 	"wikilambda-zimplementation-code-missing": "コードが空です。コードを選択してください。",
