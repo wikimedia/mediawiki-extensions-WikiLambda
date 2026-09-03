@@ -48,11 +48,11 @@
  * * In the batch helper, a key missing from the result of `run` is not
  *   cached, so the next call requests it again.
  *
- * TODO (T417384): the stores below still track in-flight requests their own
- * way and should move to these helpers, one patch each:
- * * `abstractWiki.js` (`fragmentPromises`)
- * * `ztype.js` (`parserPromises`) is a plain array used to wait for all
- *   running parsers, not a keyed cache. It does not fit these helpers.
+ * WHAT DOES NOT USE THESE
+ *
+ * `ztype.js` keeps `parserPromises`, a plain array which lets the store wait
+ * for all the parsers which run. It is not a keyed cache, so these helpers do
+ * not fit it.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

@@ -65,7 +65,7 @@ describe( 'abstractWiki Pinia store', () => {
 		store.jsonObject = { abstractwiki: {} };
 
 		store.fragments = {};
-		store.fragmentPromises = {};
+		store.fragmentPromises = new Map();
 		store.sectionHashes = {};
 		store.qid = undefined;
 		store.highlight = undefined;
@@ -627,7 +627,7 @@ describe( 'abstractWiki Pinia store', () => {
 
 			beforeEach( () => {
 				store.fragments = {};
-				store.fragmentPromises = {};
+				store.fragmentPromises = new Map();
 
 				store.setError = jest.fn();
 				store.processFragmentResponse = jest.fn();
@@ -831,6 +831,21 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.setError ).toHaveBeenCalled();
 			} );
 
+			it( 'holds a promise for every requested fragment while the request runs', () => {
+				const promise = store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.fragmentPromises.has( `hash1:${ mockLang }` ) ).toBe( true );
+				expect( store.fragmentPromises.has( `hash2:${ mockLang }` ) ).toBe( true );
+
+				return promise;
+			} );
+
 			it( 'clears loading state and promises in finally', async () => {
 				await store.fetchSectionPreview( {
 					topic: mockQid,
@@ -842,8 +857,36 @@ describe( 'abstractWiki Pinia store', () => {
 
 				expect( store.fragments[ `hash1:${ mockLang }` ].isLoading ).toBe( false );
 				expect( store.fragments[ `hash2:${ mockLang }` ].isLoading ).toBe( false );
-				expect( store.fragmentPromises[ `hash1:${ mockLang }` ] ).toBeUndefined();
-				expect( store.fragmentPromises[ `hash2:${ mockLang }` ] ).toBeUndefined();
+				expect( store.fragmentPromises.has( `hash1:${ mockLang }` ) ).toBe( false );
+				expect( store.fragmentPromises.has( `hash2:${ mockLang }` ) ).toBe( false );
+			} );
+
+			it( 'sends one request when two calls ask for the same pending fragments', async () => {
+				// A pending fragment always counts as needed, so without the
+				// in-flight map the second call would ask for it again
+				store.fragments = {
+					[ `hash1:${ mockLang }` ]: { isPending: true },
+					[ `hash2:${ mockLang }` ]: { isPending: true }
+				};
+
+				const first = store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+				const second = store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+
+				await Promise.all( [ first, second ] );
+
+				expect( postMock ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 
@@ -1085,7 +1128,7 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 
 			it( 'does not render again if there is a request in flight', async () => {
-				store.fragmentPromises[ fragmentKey ] = Promise.resolve();
+				store.fragmentPromises.set( fragmentKey, Promise.resolve() );
 
 				await store.renderFragmentPreview( payload );
 

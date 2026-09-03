@@ -14,6 +14,7 @@ const { extractWikidataItemIds, isWikidataQid } = require( '../../utils/wikidata
 const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
+const storeUtils = require( '../../utils/storeUtils.js' );
 
 /* Time (ms) between processing jobs in the queue */
 const FRAGMENT_QUEUE_TIMEOUT = 2000;
@@ -43,9 +44,16 @@ const abstractWikiStore = {
 		 * }
 		 */
 		fragments: {},
-		// TODO (T417384): move to `storeUtils.doDeduplicatedFetch` with
-		// `fragments` as the cache, as `zhtml.js` does.
-		fragmentPromises: {},
+		/**
+		 * Map of the fragment keys which a section request is fetching, written by
+		 *`storeUtils.doDeduplicatedBatchFetch`. It stops `renderFragmentPreview` from asking for
+		 * a fragment on its own while a section request is already getting it.
+		 * Key: `${ sha256(fragment) }:${ langZid }`
+		 * Value: Promise of the section request
+		 *
+		 * @type {Map<string, Promise>}
+		 */
+		fragmentPromises: new Map(),
 		sectionHashes: {},
 		qid: undefined,
 		highlight: undefined,
@@ -436,12 +444,10 @@ const abstractWikiStore = {
 		 * Fetches all the fragments for a given topic/section/language in their current
 		 * stored state (success, failure, or pending).
 		 *
-		 * Keeps track of the promise indexed by all the involved fragment hashes, so that
-		 * it stops any individual fragment requests while the whole section one is flying.
-		 *
 		 * @param {Object} payload
 		 * @param {string} payload.topic
 		 * @param {string} payload.section
+		 * @param {string} payload.sectionPath
 		 * @param {Array} payload.fragments
 		 * @param {Object} payload.fragmentHashes
 		 * @param {string} payload.language
@@ -467,8 +473,52 @@ const abstractWikiStore = {
 				return;
 			}
 
+			// The API takes the fragments in the same order as the keys, so keep
+			// the pair together: the helper decides which keys the request sends.
+			const fragmentByKey = new Map();
+			neededKeys.forEach( ( key, index ) => {
+				fragmentByKey.set( key, neededFragments ? neededFragments[ index ] : undefined );
+			} );
+
+			return storeUtils.doDeduplicatedBatchFetch( {
+				inFlight: this.fragmentPromises,
+				keys: neededKeys,
+				// No `getCached`: `onlyNeededFragments` has already left out the
+				// fragments which need no request. No `setCached` either: the
+				// response goes to `processFragmentResponse`, which keeps the
+				// state of each fragment, not one value per key.
+				run: ( keysToFetch ) => this.requestSectionPreview( {
+					topic: payload.topic,
+					section,
+					sectionPath: payload.sectionPath,
+					language,
+					keys: keysToFetch,
+					fragments: neededFragments ?
+						keysToFetch.map( ( key ) => fragmentByKey.get( key ) ) :
+						undefined
+				} )
+			} );
+		},
+
+		/**
+		 * Asks the API for one set of section fragments and stores what comes
+		 * back. Call `fetchSectionPreview`, not this action: this one does not
+		 * remove the duplicate requests.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.topic
+		 * @param {string} payload.section
+		 * @param {string} payload.sectionPath
+		 * @param {string} payload.language
+		 * @param {Array} payload.keys Fragment keys to request
+		 * @param {Array|undefined} payload.fragments Fragments to request, in the order of `keys`
+		 * @return {Promise}
+		 */
+		requestSectionPreview: function ( payload ) {
+			const { section, keys } = payload;
+
 			// Set fragments as loading, without overwriting whatever data is available
-			neededKeys.forEach( ( key ) => {
+			keys.forEach( ( key ) => {
 				if ( !this.fragments[ key ] ) {
 					this.fragments[ key ] = { isLoading: true };
 				} else if ( this.fragments[ key ].isPending ) {
@@ -476,15 +526,15 @@ const abstractWikiStore = {
 				}
 			} );
 
-			const sectionPromise = fetchAbstractWikiSection( {
+			return fetchAbstractWikiSection( {
 				topic: payload.topic,
 				section,
-				language,
-				fragments: neededFragments ? JSON.stringify( neededFragments ) : undefined
+				language: payload.language,
+				fragments: payload.fragments ? JSON.stringify( payload.fragments ) : undefined
 			} ).then( ( data ) => {
 				// renderedFragments must have the same length as fragments
 				const renderedFragments = data[ section ] || [];
-				if ( neededKeys.length !== renderedFragments.length ) {
+				if ( keys.length !== renderedFragments.length ) {
 					this.setError( {
 						errorId: payload.sectionPath,
 						errorType: Constants.ERROR_TYPES.ERROR,
@@ -494,7 +544,7 @@ const abstractWikiStore = {
 				}
 
 				// Iterate over all fragment calls and send to processFragmentResponse
-				neededKeys.forEach( ( fragmentKey, index ) => {
+				keys.forEach( ( fragmentKey, index ) => {
 					this.processFragmentResponse( fragmentKey, renderedFragments[ index ] );
 				} );
 
@@ -506,20 +556,11 @@ const abstractWikiStore = {
 				} );
 
 			} ).finally( () => {
-				neededKeys.forEach( ( fragmentKey ) => {
-					// Unset all the promises
-					this.fragmentPromises[ fragmentKey ] = undefined;
-					// Unset all isLoading (if any was left due to api error)
+				// Unset all isLoading (if any was left due to api error)
+				keys.forEach( ( fragmentKey ) => {
 					this.fragments[ fragmentKey ].isLoading = false;
 				} );
 			} );
-
-			// Store this promise for all involved fragment hashes, to avoid duplication
-			neededKeys.forEach( ( fragmentKey ) => {
-				this.fragmentPromises[ fragmentKey ] = sectionPromise;
-			} );
-
-			return sectionPromise;
 		},
 
 		/**
@@ -662,8 +703,8 @@ const abstractWikiStore = {
 		renderFragmentPreview: function ( payload ) {
 			const fragmentKey = `${ payload.fragmentHash }:${ payload.language }`;
 
-			// Fragment request in flight, exit
-			if ( this.fragmentPromises[ fragmentKey ] ) {
+			// A section request is already getting this fragment, exit
+			if ( this.fragmentPromises.has( fragmentKey ) ) {
 				return;
 			}
 
