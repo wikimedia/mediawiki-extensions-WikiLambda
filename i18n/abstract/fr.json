@@ -3,7 +3,8 @@
 		"authors": [
 			"Jérémy-Günther-Heinz Jähnick",
 			"VIGNERON",
-			"Wladek92"
+			"Wladek92",
+			"Wikipucine"
 		]
 	},
 	"action-wikilambda-abstract-create": "créer de nouveaux articles de la Wikipedia abstraite",
@@ -17,7 +18,7 @@
 	"right-wikilambda-abstract-create": "Créer de nouveaux articles de la Wikipedia abstraite",
 	"right-wikilambda-abstract-edit": "Modifier des articles existants de la Wikipedia abstraite",
 	"specialpages-group-abstractwiki": "Pages de la Wikipedia abstraite",
-	"wikilambda-abstract-content-object": "Article de la Wikiupedia abstraite",
+	"wikilambda-abstract-content-object": "Article de la Wikipédia abstraite",
 	"wikilambda-abstract-edit-title": "Modifier l'article de la Wikipedia abstraite pour $1",
 	"wikilambda-abstract-error-bad-fragments-type": "La section avec la clé « $1 » contient une liste de fragments mal typée.",
 	"wikilambda-abstract-error-bad-qid": "La valeur de la propriété Qid (« $1 ») n'est pas un Qid d'élément Wikidata valide.",
