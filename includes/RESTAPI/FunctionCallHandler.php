@@ -1099,7 +1099,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				Handler::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_ISMULTI => false,
-				ParamValidator::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_REQUIRED => false,
 				Handler::PARAM_DESCRIPTION => new MessageValue(
 					'wikifunctions-rest-module-v0-call-param-arguments-desc'
 				),

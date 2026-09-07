@@ -88,7 +88,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			)->text();
 
 			$timer->setLabel( 'response', 'disabled' )->stop();
-			return WikifunctionsPFragment::newFromLiteral( $errorMsgString, null );
+			return WikifunctionsPFragment::newFromLiteral( $errorMsgString );
 		}
 
 		// Extract arguments:
@@ -195,7 +195,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				}
 				// Otherwise, return as literal
 				$timer->setLabel( 'response', 'cached' )->stop();
-				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'] ?? '', null );
+				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'] );
 			}
 
 			// It failed for some reason; show the error message instead

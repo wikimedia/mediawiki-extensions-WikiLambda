@@ -11,27 +11,24 @@
 
 namespace MediaWiki\Extension\WikiLambda\ParserFunction;
 
-use Wikimedia\Parsoid\DOM\DocumentFragment;
-use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Fragments\LiteralStringPFragment;
+use Wikimedia\Parsoid\Fragments\PFragment;
+use Wikimedia\Parsoid\Fragments\WikitextPFragment;
 
-class WikifunctionsPFragment extends LiteralStringPFragment {
-	// TODO: Alter this so we can control serialisation etc.
-
+class WikifunctionsPFragment {
 	/**
-	 * @inheritDoc
+	 * Static method to return a PFragment instance given its content:
+	 * * When the value is an empty string, return WikitextPFragment, which is
+	 *   able to produce a span with empty content
+	 * * When the value is a non-empty string, return a LiteralStringPFragment
+	 *
+	 * @param string $value
+	 * @return PFragment
 	 */
-	public function asDom( ParsoidExtensionAPI $ext, bool $release = false ): DocumentFragment {
-		if ( !$this->isEmpty() ) {
-			return parent::asDom( $ext, $release );
+	public static function newFromLiteral( string $value = '' ): PFragment {
+		if ( $value !== '' ) {
+			return LiteralStringPFragment::newFromLiteral( $value, null );
 		}
-
-		// (T391589) LiteralStringPFragment::asDom fails when the value is empty,
-		// adding excecption here to create an empty text node.
-		$doc = $ext->getTopLevelDoc();
-		$df = $doc->createDocumentFragment();
-		$df->appendChild( $doc->createTextNode( '' ) );
-
-		return $df;
+		return WikitextPFragment::newFromWt( '', null );
 	}
 }
