@@ -67,6 +67,7 @@
 	"wikilambda-abstract-preview-fragment-max-retries": "Alcanzouse o número máximo de intentos. Inténtao de novo máis tarde.",
 	"wikilambda-abstract-preview-fragment-missing": "Ausente",
 	"wikilambda-abstract-preview-fragment-pending": "Pendente",
+	"wikilambda-abstract-preview-fragment-replicate": "Ver os detalles en Wikifuncións",
 	"wikilambda-abstract-preview-fragment-retry": "Reintentar",
 	"wikilambda-abstract-preview-in-language": "Texto xerado",
 	"wikilambda-abstract-renderedwith": "A páxina renderizouse desde a [[meta:Special:MyLanguage/Abstract Wikipedia|Wikipedia abstracta]].",

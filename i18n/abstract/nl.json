@@ -69,6 +69,7 @@
 	"wikilambda-abstract-preview-fragment-max-retries": "Het maximale aantal pogingen is bereikt. Probeer het later opnieuw.",
 	"wikilambda-abstract-preview-fragment-missing": "Ontbreekt",
 	"wikilambda-abstract-preview-fragment-pending": "In behandeling",
+	"wikilambda-abstract-preview-fragment-replicate": "Details in Wikifunctions bekijken",
 	"wikilambda-abstract-preview-fragment-retry": "Opnieuw proberen",
 	"wikilambda-abstract-preview-in-language": "Gegenereerde tekst",
 	"wikilambda-abstract-renderedwith": "Deze pagina is gegenereerd vanuit [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",

@@ -68,6 +68,7 @@
 	"wikilambda-abstract-preview-fragment-max-retries": "Maximale Anzahl an Wiederholungsversuchen erreicht. Bitte versuche es später erneut.",
 	"wikilambda-abstract-preview-fragment-missing": "Fehlend",
 	"wikilambda-abstract-preview-fragment-pending": "Ausstehend",
+	"wikilambda-abstract-preview-fragment-replicate": "Details in Wikifunctions anzeigen",
 	"wikilambda-abstract-preview-fragment-retry": "Erneut versuchen",
 	"wikilambda-abstract-preview-in-language": "Erstellter Text",
 	"wikilambda-abstract-renderedwith": "Die Seite wurde aus [[meta:Special:MyLanguage/Abstract Wikipedia|abstrakten Wikipedia]] gerendert.",
