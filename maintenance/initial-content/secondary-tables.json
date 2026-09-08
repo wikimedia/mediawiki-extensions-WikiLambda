@@ -73,6 +73,24 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z92",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Multilingual html",
+            "wlzl_label_normalised": "multilingual html",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z92",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z92",
+            "wlzl_label_normalised": "z92",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z50",
             "wlzl_type": "Z4",
             "wlzl_language": "Z1002",
@@ -672,6 +690,24 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "Z89",
             "wlzl_label_normalised": "z89",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z91",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Monolingual html",
+            "wlzl_label_normalised": "monolingual html",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z91",
+            "wlzl_type": "Z4",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z91",
+            "wlzl_label_normalised": "z91",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },

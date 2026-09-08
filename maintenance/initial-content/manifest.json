@@ -1,9 +1,9 @@
 {
     "formatVersion": 1,
-    "functionSchemataSha": "60f4ee46b7a49818982e5f5abbc78de292b050e9",
-    "pageCount": 1538,
+    "functionSchemataSha": "1f77139a83a86884568f923d72918b7d119fbd4f",
+    "pageCount": 1540,
     "tableRowCounts": {
-        "wikilambda_zobject_labels": 4987,
+        "wikilambda_zobject_labels": 4991,
         "wikilambda_zobject_join": 442,
         "wikilambda_zobject_function_join": 133,
         "wikilambda_zobject_label_conflicts": 0,
