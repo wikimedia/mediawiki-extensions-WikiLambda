@@ -188,6 +188,7 @@
 	"wikilambda-functioncall-error-unknown": "Chyba volání funkce: „$1“ není známý ZObjekt",
 	"wikilambda-functioncall-error-unknown-category": "Stránky s voláním Wikifunkcí na neznámý ZObjekt",
 	"wikilambda-functioncall-error-unknown-category-desc": "Stránky s voláním Wikifunkcí vyžadujícím neznámý ZObjekt",
+	"wikilambda-functioncall-metadata-accessible-title": "Dialog umožňující zobrazení metadat k výsledku volání funkce",
 	"wikilambda-functioncall-metadata-actual-result": "Skutečný výsledek",
 	"wikilambda-functioncall-metadata-cpu-usage": "Využití CPU",
 	"wikilambda-functioncall-metadata-duration": "Trvání",
