@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ParserFunction;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
-use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPendingFragment;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -130,16 +129,12 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 
 		$this->assertInstanceOf( WikifunctionsPendingFragment::class, $fragment );
 
-		// Assert two jobs were pushed
-		$this->assertCount( 2, $pushedJobs );
-
-		// Assert client usage update job
-		$updateJob = $pushedJobs[0];
-		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $updateJob );
-		$this->assertSame( $inputArguments[0], $updateJob->getParams()['targetFunction'] );
+		// Assert one job was pushed: the render. Usage is recorded by the page properties
+		// asserted below, which ClientHooks::onParserCacheSaveComplete reads back.
+		$this->assertCount( 1, $pushedJobs );
 
 		// Assert client request job
-		$requestJob = $pushedJobs[1];
+		$requestJob = $pushedJobs[0];
 		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $requestJob );
 		$this->assertSame( $expectedRequest, $requestJob->getParams()['request'] );
 
@@ -605,12 +600,14 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$fragment->asHtmlString( $extApi ),
 			'Offline mode renders Html::errorBox() — expect the Codex error-message class'
 		);
-		// The usage-tracking job runs before the offline branch; the render job does not.
-		$this->assertCount(
-			1, $pushedJobs,
-			'Only the usage-tracking job is queued — not the render job'
+		$this->assertSame(
+			[], $pushedJobs,
+			'Offline mode queues no render job'
 		);
-		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
+		$this->assertSame(
+			1, $extApi->getMetadata()->getPageProperty( 'wikilambda' ),
+			'Usage is still recorded, as the call is on the page whether or not it renders'
+		);
 	}
 
 	public function testSourceToFragment_returnsLiteralForCachedNonHtmlSuccess() {
@@ -633,9 +630,9 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		);
 		$this->assertNotInstanceOf( HtmlPFragment::class, $fragment );
 		$this->assertNotInstanceOf( WikifunctionsPendingFragment::class, $fragment );
-		// Cache hit → render job skipped; usage-tracking job still pushed.
-		$this->assertCount( 1, $pushedJobs );
-		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
+		// Cache hit → no render job; usage is recorded by the page property.
+		$this->assertSame( [], $pushedJobs );
+		$this->assertSame( 1, $extApi->getMetadata()->getPageProperty( 'wikilambda' ) );
 	}
 
 	public function testSourceToFragment_returnsErrorFragmentForCachedFailure() {
@@ -669,11 +666,14 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'data-error-key="broken-file"', $html,
 			'The cached error message key is preserved verbatim as a data attribute'
 		);
-		$this->assertCount(
-			1, $pushedJobs,
-			'Cached-failure path still tracks usage but does not re-queue a render job'
+		$this->assertSame(
+			[], $pushedJobs,
+			'The cached-failure path does not re-queue a render job'
 		);
-		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
+		$this->assertSame(
+			1, $extApi->getMetadata()->getPageProperty( 'wikilambda' ),
+			'Usage is still recorded, as the call is on the page whether or not it succeeds'
+		);
 	}
 
 	/**
@@ -693,7 +693,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 
 		$this->assertSame(
 			[], $pushedJobs,
-			'A target that is not a ZID must not queue the usage-tracking job'
+			'A target that is not a ZID must not queue any job'
 		);
 		$this->assertNull(
 			$extApi->getMetadata()->getPageProperty( 'wikilambda-' . $target ),
@@ -810,9 +810,8 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
 		$handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'Z10000', 'foo' ] ), false );
 
-		// Two jobs: usage tracking and re-render stale fragment
-		$this->assertCount( 2, $pushedJobs );
-		$this->assertInstanceOf( WikifunctionsClientUsageUpdateJob::class, $pushedJobs[0] );
-		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $pushedJobs[1] );
+		// One job: re-render the stale fragment.
+		$this->assertCount( 1, $pushedJobs );
+		$this->assertInstanceOf( WikifunctionsClientRequestJob::class, $pushedJobs[0] );
 	}
 }

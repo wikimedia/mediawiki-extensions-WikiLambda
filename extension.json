@@ -173,7 +173,8 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ClientHooks",
 			"services": [
 				"MainConfig",
-				"WikiLambdaMode"
+				"WikiLambdaMode",
+				"JobQueueGroup"
 			],
 			"optional_services": [
 				"CommunityConfiguration.ProviderFactory"
@@ -242,7 +243,6 @@
 	},
 	"Hooks": {
 		"PageSaveComplete": [
-			"WikiLambdaClientHooks",
 			"ViewUrlCacheHandler",
 			"WikiLambdaCommunityConfigurationHooks"
 		],
@@ -251,6 +251,7 @@
 			"WikiLambdaClientHooks"
 		],
 		"PageMoveComplete": "WikiLambdaClientHooks",
+		"ParserCacheSaveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",
 		"EnhancedChangesListModifyLineData": "WikiLambdaClientChangeHooks",

@@ -335,4 +335,65 @@ class WikifunctionsUsageStoreTest extends WikiLambdaClientIntegrationTestCase {
 			'The same page_id on another wiki must be untouched'
 		);
 	}
+
+	// ------------------------------------------------------------------
+	// setUsageForPage
+	// ------------------------------------------------------------------
+
+	public function testSetUsageForPage_recordsTheWholeSet() {
+		$this->store->setUsageForPage( 'enwiki', 500, NS_MAIN, null, 'Snapshot', [ 'Z10090', 'Z10091' ] );
+
+		$this->assertCount( 1, $this->store->fetchUsage( 'Z10090' ) );
+		$this->assertCount( 1, $this->store->fetchUsage( 'Z10091' ) );
+	}
+
+	public function testSetUsageForPage_dropsWhatIsNoLongerUsedAndKeepsTheRest() {
+		$this->store->setUsageForPage( 'enwiki', 501, NS_MAIN, null, 'Narrowed', [ 'Z10092', 'Z10093' ] );
+		$this->store->setUsageForPage( 'enwiki', 501, NS_MAIN, null, 'Narrowed', [ 'Z10093' ] );
+
+		$this->assertSame( [], $this->store->fetchUsage( 'Z10092' ) );
+		$this->assertCount( 1, $this->store->fetchUsage( 'Z10093' ) );
+	}
+
+	public function testSetUsageForPage_anEmptySetDropsEveryRow() {
+		$this->store->setUsageForPage( 'enwiki', 502, NS_MAIN, null, 'Emptied', [ 'Z10094' ] );
+		$this->store->setUsageForPage( 'enwiki', 502, NS_MAIN, null, 'Emptied', [] );
+
+		$this->assertSame( [], $this->store->fetchUsage( 'Z10094' ) );
+	}
+
+	public function testSetUsageForPage_refreshesTheDenormalisedTitle() {
+		$this->store->setUsageForPage( 'enwiki', 503, NS_TEMPLATE, 'Template', 'Before', [ 'Z10095' ] );
+		$this->store->setUsageForPage( 'enwiki', 503, NS_TEMPLATE, 'Template', 'After', [ 'Z10095' ] );
+
+		$usage = $this->store->fetchUsage( 'Z10095' );
+		$this->assertCount( 1, $usage );
+		$this->assertSame( 'After', $usage[0]['title'] );
+	}
+
+	public function testSetUsageForPage_movesTheRowWhenThePageChangesNamespace() {
+		// The namespace is part of a row's identity, so the row has to be re-filed rather
+		// than updated. One call does both, leaving nothing behind in the old namespace.
+		$this->store->setUsageForPage( 'enwiki', 504, NS_USER, 'User', 'Sandbox', [ 'Z10096' ] );
+		$this->store->setUsageForPage( 'enwiki', 504, NS_TEMPLATE, 'Template', 'Sandbox', [ 'Z10096' ] );
+
+		$usage = $this->store->fetchUsage( 'Z10096' );
+		$this->assertCount( 1, $usage, 'The page must not keep a row under its old namespace' );
+		$this->assertSame( NS_TEMPLATE, $usage[0]['namespaceId'] );
+	}
+
+	public function testSetUsageForPage_leavesOtherPagesAlone() {
+		$this->store->setUsageForPage( 'enwiki', 505, NS_MAIN, null, 'Mine', [ 'Z10097' ] );
+		$this->store->setUsageForPage( 'enwiki', 506, NS_MAIN, null, 'Yours', [ 'Z10097' ] );
+		$this->store->setUsageForPage( 'enwiki', 505, NS_MAIN, null, 'Mine', [] );
+
+		$usage = $this->store->fetchUsage( 'Z10097' );
+		$this->assertCount( 1, $usage );
+		$this->assertSame( 506, $usage[0]['pageId'] );
+	}
+
+	public function testSetUsageForPage_rejectsATargetThatIsNotAZid() {
+		$this->expectException( InvalidArgumentException::class );
+		$this->store->setUsageForPage( 'enwiki', 507, NS_MAIN, null, 'Bad', [ 'not-a-zid' ] );
+	}
 }

@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientRequestJob;
-use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Extension\WikiLambda\UIUtils;
@@ -124,19 +123,15 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 			}
 		}
 
-		// Schedule a job to update the usage tracking to say that we use this function on this page.
-		// We clear out the tracking each time the page is saved, via onPageSaveComplete above.
+		// Record the call as a page property. These properties are the only record of which Functions
+		// a page uses: the legacy parser does not run this handler, so nothing else sees the call.
+		// ClientHooks::onParserCacheSaveComplete (which requires ParserCache to be enabled on the wiki,
+		// always true for Wikimedia production) reads them back when the render is cached and writes
+		// the cross-wiki usage table from them, which iswhy they are set before the call is made and
+		// whatever its result.
+
 		// (T434194) Don't track for invalid ZIDs, `{{#function:foo}}` doesn't trigger orchestrator load
 		if ( ZObjectUtils::isValidZObjectReference( $expansion['target'] ) ) {
-			// FIXME: This will run whether or not we're a saved edit, or just a stash/edit preview. Fix by checking
-			// the page properties at run time, which are only stored for the current revision?
-			$usageJob = new WikifunctionsClientUsageUpdateJob( [
-				'targetFunction' => $expansion['target'],
-				'targetPageText' => $extApi->getPageConfig()->getLinkTarget()->getDBkey(),
-				'targetPageNamespace' => $extApi->getPageConfig()->getLinkTarget()->getNamespace()
-			] );
-			$this->jobQueueGroup->lazyPush( $usageJob );
-
 			// (T414848) Set a special flag on the page, so that we can track usage of pages with function calls, and
 			// find pages that use a lot of them.
 

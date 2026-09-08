@@ -199,6 +199,81 @@ class WikifunctionsUsageStore {
 	}
 
 	/**
+	 * Record the complete set of Functions that a page uses, replacing what was there.
+	 *
+	 * Note: As this is a snapshot, we can run this late or multiple times.
+	 *
+	 * Rows that stay are written again rather than left alone, which also refreshes the
+	 * denormalised title.
+	 *
+	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
+	 * @param int $pageId The page_id of the using page on the using wiki
+	 * @param int $namespaceId The using page's namespace ID on the using wiki
+	 * @param ?string $namespaceText The using page's namespace name on the using wiki, or
+	 *   null for the main namespace; stored because the foreign namespaces may not match
+	 *   the repo's own
+	 * @param string $title The using page's title (DBkey, without the namespace)
+	 * @param string[] $functions The ZIDs of every Function the page now uses; an empty
+	 *   array drops all of the page's rows
+	 * @throws InvalidArgumentException if any of $functions is not a valid ZID reference
+	 */
+	public function setUsageForPage(
+		string $wiki,
+		int $pageId,
+		int $namespaceId,
+		?string $namespaceText,
+		string $title,
+		array $functions
+	): void {
+		// Filter inputs first to skip bad ZIDs, as acquireWikiId() writes dimension row on miss.
+		$functionIds = array_values( array_unique(
+			array_map( [ self::class, 'functionToId' ], $functions )
+		) );
+
+		$dbw = $this->getPrimaryDB();
+
+		// Write the new set before removing the old, so a Function that the page still uses does
+		// not disappear from the table between the two SQL writes.
+		$wikiId = null;
+		if ( $functionIds ) {
+			$wikiId = $this->acquireWikiId( $wiki, $namespaceId, $namespaceText );
+			$dbw->newInsertQueryBuilder()
+				->insertInto( 'wikifunctions_usage' )
+				->rows( array_map(
+					static fn ( int $functionId ): array => [
+						'wfu_function' => $functionId,
+						'wfu_wiki_id' => $wikiId,
+						'wfu_page_id' => $pageId,
+						'wfu_title' => $title,
+					],
+					$functionIds
+				) )
+				->onDuplicateKeyUpdate()
+				->uniqueIndexFields( [ 'wfu_function', 'wfu_wiki_id', 'wfu_page_id' ] )
+				->set( [ 'wfu_title' => $title ] )
+				->caller( __METHOD__ )->execute();
+		}
+
+		$wikiIds = $this->getWikiDimensionIds( $dbw, $wiki, __METHOD__ );
+		if ( !$wikiIds ) {
+			// The wiki has never recorded a usage, so there is nothing to remove.
+			return;
+		}
+
+		$conditions = [ 'wfu_wiki_id' => $wikiIds, 'wfu_page_id' => $pageId ];
+		if ( $wikiId !== null ) {
+			// Keep only what was just written: this namespace's id, with this Function set.
+			$conditions[] = $dbw->expr( 'wfu_wiki_id', '!=', $wikiId )
+				->or( 'wfu_function', '!=', $functionIds );
+		}
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikifunctions_usage' )
+			->where( $conditions )
+			->caller( __METHOD__ )->execute();
+	}
+
+	/**
 	 * Get every recorded dimension-row id that a wiki holds, one per namespace it has used.
 	 *
 	 * A page's rows are found by (wiki, page_id), but the table keys them by the
@@ -224,9 +299,10 @@ class WikifunctionsUsageStore {
 	 *
 	 * Robust to page moves and renames: it clears every namespace's rows for the page on
 	 * the wiki by deleting across all of the wiki's wfuw_id values (a page that moved
-	 * namespace may have rows under more than one). Used when a page is deleted, or before
-	 * re-recording a page's usage from scratch on edit. The shared wikifunctions_usage_wikis
-	 * dimension rows are left in place, as other pages still reference them.
+	 * namespace may have rows under more than one). Used when a page is deleted, or when a
+	 * move takes it out of the namespace its rows are filed under. The shared
+	 * wikifunctions_usage_wikis dimension rows are left in place, as other pages still
+	 * reference them.
 	 *
 	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
 	 * @param int $pageId The page_id of the using page on the using wiki

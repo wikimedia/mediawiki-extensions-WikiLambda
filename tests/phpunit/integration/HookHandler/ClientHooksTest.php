@@ -12,12 +12,14 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 use MediaWiki\Extension\WikiLambda\HookHandler\ClientHooks;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
-use MediaWiki\Storage\EditResult;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
@@ -34,10 +36,11 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		$this->setUpAsClientMode();
 	}
 
-	private function newClientHooks(): ClientHooks {
+	private function newClientHooks( ?JobQueueGroup $jobQueueGroup = null ): ClientHooks {
 		return new ClientHooks(
 			$this->getServiceContainer()->getMainConfig(),
 			$this->getServiceContainer()->getService( 'WikiLambdaMode' ),
+			$jobQueueGroup ?? $this->getServiceContainer()->getJobQueueGroup(),
 			null
 		);
 	}
@@ -60,32 +63,120 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 	}
 
 	// ------------------------------------------------------------------
-	// onPageSaveComplete
+	// onParserCacheSaveComplete
 	// ------------------------------------------------------------------
 
-	public function testOnPageSaveComplete_clearsSharedUsageForExistingPage() {
-		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
-		$page = $this->getExistingTestPage( 'Template:Shared usage clear' );
-		$pageId = $page->getId();
-		$wiki = WikiMap::getCurrentWikiId();
+	/**
+	 * Build the render of a page that uses the given Functions.
+	 *
+	 * @param string[] $functions
+	 * @param int $revId
+	 * @return ParserOutput
+	 */
+	private function newRenderUsing( array $functions, int $revId ): ParserOutput {
+		$parserOutput = new ParserOutput();
+		$parserOutput->setCacheRevisionId( $revId );
 
-		// Seed shared (x1) usage rows for this page on two Functions.
-		$usageStore->insertUsage( 'Z10052', $wiki, $pageId, NS_TEMPLATE, 'Template', 'Shared usage clear' );
-		$usageStore->insertUsage( 'Z10053', $wiki, $pageId, NS_TEMPLATE, 'Template', 'Shared usage clear' );
-		$this->assertNotEmpty( $usageStore->fetchUsage( 'Z10052' ) );
+		foreach ( $functions as $function ) {
+			$parserOutput->setNumericPageProperty( 'wikilambda-' . $function, 1 );
+		}
+		if ( $functions ) {
+			$parserOutput->setNumericPageProperty( 'wikilambda', count( $functions ) );
+		}
 
-		$hooks = $this->newClientHooks();
-		$hooks->onPageSaveComplete(
-			$page,
-			$this->createMock( UserIdentity::class ),
-			'test summary',
-			EDIT_UPDATE,
-			$this->createMock( RevisionRecord::class ),
-			$this->createMock( EditResult::class )
+		return $parserOutput;
+	}
+
+	private function newParsoidOptions(): ParserOptions {
+		$options = ParserOptions::newFromAnon();
+		$options->setUseParsoid();
+		return $options;
+	}
+
+	private function expectPushedJob( array $expectedParams ): JobQueueGroup {
+		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$jobQueueGroup->expects( $this->once() )
+			->method( 'lazyPush' )
+			->willReturnCallback( function ( $job ) use ( $expectedParams ) {
+				foreach ( $expectedParams as $key => $value ) {
+					$this->assertSame( $value, $job->getParams()[ $key ], "Job parameter '$key'" );
+				}
+			} );
+		return $jobQueueGroup;
+	}
+
+	public function testOnParserCacheSaveComplete_pushesTheFunctionsTheRenderUsed() {
+		$page = $this->getExistingTestPage( 'Template:Shared usage record' );
+		$revId = $page->getLatest();
+
+		// 'wikilambda' counts the calls and 'wikilambda-label-en' belongs to the repo's own
+		// labelling; neither names a Function, so neither may reach the job.
+		$parserOutput = $this->newRenderUsing( [ 'Z10061', 'Z10060' ], $revId );
+		$parserOutput->setUnsortedPageProperty( 'wikilambda-label-en', 'Not a Function' );
+
+		$hooks = $this->newClientHooks( $this->expectPushedJob( [
+			'pageId' => $page->getId(),
+			'revId' => $revId,
+			'functions' => [ 'Z10060', 'Z10061' ],
+		] ) );
+
+		$hooks->onParserCacheSaveComplete(
+			$this->getServiceContainer()->getParserCache(),
+			$parserOutput,
+			$page->getTitle(),
+			$this->newParsoidOptions(),
+			$revId
 		);
+	}
 
-		$this->assertSame( [], $usageStore->fetchUsage( 'Z10052' ) );
-		$this->assertSame( [], $usageStore->fetchUsage( 'Z10053' ) );
+	public function testOnParserCacheSaveComplete_pushesAnEmptySetSoThatUsageIsRemoved() {
+		// A page that has stopped using every Function still needs a job: the empty set is
+		// what tells the store to drop the rows it left behind.
+		$page = $this->getExistingTestPage( 'Template:Shared usage emptied' );
+		$revId = $page->getLatest();
+
+		$hooks = $this->newClientHooks( $this->expectPushedJob( [
+			'pageId' => $page->getId(),
+			'functions' => [],
+		] ) );
+
+		$hooks->onParserCacheSaveComplete(
+			$this->getServiceContainer()->getParserCache(),
+			$this->newRenderUsing( [], $revId ),
+			$page->getTitle(),
+			$this->newParsoidOptions(),
+			$revId
+		);
+	}
+
+	public function testOnParserCacheSaveComplete_ignoresTheLegacyRender() {
+		// The legacy parser does not know {{#function:…}}, so its output reports no
+		// Functions for every page. Acting on it would delete every row (T393716).
+		$page = $this->getExistingTestPage( 'Template:Shared usage legacy' );
+
+		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$jobQueueGroup->expects( $this->never() )->method( 'lazyPush' );
+
+		$this->newClientHooks( $jobQueueGroup )->onParserCacheSaveComplete(
+			$this->getServiceContainer()->getParserCache(),
+			$this->newRenderUsing( [], $page->getLatest() ),
+			$page->getTitle(),
+			ParserOptions::newFromAnon(),
+			$page->getLatest()
+		);
+	}
+
+	public function testOnParserCacheSaveComplete_ignoresAPageThatIsNotStored() {
+		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$jobQueueGroup->expects( $this->never() )->method( 'lazyPush' );
+
+		$this->newClientHooks( $jobQueueGroup )->onParserCacheSaveComplete(
+			$this->getServiceContainer()->getParserCache(),
+			$this->newRenderUsing( [ 'Z10062' ], 1 ),
+			Title::makeTitle( NS_TEMPLATE, 'No such page here' ),
+			$this->newParsoidOptions(),
+			1
+		);
 	}
 
 	public function testOnPageDeleteComplete_clearsSharedUsageForDeletedPage() {
@@ -167,28 +258,20 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		$this->assertSame( [], $usageStore->fetchUsage( 'Z10055' ) );
 	}
 
-	public function testOnPageSaveComplete_noOpWhenClientModeDisabled() {
+	public function testOnParserCacheSaveComplete_noOpWhenClientModeDisabled() {
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
 
-		$usageStore = WikiLambdaServices::getWikifunctionsUsageStore();
 		$page = $this->getExistingTestPage( 'Template:ClientHookSurvivor' );
-		$usageStore->insertUsage(
-			'Z10060', WikiMap::getCurrentWikiId(), $page->getId(), NS_TEMPLATE, 'Template', 'ClientHookSurvivor'
-		);
 
-		$hooks = $this->newClientHooks();
-		$hooks->onPageSaveComplete(
-			$page,
-			$this->createMock( UserIdentity::class ),
-			'test summary',
-			EDIT_UPDATE,
-			$this->createMock( RevisionRecord::class ),
-			$this->createMock( EditResult::class )
-		);
+		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$jobQueueGroup->expects( $this->never() )->method( 'lazyPush' );
 
-		$this->assertNotEmpty(
-			$usageStore->fetchUsage( 'Z10060' ),
-			'Usage should not be cleared when client mode is disabled'
+		$this->newClientHooks( $jobQueueGroup )->onParserCacheSaveComplete(
+			$this->getServiceContainer()->getParserCache(),
+			$this->newRenderUsing( [ 'Z10063' ], $page->getLatest() ),
+			$page->getTitle(),
+			$this->newParsoidOptions(),
+			$page->getLatest()
 		);
 	}
 

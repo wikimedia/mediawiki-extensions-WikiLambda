@@ -13,20 +13,24 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\CommunityConfiguration\Provider\ConfigurationProviderFactory;
+use MediaWiki\Extension\WikiLambda\Jobs\WikifunctionsClientUsageUpdateJob;
 use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\ProperPageIdentity;
-use MediaWiki\Page\WikiPage;
+use MediaWiki\Parser\ParserCache;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\CodexModule;
 use MediaWiki\ResourceLoader\ImageModule;
 use MediaWiki\ResourceLoader\ResourceLoader;
 use MediaWiki\Revision\RevisionRecord;
-use MediaWiki\Storage\EditResult;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
@@ -34,7 +38,7 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 
 class ClientHooks implements
-	\MediaWiki\Storage\Hook\PageSaveCompleteHook,
+	\MediaWiki\Parser\Hook\ParserCacheSaveCompleteHook,
 	\MediaWiki\Page\Hook\PageDeleteCompleteHook,
 	\MediaWiki\Hook\PageMoveCompleteHook,
 	\MediaWiki\ResourceLoader\Hook\ResourceLoaderRegisterModulesHook,
@@ -45,6 +49,7 @@ class ClientHooks implements
 	public function __construct(
 		private readonly Config $config,
 		private readonly WikiLambdaMode $mode,
+		private readonly JobQueueGroup $jobQueueGroup,
 		private readonly ?ConfigurationProviderFactory $providerFactory,
 	) {
 		// Non-injected items
@@ -52,24 +57,16 @@ class ClientHooks implements
 	}
 
 	/**
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/PageSaveComplete
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ParserCacheSaveComplete
 	 *
-	 * @param WikiPage $wikiPage
-	 * @param UserIdentity $user
-	 * @param string $summary
-	 * @param int $flags
-	 * @param RevisionRecord $revisionRecord
-	 * @param EditResult $editResult
+	 * @param ParserCache $parserCache
+	 * @param ParserOutput $parserOutput
+	 * @param Title $title
+	 * @param ParserOptions $popts
+	 * @param int $revId
 	 * @return bool|void
 	 */
-	public function onPageSaveComplete(
-		$wikiPage,
-		$user,
-		$summary,
-		$flags,
-		$revisionRecord,
-		$editResult
-	) {
+	public function onParserCacheSaveComplete( $parserCache, $parserOutput, $title, $popts, $revId ) {
 		if ( !$this->mode->isClient() ) {
 			// Nothing for us to do.
 			return;
@@ -78,28 +75,74 @@ class ClientHooks implements
 		if ( defined( 'MW_UPDATER' ) || defined( 'MEDIAWIKI_INSTALL' ) ) {
 			// During an install or schema upgrade the wiki's pages are being (re)created by
 			// the bootstrap before the cross-wiki usage table exists (it lives on a virtual
-			// domain, so its schema update runs in a later pass than the page creation). A
-			// freshly bootstrapped page has no prior usage to clear anyway, so skip the write.
+			// domain, so its schema update runs in a later pass than the page creation).
 			// Mirrors Echo's PageSaveComplete guard against the same install-time problem.
 			return;
 		}
 
-		// Clear this page's rows from the shared cross-wiki usage table (T390557); any
-		// Functions still in use are re-recorded afterwards by WikifunctionsClientUsageUpdateJob.
-		//
-		// NOTE: This fires on every page save and deletes by (wiki, page_id) even for the
-		// vast majority of pages that never use a Function, so it is usually a no-op delete
-		// against the shared x1 cluster. We accept that for now.
-		$pageId = $wikiPage->getId();
-		if ( $pageId > 0 ) {
-			$this->logger->debug( __METHOD__ . ': Clearing usage tracking for {page}', [
-				'page' => $wikiPage->getTitle()->getFullText(),
-			] );
-			WikiLambdaServices::getWikifunctionsUsageStore()->deleteUsageForPage(
-				WikiMap::getCurrentWikiId(),
-				$pageId
-			);
+		// Only Parsoid runs {{#function:…}}: it is registered as a Parsoid fragment handler,
+		// and the legacy parser, which does not know the parser function, passes the call
+		// through as text. So a legacy render always reports that the page uses no Functions,
+		// and acting on it would delete every row. Once RefreshLinksJob runs on Parsoid
+		// output (T393716) this can move to LinksUpdateComplete and read page_props, which
+		// also covers the pages that a template edit changes.
+		if ( !$popts->getUseParsoid() ) {
+			return;
 		}
+
+		$pageId = $title->getId();
+		if ( $pageId <= 0 ) {
+			// A render of something that is not a stored page.
+			return;
+		}
+
+		// Take the revision from the output; the hook's own parameter is on its way out
+		// (T350538) and is null for the saves that ParserOutputAccess makes.
+		$revisionId = $parserOutput->getCacheRevisionId() ?? $revId;
+		if ( !$revisionId ) {
+			return;
+		}
+
+		// Hand the whole set to the job rather than writing here: this hook fires on cache
+		// misses during page views, and a GET must not write to the database.
+		$this->logger->debug( __METHOD__ . ': Recording usage tracking for {page}', [
+			'page' => $title->getPrefixedText(),
+		] );
+		$this->jobQueueGroup->lazyPush( new WikifunctionsClientUsageUpdateJob( [
+			'pageId' => $pageId,
+			'revId' => $revisionId,
+			'functions' => self::getUsedFunctions( $parserOutput ),
+		] ) );
+	}
+
+	/**
+	 * Read the Functions that a page uses out of its Parsoid render.
+	 *
+	 * WikifunctionsPFragmentHandler records each call as a page property, so the property
+	 * names hold the set. The repo writes other properties with the same 'wikilambda-'
+	 * prefix, such as 'wikilambda-label-en', so check that what follows the prefix is a
+	 * ZID rather than trusting the prefix alone.
+	 *
+	 * @param ParserOutput $parserOutput
+	 * @return string[] The ZIDs used, sorted, so that equal sets give equal job parameters
+	 *   and the queue can drop the repeats
+	 */
+	private static function getUsedFunctions( ParserOutput $parserOutput ): array {
+		$prefix = 'wikilambda-';
+		$functions = [];
+
+		foreach ( array_keys( $parserOutput->getPageProperties() ) as $property ) {
+			if ( !str_starts_with( (string)$property, $prefix ) ) {
+				continue;
+			}
+			$zid = substr( (string)$property, strlen( $prefix ) );
+			if ( ZObjectUtils::isValidZObjectReference( $zid ) ) {
+				$functions[] = $zid;
+			}
+		}
+
+		sort( $functions );
+		return $functions;
 	}
 
 	/**
