@@ -396,4 +396,96 @@ class WikifunctionsUsageStoreTest extends WikiLambdaClientIntegrationTestCase {
 		$this->expectException( InvalidArgumentException::class );
 		$this->store->setUsageForPage( 'enwiki', 507, NS_MAIN, null, 'Bad', [ 'not-a-zid' ] );
 	}
+
+	// ------------------------------------------------------------------
+	// Clean-up reads and writes
+	// ------------------------------------------------------------------
+
+	public function testFetchUsedPageIdsOnWiki_listsEachPageOnceInOrder() {
+		// Page 601 uses two Functions, so it must still appear once.
+		$this->store->setUsageForPage( 'enwiki', 602, NS_MAIN, null, 'Two', [ 'Z10100' ] );
+		$this->store->setUsageForPage( 'enwiki', 601, NS_MAIN, null, 'One', [ 'Z10100', 'Z10101' ] );
+		$this->store->setUsageForPage( 'dewiki', 603, NS_MAIN, null, 'Drei', [ 'Z10100' ] );
+
+		$this->assertSame( [ 601, 602 ], $this->store->fetchUsedPageIdsOnWiki( 'enwiki' ) );
+	}
+
+	public function testFetchUsedPageIdsOnWiki_pagesThroughTheWikiFromAGivenId() {
+		foreach ( [ 611, 612, 613 ] as $pageId ) {
+			$this->store->setUsageForPage( 'enwiki', $pageId, NS_MAIN, null, "Page$pageId", [ 'Z10102' ] );
+		}
+
+		$this->assertSame( [ 611, 612 ], $this->store->fetchUsedPageIdsOnWiki( 'enwiki', 0, 2 ) );
+		$this->assertSame( [ 613 ], $this->store->fetchUsedPageIdsOnWiki( 'enwiki', 612, 2 ) );
+		$this->assertSame( [], $this->store->fetchUsedPageIdsOnWiki( 'enwiki', 613, 2 ) );
+	}
+
+	public function testFetchUsedPageIdsOnWiki_isEmptyForAWikiWithNoRows() {
+		$this->assertSame( [], $this->store->fetchUsedPageIdsOnWiki( 'nosuchwiki' ) );
+	}
+
+	public function testDeleteUsageForPages_dropsOnlyTheNamedPages() {
+		$this->store->setUsageForPage( 'enwiki', 621, NS_MAIN, null, 'Doomed', [ 'Z10103' ] );
+		$this->store->setUsageForPage( 'enwiki', 622, NS_MAIN, null, 'Doomed too', [ 'Z10103' ] );
+		$this->store->setUsageForPage( 'enwiki', 623, NS_MAIN, null, 'Spared', [ 'Z10103' ] );
+
+		$this->store->deleteUsageForPages( 'enwiki', [ 621, 622 ] );
+
+		$usage = $this->store->fetchUsage( 'Z10103' );
+		$this->assertCount( 1, $usage );
+		$this->assertSame( 623, $usage[0]['pageId'] );
+	}
+
+	public function testFetchUsageWikis_listsEachWikiOnce() {
+		$this->store->setUsageForPage( 'enwiki', 631, NS_MAIN, null, 'One', [ 'Z10104' ] );
+		$this->store->setUsageForPage( 'enwiki', 632, NS_TEMPLATE, 'Template', 'Two', [ 'Z10104' ] );
+		$this->store->setUsageForPage( 'dewiki', 633, NS_MAIN, null, 'Drei', [ 'Z10104' ] );
+
+		$wikis = $this->store->fetchUsageWikis();
+		sort( $wikis );
+		$this->assertSame( [ 'dewiki', 'enwiki' ], $wikis );
+	}
+
+	public function testDeleteUsageForWiki_dropsEveryNamespaceOfThatWikiOnly() {
+		$this->store->setUsageForPage( 'enwiki', 641, NS_MAIN, null, 'Main', [ 'Z10105' ] );
+		$this->store->setUsageForPage( 'enwiki', 642, NS_TEMPLATE, 'Template', 'Tpl', [ 'Z10105' ] );
+		$this->store->setUsageForPage( 'dewiki', 643, NS_MAIN, null, 'Drei', [ 'Z10105' ] );
+
+		$this->store->deleteUsageForWiki( 'enwiki' );
+
+		$usage = $this->store->fetchUsage( 'Z10105' );
+		$this->assertCount( 1, $usage );
+		$this->assertSame( 'dewiki', $usage[0]['wiki'] );
+	}
+
+	public function testFetchUsedFunctions_returnsZidsNotNumbers() {
+		$this->store->setUsageForPage( 'enwiki', 651, NS_MAIN, null, 'Both', [ 'Z10106', 'Z10107' ] );
+
+		$functions = $this->store->fetchUsedFunctions();
+		sort( $functions );
+		$this->assertSame( [ 'Z10106', 'Z10107' ], $functions );
+	}
+
+	public function testDeleteUsageForFunctions_dropsThemAcrossEveryWiki() {
+		$this->store->setUsageForPage( 'enwiki', 661, NS_MAIN, null, 'One', [ 'Z10108', 'Z10109' ] );
+		$this->store->setUsageForPage( 'dewiki', 662, NS_MAIN, null, 'Zwei', [ 'Z10108' ] );
+
+		$this->store->deleteUsageForFunctions( [ 'Z10108' ] );
+
+		$this->assertSame( [], $this->store->fetchUsage( 'Z10108' ) );
+		$this->assertCount( 1, $this->store->fetchUsage( 'Z10109' ), 'The other Function is untouched' );
+	}
+
+	public function testDeleteOrphanWikiDimensions_removesOnlyTheUnreferencedOnes() {
+		$this->store->setUsageForPage( 'enwiki', 671, NS_USER, 'User', 'Sandbox', [ 'Z10110' ] );
+		$this->store->setUsageForPage( 'enwiki', 672, NS_MAIN, null, 'Kept', [ 'Z10110' ] );
+
+		// Emptying the User-namespace page leaves its dimension row behind with nothing
+		// pointing at it, while the main-namespace one is still in use.
+		$this->store->setUsageForPage( 'enwiki', 671, NS_USER, 'User', 'Sandbox', [] );
+
+		$this->assertSame( 1, $this->store->deleteOrphanWikiDimensions() );
+		$this->assertSame( 0, $this->store->deleteOrphanWikiDimensions(), 'A second run finds nothing' );
+		$this->assertCount( 1, $this->store->fetchUsage( 'Z10110' ), 'The rows in use are untouched' );
+	}
 }

@@ -308,6 +308,22 @@ class WikifunctionsUsageStore {
 	 * @param int $pageId The page_id of the using page on the using wiki
 	 */
 	public function deleteUsageForPage( string $wiki, int $pageId ): void {
+		$this->deleteUsageForPages( $wiki, [ $pageId ] );
+	}
+
+	/**
+	 * Drop all usage rows for a set of pages on a wiki, in one statement.
+	 *
+	 * The batch form of deleteUsageForPage(), for the clean-up script.
+	 *
+	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
+	 * @param int[] $pageIds The page_ids of the using pages on the using wiki
+	 */
+	public function deleteUsageForPages( string $wiki, array $pageIds ): void {
+		if ( !$pageIds ) {
+			return;
+		}
+
 		$dbw = $this->getPrimaryDB();
 
 		$wikiIds = $this->getWikiDimensionIds( $dbw, $wiki, __METHOD__ );
@@ -319,9 +335,154 @@ class WikifunctionsUsageStore {
 			->deleteFrom( 'wikifunctions_usage' )
 			->where( [
 				'wfu_wiki_id' => $wikiIds,
-				'wfu_page_id' => $pageId,
+				'wfu_page_id' => array_values( $pageIds ),
 			] )
 			->caller( __METHOD__ )->execute();
+	}
+
+	/**
+	 * List the page IDs on a wiki that hold any usage rows, in page-id order.
+	 *
+	 * For the maintenance scripts, which walk a wiki's pages in batches: pass the last id
+	 * seen as $afterPageId to get the next batch. The rows are clustered under the
+	 * wfu_wiki_page index, so this reads only what it returns. A page holds one row per
+	 * Function it uses, hence the DISTINCT.
+	 *
+	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
+	 * @param int $afterPageId Return only pages above this id; 0 to start
+	 * @param int $limit Maximum page IDs to return
+	 * @return int[] The page IDs, ascending
+	 */
+	public function fetchUsedPageIdsOnWiki( string $wiki, int $afterPageId = 0, int $limit = 500 ): array {
+		$dbr = $this->getReplicaDB();
+
+		$wikiIds = $this->getWikiDimensionIds( $dbr, $wiki, __METHOD__ );
+		if ( !$wikiIds ) {
+			return [];
+		}
+
+		return array_map( 'intval', $dbr->newSelectQueryBuilder()
+			->distinct()
+			->select( 'wfu_page_id' )
+			->from( 'wikifunctions_usage' )
+			->where( [ 'wfu_wiki_id' => $wikiIds ] )
+			->andWhere( $dbr->expr( 'wfu_page_id', '>', $afterPageId ) )
+			->orderBy( 'wfu_page_id' )
+			->limit( $limit )
+			->caller( __METHOD__ )->fetchFieldValues() );
+	}
+
+	/**
+	 * List every wiki that the table holds a dimension row for.
+	 *
+	 * The dimension table holds one row per (wiki, namespace) pair across all Functions,
+	 * so it is small enough to read whole.
+	 *
+	 * @return string[] The wiki IDs, e.g. [ 'enwiki', 'dewiki' ]
+	 */
+	public function fetchUsageWikis(): array {
+		return $this->getReplicaDB()->newSelectQueryBuilder()
+			->distinct()
+			->select( 'wfuw_wiki' )
+			->from( 'wikifunctions_usage_wikis' )
+			->caller( __METHOD__ )->fetchFieldValues();
+	}
+
+	/**
+	 * Drop every usage row that a wiki holds, across all of its namespaces.
+	 *
+	 * For a wiki that has left the farm, which will never re-record its own rows. The
+	 * dimension rows are left to deleteOrphanWikiDimensions().
+	 *
+	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
+	 */
+	public function deleteUsageForWiki( string $wiki ): void {
+		$dbw = $this->getPrimaryDB();
+
+		$wikiIds = $this->getWikiDimensionIds( $dbw, $wiki, __METHOD__ );
+		if ( !$wikiIds ) {
+			return;
+		}
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikifunctions_usage' )
+			->where( [ 'wfu_wiki_id' => $wikiIds ] )
+			->caller( __METHOD__ )->execute();
+	}
+
+	/**
+	 * List every Function that the table records a usage of.
+	 *
+	 * Bounded by the number of Functions anyone has called, so this is not paginated.
+	 *
+	 * @return string[] The ZIDs, e.g. [ 'Z801', 'Z802' ]
+	 */
+	public function fetchUsedFunctions(): array {
+		$functionIds = $this->getReplicaDB()->newSelectQueryBuilder()
+			->distinct()
+			->select( 'wfu_function' )
+			->from( 'wikifunctions_usage' )
+			->caller( __METHOD__ )->fetchFieldValues();
+
+		return array_map( static fn ( $functionId ): string => 'Z' . $functionId, $functionIds );
+	}
+
+	/**
+	 * Drop every usage row for a set of Functions, across all wikis.
+	 *
+	 * For Functions deleted on the repo: a re-render does not clear these, as the call
+	 * sites may still be there and still name the missing ZID.
+	 *
+	 * @param string[] $functions The target Functions' ZIDs, e.g. [ 'Z12345' ]
+	 * @throws InvalidArgumentException if any of $functions is not a valid ZID reference
+	 */
+	public function deleteUsageForFunctions( array $functions ): void {
+		if ( !$functions ) {
+			return;
+		}
+
+		$functionIds = array_map( [ self::class, 'functionToId' ], $functions );
+
+		$this->getPrimaryDB()->newDeleteQueryBuilder()
+			->deleteFrom( 'wikifunctions_usage' )
+			->where( [ 'wfu_function' => array_values( $functionIds ) ] )
+			->caller( __METHOD__ )->execute();
+	}
+
+	/**
+	 * Drop the dimension rows that no usage row points at any more.
+	 *
+	 * Several pages share a dimension row, so nothing removes it when the last of them
+	 * stops using a Function. Both sides are read and compared here, rather than joined
+	 * with NOT IN, as MariaDB optimises that poorly and the dimension table is small.
+	 *
+	 * @return int The number of dimension rows removed
+	 */
+	public function deleteOrphanWikiDimensions(): int {
+		$dbw = $this->getPrimaryDB();
+
+		$allIds = array_map( 'intval', $dbw->newSelectQueryBuilder()
+			->select( 'wfuw_id' )
+			->from( 'wikifunctions_usage_wikis' )
+			->caller( __METHOD__ )->fetchFieldValues() );
+
+		$usedIds = array_map( 'intval', $dbw->newSelectQueryBuilder()
+			->distinct()
+			->select( 'wfu_wiki_id' )
+			->from( 'wikifunctions_usage' )
+			->caller( __METHOD__ )->fetchFieldValues() );
+
+		$orphanIds = array_values( array_diff( $allIds, $usedIds ) );
+		if ( !$orphanIds ) {
+			return 0;
+		}
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikifunctions_usage_wikis' )
+			->where( [ 'wfuw_id' => $orphanIds ] )
+			->caller( __METHOD__ )->execute();
+
+		return count( $orphanIds );
 	}
 
 	/**
