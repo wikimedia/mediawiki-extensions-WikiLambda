@@ -201,6 +201,27 @@ class WikifunctionsUsageStore {
 	}
 
 	/**
+	 * Get every recorded dimension-row id that a wiki holds, one per namespace it has used.
+	 *
+	 * A page's rows are found by (wiki, page_id), but the table keys them by the
+	 * (wiki, namespace) surrogate id, and a page that moved namespace holds rows under
+	 * more than one. So anything that works on a whole page must match all of the wiki's
+	 * ids, not just the one for the page's current namespace.
+	 *
+	 * @param IReadableDatabase $db
+	 * @param string $wiki The using wiki's ID, e.g. 'enwiki'
+	 * @param string $fname Calling method, for query profiling
+	 * @return int[] The wiki's wfuw_id values; empty if the wiki has no rows at all
+	 */
+	private function getWikiDimensionIds( IReadableDatabase $db, string $wiki, string $fname ): array {
+		return array_map( 'intval', $db->newSelectQueryBuilder()
+			->select( 'wfuw_id' )
+			->from( 'wikifunctions_usage_wikis' )
+			->where( [ 'wfuw_wiki' => $wiki ] )
+			->caller( $fname )->fetchFieldValues() );
+	}
+
+	/**
 	 * Drop all usage rows for a page on a wiki.
 	 *
 	 * Robust to page moves and renames: it clears every namespace's rows for the page on
@@ -215,11 +236,7 @@ class WikifunctionsUsageStore {
 	public function deleteUsageForPage( string $wiki, int $pageId ): void {
 		$dbw = $this->getPrimaryDB();
 
-		$wikiIds = $dbw->newSelectQueryBuilder()
-			->select( 'wfuw_id' )
-			->from( 'wikifunctions_usage_wikis' )
-			->where( [ 'wfuw_wiki' => $wiki ] )
-			->caller( __METHOD__ )->fetchFieldValues();
+		$wikiIds = $this->getWikiDimensionIds( $dbw, $wiki, __METHOD__ );
 		if ( !$wikiIds ) {
 			return;
 		}
@@ -256,11 +273,7 @@ class WikifunctionsUsageStore {
 	): void {
 		$dbw = $this->getPrimaryDB();
 
-		$wikiIds = $dbw->newSelectQueryBuilder()
-			->select( 'wfuw_id' )
-			->from( 'wikifunctions_usage_wikis' )
-			->where( [ 'wfuw_wiki' => $wiki ] )
-			->caller( __METHOD__ )->fetchFieldValues();
+		$wikiIds = $this->getWikiDimensionIds( $dbw, $wiki, __METHOD__ );
 		if ( !$wikiIds ) {
 			return;
 		}
