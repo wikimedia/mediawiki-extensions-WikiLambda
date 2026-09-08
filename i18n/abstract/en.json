@@ -76,6 +76,7 @@
 	"wikilambda-abstract-preview-fragment-retry": "Retry",
 	"wikilambda-abstract-preview-in-language": "Generated text",
 	"wikilambda-abstract-renderedwith": "Page was rendered from [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",
+	"wikilambda-abstract-search-no-article": "– No article yet",
 	"wikilambda-abstract-special-create": "Create a New Abstract Article",
 	"wikilambda-abstract-special-create-createbutton-label": "Create",
 	"wikilambda-abstract-special-create-existing": "There is already an Abstract Article for that Wikidata Item:",

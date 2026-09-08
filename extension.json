@@ -420,6 +420,9 @@
 			]
 		},
 		"ext.wikilambda.search": {
+			"styles": [
+				"ext.wikilambda.search/ext.wikilambda.search.less"
+			],
 			"packageFiles": [
 				"ext.wikilambda.search/index.js",
 				"ext.wikilambda.search/utils.js",
@@ -441,7 +444,8 @@
 			"messages": [
 				"parentheses",
 				"word-separator",
-				"quotation-marks"
+				"quotation-marks",
+				"wikilambda-abstract-search-no-article"
 			]
 		},
 		"ext.wikilambda.app": {

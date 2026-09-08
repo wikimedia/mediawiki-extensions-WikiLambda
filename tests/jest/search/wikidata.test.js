@@ -27,7 +27,7 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 	} );
 
 	describe( 'vectorSearchClient', () => {
-		it( 'fetchByTitle returns object with fetch promise and abort, resolving to results with value, description, supportingText, url', async () => {
+		it( 'fetchByTitle returns object with fetch promise and abort, resolving to results with value, description, url', async () => {
 			const searchResponse = {
 				search: [
 					{ id: 'Q90', label: 'Paris', description: 'capital of France' }
@@ -63,9 +63,27 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 			expect( item ).toHaveProperty( 'url' );
 			expect( item.value ).toContain( 'Paris' );
 			expect( item.value ).toContain( 'Q90' );
-			expect( item.supportingText ).toBe( '- AW' );
+			expect( item.class ).toBeUndefined();
+			expect( item.supportingText ).toBeUndefined();
 			expect( item.url ).toContain( '/view/' );
 			expect( item.url ).toContain( 'Q90' );
+		} );
+
+		it( 'marks entities with no abstract article as missing, in colour and in text', async () => {
+			wikidataApiGetMock
+				.mockResolvedValueOnce( {
+					search: [ { id: 'Q90', label: 'Paris', description: 'capital of France' } ]
+				} )
+				.mockResolvedValueOnce( { query: { pages: [] } } );
+			apiGetMock.mockResolvedValue( { query: { pages: [ { title: 'Abstract_Wikipedia:Q90', missing: true } ] } } );
+
+			const client = wikidataSearch.vectorSearchClient;
+			const payload = await client.fetchByTitle( 'Paris', 10, true ).fetch;
+
+			expect( payload.results[ 0 ].class ).toBe( 'ext-wikilambda-search-result--new' );
+			// mw.msg returns a string in production, but an object in the jest mock.
+			expect( String( payload.results[ 0 ].supportingText ) ).toBe( '– No article yet' );
+			expect( payload.results[ 0 ].url ).toBe( '/wiki/Special:CreateAbstract/Q90' );
 		} );
 
 		it( 'includes thumbnail in result when Wikidata pageimages returns one', async () => {
@@ -151,7 +169,7 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 			expect( payload.results[ 0 ].description ).toBeUndefined();
 		} );
 
-		it( 'omits description when Wikidata description is empty but keeps supportingText for existing abstracts', async () => {
+		it( 'omits description when Wikidata description is empty but keeps existing abstracts unmarked', async () => {
 			wikidataApiGetMock
 				.mockResolvedValueOnce( { search: [ { id: 'Q90', label: 'Paris', description: '' } ] } )
 				.mockResolvedValueOnce( { query: { pages: [] } } );
@@ -169,7 +187,8 @@ describe( 'ext.wikilambda.search.wikidata', () => {
 			const payload = await result.fetch;
 			expect( payload.results ).toHaveLength( 1 );
 			expect( payload.results[ 0 ].description ).toBeUndefined();
-			expect( payload.results[ 0 ].supportingText ).toBe( '- AW' );
+			expect( payload.results[ 0 ].class ).toBeUndefined();
+			expect( payload.results[ 0 ].supportingText ).toBeUndefined();
 		} );
 
 		it( 'handles existence-check response without query/pages (treats as no abstract content)', async () => {

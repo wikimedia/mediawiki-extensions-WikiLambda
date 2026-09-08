@@ -76,6 +76,7 @@
 	"wikilambda-abstract-preview-fragment-retry": "Text for a link with a call to action to retry rendering an Abstract Wikipedia fragment that failed.",
 	"wikilambda-abstract-preview-in-language": "Label for the preview of the Abstract Article rendered into a user-specified language.",
 	"wikilambda-abstract-renderedwith": "This message is shown below each page, in the footer with the logos and links, when the page has been rendered from [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",
+	"wikilambda-abstract-search-no-article": "Marker shown after the label of a look-ahead search result on Abstract Wikipedia when the topic has no Abstract Article yet. The result is also shown as a red link, so this text must also separate the marker from the label for users who do not see the colour. Codex puts one space before this text. Keep this short, as it shows inline in a narrow menu.",
 	"wikilambda-abstract-special-create": "Title for the Special page to create a new Abstract Article",
 	"wikilambda-abstract-special-create-createbutton-label": "Label for the button to create a new Abstract Article on the Special:CreateAbstract page.",
 	"wikilambda-abstract-special-create-existing": "Warning message to users who try to create an Abstract Article about an existing topic. The next line following the colon is the label and QID of the Abstract Article, as a link.",

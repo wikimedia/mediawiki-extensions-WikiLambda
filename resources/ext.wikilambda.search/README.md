@@ -7,7 +7,7 @@ This module provides custom search functionality for WikiLambda, integrating wit
 The search module replaces Vector's default search client with custom implementations that:
 - **Abstract Wikipedia mode**: Searches Wikidata entities (QIDs) using the Wikidata `wbsearchentities` API
 - **Repo mode**: Searches ZObjects using the local MediaWiki search API
-- Marks which entities/ZObjects already have content created
+- Marks which entities have no Abstract article yet, with the red-link style and a text marker
 - Redirects to creation pages for entities/ZObjects that don't exist yet
 
 ## Architecture
@@ -18,7 +18,7 @@ The search functionality is a single module **`ext.wikilambda.search`** that:
 - Exports `init()` which selects the appropriate client based on `WikiLambdaEnableAbstractMode` / `WikiLambdaEnableRepoMode` and initializes Vector's search UI
 - Is registered via the `SkinPageReadyConfig` hook (`searchModule`)
 
-**`wikidata.js`** – Abstract Wikipedia mode: searches Wikidata entities via `wbsearchentities`, checks local page existence for the "- AW" marker.
+**`wikidata.js`** – Abstract Wikipedia mode: searches Wikidata entities via `wbsearchentities`, checks local page existence to mark the entities with no Abstract article.
 
 **`zobject.js`** – Repo mode: searches ZObjects via `wikilambdasearch_labels`. Uses `offset/limit` as the API continue token.
 
@@ -28,12 +28,12 @@ The search functionality is a single module **`ext.wikilambda.search`** that:
 
 ### Dev Configuration
 
-To customize Vector's search options (e.g., disable thumbnails, add highlighting), add the following to `LocalSettings.php`:
+To customize Vector's search options (e.g. thumbnails, highlighting), add the following to `LocalSettings.php`:
 
 ```php
 $wgVectorTypeahead = [
   "options" => [
-    "showThumbnail" => false,
+    "showThumbnail" => true,
     "showDescription" => true,
     "highlightQuery" => true   // highlight the typed query in result titles (Codex MenuItem)
   ]
@@ -41,6 +41,8 @@ $wgVectorTypeahead = [
 ```
 
 This configuration will be merged with Vector's default search options and applied to the search interface. Set `highlightQuery` to `true` to visually highlight the search query within each result title in the typeahead dropdown.
+
+Keep `showThumbnail` set to `true`: Abstract Wikipedia mode fetches a thumbnail for each result from Wikidata `pageimages`, and that request is wasted if Vector does not show thumbnails.
 
 ### Deployment Configuration
 
@@ -64,11 +66,11 @@ For deployment charts (e.g., Helm charts), ensure that:
   in a local development environment, Abstract mode takes precedence and the Wikidata
   search client will be used for the main search field.
 
-3. Vector search options are configured (we should disable thumbnails since our search clients don't provide them; optional `highlightQuery` to highlight typed text in results):
+3. Vector search options are configured (Abstract Wikipedia mode supplies Wikidata thumbnails, so keep `showThumbnail` on; optional `highlightQuery` to highlight typed text in results):
    ```php
    $wgVectorTypeahead = [
       "options" => [
-        "showThumbnail" => false,
+        "showThumbnail" => true,
         "showDescription" => true,
         "highlightQuery" => true
       ]
@@ -107,9 +109,11 @@ Each result in the `results` array has the shape expected by the Vector typeahea
 - **`value`** – Display text (e.g. `"Paris (Q90)"` or `"My function (Z123)"`)
 - **`match`** – Optional string shown when the match differs from the main label (e.g. alias in quotation marks); `undefined` when not needed
 - **`description`** – Optional; Wikidata description (if enabled and available)
-- **`supportingText`** – Optional short marker used to highlight special state (currently `"AW"` when Abstract Wikipedia content already exists)
+- **`supportingText`** – Optional short marker shown after the label (currently `"– No article yet"` when no Abstract article exists). This states in text what the red-link colour only shows visually
+- **`class`** – Optional CSS class. Codex copies unknown properties onto the menu item element, so `ext-wikilambda-search-result--new` shows the result as a red link (see `ext.wikilambda.search.less`)
+- **`thumbnail`** – Optional; Wikidata `pageimages` thumbnail as `{ url, width, height }`. Only shown while `showThumbnail` is on, and Codex draws a placeholder for the results that have none
 - **`url`** – Link to the view page or create-abstract special page
-- **`icon`** – Optional. SVG contents of a Codex icon (no wrapping `<svg>`), used by Codex MenuItem for the result row.
+- **`icon`** – Optional Codex icon object. Codex MenuItem draws it in place of the thumbnail, so it only appears while `showThumbnail` is off; neither client sets it today.
 
 ## Files
 
@@ -118,6 +122,7 @@ Each result in the `results` array has the shape expected by the Vector typeahea
 - **`wikidata.js`** – Search client for Abstract Wikipedia mode (Wikidata QID search)
 - **`zobject.js`** – Search client for Repo mode (ZObject search)
 - **`config.json`** – RL config for `WikiLambdaEnableAbstractMode` / `WikiLambdaEnableRepoMode`
+- **`ext.wikilambda.search.less`** – Styles for the results with no Abstract article
 
 ## Dependencies
 

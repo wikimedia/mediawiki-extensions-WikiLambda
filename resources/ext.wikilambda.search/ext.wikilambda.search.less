@@ -1,0 +1,22 @@
+/*!
+ * WikiLambda styles for the look-ahead search results
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
+@import 'mediawiki.skin.variables.less';
+
+/* Show the entities with no Abstract article as red links, with an icon (T435649). */
+.cdx-menu-item.cdx-menu-item--enabled.ext-wikilambda-search-result--new {
+	.cdx-menu-item__content {
+		color: @color-link-new;
+
+		&::after {
+			.cdx-mixin-css-icon( @cdx-icon-article-add, @color-link-new, @size-icon-small );
+			align-self: center;
+			margin-left: auto;
+			content: '';
+		}
+	}
+}

@@ -823,7 +823,9 @@ in any environment, are:
   Wikidata Entities. These can be searched and selected using the Visual Editor interface and also
   use remote requests to the Wikidata Action APIs.
 * In Abstract Wikipedia Mode: the typeahead search box (`ext.wikilambda.search/wikidata.js`) talks
-  directly to the public Wikidata Action API over HTTP.
+  directly to the public Wikidata Action API over HTTP. Note: If you are running this on a wiki in
+  Wikibase repo mode as well, this integration cannot work, as Wikibase repo mode replaces the search
+  system.
 
 Other things to know:
 

@@ -13,7 +13,8 @@
 
 	// Constants
 	const WIKIDATA_BASE_URL = 'https://www.wikidata.org';
-	const ABSTRACT_SUPPORTING_TEXT = '- AW';
+	const MISSING_ARTICLE_CLASS = 'ext-wikilambda-search-result--new';
+	const MISSING_ARTICLE_MESSAGE = 'wikilambda-abstract-search-no-article';
 	const QID_PATTERN = /^Q[1-9]\d*$/;
 	const DEFAULT_LIMIT = 10;
 	const DEFAULT_SHOW_DESCRIPTION = true;
@@ -212,14 +213,17 @@
 		const { id: qid, label, description } = entity;
 		const renderedLabel = label || qid;
 		const hasAbstractContent = existingQids.has( qid );
-		const supportingText = hasAbstractContent ? ABSTRACT_SUPPORTING_TEXT : undefined;
 		const thumbnail = thumbnailMap.get( qid );
 
 		return {
 			value: utils.formatLabelWithId( renderedLabel, qid ),
 			match: undefined,
 			description: context.showDescription ? ( description || undefined ) : undefined,
-			supportingText,
+			// The red-link colour is a visual signal only. Add text for the users who
+			// do not get it, such as screen reader users (T435649).
+			supportingText: hasAbstractContent ? undefined : mw.msg( MISSING_ARTICLE_MESSAGE ),
+			// Codex copies unknown result properties onto the menu item element (T435649).
+			class: hasAbstractContent ? undefined : MISSING_ARTICLE_CLASS,
 			thumbnail,
 			url: buildEntityUrl( { qid, hasAbstractContent, context } )
 		};
