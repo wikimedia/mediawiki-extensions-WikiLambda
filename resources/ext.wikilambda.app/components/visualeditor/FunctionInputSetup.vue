@@ -304,12 +304,17 @@ module.exports = exports = defineComponent( {
 		 * Watches the form validity and updates the VisualEditor validity state
 		 * so the submit button can be enabled/disabled depending on the state.
 		 *
+		 * NOTE: with non-argument functions (which are allowed), the validity
+		 * is true from the start and never changes, so we set this watcher as
+		 * { immediate: true } so that the parent can know about this and update
+		 * the available actions.
+		 *
 		 * @param {boolean} isValid - The form validity status.
 		 */
 		watch( areInputFieldsValid, ( isValid ) => {
 			store.setVEFunctionParamsValid( isValid );
 			emit( 'update' );
-		} );
+		}, { immediate: true } );
 
 		/**
 		 * Watches the function inputs and output type, and fetches the ZIDs for both.
