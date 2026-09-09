@@ -358,6 +358,7 @@
 				"ext.wikilambda.references/init.js",
 				"ext.wikilambda.image/init.js",
 				"ext.wikilambda.abstractpreview/init.js",
+				"ext.wikilambda.abstractpreview/completeness.js",
 				"ext.wikilambda.abstractpreview/testKitchen.js"
 			]
 		},

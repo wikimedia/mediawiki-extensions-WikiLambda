@@ -457,6 +457,11 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 	 * @param string $outcome
 	 */
 	private function recordRenderTiming( float $startTime, string $locale, string $source, string $outcome ): void {
+		// NOTE: When adding a new $outcome value here, also update the SLI queries
+		// against mediawiki_WikiLambda_aw_preview_render_seconds_count in
+		// slothslos/mediawiki/aw-preview-completeness.yml, so that new outcome is
+		// deliberately counted or excluded!
+		//
 		// How long does serving an AW article preview take, end-to-end?
 		// Grafana: mediawiki.WikiLambda.aw_preview_render_seconds{locale=…, source=…, outcome=…}
 		$this->statsFactory->getTiming( 'aw_preview_render_seconds' )

@@ -5,12 +5,14 @@
  * every real pageview (including CDN/parser-cache hits, which the server-side
  * aw_preview_render_seconds outcome label misses since it only fires on a fresh
  * render).
- * Two DOM signals mark an incomplete render, both already emitted by PHP side:
+ * DOM signals mark an incomplete render, all already emitted by PHP side:
  *  - <section data-wikilambda-aw-section-status="pending"> for a section missing
  *    from the store entirely (AWSection::emptyWikiSection);
- *  - <meta itemprop="aw-section-status" data-pending="N"> for a section that
- *    rendered but still has pending fragments (AWSection::appendStatusMetadata,
- *    written by the pre-generation maintenance script).
+ *  - <meta itemprop="aw-section-status" data-pending/data-failed/data-stale="N">
+ *    for a rendered section with pending, failed, or stale (outdated cache)
+ *    fragments (AWSection::appendStatusMetadata).
+ *    Stale means a cached response keeps getting served even after the section regenerates
+ *    server-side; which aw_preview_render_seconds metric (fresh-render-only) cannot detect.
  *
  * The result is sent to two places: stats.* (Prometheus; aggregate ratio, no topicQid
  * for cardinality reasons) and Test Kitchen (broken down per topic).
@@ -21,21 +23,8 @@
  */
 'use strict';
 
+const completeness = require( './completeness.js' );
 const testKitchen = require( './testKitchen.js' );
-
-/**
- * Whether the rendered preview has any section that is missing or still has
- * pending fragments.
- *
- * @memberof module:ext.wikilambda.abstractpreview
- * @return {boolean}
- */
-function hasIncompleteSection() {
-	return !!(
-		document.querySelector( '[data-wikilambda-aw-section-status="pending"]' ) ||
-		document.querySelector( 'meta[itemprop="aw-section-status"][data-pending]' )
-	);
-}
 
 /**
  * Record reader-facing outcome to the stats.* (StatsFactory/Prometheus) pipeline.
@@ -71,7 +60,7 @@ function init() {
 		return;
 	}
 
-	const outcome = hasIncompleteSection() ? 'incomplete' : 'complete';
+	const outcome = completeness.hasIncompleteSection() ? 'incomplete' : 'complete';
 	const previewConfig = {
 		locale: config.abstractPreviewLocale,
 		source: config.abstractPreviewSource
