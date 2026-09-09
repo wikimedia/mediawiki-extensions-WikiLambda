@@ -528,33 +528,19 @@ class RepoHooks implements
 			$updater->dropExtensionTable( 'wikifunctionsclient_usage' );
 		}
 
-		// Insert the tables for abstract-client-mode, if needed.
-		// Virtual domain must be defined for the 'virtual-awstorage' key:
-		//
-		// Locally, use the same DB with:
-		// $wgVirtualDomainsMapping['virtual-awstorage'] = [
-		// 	'db' => false
-		// ];
-		//
-		// In production, use x1 shared DB with:
-		// $wgVirtualDomainsMapping['virtual-awstorage'] = [
-		//   'cluster' => 'extension1',
-		//   'db' => 'wikishared'
-		// ];
+		// Drop the legacy abstract-client-mode article table. The article store now uses
+		// MainStash (T426873), so the RDBMS backend and its table are gone.
 		if (
 			$config->has( 'WikiLambdaEnableAbstractClientMode' ) &&
 			$config->get( 'WikiLambdaEnableAbstractClientMode' )
 		) {
-			$awTables = [ 'aw_article_sections' ];
-			foreach ( $awTables as $table ) {
-				$updater->addExtensionUpdateOnVirtualDomain( [
-					AWArticleStore::AW_STORAGE_VIRTUAL_DOMAIN,
-					'addTable',
-					$table,
-					"$dir/$type/table-$table.sql",
-					true
-				] );
-			}
+			$updater->addExtensionUpdateOnVirtualDomain( [
+				AWArticleStore::AW_STORAGE_VIRTUAL_DOMAIN,
+				'dropTable',
+				'aw_article_sections',
+				false,
+				true
+			] );
 		}
 
 		// Insert the shared cross-wiki Function-usage table, if needed.

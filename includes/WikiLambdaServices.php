@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
-use MediaWiki\Extension\WikiLambda\AWStorage\DBAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
@@ -205,32 +204,16 @@ class WikiLambdaServices {
 	/**
 	 * Constructs a new instance of the AWArticleStore.
 	 *
-	 * The concrete backend is selected by $wgWikiLambdaAWArticleStoreBackend:
-	 *   - 'db'        — RDBMS-backed store (aw_article_sections, x1).
-	 *   - 'mainstash' — MainStash-backed store (T426873; durable key/value
-	 *                   substrate with TTL cleanup and x2 replication).
+	 * The store is backed by MainStash (T426873), a durable key/value substrate
+	 * with TTL cleanup and x2 replication.
 	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
 	 */
 	public static function buildAWArticleStore( MediaWikiServices $services ): AWArticleStore {
-		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$backend = $extensionConfig->get( 'WikiLambdaAWArticleStoreBackend' );
-
-		switch ( $backend ) {
-			case 'db':
-				return new DBAWArticleStore(
-					$services->getConnectionProvider()
-				);
-			case 'mainstash':
-				return new MainStashAWArticleStore(
-					$services->getMainObjectStash(),
-					$services->getStatsFactory()
-				);
-			default:
-				throw new InvalidArgumentException(
-					"Unknown WikiLambdaAWArticleStoreBackend value: '$backend'"
-				);
-		}
+		return new MainStashAWArticleStore(
+			$services->getMainObjectStash(),
+			$services->getStatsFactory()
+		);
 	}
 
 	/**

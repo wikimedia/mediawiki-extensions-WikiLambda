@@ -232,10 +232,7 @@ class AWSection {
 			'itemscope' => true,
 		], $heading . $this->payload );
 
-		// We know that AWSection->payload is built out of rendered and sanitized
-		// fragments that are concatenated, or error/pending fragments that are built
-		// with Html::rawElement, so it's safe for us to suppress SecurityCheck-XX
-		// @phan-suppress-next-line SecurityCheck-XSS
+		// The payload holds only sanitized fragments, or fragments that Html::rawElement builds.
 		return new HtmlArmor( $section );
 	}
 

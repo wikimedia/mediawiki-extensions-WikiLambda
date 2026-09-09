@@ -61,8 +61,7 @@ class MainStashAWArticleStoreTest extends MediaWikiUnitTestCase {
 	}
 
 	public function testGetSectionExplicitlyRejectsMetadataKey(): void {
-		// Even if a metadata blob was stored, getSection() must not return it,
-		// matching DBAWArticleStore's behaviour.
+		// Even if a metadata blob was stored, getSection() must not return it.
 		$metadata = new AWArticleMetadata( 'Q101', [ 'sections' => [ 'Q201' ] ] );
 		$this->store->setArticleMetadata( $metadata );
 

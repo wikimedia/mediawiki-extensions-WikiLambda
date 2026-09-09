@@ -4,9 +4,8 @@
  *
  * Stores AW Article Sections and AW Article Metadata in MediaWiki's MainStash
  * (`getMainObjectStash()`), an x2 replicated key/value substrate with TTL
- * cleanup. This is an alternative to the RDBMS-backed DBAWArticleStore, used
- * where the durability semantics of a derivative cache (refreshed periodically
- * by a maintenance script) are sufficient. See T426873 for background.
+ * cleanup. The durability semantics of a derivative cache, refreshed periodically
+ * by a maintenance script, are sufficient here. See T426873 for background.
  *
  * Because MainStash is a flat key/value store, the per-topic listing required
  * by getSectionsForTopic() is sourced from the topic's AWArticleMetadata
@@ -89,7 +88,7 @@ class MainStashAWArticleStore extends AWArticleStore {
 		string $locale,
 		int $schemaVersion = self::AW_STORAGE_SCHEMA_VERSION
 	): ?AWSection {
-		// Matches DBAWArticleStore: the metadata key is not addressable via getSection().
+		// The metadata key is not addressable via getSection().
 		if ( $sectionQid === self::AW_STORAGE_METADATA_KEY ) {
 			return null;
 		}
@@ -236,7 +235,7 @@ class MainStashAWArticleStore extends AWArticleStore {
 		}
 		$this->metrics->recordOp( self::METRIC_STORE, 'get', 'hit', $startTime );
 
-		// The payload is JSON-encoded on write, matching DBAWArticleStore.
+		// The payload is JSON-encoded on write.
 		$payload = json_decode( $raw['payload'], true ) ?? [];
 
 		return new AWArticleMetadata(

@@ -7,9 +7,7 @@
  * 'virtual-wikifunctions-usage' virtual domain, so the repo (Wikifunctions.org) can read
  * the full cross-wiki picture and each client wiki can query its own usage.
  *
- * Modelled on the GlobalUsage extension's globalimagelinks table and on
- * \MediaWiki\Extension\WikiLambda\AWStorage\DBAWArticleStore for the virtual-domain
- * connection pattern.
+ * Modelled on the GlobalUsage extension's globalimagelinks table.
  *
  * @file
  * @ingroup Extensions
