@@ -14,6 +14,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ClientStorage;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ClientStorage\MainStashWikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\MemcachedWikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWikiIntegrationTestCase;
@@ -37,6 +38,16 @@ class WikifunctionsFragmentStoreWiringTest extends MediaWikiIntegrationTestCase 
 
 		$this->assertInstanceOf(
 			MemcachedWikifunctionsFragmentStore::class,
+			WikiLambdaServices::getWikifunctionsFragmentStore()
+		);
+	}
+
+	public function testResolvesToMainStashWikifunctionsFragmentStoreWhenConfigured(): void {
+		$this->overrideConfigValue( 'WikiLambdaClientFragmentStoreBackend', 'mainstash' );
+		$this->resetCachedStore();
+
+		$this->assertInstanceOf(
+			MainStashWikifunctionsFragmentStore::class,
 			WikiLambdaServices::getWikifunctionsFragmentStore()
 		);
 	}

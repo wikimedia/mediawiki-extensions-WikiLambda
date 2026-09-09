@@ -129,7 +129,7 @@
 		},
 		"WikiLambdaAWFragmentStoreBackend": {
 			"description": "Storage backend for the Abstract Wikipedia fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T432849).",
-			"value": "memcached"
+			"value": "mainstash"
 		},
 		"WikiLambdaAbstractWikiArticleStoreTopics": {
 			"description": "Default list of Abstract Wikipedia Topic QIDs to update when the updateAbstractWikiArticleStore.php maintenance script is run without --topics. Overridden by --topics when that option is given.",
@@ -145,7 +145,7 @@
 		},
 		"WikiLambdaClientFragmentStoreBackend": {
 			"description": "Storage backend for the Wikifunctions Client fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T432849).",
-			"value": "memcached"
+			"value": "mainstash"
 		},
 		"WikiLambdaEnableSearchIndexFields": {
 			"description": "If true, WikiLambda adds structured, multilingual ZObject fields (labels, aliases, description, type, and function input/output signature) to the CirrusSearch index. Off by default; must not be enabled in production until the Elasticsearch mapping has been reviewed with the Search Platform team (T390562). Temporary flag ahead of deployment. Inert where CirrusSearch is not loaded.",

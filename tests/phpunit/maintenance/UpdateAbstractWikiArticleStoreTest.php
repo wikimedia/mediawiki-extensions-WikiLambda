@@ -15,7 +15,6 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWSection;
-use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Maintenance\UpdateAbstractWikiArticleStore;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -38,7 +37,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 	private const NOW = '20260101081300';
 	private const PAST = '20200101081300';
 
-	private MemcachedWrapper $objectCache;
+	private AWFragmentStore $fragmentStore;
 	private AWArticleStore $articleStore;
 
 	protected function setUp(): void {
@@ -57,7 +56,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 
 		ConvertibleTimestamp::setFakeTime( self::NOW );
 
-		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
+		$this->fragmentStore = WikiLambdaServices::getAWFragmentStore();
 		$this->articleStore = WikiLambdaServices::getAWArticleStore();
 	}
 
@@ -105,7 +104,6 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$topicQid = 'Q42';
 		$sectionQid = 'Q8776414';
 		$langZid = 'Z1002';
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F1' ];
 		$fragment2 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F2' ];
@@ -125,13 +123,11 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		// Load fragment 1 for:
 		// * Q42,Z1002,today
 		// * Q42,Z1002,stale
-		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $date, $value1 );
-		$this->loadAWFragment( $fragment1, $topicQid, $langZid, null, $value1 );
+		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $value1 );
 		// Load fragment 2 for:
 		// * Q42,Z1002,today
 		// * Q42,Z1002,stale
-		$this->loadAWFragment( $fragment2, $topicQid, $langZid, $date, $value2 );
-		$this->loadAWFragment( $fragment2, $topicQid, $langZid, null, $value2 );
+		$this->loadAWFragment( $fragment2, $topicQid, $langZid, $value2 );
 
 		// ASSERT PRE:
 		// Before execution there are no sections in the store
@@ -181,7 +177,6 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$section1 = 'Q8776414';
 		$section2 = 'Q101';
 		$section3 = 'Q102';
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		$fragment1 = '{ "Z1K1": "Z7", "Z7K1": "Z401" }';
 		$fragment2 = '{ "Z1K1": "Z7", "Z7K1": "Z402" }';
@@ -216,21 +211,21 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		// * ES: pending -- all fragments pending
 		// * EN: pending -- some fragments pending
 		// * FR: ready
-		$this->loadAWFragment( json_decode( $fragment1, true ), $topicQid, 'Z1002', $date, $value1 );
-		$this->loadAWFragment( json_decode( $fragment1, true ), $topicQid, 'Z1004', $date, $value1 );
-		$this->loadAWFragment( json_decode( $fragment2, true ), $topicQid, 'Z1004', $date, $value2 );
+		$this->loadAWFragment( json_decode( $fragment1, true ), $topicQid, 'Z1002', $value1 );
+		$this->loadAWFragment( json_decode( $fragment1, true ), $topicQid, 'Z1004', $value1 );
+		$this->loadAWFragment( json_decode( $fragment2, true ), $topicQid, 'Z1004', $value2 );
 		// Section 2:
 		// * ES: pending -- one fragment pending
 		// * EN: ready -- one fragment ready
 		// * FR: ready
-		$this->loadAWFragment( json_decode( $fragment3, true ), $topicQid, 'Z1002', $date, $value3 );
-		$this->loadAWFragment( json_decode( $fragment3, true ), $topicQid, 'Z1004', $date, $value3 );
+		$this->loadAWFragment( json_decode( $fragment3, true ), $topicQid, 'Z1002', $value3 );
+		$this->loadAWFragment( json_decode( $fragment3, true ), $topicQid, 'Z1004', $value3 );
 		// Section 3:
 		// * EN/ES: ready -- all fragments ready
 		// * FR: ready
-		$this->loadAWFragment( json_decode( $fragment4, true ), $topicQid, 'Z1002', $date, $value4 );
-		$this->loadAWFragment( json_decode( $fragment4, true ), $topicQid, 'Z1003', $date, $value4 );
-		$this->loadAWFragment( json_decode( $fragment4, true ), $topicQid, 'Z1004', $date, $value4 );
+		$this->loadAWFragment( json_decode( $fragment4, true ), $topicQid, 'Z1002', $value4 );
+		$this->loadAWFragment( json_decode( $fragment4, true ), $topicQid, 'Z1003', $value4 );
+		$this->loadAWFragment( json_decode( $fragment4, true ), $topicQid, 'Z1004', $value4 );
 
 		// ASSERT PRE:
 		// Before execution there are no sections in the store
@@ -298,7 +293,6 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$topicQid = 'Q42';
 		$sectionQid = 'Q8776414';
 		$langZid = 'Z1002';
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F1' ];
 		$value1 = [ 'success' => true, 'value' => '<h1>Fragment 1</h1>' ];
@@ -310,15 +304,15 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		// SETUP:
 		// Provide the topics and langs through config rather than CLI flags.
 		// overrideConfigValues() resets the service container, so re-capture the
-		// cache/store handles afterwards (setUp's copies now point at stale services).
+		// store handles afterwards (setUp's copies now point at stale services).
 		$this->overrideConfigValues( [
 			'WikiLambdaAbstractWikiArticleStoreTopics' => [ $topicQid ],
 			'WikiLambdaAbstractWikiArticleStoreLangs' => [ 'en' ],
 		] );
-		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
+		$this->fragmentStore = WikiLambdaServices::getAWFragmentStore();
 		$this->articleStore = WikiLambdaServices::getAWArticleStore();
 		$this->loadAWContent( $topicQid, $awJson );
-		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $date, $value1 );
+		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $value1 );
 
 		// EXECUTE:
 		// Run the script with no flags, so it relies on config defaults
@@ -343,7 +337,6 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$topicQid = 'Q42';
 		$sectionQid = 'Q8776414';
 		$langZid = 'Z1002';
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400', 'Z400K1' => 'F1' ];
 		$value1 = [ 'success' => true, 'value' => '<h1>Fragment 1</h1>' ];
@@ -356,15 +349,15 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		// Config points at a topic with no content and a different language;
 		// if the CLI flags didn't override config, no Q42/en section would be made.
 		// overrideConfigValues() resets the service container, so re-capture the
-		// cache/store handles afterwards (setUp's copies now point at stale services).
+		// store handles afterwards (setUp's copies now point at stale services).
 		$this->overrideConfigValues( [
 			'WikiLambdaAbstractWikiArticleStoreTopics' => [ 'Q999' ],
 			'WikiLambdaAbstractWikiArticleStoreLangs' => [ 'fr' ],
 		] );
-		$this->objectCache = WikiLambdaServices::getMemcachedWrapper();
+		$this->fragmentStore = WikiLambdaServices::getAWFragmentStore();
 		$this->articleStore = WikiLambdaServices::getAWArticleStore();
 		$this->loadAWContent( $topicQid, $awJson );
-		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $date, $value1 );
+		$this->loadAWFragment( $fragment1, $topicQid, $langZid, $value1 );
 
 		// EXECUTE:
 		// Run the script for --topics Q42 --langs en
@@ -433,12 +426,11 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $oldMetadata ) );
 
 		ConvertibleTimestamp::setFakeTime( self::NOW );
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		// Fragments are freshly ready for english, french and russian
-		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', $date, $value );
-		$this->loadAWFragment( $fragment, $topicQid, 'Z1004', $date, $value );
-		$this->loadAWFragment( $fragment, $topicQid, 'Z1005', $date, $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1004', $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1005', $value );
 
 		// EXECUTE:
 		// Run the script for --topics Q42 --langs en,es,ru --pending
@@ -528,8 +520,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, $oldMetadata ) );
 
 		ConvertibleTimestamp::setFakeTime( self::NOW );
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
-		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', $date, $value );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', $value );
 
 		// EXECUTE:
 		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en', '--pending' ] );
@@ -610,7 +601,6 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 	public function testSectionPayloadContainsStatusMetadata(): void {
 		$topicQid = 'Q42';
 		$sectionQid = 'Q8776414';
-		$date = ( new ConvertibleTimestamp() )->format( 'Y-m-d' );
 
 		$fragment1 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z401' ];
 		$fragment2 = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z402' ];
@@ -630,8 +620,8 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		// Fragment 1 is pending
 		// Fragment 2 is OK but stale
 		// Fragment 3 is fresh but failed
-		$this->loadAWFragment( $fragment2, $topicQid, 'Z1002', null, $valueOk );
-		$this->loadAWFragment( $fragment3, $topicQid, 'Z1002', $date, $valueFailed );
+		$this->loadAWFragment( $fragment2, $topicQid, 'Z1002', $valueOk, self::PAST );
+		$this->loadAWFragment( $fragment3, $topicQid, 'Z1002', $valueFailed );
 
 		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en' ] );
 		$this->maintenance->execute();
@@ -664,28 +654,23 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 	}
 
 	/**
-	 * Loads a rendered AbstractWiki Fragment into the object cache, given
-	 * its topic qid, language, fragment, date and value:
-	 * * If the date is null, stores it as stale value,
-	 * * If the date is not null, stores it as dated value.
+	 * Loads a rendered AbstractWiki Fragment into the configured AWFragmentStore,
+	 * given its topic qid, language, fragment and value. The store records the
+	 * render datetime with the value. Pass self::PAST to make the fragment stale.
 	 *
 	 * @param array $fragment
 	 * @param string $qid
 	 * @param string $lang
-	 * @param ?string $date
 	 * @param array $value
+	 * @param string $datetime
 	 */
-	private function loadAWFragment( $fragment, $qid, $lang, $date, $value ) {
-		// Assemble cache key arguments for fresh or stale key (depending on $date)
-		$cacheKeyArgs = [ AWFragmentStore::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX, $qid, $lang ];
-		if ( $date ) {
-			$cacheKeyArgs[] = $date;
-		}
-		$cacheKeyArgs[] = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
-		$cacheKey = $this->objectCache->makeKey( ...$cacheKeyArgs );
-
-		$encodedValue = json_encode( $value );
-
-		$this->objectCache->set( $cacheKey, $encodedValue, MemcachedWrapper::TTL_DAY );
+	private function loadAWFragment( $fragment, $qid, $lang, $value, $datetime = self::NOW ) {
+		$this->fragmentStore->setRenderedAWFragment(
+			$qid,
+			$lang,
+			$datetime,
+			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment ),
+			$value
+		);
 	}
 }
