@@ -16,7 +16,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 abstract class WikiLambdaAbstractClientIntegrationTestCase extends WikiLambdaIntegrationTestCase {
@@ -38,18 +37,6 @@ abstract class WikiLambdaAbstractClientIntegrationTestCase extends WikiLambdaInt
 			'wgWikiLambdaEnableAbstractMode' => false,
 		] );
 		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
-	}
-
-	protected function getPrimaryDB() {
-		return $this->getServiceContainer()
-			->getConnectionProvider( AWArticleStore::AW_STORAGE_VIRTUAL_DOMAIN )
-			->getPrimaryDatabase();
-	}
-
-	protected function getReplicaDB() {
-		return $this->getServiceContainer()
-			->getConnectionProvider( AWArticleStore::AW_STORAGE_VIRTUAL_DOMAIN )
-			->getReplicaDatabase();
 	}
 
 	protected function tearDown(): void {

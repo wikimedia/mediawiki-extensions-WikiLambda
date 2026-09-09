@@ -1494,7 +1494,6 @@
 		}
 	},
 	"DatabaseVirtualDomains": [
-		"virtual-awstorage",
 		"virtual-wikifunctions-usage"
 	],
 	"LogTypes": [ "abstractwiki" ],

@@ -14,7 +14,6 @@ namespace MediaWiki\Extension\WikiLambda\HookHandler;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Deferred\DeferredUpdates;
-use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\InitialContentSnapshot;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -543,21 +542,6 @@ class RepoHooks implements
 		// in pre-extension registry mode.)
 		if ( $config->has( 'WikiLambdaEnableClientMode' ) && $config->get( 'WikiLambdaEnableClientMode' ) ) {
 			$updater->dropExtensionTable( 'wikifunctionsclient_usage' );
-		}
-
-		// Drop the legacy abstract-client-mode article table. The article store now uses
-		// MainStash (T426873), so the RDBMS backend and its table are gone.
-		if (
-			$config->has( 'WikiLambdaEnableAbstractClientMode' ) &&
-			$config->get( 'WikiLambdaEnableAbstractClientMode' )
-		) {
-			$updater->addExtensionUpdateOnVirtualDomain( [
-				AWArticleStore::AW_STORAGE_VIRTUAL_DOMAIN,
-				'dropTable',
-				'aw_article_sections',
-				false,
-				true
-			] );
 		}
 
 		// Insert the shared cross-wiki Function-usage table, if needed.

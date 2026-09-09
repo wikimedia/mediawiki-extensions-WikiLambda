@@ -28,8 +28,6 @@ namespace MediaWiki\Extension\WikiLambda\AWStorage;
 
 abstract class AWArticleStore {
 
-	// Kept only so the schema updater can drop the legacy aw_article_sections table.
-	public const AW_STORAGE_VIRTUAL_DOMAIN = 'virtual-awstorage';
 	public const AW_STORAGE_SCHEMA_VERSION = 1;
 	public const AW_STORAGE_METADATA_KEY = '_metadata';
 	public const AW_STORAGE_LOCALE_MULTILINGUAL = 'mul';
