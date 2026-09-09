@@ -17,9 +17,8 @@
  * might determine the actions taken by the caller.
  *
  * NOTE:
- * This class isolates and decouples the AW Fragment storage layer. Currently, rendered
- * fragments are stored in an ephemeral cache (Memcached), but possibly in the future
- * we'd want to change this by adding other layers of fallback storage.
+ * This class isolates and decouples the AW Fragment storage layer. Rendered fragments
+ * are stored in MainStash. In the future we can add other layers of fallback storage.
  *
  * @file
  * @ingroup Extensions

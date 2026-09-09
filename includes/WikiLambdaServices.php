@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
@@ -18,10 +17,8 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
-use MediaWiki\Extension\WikiLambda\AWStorage\MemcachedAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\ClientStorage\MainStashWikifunctionsFragmentStore;
-use MediaWiki\Extension\WikiLambda\ClientStorage\MemcachedWikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
@@ -162,33 +159,16 @@ class WikiLambdaServices {
 	/**
 	 * Constructs a new instance of the WikifunctionsFragmentStore.
 	 *
-	 * The concrete backend is selected by $wgWikiLambdaClientFragmentStoreBackend:
-	 * * 'memcached': Store backed by the Wikifunctions Memcached instance
-	 *   using the MemcachedWrapper interface.
-	 * * 'mainstash': Store backed by MediaWiki MainStash, a durable key/value
-	 *   substrate with TTL cleanup and x2 replication.
+	 * The store is backed by MediaWiki MainStash, a durable key/value substrate
+	 * with TTL cleanup and x2 replication.
 	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
 	 */
 	public static function buildWikifunctionsFragmentStore( MediaWikiServices $services ): WikifunctionsFragmentStore {
-		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$backend = $extensionConfig->get( 'WikiLambdaClientFragmentStoreBackend' );
-
-		switch ( $backend ) {
-			case 'memcached':
-				return new MemcachedWikifunctionsFragmentStore(
-					self::buildMemcachedWrapper( $services )
-				);
-			case 'mainstash':
-				return new MainStashWikifunctionsFragmentStore(
-					$services->getMainObjectStash(),
-					$services->getStatsFactory()
-				);
-			default:
-				throw new InvalidArgumentException(
-					"Unknown WikiLambdaClientFragmentStoreBackend value: '$backend'"
-				);
-		}
+		return new MainStashWikifunctionsFragmentStore(
+			$services->getMainObjectStash(),
+			$services->getStatsFactory()
+		);
 	}
 
 	/**
@@ -219,35 +199,16 @@ class WikiLambdaServices {
 	/**
 	 * Constructs a new instance of the AWFragmentStore.
 	 *
-	 * The concrete backend is selected by $wgWikiLambdaAWFragmentStoreBackend:
-	 * * 'memcached': Store backed by the Wikifunctions Memcached instance
-	 *   using the MemcachedWrapper interface.
-	 * * 'mainstash': Store backed by MediaWiki MainStash (T431428), a durable
-	 * 	 key/value substrate with TTL cleanup and x2 replication, using th.
+	 * The store is backed by MediaWiki MainStash (T431428), a durable key/value
+	 * substrate with TTL cleanup and x2 replication.
 	 *
 	 * @internal For use in Service Wiring and early setup on RepoHooks
 	 */
 	public static function buildAWFragmentStore( MediaWikiServices $services ): AWFragmentStore {
-		$extensionConfig = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$backend = $extensionConfig->get( 'WikiLambdaAWFragmentStoreBackend' );
-
-		switch ( $backend ) {
-			case 'memcached':
-				return new MemcachedAWFragmentStore(
-					$services->getJobQueueGroup(),
-					self::buildMemcachedWrapper( $services ),
-					$services->getStatsFactory()
-				);
-			case 'mainstash':
-				return new MainStashAWFragmentStore(
-					$services->getJobQueueGroup(),
-					$services->getMainObjectStash(),
-					$services->getStatsFactory()
-				);
-			default:
-				throw new InvalidArgumentException(
-					"Unknown WikiLambdaAWFragmentStoreBackend value: '$backend'"
-				);
-		}
+		return new MainStashAWFragmentStore(
+			$services->getJobQueueGroup(),
+			$services->getMainObjectStash(),
+			$services->getStatsFactory()
+		);
 	}
 }

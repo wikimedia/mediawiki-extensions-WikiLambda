@@ -3,9 +3,7 @@
  * WikiLambda Wikifunctions Client - MainStash implementation for Wikifunctions fragment storage.
  *
  * Stores Wikifunctions embedded fragments in MediaWiki's MainStash (`getMainObjectStash()`),
- * an x2 replicated key/value substrate with TTL cleanup. This is an alternative to the
- * Memcached MemcachedWikifunctionsFragmentStore, to provide a more durable alternative
- * for fragment storage. See T431428 for background.
+ * an x2 replicated key/value substrate with TTL cleanup. See T431428 for background.
  *
  * @file
  * @ingroup Extensions

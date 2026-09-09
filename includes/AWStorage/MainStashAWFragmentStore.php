@@ -3,9 +3,7 @@
  * WikiLambda Abstract Wikipedia - MainStash implementation for the AW Fragment storage.
  *
  * Stores AW Fragments in MediaWiki's MainStash (`getMainObjectStash()`), an x2
- * replicated key/value substrate with TTL cleanup. This is an alternative to the
- * Memcached MemcachedAWFragmentStore, to provide a more durable alternative
- * for fragment storage. See T431428 for background.
+ * replicated key/value substrate with TTL cleanup. See T431428 for background.
  *
  * @file
  * @ingroup Extensions

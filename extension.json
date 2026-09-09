@@ -127,10 +127,6 @@
 			"description": "If true (and WikiLambdaEnableAbstractClientMode is also true), Abstract Wikipedia generated content is rendered in place of opted-in missing local articles. Acts as a kill-switch for the integration behaviour, independent of the rest of abstract client mode.",
 			"value": true
 		},
-		"WikiLambdaAWFragmentStoreBackend": {
-			"description": "Storage backend for the Abstract Wikipedia fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T432849).",
-			"value": "mainstash"
-		},
 		"WikiLambdaAbstractWikiArticleStoreTopics": {
 			"description": "Default list of Abstract Wikipedia Topic QIDs to update when the updateAbstractWikiArticleStore.php maintenance script is run without --topics. Overridden by --topics when that option is given.",
 			"value": []
@@ -142,10 +138,6 @@
 		"WikiLambdaAbstractWikiIconUrl": {
 			"description": "URL of the Abstract Wikipedia SVG icon uploaded to commons, to use it as decorator in the Abstract Wikipedia notice boxes",
 			"value": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Abstract-Wikipedia-favicon.svg"
-		},
-		"WikiLambdaClientFragmentStoreBackend": {
-			"description": "Storage backend for the Wikifunctions Client fragment store. Either 'memcached' (Wikifunctions Memcached instance) or 'mainstash' (MediaWiki MainStash; durable key/value substrate with TTL cleanup, per T432849).",
-			"value": "mainstash"
 		},
 		"WikiLambdaEnableSearchIndexFields": {
 			"description": "If true, WikiLambda adds structured, multilingual ZObject fields (labels, aliases, description, type, and function input/output signature) to the CirrusSearch index. Off by default; must not be enabled in production until the Elasticsearch mapping has been reviewed with the Search Platform team (T390562). Temporary flag ahead of deployment. Inert where CirrusSearch is not loaded.",

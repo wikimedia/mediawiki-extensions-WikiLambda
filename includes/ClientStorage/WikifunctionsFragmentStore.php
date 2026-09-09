@@ -11,7 +11,7 @@
  *
  * NOTE:
  * This class isolates the storage layer from its callers, so that the backend store can
- * be changed (Memcached, MainStash) without touching the parser function code paths.
+ * be changed without touching the parser function code paths.
  *
  * @file
  * @ingroup Extensions
@@ -45,10 +45,8 @@ abstract class WikifunctionsFragmentStore {
 	 *
 	 * The input object is an array with the necessary information to identify
 	 * the embedded fragment. Different cache implementations can choose to
-	 * use these differently. For example, the Memcached implementation uses
-	 * dynamic temporal arguments for the key, while the MainStash
-	 * implementation uses the original temporal input values to avoid
-	 * invalidating the cache entry daily.
+	 * use these differently. The MainStash implementation uses the original
+	 * temporal input values, to avoid invalidating the cache entry daily.
 	 *
 	 * E.g.:
 	 * [
