@@ -27,6 +27,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Wikimedia\TestingAccessWrapper;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\OrchestratorRequest
@@ -34,6 +35,26 @@ use Wikimedia\TestingAccessWrapper;
  * @group Database
  */
 class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
+
+	private const TYPED_MAP_TYPE = '{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z1"}';
+	private const TYPED_PAIR_TYPE = '{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"}';
+
+	/**
+	 * Builds the JSON string of a successful Z22/ResponseEnvelope given its value
+	 * and the keys to add to the metadata map
+	 *
+	 * @param string $value
+	 * @param string[] $keys
+	 * @return string
+	 */
+	private function makeSuccessEnvelope( string $value, array $keys = [] ): string {
+		$pairs = [ self::TYPED_PAIR_TYPE ];
+		foreach ( $keys as $key => $keyValue ) {
+			$pairs[] = '{"Z1K1":' . self::TYPED_PAIR_TYPE . ',"K1":"' . $key . '","K2":"' . $keyValue . '"}';
+		}
+		$metadata = '{"Z1K1":' . self::TYPED_MAP_TYPE . ',"K1":[' . implode( ',', $pairs ) . ']}';
+		return '{"Z1K1":"Z22","Z22K1":' . $value . ',"Z22K2":' . $metadata . '}';
+	}
 
 	// OrchestratorRequest::getHost
 	// ============================
@@ -307,9 +328,6 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$mockCache = $this->createMock( MemcachedWrapper::class );
 		$mockCache
 			->expects( $this->never() )
-			->method( 'makeKey' );
-		$mockCache
-			->expects( $this->never() )
 			->method( 'get' );
 		$mockCache
 			->expects( $this->never() )
@@ -406,6 +424,55 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		);
 
 		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
+	}
+
+	public function testOrchestrate_getFreshResult() {
+		$now = '20260911000000';
+		ConvertibleTimestamp::setFakeTime( $now );
+
+		$value = '{"Z1K1":"Z6","Z6K1":"some fresh result"}';
+		$envelopeString = $this->makeSuccessEnvelope( $value );
+
+		$expectedCachedValue = [
+			'result' => $this->makeSuccessEnvelope( $value, [
+				'functionCallCachedOn' => '2026-09-11T00:00:00Z',
+				'functionCallCacheKey' => 'some-mock-key'
+			] ),
+			'httpStatusCode' => HttpStatus::OK
+		];
+
+		// With getFreshResult=true the cache read is skipped entirely, but the freshly
+		// evaluated result is still written to the cache (200 => TTL_MONTH).
+		$mockCache = $this->createMock( MemcachedWrapper::class );
+		$mockCache
+			->expects( $this->once() )
+			->method( 'makeKey' )
+			->willReturn( 'some-mock-key' );
+		$mockCache
+			->expects( $this->never() )
+			->method( 'get' );
+		$mockCache
+			->expects( $this->once() )
+			->method( 'set' )
+			->with( 'some-mock-key', $expectedCachedValue, MemcachedWrapper::TTL_MONTH );
+		$this->setService( 'WikiLambdaMemcachedWrapper', $mockCache );
+
+		$mock = new MockHandler( [ new Response( HttpStatus::OK, [], $envelopeString ) ] );
+		$client = new Client( [ 'handler' => HandlerStack::create( $mock ) ] );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
+
+		$call = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10000","Z10000K1":"input"}', true );
+		$query = [ 'zobject' => $call, 'doValidate' => true, 'getFreshResult' => true ];
+
+		$response = $orchestrator->orchestrate( $query );
+
+		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
+		$this->assertEquals( json_decode( $envelopeString ), json_decode( $response['result'] ) );
+
+		// The getFreshResult property is forwarded to the orchestrator in the request body
+		$sentBody = json_decode( (string)$mock->getLastRequest()->getBody(), true );
+		$this->assertTrue( $sentBody['getFreshResult'] );
+		$this->assertEquals( $query, $sentBody );
 	}
 
 	// OrchestratorRequest::isAWFragmentRequest

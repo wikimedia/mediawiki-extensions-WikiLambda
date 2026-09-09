@@ -135,6 +135,7 @@ class RepoHooks implements
 			'wikilambda-edit-user-function',
 			'wikilambda-execute',
 			'wikilambda-execute-unsaved-code',
+			'wikilambda-request-fresh-result',
 			'wikifunctions-run',
 		];
 
@@ -168,6 +169,9 @@ class RepoHooks implements
 				'wikilambda-edit-object-label' => true,
 				'wikilambda-edit-tester' => true,
 				'wikilambda-edit-user-function' => true,
+			],
+			'autoconfirmed' => [
+				'wikilambda-request-fresh-result' => true,
 			],
 			'functioneer' => [
 				'wikilambda-connect-implementation' => true,

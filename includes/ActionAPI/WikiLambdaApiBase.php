@@ -164,6 +164,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$validate = (bool)( $flags[ 'validate' ] ?? true );
 		$bypassCache = (bool)( $flags[ 'bypassCache' ] ?? false );
 		$isUnsavedCode = (bool)( $flags[ 'isUnsavedCode' ] ?? false );
+		$getFreshResult = (bool)( $flags[ 'getFreshResult' ] ?? false );
 
 		$zObjectAsStdClass = ( $zObject instanceof ZFunctionCall ) ? $zObject->getSerialized() : $zObject;
 		$zObjectAsString = json_encode( $zObjectAsStdClass );
@@ -177,6 +178,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			'request' => $zObjectAsString,
 			'validate' => $validate,
 			'bypassCache' => $bypassCache,
+			'getFreshResult' => $getFreshResult
 		] );
 
 		// 1. Check that input ZObject is a (normal or canonical) Z7/Function Call
@@ -205,11 +207,17 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->failWithPermissionDenied( 'wikilambda-bypass-cache', $zObjectAsStdClass );
 		}
 
+		// 2.d. User can request fresh result if flag getFreshResult is true
+		if ( $getFreshResult && !$userAuthority->isAllowed( 'wikilambda-request-fresh-result' ) ) {
+			$this->failWithPermissionDenied( 'wikilambda-request-fresh-result', $zObjectAsStdClass );
+		}
+
 		// 3. Call OrchestratorRequest::orchestrate if there are not too many requests
 		// being run at the same time by the same user.
 		$queryArguments = [
 			'zobject' => $zObjectAsStdClass,
-			'doValidate' => $validate
+			'doValidate' => $validate,
+			'getFreshResult' => $getFreshResult
 		];
 
 		try {

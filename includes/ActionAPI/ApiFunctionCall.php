@@ -94,7 +94,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'validate' => true,
 			'isUnsavedCode' => false,
 			// Get bypassCache boolean flag if set to any truthy value, false otherwise
-			'bypassCache' => filter_var( $params[ 'bypass-cache' ], FILTER_VALIDATE_BOOLEAN )
+			'bypassCache' => filter_var( $params[ 'bypass-cache' ], FILTER_VALIDATE_BOOLEAN ),
+			// Get getFreshResult boolean flag if set to any truthy value, false otherwise
+			'getFreshResult' => filter_var( $params[ 'fresh-result' ], FILTER_VALIDATE_BOOLEAN )
 		];
 
 		// Get function zid for logging
@@ -187,6 +189,11 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				ParamValidator::PARAM_REQUIRED => true,
 			],
 			'bypass-cache' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => false
+			],
+			'fresh-result' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => false

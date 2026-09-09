@@ -32,6 +32,8 @@ use Psr\Log\LoggerInterface;
 use stdClass;
 use Wikimedia\RequestTimeout\TimeoutException;
 use Wikimedia\Telemetry\TracerInterface;
+use Wikimedia\Timestamp\ConvertibleTimestamp;
+use Wikimedia\Timestamp\TimestampFormat as TS;
 
 class OrchestratorRequest {
 
@@ -112,14 +114,19 @@ class OrchestratorRequest {
 		$requestHeaders = $this->tracer->getRequestHeaders();
 		$requestHeaders['User-Agent'] = $this->userAgentString;
 
-		// 1. Get from memcached (if bypassCache is unset)
-		$requestKey = '';
-		if ( !$bypassCache ) {
-			$requestKey = $this->objectCache->makeKey(
-				self::FUNCTIONCALL_CACHE_KEY_PREFIX,
-				ZObjectUtils::makeCacheKeyFromZObject( $query )
-			);
+		$getFreshResult = (bool)( $query[ 'getFreshResult' ] ?? false );
 
+		// Remove getFreshResult from cache key
+		$cacheableQuery = $query;
+		unset( $cacheableQuery[ 'getFreshResult' ] );
+
+		$requestKey = $this->objectCache->makeKey(
+			self::FUNCTIONCALL_CACHE_KEY_PREFIX,
+			ZObjectUtils::makeCacheKeyFromZObject( $cacheableQuery )
+		);
+
+		// 1. Get from the Object Cache (except when bypassCache=true or getFreshResult=true)
+		if ( !$bypassCache && !$getFreshResult ) {
 			$response = $this->objectCache->get( $requestKey );
 
 			// 1.a. Cache hit, exit early with validated cached value
@@ -142,7 +149,7 @@ class OrchestratorRequest {
 			throw new OrchestratorException( $e->getMessage(), $query, 0, $e );
 		}
 
-		// 3. Store in the cache (if bypassCache is unset)
+		// 3. Write to the Object Cache (except when bypassCache=true)
 		if ( !$bypassCache ) {
 			// (T338243) Set TTL conditionally:
 			// * success (http 200)           TTL_MONTH
@@ -182,8 +189,9 @@ class OrchestratorRequest {
 
 			// Let's avoid deserializing-serializing just to add a few metadata keys before caching
 			$stampedResponse = json_decode( $response[ 'result' ] );
+			$requestTimestamp = ConvertibleTimestamp::now( TS::ISO_8601 );
 			$stampedResponse = ZObjectUtils::setMetaDataValue( $stampedResponse,
-				'functionCallCachedOn', date( 'Y-m-d\TH:i:s\Z' ) );
+				'functionCallCachedOn', $requestTimestamp );
 			$stampedResponse = ZObjectUtils::setMetaDataValue( $stampedResponse,
 				'functionCallCacheKey', $requestKey );
 

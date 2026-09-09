@@ -516,4 +516,54 @@ class ApiFunctionCallTest extends WikiLambdaApiTestCase {
 			$this->assertSame( 'Error of type Z559', $e->getMessage() );
 		}
 	}
+
+	private function spyOnOrchestrator( ?array &$capturedParams ): void {
+		$innerMock = new MockOrchestratorRequest();
+		$spy = $this->createMock( OrchestratorRequest::class );
+		$spy
+			->method( 'orchestrate' )
+			->willReturnCallback(
+				static function ( ...$params ) use ( &$capturedParams, $innerMock ) {
+					$capturedParams = $params;
+					return $innerMock->orchestrate( ...$params );
+				}
+		);
+
+		$this->setService( 'WikiLambdaOrchestratorRequest', $spy );
+	}
+
+	public function testExecute_bypassCache() {
+		$this->setGroupPermissions( '*', 'wikilambda-bypass-cache', true );
+
+		$capturedParams = null;
+		$this->spyOnOrchestrator( $capturedParams );
+
+		$this->doApiRequest( [
+			'action' => 'wikilambda_function_call',
+			'wikilambda_function_call_zobject' => '{"Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello, testers!" }',
+			'wikilambda_function_call_bypass-cache' => '1',
+		] );
+
+		$this->assertNotNull( $capturedParams );
+		$this->assertArrayHasKey( 1, $capturedParams );
+		$this->assertTrue( (bool)$capturedParams[1] );
+	}
+
+	public function testExecute_freshResult() {
+		$user = $this->getTestUser()->getAuthority();
+		$this->overrideUserPermissions( $user, [ 'wikilambda-request-fresh-result' ] );
+
+		$capturedParams = null;
+		$this->spyOnOrchestrator( $capturedParams );
+
+		$this->doApiRequest( [
+			'action' => 'wikilambda_function_call',
+			'wikilambda_function_call_zobject' => '{"Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello, testers!" }',
+			'wikilambda_function_call_fresh-result' => '1',
+		], null, false, $user );
+
+		$this->assertNotNull( $capturedParams );
+		$this->assertArrayHasKey( 'getFreshResult', $capturedParams[0] );
+		$this->assertTrue( $capturedParams[0]['getFreshResult'] );
+	}
 }
