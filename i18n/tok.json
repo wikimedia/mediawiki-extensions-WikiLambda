@@ -1,8 +1,30 @@
 {
 	"@metadata": {
 		"authors": [
+			"Earldridge Jazzed Pineda",
 			"Robin van der Vliet"
 		]
 	},
+	"specialpages-group-wikilambda": "lipu ilo pi lipu Wikilo",
+	"wikilambda-about-widget-add-language": "o pana e toki",
+	"wikilambda-about-widget-aliases-caption": "sina sitelen e nimi ante la o kepeken nena ↵.",
+	"wikilambda-about-widget-edit-button": "o ante",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|toki $1}}",
+	"wikilambda-about-widget-name-placeholder": "o sitelen e nimi",
+	"wikilambda-about-widget-no-aliases": "nimi ante pana ala.",
+	"wikilambda-about-widget-no-descriptions": "toki pana ala.",
+	"wikilambda-about-widget-no-descriptions-or-aliases": "toki anu nimi ante pana ala.",
+	"wikilambda-about-widget-no-inputs": "nanpa kama pana ala.",
+	"wikilambda-about-widget-title": "sona",
+	"wikilambda-about-widget-unlabelled-input": "nimi ala",
+	"wikilambda-about-widget-view-languages-other": "toki ante",
+	"wikilambda-function-definition-inputs-label": "nanpa kama",
+	"wikilambda-function-definition-name-example": "o lukin e ijo nimi.",
+	"wikilambda-function-definition-name-label": "nimi",
+	"wikilambda-function-definition-name-placeholder": "o sitelen e nimi",
+	"wikilambda-function-definition-output-description": "ilo li pana e sona seme?",
+	"wikilambda-function-definition-output-label": "nanpa pana",
+	"wikilambda-function-definition-output-selector": "o wile e nasin",
+	"wikilambda-function-definition-output-type-label": "nasin",
 	"wikilambda-special-listduplicateobjectlabels-language": "toki"
 }

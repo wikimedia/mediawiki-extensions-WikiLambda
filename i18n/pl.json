@@ -52,6 +52,8 @@
 	"action-wikilambda-edit-user-function": "edytowania istniejących funkcji stworzonych przez użytkowników",
 	"action-wikilambda-execute": "uruchamiania funkcji",
 	"action-wikilambda-execute-unsaved-code": "uruchamiania kodu niezapisanej implementacji",
+	"communityconfiguration-abstractwikioptedinarticles-description": "Lista artykułów wygenerowanych na podstawie treści z Abstrakcyjnej Wikipedii.",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-help-text": "Identyfikator Q elementu Wikidanych pozwalający wyświetlić na tej stronie artykuł z Abstrakcyjnej Wikipedii.",
 	"content-model-zobject": "Obiekt WikiLambda",
 	"group-functioneer": "Funkcjonierzy",
 	"group-functioneer-member": "{{GENDER:$1|funkcjonier|funkcjonierka}}",
