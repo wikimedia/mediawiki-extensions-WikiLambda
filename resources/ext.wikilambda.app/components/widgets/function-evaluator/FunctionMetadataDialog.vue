@@ -86,24 +86,39 @@
 					>{{ section.description.labelOrUntitled }}</span>
 					<span v-else>{{ section.description }}</span>
 				</template>
-				<ul class="ext-wikilambda-app-function-metadata-dialog__content">
-					<wl-function-metadata-item
-						v-for="( item, itemIndex ) in section.content"
-						:key="`item-${ itemIndex }`"
-						:key-string="`item-${ itemIndex }`"
-						:item="item"
-					></wl-function-metadata-item>
-				</ul>
-				<a
-					v-if="section.link"
-					:href="section.link.url"
-					target="_blank"
-					class="ext-wikilambda-app-function-metadata-dialog__link"
-				>
-					{{ section.link.label }}
-					<cdx-icon :icon="iconLinkExternal" class="ext-wikilambda-app-function-metadata-dialog__link-icon">
-					</cdx-icon>
-				</a>
+				<template v-if="section.content.length">
+					<ul class="ext-wikilambda-app-function-metadata-dialog__content">
+						<wl-function-metadata-item
+							v-for="( item, itemIndex ) in section.content"
+							:key="`item-${ itemIndex }`"
+							:key-string="`item-${ itemIndex }`"
+							:item="item"
+						></wl-function-metadata-item>
+					</ul>
+					<template v-if="section.action">
+						<a
+							v-if="section.action.type === 'link'"
+							:href="section.action.url"
+							target="_blank"
+							class="ext-wikilambda-app-function-metadata-dialog__link"
+						>
+							{{ section.action.label }}
+							<cdx-icon
+								:icon="iconLinkExternal"
+								class="ext-wikilambda-app-function-metadata-dialog__link-icon"
+							></cdx-icon>
+						</a>
+						<cdx-button
+							v-if="section.action.type === 'button'"
+							class="ext-wikilambda-app-function-metadata-dialog__link"
+							:action="section.action.action"
+							:weight="section.action.weight"
+							@click="section.action.callback"
+						>
+							{{ section.action.label }}
+						</cdx-button>
+					</template>
+				</template>
 			</cdx-accordion>
 		</div>
 	</cdx-dialog>
@@ -121,6 +136,7 @@ const { extractErrorData, extractWarningsData, escapeHtml } = require( '../../..
 const { isValidZidFormat } = require( '../../../utils/typeUtils.js' );
 const { extractZIDs } = require( '../../../utils/schemata.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
+const { isWikidataEntityId } = require( '../../../utils/wikidataUtils.js' );
 const icons = require( '../../../../lib/icons.json' );
 const DateFormatter = require( 'mediawiki.DateFormatter' );
 
@@ -132,6 +148,7 @@ const SafeMessage = require( '../../base/SafeMessage.vue' );
 // Codex components
 const {
 	CdxAccordion,
+	CdxButton,
 	CdxDialog,
 	CdxField,
 	CdxIcon,
@@ -143,6 +160,7 @@ module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-dialog',
 	components: {
 		'cdx-accordion': CdxAccordion,
+		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
 		'cdx-field': CdxField,
 		'cdx-icon': CdxIcon,
@@ -179,7 +197,7 @@ module.exports = exports = defineComponent( {
 			default: false
 		}
 	},
-	emits: [ 'close-dialog' ],
+	emits: [ 'close-dialog', 'freshen-result' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
@@ -629,7 +647,10 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		function getCachingSummary() {
-			return i18n( 'wikilambda-functioncall-metadata-cached' ).text();
+			const isFresh = keyValues.value.has( 'functionCallFreshResult' );
+			return isFresh ?
+				i18n( 'wikilambda-functioncall-metadata-fresh' ).text() :
+				i18n( 'wikilambda-functioncall-metadata-cached' ).text();
 		}
 
 		/**
@@ -962,6 +983,41 @@ module.exports = exports = defineComponent( {
 			};
 		}
 
+		/**
+		 * Transform method.
+		 * Returns a list of Wikidata item Qids.
+		 *
+		 * @param {Array} value
+		 * @return {Object}
+		 */
+		function getListOfIds( value ) {
+			if ( !Array.isArray( value ) ) {
+				return getStringValue( value );
+			}
+			// Remove benjamin item and make sure all items are Wikidata entities
+			const qids = value.slice( 1 ).filter( ( id ) => isWikidataEntityId( id ) );
+			const urlGetters = {
+				Q: store.getItemUrl,
+				L: store.getLexemeUrl,
+				P: store.getPropertyUrl,
+				LF: store.getLexemeFormUrl,
+				LS: store.getLexemeSenseUrl
+			};
+			// Convert items to links
+			const links = qids.map( ( id ) => {
+				// Key by the first letter of each part of the ID (e.g. L1-F2 url getter keyed by LF)
+				const buildUrlFor = urlGetters[ id.split( '-' ).map( ( part ) => part[ 0 ] ).join( '' ) ];
+				const href = buildUrlFor ? buildUrlFor( id ) : null;
+				return href ?
+					`<a href="${ href }" target="_blank">${ id }</a>` :
+					`<span>${ id }</span>`;
+			} );
+			return {
+				type: Constants.METADATA_CONTENT_TYPE.HTML,
+				value: `<span>${ links.join( ', ' ) }</span>`
+			};
+		}
+
 		const transforms = {
 			getDebugLogs,
 			getErrorChildren,
@@ -969,6 +1025,7 @@ module.exports = exports = defineComponent( {
 			getErrorType,
 			getImplementationLink,
 			getLinksOfTestKey,
+			getListOfIds,
 			getStringValue,
 			getTestResultValue,
 			getWarningsList,
@@ -998,6 +1055,68 @@ module.exports = exports = defineComponent( {
 				value;
 		}
 
+		/**
+		 * Returns link configuration object for the implementation section.
+		 *
+		 * @return {Object|undefined}
+		 */
+		function getImplementationHelpLink() {
+			if ( !props.hasChosenImplementation ) {
+				return undefined;
+			}
+			return {
+				type: 'link',
+				label: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen' ).text(),
+				url: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen-link' ).text()
+			};
+		}
+
+		/**
+		 * Returns button configuration for the caching section.
+		 *
+		 * Freshen button must be shown when:
+		 * * User has the appropriate rights (wikilambda-request-fresh-result)
+		 * * There's cached content:
+		 *   * either call result was retrieved from the cache (functionCallCachedOn key is present)
+		 *   * or call was executed with cached wikidata items (cachedWikidataEntities key is present)
+		 * * The metadata corresponds to a wikilambda_function_call execution (not to perform_tests)
+		 *   * there's no way to know this
+		 *
+		 * @return {Object}
+		 */
+		function getFreshenResultButton() {
+			// Don't show freshen button if user has no rights
+			if ( !store.userHasRight( 'wikilambda-request-fresh-result' ) ) {
+				return undefined;
+			}
+			// Don't show freshen button if the metadata indicates the call was fresh
+			if ( keyValues.value.has( 'functionCallFreshResult' ) ) {
+				return undefined;
+			}
+			// Don't show freshen button if the response comes from performing a test
+			if (
+				keyValues.value.has( 'testCallCachedOn' ) ||
+				keyValues.value.has( 'validationCallCachedOn' )
+			) {
+				return undefined;
+			}
+			return {
+				type: 'button',
+				action: 'progressive',
+				weight: 'quiet',
+				label: i18n( 'wikilambda-functioncall-metadata-cache-freshen-button' ).text(),
+				callback: freshenResult
+			};
+		}
+
+		/**
+		 * Emits event to execute the function call egain without
+		 * returning or using cached data.
+		 */
+		function freshenResult() {
+			emit( 'freshen-result' );
+		}
+
 		// Section compilation
 		const descriptionMethods = {
 			getErrorSummary,
@@ -1007,6 +1126,11 @@ module.exports = exports = defineComponent( {
 			getDurationSummary,
 			getCpuUsageSummary,
 			getMemoryUsageSummary
+		};
+
+		const actionMethods = {
+			getImplementationHelpLink,
+			getFreshenResultButton
 		};
 
 		/**
@@ -1042,19 +1166,15 @@ module.exports = exports = defineComponent( {
 						compileSections( value.sections ) :
 						compileKeys( value.keys ),
 					open: value.open || false,
-					link: props.hasChosenImplementation && key === 'implementation' ? {
-						label: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen' ).text(),
-						url: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen-link' ).text()
-					} : null
+					action: actionMethods[ value.action ] ? actionMethods[ value.action ]() : null
 				};
-				// Check that section has content
+
+				// We add section only if it has content
 				if ( section.content.length > 0 ) {
 					// Compute description if needed and description function is available
-					if ( ( 'description' in value ) ) {
-						const descriptionMethod = descriptionMethods[ value.description ];
-						if ( descriptionMethod ) {
-							section.description = descriptionMethod();
-						}
+					const descriptionMethod = descriptionMethods[ value.description ];
+					if ( descriptionMethod ) {
+						section.description = descriptionMethod();
 					}
 					metadata.push( section );
 				}

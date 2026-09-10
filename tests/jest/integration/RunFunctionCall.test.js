@@ -90,7 +90,8 @@ describe( 'WikiLambda frontend, running a function on Run Function Special page'
 			format: 'json',
 			formatversion: '2',
 			uselang: 'en',
-			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCallPostedToApi )
+			wikilambda_function_call_zobject: JSON.stringify( expectedFunctionCallPostedToApi ),
+			'wikilambda_function_call_fresh-result': false
 		}, { signal: undefined } );
 
 		// * -- Checking the response

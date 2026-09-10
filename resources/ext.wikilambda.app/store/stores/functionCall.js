@@ -43,12 +43,15 @@ module.exports = {
 		 * @param {Object} payload
 		 * @param {Object} payload.functionCall
 		 * @param {Array} payload.resultKeyPath
+		 * @param {boolean} payload.freshResult
 		 * @return {Promise}
 		 */
-		callZFunction: function ( { functionCall, resultKeyPath } ) {
+		callZFunction: function ( payload ) {
+			const { functionCall, resultKeyPath, freshResult } = payload;
 			return performFunctionCall( {
 				functionCall,
-				language: this.getUserLangCode
+				language: this.getUserLangCode,
+				freshResult
 			} ).then( ( data ) => {
 				// Asynchronously collect the necessary labels
 				const zids = extractZIDs( data.response );

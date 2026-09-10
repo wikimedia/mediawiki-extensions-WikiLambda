@@ -35,6 +35,17 @@ const wikidataUtils = {
 		return [ ...new Set( allMatches ) ];
 	},
 	/**
+	 * Whether the input string is a valid Wikidata Entity ID
+	 * (Qid, Lid, Pid, Lexeme form or Lexeme sense)
+	 *
+	 * @param {string} str
+	 * @return {boolean}
+	 */
+	isWikidataEntityId: function ( str ) {
+		const regexp = /^([QP][1-9]\d*|L[1-9]\d*(-[FS][1-9]\d*)?)$/;
+		return regexp.test( str );
+	},
+	/**
 	 * Whether the input string is a valid Wikidata Item ID (Qid)
 	 *
 	 * @param {string} str

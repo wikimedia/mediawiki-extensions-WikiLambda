@@ -238,63 +238,166 @@ describe( 'dialog', () => {
 			expect( keys[ 0 ].text() ).toContain( 'QuickJS v0.5.0-alpha' );
 		} );
 
-		it( 'renders the caching section', () => {
-			// Set fake timer
-			jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
+		describe( 'Provenance', () => {
+			it( 'renders the caching section for performed test', () => {
+				// Set fake timer
+				jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
 
-			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCaching } );
-			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
-			const section = sections[ 0 ];
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachedTest } );
+				const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const section = sections[ 0 ];
 
-			// Check header
-			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() )
-				.toBe( 'This response was retrieved from the cache' );
+				// Check header
+				expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
+				expect( section.find( '.cdx-accordion__header__description' ).text() )
+					.toBe( 'This response was retrieved from the cache' );
 
-			// Check content
-			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+				// Check content
+				const content = section.find( '.cdx-accordion__content' );
+				const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 
-			expect( keys[ 0 ].text() ).toContain( 'Cached function call:' );
-			expect( keys[ 0 ].text() ).toContain( '4 minutes ago' );
+				expect( keys[ 0 ].text() ).toContain( 'Cached test call:' );
+				expect( keys[ 0 ].text() ).toContain( '4 minutes ago' );
 
-			expect( keys[ 1 ].text() ).toContain( 'Cached test call:' );
-			expect( keys[ 1 ].text() ).toContain( '4 minutes ago' );
+				expect( keys[ 1 ].text() ).toContain( 'Cached validation call:' );
+				expect( keys[ 1 ].text() ).toContain( '4 minutes ago' );
 
-			expect( keys[ 2 ].text() ).toContain( 'Cached validation call:' );
-			expect( keys[ 2 ].text() ).toContain( '4 minutes ago' );
+				expect( keys[ 2 ].text() ).toContain( 'Cached test result:' );
+				expect( keys[ 2 ].text() ).toContain( '4 minutes ago' );
 
-			expect( keys[ 3 ].text() ).toContain( 'Cached test result:' );
-			expect( keys[ 3 ].text() ).toContain( '4 minutes ago' );
+				expect( keys[ 3 ].text() ).toContain( 'Tested for (zids and revisions):' );
+				const links = keys[ 3 ].findAll( 'a' );
+				expect( links.length ).toBe( 3 );
 
-			expect( keys[ 4 ].text() ).toContain( 'Tested for (zids and revisions):' );
-			const links = keys[ 4 ].findAll( 'a' );
-			expect( links.length ).toBe( 3 );
+				expect( links[ 0 ].text() ).toBe( 'Z10000 (revision 10)' );
+				expect( links[ 0 ].attributes( 'href' ) ).toBe( '/view/en/Z10000?oldid=10' );
+				expect( links[ 1 ].text() ).toBe( 'Z10001 (revision 11)' );
+				expect( links[ 1 ].attributes( 'href' ) ).toBe( '/view/en/Z10001?oldid=11' );
+				expect( links[ 2 ].text() ).toBe( 'Z10002 (revision 12)' );
+				expect( links[ 2 ].attributes( 'href' ) ).toBe( '/view/en/Z10002?oldid=12' );
 
-			expect( links[ 0 ].text() ).toBe( 'Z10000 (revision 10)' );
-			expect( links[ 0 ].attributes( 'href' ) ).toBe( '/view/en/Z10000?oldid=10' );
-			expect( links[ 1 ].text() ).toBe( 'Z10001 (revision 11)' );
-			expect( links[ 1 ].attributes( 'href' ) ).toBe( '/view/en/Z10001?oldid=11' );
-			expect( links[ 2 ].text() ).toBe( 'Z10002 (revision 12)' );
-			expect( links[ 2 ].attributes( 'href' ) ).toBe( '/view/en/Z10002?oldid=12' );
-		} );
+				// Does not render freshen button
+				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+			} );
 
-		it( 'does not link a cache key part which is not a Zid', () => {
-			jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
+			it( 'does not link a cache key part which is not a Zid', () => {
+				jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
 
-			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachingOddKey } );
-			const section = wrapper.findAllComponents( { name: 'cdx-accordion' } )[ 0 ];
-			const content = section.find( '.cdx-accordion__content' );
-			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachedTestOddKey } );
+				const section = wrapper.findAllComponents( { name: 'cdx-accordion' } )[ 0 ];
+				const content = section.find( '.cdx-accordion__content' );
+				const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 
-			const tested = keys[ 1 ];
-			expect( tested.text() ).toContain( 'Tested for (zids and revisions):' );
+				const tested = keys[ 1 ];
+				expect( tested.text() ).toContain( 'Tested for (zids and revisions):' );
 
-			// The valid part links, the other part shows as text
-			const links = tested.findAll( 'a' );
-			expect( links.length ).toBe( 1 );
-			expect( links[ 0 ].attributes( 'href' ) ).toBe( '/view/en/Z10000?oldid=10' );
-			expect( tested.text() ).toContain( 'not a zid (revision 11)' );
+				// The valid part links, the other part shows as text
+				const links = tested.findAll( 'a' );
+				expect( links.length ).toBe( 1 );
+				expect( links[ 0 ].attributes( 'href' ) ).toBe( '/view/en/Z10000?oldid=10' );
+				expect( tested.text() ).toContain( 'not a zid (revision 11)' );
+
+				// Does not render freshen button
+				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+			} );
+
+			it( 'renders the caching section with freshen button when user has rights', () => {
+				store.userHasRight = createGettersWithFunctionsMock( true );
+
+				// Set fake timer
+				jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
+
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachedCall } );
+				const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const section = sections[ 0 ];
+
+				// Check header
+				expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
+				expect( section.find( '.cdx-accordion__header__description' ).text() )
+					.toBe( 'This response was retrieved from the cache' );
+
+				// Check content
+				const content = section.find( '.cdx-accordion__content' );
+				const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+
+				expect( keys[ 0 ].text() ).toContain( 'Cached function call:' );
+				expect( keys[ 0 ].text() ).toContain( '4 minutes ago' );
+
+				expect( keys[ 1 ].text() ).toContain( 'Cached Wikidata entities:' );
+
+				const links = keys[ 1 ].findAll( 'a' );
+				expect( links.length ).toBe( 5 );
+
+				expect( links[ 0 ].text() ).toBe( 'Q111' );
+				expect( links[ 0 ].attributes( 'href' ) ).toBe( 'https://www.wikidata.org/wiki/Q111' );
+				expect( links[ 1 ].text() ).toBe( 'L222' );
+				expect( links[ 1 ].attributes( 'href' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222' );
+				expect( links[ 2 ].text() ).toBe( 'P333' );
+				expect( links[ 2 ].attributes( 'href' ) ).toBe( 'https://www.wikidata.org/wiki/Property:P333' );
+				expect( links[ 3 ].text() ).toBe( 'L222-F1' );
+				expect( links[ 3 ].attributes( 'href' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222#F1' );
+				expect( links[ 4 ].text() ).toBe( 'L222-S2' );
+				expect( links[ 4 ].attributes( 'href' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222#S2' );
+
+				// Renders the freshen button
+				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( true );
+			} );
+
+			it( 'does not render the freshen button in the caching section if the user has no rights', () => {
+				store.userHasRight = createGettersWithFunctionsMock( false );
+
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachedCall } );
+				const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const section = sections[ 0 ];
+
+				// Check header
+				expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
+				expect( section.find( '.cdx-accordion__header__description' ).text() )
+					.toBe( 'This response was retrieved from the cache' );
+
+				// Does not render the freshen button
+				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+			} );
+
+			it( 'renders the caching section with no freshen button when the response is explicitly fresh', () => {
+				store.userHasRight = createGettersWithFunctionsMock( true );
+
+				// Set fake timer
+				jest.useFakeTimers().setSystemTime( new Date( '2026-06-06T00:00:00.000Z' ) );
+
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataFreshCall } );
+				const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const section = sections[ 0 ];
+
+				// Check header
+				expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
+				expect( section.find( '.cdx-accordion__header__description' ).text() )
+					.toBe( 'This response was not retrieved from the cache' );
+
+				// Check content
+				const content = section.find( '.cdx-accordion__content' );
+				const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+
+				expect( keys[ 0 ].text() ).toContain( 'Response generated with latest data:' );
+				expect( keys[ 0 ].text() ).toContain( '4 minutes ago' );
+
+				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+			} );
+
+			it( 'emits freshen-result when the freshen result button is clicked', async () => {
+				store.userHasRight = createGettersWithFunctionsMock( true );
+
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachedCall } );
+				const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const section = sections[ 0 ];
+
+				const button = section.findComponent( { name: 'cdx-button' } );
+				expect( button.exists() ).toBe( true );
+
+				await button.trigger( 'click' );
+
+				expect( wrapper.emitted( 'freshen-result' ) ).toHaveLength( 1 );
+			} );
 		} );
 	} );
 

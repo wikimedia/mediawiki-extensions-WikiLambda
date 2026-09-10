@@ -369,8 +369,8 @@ class ZTypedMapTest extends WikiLambdaRepoModeIntegrationTestCase {
 	 * This test adds the use of setValueForKey.
 	 */
 	public function testSetValueForKey_emptyMap() {
-		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
-		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
+		// Ensure that Z6/String, Z40/Boolean, Z41/True and Z42/False instance of Boolean are all available
+		$this->insertZids( [ 'Z6', 'Z40', 'Z41', 'Z42' ] );
 		$pairType = ZTypedPair::buildType( 'Z6', 'Z40' );
 		$testObject = new ZTypedMap(
 			ZTypedMap::buildType( 'Z6', 'Z40' ),
@@ -426,9 +426,12 @@ class ZTypedMapTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertInstanceOf( ZReference::class, $value );
 		$this->assertSame( 'Z41', $value->getZValue() );
 
-		// Check that re-setting a key to null doesn't over-write that key
-		$testObject->setValueForKey( new ZString( 'Testing1' ), null );
+		// Check that setting a new key adds one element
+		$testObject->setValueForKey( new ZString( 'Testing2' ), new ZReference( 'Z42' ) );
+		$this->assertTrue( $testObject->isValid() );
 
+		// Check that re-setting a key to null unsets the key
+		$testObject->setValueForKey( new ZString( 'Testing1' ), null );
 		$this->assertTrue( $testObject->isValid() );
 
 		$list = $testObject->getList();
@@ -436,9 +439,13 @@ class ZTypedMapTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertCount( 1, $array );
 
 		$firstListItem = $array[0];
+		$key = $firstListItem->getFirstElement();
+		$this->assertInstanceOf( ZString::class, $key );
+		$this->assertSame( 'Testing2', $key->getZValue() );
+
 		$value = $firstListItem->getSecondElement();
 		$this->assertInstanceOf( ZReference::class, $value );
-		$this->assertSame( 'Z41', $value->getZValue() );
+		$this->assertSame( 'Z42', $value->getZValue() );
 
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
 	}

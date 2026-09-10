@@ -41,18 +41,22 @@ const metadataUtils = {
 				{ key: 'implementationId', title: 'wikilambda-functioncall-metadata-implementation-name', transform: 'getImplementationLink' },
 				{ key: 'implementationId', title: 'wikilambda-functioncall-metadata-implementation-id', transform: 'getStringValue' },
 				{ key: 'implementationType', title: 'wikilambda-functioncall-metadata-implementation-type' }
-			]
+			],
+			action: 'getImplementationHelpLink'
 		},
 		caching: {
 			title: 'wikilambda-functioncall-metadata-caching',
 			description: 'getCachingSummary',
 			keys: [
 				{ key: 'functionCallCachedOn', title: 'wikilambda-functioncall-metadata-cache-stored', transform: 'toRelativeTime' },
+				{ key: 'functionCallFreshResult', title: 'wikilambda-functioncall-metadata-cache-fresh', transform: 'toRelativeTime' },
 				{ key: 'testCallCachedOn', title: 'wikilambda-functioncall-metadata-cache-test-call-stored', transform: 'toRelativeTime' },
 				{ key: 'validationCallCachedOn', title: 'wikilambda-functioncall-metadata-cache-test-validation-stored', transform: 'toRelativeTime' },
 				{ key: 'testResultCachedOn', title: 'wikilambda-functioncall-metadata-cache-test-result-stored', transform: 'toRelativeTime' },
-				{ key: 'testResultCacheKey', title: 'wikilambda-functioncall-metadata-cache-test-result-key', transform: 'getLinksOfTestKey' }
-			]
+				{ key: 'testResultCacheKey', title: 'wikilambda-functioncall-metadata-cache-test-result-key', transform: 'getLinksOfTestKey' },
+				{ key: 'cachedWikidataEntities', title: 'wikilambda-functioncall-metadata-cache-wikidata-entities', transform: 'getListOfIds' }
+			],
+			action: 'getFreshenResultButton'
 		},
 		duration: {
 			title: 'wikilambda-functioncall-metadata-duration',

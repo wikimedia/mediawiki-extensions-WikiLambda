@@ -59,6 +59,48 @@ describe( 'wikidataUtils', () => {
 		} );
 	} );
 
+	describe( 'isWikidataEntityId', () => {
+		it( 'returns false with undefined', () => {
+			expect( wikidataUtils.isWikidataQid( undefined ) ).toBe( false );
+		} );
+
+		it( 'returns false with empty string', () => {
+			expect( wikidataUtils.isWikidataQid( '' ) ).toBe( false );
+		} );
+
+		it( 'returns false with arbitrary string', () => {
+			expect( wikidataUtils.isWikidataQid( 'banjo' ) ).toBe( false );
+		} );
+
+		it( 'returns false with Zid', () => {
+			expect( wikidataUtils.isWikidataQid( 'Z1234' ) ).toBe( false );
+		} );
+
+		it( 'returns true with Qid', () => {
+			expect( wikidataUtils.isWikidataQid( 'Q123456' ) ).toBe( true );
+		} );
+
+		it( 'returns true with Lexeme Id', () => {
+			expect( wikidataUtils.isWikidataLexemeId( 'L123456' ) ).toBe( true );
+		} );
+
+		it( 'returns true with Lexeme Form Id', () => {
+			expect( wikidataUtils.isWikidataLexemeFormId( 'L123456-F321' ) ).toBe( true );
+		} );
+
+		it( 'returns true with Lexeme Sense Id', () => {
+			expect( wikidataUtils.isWikidataLexemeSenseId( 'L123456-S321' ) ).toBe( true );
+		} );
+
+		it( 'returns false with other Lexeme suffixes', () => {
+			expect( wikidataUtils.isWikidataLexemeSenseId( 'L123456-X321' ) ).toBe( false );
+		} );
+
+		it( 'returns true with Property Id', () => {
+			expect( wikidataUtils.isWikidataPropertyId( 'P123456' ) ).toBe( true );
+		} );
+	} );
+
 	describe( 'isWikidataQid', () => {
 		it( 'returns false with undefined', () => {
 			expect( wikidataUtils.isWikidataQid( undefined ) ).toBe( false );
@@ -72,7 +114,7 @@ describe( 'wikidataUtils', () => {
 			expect( wikidataUtils.isWikidataQid( 'banjo' ) ).toBe( false );
 		} );
 
-		it( 'returns true with another Wikidata id', () => {
+		it( 'returns false with another Wikidata id', () => {
 			expect( wikidataUtils.isWikidataQid( 'L123456' ) ).toBe( false );
 		} );
 
@@ -94,7 +136,7 @@ describe( 'wikidataUtils', () => {
 			expect( wikidataUtils.isWikidataLexemeId( 'harmonica' ) ).toBe( false );
 		} );
 
-		it( 'returns true with another Wikidata id', () => {
+		it( 'returns false with another Wikidata id', () => {
 			expect( wikidataUtils.isWikidataLexemeId( 'Q123456' ) ).toBe( false );
 		} );
 
@@ -116,7 +158,7 @@ describe( 'wikidataUtils', () => {
 			expect( wikidataUtils.isWikidataLexemeFormId( 'harmonica' ) ).toBe( false );
 		} );
 
-		it( 'returns true with another Wikidata id', () => {
+		it( 'returns false with another Wikidata id', () => {
 			expect( wikidataUtils.isWikidataLexemeFormId( 'L123456' ) ).toBe( false );
 		} );
 
@@ -138,7 +180,7 @@ describe( 'wikidataUtils', () => {
 			expect( wikidataUtils.isWikidataLexemeSenseId( 'harmonica' ) ).toBe( false );
 		} );
 
-		it( 'returns true with another Wikidata id', () => {
+		it( 'returns false with another Wikidata id', () => {
 			expect( wikidataUtils.isWikidataLexemeSenseId( 'L123456' ) ).toBe( false );
 		} );
 
@@ -160,7 +202,7 @@ describe( 'wikidataUtils', () => {
 			expect( wikidataUtils.isWikidataPropertyId( 'harmonica' ) ).toBe( false );
 		} );
 
-		it( 'returns true with another Wikidata id', () => {
+		it( 'returns false with another Wikidata id', () => {
 			expect( wikidataUtils.isWikidataPropertyId( 'Q123456' ) ).toBe( false );
 		} );
 

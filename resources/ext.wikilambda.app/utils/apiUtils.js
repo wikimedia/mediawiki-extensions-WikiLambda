@@ -81,6 +81,7 @@ const apiUtils = {
 	 * @param {Object} payload
 	 * @param {Object} payload.functionCall
 	 * @param {string} payload.language
+	 * @param {boolean} payload.freshResult
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -94,6 +95,7 @@ const apiUtils = {
 				format: 'json',
 				formatversion: '2',
 				wikilambda_function_call_zobject: canonicalJson,
+				'wikilambda_function_call_fresh-result': payload.freshResult,
 				uselang: payload.language
 			}, {
 				// The AbortSignal to cancel the request

@@ -354,8 +354,7 @@ const metadataOddWarnings = convertSetToMap( {
 	}
 } );
 
-const metadataCaching = convertSetToMap( {
-	functionCallCachedOn: '2026-06-01T00:00:00Z',
+const metadataCachedTest = convertSetToMap( {
 	testCallCachedOn: '2026-06-02T00:00:00Z',
 	validationCallCachedOn: '2026-06-03T00:00:00Z',
 	testResultCachedOn: '2026-06-04T00:00:00Z',
@@ -363,9 +362,18 @@ const metadataCaching = convertSetToMap( {
 } );
 
 // A cache key with a part which is not a Zid, so that it cannot become a link.
-const metadataCachingOddKey = convertSetToMap( {
+const metadataCachedTestOddKey = convertSetToMap( {
 	testResultCachedOn: '2026-06-04T00:00:00Z',
 	testResultCacheKey: 'Z10000#10:not a zid#11'
+} );
+
+const metadataCachedCall = convertSetToMap( {
+	cachedWikidataEntities: [ 'Z6', 'Q111', 'L222', 'P333', 'L222-F1', 'L222-S2' ],
+	functionCallCachedOn: '2026-06-04T00:00:00Z',
+} );
+
+const metadataFreshCall = convertSetToMap( {
+	functionCallFreshResult: '2026-06-04T00:00:00Z',
 } );
 
 module.exports = {
@@ -381,7 +389,9 @@ module.exports = {
 	metadataWarnings,
 	metadataEmptyWarnings,
 	metadataOddWarnings,
-	metadataCaching,
-	metadataCachingOddKey,
+	metadataCachedTest,
+	metadataCachedTestOddKey,
+	metadataCachedCall,
+	metadataFreshCall,
 	convertSetToMap
 };

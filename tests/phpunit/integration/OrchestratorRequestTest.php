@@ -44,13 +44,14 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 	 * and the keys to add to the metadata map
 	 *
 	 * @param string $value
-	 * @param string[] $keys
+	 * @param array $keys
 	 * @return string
 	 */
 	private function makeSuccessEnvelope( string $value, array $keys = [] ): string {
 		$pairs = [ self::TYPED_PAIR_TYPE ];
 		foreach ( $keys as $key => $keyValue ) {
-			$pairs[] = '{"Z1K1":' . self::TYPED_PAIR_TYPE . ',"K1":"' . $key . '","K2":"' . $keyValue . '"}';
+			$pairs[] = '{"Z1K1":' . self::TYPED_PAIR_TYPE
+				. ',"K1":"' . $key . '","K2":' . json_encode( $keyValue ) . '}';
 		}
 		$metadata = '{"Z1K1":' . self::TYPED_MAP_TYPE . ',"K1":[' . implode( ',', $pairs ) . ']}';
 		return '{"Z1K1":"Z22","Z22K1":' . $value . ',"Z22K2":' . $metadata . '}';
@@ -247,6 +248,9 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	public function testExecuteWithBadInput() {
+		$now = '20260911000000';
+		ConvertibleTimestamp::setFakeTime( $now );
+
 		// Mock cache: miss on get, set failing response for a minute
 		$expectCachedValue = $this->callback( static function ( $actual ) {
 			return $actual[ 'httpStatusCode' ] === HttpStatus::NOT_FOUND;
@@ -257,11 +261,13 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		// the user-supplied call references something it cannot resolve — e.g. a ZID that does
 		// not exist (Z504, mapped to HTTP 404). OrchestratorRequest must pass both body and
 		// status through unchanged; the wrap-as-Z577 path is only for malformed responses.
-		$envelopeString = '{"Z1K1":"Z22","Z22K1":"Z24","Z22K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883",' .
-			'"Z883K1":"Z6","Z883K2":"Z1"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},' .
-			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z1"},"K1":"errors",' .
-			'"K2":{"Z1K1":"Z5","Z5K1":"Z504","Z5K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z504"},' .
-			'"K1":"Z40404"}}}]}}';
+		$errorString = '{"Z1K1":"Z5","Z5K1":"Z504","Z5K2":{'
+			. '"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z504"},'
+			. '"Z504K1":"Z40404"}}';
+		$envelopeString = $this->makeSuccessEnvelope( '"Z24"', [
+			'errors' => json_decode( $errorString ),
+			'functionCallFreshResult' => '2026-09-11T00:00:00Z',
+		] );
 
 		$guzzleResponse = new Response( HttpStatus::NOT_FOUND, [], $envelopeString );
 		$orchestrator = $this->getOrchestratorWithMockResponse( $guzzleResponse );
@@ -433,10 +439,21 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		ConvertibleTimestamp::setFakeTime( $now );
 
 		$value = '{"Z1K1":"Z6","Z6K1":"some fresh result"}';
-		$envelopeString = $this->makeSuccessEnvelope( $value );
+		$envelopeString = $this->makeSuccessEnvelope( $value, [
+			'someExistingKey' => 'and its value',
+		] );
 
+		// When the call is run fresh...
+		// 1. the expected returned envelope has functionCallFreshResult metadata key
+		$expectedEnvelope = $this->makeSuccessEnvelope( $value, [
+			'someExistingKey' => 'and its value',
+			'functionCallFreshResult' => '2026-09-11T00:00:00Z',
+		] );
+		// 2. the expected cached envelope has functionCallCachedOn and
+		//    functionCallCacheKey metadata keys
 		$expectedCachedValue = [
 			'result' => $this->makeSuccessEnvelope( $value, [
+				'someExistingKey' => 'and its value',
 				'functionCallCachedOn' => '2026-09-11T00:00:00Z',
 				'functionCallCacheKey' => 'some-mock-key'
 			] ),
@@ -469,7 +486,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$response = $orchestrator->orchestrate( $query );
 
 		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
-		$this->assertEquals( json_decode( $envelopeString ), json_decode( $response['result'] ) );
+		$this->assertEquals( json_decode( $expectedEnvelope ), json_decode( $response['result'] ) );
 
 		// The getFreshResult property is forwarded to the orchestrator in the request body
 		$sentBody = json_decode( (string)$mock->getLastRequest()->getBody(), true );
@@ -525,9 +542,11 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$validationCall = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10001"}' );
 
 		$testValue = '{"Z1K1":"Z6","Z6K1":"some result"}';
-		$testEnvelope = '{"Z1K1":"Z22","Z22K1":' . $testValue . ',"Z22K2":"Z24"}';
+		$testEnvelope = $this->makeSuccessEnvelope( $testValue );
 
-		$validationEnvelope = '{"Z1K1":"Z22","Z22K1":{"Z1K1":"Z9","Z9K1":"Z41"},"Z22K2":"Z24"}';
+		$validationValue = '{"Z1K1":"Z9","Z9K1":"Z41"}';
+		$validationEnvelope = $this->makeSuccessEnvelope( $validationValue );
+
 		$cachedValidationResponse = [ 'result' => $validationEnvelope, 'httpStatusCode' => HttpStatus::OK ];
 
 		$mockCache = $this->createMock( MemcachedWrapper::class );

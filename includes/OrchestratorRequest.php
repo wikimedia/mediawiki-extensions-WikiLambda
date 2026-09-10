@@ -215,6 +215,19 @@ class OrchestratorRequest {
 			] );
 		}
 
+		// 4. Add metadata key about the call being newly generated with latest data;
+		// get cachedWikidataEntities key: if missing, the call is considered fresh
+		$stampedResponse = json_decode( $response[ 'result' ] );
+		$cachedWikidataEntities = ZObjectUtils::getMetadataValue( $stampedResponse, 'cachedWikidataEntities' );
+		if ( $cachedWikidataEntities === null ) {
+			$ts = ConvertibleTimestamp::now( TS::ISO_8601 );
+			$stampedResponse = ZObjectUtils::setMetaDataValue( $stampedResponse, 'functionCallFreshResult', $ts );
+			if ( $stampedResponse !== null ) {
+				// Assign new stamped response only if valid (e.g. no change if Z22 contained a Z24
+				$response['result'] = json_encode( $stampedResponse );
+			}
+		}
+
 		return array_merge( $response, [ 'cached' => false ] );
 	}
 
@@ -404,6 +417,9 @@ class OrchestratorRequest {
 				new ZString( $validationCachedTimestamp )
 			);
 		}
+
+		// 3.d. Remove generic function call cache metadata key
+		$testMetadata->setValueForKey( new ZString( 'functionCallCachedOn' ), null );
 
 		return [
 			'passed' => $passed,

@@ -154,17 +154,16 @@ class ZTypedMap extends ZObject {
 	 * already an entry for the given key, overwrites the corresponding value.  Otherwise,
 	 * creates a new entry. N.B.: Modifies the content of the ZMap's list in place.
 	 *
+	 * If the value is null, it unsets the key if found, or does nothing if the key
+	 * doesn't exist.
+	 *
 	 * TODO (T302015): When ZMap keys are extended beyond Z6/Z39, update accordingly
 	 *
 	 * @param ZObject $key A Z6 or Z39 instance to serve as the key
-	 * @param ?ZObject $value A ZObject to set; if null, no object is set
+	 * @param ?ZObject $value A ZObject to set for the key; if null, key is unset
 	 * @throws ZErrorException
 	 */
 	public function setValueForKey( ZObject $key, ?ZObject $value ) {
-		if ( $value === null ) {
-			return;
-		}
-
 		$typedList = $this->getList();
 		if ( $typedList === null ) {
 			// The list we're wrapping was not created correctly; nothing we can do but throw
@@ -193,8 +192,8 @@ class ZTypedMap extends ZObject {
 			);
 		}
 
-		if ( !ZObjectUtils::isCompatibleType( $this->getValueType(), $value ) ) {
-			// The value we've been given is of an unacceptable type
+		if ( ( $value !== null ) && !ZObjectUtils::isCompatibleType( $this->getValueType(), $value ) ) {
+			// The value we've been given is of an unacceptable type (if not null)
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ARRAY_TYPE_MISMATCH,
@@ -215,9 +214,27 @@ class ZTypedMap extends ZObject {
 			$mapKey = $pair->getFirstElement();
 
 			if ( $mapKey && $mapKey->getZValue() === $key->getZValue() ) {
-				$pair->setSecondElement( $value );
+				if ( $value === null ) {
+					// Elements of the list are pairs
+					$pairs = $typedList->getAsArray();
+
+					// Type of the list is TypedPair (ZFunctionCall)
+					$pairType = $typedList->getElementType();
+					'@phan-var ZFunctionCall $pairType';
+
+					// Rebuild the list of pairs without this pair
+					array_splice( $pairs, $index, 1 );
+					$this->data[ 'K1' ] = new ZTypedList( ZTypedList::buildType( $pairType ), $pairs );
+				} else {
+					$pair->setSecondElement( $value );
+				}
 				return;
 			}
+		}
+
+		// Request to unset a key that doesn't exist in the initial map; exit doing nothing
+		if ( $value === null ) {
+			return;
 		}
 
 		// The key isn't present in the map, so add an entry for it
@@ -226,5 +243,4 @@ class ZTypedMap extends ZObject {
 		$typedList->appendArray( [ $newPair ], false );
 		$this->data[ 'K1' ] = $typedList;
 	}
-
 }

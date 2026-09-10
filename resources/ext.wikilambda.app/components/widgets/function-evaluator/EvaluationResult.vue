@@ -61,6 +61,7 @@
 			:metadata="metadata"
 			:has-chosen-implementation="hasChosenImplementation"
 			@close-dialog="showMetadata = false"
+			@freshen-result="freshenResult"
 		></wl-function-metadata-dialog>
 	</div>
 </template>
@@ -107,7 +108,8 @@ module.exports = exports = defineComponent( {
 			default: undefined
 		}
 	},
-	setup( props ) {
+	emits: [ 'freshen-result' ],
+	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 		const clipboard = useClipboard();
@@ -242,6 +244,15 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		/**
+		 * Closes the function metadata dialog and emits freshen result
+		 * event so that the parent re-triggers the function call
+		 */
+		function freshenResult() {
+			showMetadata.value = false;
+			emit( 'freshen-result' );
+		}
+
 		// Implementation data
 		/**
 		 * Returns whether the implementation has been chosen
@@ -265,6 +276,7 @@ module.exports = exports = defineComponent( {
 		} );
 
 		return {
+			freshenResult,
 			i18n,
 			hasMetadata,
 			isVoidResult,

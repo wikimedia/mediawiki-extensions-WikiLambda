@@ -115,7 +115,11 @@
 					</div>
 					<template v-else>
 						<wl-safe-message v-if="apiErrors.length > 0" :error="apiErrors[0]"></wl-safe-message>
-						<wl-evaluation-result v-else :content-type="contentType"></wl-evaluation-result>
+						<wl-evaluation-result
+							v-else
+							:content-type="contentType"
+							@freshen-result="freshenResult"
+						></wl-evaluation-result>
 					</template>
 				</div>
 			</div>
@@ -440,9 +444,19 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
-		 * Performs the function call
+		 * Runs the function call with the freshen-result property so
+		 * that the call is executed again, without using cached data.
 		 */
-		function callFunction() {
+		function freshenResult() {
+			callFunction( true );
+		}
+
+		/**
+		 * Performs the function call
+		 *
+		 * @param {boolean} freshResult
+		 */
+		function callFunction( freshResult = false ) {
 			const funcCall = JSON.parse( JSON.stringify( functionCall.value ) );
 			// If we are in an implementation page, we build raw function call with raw implementation:
 			// 1. Replace Z7K1 with the whole Z8 object: we assume it's in the store
@@ -480,7 +494,8 @@ module.exports = exports = defineComponent( {
 			// Perform the function call using .then() chain
 			store.callZFunction( {
 				functionCall: funcCall,
-				resultKeyPath: [ Constants.STORED_OBJECTS.RESPONSE ]
+				resultKeyPath: [ Constants.STORED_OBJECTS.RESPONSE ],
+				freshResult
 			} ).then( () => {
 				// Once the function call is done, update the state
 				running.value = false;
@@ -516,6 +531,7 @@ module.exports = exports = defineComponent( {
 			apiErrors,
 			canRunFunction,
 			forImplementation,
+			freshenResult,
 			functionCall,
 			functionCallLabelData,
 			functionKey,

@@ -171,6 +171,27 @@ describe( 'EvaluationResult', () => {
 			expect( hint.exists() ).toBe( true );
 			expect( hint.text() ).toContain( '1' );
 		} );
+
+		it( 'closes the metadata dialog', async () => {
+			const wrapper = renderEvaluationResult();
+			const details = wrapper.find( '.ext-wikilambda-app-evaluation-result__action-details' );
+			await details.trigger( 'click' );
+
+			const dialog = wrapper.findComponent( { name: 'wl-function-metadata-dialog' } );
+			expect( dialog.props( 'open' ) ).toBe( true );
+
+			await dialog.vm.$emit( 'close-dialog' );
+			expect( dialog.props( 'open' ) ).toBe( false );
+		} );
+
+		it( 'emits freshen-result when the metadata dialog requests it', async () => {
+			const wrapper = renderEvaluationResult();
+			const dialog = wrapper.findComponent( { name: 'wl-function-metadata-dialog' } );
+
+			await dialog.vm.$emit( 'freshen-result' );
+			expect( wrapper.emitted( 'freshen-result' ) ).toBeTruthy();
+			expect( wrapper.emitted( 'freshen-result' ) ).toHaveLength( 1 );
+		} );
 	} );
 
 	describe( 'share functionality', () => {

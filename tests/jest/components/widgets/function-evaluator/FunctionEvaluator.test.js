@@ -329,6 +329,42 @@ describe( 'FunctionEvaluator', () => {
 
 			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 1 ) );
 			expect( store.callZFunction ).toHaveBeenCalledWith( {
+				freshResult: false,
+				functionCall: hybridFunctionCall,
+				resultKeyPath: [ 'response' ]
+			} );
+		} );
+
+		it( 'calls function with freshResult=true when child component throws freshen-result event', async () => {
+			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
+			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+
+			const wrapper = renderFunctionEvaluator();
+
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
+
+			// Simulate clicking the run button to trigger a function call
+			const runButton = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__run-button' );
+			const button = runButton.findComponent( { name: 'cdx-button' } );
+			button.trigger( 'click' );
+
+			// Wait for the result to be rendered
+			await waitFor( () => {
+				expect( store.callZFunction ).toHaveBeenCalledTimes( 1 );
+				expect( wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__result' ) ).toBeTruthy();
+			} );
+
+			const block = wrapper.get( '.ext-wikilambda-app-function-evaluator-widget__result' );
+			const result = block.findComponent( { name: 'wl-evaluation-result' } );
+			expect( result.exists() ).toBe( true );
+
+			result.vm.$emit( 'freshen-result' );
+
+			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 2 ) );
+			expect( store.callZFunction ).toHaveBeenCalledWith( {
+				freshResult: true,
 				functionCall: hybridFunctionCall,
 				resultKeyPath: [ 'response' ]
 			} );
@@ -458,6 +494,7 @@ describe( 'FunctionEvaluator', () => {
 
 			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 1 ) );
 			expect( store.callZFunction ).toHaveBeenCalledWith( {
+				freshResult: false,
 				functionCall: implementationCall,
 				resultKeyPath: [ 'response' ]
 			} );
