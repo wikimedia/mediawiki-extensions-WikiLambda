@@ -184,8 +184,13 @@ module.exports = function useMenuAction() {
 		// If fragments are moved, swap the fragment keys for reflecting the change
 		// immediately in the preview; otherwise a change will be detected causing
 		// delayed re-hasing and update, but will come a couple seconds later.
+		// The highlight and the selection hold a fragment keyPath, so they must
+		// also follow the fragment to its new position.
 		if ( isAbstractFragment( keyPath ) ) {
+			const parts = keyPath.split( '.' );
+			const toIndex = Number( parts[ parts.length - 1 ] ) + offset;
 			store.swapHashAtKeyPath( keyPath, offset );
+			store.relocateHighlightAndSelectionForMove( keyPath, toIndex );
 		}
 	}
 

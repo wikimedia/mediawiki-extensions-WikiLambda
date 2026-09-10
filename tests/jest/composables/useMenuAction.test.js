@@ -290,6 +290,7 @@ describe( 'useMenuAction', () => {
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
 			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves list item inside fragment one position before and sets page and fragment as dirty', () => {
@@ -306,6 +307,7 @@ describe( 'useMenuAction', () => {
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
 			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves fragment one position before and swaps fragment previews', () => {
@@ -323,6 +325,9 @@ describe( 'useMenuAction', () => {
 
 			expect( store.swapHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.swapHashAtKeyPath ).toHaveBeenCalledWith( keyPath, -1 );
+
+			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledTimes( 1 );
+			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledWith( keyPath, 2 );
 		} );
 	} );
 
@@ -341,6 +346,7 @@ describe( 'useMenuAction', () => {
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
 			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves list item inside fragment one position after and sets page and fragment as dirty', () => {
@@ -357,6 +363,7 @@ describe( 'useMenuAction', () => {
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
 			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
 		it( 'moves fragment one position after and swaps fragment previews', () => {
@@ -374,6 +381,9 @@ describe( 'useMenuAction', () => {
 
 			expect( store.swapHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.swapHashAtKeyPath ).toHaveBeenCalledWith( keyPath, 1 );
+
+			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledTimes( 1 );
+			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledWith( keyPath, 4 );
 		} );
 	} );
 

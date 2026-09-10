@@ -2045,6 +2045,65 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'relocateHighlightAndSelectionForMove', () => {
+			const path = ( qid, index ) => `abstractwiki.sections.${ qid }.fragments.${ index }`;
+
+			beforeEach( () => {
+				store.highlight = undefined;
+				store.selection = undefined;
+			} );
+
+			it( 'does nothing when the fragment does not move', () => {
+				store.selection = path( 'Q101', 2 );
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 2 ), 2 );
+				expect( store.selection ).toBe( path( 'Q101', 2 ) );
+			} );
+
+			it( 'moves the selection with the moved fragment', () => {
+				store.selection = path( 'Q101', 1 );
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 1 ), 3 );
+				expect( store.selection ).toBe( path( 'Q101', 3 ) );
+			} );
+
+			it( 'moves the highlight with the moved fragment', () => {
+				store.highlight = path( 'Q101', 4 );
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 4 ), 2 );
+				expect( store.highlight ).toBe( path( 'Q101', 2 ) );
+			} );
+
+			it( 'shifts a selected fragment that the move displaces down one place', () => {
+				store.selection = path( 'Q101', 2 );
+				// The fragment at 1 moves to 3, so the fragments at 2 and 3 shift down
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 1 ), 3 );
+				expect( store.selection ).toBe( path( 'Q101', 1 ) );
+			} );
+
+			it( 'shifts a selected fragment that the move displaces up one place', () => {
+				store.selection = path( 'Q101', 2 );
+				// The fragment at 4 moves to 2, so the fragments at 2 and 3 shift up
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 4 ), 2 );
+				expect( store.selection ).toBe( path( 'Q101', 3 ) );
+			} );
+
+			it( 'leaves a selected fragment outside the moved range alone', () => {
+				store.selection = path( 'Q101', 5 );
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 1 ), 3 );
+				expect( store.selection ).toBe( path( 'Q101', 5 ) );
+			} );
+
+			it( 'leaves a selected fragment in another section alone', () => {
+				store.selection = path( 'Q102', 1 );
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 1 ), 3 );
+				expect( store.selection ).toBe( path( 'Q102', 1 ) );
+			} );
+
+			it( 'leaves a blank highlight and selection alone', () => {
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 1 ), 3 );
+				expect( store.highlight ).toBeUndefined();
+				expect( store.selection ).toBeUndefined();
+			} );
+		} );
+
 		describe( 'setHighlightedFragment', () => {
 			it( 'sets keyPath as highligted fragment', () => {
 				const keyPath = 'abstractwiki.sections.Q8776414.fragments';

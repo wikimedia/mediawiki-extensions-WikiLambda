@@ -1056,6 +1056,51 @@ const abstractWikiStore = {
 			[ hashes[ index ], hashes[ swapIndex ] ] = [ hashes[ swapIndex ], hashes[ index ] ];
 		},
 		/**
+		 * Relocates the highlighted and the selected fragment when a fragment
+		 * moves inside one section, so that they follow the fragment to its
+		 * new position. Both hold a fragment keyPath, which carries the
+		 * fragment index, so a move makes them stale.
+		 *
+		 * This reproduces the move on those keyPaths: the moved fragment takes
+		 * the new position, and the move shifts the fragments between the two
+		 * positions by one place. Fragments outside that range stay the same.
+		 *
+		 * @param {string} keyPath
+		 * @param {number} toIndex Fragment index for the new position
+		 */
+		relocateHighlightAndSelectionForMove: function ( keyPath, toIndex ) {
+			const parts = keyPath.split( '.' );
+			const listPrefix = parts.slice( 0, -1 ).join( '.' );
+			const index = parseInt( parts[ parts.length - 1 ] );
+			const newIndex = parseInt( toIndex );
+
+			if ( index === newIndex ) {
+				return;
+			}
+
+			const low = Math.min( index, newIndex );
+			const high = Math.max( index, newIndex );
+
+			const relocate = ( fragmentPath ) => {
+				if ( !fragmentPath || !fragmentPath.startsWith( listPrefix + '.' ) ) {
+					return fragmentPath;
+				}
+				const fragmentIndex = Number( fragmentPath.slice( listPrefix.length + 1 ) );
+				if ( !Number.isInteger( fragmentIndex ) || fragmentIndex < low || fragmentIndex > high ) {
+					return fragmentPath;
+				}
+				if ( fragmentIndex === index ) {
+					return `${ listPrefix }.${ newIndex }`;
+				}
+				// The move shifts the fragments between the two positions by one place
+				const shifted = index < newIndex ? fragmentIndex - 1 : fragmentIndex + 1;
+				return `${ listPrefix }.${ shifted }`;
+			};
+
+			this.highlight = relocate( this.highlight );
+			this.selection = relocate( this.selection );
+		},
+		/**
 		 * Set a given fragment keyPath as highlighted
 		 *
 		 * @param {string|undefined} keyPath
