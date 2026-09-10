@@ -409,6 +409,82 @@ describe( 'Errors Pinia store', () => {
 			} );
 		} );
 
+		describe( 'relocateErrorsForListTransfer', () => {
+			const err = () => [ new ErrorData( 'k', [], null, Constants.ERROR_TYPES.ERROR ) ];
+
+			it( 'moves the errors of the moved item to the target list', () => {
+				const item = err();
+				store.errors = { 'main.Z2K2.K1.1': item };
+
+				store.relocateErrorsForListTransfer( 'main.Z2K2.K1.1', 'main.Z2K2.K2.1' );
+
+				expect( store.errors ).toEqual( { 'main.Z2K2.K2.1': item } );
+			} );
+
+			it( 'moves descendant errors of the moved item', () => {
+				const childError = err();
+				store.errors = { 'main.Z2K2.K1.2.Z6K1': childError };
+
+				store.relocateErrorsForListTransfer(
+					[ 'main', 'Z2K2', 'K1', '2' ],
+					[ 'main', 'Z2K2', 'K2', '3' ]
+				);
+
+				expect( store.errors ).toEqual( { 'main.Z2K2.K2.3.Z6K1': childError } );
+			} );
+
+			it( 'shifts the source items after the old position down one place', () => {
+				const moved = err();
+				const after = err();
+				store.errors = {
+					'main.Z2K2.K1.1': moved,
+					'main.Z2K2.K1.2': after
+				};
+
+				store.relocateErrorsForListTransfer( 'main.Z2K2.K1.1', 'main.Z2K2.K2.1' );
+
+				expect( store.errors ).toEqual( {
+					'main.Z2K2.K2.1': moved,
+					'main.Z2K2.K1.1': after
+				} );
+			} );
+
+			it( 'shifts the target items at or after the new position up one place', () => {
+				const moved = err();
+				const displaced = err();
+				const before = err();
+				store.errors = {
+					'main.Z2K2.K1.1': moved,
+					'main.Z2K2.K2.1': before,
+					'main.Z2K2.K2.2': displaced
+				};
+
+				store.relocateErrorsForListTransfer( 'main.Z2K2.K1.1', 'main.Z2K2.K2.2' );
+
+				expect( store.errors ).toEqual( {
+					'main.Z2K2.K2.2': moved,
+					'main.Z2K2.K2.1': before,
+					'main.Z2K2.K2.3': displaced
+				} );
+			} );
+
+			it( 'leaves unrelated lists and non-numeric children untouched', () => {
+				const unrelated = err();
+				const nonNumeric = err();
+				store.errors = {
+					'main.Z2K3.K1.1': unrelated,
+					'main.Z2K2.K1.Z9K1': nonNumeric
+				};
+
+				store.relocateErrorsForListTransfer( 'main.Z2K2.K1.1', 'main.Z2K2.K2.1' );
+
+				expect( store.errors ).toEqual( {
+					'main.Z2K3.K1.1': unrelated,
+					'main.Z2K2.K1.Z9K1': nonNumeric
+				} );
+			} );
+		} );
+
 		describe( 'clearValidationErrors', () => {
 			it( 'does nothing if the state has no validation errors', () => {
 				store.errors = {

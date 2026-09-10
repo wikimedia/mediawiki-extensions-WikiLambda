@@ -1029,31 +1029,85 @@ const abstractWikiStore = {
 			this.sectionHashes[ sectionQid ].splice( index, 1 );
 		},
 		/**
-		 * Swaps a hash in the sectionHashes structure with the adjacent
-		 * element at the given offset.
+		 * Moves a hash in the sectionHashes structure to a new position in the
+		 * same section. Both positions are fragment keyPath indexes, which the
+		 * benjamin item pads, so this decrements them for the hash array.
 		 *
 		 * E.g. When given the keyPath `abstractwiki.sections.Q1.fragments.2`
-		 * and offset -1, it will swap sectionHashes[ 'Q1' ][ 1 ] with [ 0 ]
+		 * and toIndex 4, it moves sectionHashes[ 'Q1' ][ 1 ] to [ 3 ]
 		 *
 		 * @param {string} keyPath
-		 * @param {number} offset -1 or 1
+		 * @param {number} toIndex Fragment index for the new position
 		 */
-		swapHashAtKeyPath: function ( keyPath, offset ) {
+		moveHashAtKeyPath: function ( keyPath, toIndex ) {
 			const parts = keyPath.split( '.' );
 			const sectionQid = parts[ 2 ];
 			const index = parseInt( parts[ parts.length - 1 ] ) - 1;
+			const newIndex = parseInt( toIndex ) - 1;
 			const hashes = this.sectionHashes[ sectionQid ];
 
 			if ( !hashes ) {
 				return;
 			}
 
-			const swapIndex = index + offset;
-			if ( swapIndex < 0 || swapIndex >= hashes.length ) {
+			if ( index < 0 || index >= hashes.length || newIndex < 0 || newIndex >= hashes.length ) {
 				return;
 			}
 
-			[ hashes[ index ], hashes[ swapIndex ] ] = [ hashes[ swapIndex ], hashes[ index ] ];
+			const [ hash ] = hashes.splice( index, 1 );
+			hashes.splice( newIndex, 0, hash );
+		},
+		/**
+		 * Swaps a hash in the sectionHashes structure with the adjacent
+		 * element at the given offset.
+		 *
+		 * E.g. When given the keyPath `abstractwiki.sections.Q1.fragments.2`
+		 * and offset -1, it will swap sectionHashes[ 'Q1' ][ 1 ] with [ 0 ]
+		 *
+		 * The offset is -1 or 1, so a swap of two adjacent hashes gives the
+		 * same result as a move to the adjacent position.
+		 *
+		 * @param {string} keyPath
+		 * @param {number} offset -1 or 1
+		 */
+		swapHashAtKeyPath: function ( keyPath, offset ) {
+			const parts = keyPath.split( '.' );
+			const index = parseInt( parts[ parts.length - 1 ] );
+			this.moveHashAtKeyPath( keyPath, index + offset );
+		},
+		/**
+		 * Moves a hash in the sectionHashes structure from one section to a
+		 * position in another section. Both positions are fragment keyPath
+		 * indexes, which the benjamin item pads, so this decrements them for
+		 * the hash arrays.
+		 *
+		 * E.g. When given the keyPaths `abstractwiki.sections.Q1.fragments.2`
+		 * and `abstractwiki.sections.Q2.fragments.1`, it removes
+		 * sectionHashes[ 'Q1' ][ 1 ] and inserts it at sectionHashes[ 'Q2' ][ 0 ]
+		 *
+		 * A section with no hashes gives a blank hash to the target section,
+		 * to keep the target hashes aligned with the target fragments.
+		 *
+		 * @param {string} fromKeyPath
+		 * @param {string} toKeyPath
+		 */
+		transferHashAtKeyPath: function ( fromKeyPath, toKeyPath ) {
+			const fromParts = fromKeyPath.split( '.' );
+			const toParts = toKeyPath.split( '.' );
+			const fromQid = fromParts[ 2 ];
+			const toQid = toParts[ 2 ];
+			const fromIndex = parseInt( fromParts[ fromParts.length - 1 ] ) - 1;
+			const toIndex = parseInt( toParts[ toParts.length - 1 ] ) - 1;
+
+			const fromHashes = this.sectionHashes[ fromQid ];
+			const removed = fromHashes ? fromHashes.splice( fromIndex, 1 ) : [];
+			const hash = removed.length > 0 ? removed[ 0 ] : null;
+
+			// Initialize hashes for the target section if they don't exist
+			if ( !this.sectionHashes[ toQid ] ) {
+				this.sectionHashes[ toQid ] = [];
+			}
+			this.sectionHashes[ toQid ].splice( toIndex, 0, hash );
 		},
 		/**
 		 * Relocates the highlighted and the selected fragment when a fragment
@@ -1095,6 +1149,53 @@ const abstractWikiStore = {
 				// The move shifts the fragments between the two positions by one place
 				const shifted = index < newIndex ? fragmentIndex - 1 : fragmentIndex + 1;
 				return `${ listPrefix }.${ shifted }`;
+			};
+
+			this.highlight = relocate( this.highlight );
+			this.selection = relocate( this.selection );
+		},
+		/**
+		 * Relocates the highlighted and the selected fragment when a fragment
+		 * moves to a different section, so that they follow the fragment to
+		 * its new position.
+		 *
+		 * This reproduces the move on those keyPaths:
+		 * * The moved fragment takes the target position.
+		 * * Source fragments after the old position move down one place.
+		 * * Target fragments at or after the new position move up one place.
+		 *
+		 * @param {string} fromKeyPath
+		 * @param {string} toKeyPath
+		 */
+		relocateHighlightAndSelectionForTransfer: function ( fromKeyPath, toKeyPath ) {
+			const fromParts = fromKeyPath.split( '.' );
+			const toParts = toKeyPath.split( '.' );
+			const fromPrefix = fromParts.slice( 0, -1 ).join( '.' );
+			const toPrefix = toParts.slice( 0, -1 ).join( '.' );
+			const fromIndex = parseInt( fromParts[ fromParts.length - 1 ] );
+			const toIndex = parseInt( toParts[ toParts.length - 1 ] );
+
+			const relocate = ( fragmentPath ) => {
+				if ( !fragmentPath ) {
+					return fragmentPath;
+				}
+				if ( fragmentPath === fromKeyPath ) {
+					return toKeyPath;
+				}
+				if ( fragmentPath.startsWith( fromPrefix + '.' ) ) {
+					const fragmentIndex = Number( fragmentPath.slice( fromPrefix.length + 1 ) );
+					if ( Number.isInteger( fragmentIndex ) && fragmentIndex > fromIndex ) {
+						return `${ fromPrefix }.${ fragmentIndex - 1 }`;
+					}
+					return fragmentPath;
+				}
+				if ( fragmentPath.startsWith( toPrefix + '.' ) ) {
+					const fragmentIndex = Number( fragmentPath.slice( toPrefix.length + 1 ) );
+					if ( Number.isInteger( fragmentIndex ) && fragmentIndex >= toIndex ) {
+						return `${ toPrefix }.${ fragmentIndex + 1 }`;
+					}
+				}
+				return fragmentPath;
 			};
 
 			this.highlight = relocate( this.highlight );
