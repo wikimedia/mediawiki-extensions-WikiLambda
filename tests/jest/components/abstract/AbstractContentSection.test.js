@@ -60,6 +60,7 @@ describe( 'AbstractContentSection', () => {
 			addListItem: jest.fn(),
 			moveAfter: jest.fn(),
 			moveBefore: jest.fn(),
+			moveTo: jest.fn(),
 			deleteListItem: jest.fn(),
 			openFunctionCallLink: jest.fn()
 		};
@@ -315,4 +316,110 @@ describe( 'AbstractContentSection', () => {
 		await waitFor( () => expect( store.setAbstractFragmentHash ).toHaveBeenCalledTimes( 1 ) );
 		expect( store.setAbstractFragmentHash ).toHaveBeenCalledWith( section.qid, 0, fragmentHash );
 	} );
+	describe( 'dragging a fragment', () => {
+		const threeFragments = Object.assign( {}, section, {
+			fragments: [ benjaminType, fragmentCall, fragmentCall, fragmentCall ]
+		} );
+
+		/**
+		 * Give the list and the fragments a layout, because jsdom draws nothing.
+		 * Three fragments, each 20px high, from y=100 to y=160.
+		 *
+		 * @param {Object} wrapper
+		 */
+		function setLayout( wrapper ) {
+			const list = wrapper.vm.listRef;
+			list.getBoundingClientRect = () => ( { top: 100, left: 0, right: 200, height: 60 } );
+			const rows = list.querySelectorAll( '.ext-wikilambda-app-abstract-content-section-fragment' );
+			expect( rows.length ).toBe( 3 );
+			rows.forEach( ( row, position ) => {
+				row.getBoundingClientRect = () => (
+					{ top: 100 + ( position * 20 ), left: 0, right: 200, height: 20 }
+				);
+			} );
+		}
+
+		/**
+		 * Dispatch a pointer event on the window, as the browser does during a drag.
+		 *
+		 * @param {string} type
+		 * @param {Object} properties
+		 */
+		function firePointer( type, properties = {} ) {
+			const event = new Event( type, { bubbles: true, cancelable: true } );
+			Object.assign( event, { pointerId: 1, clientX: 0, clientY: 0 }, properties );
+			window.dispatchEvent( event );
+		}
+
+		it( 'passes the drag state to the fragments', () => {
+			const wrapper = renderSection( { section: threeFragments } );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			expect( fragments[ 0 ].props( 'dragging' ) ).toBe( false );
+			expect( fragments[ 0 ].props( 'dragged' ) ).toBe( false );
+		} );
+
+		it( 'marks the dragged fragment while the user drags it', async () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			await wrapper.vm.$nextTick();
+
+			const dragged = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			expect( dragged[ 0 ].props( 'dragging' ) ).toBe( true );
+			expect( dragged[ 0 ].props( 'dragged' ) ).toBe( true );
+			expect( dragged[ 1 ].props( 'dragged' ) ).toBe( false );
+
+			firePointer( 'pointercancel' );
+		} );
+
+		it( 'shows the line that gives the target position during a drag', async () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-section-insertion' ).exists() )
+				.toBe( false );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			await wrapper.vm.$nextTick();
+
+			const line = wrapper.find( '.ext-wikilambda-app-abstract-content-section-insertion' );
+			expect( line.exists() ).toBe( true );
+			expect( line.attributes( 'style' ) ).toContain( 'top: 60px' );
+
+			firePointer( 'pointercancel' );
+		} );
+
+		it( 'moves the fragment to the target position on drop', () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			firePointer( 'pointerup', { clientX: 50, clientY: 155 } );
+
+			expect( mockMenuActions.moveTo ).toHaveBeenCalledTimes( 1 );
+			expect( mockMenuActions.moveTo )
+				.toHaveBeenCalledWith( 'abstractwiki.sections.Q8776414.fragments.1', 3 );
+		} );
+
+		it( 'does not move the fragment when the drop keeps the order', () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 115 } );
+			firePointer( 'pointerup', { clientX: 50, clientY: 115 } );
+
+			expect( mockMenuActions.moveTo ).not.toHaveBeenCalled();
+		} );
+	} );
+
 } );

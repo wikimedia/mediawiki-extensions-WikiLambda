@@ -408,4 +408,74 @@ describe( 'AbstractContentFragment', () => {
 			expect( wrapper.emitted( 'rehash' ) ).toHaveLength( 1 );
 		} );
 	} );
+	describe( 'drag handle', () => {
+		const dragSelector = '.ext-wikilambda-app-abstract-content-fragment-drag';
+
+		it( 'renders the drag handle in edit mode', () => {
+			const wrapper = renderFragment();
+
+			expect( wrapper.find( dragSelector ).exists() ).toBe( true );
+		} );
+
+		it( 'does not render the drag handle in read mode', () => {
+			const wrapper = renderFragment( { edit: false } );
+
+			expect( wrapper.find( dragSelector ).exists() ).toBe( false );
+		} );
+
+		it( 'hides the drag handle from assistive technology', () => {
+			const wrapper = renderFragment();
+
+			// The actions menu gives the same moves to the keyboard
+			expect( wrapper.find( dragSelector ).attributes( 'aria-hidden' ) ).toBe( 'true' );
+		} );
+
+		it( 'emits dragstart with the pointer event on pointer down', async () => {
+			const wrapper = renderFragment();
+
+			await wrapper.find( dragSelector ).trigger( 'pointerdown' );
+
+			expect( wrapper.emitted( 'dragstart' ) ).toHaveLength( 1 );
+		} );
+
+		it( 'marks the fragment that the user drags', () => {
+			const wrapper = renderFragment( { dragged: true } );
+
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).classes() )
+				.toContain( 'ext-wikilambda-app-abstract-content-fragment__dragged' );
+		} );
+
+		it( 'does not highlight a fragment during a drag', async () => {
+			const wrapper = renderFragment( { dragging: true } );
+
+			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).trigger( 'pointerenter' );
+
+			expect( store.setHighlightedFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'does not clear the highlight during a drag', async () => {
+			const wrapper = renderFragment( { dragging: true } );
+
+			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).trigger( 'pointerleave' );
+
+			expect( store.setHighlightedFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'does not select a fragment on the click that ends a drag', async () => {
+			const wrapper = renderFragment( { dragging: true } );
+
+			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).trigger( 'click' );
+
+			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'selects a fragment on a click outside a drag', async () => {
+			const wrapper = renderFragment();
+
+			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).trigger( 'click' );
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
+		} );
+	} );
+
 } );

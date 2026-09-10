@@ -10,15 +10,26 @@
 		class="ext-wikilambda-app-abstract-content-fragment"
 		:class="{
 			'ext-wikilambda-app-abstract-content-fragment__highlight': isHighlighted,
-			'ext-wikilambda-app-abstract-content-fragment__selected': isSelected
+			'ext-wikilambda-app-abstract-content-fragment__selected': isSelected,
+			'ext-wikilambda-app-abstract-content-fragment__dragged': dragged
 		}"
 		:aria-current="isSelected ? 'true' : undefined"
 		@pointerenter="setHighlight"
 		@pointerleave="unsetHighlight"
 		@focusin="onFocusIn"
 		@focusout="unsetHighlight"
-		@click="selectFragment"
+		@click="onClick"
 	>
+		<!-- The drag handle needs no accessible name: the actions menu gives the
+		same moves to the keyboard, and a second control adds no function -->
+		<span
+			v-if="edit"
+			class="ext-wikilambda-app-abstract-content-fragment-drag"
+			aria-hidden="true"
+			@pointerdown="$emit( 'dragstart', $event )"
+		>
+			<cdx-icon :icon="iconDrag" size="small"></cdx-icon>
+		</span>
 		<cdx-menu-button
 			v-if="edit"
 			:aria-label="i18n( 'wikilambda-abstract-fragment-actions-menu' ).text()"
@@ -80,15 +91,31 @@ module.exports = exports = defineComponent( {
 		edit: {
 			type: Boolean,
 			required: true
+		},
+		/**
+		 * Whether the user drags a fragment of this section. The pointer
+		 * follows the drag, so it must not highlight or select a fragment.
+		 */
+		dragging: {
+			type: Boolean,
+			default: false
+		},
+		/**
+		 * Whether the user drags this fragment
+		 */
+		dragged: {
+			type: Boolean,
+			default: false
 		}
 	},
-	emits: [ 'action', 'rehash' ],
+	emits: [ 'action', 'rehash', 'dragstart' ],
 	setup( props, { emit } ) {
 		const store = useMainStore();
 		const i18n = inject( 'i18n' );
 
 		// Constants
 		const icon = icons.cdxIconEllipsis;
+		const iconDrag = icons.cdxIconDraggable;
 		const htmlFragmentType = Constants.Z_HTML_FRAGMENT;
 
 		const fragmentCount = computed( () => store.getParentListCount( props.keyPath.split( '.' ) ) );
@@ -201,6 +228,9 @@ module.exports = exports = defineComponent( {
 		 * Add highlight to fragment
 		 */
 		function setHighlight() {
+			if ( props.dragging ) {
+				return;
+			}
 			store.setHighlightedFragment( props.keyPath );
 		}
 
@@ -208,6 +238,9 @@ module.exports = exports = defineComponent( {
 		 * Remove highlight from fragment
 		 */
 		function unsetHighlight() {
+			if ( props.dragging ) {
+				return;
+			}
 			store.setHighlightedFragment( undefined );
 		}
 
@@ -230,6 +263,17 @@ module.exports = exports = defineComponent( {
 		 */
 		function onFocusIn() {
 			setHighlight();
+			selectFragment();
+		}
+
+		/**
+		 * Select the fragment on a click. A drag ends with a pointer up, which
+		 * also gives a click, so a drag must not select a fragment.
+		 */
+		function onClick() {
+			if ( props.dragging ) {
+				return;
+			}
 			selectFragment();
 		}
 
@@ -259,11 +303,12 @@ module.exports = exports = defineComponent( {
 			checkCallLink,
 			i18n,
 			icon,
+			iconDrag,
 			isHighlighted,
 			isSelected,
+			onClick,
 			onFocusIn,
 			rootRef,
-			selectFragment,
 			setHighlight,
 			unsetHighlight,
 			htmlFragmentType,
@@ -298,6 +343,22 @@ module.exports = exports = defineComponent( {
 	&.ext-wikilambda-app-abstract-content-fragment__selected {
 		background-color: @background-color-progressive-subtle;
 		box-shadow: inset 2px 0 0 0 @border-color-progressive;
+	}
+
+	&.ext-wikilambda-app-abstract-content-fragment__dragged {
+		opacity: @opacity-medium;
+	}
+
+	.ext-wikilambda-app-abstract-content-fragment-drag {
+		display: flex;
+		flex: 0 0 auto;
+		align-items: center;
+		align-self: stretch;
+		width: calc( @min-size-icon-small + 4px );
+		color: @color-subtle;
+		cursor: grab;
+		// The pointer must drag the fragment, not scroll the page
+		touch-action: none;
 	}
 
 	.ext-wikilambda-app-abstract-content-fragment-menu__icon {

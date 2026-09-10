@@ -13,20 +13,31 @@
 			</h2>
 		</div>
 		<!-- Section fragments -->
-		<template v-for="( fragment, index ) in section.fragments">
-			<!-- TODO: we should probably remove the benjamin item from the
-			fragments list, then we can remove the v-if and wrapper template -->
-			<wl-abstract-content-fragment
-				v-if="index !== 0"
-				:key="getListItemKey( fragment, index )"
-				class="ext-wikilambda-app-abstract-content-section-fragment"
-				:edit="edit"
-				:key-path="`${ section.fragmentsPath }.${ index }`"
-				:fragment="fragment"
-				@action="performAction( $event, index )"
-				@rehash="regenerateHash( fragment, index )"
-			></wl-abstract-content-fragment>
-		</template>
+		<div ref="listRef" class="ext-wikilambda-app-abstract-content-section-fragments">
+			<template v-for="( fragment, index ) in section.fragments">
+				<!-- TODO: we should probably remove the benjamin item from the
+				fragments list, then we can remove the v-if and wrapper template -->
+				<wl-abstract-content-fragment
+					v-if="index !== 0"
+					:key="getListItemKey( fragment, index )"
+					class="ext-wikilambda-app-abstract-content-section-fragment"
+					:edit="edit"
+					:key-path="`${ section.fragmentsPath }.${ index }`"
+					:fragment="fragment"
+					:dragging="isDragging"
+					:dragged="draggedIndex === index"
+					@action="performAction( $event, index )"
+					@rehash="regenerateHash( fragment, index )"
+					@dragstart="startDrag( $event, index )"
+				></wl-abstract-content-fragment>
+			</template>
+			<!-- Line that shows where the dragged fragment goes -->
+			<div
+				v-if="insertionOffset !== null"
+				class="ext-wikilambda-app-abstract-content-section-insertion"
+				:style="{ top: `${ insertionOffset }px` }"
+			></div>
+		</div>
 		<!-- Add fragment menu button in edit mode -->
 		<cdx-menu-button
 			v-if="edit"
@@ -54,6 +65,7 @@ const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useEventLog = require( '../../composables/useEventLog.js' );
+const useFragmentDrag = require( '../../composables/useFragmentDrag.js' );
 const useMenuAction = require( '../../composables/useMenuAction.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
@@ -106,6 +118,7 @@ module.exports = exports = defineComponent( {
 			addListItem,
 			moveAfter,
 			moveBefore,
+			moveTo,
 			deleteListItem,
 			openFunctionCallLink
 		} = menuActions();
@@ -291,6 +304,54 @@ module.exports = exports = defineComponent( {
 			}
 		}
 
+		// Fragment dragging
+		// =================
+		// The fragments carry a drag handle, but this component owns the drag:
+		// it knows the position of every fragment of the section, and it holds
+		// the line that shows where the dragged fragment goes.
+
+		const listRef = ref( null );
+
+		/**
+		 * Returns the rectangle of the fragment list, or null before the
+		 * component draws the list.
+		 *
+		 * @return {Object|null}
+		 */
+		function getListRect() {
+			return listRef.value ? listRef.value.getBoundingClientRect() : null;
+		}
+
+		/**
+		 * Returns the rectangles of the fragments, in list order.
+		 * The list holds no rectangle for the benjamin item, so the first
+		 * rectangle belongs to the fragment in position 1.
+		 *
+		 * @return {Array<Object>}
+		 */
+		function getFragmentRects() {
+			if ( !listRef.value ) {
+				return [];
+			}
+			const elements = listRef.value.querySelectorAll(
+				'.ext-wikilambda-app-abstract-content-section-fragment'
+			);
+			return Array.from( elements ).map( ( element ) => element.getBoundingClientRect() );
+		}
+
+		const {
+			isDragging,
+			draggedIndex,
+			insertionOffset,
+			startDrag
+		} = useFragmentDrag( {
+			getListRect,
+			getFragmentRects,
+			onDrop: ( fragmentIndex, targetIndex ) => {
+				moveTo( `${ props.section.fragmentsPath }.${ fragmentIndex }`, targetIndex );
+			}
+		} );
+
 		// Fragment hashing
 		// ================
 		// This component is in charge of keeping the fragment hash array updated,
@@ -321,6 +382,11 @@ module.exports = exports = defineComponent( {
 
 		return {
 			closeClipboard,
+			draggedIndex,
+			insertionOffset,
+			isDragging,
+			listRef,
+			startDrag,
 			pasteFromClipboard,
 			showClipboard,
 			addFragment,
@@ -340,5 +406,18 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-abstract-content-section {
 	margin-bottom: @spacing-150;
+
+	.ext-wikilambda-app-abstract-content-section-fragments {
+		position: relative;
+	}
+
+	.ext-wikilambda-app-abstract-content-section-insertion {
+		position: absolute;
+		left: 0;
+		width: 100%;
+		height: @border-width-thick;
+		background-color: @border-color-progressive;
+		pointer-events: none;
+	}
 }
 </style>
