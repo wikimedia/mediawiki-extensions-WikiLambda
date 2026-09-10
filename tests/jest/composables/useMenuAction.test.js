@@ -284,12 +284,12 @@ describe( 'useMenuAction', () => {
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 				keyPath: keyPath.split( '.' ),
-				offset: -1
+				toIndex: 2
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.moveHashAtKeyPath ).not.toHaveBeenCalled();
 			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
@@ -301,12 +301,12 @@ describe( 'useMenuAction', () => {
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 				keyPath: keyPath.split( '.' ),
-				offset: -1
+				toIndex: 2
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.moveHashAtKeyPath ).not.toHaveBeenCalled();
 			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
@@ -318,13 +318,13 @@ describe( 'useMenuAction', () => {
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 				keyPath: keyPath.split( '.' ),
-				offset: -1
+				toIndex: 2
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
-			expect( store.swapHashAtKeyPath ).toHaveBeenCalledWith( keyPath, -1 );
+			expect( store.moveHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.moveHashAtKeyPath ).toHaveBeenCalledWith( keyPath, 2 );
 
 			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledTimes( 1 );
 			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledWith( keyPath, 2 );
@@ -340,12 +340,12 @@ describe( 'useMenuAction', () => {
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 				keyPath: keyPath.split( '.' ),
-				offset: 1
+				toIndex: 4
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.moveHashAtKeyPath ).not.toHaveBeenCalled();
 			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
@@ -357,12 +357,12 @@ describe( 'useMenuAction', () => {
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 				keyPath: keyPath.split( '.' ),
-				offset: 1
+				toIndex: 4
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapHashAtKeyPath ).not.toHaveBeenCalled();
+			expect( store.moveHashAtKeyPath ).not.toHaveBeenCalled();
 			expect( store.relocateHighlightAndSelectionForMove ).not.toHaveBeenCalled();
 		} );
 
@@ -374,13 +374,13 @@ describe( 'useMenuAction', () => {
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledTimes( 1 );
 			expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 				keyPath: keyPath.split( '.' ),
-				offset: 1
+				toIndex: 4
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
 
-			expect( store.swapHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
-			expect( store.swapHashAtKeyPath ).toHaveBeenCalledWith( keyPath, 1 );
+			expect( store.moveHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.moveHashAtKeyPath ).toHaveBeenCalledWith( keyPath, 4 );
 
 			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledTimes( 1 );
 			expect( store.relocateHighlightAndSelectionForMove ).toHaveBeenCalledWith( keyPath, 4 );

@@ -174,22 +174,32 @@ module.exports = function useMenuAction() {
 	 * @param {number} offset -1 or 1
 	 */
 	function moveByOffset( keyPath, offset ) {
+		const parts = keyPath.split( '.' );
+		moveTo( keyPath, Number( parts[ parts.length - 1 ] ) + offset );
+	}
+
+	/**
+	 * Handles the modification of the ZObject when the changed key-value is a
+	 * typed list item and the user moves it to another position in the list.
+	 *
+	 * @param {string} keyPath
+	 * @param {number} toIndex Position for the item
+	 */
+	function moveTo( keyPath, toIndex ) {
 		store.moveListItemByKeyPath( {
 			keyPath: keyPath.split( '.' ),
-			offset
+			toIndex
 		} );
 
 		setDirtyKeyPath( keyPath );
 
-		// If fragments are moved, swap the fragment keys for reflecting the change
+		// If fragments are moved, move the fragment keys for reflecting the change
 		// immediately in the preview; otherwise a change will be detected causing
 		// delayed re-hasing and update, but will come a couple seconds later.
 		// The highlight and the selection hold a fragment keyPath, so they must
 		// also follow the fragment to its new position.
 		if ( isAbstractFragment( keyPath ) ) {
-			const parts = keyPath.split( '.' );
-			const toIndex = Number( parts[ parts.length - 1 ] ) + offset;
-			store.swapHashAtKeyPath( keyPath, offset );
+			store.moveHashAtKeyPath( keyPath, toIndex );
 			store.relocateHighlightAndSelectionForMove( keyPath, toIndex );
 		}
 	}
@@ -216,6 +226,7 @@ module.exports = function useMenuAction() {
 		deleteListItem,
 		moveBefore,
 		moveAfter,
+		moveTo,
 		openFunctionCallLink,
 		setDirtyKeyPath
 	};

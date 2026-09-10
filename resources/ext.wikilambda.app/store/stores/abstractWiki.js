@@ -1058,24 +1058,6 @@ const abstractWikiStore = {
 			hashes.splice( newIndex, 0, hash );
 		},
 		/**
-		 * Swaps a hash in the sectionHashes structure with the adjacent
-		 * element at the given offset.
-		 *
-		 * E.g. When given the keyPath `abstractwiki.sections.Q1.fragments.2`
-		 * and offset -1, it will swap sectionHashes[ 'Q1' ][ 1 ] with [ 0 ]
-		 *
-		 * The offset is -1 or 1, so a swap of two adjacent hashes gives the
-		 * same result as a move to the adjacent position.
-		 *
-		 * @param {string} keyPath
-		 * @param {number} offset -1 or 1
-		 */
-		swapHashAtKeyPath: function ( keyPath, offset ) {
-			const parts = keyPath.split( '.' );
-			const index = parseInt( parts[ parts.length - 1 ] );
-			this.moveHashAtKeyPath( keyPath, index + offset );
-		},
-		/**
 		 * Moves a hash in the sectionHashes structure from one section to a
 		 * position in another section. Both positions are fragment keyPath
 		 * indexes, which the benjamin item pads, so this decrements them for

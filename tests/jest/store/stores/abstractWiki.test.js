@@ -2103,47 +2103,6 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
-		describe( 'swapHashAtKeyPath', () => {
-			beforeEach( () => {
-				store.sectionHashes = {};
-			} );
-
-			it( 'does nothing if section does not exist', () => {
-				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 1 );
-				expect( store.sectionHashes.Q101 ).toBeUndefined();
-			} );
-
-			it( 'does nothing if swap index is out of bounds (forward)', () => {
-				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
-				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.2', 1 );
-				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2' ] );
-			} );
-
-			it( 'does nothing if swap index is out of bounds (backward)', () => {
-				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
-				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', -1 );
-				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2' ] );
-			} );
-
-			it( 'swaps hash one position forward', () => {
-				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
-				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 1 );
-				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash2', 'hash1', 'hash3' ] );
-			} );
-
-			it( 'swaps hash one position backward', () => {
-				store.sectionHashes = { Q101: [ 'hash1', 'hash2', 'hash3' ] };
-				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.2', -1 );
-				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash2', 'hash1', 'hash3' ] );
-			} );
-
-			it( 'does not affect other sections', () => {
-				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ], Q102: [ 'goodhash' ] };
-				store.swapHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 1 );
-				expect( store.sectionHashes.Q102 ).toEqual( [ 'goodhash' ] );
-			} );
-		} );
-
 		describe( 'relocateHighlightAndSelectionForMove', () => {
 			const path = ( qid, index ) => `abstractwiki.sections.${ qid }.fragments.${ index }`;
 

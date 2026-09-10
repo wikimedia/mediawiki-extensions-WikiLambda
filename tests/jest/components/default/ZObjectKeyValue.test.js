@@ -524,7 +524,7 @@ describe( 'ZObjectKeyValue', () => {
 				expect( store.setDirty ).toHaveBeenCalled();
 				expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 					keyPath: [ 'main', 'Z2K2', '2' ],
-					offset: -1
+					toIndex: 1
 				} );
 			} );
 
@@ -545,7 +545,7 @@ describe( 'ZObjectKeyValue', () => {
 				expect( store.setDirty ).toHaveBeenCalled();
 				expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 					keyPath: [ 'main', 'Z2K2', '1' ],
-					offset: 1
+					toIndex: 2
 				} );
 			} );
 
@@ -566,7 +566,7 @@ describe( 'ZObjectKeyValue', () => {
 				expect( store.setDirty ).toHaveBeenCalled();
 				expect( store.moveListItemByKeyPath ).toHaveBeenCalledWith( {
 					keyPath: [ 'abstractwiki', 'sections', 'Q8776414', 'fragments', '2', 'Z444K3', '4' ],
-					offset: 1
+					toIndex: 5
 				} );
 			} );
 
