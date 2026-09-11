@@ -183,7 +183,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	private function getHeaderTitle( $typeZid ) {
 		$typeLabel = $this->zObjectStore->fetchZObjectLabel( $typeZid, $this->getLanguage()->getCode() );
 		return $this->msg( 'wikilambda-special-objectsbytype-listheader' )
-			->rawParams( htmlspecialchars( $typeLabel ?? $typeZid ), htmlspecialchars( $typeZid ) )
+			->plaintextParams( $typeLabel ?? $typeZid, $typeZid )
 			->text();
 	}
 

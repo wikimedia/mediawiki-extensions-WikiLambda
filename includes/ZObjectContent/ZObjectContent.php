@@ -286,7 +286,7 @@ class ZObjectContent extends AbstractContent {
 				// when the parentheses is the full-width form for languages including zh-hans,
 				// zh-hant, etc.
 				. wfMessage( 'word-separator' )->text()
-				. wfMessage( 'parentheses' )->rawParams( $this->getZType() )->text(),
+				. wfMessage( 'parentheses' )->plaintextParams( $this->getZType() )->text(),
 			'languageCode' => $chosenLang
 		];
 	}

@@ -42,6 +42,6 @@ class AbstractContentHistoryAction extends HistoryAction {
 		}
 
 		return $this->msg( 'wikilambda-abstract-content-history-title' )
-		->rawParams( htmlspecialchars( $label ), $entityId );
+			->plaintextParams( $label, $entityId );
 	}
 }
