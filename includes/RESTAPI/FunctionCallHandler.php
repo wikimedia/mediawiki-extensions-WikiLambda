@@ -16,6 +16,7 @@ use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\DerivativeContext;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -888,6 +889,9 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			/* wasPosted */
 			true
 		);
+
+		// As we're re-calling the Action API, tell it so it doesn't increase the rate limit
+		$request->setHeader( WikiLambdaApiBase::REST_REENTRY_HEADER, '1' );
 
 		// Propagate request origin header if present in the REST headers
 		$origin = $this->getRequest()->getHeaderLine( 'X-WikiLambda-Request-Origin' );

@@ -132,6 +132,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
 		$this->assertEquals( json_decode( $envelopeString ), json_decode( $response['result'] ) );
+		$this->assertFalse( $response['cached'], 'An evaluated call must report that it was not cached' );
 	}
 
 	public function testExecuteWithNormalFormEnvelope() {
@@ -301,6 +302,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 		$this->assertEquals( HttpStatus::OK, $response['httpStatusCode'] );
 		$this->assertEquals( json_decode( $cachedValue ), json_decode( $response['result'] ) );
+		$this->assertTrue( $response['cached'], 'A cached call must report that it was cached' );
 	}
 
 	public function testExecute_dontEvaluateOnMiss() {

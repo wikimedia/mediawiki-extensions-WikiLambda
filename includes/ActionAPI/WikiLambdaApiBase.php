@@ -45,6 +45,10 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	protected ?OrchestratorRequest $orchestrator;
 
 	public const FUNCTIONCALL_POOL_COUNTER_TYPE = 'WikiLambdaFunctionCall';
+
+	/** Header that FunctionCallHandler sets to show that the REST route made the inner call. */
+	public const REST_REENTRY_HEADER = 'X-WikiLambda-Rest-Reentry';
+
 	public const INSTRUMENT_NAME = 'WikiLambdaApi';
 	public const SCHEMA_ID = '/analytics/mediawiki/product_metrics/wikilambda/api/2.0.0';
 
@@ -212,6 +216,20 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->failWithPermissionDenied( 'wikilambda-request-fresh-result', $zObjectAsStdClass );
 		}
 
+		// 2.e. User has remaining rate limit allowance, or this is a wrapped REST call
+		$isRestReentry = $this->getMain()->isInternalMode()
+			&& $this->getRequest()->getHeader( self::REST_REENTRY_HEADER ) !== false;
+		$rateLimiter = MediaWikiServices::getInstance()->getRateLimiter();
+		$limitCalls = !$isRestReentry && $rateLimiter->isLimitable( $executionRight );
+		$limitSubject = $limitCalls ? $this->getUser()->toRateLimitSubject() : null;
+
+		// Only a call that reaches the orchestrator costs us work, so check the allowance now
+		// but charge it after we know that the cache did not serve the result. An increment of
+		// 0 tells MW to check the limit without counting a hit.
+		if ( $limitCalls && $rateLimiter->limit( $limitSubject, $executionRight, 0 ) ) {
+			$this->failWithRateLimited( $executionRight, $zObjectAsStdClass );
+		}
+
 		// 3. Call OrchestratorRequest::orchestrate if there are not too many requests
 		// being run at the same time by the same user.
 		$queryArguments = [
@@ -219,6 +237,11 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			'doValidate' => $validate,
 			'getFreshResult' => $getFreshResult
 		];
+
+		// Set when the orchestrator client runs:
+		// - false if the PoolCounter refuses the request, or returns a cached result,
+		// - true only if work was actually done, so that we can charge the rate limit.
+		$wasEvaluated = false;
 
 		try {
 			$method = __METHOD__;
@@ -230,7 +253,8 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$poolAcquireStart = microtime( true );
 			$work = new PoolCounterWorkViaCallback( self::FUNCTIONCALL_POOL_COUNTER_TYPE, $userName, [
 				'doWork' => function () use (
-					$queryArguments, $bypassCache, $method, $statsFactory, $poolAcquireStart, $origin
+					$queryArguments, $bypassCache, $method, $statsFactory, $poolAcquireStart, $origin,
+					&$wasEvaluated
 				) {
 					// (T405554) Time spent waiting for a free worker slot ('observe' takes milliseconds).
 					$statsFactory->getTiming( 'functioncall_pool_wait_seconds' )
@@ -251,7 +275,11 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 					// OrchestratorException) is still measured -- those are the slow calls we care about.
 					$orchestrateStart = microtime( true );
 					try {
-						return $this->orchestrator->orchestrate( $queryArguments, $bypassCache, true, $origin );
+						// A throw leaves this set, because only an orchestrator call can fail here.
+						$wasEvaluated = true;
+						$response = $this->orchestrator->orchestrate( $queryArguments, $bypassCache, true, $origin );
+						$wasEvaluated = !( $response['cached'] ?? false );
+						return $response;
 					} finally {
 						$statsFactory->getTiming( 'orchestrator_call_seconds' )
 							->observe( 1000 * ( microtime( true ) - $orchestrateStart ) );
@@ -334,6 +362,13 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				[ "timeouterror-text", $exception->getLimit() ],
 				null, null, HttpStatus::SERVICE_UNAVAILABLE
 			);
+		} finally {
+			// Charge the allowance for an orchestrator call, whatever its outcome. A failed call
+			// still costs the service, but a cached result and a request that the PoolCounter
+			// refused cost nothing, and $wasEvaluated stays false for both.
+			if ( $limitCalls && $wasEvaluated ) {
+				$rateLimiter->limit( $limitSubject, $executionRight, 1 );
+			}
 		}
 	}
 
@@ -586,5 +621,25 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 		$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 		self::dieWithZError( $zError, HttpStatus::FORBIDDEN );
+	}
+
+	/**
+	 * @param string $right
+	 * @param stdClass $zobject
+	 * @throws ApiUsageException
+	 */
+	protected function failWithRateLimited( $right, $zobject ): never {
+		// Failure Level #2: Execution is temporarily forbidden due to rate limit
+		$this->getLogger()->info(
+			__METHOD__ . ' prevented from executing, user "{user}" is over the rate limit to {right}',
+			[
+				'request' => $zobject,
+				'right' => $right,
+				'user' => $this->getUser()->getName(),
+			]
+		);
+
+		$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+		self::dieWithZError( $zError, HttpStatus::TOO_MANY_REQUESTS );
 	}
 }

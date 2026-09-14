@@ -11,6 +11,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Rest\LocalizedHttpException;
 use MediaWiki\Rest\RequestData;
 use MediaWiki\Tests\Rest\Handler\HandlerTestTrait;
@@ -73,6 +74,26 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$actualErrorData = $actualError->getErrorData();
 		foreach ( $expectedError[2] as $key => $expectedValue ) {
 			$this->assertEquals( $expectedValue, $actualErrorData[ $key ] );
+		}
+	}
+
+	/**
+	 * The route carries the traffic of a whole client wiki from one app server address, so the
+	 * per-user call rate limit must not apply to it. A limit of one call per minute must still
+	 * let a second call through.
+	 */
+	public function testExecute_isNotChargedToTheCallerRateLimit() {
+		$this->insertZids( [ 'Z17', 'Z801' ] );
+		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+		$this->overrideConfigValue(
+			MainConfigNames::RateLimits,
+			[ 'wikilambda-execute' => [ 'ip' => [ 1, 60 ] ] ]
+		);
+
+		foreach ( [ 'first', 'second' ] as $attempt ) {
+			$handler = new FunctionCallHandler( $this->tracer, $this->zobjectStore );
+			$response = $this->executeHandler( $handler, new RequestData( $this->standardCall ) );
+			$this->assertEquals( 200, $response->getStatusCode(), "The $attempt call must succeed" );
 		}
 	}
 

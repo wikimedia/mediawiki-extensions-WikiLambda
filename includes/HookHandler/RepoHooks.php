@@ -211,13 +211,21 @@ class RepoHooks implements
 			],
 		];
 
+		// Buckets for $wgRateLimits['wikilambda-execute']. MediaWiki applies these only to a
+		// user with an account. A logged-out caller needs an 'ip' or 'subnet' bucket, which we
+		// cannot add until app server addresses are excluded: fragment rendering calls the API
+		// over HTTP from an app server, and one address then carries the whole wiki.
 		$rateLimits = [
-			// Functioneers can make 20 calls per minute
-			'functioneer' => [ 20, 60 ],
-			// Regular (logged-in) users can make 5 calls per minute
-			'user' => [ 5, 60 ],
-			// Brand new users (and temporary accounts and logged-out users) can only make 1 call per minute
-			'newbie' => [ 1, 60 ],
+			// Functioneers can make 50 calls per minute
+			'functioneer' => [ 50, 60 ],
+			// Regular (logged-in) users can make 20 calls per minute
+			'user' => [ 20, 60 ],
+			// Brand new users and temporary accounts can only make 5 calls per minute
+			'newbie' => [ 5, 60 ],
+			// Logged-out users have no account to count against. Count them by address,
+			// and by /24 or /64 block so that one operator cannot rotate through addresses.
+			'ip' => [ 5, 60 ],
+			'subnet' => [ 20, 60 ],
 		];
 
 		// 'sysop' can promote/demote 'functioneer'; 'bureaucrat' the same for 'functionmaintainer'.
@@ -377,7 +385,7 @@ class RepoHooks implements
 	 *
 	 * @param string[] $availableRights
 	 * @param array<string,array<string,bool>> $groupPermissions
-	 * @param array<string,int[]> $rateLimits Per-group [count, period] entries for 'wikilambda-execute'
+	 * @param array<string,int[]> $rateLimits Per-entity-type [count, period] entries for 'wikilambda-execute'
 	 * @param array<string,string> $groupChangeRights Map of administrator group => target group
 	 */
 	private static function applyRegisteredConfig(

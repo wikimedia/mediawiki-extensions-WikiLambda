@@ -12,10 +12,12 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorException;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\MainConfigNames;
 use Wikimedia\RequestTimeout\TimeoutException;
 
 /**
@@ -26,6 +28,13 @@ use Wikimedia\RequestTimeout\TimeoutException;
  * @group Database
  */
 class ApiFunctionCallTest extends WikiLambdaApiTestCase {
+
+	/** A minimal echo call, for the tests that care about the rate limit and not the result. */
+	private const RATE_LIMIT_REQUEST = [
+		'action' => 'wikilambda_function_call',
+		'wikilambda_function_call_zobject' =>
+			'{"Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello, testers!" }',
+	];
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -513,6 +522,108 @@ class ApiFunctionCallTest extends WikiLambdaApiTestCase {
 			], null, false, $user );
 			$this->fail( 'Expected ApiUsageException but none was thrown' );
 		} catch ( ApiUsageException $e ) {
+			$this->assertSame( HttpStatus::FORBIDDEN, $e->getCode() );
+			$this->assertSame( 'Error of type Z559', $e->getMessage() );
+		}
+	}
+
+	/**
+	 * $wgRateLimits['wikilambda-execute'] must actually stop the caller. The right check
+	 * alone does not read the limit, so the limit has to be counted separately.
+	 */
+	public function testExecute_enforcesTheCallRateLimit() {
+		$this->overrideConfigValue(
+			MainConfigNames::RateLimits,
+			[ 'wikilambda-execute' => [ 'user' => [ 1, 60 ] ] ]
+		);
+
+		$user = $this->getTestUser()->getUser();
+		$this->overrideUserPermissions( $user, [ 'wikilambda-execute' ] );
+
+		// The first call uses the whole allowance for the period.
+		$first = $this->doApiRequest( self::RATE_LIMIT_REQUEST, null, false, $user );
+		$this->assertTrue( $first[0]['wikilambda_function_call']['success'] );
+
+		try {
+			$this->doApiRequest( self::RATE_LIMIT_REQUEST, null, false, $user );
+			$this->fail( 'Expected ApiUsageException but none was thrown' );
+		} catch ( ApiUsageException $e ) {
+			$this->assertSame( HttpStatus::TOO_MANY_REQUESTS, $e->getCode() );
+			$this->assertSame( 'Error of type Z559', $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Sets an orchestrator that always answers with the given result, so that a test can say
+	 * whether the object cache served the call.
+	 */
+	private function setOrchestratorReturning( array $result ): void {
+		$stub = $this->createMock( OrchestratorRequest::class );
+		$stub->method( 'orchestrate' )->willReturn( $result );
+		$this->setService( 'WikiLambdaOrchestratorRequest', $stub );
+	}
+
+	/**
+	 * A cached result costs the orchestrator nothing, so it must not use up the allowance.
+	 * Three calls must all succeed under a limit of one call per minute.
+	 */
+	public function testExecute_doesNotChargeForACachedResult() {
+		$this->overrideConfigValue(
+			MainConfigNames::RateLimits,
+			[ 'wikilambda-execute' => [ 'user' => [ 1, 60 ] ] ]
+		);
+		$this->setOrchestratorReturning( [
+			'result' => '{"Z1K1":"Z22","Z22K1":"cached","Z22K2":"Z24"}',
+			'httpStatusCode' => HttpStatus::OK,
+			'cached' => true,
+		] );
+
+		$user = $this->getTestUser()->getUser();
+		$this->overrideUserPermissions( $user, [ 'wikilambda-execute' ] );
+
+		for ( $attempt = 1; $attempt <= 3; $attempt++ ) {
+			$result = $this->doApiRequest( self::RATE_LIMIT_REQUEST, null, false, $user );
+			$this->assertTrue(
+				$result[0]['wikilambda_function_call']['success'],
+				"Call $attempt must succeed, because no call reached the orchestrator"
+			);
+		}
+	}
+
+	/**
+	 * A call that reaches the orchestrator and fails still costs the service, so it must use up
+	 * the allowance rather than letting a caller repeat a failing call without limit.
+	 */
+	public function testExecute_chargesForAFailedCall() {
+		$this->overrideConfigValue(
+			MainConfigNames::RateLimits,
+			[ 'wikilambda-execute' => [ 'user' => [ 1, 60 ] ] ]
+		);
+
+		$stub = $this->createMock( OrchestratorRequest::class );
+		$stub->method( 'orchestrate' )->willThrowException(
+			new OrchestratorException( 'Orchestrator unreachable', [], 0, new ConnectException(
+				'Connection refused', new Request( 'POST', 'http://orchestrator' )
+			) )
+		);
+		$this->setService( 'WikiLambdaOrchestratorRequest', $stub );
+
+		$user = $this->getTestUser()->getUser();
+		$this->overrideUserPermissions( $user, [ 'wikilambda-execute' ] );
+
+		// The first call fails in the orchestrator, and still uses the whole allowance.
+		try {
+			$this->doApiRequest( self::RATE_LIMIT_REQUEST, null, false, $user );
+			$this->fail( 'Expected the failed call to throw' );
+		} catch ( ApiUsageException $e ) {
+			$this->assertSame( HttpStatus::SERVICE_UNAVAILABLE, $e->getCode() );
+		}
+
+		try {
+			$this->doApiRequest( self::RATE_LIMIT_REQUEST, null, false, $user );
+			$this->fail( 'Expected ApiUsageException but none was thrown' );
+		} catch ( ApiUsageException $e ) {
+			$this->assertSame( HttpStatus::TOO_MANY_REQUESTS, $e->getCode() );
 			$this->assertSame( 'Error of type Z559', $e->getMessage() );
 		}
 	}

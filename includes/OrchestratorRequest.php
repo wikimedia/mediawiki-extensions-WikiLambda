@@ -100,8 +100,9 @@ class OrchestratorRequest {
 	 *   Default behavior is true, but we can disable this flag if we want to orchestrate asynchronous
 	 *   calls when there's no cached result (e.g. with bulk requests).
 	 * @param string $origin - Content of the X-WikiLambda-Request-Origin header from the caller request
-	 * @return array|false containing Response object (Z22) returned by orchestrator, down-cast to a string
-	 *   and the actual http status code from the Orchestrator
+	 * @return array|false containing Response object (Z22) returned by orchestrator, down-cast to a
+	 *   string, the actual http status code from the Orchestrator, and a 'cached' flag that states
+	 *   whether the object cache served the value
 	 * @throws OrchestratorException on any transport failure
 	 */
 	public function orchestrate(
@@ -132,7 +133,12 @@ class OrchestratorRequest {
 			// 1.a. Cache hit, exit early with validated cached value
 			if ( $response !== false ) {
 				$this->logger->debug( __METHOD__ . ' cache hit for {key}', [ 'key' => $requestKey ] );
-				return $this->validateCachedResponse( $response, $requestKey );
+				// The flag is set here, not stored, so that an entry written before this code
+				// shipped still reports correctly.
+				return array_merge(
+					$this->validateCachedResponse( $response, $requestKey ),
+					[ 'cached' => true ]
+				);
 			}
 
 			// 1.b. Cache miss, re-evaluate or return false (if evaluateOnMiss is unset)
@@ -209,7 +215,7 @@ class OrchestratorRequest {
 			] );
 		}
 
-		return $response;
+		return array_merge( $response, [ 'cached' => false ] );
 	}
 
 	/**
