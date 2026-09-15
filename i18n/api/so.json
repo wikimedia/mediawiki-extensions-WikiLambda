@@ -14,6 +14,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Soo qaado dib u eegista 12-aad ee ZObject-ka Z1, dib u eegista 14-aad ee Z2, iyo dib u eegista 25-aad ee Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject loogu yeerista Shaqada",
 	"apihelp-wikilambda_function_call-param-bypass-cache": "Calaamadda ka dhaafidda kaydka oo ah halbeeg ikhtiyaari ah oo loogu talagalay isticmaal gaar ah oo gudaha ah oo keliya.",
+	"apihelp-wikilambda_function_call-param-fresh-result": "Calaamadda natiijo cusub oo ah xuduud ikhtiyaari ah oo loogu talagalay isticmaalka gaarka ah ee gudaha oo keliya",
 	"apihelp-wikilambda_function_call-example-generic-list": "U yeer Shaqo soo celinaysa curiyaha ugu horreeya ee Liis la qoray",
 	"apihelp-wikilambda_function_call-example-generic-pair": "U yeer Shaqo soo celinaysa curiyaha labaad ee lammaane la qoray oo ah &lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "U yeer Shaqo u beddelaysa curiyaha Map guud ee ku jira furaha la siiyay una beddelaysa nooca qoraalka ee qiimihiisa",

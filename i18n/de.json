@@ -40,7 +40,7 @@
 	"action-wikilambda-edit-function-attached-implementation": "die Funktions-ZID einer Implementierung, die mit einer Funktion verbunden ist, zu ändern",
 	"action-wikilambda-edit-function-attached-tester": "die Funktions-ZID eines Tests, der mit einer Funktion verbunden ist, zu ändern",
 	"action-wikilambda-edit-boolean": "vorhandene boolesche Objekte bearbeiten",
-	"action-wikilambda-edit-builtin-function": "vom System bereitgestellte Funktion bearbeiten",
+	"action-wikilambda-edit-builtin-function": "vom System bereitgestellte Funktion zu bearbeiten",
 	"action-wikilambda-edit-connected-converter": "einen verbundenen Serialisierers oder Deserialisierers zu bearbeiten",
 	"action-wikilambda-edit-converter": "einen vorhandenen Serialisierers oder Deserialisierers zu bearbeiten",
 	"action-wikilambda-edit-enum-value": "bestehende Instanz des Typs Enum zu bearbeiten",
