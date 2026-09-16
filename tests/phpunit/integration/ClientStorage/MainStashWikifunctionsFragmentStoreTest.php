@@ -14,6 +14,7 @@ use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\ObjectCache\HashBagOStuff;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\TestingAccessWrapper;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
@@ -371,6 +372,72 @@ class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 		$this->assertNotSame(
 			$this->wrapper->makeFragmentKey( $callOne ),
 			$this->wrapper->makeFragmentKey( $callTwo )
+		);
+	}
+
+	// Metrics
+	// =======
+
+	public function testGetRenderedFragment_emitsHitMetric(): void {
+		$statsHelper = StatsFactory::newUnitTestingHelper()->withComponent( 'WikiLambda' );
+		$store = new MainStashWikifunctionsFragmentStore( $this->stash, $statsHelper->getStatsFactory() );
+
+		$cacheKey = TestingAccessWrapper::newFromObject( $store )->makeFragmentKey( $this->functionCall );
+		$this->stash->set( $cacheKey, [ 'success' => true, 'value' => 'hello', 'type' => 'Z6' ] );
+
+		$store->getRenderedFragment( $this->functionCall );
+
+		$this->assertSame(
+			1,
+			$statsHelper->count(
+				'store_ops_total{store="client_functioncall",storage="mainstash",op="get",outcome="hit"}'
+			)
+		);
+	}
+
+	public function testGetRenderedFragment_emitsMissMetric(): void {
+		$statsHelper = StatsFactory::newUnitTestingHelper()->withComponent( 'WikiLambda' );
+		$store = new MainStashWikifunctionsFragmentStore( $this->stash, $statsHelper->getStatsFactory() );
+
+		$store->getRenderedFragment( $this->functionCall );
+
+		$this->assertSame(
+			1,
+			$statsHelper->count(
+				'store_ops_total{store="client_functioncall",storage="mainstash",op="get",outcome="miss"}'
+			)
+		);
+	}
+
+	public function testSetRenderedFragment_emitsSuccessMetric(): void {
+		$statsHelper = StatsFactory::newUnitTestingHelper()->withComponent( 'WikiLambda' );
+		$store = new MainStashWikifunctionsFragmentStore( $this->stash, $statsHelper->getStatsFactory() );
+
+		$value = [ 'success' => true, 'value' => 'text', 'type' => 'Z6', 'renderDate' => '20260828121500' ];
+		$store->setRenderedFragment( $this->functionCall, $value, HttpStatus::OK );
+
+		$this->assertSame(
+			1,
+			$statsHelper->count(
+				'store_ops_total{store="client_functioncall",storage="mainstash",op="set",outcome="success"}'
+			)
+		);
+	}
+
+	public function testGetRenderedFragment_deletingCorruptedEntryEmitsDeleteMetric(): void {
+		$statsHelper = StatsFactory::newUnitTestingHelper()->withComponent( 'WikiLambda' );
+		$store = new MainStashWikifunctionsFragmentStore( $this->stash, $statsHelper->getStatsFactory() );
+
+		$cacheKey = TestingAccessWrapper::newFromObject( $store )->makeFragmentKey( $this->functionCall );
+		$this->stash->set( $cacheKey, 'not-an-array' );
+
+		$store->getRenderedFragment( $this->functionCall );
+
+		$this->assertSame(
+			1,
+			$statsHelper->count(
+				'store_ops_total{store="client_functioncall",storage="mainstash",op="delete",outcome="success"}'
+			)
 		);
 	}
 
