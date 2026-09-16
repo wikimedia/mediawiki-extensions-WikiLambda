@@ -14,6 +14,7 @@
 	"apihelp-wikilambda_fetch-example-multiple-old": "Obter a revisión 12 do ZObject Z1, a revisión 14 do Z2 e a revisión 25 do Z3.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject para a chamada de función",
 	"apihelp-wikilambda_function_call-param-bypass-cache": "Marca para ignorar a caché, que é un parámetro opcional unicamente para uso especial interno",
+	"apihelp-wikilambda_function_call-param-fresh-result": "Indicador de resultado fresco que é un parámetro opcional só para uso especial interno",
 	"apihelp-wikilambda_function_call-example-generic-list": "Invocar unha función que devolve o primeiro elemento dunha lista dun determinado tipo",
 	"apihelp-wikilambda_function_call-example-generic-pair": "Invocar unha función que devolve o segundo elemento dun Typed pair&lt;String,Typed pair&lt;String,Boolean&gt;&gt;",
 	"apihelp-wikilambda_function_call-example-generic-map": "Invocar unha función que fai corresponder o elemento dun mapa xenérico nunha clave determinada cunha versión dunha cadea de texto do seu valor",
