@@ -45,7 +45,8 @@ class WikiLambdaApiBaseTest extends WikiLambdaApiTestCase {
 			'wikilambda_function_call',
 			$this->getServiceContainer()->getStatsFactory(),
 			$this->getServiceContainer()->getTracer(),
-			$orchestrator
+			$orchestrator,
+			$this->getServiceContainer()->getRateLimiter()
 		);
 		$wrapper = TestingAccessWrapper::newFromObject( $module );
 		$wrapper->setUp();

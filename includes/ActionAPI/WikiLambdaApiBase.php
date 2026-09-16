@@ -17,7 +17,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Permissions\RateLimiter;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Status\Status;
 use Psr\Log\LoggerAwareInterface;
@@ -67,6 +67,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 * @param string $moduleName
 	 * @param StatsFactory $statsFactory
 	 * @param string $modulePrefix
+	 * @param ?RateLimiter $rateLimiter Null for the modules that do not run function calls
 	 * @param ?InstrumentManagerInterface $instrumentManager Null if TestKitchen is not installed
 	 */
 	public function __construct(
@@ -74,6 +75,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		string $moduleName,
 		private readonly StatsFactory $statsFactory,
 		string $modulePrefix = '',
+		private readonly ?RateLimiter $rateLimiter = null,
 		protected readonly ?InstrumentManagerInterface $instrumentManager = null,
 	) {
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
@@ -229,27 +231,26 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		// 2.e. User has remaining rate limit allowance, or this is a wrapped REST call
 		$isRestReentry = $this->getMain()->isInternalMode()
 			&& $this->getRequest()->getHeader( self::REST_REENTRY_HEADER ) !== false;
-		$rateLimiter = MediaWikiServices::getInstance()->getRateLimiter();
 
 		// 2.e.1. Check rate limit for fresh result request; increment the counter
 		// at this point, as we know that any call with getFreshResult flag will
 		// reach the orchestrator.
 		if (
 			$getFreshResult &&
-			$rateLimiter->isLimitable( $freshResultRight ) &&
-			$rateLimiter->limit( $this->getUser()->toRateLimitSubject(), $freshResultRight )
+			$this->rateLimiter->isLimitable( $freshResultRight ) &&
+			$this->rateLimiter->limit( $this->getUser()->toRateLimitSubject(), $freshResultRight )
 		) {
 			$this->failWithRateLimited( $freshResultRight, $zObjectAsStdClass );
 		}
 
 		// 2.e.2. General execution rate limits:
-		$limitCalls = !$isRestReentry && $rateLimiter->isLimitable( $executionRight );
+		$limitCalls = !$isRestReentry && $this->rateLimiter->isLimitable( $executionRight );
 		$limitSubject = $limitCalls ? $this->getUser()->toRateLimitSubject() : null;
 
 		// Only a call that reaches the orchestrator costs us work, so check the allowance now
 		// but charge it after we know that the cache did not serve the result. An increment of
 		// 0 tells MW to check the limit without counting a hit.
-		if ( $limitCalls && $rateLimiter->limit( $limitSubject, $executionRight, 0 ) ) {
+		if ( $limitCalls && $this->rateLimiter->limit( $limitSubject, $executionRight, 0 ) ) {
 			$this->failWithRateLimited( $executionRight, $zObjectAsStdClass );
 		}
 
@@ -398,7 +399,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			// still costs the service, but a cached result and a request that the PoolCounter
 			// refused cost nothing, and $wasEvaluated stays false for both.
 			if ( $limitCalls && $wasEvaluated ) {
-				$rateLimiter->limit( $limitSubject, $executionRight, 1 );
+				$this->rateLimiter->limit( $limitSubject, $executionRight, 1 );
 			}
 		}
 	}

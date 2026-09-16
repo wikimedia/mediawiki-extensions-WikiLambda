@@ -1156,7 +1156,8 @@
 			"services": [
 				"StatsFactory",
 				"Tracer",
-				"WikiLambdaOrchestratorRequest"
+				"WikiLambdaOrchestratorRequest",
+				"RateLimiter"
 			],
 			"optional_services": [
 				"TestKitchen.InstrumentManager"
@@ -1166,7 +1167,8 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\PublicAPI\\PublicApiRun",
 			"services": [
 				"WikiLambdaOrchestratorRequest",
-				"StatsFactory"
+				"StatsFactory",
+				"RateLimiter"
 			],
 			"optional_services": [
 				"TestKitchen.InstrumentManager"

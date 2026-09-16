@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Permissions\RateLimiter;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Stats\StatsFactory;
 
@@ -33,9 +34,10 @@ class PublicApiRun extends WikiLambdaApiBase {
 		string $moduleName,
 		OrchestratorRequest $orchestrator,
 		StatsFactory $statsFactory,
+		RateLimiter $rateLimiter,
 		?InstrumentManagerInterface $instrumentManager = null,
 	) {
-		parent::__construct( $mainModule, $moduleName, $statsFactory, '', $instrumentManager );
+		parent::__construct( $mainModule, $moduleName, $statsFactory, '', $rateLimiter, $instrumentManager );
 
 		$this->setUp( $orchestrator );
 	}

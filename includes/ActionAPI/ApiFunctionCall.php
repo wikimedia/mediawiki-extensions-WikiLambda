@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Permissions\RateLimiter;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Telemetry\SpanInterface;
@@ -32,6 +33,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		StatsFactory $statsFactory,
 		private readonly TracerInterface $tracer,
 		OrchestratorRequest $orchestrator,
+		RateLimiter $rateLimiter,
 		?InstrumentManagerInterface $instrumentManager = null,
 	) {
 		parent::__construct(
@@ -39,6 +41,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			$moduleName,
 			$statsFactory,
 			'wikilambda_function_call_',
+			$rateLimiter,
 			$instrumentManager
 		);
 
