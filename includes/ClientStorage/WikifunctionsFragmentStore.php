@@ -27,6 +27,9 @@ abstract class WikifunctionsFragmentStore {
 
 	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
 
+	/** Metrics 'store' label shared by WikifunctionsFragmentStore backends. */
+	protected const METRIC_STORE = 'client_functioncall';
+
 	protected LoggerInterface $logger;
 
 	public function __construct( LoggerInterface $logger ) {

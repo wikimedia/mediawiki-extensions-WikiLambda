@@ -17,9 +17,11 @@ namespace MediaWiki\Extension\WikiLambda\ClientStorage;
 
 use DateTime;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsCallDefaultValues;
 use MediaWiki\Logger\LoggerFactory;
 use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class MainStashWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
@@ -30,11 +32,15 @@ class MainStashWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 	 */
 	public const MAX_AGE_HOURS = 48;
 
+	private readonly StoreOpsMetrics $metrics;
+
 	public function __construct(
-		private readonly BagOStuff $stash
+		private readonly BagOStuff $stash,
+		?StatsFactory $statsFactory = null
 	) {
 		$logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 		parent::__construct( $logger );
+		$this->metrics = new StoreOpsMetrics( 'mainstash', $statsFactory );
 	}
 
 	/**
@@ -70,10 +76,11 @@ class MainStashWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 	public function getRenderedFragment( array $functionCall ): ?array {
 		$key = $this->makeFragmentKey( $functionCall );
 
-		return $this->validateStoredFragment(
-			$key,
-			$this->stash->get( $key )
-		);
+		$startTime = hrtime( true );
+		$rawValue = $this->stash->get( $key );
+		$this->metrics->recordOp( self::METRIC_STORE, 'get', $rawValue === false ? 'miss' : 'hit', $startTime );
+
+		return $this->validateStoredFragment( $key, $rawValue );
 	}
 
 	/**
@@ -82,18 +89,26 @@ class MainStashWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 	public function setRenderedFragment( array $functionCall, array $value, int $httpStatusCode ): bool {
 		$key = $this->makeFragmentKey( $functionCall );
 
-		return $this->stash->set(
+		$startTime = hrtime( true );
+		$success = $this->stash->set(
 			$key,
 			$value,
 			$this->getFragmentTTL( $httpStatusCode )
 		);
+		$this->metrics->recordOp( self::METRIC_STORE, 'set', $success ? 'success' : 'failure', $startTime );
+
+		return $success;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	protected function delete( string $key ): bool {
-		return $this->stash->delete( $key );
+		$startTime = hrtime( true );
+		$success = $this->stash->delete( $key );
+		$this->metrics->recordOp( self::METRIC_STORE, 'delete', $success ? 'success' : 'failure', $startTime );
+
+		return $success;
 	}
 
 	/**

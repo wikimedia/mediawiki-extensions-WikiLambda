@@ -49,7 +49,7 @@ class MemcachedWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 
 		return $this->validateStoredFragment(
 			$key,
-			$this->objectCache->get( $key )
+			$this->objectCache->get( $key, self::METRIC_STORE )
 		);
 	}
 
@@ -62,7 +62,8 @@ class MemcachedWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 		return $this->objectCache->set(
 			$key,
 			$value,
-			$this->getFragmentTTL( $httpStatusCode )
+			$this->getFragmentTTL( $httpStatusCode ),
+			self::METRIC_STORE
 		);
 	}
 
@@ -70,7 +71,7 @@ class MemcachedWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 	 * @inheritDoc
 	 */
 	protected function delete( string $key ): bool {
-		return $this->objectCache->delete( $key );
+		return $this->objectCache->delete( $key, self::METRIC_STORE );
 	}
 
 	/**

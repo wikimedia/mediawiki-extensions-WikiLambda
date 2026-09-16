@@ -182,7 +182,8 @@ class WikiLambdaServices {
 				);
 			case 'mainstash':
 				return new MainStashWikifunctionsFragmentStore(
-					$services->getMainObjectStash()
+					$services->getMainObjectStash(),
+					$services->getStatsFactory()
 				);
 			default:
 				throw new InvalidArgumentException(
