@@ -601,6 +601,7 @@
 	"wikilambda-commons-media-selector-placeholder": "Raadi sawirrada Commons",
 	"wikilambda-commons-media-empty-value-placeholder": "Sawir lama dooran",
 	"wikilambda-wikidata-entity-selector-placeholder": "Dooro qaybta Wikidata",
+	"wikilambda-wikidata-entity-fetch-error": "Lama soo dejin karin xogta Wikidata.",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Qiime ma jiro",
 	"wikilambda-wikidata-item-selector-placeholder": "Dooro shayga Wikidata",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Dooro qaabka Lexeme-ka Wikidata",

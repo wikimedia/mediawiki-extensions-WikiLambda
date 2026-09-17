@@ -608,6 +608,7 @@
 	"wikilambda-commons-media-selector-placeholder": "Wyszukaj obrazy w Commons",
 	"wikilambda-commons-media-empty-value-placeholder": "Nie wybrano obrazu",
 	"wikilambda-wikidata-entity-selector-placeholder": "Wybierz encję Wikidanych",
+	"wikilambda-wikidata-entity-fetch-error": "Nie udało się załadować danych z Wikidanych.",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Bez wartości",
 	"wikilambda-wikidata-item-selector-placeholder": "Wybierz element Wikidanych",
 	"wikilambda-wikidata-lexeme-form-selector-placeholder": "Wybierz formę leksemu Wikidanych",

@@ -66,6 +66,7 @@
 	"action-wikilambda-edit-user-function": "von Benutzern bereitgestellte Funktion bearbeiten",
 	"action-wikilambda-execute": "Funktionen ausführen",
 	"action-wikilambda-execute-unsaved-code": "nicht gespeicherten Implementierungscode auszuführen",
+	"action-wikilambda-request-fresh-result": "eine neue Ausführung beantragen",
 	"communityconfiguration-abstractwikioptedinarticles-description": "Die Liste der Artikel, die aus dem abstrakten Wikipedia-Inhalt generiert wurden.",
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label": "Titel",
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-label": "Themen-QID",
