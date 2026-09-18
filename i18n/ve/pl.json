@@ -1,14 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
-			"Woytecr"
+			"Woytecr",
+			"PanWor"
 		]
 	},
 	"wikilambda-fragment-disabled": "Wywoływanie Wikifunkcji jest obecnie wyłączone. Być może chcesz zastąpić to wywołanie.",
-	"wikilambda-fragment-pending": "⏳ Funkcja jest wywoływana…",
-	"wikilambda-recentchanges-edit-legend": "Edycja z Wikifunkcji",
+	"wikilambda-fragment-pending": "⏳ Wywoływanie funkcji…",
+	"wikilambda-recentchanges-edit-legend": "Edycja w Wikifunkcjach",
 	"wikilambda-recentchanges-edit-letter": "F",
-	"wikilambda-recentchanges-edit-title": "Edycja Wikifunkcji",
+	"wikilambda-recentchanges-edit-title": "Edycja w Wikifunkcjach",
 	"wikilambda-recentchanges-entry-function": "Funkcja",
 	"wikilambda-recentchanges-explanation-connect-implementation": "Dołączono {{PLURAL:$1|implementację|$1 implementacje:|$1 implementacji:}} $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "Dołączono {{PLURAL:$1|przypadek testowy|$1 przypadki testowe:|$1 przypadków testowych:}} $2",
@@ -24,9 +25,9 @@
 	"wikilambda-recentchanges-explanation-restore-implementation": "Przywrócono implementację $1",
 	"wikilambda-recentchanges-explanation-restore-tester": "Przywrócono przypadek testowy $1",
 	"wikilambda-recentchanges-filter-description": "Edycje pochodzące z Wikifunkcji",
-	"wikilambda-recentchanges-filter-label": "Edycje Wikifunkcji",
-	"wikilambda-recentchanges-filter-rc-pref": "Pokaż edycje Wikifunkcji w ostatnich zmianach",
-	"wikilambda-recentchanges-filter-wl-pref": "Pokaż edycje Wikifunkcji na liście obserwowanych",
+	"wikilambda-recentchanges-filter-label": "Edycja w Wikifunkcjach",
+	"wikilambda-recentchanges-filter-rc-pref": "Pokaż edycje w Wikifunkcjach w ostatnich zmianach",
+	"wikilambda-recentchanges-filter-wl-pref": "Pokaż edycje w Wikifunkcjach na liście obserwowanych",
 	"wikilambda-visualeditor-wikifunctionscall-back": "Wstecz",
 	"wikilambda-visualeditor-wikifunctionscall-ce-loading": "Wczytywanie",
 	"wikilambda-visualeditor-wikifunctionscall-ce-abort": "Ładowanie podglądu trwało zbyt długo",
@@ -55,7 +56,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-property": "Nieprawidłowa właściwość z Wikidanych.",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-item": "Nieprawidłowy element Wikidanych.",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme-form": "Nieprawidłowa forma leksemu z Wikidanych.",
-	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Pomóż nam przetłumaczyć brakującą treść w Twoim języku na [[f:$1|Wikifunctions]].",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "Pomóż nam przetłumaczyć brakującą treść w Twoim języku w [[f:$1|Wikifunkcjach]].",
 	"wikilambda-visualeditor-wikifunctionscall-no-description": "Brak opisu",
 	"wikilambda-visualeditor-wikifunctionscall-no-input-label": "Brak etykiety",
 	"wikilambda-visualeditor-wikifunctionscall-no-name": "Bez nazwy",
@@ -69,6 +70,8 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Anulowano",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Zresetuj",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Anuluj",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Pokaż wersję wyrenderowaną",
+	"wikilambda-visualeditor-wikifunctionscall-default-value-date": "Użyj dzisiejszej daty i aktualizuj wynik na bieżąco",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-wikidata-item": "Użyj domyślnego elementu Wikidanych dla tej strony",
 	"wikilambda-visualeditor-wikifunctionscall-default-value-language": "Użyj domyślnego języka tej strony"
 }
