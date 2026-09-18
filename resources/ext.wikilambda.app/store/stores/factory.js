@@ -55,6 +55,7 @@ module.exports = {
 
 				// When creating data in an Abstract Content Fragment, set
 				// language and date automatically to their corresponding Z18(Z825K*)
+				// and set wikidata items and item references to the page topic Qid
 				if ( this.isAbstractContent() && !payload.literal ) {
 					if ( payload.type === Constants.Z_NATURAL_LANGUAGE ) {
 						return this.createZArgumentReference( {
@@ -66,17 +67,18 @@ module.exports = {
 							value: Constants.Z_ABSTRACT_RENDER_FUNCTION_DATE
 						} );
 					}
+					// (T435657) Wikidata item reference to raw page Qid
 					if ( payload.type === Constants.Z_WIKIDATA_REFERENCE_ITEM ) {
-						return this.createZArgumentReference( {
-							value: Constants.Z_ABSTRACT_RENDER_FUNCTION_QID
+						return this.createWikidataReference( {
+							type: Constants.Z_WIKIDATA_REFERENCE_ITEM,
+							value: this.getAbstractWikiId
 						} );
 					}
+					// (T435657) Wikidata item to raw page Qid
 					if ( payload.type === Constants.Z_WIKIDATA_ITEM ) {
 						return this.createWikidataEntity( {
 							type: Constants.Z_WIKIDATA_ITEM,
-							value: this.createZArgumentReference( {
-								value: Constants.Z_ABSTRACT_RENDER_FUNCTION_QID
-							} )
+							value: this.getAbstractWikiId
 						} );
 					}
 				}

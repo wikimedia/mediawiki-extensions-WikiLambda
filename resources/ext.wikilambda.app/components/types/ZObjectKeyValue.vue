@@ -751,9 +751,15 @@ module.exports = exports = defineComponent( {
 
 				// If set, bypass the normal setter and exit. Else continue to normal behavior.
 				if ( keyPath ) {
+					const wdEntity = store.createWikidataEntity( {
+						type: Constants.Z_WIKIDATA_ITEM
+					} );
+					wdEntity[ Constants.Z_WIKIDATA_FETCH_ITEM_ID ] = store.createZArgumentReference( {
+						value: Constants.Z_ABSTRACT_RENDER_FUNCTION_QID
+					} );
 					store.setValueByKeyPath( {
 						keyPath,
-						value: store.createObjectByType( { type: Constants.Z_WIKIDATA_ITEM } )
+						value: wdEntity
 					} );
 					return;
 				}

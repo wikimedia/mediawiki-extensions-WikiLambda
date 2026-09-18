@@ -1135,26 +1135,29 @@ describe( 'factory Pinia store', () => {
 			describe( 'preset argument references when abstract content', () => {
 				beforeEach( () => {
 					store.isAbstractContent = jest.fn().mockReturnValue( true );
+					Object.defineProperty( store, 'getAbstractWikiId', {
+						value: 'Q7197'
+					} );
 				} );
 
-				it( 'creates an argument reference to Z825K1 when creating a wikidata item reference in abstract mode', () => {
+				it( 'creates a wikidata reference for the abstract page topic qid', () => {
 					const payload = { type: 'Z6091' };
 					const expected = {
-						Z1K1: 'Z18',
-						Z18K1: 'Z825K1'
+						Z1K1: 'Z6091',
+						Z6091K1: 'Q7197'
 					};
 
 					expect( store.createObjectByType( payload ) ).toEqual( expected );
 				} );
 
-				it( 'creates a wikidata fetch function with argument reference to Z825K1 when creating a wikidata item in abstract mode', () => {
+				it( 'creates a wikidata fetch function with a wikidata reference for the abstract page topic qid', () => {
 					const payload = { type: 'Z6001' };
 					const expected = {
 						Z1K1: 'Z7',
 						Z7K1: 'Z6821',
 						Z6821K1: {
-							Z1K1: 'Z18',
-							Z18K1: 'Z825K1'
+							Z1K1: 'Z6091',
+							Z6091K1: 'Q7197'
 						}
 					};
 
