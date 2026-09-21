@@ -63,6 +63,8 @@
 	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-label": "Recommandéiert Wikifunktiounen",
 	"communityconfiguration-wikifunctionssuggestions-suggestedfunctions-item-label": "Recommandéiert Wikifunktiounen $1",
 	"content-model-zobject": "WikiLambda-Objet",
+	"wikilambda-functionlookup-placeholder": "Mam Numm oder der ZID no enger Funktioun sichen",
+	"wikilambda-functionlookup-no-results": "Keng passend Funktiounen",
 	"right-wikifunctions-run": "Funktiounen an der ëffentlecher API ausféieren",
 	"right-wikilambda-connect-implementation": "Implementéierung mat hirer Funktioun connectéieren, sou datt se ausgefouert ka ginn",
 	"right-wikilambda-connect-tester": "En Testfall mat senger Funktioun connectéieren",
