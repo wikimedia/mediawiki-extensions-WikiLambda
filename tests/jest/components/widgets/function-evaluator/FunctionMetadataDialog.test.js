@@ -278,6 +278,9 @@ describe( 'dialog', () => {
 
 				// Does not render freshen button
 				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+
+				// Renders help link
+				expect( section.find( 'a.ext-wikilambda-app-function-metadata-dialog__link' ).exists() ).toBe( true );
 			} );
 
 			it( 'does not link a cache key part which is not a Zid', () => {
@@ -299,6 +302,9 @@ describe( 'dialog', () => {
 
 				// Does not render freshen button
 				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+
+				// Renders help link
+				expect( section.find( 'a.ext-wikilambda-app-function-metadata-dialog__link' ).exists() ).toBe( true );
 			} );
 
 			it( 'renders the caching section with freshen button when user has rights', () => {
@@ -339,8 +345,9 @@ describe( 'dialog', () => {
 				expect( links[ 4 ].text() ).toBe( 'L222-S2' );
 				expect( links[ 4 ].attributes( 'href' ) ).toBe( 'https://www.wikidata.org/wiki/Lexeme:L222#S2' );
 
-				// Renders the freshen button
+				// Renders the freshen button and help link
 				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( true );
+				expect( section.find( 'a.ext-wikilambda-app-function-metadata-dialog__link' ).exists() ).toBe( true );
 			} );
 
 			it( 'does not render the freshen button in the caching section if the user has no rights', () => {
@@ -357,6 +364,9 @@ describe( 'dialog', () => {
 
 				// Does not render the freshen button
 				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+
+				// Renders help link
+				expect( section.find( 'a.ext-wikilambda-app-function-metadata-dialog__link' ).exists() ).toBe( true );
 			} );
 
 			it( 'renders the caching section with no freshen button when the response is explicitly fresh', () => {
@@ -381,7 +391,11 @@ describe( 'dialog', () => {
 				expect( keys[ 0 ].text() ).toContain( 'Response generated with latest data:' );
 				expect( keys[ 0 ].text() ).toContain( '4 minutes ago' );
 
+				// Does not render the freshen button
 				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+
+				// Renders help link
+				expect( section.find( 'a.ext-wikilambda-app-function-metadata-dialog__link' ).exists() ).toBe( true );
 			} );
 
 			it( 'emits freshen-result when the freshen result button is clicked', async () => {

@@ -42,7 +42,7 @@ const metadataUtils = {
 				{ key: 'implementationId', title: 'wikilambda-functioncall-metadata-implementation-id', transform: 'getStringValue' },
 				{ key: 'implementationType', title: 'wikilambda-functioncall-metadata-implementation-type' }
 			],
-			action: 'getImplementationHelpLink'
+			link: 'getImplementationHelpLink'
 		},
 		caching: {
 			title: 'wikilambda-functioncall-metadata-caching',
@@ -56,7 +56,8 @@ const metadataUtils = {
 				{ key: 'testResultCacheKey', title: 'wikilambda-functioncall-metadata-cache-test-result-key', transform: 'getLinksOfTestKey' },
 				{ key: 'cachedWikidataEntities', title: 'wikilambda-functioncall-metadata-cache-wikidata-entities', transform: 'getListOfIds' }
 			],
-			action: 'getFreshenResultButton'
+			action: 'getFreshenResultButton',
+			link: 'getFreshenHelpLink'
 		},
 		duration: {
 			title: 'wikilambda-functioncall-metadata-duration',

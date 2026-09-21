@@ -95,21 +95,12 @@
 							:item="item"
 						></wl-function-metadata-item>
 					</ul>
-					<template v-if="section.action">
-						<a
-							v-if="section.action.type === 'link'"
-							:href="section.action.url"
-							target="_blank"
-							class="ext-wikilambda-app-function-metadata-dialog__link"
-						>
-							{{ section.action.label }}
-							<cdx-icon
-								:icon="iconLinkExternal"
-								class="ext-wikilambda-app-function-metadata-dialog__link-icon"
-							></cdx-icon>
-						</a>
+					<div
+						v-if="section.action || section.link"
+						class="ext-wikilambda-app-function-metadata-dialog__action"
+					>
 						<cdx-button
-							v-if="section.action.type === 'button'"
+							v-if="section.action"
 							class="ext-wikilambda-app-function-metadata-dialog__link"
 							:action="section.action.action"
 							:weight="section.action.weight"
@@ -117,7 +108,19 @@
 						>
 							{{ section.action.label }}
 						</cdx-button>
-					</template>
+						<a
+							v-if="section.link"
+							:href="section.link.url"
+							target="_blank"
+							class="ext-wikilambda-app-function-metadata-dialog__link"
+						>
+							{{ section.link.label }}
+							<cdx-icon
+								:icon="iconLinkExternal"
+								class="ext-wikilambda-app-function-metadata-dialog__link-icon"
+							></cdx-icon>
+						</a>
+					</div>
 				</template>
 			</cdx-accordion>
 		</div>
@@ -1072,9 +1075,22 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Returns help link configuration for the caching section
+		 *
+		 * @return {Object}
+		 */
+		function getFreshenHelpLink() {
+			return {
+				type: 'link',
+				label: 'About result provenance',
+				url: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen-link' ).text()
+			};
+		}
+
+		/**
 		 * Returns button configuration for the caching section.
 		 *
-		 * Freshen button must be shown when:
+		 * Freshen call to action must be shown when:
 		 * * User has the appropriate rights (wikilambda-request-fresh-result)
 		 * * There's cached content:
 		 *   * either call result was retrieved from the cache (functionCallCachedOn key is present)
@@ -1082,7 +1098,7 @@ module.exports = exports = defineComponent( {
 		 * * The metadata corresponds to a wikilambda_function_call execution (not to perform_tests)
 		 *   * there's no way to know this
 		 *
-		 * @return {Object}
+		 * @return {Object|undefined}
 		 */
 		function getFreshenResultButton() {
 			// Don't show freshen button if user has no rights
@@ -1130,6 +1146,7 @@ module.exports = exports = defineComponent( {
 
 		const actionMethods = {
 			getImplementationHelpLink,
+			getFreshenHelpLink,
 			getFreshenResultButton
 		};
 
@@ -1166,7 +1183,8 @@ module.exports = exports = defineComponent( {
 						compileSections( value.sections ) :
 						compileKeys( value.keys ),
 					open: value.open || false,
-					action: actionMethods[ value.action ] ? actionMethods[ value.action ]() : null
+					action: actionMethods[ value.action ] ? actionMethods[ value.action ]() : null,
+					link: actionMethods[ value.link ] ? actionMethods[ value.link ]() : null
 				};
 
 				// We add section only if it has content
@@ -1335,6 +1353,13 @@ module.exports = exports = defineComponent( {
 				color: @color-destructive;
 			}
 		}
+	}
+
+	.ext-wikilambda-app-function-metadata-dialog__action {
+		display: inline-flex;
+		align-items: center;
+		gap: @spacing-100;
+		margin-top: @spacing-50;
 	}
 
 	.ext-wikilambda-app-function-metadata-dialog__link {
