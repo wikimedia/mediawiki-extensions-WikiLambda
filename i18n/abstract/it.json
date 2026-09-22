@@ -3,10 +3,12 @@
 		"authors": [
 			"Beta16",
 			"Daimona Eaytoy",
-			"FL2226"
+			"FL2226",
+			"Matroz"
 		]
 	},
 	"action-wikilambda-abstract-create": "creare nuovi articoli astratti",
+	"wikilambda-abstractsuggestedfunctions-outputtype-hint": "Solo le funzioni che restituiscono codice HTML possono essere utilizzate qui, quindi la ricerca non ne offre altre.",
 	"content-model-abstractwiki": "Articolo astratto",
 	"right-wikilambda-abstract-create": "Crea nuovi articoli astratti",
 	"wikilambda-abstract-content-object": "Articolo astratto",

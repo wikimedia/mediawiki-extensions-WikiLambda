@@ -524,6 +524,8 @@
 	"wikilambda-special-functionusage-form-submit": "使用状況を表示",
 	"wikilambda-special-functionusage-header": "$1を埋め込んでいるページ:",
 	"wikilambda-special-functionusage-invalid": "$1は有効な関数参照ではありません。",
+	"wikilambda-special-functionusage-summary": "このページでは、このウィキおよび他のウィキで、<code><nowiki>{{#function:}}</nowiki></code>パーサー関数を使用して特定の関数を埋め込んでいるページを一覧表示します。",
+	"wikilambda-special-functionusage-whatlinkshere": "自身の定義内でこの関数を参照するオブジェクトについては、$1を参照してください。",
 	"wikilambda-special-functionusage-whatlinkshere-label": "この関数を参照しているものは何ですか？",
 	"wikilambda-special-list-all-pages": "すべてのリストページ",
 	"wikilambda-special-listduplicateobjectlabels": "ラベルが重複しているZオブジェクトページ",
