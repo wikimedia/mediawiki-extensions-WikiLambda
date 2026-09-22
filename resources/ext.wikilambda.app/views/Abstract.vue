@@ -29,6 +29,7 @@
 <script>
 const { computed, defineComponent, onMounted, onUnmounted, watch } = require( 'vue' );
 
+const useEventLog = require( '../composables/useEventLog.js' );
 const useMainStore = require( '../store/index.js' );
 const usePageTitle = require( '../composables/usePageTitle.js' );
 
@@ -47,6 +48,7 @@ module.exports = exports = defineComponent( {
 	emits: [ 'mounted' ],
 	setup( _props, { emit } ) {
 		const store = useMainStore();
+		const { submitInteraction } = useEventLog();
 		const { updateAbstractPageTitle } = usePageTitle();
 
 		/**
@@ -101,10 +103,36 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Dispatch the event (via Test Kitchen) that records the load of this
+		 * view. The event tells us that the user views an abstract page, starts
+		 * to create one, or starts to edit an existing one.
+		 *
+		 * A create page gets the topic either from the URL or from the selector
+		 * in AbstractTitle. The sub-type separates these two entry routes, so
+		 * that a count of create events stays correct for both. With no topic,
+		 * the event carries no object id, and AbstractTitle records the topic
+		 * selection later.
+		 */
+		function dispatchLoadEvent() {
+			let action = 'view';
+			let subtype;
+			if ( edit.value ) {
+				if ( store.isAbstractCreatePage() ) {
+					action = 'create';
+					subtype = qid.value ? 'entry_with_topic' : 'entry_no_topic';
+				} else {
+					action = 'edit';
+				}
+			}
+			submitInteraction( action, store.getInteractionData, subtype );
+		}
+
+		/**
 		 * Lifecycle hook to emit the mounted event.
 		 */
 		onMounted( () => {
 			document.addEventListener( 'keydown', onKeyDown );
+			dispatchLoadEvent();
 			emit( 'mounted' );
 		} );
 

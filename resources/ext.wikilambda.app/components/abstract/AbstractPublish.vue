@@ -39,6 +39,7 @@ const { computed, defineComponent, inject, ref } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
+const useEventLog = require( '../../composables/useEventLog.js' );
 const useLeaveEditorDialog = require( '../../composables/useLeaveEditorDialog.js' );
 const useMainStore = require( '../../store/index.js' );
 const ApiError = require( '../../store/classes/ApiError.js' );
@@ -60,6 +61,7 @@ module.exports = exports = defineComponent( {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
 		const { isDirty } = storeToRefs( store );
+		const { submitInteraction } = useEventLog();
 
 		// Leave editor dialog
 		const {
@@ -67,7 +69,17 @@ module.exports = exports = defineComponent( {
 			leaveEditorCallback,
 			removeListeners,
 			showLeaveEditorDialog
-		} = useLeaveEditorDialog( { isDirty } );
+		} = useLeaveEditorDialog( {
+			isDirty,
+			onBeforeLeave: submitCancelInteraction
+		} );
+
+		/**
+		 * Submit cancel interaction metric for event logging.
+		 */
+		function submitCancelInteraction() {
+			submitInteraction( 'cancel', store.getInteractionData );
+		}
 
 		// Publish state
 		const showPublishDialog = ref( false );

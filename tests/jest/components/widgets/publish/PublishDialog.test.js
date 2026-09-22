@@ -57,6 +57,7 @@ describe( 'Publish Dialog', () => {
 		store.getCurrentZObjectType = Constants.Z_FUNCTION;
 		store.getCurrentZImplementationType = undefined;
 		store.isCreateNewPage = true;
+		store.isAbstractContent = jest.fn().mockReturnValue( false );
 		store.getUserLangZid = 'Z1002';
 		store.getUserLangCode = 'en';
 		store.submitZObject.mockResolvedValue( { page: 'Z10001' } );
@@ -315,6 +316,56 @@ describe( 'Publish Dialog', () => {
 			const interactionData = { action_source: 'zobject', haserrors: false, implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
 
 			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
+		} );
+
+		it( 'emits publish event with the success subtype after saving abstract content', async () => {
+			store.isAbstractContent = jest.fn().mockReturnValue( true );
+			store.getAbstractWikiId = 'Q42';
+
+			const wrapper = renderPublishDialog( {
+				showDialog: true
+			} );
+
+			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+
+			const interactionData = {
+				zobjectid: 'Q42',
+				zobjecttype: 'abstractwiki',
+				zlang: 'Z1002',
+				action_source: 'abstractwiki',
+				action_subtype: 'success',
+				haserrors: false
+			};
+
+			await waitFor( () => expect( mw.testKitchen.getInstrument().send )
+				.toHaveBeenCalledWith( 'publish', interactionData ) );
+		} );
+
+		it( 'emits publish event with the failure subtype after a failed save of abstract content', async () => {
+			mockSubmitAction = jest.fn().mockRejectedValue(
+				new ApiError( 'http', { error: { message: 'mock submission error' } } )
+			);
+			store.isAbstractContent = jest.fn().mockReturnValue( true );
+			store.getAbstractWikiId = 'Q42';
+
+			const wrapper = renderPublishDialog( {
+				showDialog: true,
+				submitAction: mockSubmitAction
+			} );
+
+			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+
+			const interactionData = {
+				zobjectid: 'Q42',
+				zobjecttype: 'abstractwiki',
+				zlang: 'Z1002',
+				action_source: 'abstractwiki',
+				action_subtype: 'failure',
+				haserrors: false
+			};
+
+			await waitFor( () => expect( mw.testKitchen.getInstrument().send )
+				.toHaveBeenCalledWith( 'publish', interactionData ) );
 		} );
 
 		it( 'emits publish event after unsuccessful creation of a function', async () => {

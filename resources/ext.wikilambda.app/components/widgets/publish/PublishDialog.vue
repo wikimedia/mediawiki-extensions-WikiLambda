@@ -241,11 +241,13 @@ module.exports = exports = defineComponent( {
 			}
 			if ( props.submitAction ) {
 				isPublishing.value = true;
+				let outcome = 'failure';
 
 				props.submitAction( {
 					summary: summary.value
 				} ).then( ( response ) => {
 					// Successful submission: push event, unset dirty and close
+					outcome = 'success';
 					emit( 'before-exit' );
 					store.setDirty( false );
 					closeDialog();
@@ -259,7 +261,10 @@ module.exports = exports = defineComponent( {
 						implementationtype: store.getCurrentZImplementationType || null,
 						haserrors: hasErrors.value
 					} );
-					eventLogUtils.submitInteraction( 'publish', interactionData );
+					// Abstract content reports the outcome of the save. The ZObject
+					// pages keep their single event, to not break their data series.
+					const subtype = store.isAbstractContent() ? outcome : undefined;
+					eventLogUtils.submitInteraction( 'publish', interactionData, subtype );
 				} );
 			}
 		}

@@ -46,12 +46,17 @@ const eventLogUtils = {
 	 *
 	 * @param {string} action
 	 * @param {Object} interactionData
+	 * @param {string} [subtype] Optional value that subdivides the action
 	 */
-	submitInteraction: function ( action, interactionData ) {
+	submitInteraction: function ( action, interactionData, subtype ) {
 		// Test Kitchen is a soft dependency: it loads its own SDK (mw.testKitchen)
 		// when installed and enabled, so we simply no-op when it is unavailable.
 		if ( mw.testKitchen ) {
-			const eventData = eventLogUtils.removeNullUndefined( interactionData );
+			// removeNullUndefined drops action_subtype when the caller sends no subtype
+			const eventData = eventLogUtils.removeNullUndefined(
+				// eslint-disable-next-line camelcase
+				Object.assign( { action_subtype: subtype }, interactionData )
+			);
 			// Ensure zobjecttype (if present) is a string, to avoid event validation error.
 			// Work on the copy, because callers can send a shared object, e.g. a store getter.
 			if ( eventData.zobjecttype && typeof eventData.zobjecttype !== 'string' ) {

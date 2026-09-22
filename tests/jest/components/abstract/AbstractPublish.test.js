@@ -20,6 +20,12 @@ describe( 'AbstractPublish', () => {
 		store.validateAbstractWikiContent = jest.fn().mockReturnValue( true );
 		store.submitAbstractWikiContent = jest.fn();
 		store.waitForRunningParsers = Promise.resolve();
+		store.getInteractionData = {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki'
+		};
 		jest.spyOn( window, 'addEventListener' ).mockImplementation( () => {} );
 		jest.spyOn( window, 'removeEventListener' ).mockImplementation( () => {} );
 	} );
@@ -44,6 +50,28 @@ describe( 'AbstractPublish', () => {
 		const wrapper = renderAbstractPublish();
 
 		expect( wrapper.find( '.ext-wikilambda-app-abstract-publish' ).exists() ).toBe( true );
+	} );
+
+	describe( 'Event logging', () => {
+		it( 'emits cancel event when the user leaves the page', async () => {
+			// Leave at once, with no confirmation dialog
+			store.isDirty = false;
+
+			renderAbstractPublish();
+
+			// The leave-editor composable adds its click handler to the window,
+			// which the test replaces with a mock. Take the handler from the mock.
+			const [ , handleClickAway ] = window.addEventListener.mock.calls
+				.find( ( [ eventName ] ) => eventName === 'click' );
+
+			const link = document.createElement( 'a' );
+			link.href = 'https://example.com/leave';
+
+			handleClickAway( { target: link, preventDefault: jest.fn() } );
+
+			await waitFor( () => expect( mw.testKitchen.getInstrument().send )
+				.toHaveBeenCalledWith( 'cancel', store.getInteractionData ) );
+		} );
 	} );
 
 	it( 'disables publish button when content is not dirty', () => {

@@ -107,6 +107,18 @@ describe( 'eventLogUtils', () => {
 			);
 		} );
 
+		it( 'submits the subtype when one is given', () => {
+			eventLogUtils.submitInteraction( 'change', { zobjectid: 'Q42' }, 'add_fragment' );
+
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+				'change',
+				{
+					zobjectid: 'Q42',
+					action_subtype: 'add_fragment'
+				}
+			);
+		} );
+
 		it( 'does not submit if mw.testKitchen is not available', () => {
 			const originalTestKitchen = mw.testKitchen;
 			delete mw.testKitchen;

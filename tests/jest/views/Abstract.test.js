@@ -63,10 +63,68 @@ describe( 'Abstract view', () => {
 
 		store.getSelectedFragment = undefined;
 		store.setSelectedFragment = jest.fn();
+
+		store.getInteractionData = {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki'
+		};
 	} );
 
 	afterEach( () => {
 		mountedWrappers.splice( 0 ).forEach( ( wrapper ) => wrapper.unmount() );
+	} );
+
+	describe( 'Event logging', () => {
+		it( 'emits view event when the page is in view mode', () => {
+			store.getViewMode = true;
+
+			renderAbstractView();
+
+			expect( mw.testKitchen.getInstrument().send )
+				.toHaveBeenCalledWith( 'view', store.getInteractionData );
+		} );
+
+		it( 'emits create event with no topic when the page has no topic yet', () => {
+			store.isAbstractCreatePage = jest.fn().mockReturnValue( true );
+			store.getInteractionData = {
+				zobjecttype: 'abstractwiki',
+				zlang: 'Z1002',
+				action_source: 'abstractwiki'
+			};
+
+			renderAbstractView();
+
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'create', {
+				zobjecttype: 'abstractwiki',
+				zlang: 'Z1002',
+				action_source: 'abstractwiki',
+				action_subtype: 'entry_no_topic'
+			} );
+		} );
+
+		it( 'emits create event with the topic when the URL names it', () => {
+			store.isAbstractCreatePage = jest.fn().mockReturnValue( true );
+			store.getAbstractWikiId = 'Q42';
+
+			renderAbstractView();
+
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'create', {
+				zobjectid: 'Q42',
+				zobjecttype: 'abstractwiki',
+				zlang: 'Z1002',
+				action_source: 'abstractwiki',
+				action_subtype: 'entry_with_topic'
+			} );
+		} );
+
+		it( 'emits edit event when the page edits an existing abstract article', () => {
+			renderAbstractView();
+
+			expect( mw.testKitchen.getInstrument().send )
+				.toHaveBeenCalledWith( 'edit', store.getInteractionData );
+		} );
 	} );
 
 	it( 'renders without errors', () => {

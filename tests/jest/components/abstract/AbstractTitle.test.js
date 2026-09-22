@@ -51,6 +51,12 @@ describe( 'AbstractTitle', () => {
 
 		store.fetchItems = jest.fn();
 		store.setAbstractWikiId = jest.fn();
+		store.getInteractionData = {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki'
+		};
 		store.getAbstractWikipediaNamespace = 'Abstract Wikipedia';
 
 		store.getItemLabelData = jest.fn().mockImplementation( ( qid ) => qid === 'Q2' ? { label: 'Douglas Adams' } : undefined );
@@ -162,6 +168,32 @@ describe( 'AbstractTitle', () => {
 
 		wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
 		expect( store.setAbstractWikiId ).toHaveBeenCalledWith( 'Q42' );
+	} );
+
+	it( 'emits create event with the topic_selected subtype when clicking create', async () => {
+		getMock = jest.fn().mockResolvedValue( mockPageMissing );
+
+		const wrapper = renderAbstractTitle();
+
+		const lookup = wrapper.findComponent( { name: 'wl-wikidata-entity-selector' } );
+		lookup.vm.$emit( 'select-wikidata-entity', 'Q42' );
+
+		await Promise.resolve();
+		await waitFor( () => {
+			expect( wrapper.vm.isLoading ).toBe( false );
+		} );
+
+		wrapper.findComponent( { name: 'cdx-button' } ).trigger( 'click' );
+
+		const interactionData = {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki',
+			action_subtype: 'topic_selected'
+		};
+		expect( mw.testKitchen.getInstrument().send )
+			.toHaveBeenCalledWith( 'create', interactionData );
 	} );
 
 	it( 'does nothing when clicking create but creation is not allowed', async () => {

@@ -55,6 +55,7 @@
 const { computed, defineComponent, inject, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useEventLog = require( '../../composables/useEventLog.js' );
 const useMainStore = require( '../../store/index.js' );
 const { fetchPageInfo } = require( '../../utils/apiUtils.js' );
 const { buildAbstractWikiTitle } = require( '../../utils/urlUtils.js' );
@@ -81,6 +82,7 @@ module.exports = exports = defineComponent( {
 
 		// Use main store
 		const store = useMainStore();
+		const { submitInteraction } = useEventLog();
 
 		const itemType = Constants.Z_WIKIDATA_ITEM;
 
@@ -163,6 +165,11 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 			store.setAbstractWikiId( itemId.value );
+
+			// Record the topic selection, the first step of the creation journey
+			// that identifies the page. Set the Id first, so that the event
+			// carries the selected topic Qid.
+			submitInteraction( 'create', store.getInteractionData, 'topic_selected' );
 		}
 
 		// Watch itemId changes, and fetch the data from AW and WD
