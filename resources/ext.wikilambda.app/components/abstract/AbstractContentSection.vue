@@ -53,6 +53,7 @@
 const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useEventLog = require( '../../composables/useEventLog.js' );
 const useMenuAction = require( '../../composables/useMenuAction.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
@@ -65,6 +66,16 @@ const AbstractContentFragment = require( './AbstractContentFragment.vue' );
 const ClipboardDialog = require( '../base/ClipboardDialog.vue' );
 // Codex components
 const { CdxMenuButton, CdxIcon } = require( '../../../codex.js' );
+
+// Event subtypes for the fragment actions that we log. The clipboard actions are
+// absent on purpose: the clipboard store and dialog log them as copy and paste.
+const FRAGMENT_ACTION_SUBTYPES = {
+	[ Constants.LIST_MENU_OPTIONS.MOVE_BEFORE ]: 'move_fragment_before',
+	[ Constants.LIST_MENU_OPTIONS.MOVE_AFTER ]: 'move_fragment_after',
+	[ Constants.LIST_MENU_OPTIONS.ADD_BEFORE ]: 'add_fragment_before',
+	[ Constants.LIST_MENU_OPTIONS.ADD_AFTER ]: 'add_fragment_after',
+	[ Constants.LIST_MENU_OPTIONS.DELETE_ITEM ]: 'delete_fragment'
+};
 
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-content-section',
@@ -87,6 +98,7 @@ module.exports = exports = defineComponent( {
 	setup( props ) {
 		const store = useMainStore();
 		const i18n = inject( 'i18n' );
+		const { submitInteraction } = useEventLog();
 		const menuActions = inject( 'useMenuAction', useMenuAction );
 		const {
 			addAfter,
@@ -171,6 +183,7 @@ module.exports = exports = defineComponent( {
 					props.section.fragmentsPath,
 					props.section.fragments.length
 				);
+				submitInteraction( 'change', store.getInteractionData, 'add_fragment_empty' );
 				return;
 			}
 
@@ -209,6 +222,12 @@ module.exports = exports = defineComponent( {
 				keyPath: newItemPath.split( '.' ),
 				functionZid: value
 			} );
+
+			// Record which suggested function the user chose
+			const interactionData = Object.assign( {}, store.getInteractionData, {
+				selectedfunctionzid: value
+			} );
+			submitInteraction( 'change', interactionData, 'add_fragment_suggested' );
 		}
 
 		/**
@@ -220,6 +239,11 @@ module.exports = exports = defineComponent( {
 		 */
 		function performAction( payload, itemKey ) {
 			const itemKeyPath = `${ props.section.fragmentsPath }.${ itemKey }`;
+
+			const subtype = FRAGMENT_ACTION_SUBTYPES[ payload.action ];
+			if ( subtype ) {
+				submitInteraction( 'change', store.getInteractionData, subtype );
+			}
 
 			if ( payload.action === Constants.LIST_MENU_OPTIONS.MOVE_BEFORE ) {
 				moveBefore( itemKeyPath );

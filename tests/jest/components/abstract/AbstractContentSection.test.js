@@ -73,6 +73,85 @@ describe( 'AbstractContentSection', () => {
 			Z10001: 'section title',
 			Z10002: 'paragraph'
 		} );
+		store.copyToClipboard = jest.fn();
+		store.getInteractionData = {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki'
+		};
+	} );
+
+	describe( 'Event logging', () => {
+		const identity = {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki'
+		};
+
+		it( 'emits change event when adding an empty fragment', () => {
+			const wrapper = renderSection();
+
+			wrapper.findComponent( { name: 'cdx-menu-button' } )
+				.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT );
+
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+				'change',
+				Object.assign( {}, identity, { action_subtype: 'add_fragment_empty' } )
+			);
+		} );
+
+		it( 'emits change event with the function zid when adding a suggested fragment', () => {
+			const wrapper = renderSection();
+
+			wrapper.findComponent( { name: 'cdx-menu-button' } ).vm.$emit( 'update:selected', 'Z10001' );
+
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+				'change',
+				Object.assign( {}, identity, {
+					selectedfunctionzid: 'Z10001',
+					action_subtype: 'add_fragment_suggested'
+				} )
+			);
+		} );
+
+		it( 'emits change event when deleting a fragment', () => {
+			const wrapper = renderSection();
+
+			wrapper.findComponent( { name: 'wl-abstract-content-fragment' } )
+				.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.DELETE_ITEM } );
+
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+				'change',
+				Object.assign( {}, identity, { action_subtype: 'delete_fragment' } )
+			);
+		} );
+
+		it( 'emits change event when moving a fragment', () => {
+			const wrapper = renderSection();
+
+			wrapper.findComponent( { name: 'wl-abstract-content-fragment' } )
+				.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.MOVE_BEFORE } );
+
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+				'change',
+				Object.assign( {}, identity, { action_subtype: 'move_fragment_before' } )
+			);
+		} );
+
+		it( 'emits no change event for the clipboard actions, which log copy and paste', () => {
+			const wrapper = renderSection();
+			const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+
+			fragment.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD } );
+			fragment.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD } );
+
+			expect( mw.testKitchen.getInstrument().send ).not.toHaveBeenCalledWith(
+				'change',
+				expect.anything()
+			);
+		} );
 	} );
 
 	it( 'renders without errors', () => {

@@ -64,6 +64,28 @@ describe( 'AbstractPreview', () => {
 		store.getItemLabelData = jest.fn().mockImplementation( ( id ) => ( id === 'Q42' ) ? { label: 'Douglas Adams' } : undefined );
 		store.getLanguageIsoCodeOfZLang = jest.fn().mockReturnValue( 'en' );
 		store.fetchItemLabelInLanguage = jest.fn();
+		store.setPreviewLanguageZid = jest.fn();
+		store.getInteractionData = {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki'
+		};
+	} );
+
+	it( 'emits preview event when the preview language changes', () => {
+		const wrapper = renderPreview();
+
+		wrapper.findComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', 'Z1003' );
+
+		expect( store.setPreviewLanguageZid ).toHaveBeenCalledWith( 'Z1003' );
+		expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'preview', {
+			zobjectid: 'Q42',
+			zobjecttype: 'abstractwiki',
+			zlang: 'Z1002',
+			action_source: 'abstractwiki',
+			action_subtype: 'language_selected'
+		} );
 	} );
 
 	afterEach( () => {

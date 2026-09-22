@@ -72,6 +72,11 @@ describe( 'abstractWiki Pinia store', () => {
 		store.highlight = undefined;
 		store.previewLanguageZid = mockLang;
 
+		// Every action here runs on an abstract page, where the interaction
+		// events carry the topic Qid and the abstract content model
+		Object.defineProperty( store, 'isAbstractContent', {
+			value: jest.fn().mockReturnValue( true )
+		} );
 		Object.defineProperty( store, 'getUserLangZid', { value: 'Z1003' } );
 		Object.defineProperty( store, 'getItemLabelData', {
 			value: jest.fn().mockReturnValue( { label: 'Abstract Wikipedia' } )
@@ -1475,6 +1480,90 @@ describe( 'abstractWiki Pinia store', () => {
 						text: 'Unable to render this fragment due to an unknown error.'
 					}
 				} );
+			} );
+		} );
+
+		describe( 'Event logging', () => {
+			const fragmentKey = `hash1:${ mockLang }`;
+			const identity = {
+				zobjectid: mockQid,
+				zobjecttype: 'abstractwiki',
+				zlang: 'Z1003',
+				action_source: 'abstractwiki'
+			};
+
+			beforeEach( () => {
+				store.qid = mockQid;
+				store.fragments = {};
+				store.setError = jest.fn();
+				store.setRenderedFragment = jest.fn();
+				store.enqueueFragmentPreview = jest.fn();
+				store.fetchZids = jest.fn();
+			} );
+
+			it( 'emits one preview event for each section render that reaches the API', async () => {
+				const response = {
+					abstractwiki_fetch_section: {
+						[ ledeQid ]: [ { success: true, value: '<p>Fragment</p>' } ]
+					}
+				};
+				mw.Api = jest.fn( () => ( {
+					get: jest.fn().mockResolvedValue( response ),
+					getToken: jest.fn().mockResolvedValue( 'csrf-token' ),
+					post: jest.fn().mockResolvedValue( response )
+				} ) );
+				Object.defineProperty( store, 'getViewMode', { value: false, configurable: true } );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments: [ { Z1K1: 'Z7', Z7K1: 'Z401' } ],
+					fragmentHashes: [ 'hash1' ]
+				} );
+
+				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+					'preview',
+					Object.assign( {}, identity, { action_subtype: 'section_render' } )
+				);
+			} );
+
+			it( 'emits a preview event with the failing function when a fragment fails', () => {
+				store.processFragmentResponse( fragmentKey, {
+					success: false,
+					value: { msg: 'apierror-abstractwiki_run_fragment-returned-zerror', params: [ 'Z528' ] }
+				} );
+
+				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+					'preview',
+					Object.assign( {}, identity, {
+						selectedfunctionzid: 'Z528',
+						action_subtype: 'fragment_failure'
+					} )
+				);
+			} );
+
+			it( 'emits a preview event when a fragment stays pending', () => {
+				store.processFragmentResponse( fragmentKey, { success: true, pending: true } );
+
+				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+					'preview',
+					Object.assign( {}, identity, { action_subtype: 'fragment_pending' } )
+				);
+			} );
+
+			it( 'emits a preview event when a single fragment render is asked for', () => {
+				store.renderFragmentPreview( {
+					fragmentHash: 'hash2',
+					qid: mockQid,
+					language: mockLang,
+					fragment: { Z1K1: 'Z7', Z7K1: 'Z401' }
+				} );
+
+				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+					'preview',
+					Object.assign( {}, identity, { action_subtype: 'fragment_render' } )
+				);
 			} );
 		} );
 

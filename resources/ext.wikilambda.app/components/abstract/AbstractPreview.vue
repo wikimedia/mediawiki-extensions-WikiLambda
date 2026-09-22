@@ -52,6 +52,7 @@
 const { computed, defineComponent, inject, provide, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useEventLog = require( '../../composables/useEventLog.js' );
 const useFragmentHighlightRegistry = require( '../../composables/useFragmentHighlightRegistry.js' );
 const useMainStore = require( '../../store/index.js' );
 
@@ -73,6 +74,7 @@ module.exports = exports = defineComponent( {
 	setup() {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
+		const { submitInteraction } = useEventLog();
 
 		const bodyRef = ref( null );
 		const fragmentHighlightRegistry = useFragmentHighlightRegistry();
@@ -110,6 +112,7 @@ module.exports = exports = defineComponent( {
 		function onPreviewLanguageSelect( zid ) {
 			store.fetchZids( { zids: [ zid ] } );
 			store.setPreviewLanguageZid( zid );
+			submitInteraction( 'preview', store.getInteractionData, 'language_selected' );
 		}
 
 		/**

@@ -7,6 +7,7 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' );
+const eventLogUtils = require( '../../utils/eventLogUtils.js' );
 const { fetchAbstractWikiSection, saveAbstractWikiContent, runAbstractWikiFragment } = require( '../../utils/apiUtils.js' );
 const { extractZIDs } = require( '../../utils/schemata.js' );
 const { buildAbstractWikiTitle, generateViewUrl } = require( '../../utils/urlUtils.js' );
@@ -664,6 +665,10 @@ const abstractWikiStore = {
 				}
 			} );
 
+			// One event for each section render that reaches the API. It is the
+			// denominator for the rate of fragment failures below.
+			eventLogUtils.submitInteraction( 'preview', this.getInteractionData, 'section_render' );
+
 			return fetchAbstractWikiSection( {
 				topic: payload.topic,
 				section,
@@ -773,6 +778,7 @@ const abstractWikiStore = {
 					!!fragmentStatus.isUnavailable;
 				if ( noRetry || ++fragmentStatus.retryCount >= MAX_FRAGMENT_RETRIES ) {
 					fragmentPayload.isPending = true;
+					eventLogUtils.submitInteraction( 'preview', this.getInteractionData, 'fragment_pending' );
 				} else {
 					// Else, queue retry with exponential backoff to avoid stampeding
 					// the server. retryCount has just been incremented, so the first
@@ -817,6 +823,11 @@ const abstractWikiStore = {
 				}
 
 				fragmentPayload.error = error;
+
+				const interactionData = Object.assign( {}, this.getInteractionData, {
+					selectedfunctionzid: error.zid || null
+				} );
+				eventLogUtils.submitInteraction( 'preview', interactionData, 'fragment_failure' );
 			}
 
 			// Set final rendered fragment
@@ -892,6 +903,10 @@ const abstractWikiStore = {
 
 			// Else, initiate rendering call
 			fragmentStatus.isLoading = true;
+
+			// The user asks for this render with the Retry button, or a changed
+			// fragment hash asks for it. The two are not separable here.
+			eventLogUtils.submitInteraction( 'preview', this.getInteractionData, 'fragment_render' );
 
 			// Build request job and enqueue it
 			const job = () => this.requestFragmentPreview( payload, job );
