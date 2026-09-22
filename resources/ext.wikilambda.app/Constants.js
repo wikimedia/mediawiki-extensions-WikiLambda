@@ -693,6 +693,12 @@ Constants.STORED_OBJECTS = {
 	ABSTRACT: 'abstractwiki'
 };
 
+// Content model names. These match the PHP definitions in includes/defines.php.
+Constants.CONTENT_MODELS = {
+	ZOBJECT: 'zobject',
+	ABSTRACT: 'abstractwiki'
+};
+
 Constants.METADATA_CONTENT_TYPE = {
 	TEXT: 1,
 	LINK: 2,

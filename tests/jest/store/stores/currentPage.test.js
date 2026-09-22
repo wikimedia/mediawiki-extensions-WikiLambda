@@ -87,6 +87,39 @@ describe( 'CurrentPage Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getInteractionData', () => {
+			beforeEach( () => {
+				// The getter reads getters of other stores, so stub them here
+				Object.defineProperty( store, 'getCurrentZObjectType', { value: 'Z14' } );
+				Object.defineProperty( store, 'getAbstractWikiId', { value: 'Q123' } );
+				Object.defineProperty( store, 'getUserLangZid', { value: 'Z1002' } );
+			} );
+
+			it( 'returns the ZObject identity when the page is not abstract content', () => {
+				store.currentZid = 'Z10001';
+
+				expect( store.getInteractionData ).toEqual( {
+					zobjectid: 'Z10001',
+					zobjecttype: 'Z14',
+					zlang: 'Z1002',
+					action_source: 'zobject'
+				} );
+			} );
+
+			it( 'returns the topic Qid and the content model when the page is abstract content', () => {
+				Object.defineProperty( store, 'isAbstractContent', {
+					value: jest.fn().mockReturnValue( true )
+				} );
+
+				expect( store.getInteractionData ).toEqual( {
+					zobjectid: 'Q123',
+					zobjecttype: 'abstractwiki',
+					zlang: 'Z1002',
+					action_source: 'abstractwiki'
+				} );
+			} );
+		} );
+
 		describe( 'getMultilingualDataCopy', () => {
 			it( 'returns the multilingual data copy', () => {
 				const multilingualDataCopy = {

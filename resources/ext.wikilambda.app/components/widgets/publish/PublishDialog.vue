@@ -255,14 +255,10 @@ module.exports = exports = defineComponent( {
 					props.errorCallback( error );
 				} ).finally( () => {
 					isPublishing.value = false;
-					// TODO event submission for abstract content
-					const interactionData = {
-						zobjecttype: store.getCurrentZObjectType || null,
-						zobjectid: store.getCurrentZObjectId || null,
-						zlang: store.getUserLangZid || null,
+					const interactionData = Object.assign( {}, store.getInteractionData, {
 						implementationtype: store.getCurrentZImplementationType || null,
 						haserrors: hasErrors.value
-					};
+					} );
 					eventLogUtils.submitInteraction( 'publish', interactionData );
 				} );
 			}

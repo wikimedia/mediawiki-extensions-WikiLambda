@@ -103,12 +103,9 @@ module.exports = exports = defineComponent( {
 		 * Submit cancel interaction metric for event logging.
 		 */
 		function submitCancelInteraction() {
-			const interactionData = {
-				zobjecttype: store.getCurrentZObjectType || null,
-				zobjectid: store.getCurrentZObjectId,
-				zlang: store.getUserLangZid || null,
+			const interactionData = Object.assign( {}, store.getInteractionData, {
 				implementationtype: store.getCurrentZImplementationType || null
-			};
+			} );
 			submitInteraction( 'cancel', interactionData );
 		}
 

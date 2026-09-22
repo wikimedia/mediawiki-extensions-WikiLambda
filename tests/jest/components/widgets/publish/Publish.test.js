@@ -170,7 +170,7 @@ describe( 'Publish widget', () => {
 			wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 			const action = 'cancel';
-			const interactionData = { zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
+			const interactionData = { action_source: 'zobject', zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
 			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );
@@ -188,7 +188,7 @@ describe( 'Publish widget', () => {
 			wrapper.get( '.ext-wikilambda-app-publish-widget__cancel-button' ).trigger( 'click' );
 
 			const action = 'cancel';
-			const interactionData = { implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
+			const interactionData = { action_source: 'zobject', implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
 
 			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );

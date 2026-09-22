@@ -51,13 +51,15 @@ const eventLogUtils = {
 		// Test Kitchen is a soft dependency: it loads its own SDK (mw.testKitchen)
 		// when installed and enabled, so we simply no-op when it is unavailable.
 		if ( mw.testKitchen ) {
-			// Ensure zobjecttype (if present) is a string, to avoid event validation error
-			if ( interactionData.zobjecttype && typeof interactionData.zobjecttype !== 'string' ) {
-				interactionData.zobjecttype = JSON.stringify( interactionData.zobjecttype );
+			const eventData = eventLogUtils.removeNullUndefined( interactionData );
+			// Ensure zobjecttype (if present) is a string, to avoid event validation error.
+			// Work on the copy, because callers can send a shared object, e.g. a store getter.
+			if ( eventData.zobjecttype && typeof eventData.zobjecttype !== 'string' ) {
+				eventData.zobjecttype = JSON.stringify( eventData.zobjecttype );
 			}
 			const instrument = mw.testKitchen.getInstrument( INSTRUMENT_NAME );
 			instrument.setSchema( SCHEMA_ID );
-			instrument.send( action, eventLogUtils.removeNullUndefined( interactionData ) );
+			instrument.send( action, eventData );
 		}
 	}
 };

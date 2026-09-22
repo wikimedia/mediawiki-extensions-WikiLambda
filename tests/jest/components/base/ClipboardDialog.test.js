@@ -461,7 +461,8 @@ describe( 'ClipboardDialog', () => {
 			const interactionData = {
 				zobjectid: 'Z0',
 				zobjecttype: 'Z14',
-				zlang: 'Z1002'
+				zlang: 'Z1002',
+				action_source: 'zobject'
 			};
 			const instrument = mw.testKitchen.getInstrument();
 			expect( mw.testKitchen.getInstrument ).toHaveBeenCalledWith( 'wikifunctions-ui-actions' );

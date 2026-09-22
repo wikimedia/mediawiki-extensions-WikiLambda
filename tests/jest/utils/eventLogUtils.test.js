@@ -129,8 +129,16 @@ describe( 'eventLogUtils', () => {
 
 			eventLogUtils.submitInteraction( 'test-action', interactionData );
 
-			// Original object should be mutated (zobjecttype converted to string)
-			expect( interactionData.zobjecttype ).toBe( JSON.stringify( originalZobjecttype ) );
+			// The original object keeps its object-valued zobjecttype; only the
+			// submitted copy carries the stringified value.
+			expect( interactionData.zobjecttype ).toBe( originalZobjecttype );
+			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
+				'test-action',
+				{
+					zobjecttype: JSON.stringify( originalZobjecttype ),
+					action: 'save'
+				}
+			);
 		} );
 	} );
 } );

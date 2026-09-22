@@ -93,12 +93,7 @@ module.exports = {
 			mw.storage.set( STORAGE_KEY, JSON.stringify( this.clipboardItems ) );
 
 			// Submit copy interaction
-			const interactionData = {
-				zobjectid: this.isAbstractContent() ? this.getAbstractWikiId : this.getCurrentZObjectId,
-				zobjecttype: this.isAbstractContent() ? 'abstractwiki' : this.getCurrentZObjectType,
-				zlang: this.getUserLangZid || null
-			};
-			eventLogUtils.submitInteraction( 'copy', interactionData );
+			eventLogUtils.submitInteraction( 'copy', this.getInteractionData );
 		},
 		/**
 		 * Clears the store and the data stored in the browser localStorage

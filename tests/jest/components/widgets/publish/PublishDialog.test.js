@@ -312,7 +312,7 @@ describe( 'Publish Dialog', () => {
 			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
 			const action = 'publish';
-			const interactionData = { haserrors: false, implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
+			const interactionData = { action_source: 'zobject', haserrors: false, implementationtype: 'Z14K3', zlang: 'Z1002', zobjectid: 'Z10001', zobjecttype: 'Z14' };
 
 			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );
@@ -334,7 +334,7 @@ describe( 'Publish Dialog', () => {
 			wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 
 			const action = 'publish';
-			const interactionData = { haserrors: true, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
+			const interactionData = { action_source: 'zobject', haserrors: true, zlang: 'Z1002', zobjectid: 'Z0', zobjecttype: 'Z8' };
 
 			await waitFor( () => expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( action, interactionData ) );
 		} );

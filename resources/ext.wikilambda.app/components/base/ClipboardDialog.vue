@@ -228,12 +228,7 @@ module.exports = exports = defineComponent( {
 			emit( 'close-dialog' );
 
 			// Submit paste interaction
-			const interactionData = {
-				zobjectid: store.isAbstractContent() ? store.getAbstractWikiId : store.getCurrentZObjectId,
-				zobjecttype: store.isAbstractContent() ? 'abstractwiki' : store.getCurrentZObjectType,
-				zlang: store.getUserLangZid || null
-			};
-			submitInteraction( 'paste', interactionData );
+			submitInteraction( 'paste', store.getInteractionData );
 		}
 
 		/**

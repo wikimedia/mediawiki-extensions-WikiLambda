@@ -169,7 +169,8 @@ describe( 'clipboard Pinia store', () => {
 				const interactionData = {
 					zobjectid: 'Z0',
 					zobjecttype: 'Z14',
-					zlang: 'Z1002'
+					zlang: 'Z1002',
+					action_source: 'zobject'
 				};
 				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'copy', interactionData );
 			} );
@@ -231,7 +232,8 @@ describe( 'clipboard Pinia store', () => {
 				const interactionData = {
 					zobjectid: 'Q123',
 					zobjecttype: 'abstractwiki',
-					zlang: 'Z1002'
+					zlang: 'Z1002',
+					action_source: 'abstractwiki'
 				};
 				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'copy', interactionData );
 			} );
@@ -271,7 +273,8 @@ describe( 'clipboard Pinia store', () => {
 				const interactionData = {
 					zobjectid: 'Z0',
 					zobjecttype: 'Z14',
-					zlang: 'Z1002'
+					zlang: 'Z1002',
+					action_source: 'zobject'
 				};
 				expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith( 'copy', interactionData );
 			} );

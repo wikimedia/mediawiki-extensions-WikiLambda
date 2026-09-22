@@ -83,6 +83,30 @@ module.exports = {
 		 */
 		getCurrentRevisionId: function ( state ) {
 			return state.currentRevisionId;
+		},
+
+		/**
+		 * Returns the identity fields for an interaction event: the object id,
+		 * the object type, the user language and the content model.
+		 *
+		 * Abstract content has its own store namespace, so the ZObject getters
+		 * are empty on abstract pages. There we send the topic Qid and the
+		 * abstract content model name instead.
+		 *
+		 * @return {Object}
+		 */
+		getInteractionData: function () {
+			const isAbstract = this.isAbstractContent();
+			return {
+				zobjectid: ( isAbstract ? this.getAbstractWikiId : this.getCurrentZObjectId ) || null,
+				zobjecttype: ( isAbstract ?
+					Constants.CONTENT_MODELS.ABSTRACT :
+					this.getCurrentZObjectType ) || null,
+				zlang: this.getUserLangZid || null,
+				action_source: isAbstract ?
+					Constants.CONTENT_MODELS.ABSTRACT :
+					Constants.CONTENT_MODELS.ZOBJECT
+			};
 		}
 	},
 
@@ -135,12 +159,9 @@ module.exports = {
 		setDirty: function ( value = true ) {
 			// sending the 'change' event for the first change
 			if ( value === true && !this.isDirty ) {
-				const interactionData = {
-					zobjectid: this.getCurrentZObjectId,
-					zobjecttype: this.getCurrentZObjectType || null,
-					implementationtype: this.getCurrentZImplementationType || null,
-					zlang: this.getUserLangZid || null
-				};
+				const interactionData = Object.assign( {}, this.getInteractionData, {
+					implementationtype: this.getCurrentZImplementationType || null
+				} );
 				// Submit interaction event via eventLogUtils
 				eventLogUtils.submitInteraction( 'change', interactionData );
 			}
