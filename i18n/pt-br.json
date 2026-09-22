@@ -11,7 +11,8 @@
 			"Mello25",
 			"Re demz",
 			"Svjatysberega",
-			"YuriNikolai"
+			"YuriNikolai",
+			"Trooper57"
 		]
 	},
 	"wikilambda-desc": "Prover funções para serem escritas, gerenciadas e avaliadas em uma wiki central.",
@@ -36,6 +37,11 @@
 	"right-wikilambda-edit-unit": "editar ZUnit ZObject existentes",
 	"right-wikilambda-edit-user-function": "Editar uma ZFunction existente fornecida por usuários",
 	"specialpages-group-wikilambda": "Páginas de Wikifunções",
+	"wikilambda-about-widget-edit-metadata-title": "Editar informações",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 idioma|$1 idiomas}}",
+	"wikilambda-about-widget-name-placeholder": "Inserir nome",
+	"wikilambda-about-widget-no-aliases": "Nenhum nome alternativo foi fornecido.",
+	"wikilambda-about-widget-no-descriptions": "Nenhuma descrição foi fornecida.",
 	"wikilambda-add-list-item": "Adicionar item",
 	"wikilambda-add-list-item-button": "Adicionar item",
 	"wikilambda-argument-typeselector-label": "Selecione um tipo para este argumento",
