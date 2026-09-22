@@ -3340,6 +3340,24 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z584",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Service is shutting down",
+            "wlzl_label_normalised": "service is shutting down",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z584",
+            "wlzl_type": "Z50",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z584",
+            "wlzl_label_normalised": "z584",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z590",
             "wlzl_type": "Z50",
             "wlzl_language": "Z1002",
