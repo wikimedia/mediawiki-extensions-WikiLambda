@@ -42,6 +42,23 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		);
 	}
 
+	/**
+	 * Make a ResourceLoader that the registration hook did not run on.
+	 *
+	 * The service instance already has our modules, and a second registration on it makes core
+	 * send a duplicate-module warning (T438387).
+	 *
+	 * @return ResourceLoader
+	 */
+	private function newResourceLoader(): ResourceLoader {
+		return new ResourceLoader(
+			$this->getServiceContainer()->getMainConfig(),
+			null,
+			null,
+			[ 'loadScript' => '/w/load.php' ]
+		);
+	}
+
 	// ------------------------------------------------------------------
 	// onPageSaveComplete
 	// ------------------------------------------------------------------
@@ -256,7 +273,7 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		}
 
 		$hooks = $this->newClientHooks();
-		$rl = $this->getServiceContainer()->getResourceLoader();
+		$rl = $this->newResourceLoader();
 		$hooks->onResourceLoaderRegisterModules( $rl );
 
 		$this->assertTrue(
@@ -277,12 +294,7 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
 
 		$hooks = $this->newClientHooks();
-		$rl = new ResourceLoader(
-			$this->getServiceContainer()->getMainConfig(),
-			null,
-			null,
-			[ 'loadScript' => '/w/load.php' ]
-		);
+		$rl = $this->newResourceLoader();
 		$hooks->onResourceLoaderRegisterModules( $rl );
 
 		$this->assertFalse(
@@ -297,7 +309,7 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		}
 
 		$hooks = $this->newClientHooks();
-		$rl = $this->getServiceContainer()->getResourceLoader();
+		$rl = $this->newResourceLoader();
 		$hooks->onResourceLoaderRegisterModules( $rl );
 
 		$this->assertTrue(
@@ -316,12 +328,7 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', false );
 
 		$hooks = $this->newClientHooks();
-		$rl = new ResourceLoader(
-			$this->getServiceContainer()->getMainConfig(),
-			null,
-			null,
-			[ 'loadScript' => '/w/load.php' ]
-		);
+		$rl = $this->newResourceLoader();
 		$hooks->onResourceLoaderRegisterModules( $rl );
 
 		$this->assertTrue(
