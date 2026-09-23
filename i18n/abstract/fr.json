@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Jdforrester",
 			"Jérémy-Günther-Heinz Jähnick",
 			"VIGNERON",
 			"Wikipucine",
@@ -16,6 +17,7 @@
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Wikifunctions suggérées",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "Jusqu'à dix Wikifunctions classées par Zid (par exemple <code>Z20756</code>) et renvoyant du HTML présentée dans le menu des fragments des articles de la Wikipedia abstraite.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-item-label": "Wikifunction suggérée $1",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-functions-section-label": "Fonctions proposées dans le menu des fragments",
 	"content-model-abstractwiki": "Article de la Wikipedia abstraite",
 	"right-wikilambda-abstract-create": "Créer de nouveaux articles de la Wikipedia abstraite",
 	"right-wikilambda-abstract-edit": "Modifier des articles existants de la Wikipedia abstraite",
