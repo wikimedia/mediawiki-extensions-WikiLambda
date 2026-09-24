@@ -293,7 +293,7 @@
 	"wikilambda-function-viewer-aliases-header": "別名",
 	"wikilambda-function-viewer-aliases-hide-language-button": "表示言語を減らす",
 	"wikilambda-function-viewer-aliases-show-language-button": "他の言語も表示する",
-	"wikilambda-function-viewer-details-input-number": "$1を入力",
+	"wikilambda-function-viewer-details-input-number": "入力 $1",
 	"wikilambda-function-viewer-details-table-view-all": "すべて表示",
 	"wikilambda-function-viewer-details-table-view-less": "表示数を減らす",
 	"wikilambda-function-viewer-names-show-languages-button": "他の言語で名前を表示する",

@@ -35,5 +35,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description": "続きを畳む",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-read-more-description": "続きを読む",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-no-results": "検索結果が見つかりませんでした。別の検索語句をお試しください。",
-	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "結果"
+	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "結果",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "テキストを入力してください",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "推奨される関数",
+	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "値を入力してください。",
+	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "[[f:$1|ウィキファンクションズ]]で不足しているコンテンツをあなたの言語に翻訳するのを手伝ってください。",
+	"wikilambda-visualeditor-wikifunctionscall-title": "関数",
+	"wikilambda-visualeditor-wikifunctionscall-preview-title": "プレビュー"
 }
