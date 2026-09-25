@@ -7,6 +7,8 @@
 	},
 	"action-wikilambda-abstract-create": "抽象記事の新規作成",
 	"action-wikilambda-abstract-edit": "既存の抽象記事の編集",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "推奨されるウィキファンクションズの関数",
+	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "抽象記事のフラグメントメニューに表示するZID (例: <code>Z20756</code>) で指定できるHTMLを返すウィキファンクションズの関数を最大10個まで指定できます。",
 	"content-model-abstractwiki": "抽象記事",
 	"right-wikilambda-abstract-create": "抽象記事を新規作成",
 	"right-wikilambda-abstract-edit": "既存の抽象記事を編集",

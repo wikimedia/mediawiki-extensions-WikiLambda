@@ -75,6 +75,7 @@
 	"apihelp-wikilambda_edit-example-edit-incorrect": "לנסות לעדכן את עצם ה־Z בעל המזהה Z010 עם נתונים לא נכונים",
 	"apihelp-query+wikilambdaload_zlanguages-summary": "מיפוי קודי שפה למזהי ה־Z של ה־ZLanguage המתאימים להם",
 	"apihelp-query+wikilambdaload_zlanguages-param-codes": "אילו קודי שפה למפות למזהי Z של ZLanguage.",
+	"apihelp-query+wikilambdaload_zlanguages-param-withlabels": "האם לכלול תוויות שפות מועדפות עבור כל ZID של ZLanguge שנפתר.",
 	"apihelp-query+wikilambdaload_zlanguages-example-single": "מיפוי של קוד שפה בודד (en) למזהה ה־Z של ה־ZLanguage שלו",
 	"apihelp-query+wikilambdaload_zlanguages-example-multiple": "מיפוי כמה קודי שפה (en‏, es‏, fr) למזהי Z של ה־ZLanguage שלהם בבקשה אחת.",
 	"apihelp-wikilambda_edit-summary": "ליצור או לערוך עצם Z.",
