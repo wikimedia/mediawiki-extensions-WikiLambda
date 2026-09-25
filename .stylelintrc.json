@@ -1,6 +1,6 @@
 {
 	"extends": "stylelint-config-wikimedia",
 	"rules": {
-		"selector-class-pattern": "^(ext-wikilambda-|cdx-|ace_|client-js|client-nojs|mw-htmlform-field-HTMLIntField|mw-special-ListFunctionsByTests|oo-ui-|skin-theme-clientpref-|ve-ce-focusableNode-invisible)"
+		"selector-class-pattern": "^(ext-wikilambda-|cdx-|ace_|cm-|client-js|client-nojs|mw-htmlform-field-HTMLIntField|mw-special-ListFunctionsByTests|oo-ui-|skin-theme-clientpref-|ve-ce-focusableNode-invisible)"
 	}
 }

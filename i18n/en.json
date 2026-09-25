@@ -676,6 +676,7 @@
 	"wikilambda-commons-image-error-not-found": "Image not found.",
 	"wikilambda-commons-image-error-unavailable": "Image temporarily unavailable.",
 	"wikilambda-codeeditor-image-element-description": "In the rendered output, this element displays as an actual image.",
+	"wikilambda-codeeditor-image-element-detail": "Commons image",
 	"wikilambda-zobjectselector-label": "Object",
 	"wikilambda-zobjectselector-no-results": "No results found.",
 	"wikilambda-ztester-missing-call-function": "Call is empty. Please select a function.",

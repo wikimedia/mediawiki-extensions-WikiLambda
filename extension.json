@@ -27,6 +27,11 @@
 			"UniversalLanguageSelector": "*"
 		}
 	},
+	"suggests": {
+		"extensions": {
+			"CodeMirror": "*"
+		}
+	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
 	},
@@ -149,6 +154,14 @@
 		"WikiLambdaSearchIndexLanguages": {
 			"description": "Allowlist of language codes that get their own per-language CirrusSearch fields (zobject_labels.<lang> etc.) when WikiLambdaEnableSearchIndexFields is on. All other languages are still searchable via the zobject_labels_all catch-all field. Deliberately small; to be tuned with the Search Platform team (T390562 M1).",
 			"value": [ "en" ]
+		},
+		"WikiLambdaUseCodeEditor": {
+			"description": "If true, use the bundled ACE code editor for code, HTML and JSON fields. Ignored when WikiLambdaUseCodeMirror is true. If both are false, a plain textarea is used.",
+			"value": true
+		},
+		"WikiLambdaUseCodeMirror": {
+			"description": "If true, use the CodeMirror extension for code, HTML and JSON fields, in place of the bundled ACE code editor. Takes precedence over WikiLambdaUseCodeEditor. Has no effect if the CodeMirror extension is not installed.",
+			"value": false
 		}
 	},
 	"ConfigRegistry": {
@@ -551,6 +564,7 @@
 				"ext.wikilambda.app/utils/errorUtils.js",
 				"ext.wikilambda.app/utils/eventLogUtils.js",
 				"ext.wikilambda.app/utils/helpUtils.js",
+				"ext.wikilambda.app/utils/htmlValidationUtils.js",
 				"ext.wikilambda.app/utils/metadataUtils.js",
 				"ext.wikilambda.app/utils/miscUtils.js",
 				"ext.wikilambda.app/utils/schemata.js",
@@ -578,7 +592,9 @@
 				"ext.wikilambda.app/components/abstract/AbstractTitle.vue",
 				"ext.wikilambda.app/components/base/ZObjectSelector.vue",
 				"ext.wikilambda.app/components/base/ClipboardDialog.vue",
+				"ext.wikilambda.app/components/base/AceEditor.vue",
 				"ext.wikilambda.app/components/base/CodeEditor.vue",
+				"ext.wikilambda.app/components/base/CodeMirrorEditor.vue",
 				"ext.wikilambda.app/components/base/CustomDialogHeader.vue",
 				"ext.wikilambda.app/components/base/HTMLFragmentViewer.vue",
 				"ext.wikilambda.app/components/base/ExpandedToggle.vue",
@@ -587,6 +603,7 @@
 				"ext.wikilambda.app/components/base/KeyBlock.vue",
 				"ext.wikilambda.app/components/base/LocalizedLabel.vue",
 				"ext.wikilambda.app/components/base/ModeSelector.vue",
+				"ext.wikilambda.app/components/base/PlainTextEditor.vue",
 				"ext.wikilambda.app/components/base/SafeMessage.vue",
 				"ext.wikilambda.app/components/base/StatusIcon.vue",
 				"ext.wikilambda.app/components/base/TypeSelector.vue",
@@ -667,6 +684,13 @@
 				"ext.wikilambda.app/components/widgets/function-usage/FunctionUsage.vue",
 				"lib/ace/src/ace.js",
 				"lib/ace/src/ext-language_tools.js",
+				{
+					"name": "ext.wikilambda.app/config.json",
+					"config": [
+						"WikiLambdaUseCodeEditor",
+						"WikiLambdaUseCodeMirror"
+					]
+				},
 				{
 					"name": "lib/icons.json",
 					"callback": "MediaWiki\\ResourceLoader\\CodexModule::getIcons",
@@ -1128,6 +1152,7 @@
 				"wikilambda-object-selector-suggested-languages",
 				"wikilambda-edit-monolingual-text-placeholder",
 				"wikilambda-codeeditor-image-element-description",
+				"wikilambda-codeeditor-image-element-detail",
 				"wikilambda-commons-media-selector-placeholder",
 				"wikilambda-commons-media-empty-value-placeholder",
 				"wikilambda-wikidata-entity-selector-placeholder",

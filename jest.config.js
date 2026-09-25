@@ -27,6 +27,8 @@ module.exports = {
 		// and the patterns below are unanchored substrings.
 		'^ext\\.communityConfiguration\\.Editor\\.controls$':
 			'<rootDir>/tests/jest/helpers/communityConfigurationControls.js',
+		// Virtual RL file; see the packageFiles for ext.wikilambda.app in extension.json.
+		'^\\.\\./\\.\\./config\\.json$': '<rootDir>/tests/jest/fixtures/appConfig.js',
 		'codex.js': '<rootDir>/tests/jest/helpers/loadCodexComponents.js',
 		'icons.json': '<rootDir>/tests/jest/fixtures/icons.js',
 		'mediawiki.DateFormatter': '<rootDir>/tests/jest/helpers/mockDateFormatter.js'

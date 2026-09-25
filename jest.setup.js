@@ -173,6 +173,17 @@ global.mw = {
 			wgUserName: 'username'
 		}
 	},
+	loader: {
+		// No extra ResourceLoader module is registered by default, so the app
+		// falls back to the editor that WikiLambda bundles.
+		getState: jest.fn().mockReturnValue( null ),
+		using: jest.fn().mockResolvedValue( jest.fn() )
+	},
+	log: {
+		error: jest.fn(),
+		warn: jest.fn(),
+		deprecate: jest.fn()
+	},
 	user: {
 		isAnon: jest.fn().mockReturnValue( true ),
 		options: {
