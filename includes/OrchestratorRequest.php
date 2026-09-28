@@ -226,6 +226,14 @@ class OrchestratorRequest {
 				// Assign new stamped response only if valid (e.g. no change if Z22 contained a Z24
 				$response['result'] = json_encode( $stampedResponse );
 			}
+		} else {
+			// When the call was evaluated but used cached entities, return in the response array
+			// so that the caller logs the information without having to parse the response again.
+			// Note than when returning a cached response, we don't inspect the cached wikidata
+			// entities, as this information is most likely irrelevant and outdated, and extracting
+			// this information at this point is costless while parsing cached response to get
+			// the metadata is not.
+			$response['cachedEntities'] = $cachedWikidataEntities;
 		}
 
 		return array_merge( $response, [ 'cached' => false ] );

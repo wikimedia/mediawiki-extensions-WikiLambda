@@ -331,11 +331,17 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 			$response = $work->execute();
 
+			$responseOrigin = ( $response['cached'] ?? false ) ? 'cached' : 'evaluated';
+			$responseCachedEntities = json_encode( $response['cachedEntities'] ?? [] );
+
 			$this->getLogger()->debug(
 				__METHOD__ . ' executed successfully',
 				[
 					'request' => $zObjectAsString,
-					'response' => $response[ 'result' ],
+					'query' => $queryArguments,
+					'response' => $response['result'],
+					'response.origin' => $responseOrigin,
+					'response.cachedEntities' => $responseCachedEntities
 				]
 			);
 
@@ -356,6 +362,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				[
 					'reason' => $exception->getPrevious()->getMessage(),
 					'request' => $zObjectAsString,
+					'query' => $queryArguments,
 					'exception' => $exception,
 				]
 			);
@@ -377,6 +384,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				__METHOD__ . ' failed to execute with a TimeoutException: {exception}',
 				[
 					'request' => $zObjectAsString,
+					'query' => $queryArguments,
 					'exception' => $exception,
 				]
 			);
