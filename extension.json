@@ -918,6 +918,8 @@
 				"wikilambda-functioncall-metadata-cached",
 				"wikilambda-functioncall-metadata-cache-fresh",
 				"wikilambda-functioncall-metadata-cache-freshen-button",
+				"wikilambda-functioncall-metadata-cache-help-label",
+				"wikilambda-functioncall-metadata-cache-help-link",
 				"wikilambda-functioncall-metadata-cache-stored",
 				"wikilambda-functioncall-metadata-cache-test-call-stored",
 				"wikilambda-functioncall-metadata-cache-test-result-key",

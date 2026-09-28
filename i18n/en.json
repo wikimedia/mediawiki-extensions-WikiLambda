@@ -403,6 +403,8 @@
 	"wikilambda-functioncall-metadata-cached": "This response was retrieved from the cache",
 	"wikilambda-functioncall-metadata-cache-fresh": "Response generated with latest data",
 	"wikilambda-functioncall-metadata-cache-freshen-button": "Run with latest data",
+	"wikilambda-functioncall-metadata-cache-help-label": "About result provenance",
+	"wikilambda-functioncall-metadata-cache-help-link": "https://www.mediawiki.org/wiki/Help:Wikifunctions/Provenance_metadata_and_result_freshening",
 	"wikilambda-functioncall-metadata-cache-stored": "Cached function call",
 	"wikilambda-functioncall-metadata-cache-test-call-stored": "Cached test call",
 	"wikilambda-functioncall-metadata-cache-test-result-key": "Tested for (zids and revisions)",

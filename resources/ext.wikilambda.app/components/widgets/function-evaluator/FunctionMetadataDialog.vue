@@ -1082,8 +1082,8 @@ module.exports = exports = defineComponent( {
 		function getFreshenHelpLink() {
 			return {
 				type: 'link',
-				label: 'About result provenance',
-				url: i18n( 'wikilambda-functioncall-metadata-implementation-how-chosen-link' ).text()
+				label: i18n( 'wikilambda-functioncall-metadata-cache-help-label' ).text(),
+				url: i18n( 'wikilambda-functioncall-metadata-cache-help-link' ).text()
 			};
 		}
 
