@@ -216,16 +216,30 @@ class RepoHooks implements
 		// cannot add until app server addresses are excluded: fragment rendering calls the API
 		// over HTTP from an app server, and one address then carries the whole wiki.
 		$rateLimits = [
-			// Functioneers can make 50 calls per minute
-			'functioneer' => [ 50, 60 ],
-			// Regular (logged-in) users can make 20 calls per minute
-			'user' => [ 20, 60 ],
-			// Brand new users and temporary accounts can only make 5 calls per minute
-			'newbie' => [ 5, 60 ],
-			// Logged-out users have no account to count against. Count them by address,
-			// and by /24 or /64 block so that one operator cannot rotate through addresses.
-			'ip' => [ 5, 60 ],
-			'subnet' => [ 20, 60 ],
+			'wikilambda-execute' => [
+				// Functioneers can make 50 calls per minute
+				'functioneer' => [ 50, 60 ],
+				// Regular (logged-in) users can make 20 calls per minute
+				'user' => [ 20, 60 ],
+				// Brand new users and temporary accounts can only make 5 calls per minute
+				'newbie' => [ 5, 60 ],
+				// Logged-out users have no account to count against. Count them by address,
+				// and by /24 or /64 block so that one operator cannot rotate through addresses.
+				'ip' => [ 5, 60 ],
+				'subnet' => [ 20, 60 ],
+			],
+			// Set requests for fresh results to lower rate limits, due to the impact these
+			// requests might have in the network requests between the orchestrator and Wikidata
+			'wikilambda-request-fresh-result' => [
+				// Function maintainers can make 10 fresh calls per minute
+				'functionmaintainer' => [ 10, 60 ],
+				// Functioneers can make 5 fresh calls per minute
+				'functioneer' => [ 5, 60 ],
+				// Logged-in autoconfirmed users can make 2 fresh calls per minute
+				'autoconfirmed' => [ 2, 60 ],
+				// Regular logged-in users cannot make fresh calls
+				'user' => [ 0, 60 ],
+			]
 		];
 
 		// 'sysop' can promote/demote 'functioneer'; 'bureaucrat' the same for 'functionmaintainer'.
@@ -385,7 +399,7 @@ class RepoHooks implements
 	 *
 	 * @param string[] $availableRights
 	 * @param array<string,array<string,bool>> $groupPermissions
-	 * @param array<string,int[]> $rateLimits Per-entity-type [count, period] entries for 'wikilambda-execute'
+	 * @param array<string,array<string,int[]>> $rateLimits Per-entity-type [count, period] entries per user right
 	 * @param array<string,string> $groupChangeRights Map of administrator group => target group
 	 */
 	private static function applyRegisteredConfig(
@@ -406,8 +420,9 @@ class RepoHooks implements
 		}
 
 		if ( $rateLimits ) {
-			$wgRateLimits['wikilambda-execute'] =
-				( $wgRateLimits['wikilambda-execute'] ?? [] ) + $rateLimits;
+			foreach ( $rateLimits as $action => $limits ) {
+				$wgRateLimits[$action] = ( $wgRateLimits[$action] ?? [] ) + $limits;
+			}
 		}
 
 		foreach ( $groupChangeRights as $admin => $target ) {

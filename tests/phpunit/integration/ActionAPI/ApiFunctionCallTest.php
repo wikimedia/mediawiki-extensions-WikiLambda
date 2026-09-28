@@ -661,6 +661,9 @@ class ApiFunctionCallTest extends WikiLambdaApiTestCase {
 	}
 
 	public function testExecute_freshResult() {
+		// Turn off rate limits and test that in a subsequent test
+		$this->overrideConfigValue( MainConfigNames::RateLimits, [] );
+
 		$user = $this->getTestUser()->getAuthority();
 		$this->overrideUserPermissions( $user, [ 'wikilambda-request-fresh-result' ] );
 
@@ -676,5 +679,40 @@ class ApiFunctionCallTest extends WikiLambdaApiTestCase {
 		$this->assertNotNull( $capturedParams );
 		$this->assertArrayHasKey( 'getFreshResult', $capturedParams[0] );
 		$this->assertTrue( $capturedParams[0]['getFreshResult'] );
+	}
+
+	public function testExecute_freshResultRateLimits() {
+		$this->overrideConfigValue(
+			MainConfigNames::RateLimits,
+			[ 'wikilambda-request-fresh-result' => [ 'user' => [ 1, 60 ] ] ]
+		);
+
+		$user = $this->getTestUser()->getUser();
+		$this->overrideUserPermissions( $user, [ 'wikilambda-execute', 'wikilambda-request-fresh-result' ] );
+
+		$capturedParams = null;
+		$this->spyOnOrchestrator( $capturedParams );
+
+		$freshRequest = self::RATE_LIMIT_REQUEST + [ 'wikilambda_function_call_fresh-result' => '1' ];
+
+		// The first fresh call uses the whole allowance for the period.
+		$first = $this->doApiRequest( $freshRequest, null, false, $user );
+		$this->assertTrue( $first[0]['wikilambda_function_call']['success'] );
+		$this->assertNotNull( $capturedParams, 'The first fresh call must reach the orchestrator' );
+
+		// The second fresh call is refused before it reaches the orchestrator.
+		$capturedParams = null;
+		try {
+			$this->doApiRequest( $freshRequest, null, false, $user );
+			$this->fail( 'Expected ApiUsageException but none was thrown' );
+		} catch ( ApiUsageException $e ) {
+			$this->assertSame( HttpStatus::TOO_MANY_REQUESTS, $e->getCode() );
+			$this->assertSame( 'Error of type Z559', $e->getMessage() );
+		}
+		$this->assertNull( $capturedParams );
+
+		// A third call without the flag is not affected by the fresh-result limit.
+		$regular = $this->doApiRequest( self::RATE_LIMIT_REQUEST, null, false, $user );
+		$this->assertTrue( $regular[0]['wikilambda_function_call']['success'] );
 	}
 }

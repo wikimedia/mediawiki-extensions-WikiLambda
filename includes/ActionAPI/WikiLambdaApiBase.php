@@ -221,14 +221,28 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		}
 
 		// 2.d. User can request fresh result if flag getFreshResult is true
-		if ( $getFreshResult && !$userAuthority->isAllowed( 'wikilambda-request-fresh-result' ) ) {
-			$this->failWithPermissionDenied( 'wikilambda-request-fresh-result', $zObjectAsStdClass );
+		$freshResultRight = 'wikilambda-request-fresh-result';
+		if ( $getFreshResult && !$userAuthority->isAllowed( $freshResultRight ) ) {
+			$this->failWithPermissionDenied( $freshResultRight, $zObjectAsStdClass );
 		}
 
 		// 2.e. User has remaining rate limit allowance, or this is a wrapped REST call
 		$isRestReentry = $this->getMain()->isInternalMode()
 			&& $this->getRequest()->getHeader( self::REST_REENTRY_HEADER ) !== false;
 		$rateLimiter = MediaWikiServices::getInstance()->getRateLimiter();
+
+		// 2.e.1. Check rate limit for fresh result request; increment the counter
+		// at this point, as we know that any call with getFreshResult flag will
+		// reach the orchestrator.
+		if (
+			$getFreshResult &&
+			$rateLimiter->isLimitable( $freshResultRight ) &&
+			$rateLimiter->limit( $this->getUser()->toRateLimitSubject(), $freshResultRight )
+		) {
+			$this->failWithRateLimited( $freshResultRight, $zObjectAsStdClass );
+		}
+
+		// 2.e.2. General execution rate limits:
 		$limitCalls = !$isRestReentry && $rateLimiter->isLimitable( $executionRight );
 		$limitSubject = $limitCalls ? $this->getUser()->toRateLimitSubject() : null;
 
