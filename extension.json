@@ -1332,9 +1332,18 @@
 	},
 	"TrackingCategories": [
 		"wikilambda-functioncall-error-category",
-		"wikilambda-functioncall-error-unknown-category",
+		"wikilambda-functioncall-error-unknown-zid-category",
+		"wikilambda-functioncall-error-invalid-zobject-category",
 		"wikilambda-functioncall-error-nonfunction-category",
-		"wikilambda-functioncall-error-nonstring-category"
+		"wikilambda-functioncall-error-bad-input-type-category",
+		"wikilambda-functioncall-error-bad-langs-category",
+		"wikilambda-functioncall-error-bad-inputs-category",
+		"wikilambda-functioncall-error-nonstringinput-category",
+		"wikilambda-functioncall-error-nonstringoutput-category",
+		"wikilambda-functioncall-error-unclear-category",
+		"wikilambda-functioncall-error-evaluation-category",
+		"wikilambda-functioncall-error-bad-output-category",
+		"wikilambda-functioncall-error-disabled-category"
 	],
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
