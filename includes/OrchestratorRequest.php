@@ -218,7 +218,7 @@ class OrchestratorRequest {
 		// 4. Add metadata key about the call being newly generated with latest data;
 		// get cachedWikidataEntities key: if missing, the call is considered fresh
 		$stampedResponse = json_decode( $response[ 'result' ] );
-		$cachedWikidataEntities = ZObjectUtils::getMetadataValue( $stampedResponse, 'cachedWikidataEntities' );
+		$cachedWikidataEntities = ZObjectUtils::getMetaDataValue( $stampedResponse, 'cachedWikidataEntities' );
 		if ( $cachedWikidataEntities === null ) {
 			$ts = ConvertibleTimestamp::now( TS::ISO_8601 );
 			$stampedResponse = ZObjectUtils::setMetaDataValue( $stampedResponse, 'functionCallFreshResult', $ts );
@@ -322,7 +322,7 @@ class OrchestratorRequest {
 		}
 
 		// 1.f. If the call was retrieved from the cache, get stored timestamp from the response
-		$callCachedTimestamp = ZObjectUtils::getMetadataValue(
+		$callCachedTimestamp = ZObjectUtils::getMetaDataValue(
 			$callResponse->getSerialized(), 'functionCallCachedOn' );
 
 		// 2. Execute the validation call (Z20K3)
@@ -373,7 +373,7 @@ class OrchestratorRequest {
 		);
 
 		// 2.f. If the call was retrieved from the cache, get stored timestamp from the response
-		$validationCachedTimestamp = ZObjectUtils::getMetadataValue(
+		$validationCachedTimestamp = ZObjectUtils::getMetaDataValue(
 			$validationResponse->getSerialized(), 'functionCallCachedOn' );
 
 		// 3. Interpret the result and compile additional metadata

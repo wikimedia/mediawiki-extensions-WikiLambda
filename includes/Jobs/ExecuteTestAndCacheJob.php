@@ -257,7 +257,7 @@ class ExecuteTestAndCacheJob extends Job implements GenericParameterJob {
 				if ( !$testResult[ 'passed' ] ) {
 					$numFailed++;
 				}
-				$averageTime += self::getNumericMetadataValue( $testResult[ 'result' ], 'orchestrationDuration' );
+				$averageTime += self::getNumericMetaDataValue( $testResult[ 'result' ], 'orchestrationDuration' );
 			}
 			$averageTime /= count( $testMap );
 			$implementationMap[ $implementationZid ][ 'numFailed' ] = $numFailed;
@@ -329,8 +329,8 @@ class ExecuteTestAndCacheJob extends Job implements GenericParameterJob {
 	 * @param string $key
 	 * @return float
 	 */
-	private static function getNumericMetadataValue( stdClass $response, string $key ) {
-		$duration = ZObjectUtils::getMetadataValue( $response, $key );
+	private static function getNumericMetaDataValue( stdClass $response, string $key ) {
+		$duration = ZObjectUtils::getMetaDataValue( $response, $key );
 		return $duration ? floatval( $duration ) : 0.0;
 	}
 

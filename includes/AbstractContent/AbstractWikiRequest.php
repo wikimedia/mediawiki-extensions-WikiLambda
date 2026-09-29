@@ -431,7 +431,7 @@ class AbstractWikiRequest {
 
 		// How long did the orchestrator itself spend evaluating, excluding network time?
 		// Grafana: mediawiki.WikiLambda.aw_orchestration_duration_seconds{}
-		$orchestrationDuration = ZObjectUtils::getMetadataValue( $responseEnvelope, 'orchestrationDuration' );
+		$orchestrationDuration = ZObjectUtils::getMetaDataValue( $responseEnvelope, 'orchestrationDuration' );
 		if ( $orchestrationDuration !== null ) {
 			$this->statsFactory->getTiming( 'aw_orchestration_duration_seconds' )
 				->observe( floatval( $orchestrationDuration ) );
@@ -442,7 +442,7 @@ class AbstractWikiRequest {
 		// If the response value is Void, there is an error in the response metadata.
 		// We can capture it and show some stuff.
 		if ( $htmlFragment === ZTypeRegistry::Z_VOID ) {
-			$zerror = ZObjectUtils::getMetadataValue( $responseEnvelope, 'errors' );
+			$zerror = ZObjectUtils::getMetaDataValue( $responseEnvelope, 'errors' );
 			// (T432333) Surface http status code assigned and returned by the orchestrator
 			// This http status code maps with the inner zerror zid according to the mappings
 			// in `function-schemata/test_data/errors/http_status_mappings.yaml`

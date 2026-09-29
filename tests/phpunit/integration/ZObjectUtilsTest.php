@@ -1820,8 +1820,8 @@ EOT;
 	/**
 	 * @dataProvider provideGetErrorsFromMetadata
 	 */
-	public function testGetMetadataValue( $metadata, $expected ) {
-		$actual = ZObjectUtils::getMetadataValue( $metadata, 'errors' );
+	public function testGetMetaDataValue( $metadata, $expected ) {
+		$actual = ZObjectUtils::getMetaDataValue( $metadata, 'errors' );
 		$this->assertEquals( $expected, $actual );
 	}
 
@@ -1858,7 +1858,7 @@ EOT;
 	/**
 	 * @dataProvider provideSetMetaDataValue
 	 */
-	public function testSetMetadataValue( $response, string $key, $value, $expected ): void {
+	public function testSetMetaDataValue( $response, string $key, $value, $expected ): void {
 		$actual = ZObjectUtils::setMetaDataValue( $response, $key, $value );
 		$this->assertEquals( $expected, $actual );
 	}
