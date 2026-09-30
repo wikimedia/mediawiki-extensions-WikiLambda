@@ -46,7 +46,7 @@ services:
         }
 
   function-evaluator-python:
-    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/wasm-python3-all:latest
+    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/rusty-py:latest
     # Un-comment this if you're using a local build, by running this in your check-out of the evaluator:
     # docker build -f .pipeline/blubber.yaml --target development-python3-all-wasm -t local-evaluator-py .
     # image: local-evaluator-py:latest
@@ -55,7 +55,7 @@ services:
       - 9091:9090
 
   function-evaluator-javascript:
-    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/wasm-javascript-all:latest
+    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/rusty-js:latest
     # Un-comment this if you're using a local build, by running this in your check-out of the evaluator:
     # docker build -f .pipeline/blubber.yaml --target development-javascript-all-wasm -t local-evaluator-js .
     # image: local-evaluator-js:latest
