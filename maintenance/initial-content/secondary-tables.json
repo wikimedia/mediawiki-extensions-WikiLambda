@@ -41185,6 +41185,114 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z2075",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Kimaragang",
+            "wlzl_label_normalised": "kimaragang",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2075",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2075",
+            "wlzl_label": "Kimaragang",
+            "wlzl_label_normalised": "kimaragang",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2075",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2075",
+            "wlzl_label_normalised": "z2075",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2075",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "kqr",
+            "wlzl_label_normalised": "kqr",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2076",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Godoberi",
+            "wlzl_label_normalised": "godoberi",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2076",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2076",
+            "wlzl_label": "гъибдилӀи мицци",
+            "wlzl_label_normalised": "гъибдилӏи мицци",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2076",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2076",
+            "wlzl_label_normalised": "z2076",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2076",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "gdo",
+            "wlzl_label_normalised": "gdo",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2077",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Bangla (Sylheti Nagari script)",
+            "wlzl_label_normalised": "bangla (sylheti nagari script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2077",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2077",
+            "wlzl_label": "ꠛꠣꠋꠟꠣ",
+            "wlzl_label_normalised": "ꠛꠣꠟꠣ",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2077",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2077",
+            "wlzl_label_normalised": "z2077",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2077",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "bn-sylo",
+            "wlzl_label_normalised": "bn-sylo",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z6001",
             "wlzl_type": "Z4",
             "wlzl_language": "Z1002",
@@ -53186,6 +53294,18 @@
         {
             "wlzlangs_zid": "Z2074",
             "wlzlangs_language": "izr"
+        },
+        {
+            "wlzlangs_zid": "Z2075",
+            "wlzlangs_language": "kqr"
+        },
+        {
+            "wlzlangs_zid": "Z2076",
+            "wlzlangs_language": "gdo"
+        },
+        {
+            "wlzlangs_zid": "Z2077",
+            "wlzlangs_language": "bn-sylo"
         }
     ]
 }
