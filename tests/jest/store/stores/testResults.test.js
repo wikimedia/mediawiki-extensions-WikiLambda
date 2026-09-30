@@ -403,6 +403,61 @@ describe( 'testResults Pinia store', () => {
 
 			} );
 
+			it( 'should make one request for 50 testers or fewer', async () => {
+				const zTesters = Array.from( { length: 50 }, ( _, i ) => `Z${ 11000 + i }` );
+
+				await store.getTestResults( {
+					zFunctionId: 'Z10000',
+					zImplementations: [ 'Z10001' ],
+					zTesters
+				} );
+
+				expect( getMock ).toHaveBeenCalledTimes( 1 );
+				expect( Object.keys( store.zTesterResults ).length ).toEqual( 50 );
+			} );
+
+			it( 'should split more than 50 testers and implementations into batches (T433746)', async () => {
+				const zImplementations = Array.from( { length: 51 }, ( _, i ) => `Z${ 12000 + i }` );
+				const zTesters = Array.from( { length: 83 }, ( _, i ) => `Z${ 11000 + i }` );
+
+				await store.getTestResults( {
+					zFunctionId: 'Z10000',
+					zImplementations,
+					zTesters
+				} );
+
+				// 2 implementation batches x 2 tester batches
+				expect( getMock ).toHaveBeenCalledTimes( 4 );
+				getMock.mock.calls.forEach( ( [ params ] ) => {
+					expect( params.wikilambda_perform_test_zimplementations.split( '|' ).length )
+						.toBeLessThanOrEqual( 50 );
+					expect( params.wikilambda_perform_test_ztesters.split( '|' ).length )
+						.toBeLessThanOrEqual( 50 );
+				} );
+				expect( Object.keys( store.zTesterResults ).length )
+					.toEqual( zTesters.length * zImplementations.length );
+				expect( store.setError ).not.toHaveBeenCalled();
+			} );
+
+			it( 'should set an error when one of the batches fails', async () => {
+				const zTesters = Array.from( { length: 60 }, ( _, i ) => `Z${ 11000 + i }` );
+				const successfulGet = getMock.getMockImplementation();
+				getMock
+					.mockImplementationOnce( successfulGet )
+					.mockImplementationOnce( () => Promise.reject( 'internal_api_error' ) );
+
+				await store.getTestResults( {
+					zFunctionId: 'Z10000',
+					zImplementations: [ 'Z10001' ],
+					zTesters
+				} );
+
+				expect( getMock ).toHaveBeenCalledTimes( 2 );
+				expect( store.setError ).toHaveBeenCalledWith( expect.objectContaining( {
+					errorId: Constants.ERROR_IDS.TEST_RESULTS
+				} ) );
+			} );
+
 			it( 'should not reset the tests when not to', async () => {
 				const zFunctionId = 'Z10000';
 				const zImplementations = [ 'Z10001', 'Z10002' ];

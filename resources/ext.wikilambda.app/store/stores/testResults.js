@@ -347,13 +347,35 @@ module.exports = {
 				payload.testers :
 				replaceCurrentZidWithLiteral( payload.testers );
 
-			return performTests( {
-				functionZid: payload.zFunctionId,
-				language: this.getUserLangCode,
-				implementations,
-				testers,
-				signal: payload.signal
-			} ).then( ( results ) => {
+			// Batch implementations and testers in groups of max 50 items (T433746).
+			// An empty list tells the API to use all the items, so keep it as one batch.
+			const toBatches = ( items ) => {
+				if ( !items.length ) {
+					return [ items ];
+				}
+				const batches = [];
+				for ( let i = 0; i < items.length; i += Constants.API_REQUEST_ITEMS_LIMIT ) {
+					batches.push( items.slice( i, i + Constants.API_REQUEST_ITEMS_LIMIT ) );
+				}
+				return batches;
+			};
+
+			// Make one request for each combination of implementation and tester batches
+			const requests = [];
+			toBatches( implementations ).forEach( ( implementationsBatch ) => {
+				toBatches( testers ).forEach( ( testersBatch ) => {
+					requests.push( performTests( {
+						functionZid: payload.zFunctionId,
+						language: this.getUserLangCode,
+						implementations: implementationsBatch,
+						testers: testersBatch,
+						signal: payload.signal
+					} ) );
+				} );
+			} );
+
+			return Promise.all( requests ).then( ( batchResults ) => {
+				const results = [].concat( ...batchResults );
 				const zids = [];
 				let hasPending = false;
 
