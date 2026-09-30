@@ -377,6 +377,8 @@
 	"wikilambda-functioncall-metadata-cached": "Jawaabtan waxaa laga soo helay kaydka",
 	"wikilambda-functioncall-metadata-cache-fresh": "Jawaabta waxaa la soo saaray iyadoo la adeegsanayo xogtii ugu dambeysay",
 	"wikilambda-functioncall-metadata-cache-freshen-button": "Ku socodsii xogtii ugu dambeysay",
+	"wikilambda-functioncall-metadata-cache-help-label": "Ku saabsan asalka natiijada",
+	"wikilambda-functioncall-metadata-cache-help-link": "https://www.mediawiki.org/wiki/Help:Wikifunctions/Provenance_metadata_and_result_freshening",
 	"wikilambda-functioncall-metadata-cache-stored": "Wicitaan shaqo oo kaydsan",
 	"wikilambda-functioncall-metadata-cache-test-call-stored": "Wicitaanka tijaabada kaydsan",
 	"wikilambda-functioncall-metadata-cache-test-result-key": "Lagu tijaabiyay (ZID-yada iyo dib u eegisyada)",

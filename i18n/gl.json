@@ -378,6 +378,8 @@
 	"wikilambda-functioncall-metadata-cached": "Esta resposta recuperouse da caché",
 	"wikilambda-functioncall-metadata-cache-fresh": "A resposta xerouse cos datos máis recentes",
 	"wikilambda-functioncall-metadata-cache-freshen-button": "Executar cos datos máis recentes",
+	"wikilambda-functioncall-metadata-cache-help-label": "Acerca da procedencia dos resultados",
+	"wikilambda-functioncall-metadata-cache-help-link": "https://www.mediawiki.org/wiki/Help:Wikifunctions/Provenance_metadata_and_result_freshening",
 	"wikilambda-functioncall-metadata-cache-stored": "Chamada de función almacenada na caché",
 	"wikilambda-functioncall-metadata-cache-test-call-stored": "Chamada de proba almacenada na caché",
 	"wikilambda-functioncall-metadata-cache-test-result-key": "Probado para (zids e revisións)",

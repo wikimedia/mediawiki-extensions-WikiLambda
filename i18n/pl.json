@@ -384,6 +384,7 @@
 	"wikilambda-functioncall-metadata-cached": "Ten wynik został pobrany z pamięci podręcznej",
 	"wikilambda-functioncall-metadata-cache-fresh": "Wynik wygenerowany na podstawie najnowszych danych",
 	"wikilambda-functioncall-metadata-cache-freshen-button": "Uruchom z najnowszymi danymi",
+	"wikilambda-functioncall-metadata-cache-help-label": "O pochodzeniu wyników",
 	"wikilambda-functioncall-metadata-cache-stored": "Wywołanie funkcji zapisane w pamięci podręcznej",
 	"wikilambda-functioncall-metadata-cache-test-call-stored": "Wywołanie przypadku testowego zapisane w pamięci podręcznej",
 	"wikilambda-functioncall-metadata-cache-test-result-key": "Przetestowano dla (identyfikatory Z i wersje)",

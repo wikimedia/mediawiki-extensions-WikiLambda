@@ -419,7 +419,7 @@
 	"wikilambda-functioncall-metadata-fresh": "Summary for the caching section in the function call metadata, stating that the response was requested fresh, without retrieving the result or data from the cache.\n\n{{doc-wikilambda}}.",
 	"wikilambda-functioncall-metadata-cached": "Summary for the caching section in the function call metadata, stating that the response was retrieved from a cache.\n\n{{doc-wikilambda}}.",
 	"wikilambda-functioncall-metadata-cache-fresh": "Label for the time when the function call was executed with the latest data.\n\n{{doc-wikilambda}}.",
-	"wikilambda-functioncall-metadata-cache-freshen-button": "Label for the button that allows users to re-request the call again but without using cached data or responses.\n\n{{doc-wikilabda}}",
+	"wikilambda-functioncall-metadata-cache-freshen-button": "Label for the button that allows users to re-request the call again but without using cached data or responses.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-cache-help-label": "Label for the link to the help page about the provenance section in the function call metadata dialog.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-cache-help-link": "URL of the help page about the provenance section in the function call metadata dialog.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-cache-stored": "Label for the time when the function call was stored in the cache.",
