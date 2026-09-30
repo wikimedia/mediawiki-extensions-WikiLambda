@@ -19,7 +19,7 @@ services:
               ],
               "evaluatorUri": "http://mediawiki-function-evaluator-python-1:6927/1/v1/evaluate/",
               "evaluatorWs": "",
-              "useReentrance": false
+              "useReentrance": true
             },
             {
               "programmingLanguages": [
@@ -27,7 +27,7 @@ services:
               ],
               "evaluatorUri": "http://mediawiki-function-evaluator-javascript-1:6927/1/v1/evaluate/",
               "evaluatorWs": "",
-              "useReentrance": false
+              "useReentrance": true
             }
           ],
           "useWikidata": true,
@@ -41,6 +41,7 @@ services:
           "useWikidataMemcached": true,
           "wikidataMemcachedTTL": 60000,
           "useBatching": true,
+          "acceptCallbacks": true,
           "generateFunctionsMetrics": true,
           "addNestedMetadata": false
         }
@@ -48,20 +49,26 @@ services:
   function-evaluator-python:
     image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/rusty-py:latest
     # Un-comment this if you're using a local build, by running this in your check-out of the evaluator:
-    # docker build -f .pipeline/blubber.yaml --target development-python3-all-wasm -t local-evaluator-py .
-    # image: local-evaluator-py:latest
+    # docker build -f .pipeline/blubber.yaml --target production-python3-rust-evaluator -t rusty-py .
+    # MacOS: docker build --platform linux/amd64 -f .pipeline/blubber.yaml --target production-python3-rust-evaluator -t rusty-py .
+    # image: rusty-py:latest
     ports:
       - 6928:6927
       - 9091:9090
+    environment:
+      ORCHESTRATOR_CALLBACK_API_URI: "http://mediawiki-function-orchestrator-1:6254/1/v1/callback/"
 
   function-evaluator-javascript:
     image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/rusty-js:latest
     # Un-comment this if you're using a local build, by running this in your check-out of the evaluator:
-    # docker build -f .pipeline/blubber.yaml --target development-javascript-all-wasm -t local-evaluator-js .
-    # image: local-evaluator-js:latest
+    # docker build -f .pipeline/blubber.yaml --target production-javascript-rust-evaluator -t rusty-js .
+    # MacOS: docker build --platform linux/amd64 -f .pipeline/blubber.yaml --target production-javascript-rust-evaluator -t rusty-js .
+    # image: rusty-js:latest
     ports:
       - 6929:6927
       - 9092:9090
+    environment:
+      ORCHESTRATOR_CALLBACK_API_URI: "http://mediawiki-function-orchestrator-1:6254/1/v1/callback/"
 
   memcached:
     image: memcached
