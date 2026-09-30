@@ -23,6 +23,7 @@
 				:alt="title"
 				:width="thumbWidth"
 				:height="thumbHeight"
+				loading="lazy"
 			>
 		</a>
 		<img
@@ -31,6 +32,7 @@
 			:alt="title"
 			:width="thumbWidth"
 			:height="thumbHeight"
+			loading="lazy"
 		>
 		<figcaption class="ext-wikilambda-app-commons-media-preview__title">
 			{{ title }}

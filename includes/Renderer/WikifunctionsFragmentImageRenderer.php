@@ -264,6 +264,8 @@ class WikifunctionsFragmentImageRenderer {
 			'width' => $thumbWidth,
 			'height' => $thumbHeight,
 			'decoding' => 'async',
+			// The browser loads the image only when it comes near the viewport.
+			'loading' => 'lazy',
 			'class' => 'mw-file-element'
 		] );
 

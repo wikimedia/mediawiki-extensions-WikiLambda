@@ -369,6 +369,13 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		$this->assertStringContainsString( 'height="188"', $result );
 	}
 
+	public function testRender_validImage_usesNativeLazyLoading() {
+		$renderer = $this->buildRenderer( $this->makeHttpFactory( self::VALID_API_RESPONSE ) );
+		$result = $renderer->render( 'M68960758', 'thumb', null );
+
+		$this->assertStringContainsString( 'loading="lazy"', $result );
+	}
+
 	// ------------------------------------------------------------------
 	// Caching
 	// ------------------------------------------------------------------
