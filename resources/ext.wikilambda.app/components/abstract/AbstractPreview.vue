@@ -108,17 +108,33 @@ module.exports = exports = defineComponent( {
 		 * @param {string} zid
 		 */
 		function onPreviewLanguageSelect( zid ) {
+			store.fetchZids( { zids: [ zid ] } );
 			store.setPreviewLanguageZid( zid );
 		}
+
+		/**
+		 * ISO code of the selected preview language, or its ZID if the
+		 * ZLanguage object hasn't been fetched yet.
+		 *
+		 * @return {string}
+		 */
+		const previewLanguageIsoCode = computed( () => store.getLanguageIsoCodeOfZLang( previewLanguageZid.value ) );
 
 		// Ensure the topic item's label is available in the selected preview language:
 		// item labels are otherwise only ever fetched in the interface language, so the
 		// lede title would keep showing that language regardless of the preview language
 		// picked here.
-		watch( previewLanguageZid, ( languageZid ) => {
+		// Watch ISO code rather than ZID, so the label is only requested
+		// once the ZLanguage object has been fetched and its ISO code is known. Otherwise,
+		// Wikidata labels are keyed by ISO code, so a label requested with the ZID fallback would
+		// not be found, and the fetch isn't retried.
+		watch( previewLanguageIsoCode, ( langCode ) => {
+			if ( !langCode || langCode === previewLanguageZid.value ) {
+				return;
+			}
 			store.fetchItemLabelInLanguage( {
 				id: store.getAbstractWikiId,
-				langCode: store.getLanguageIsoCodeOfZLang( languageZid )
+				langCode
 			} );
 		}, { immediate: false } );
 

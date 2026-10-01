@@ -37,9 +37,10 @@ const sections = [ {
 
 describe( 'AbstractPreview', () => {
 	let store;
+	let mountedWrapper;
 
 	function renderPreview() {
-		return shallowMount( AbstractPreview, {
+		mountedWrapper = shallowMount( AbstractPreview, {
 			global: {
 				stubs: {
 					'wl-widget-base': false,
@@ -48,6 +49,7 @@ describe( 'AbstractPreview', () => {
 				}
 			}
 		} );
+		return mountedWrapper;
 	}
 
 	beforeEach( () => {
@@ -62,6 +64,13 @@ describe( 'AbstractPreview', () => {
 		store.getItemLabelData = jest.fn().mockImplementation( ( id ) => ( id === 'Q42' ) ? { label: 'Douglas Adams' } : undefined );
 		store.getLanguageIsoCodeOfZLang = jest.fn().mockReturnValue( 'en' );
 		store.fetchItemLabelInLanguage = jest.fn();
+	} );
+
+	afterEach( () => {
+		if ( mountedWrapper ) {
+			mountedWrapper.unmount();
+			mountedWrapper = undefined;
+		}
 	} );
 
 	it( 'renders without errors', () => {
@@ -155,22 +164,48 @@ describe( 'AbstractPreview', () => {
 		expect( store.getLabelDataForLangCode ).toHaveBeenCalledWith( 'Z11926' );
 	} );
 
-	it( 'ensures the topic item label is fetched in the selected preview language on mount', () => {
+	it( 'does not fetch the topic item label on mount', () => {
+		// The initial item fetch already requests it in the interface language
 		renderPreview();
 
-		expect( store.getLanguageIsoCodeOfZLang ).toHaveBeenCalledWith( 'Z1002' );
-		expect( store.fetchItemLabelInLanguage ).toHaveBeenCalledWith( { id: 'Q42', langCode: 'en' } );
+		expect( store.fetchItemLabelInLanguage ).not.toHaveBeenCalled();
 	} );
 
 	it( 'fetches the topic item label again when the preview language changes', async () => {
 		const wrapper = renderPreview();
-		store.fetchItemLabelInLanguage.mockClear();
-		store.getLanguageIsoCodeOfZLang.mockReturnValue( 'ar' );
+		store.getLanguageIsoCodeOfZLang = jest.fn().mockReturnValue( 'ar' );
 
-		store.getPreviewLanguageZid = 'Z1832';
+		store.getPreviewLanguageZid = 'Z1001';
 		await wrapper.vm.$nextTick();
 
-		expect( store.getLanguageIsoCodeOfZLang ).toHaveBeenCalledWith( 'Z1832' );
+		expect( store.getLanguageIsoCodeOfZLang ).toHaveBeenCalledWith( 'Z1001' );
 		expect( store.fetchItemLabelInLanguage ).toHaveBeenCalledWith( { id: 'Q42', langCode: 'ar' } );
+	} );
+
+	it( 'waits for the selected ZLanguage before fetching the topic item label', async () => {
+		const wrapper = renderPreview();
+		// ZLanguage object not fetched yet, so the ZID is returned
+		store.getLanguageIsoCodeOfZLang = jest.fn().mockImplementation( ( zid ) => zid );
+
+		store.getPreviewLanguageZid = 'Z1830';
+		await wrapper.vm.$nextTick();
+
+		expect( store.fetchItemLabelInLanguage ).not.toHaveBeenCalled();
+
+		// ZLanguage object is now fetched
+		store.getLanguageIsoCodeOfZLang = jest.fn().mockReturnValue( 'ja' );
+		await wrapper.vm.$nextTick();
+
+		expect( store.fetchItemLabelInLanguage ).toHaveBeenCalledTimes( 1 );
+		expect( store.fetchItemLabelInLanguage ).toHaveBeenCalledWith( { id: 'Q42', langCode: 'ja' } );
+	} );
+
+	it( 'fetches the selected ZLanguage object and sets it as the preview language', () => {
+		const wrapper = renderPreview();
+
+		wrapper.findComponent( { name: 'wl-z-object-selector' } ).vm.$emit( 'select-item', 'Z1830' );
+
+		expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z1830' ] } );
+		expect( store.setPreviewLanguageZid ).toHaveBeenCalledWith( 'Z1830' );
 	} );
 } );
