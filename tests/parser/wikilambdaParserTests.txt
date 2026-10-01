@@ -1,0 +1,130 @@
+!! options
+version=2
+parsoid-compatible=wt2html,wt2wt,html2wt,selser
+!! end
+
+# Parser tests for the WikiLambda parser functions.
+#
+# The fragment store is empty here, so each {{#function:…}} call gives the pending placeholder.
+# The PHPUnit tests for WikifunctionsPFragmentHandler cover the cached, failed and offline results.
+
+!! article
+Z10001
+!! text
+{
+	"Z1K1": "Z2",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10001" },
+	"Z2K2": "Value",
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "Label with ''quotes'' and [[brackets]]" } ] },
+	"Z2K4": { "Z1K1": "Z32", "Z32K1": [ "Z31" ] },
+	"Z2K5": { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "Description" } ] }
+}
+!! endarticle
+
+!! article
+Z10002
+!! text
+{
+	"Z1K1": "Z2",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10002" },
+	"Z2K2": "Value",
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "Undescribed label" } ] },
+	"Z2K4": { "Z1K1": "Z32", "Z32K1": [ "Z31" ] },
+	"Z2K5": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] }
+}
+!! endarticle
+
+!! test
+WikiLambda: Function call gives the pending placeholder
+!! wikitext
+{{#function:Z10000|foo}}
+!! html/parsoid
+<p><span class="mw-async-not-ready mw-wikifunctions-fragment-pending" typeof="mw:Transclusion mw:ParserFunction/function" about="#mwt1" data-parsoid='{"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"parserfunction":{"target":{"wt":"#function","key":"function"},"params":{"1":{"wt":"Z10000"},"2":{"wt":"foo"}},"i":0}}]}'>⏳ Function is being called…</span></p>
+!! end
+
+!! test
+WikiLambda: Function call inline in text
+!! wikitext
+Before {{#function:Z10000|foo}} after.
+!! html/parsoid
+<p>Before <span class="mw-async-not-ready mw-wikifunctions-fragment-pending" typeof="mw:Transclusion mw:ParserFunction/function" about="#mwt1" data-parsoid='{"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"parserfunction":{"target":{"wt":"#function","key":"function"},"params":{"1":{"wt":"Z10000"},"2":{"wt":"foo"}},"i":0}}]}'>⏳ Function is being called…</span> after.</p>
+!! end
+
+!! test
+WikiLambda: Function call keeps the whitespace and order of its arguments
+!! wikitext
+{{#function: Z10000 | foo |bar| baz }}
+!! html/parsoid
+<p><span class="mw-async-not-ready mw-wikifunctions-fragment-pending" typeof="mw:Transclusion mw:ParserFunction/function" about="#mwt1" data-parsoid='{"pi":[[{"k":"1"},{"k":"2"},{"k":"3"},{"k":"4"}]]}' data-mw='{"parts":[{"parserfunction":{"target":{"wt":"#function","key":"function"},"params":{"1":{"wt":" Z10000 "},"2":{"wt":" foo "},"3":{"wt":"bar"},"4":{"wt":" baz "}},"i":0}}]}'>⏳ Function is being called…</span></p>
+!! end
+
+!! test
+WikiLambda: Function call nested in an argument of a function call
+!! wikitext
+{{#function:Z10000|{{#function:Z10003|foo}}}}
+!! html/parsoid
+<p><span class="mw-async-not-ready mw-wikifunctions-fragment-pending" typeof="mw:Transclusion mw:ParserFunction/function" about="#mwt1" data-parsoid='{"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"parserfunction":{"target":{"wt":"#function","key":"function"},"params":{"1":{"wt":"Z10000"},"2":{"wt":"{{#function:Z10003|foo}}"}},"i":0}}]}'>⏳ Function is being called…</span></p>
+!! end
+
+!! test
+WikiLambda: Function call with an invalid ZID gives the pending placeholder
+!! wikitext
+{{#function:Z0|foo}}
+!! html/parsoid
+<p><span class="mw-async-not-ready mw-wikifunctions-fragment-pending" typeof="mw:Transclusion mw:ParserFunction/function" about="#mwt1" data-parsoid='{"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"parserfunction":{"target":{"wt":"#function","key":"function"},"params":{"1":{"wt":"Z0"},"2":{"wt":"foo"}},"i":0}}]}'>⏳ Function is being called…</span></p>
+!! end
+
+!! test
+WikiLambda: Label of a ZObject, with wikitext in the label escaped
+!! wikitext
+{{#wikifunctionlabel:Z10001|en}}
+!! html/php
+<p><a href="/wiki/Z10001" title="Z10001">Label with &#39;&#39;quotes&#39;&#39; and &#91;&#91;brackets&#93;&#93; (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10001</span>)</a>
+</p>
+!! html/parsoid
+<p><a rel="mw:WikiLink" href="./Z10001" title="Z10001" about="#mwt1" typeof="mw:Transclusion" data-parsoid='{"stx":"piped","a":{"href":"./Z10001"},"sa":{"href":"Z10001"},"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"template":{"target":{"wt":"#wikifunctionlabel:Z10001","function":"wikifunctionlabel"},"params":{"1":{"wt":"en"}},"i":0}}]}'>Label with <span typeof="mw:Entity">'</span><span typeof="mw:Entity">'</span>quotes<span typeof="mw:Entity">'</span><span typeof="mw:Entity">'</span> and <span typeof="mw:Entity">[</span><span typeof="mw:Entity">[</span>brackets<span typeof="mw:Entity">]</span><span typeof="mw:Entity">]</span> (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10001</span>)</a></p>
+!! end
+
+!! test
+WikiLambda: Label and description of a ZObject
+!! wikitext
+{{#wikifunctionlabeldesc:Z10001|en}}
+!! html/php
+<p><a href="/wiki/Z10001" title="Z10001">Label with &#39;&#39;quotes&#39;&#39; and &#91;&#91;brackets&#93;&#93; (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10001</span>): <span class="ext-wikilambda-inline-description">Description</span></a>
+</p>
+!! html/parsoid
+<p><a rel="mw:WikiLink" href="./Z10001" title="Z10001" about="#mwt1" typeof="mw:Transclusion" data-parsoid='{"stx":"piped","a":{"href":"./Z10001"},"sa":{"href":"Z10001"},"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"template":{"target":{"wt":"#wikifunctionlabeldesc:Z10001","function":"wikifunctionlabeldesc"},"params":{"1":{"wt":"en"}},"i":0}}]}'>Label with <span typeof="mw:Entity">'</span><span typeof="mw:Entity">'</span>quotes<span typeof="mw:Entity">'</span><span typeof="mw:Entity">'</span> and <span typeof="mw:Entity">[</span><span typeof="mw:Entity">[</span>brackets<span typeof="mw:Entity">]</span><span typeof="mw:Entity">]</span> (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10001</span>): <span class="ext-wikilambda-inline-description">Description</span></a></p>
+!! end
+
+!! test
+WikiLambda: Label and description of a ZObject with no description
+!! wikitext
+{{#wikifunctionlabeldesc:Z10002|en}}
+!! html/php
+<p><a href="/wiki/Z10002" title="Z10002">Undescribed label (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10002</span>): <span class="ext-wikilambda-inline-description">Description missing</span></a>
+</p>
+!! html/parsoid
+<p><a rel="mw:WikiLink" href="./Z10002" title="Z10002" about="#mwt1" typeof="mw:Transclusion" data-parsoid='{"stx":"piped","a":{"href":"./Z10002"},"sa":{"href":"Z10002"},"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"template":{"target":{"wt":"#wikifunctionlabeldesc:Z10002","function":"wikifunctionlabeldesc"},"params":{"1":{"wt":"en"}},"i":0}}]}'>Undescribed label (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10002</span>): <span class="ext-wikilambda-inline-description">Description missing</span></a></p>
+!! end
+
+!! test
+WikiLambda: Label of a ZObject that does not exist
+!! wikitext
+{{#wikifunctionlabel:Z10004|en}}
+!! html/php
+<p><a href="/index.php?title=Z10004&amp;action=edit&amp;redlink=1" class="new" title="Z10004 (page does not exist)">Unlabelled (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10004</span>)</a>
+</p>
+!! html/parsoid
+<p><a rel="mw:WikiLink" href="./Z10004?action=edit&amp;redlink=1" title="Z10004" about="#mwt1" typeof="mw:Transclusion mw:LocalizedAttrs" class="new" data-parsoid='{"stx":"piped","a":{"href":"./Z10004"},"sa":{"href":"Z10004"},"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"template":{"target":{"wt":"#wikifunctionlabel:Z10004","function":"wikifunctionlabel"},"params":{"1":{"wt":"en"}},"i":0}}]}' data-mw-i18n='{"title":{"lang":"x-page","key":"red-link-title","params":["Z10004"]}}'>Unlabelled (<span dir="ltr" class="ext-wikilambda-inline-zid">Z10004</span>)</a></p>
+!! end
+
+!! test
+WikiLambda: Label of an invalid ZID gives the escaped text
+!! wikitext
+{{#wikifunctionlabel:Z!0|en}}
+!! html/php
+<p>Z!0
+</p>
+!! html/parsoid
+<p><span about="#mwt1" typeof="mw:Transclusion" data-parsoid='{"pi":[[{"k":"1"},{"k":"2"}]]}' data-mw='{"parts":[{"template":{"target":{"wt":"#wikifunctionlabel:Z!0","function":"wikifunctionlabel"},"params":{"1":{"wt":"en"}},"i":0}}]}'>Z!0</span></p>
+!! end
