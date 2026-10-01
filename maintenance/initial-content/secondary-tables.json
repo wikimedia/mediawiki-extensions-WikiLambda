@@ -41293,6 +41293,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z2078",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Swiss Italian",
+            "wlzl_label_normalised": "swiss italian",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2078",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2078",
+            "wlzl_label": "italiano svizzero",
+            "wlzl_label_normalised": "italiano svizzero",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2078",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2078",
+            "wlzl_label_normalised": "z2078",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2078",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "it-ch",
+            "wlzl_label_normalised": "it-ch",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z6001",
             "wlzl_type": "Z4",
             "wlzl_language": "Z1002",
@@ -53306,6 +53342,10 @@
         {
             "wlzlangs_zid": "Z2077",
             "wlzlangs_language": "bn-sylo"
+        },
+        {
+            "wlzlangs_zid": "Z2078",
+            "wlzlangs_language": "it-ch"
         }
     ]
 }
