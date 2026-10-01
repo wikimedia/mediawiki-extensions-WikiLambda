@@ -40,6 +40,9 @@ use Wikimedia\Stats\StatsFactory;
 
 class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
+	/** Timeout in milliseconds to fetch a Function from Wikifunctions, to find default values. */
+	private const FETCH_FUNCTION_TIMEOUT_MS = 1000;
+
 	private LoggerInterface $logger;
 	/**
 	 * @var TimingMetric|NullMetric (might be a NullMetric in some circumstances)
@@ -282,39 +285,45 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// Initialize record of arguments that will always contain today's date
 		$functionCall[ 'temporalArgs' ] = [];
 
+		// Fetch the Function only once, and only if an arg is empty and the target can be a Function
+		$firstEmptyArgKey = array_search( '', $functionCall[ 'arguments' ], true );
+		if ( $firstEmptyArgKey === false || !ZObjectUtils::isValidZObjectReference( $functionCall[ 'target' ] ) ) {
+			return $functionCall;
+		}
+
+		// 2.1. Fetch Function Zid from Memcached
+		$zobject = $this->clientObjectStore->fetchFromZObjectCache( $functionCall[ 'target' ] );
+		if ( !$zobject ) {
+			// 2.2. Fetch Function Zid from Wikifunctions
+			$this->logger->info(
+				__METHOD__ . ' cache miss while fetching {zid} for empty argument {arg}, falling back to API',
+				[
+					'zid' => $functionCall[ 'target' ],
+					'arg' => $firstEmptyArgKey
+				]
+			);
+			$zobject = $this->fetchFunctionFromWikifunctionsApi( $functionCall[ 'target' ], $firstEmptyArgKey );
+		}
+
+		// If function is not found, return:
+		if ( !$zobject ) {
+			return $functionCall;
+		}
+
+		// If object is not a function, return:
+		$function = $zobject[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
+		if ( $function[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_FUNCTION ) {
+			return $functionCall;
+		}
+		$args = array_slice( $function[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ], 1 );
+
 		foreach ( $functionCall[ 'arguments' ] as $argKey => $argValue ) {
 			// If argValue is not empty, continue
 			if ( $argValue !== '' ) {
 				continue;
 			}
 
-			// 2.1. Fetch Function Zid from Memcached
-			$zobject = $this->clientObjectStore->fetchFromZObjectCache( $functionCall[ 'target' ] );
-			if ( !$zobject ) {
-				// 2.2. Fetch Function Zid from Wikifunctions
-				$this->logger->info(
-					__METHOD__ . ' cache miss while fetching {zid} for empty argument {arg}, falling back to API',
-					[
-						'zid' => $functionCall[ 'target' ],
-						'arg' => $argKey
-					]
-				);
-				$zobject = $this->fetchFunctionFromWikifunctionsApi( $functionCall[ 'target' ], $argKey );
-			}
-
-			// If function is not found, return on first iteration:
-			if ( !$zobject ) {
-				return $functionCall;
-			}
-
-			// If object is not a function, return on first iteration:
-			$function = $zobject[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
-			if ( $function[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_FUNCTION ) {
-				return $functionCall;
-			}
-
 			// 2.3. Get argument type zid
-			$args = array_slice( $function[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ], 1 );
 			$matches = array_filter( $args, static function ( $item ) use ( $argKey ) {
 				return isset( $item[ ZTypeRegistry::Z_ARGUMENTDECLARATION_ID ] ) &&
 					$item[ ZTypeRegistry::Z_ARGUMENTDECLARATION_ID ] === $argKey;
@@ -405,7 +414,12 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		];
 		$baseUrl = WikifunctionsClientRequestJob::getClientTargetUrl( $this->config, $this->logger );
 		$apiUrl = wfAppendQuery( $baseUrl . wfScript( 'api' ), $requestParams );
-		$request = $this->httpRequestFactory->create( $apiUrl, [ 'method' => 'GET' ], __METHOD__ );
+		$request = $this->httpRequestFactory->create(
+			$apiUrl,
+			// The parse waits for this request, so do not use the longer default timeout.
+			[ 'method' => 'GET', 'timeout' => self::FETCH_FUNCTION_TIMEOUT_MS / 1000 ],
+			__METHOD__
+		);
 
 		if ( !$request ) {
 			$this->logger->error(

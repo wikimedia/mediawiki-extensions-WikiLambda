@@ -18,8 +18,10 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Http\HttpRequestFactory;
+use MediaWiki\Http\MWHttpRequest;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Parser\ParserOutput;
+use StatusValue;
 use Wikimedia\Parsoid\Core\ContentMetadataCollector;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
@@ -858,6 +860,63 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 				"The parse counts once when it goes over the '$type' threshold"
 			);
 		}
+	}
+
+	/**
+	 * Build a handler whose ZObject cache always misses, so that a default-value lookup goes to the API.
+	 */
+	private function buildHandlerWithZObjectCacheMiss(
+		HttpRequestFactory $httpRequestFactory,
+		int $expectedCacheReads
+	): WikifunctionsPFragmentHandler {
+		$mockClientObjectStore = $this->createMock( WikifunctionsClientStore::class );
+		$mockClientObjectStore
+			->expects( $this->exactly( $expectedCacheReads ) )
+			->method( 'fetchFromZObjectCache' )
+			->willReturn( null );
+
+		return new WikifunctionsPFragmentHandler(
+			$this->getServiceContainer()->getStatsFactory(),
+			$this->getServiceContainer()->getMainConfig(),
+			$this->createMock( JobQueueGroup::class ),
+			$httpRequestFactory,
+			$this->getServiceContainer()->get( 'WikiLambdaPFragmentRenderer' ),
+			$mockClientObjectStore,
+			$this->createMock( WikifunctionsFragmentStore::class )
+		);
+	}
+
+	public function testSourceToFragment_fetchesFunctionOnceWithShortTimeoutForEmptyArgs() {
+		$mockRequest = $this->createMock( MWHttpRequest::class );
+		$mockRequest->method( 'execute' )->willReturn( StatusValue::newFatal( 'http-request-error' ) );
+		$mockRequest->method( 'getContent' )->willReturn( '' );
+
+		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
+		$mockHttpRequestFactory
+			->expects( $this->once() )
+			->method( 'create' )
+			->with(
+				$this->stringContains( 'zids=Z10000' ),
+				$this->callback( static fn ( $options ) => $options['timeout'] === 1 )
+			)
+			->willReturn( $mockRequest );
+
+		$handler = $this->buildHandlerWithZObjectCacheMiss( $mockHttpRequestFactory, 1 );
+		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
+
+		// {{#function:Z10000||}}
+		$handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'Z10000', '', '' ] ), false );
+	}
+
+	public function testSourceToFragment_doesNotFetchFunctionForEmptyArgsOfTargetThatIsNotAZid() {
+		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
+		$mockHttpRequestFactory->expects( $this->never() )->method( 'create' );
+
+		$handler = $this->buildHandlerWithZObjectCacheMiss( $mockHttpRequestFactory, 0 );
+		$extApi = new ParsoidExtensionAPI( new MockEnv( [] ), [] );
+
+		// {{#function:foo||}}
+		$handler->sourceToFragment( $extApi, $this->getMockArguments( [ 'foo', '', '' ] ), false );
 	}
 
 	public function testSourceToFragment_queuesRenderJobWhenCachedValueIsStale() {
