@@ -11,7 +11,6 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Config;
 
 use MediaWiki\Extension\WikiLambda\Config\AbstractSuggestedFunctionsSchema;
 use MediaWikiUnitTestCase;
-use ReflectionClass;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Config\AbstractSuggestedFunctionsSchema
@@ -19,8 +18,7 @@ use ReflectionClass;
 class AbstractSuggestedFunctionsSchemaTest extends MediaWikiUnitTestCase {
 
 	private static function getProperty(): array {
-		$reflection = new ReflectionClass( AbstractSuggestedFunctionsSchema::class );
-		return $reflection->getConstant( 'SuggestedFunctions' );
+		return AbstractSuggestedFunctionsSchema::SuggestedFunctions;
 	}
 
 	public function testIsArrayType(): void {

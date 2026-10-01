@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Page\Article;
 use MediaWiki\Title\Title;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction
@@ -86,8 +87,7 @@ class AbstractContentHistoryActionTest extends WikiLambdaAbstractModeIntegration
 	}
 
 	private function invokeGetPageTitle( AbstractContentHistoryAction $action ): \MediaWiki\Message\Message {
-		$method = new \ReflectionMethod( AbstractContentHistoryAction::class, 'getPageTitle' );
-		return $method->invoke( $action );
+		return TestingAccessWrapper::newFromObject( $action )->getPageTitle();
 	}
 
 	private function makeAction( string $qid ): AbstractContentHistoryAction {

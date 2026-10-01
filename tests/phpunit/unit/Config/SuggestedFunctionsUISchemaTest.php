@@ -51,7 +51,7 @@ class SuggestedFunctionsUISchemaTest extends MediaWikiUnitTestCase {
 	public function testDataSchemaPointsAtItsUiSchema( string $schemaClass, string $uiSchemaClass ): void {
 		$this->assertSame(
 			$uiSchemaClass,
-			( new ReflectionClass( $schemaClass ) )->getConstant( 'UI_SCHEMA' )
+			$schemaClass::UI_SCHEMA
 		);
 	}
 

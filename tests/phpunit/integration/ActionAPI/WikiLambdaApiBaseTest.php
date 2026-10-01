@@ -21,7 +21,6 @@ use MediaWiki\Extension\WikiLambda\ActionAPI\WikiLambdaApiBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockOrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use ReflectionClass;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -372,8 +371,7 @@ class WikiLambdaApiBaseTest extends WikiLambdaApiTestCase {
 	public function testHasUnsavedCode_failsClosedOnHugeInput() {
 		$wrapper = $this->getWrappedModule();
 
-		$budget = ( new ReflectionClass( WikiLambdaApiBase::class ) )
-			->getConstant( 'MAX_CODE_SCAN_NODES' );
+		$budget = TestingAccessWrapper::constant( WikiLambdaApiBase::class, 'MAX_CODE_SCAN_NODES' );
 
 		// A flat list of objects, one longer than the walk will look at. array_fill
 		// repeats the same object, so this costs one object and a list of handles.
