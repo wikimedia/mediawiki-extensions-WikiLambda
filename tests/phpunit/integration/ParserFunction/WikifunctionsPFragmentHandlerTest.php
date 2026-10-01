@@ -19,12 +19,15 @@ use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaClientIntegration
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Parser\ParserOutput;
+use Wikimedia\Parsoid\Core\ContentMetadataCollector;
 use Wikimedia\Parsoid\Ext\ParsoidExtensionAPI;
 use Wikimedia\Parsoid\Fragments\HtmlPFragment;
 use Wikimedia\Parsoid\Fragments\LiteralStringPFragment;
 use Wikimedia\Parsoid\Fragments\WikitextPFragment;
 use Wikimedia\Parsoid\Mocks\MockEnv;
 use Wikimedia\Parsoid\Wt2Html\TT\TemplateHandlerArguments;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsPFragmentHandler
@@ -530,9 +533,12 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 	 *
 	 * @param array|false|null $cacheValue value to return from fetchFromFunctionCallCache()
 	 * @param array &$pushedJobs populated by the mock JobQueueGroup
+	 * @param StatsFactory|null $statsFactory
 	 * @return array{0: WikifunctionsPFragmentHandler, 1: ParsoidExtensionAPI}
 	 */
-	private function buildHandlerWithCachedValue( $cacheValue, array &$pushedJobs ): array {
+	private function buildHandlerWithCachedValue(
+		$cacheValue, array &$pushedJobs, ?StatsFactory $statsFactory = null
+	): array {
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
 
 		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
@@ -547,7 +553,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			} );
 
 		$handler = new WikifunctionsPFragmentHandler(
-			$this->getServiceContainer()->getStatsFactory(),
+			$statsFactory ?? $this->getServiceContainer()->getStatsFactory(),
 			$mainConfig,
 			$mockJobQueueGroup,
 			$this->createMock( HttpRequestFactory::class ),
@@ -770,6 +776,88 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			),
 			'Nested function-call expansion must not unbalance the shared timing metric'
 		);
+	}
+
+	/**
+	 * MockEnv uses a StubMetadataCollector, which cannot read back limit report data.
+	 */
+	private function newExtApiWithParserOutput( ParserOutput $parserOutput ): ParsoidExtensionAPI {
+		$env = new class( [] ) extends MockEnv {
+			public ParserOutput $parserOutput;
+
+			public function getMetadata(): ContentMetadataCollector {
+				return $this->parserOutput;
+			}
+		};
+		$env->parserOutput = $parserOutput;
+		return new ParsoidExtensionAPI( $env, [] );
+	}
+
+	/**
+	 * @dataProvider provideLimitReportData
+	 */
+	public function testSourceToFragment_addsLimitReportData( ?array $cacheValue, array $expected ) {
+		$pushedJobs = [];
+		[ $handler ] = $this->buildHandlerWithCachedValue( $cacheValue, $pushedJobs );
+		$parserOutput = new ParserOutput();
+		$extApi = $this->newExtApiWithParserOutput( $parserOutput );
+
+		// Call twice, to check that the counts add up over the page.
+		$arguments = $this->getMockArguments( [ 'Z10000', 'foo' ] );
+		$handler->sourceToFragment( $extApi, $arguments, false );
+		$handler->sourceToFragment( $extApi, $arguments, false );
+
+		$this->assertSame( $expected, $parserOutput->getLimitReportData() );
+	}
+
+	public static function provideLimitReportData() {
+		yield 'cached success' => [
+			[ 'success' => true, 'value' => 'foo', 'type' => 'Z6' ],
+			[
+				'wikilambda-limitreport-totalcalls' => 2,
+				'wikilambda-limitreport-failedcalls' => 0,
+				'wikilambda-limitreport-uncachedcalls' => 0,
+			],
+		];
+		yield 'cached failure' => [
+			// See testSourceToFragment_returnsErrorFragmentForCachedFailure for the choice of key.
+			[ 'success' => false, 'errorMessageKey' => 'broken-file' ],
+			[
+				'wikilambda-limitreport-totalcalls' => 2,
+				'wikilambda-limitreport-failedcalls' => 2,
+				'wikilambda-limitreport-uncachedcalls' => 0,
+			],
+		];
+		yield 'uncached' => [
+			null,
+			[
+				'wikilambda-limitreport-totalcalls' => 2,
+				'wikilambda-limitreport-failedcalls' => 0,
+				'wikilambda-limitreport-uncachedcalls' => 2,
+			],
+		];
+	}
+
+	public function testSourceToFragment_countsParseOverCallThresholdOnce() {
+		$this->overrideConfigValue( 'WikiLambdaClientCallThresholds', [ 'total' => 1, 'uncached' => 1 ] );
+		$statsHelper = StatsFactory::newUnitTestingHelper()->withComponent( 'WikiLambdaClient' );
+
+		$pushedJobs = [];
+		[ $handler ] = $this->buildHandlerWithCachedValue( null, $pushedJobs, $statsHelper->getStatsFactory() );
+		$extApi = $this->newExtApiWithParserOutput( new ParserOutput() );
+
+		$arguments = $this->getMockArguments( [ 'Z10000', 'foo' ] );
+		for ( $i = 0; $i < 3; $i++ ) {
+			$handler->sourceToFragment( $extApi, $arguments, false );
+		}
+
+		foreach ( [ 'total', 'uncached' ] as $type ) {
+			$this->assertSame(
+				1.0,
+				$statsHelper->sum( "parse_over_call_threshold_total{calls=\"$type\"}" ),
+				"The parse counts once when it goes over the '$type' threshold"
+			);
+		}
 	}
 
 	public function testSourceToFragment_queuesRenderJobWhenCachedValueIsStale() {

@@ -45,6 +45,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	 * @var TimingMetric|NullMetric (might be a NullMetric in some circumstances)
 	 */
 	private $statsFactoryTimer;
+	private StatsFactory $statsFactory;
 
 	public function __construct(
 		StatsFactory $statsFactory,
@@ -58,9 +59,9 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
 
-		$this->statsFactoryTimer = $statsFactory
+		$this->statsFactory = $statsFactory->withComponent( 'WikiLambdaClient' );
+		$this->statsFactoryTimer = $this->statsFactory
 			// Will end up as 'mediawiki.WikiLambdaClient.parsoid_to_fragment_handler_seconds{response=…}'
-			->withComponent( 'WikiLambdaClient' )
 			->getTiming( 'parsoid_to_fragment_handler_seconds' )
 			->setLabel( 'wiki', WikiMap::getCurrentWikiId() );
 	}
@@ -185,10 +186,12 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 						'function' => $expansion['target'],
 						'page' => $extApi->getPageConfig()->getLinkTarget()->__toString(),
 					] );
+					$this->addToLimitReport( $extApi, 'cached' );
 					$timer->setLabel( 'response', 'cached' )->stop();
 					return HtmlPFragment::newFromHtmlString( $html, null );
 				}
 				// Otherwise, return as literal
+				$this->addToLimitReport( $extApi, 'cached' );
 				$timer->setLabel( 'response', 'cached' )->stop();
 				return WikifunctionsPFragment::newFromLiteral( $cachedValue['value'] );
 			}
@@ -211,6 +214,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 				[ 'ext.wikilambda.inlineerrors' ]
 			);
 
+			$this->addToLimitReport( $extApi, 'cachedError' );
 			$timer->setLabel( 'response', 'cachedError' )->stop();
 
 			return $this->createErrorfulFragment( $extApi, $errorMessageKey );
@@ -226,6 +230,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 
 		// Check if SRE have set this wiki (probably all wikis) temporarily to not try to use Wikifunctions.
 		if ( WikiLambdaServices::getMode()->isClientOffline() ) {
+			$this->addToLimitReport( $extApi, 'offline' );
 			$timer->setLabel( 'response', 'offline' )->stop();
 			return HtmlPFragment::newFromHtmlString( Html::errorBox(
 				wfMessage( 'wikilambda-fragment-disabled' )->text()
@@ -238,6 +243,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		$this->queueRevalidateJob( $expansion );
 
 		// As we're async, return a "sorry, no content yet" fragment
+		$this->addToLimitReport( $extApi, 'pending' );
 		$timer->setLabel( 'response', 'pending' )->stop();
 		return new WikifunctionsPendingFragment(
 			$extApi->getPageConfig()->getPageLanguageBcp47(), null
@@ -340,6 +346,46 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 		}
 
 		return $functionCall;
+	}
+
+	/**
+	 * Count this call in the parser limit report, and record when the page goes over a threshold.
+	 *
+	 * @param ParsoidExtensionAPI $extApi
+	 * @param string $response One of 'cached', 'cachedError', 'offline' or 'pending'
+	 */
+	private function addToLimitReport( ParsoidExtensionAPI $extApi, string $response ): void {
+		$metadata = $extApi->getMetadata();
+		// Parsoid's StubMetadataCollector (e.g. in tests) cannot read back limit report data.
+		if ( !( $metadata instanceof ParserOutput ) ) {
+			return;
+		}
+
+		$increments = [
+			'total' => 1,
+			'failed' => $response === 'cachedError' ? 1 : 0,
+			'uncached' => $response === 'offline' || $response === 'pending' ? 1 : 0,
+		];
+		$existingData = $metadata->getLimitReportData();
+		$thresholds = $this->config->get( 'WikiLambdaClientCallThresholds' );
+
+		foreach ( $increments as $type => $increment ) {
+			// The following messages are used here:
+			// * wikilambda-limitreport-totalcalls
+			// * wikilambda-limitreport-failedcalls
+			// * wikilambda-limitreport-uncachedcalls
+			$key = "wikilambda-limitreport-{$type}calls";
+			$count = ( $existingData[$key] ?? 0 ) + $increment;
+			$metadata->setLimitReportData( $key, $count );
+
+			// Record only the call that crosses the threshold, so each parse counts once.
+			if ( $increment && isset( $thresholds[$type] ) && $count === $thresholds[$type] + 1 ) {
+				$this->statsFactory->getCounter( 'parse_over_call_threshold_total' )
+					->setLabel( 'wiki', WikiMap::getCurrentWikiId() )
+					->setLabel( 'calls', $type )
+					->increment();
+			}
+		}
 	}
 
 	/**

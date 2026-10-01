@@ -85,6 +85,13 @@
 			"description": "If true, have the 'client' mode of WikiLambda emit a disabled state and use cached values, but not try to run new Functions calls.",
 			"value": false
 		},
+		"WikiLambdaClientCallThresholds": {
+			"description": "Number of Wikifunctions calls on a page above which a parse is counted in the 'parse_over_call_threshold_total' metric, by type of call ('total' or 'uncached'). These are not enforced.",
+			"value": {
+				"total": 20,
+				"uncached": 5
+			}
+		},
 		"WikiLambdaClientTargetAPI": {
 			"description": "API to target to make function calls (to allow testing against non-standard wikis).",
 			"value": "//www.wikifunctions.org"
