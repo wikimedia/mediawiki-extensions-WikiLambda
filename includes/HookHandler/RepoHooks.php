@@ -215,6 +215,10 @@ class RepoHooks implements
 		// user with an account. A logged-out caller needs an 'ip' or 'subnet' bucket, which we
 		// cannot add until app server addresses are excluded: fragment rendering calls the API
 		// over HTTP from an app server, and one address then carries the whole wiki.
+		//
+		// A group bucket must name an *explicit* group. RateLimiter::limit() matches
+		// against UserGroupManager::getUserGroups(), which reads the user_groups table, so the
+		// implicit groups from getUserImplicitGroups(), such as 'autoconfirmed', aren't used here.
 		$rateLimits = [
 			'wikilambda-execute' => [
 				// Functioneers can make 50 calls per minute
@@ -235,10 +239,8 @@ class RepoHooks implements
 				'functionmaintainer' => [ 10, 60 ],
 				// Functioneers can make 5 fresh calls per minute
 				'functioneer' => [ 5, 60 ],
-				// Logged-in autoconfirmed users can make 2 fresh calls per minute
-				'autoconfirmed' => [ 2, 60 ],
-				// Regular logged-in users cannot make fresh calls
-				'user' => [ 0, 60 ],
+				// Everyone else holding the right can make 2 fresh calls per minute
+				'user' => [ 2, 60 ],
 			]
 		];
 
