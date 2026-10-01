@@ -17,7 +17,7 @@
 	"action-wikilambda-create": "skapa nya objekt överhuvudtaget",
 	"action-wikilambda-create-arbitrary-zid": "skapa nytt objekt på ett godtyckligt ZID",
 	"action-wikilambda-create-boolean": "skapa nya booleska objekt",
-	"action-wikilambda-create-converter": "skapa ny serialiserare eller deserialiserare",
+	"action-wikilambda-create-converter": "skapa ny typomvandlare",
 	"action-wikilambda-create-enum-value": "skapa en ny instans av en Enum-typ",
 	"action-wikilambda-create-function": "skapa nya funktionsobjekt",
 	"action-wikilambda-create-function-call": "skapa ett nytt permanent funktionsanrop",
