@@ -74,6 +74,7 @@
 	"wikilambda-abstract-preview-fragment-pending": "Pending",
 	"wikilambda-abstract-preview-fragment-replicate": "View details in Wikifunctions",
 	"wikilambda-abstract-preview-fragment-retry": "Retry",
+	"wikilambda-abstract-preview-fragment-unavailable": "The rendering service is busy right now. Trying again in {{PLURAL:$1|$1 minute|$1 minutes}}.",
 	"wikilambda-abstract-preview-in-language": "Generated text",
 	"wikilambda-abstract-renderedwith": "Page was rendered from [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",
 	"wikilambda-abstract-search-no-article": "– No article yet",

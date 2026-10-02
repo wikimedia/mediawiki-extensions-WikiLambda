@@ -12,6 +12,20 @@ const { isLocalKey, isValidZidFormat } = require( './typeUtils.js' );
 
 const errorUtils = {
 	/**
+	 * Returns whether an Abstract Wiki fragment value is a failure because the
+	 * rendering service is busy or rate-limited (HTTP 429 or 503), and not because
+	 * the content is wrong. The server renders the fragment again later.
+	 *
+	 * @param {Object|undefined} result fragment value from the abstractwiki APIs
+	 * @return {boolean}
+	 */
+	isUnavailableFragmentFailure: function ( result ) {
+		const unavailableStatusCodes = [ 429, 503 ];
+		return !!result && !result.success && !!result.value &&
+			unavailableStatusCodes.includes( Number( result.value.httpStatusCode ) );
+	},
+
+	/**
 	 * Returns the global key that identifies an error value key.
 	 * The value of an error is an instance of the generic type Z885/Errortype to
 	 * type, so its keys can arrive in local form (K1, K2…). The labels are stored

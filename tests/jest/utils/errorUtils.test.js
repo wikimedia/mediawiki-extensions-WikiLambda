@@ -16,6 +16,39 @@ describe( 'errorUtils', () => {
 	const nestedErrorObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/nestedErrorObject.json' ) ) ),
 		nestedErrorObjectLocalKeys = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/nestedErrorObject_LocalKeys.json' ) ) );
 
+	describe( 'isUnavailableFragmentFailure', () => {
+		it( 'returns true for a failed fragment with HTTP 503', () => {
+			expect( errorUtils.isUnavailableFragmentFailure( {
+				success: false,
+				value: { msg: 'apierror-abstractwiki_run_fragment-service-unavailable', httpStatusCode: 503 }
+			} ) ).toBe( true );
+		} );
+
+		it( 'returns true for a failed fragment with HTTP 429 as a string', () => {
+			expect( errorUtils.isUnavailableFragmentFailure( {
+				success: false,
+				value: { httpStatusCode: '429' }
+			} ) ).toBe( true );
+		} );
+
+		it( 'returns false for a failed fragment caused by the content', () => {
+			expect( errorUtils.isUnavailableFragmentFailure( {
+				success: false,
+				value: { msg: 'apierror-abstractwiki_run_fragment-returned-zerror', httpStatusCode: 400 }
+			} ) ).toBe( false );
+		} );
+
+		it( 'returns false for a successful or pending fragment', () => {
+			expect( errorUtils.isUnavailableFragmentFailure( { success: true, value: '<p>ok</p>' } ) ).toBe( false );
+			expect( errorUtils.isUnavailableFragmentFailure( { success: true, pending: true } ) ).toBe( false );
+		} );
+
+		it( 'returns false for a missing or malformed fragment', () => {
+			expect( errorUtils.isUnavailableFragmentFailure( undefined ) ).toBe( false );
+			expect( errorUtils.isUnavailableFragmentFailure( { success: false } ) ).toBe( false );
+		} );
+	} );
+
 	describe( 'extractErrorData', () => {
 		it( 'returns undefined if object is not a zerror but a string', () => {
 			expect( errorUtils.extractErrorData( 'not a zerror' ) ).toBe( undefined );

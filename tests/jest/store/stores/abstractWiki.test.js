@@ -1030,7 +1030,8 @@ describe( 'abstractWiki Pinia store', () => {
 						isLoading: false,
 						hasError: false,
 						html: 'old fragment',
-						retryCount: 0
+						retryCount: 0,
+						unavailableRetryCount: 0
 					}
 				};
 
@@ -1133,6 +1134,98 @@ describe( 'abstractWiki Pinia store', () => {
 						zid: 'Z500',
 						zerror: { Z1K1: 'Z5' }
 					}
+				} );
+			} );
+
+			describe( 'fragment that waits for a busy rendering service', () => {
+				const unavailable = {
+					success: false,
+					value: {
+						msg: 'apierror-abstractwiki_run_fragment-service-unavailable',
+						httpStatusCode: 503,
+						zerror: null,
+						params: []
+					}
+				};
+				const unavailableNotice = {
+					language: mockLang,
+					isUnavailable: true,
+					error: {
+						type: Constants.ERROR_TYPES.NOTICE,
+						code: 'wikilambda-abstract-preview-fragment-unavailable',
+						params: [ '2' ],
+						retry: false
+					}
+				};
+				const unavailableError = {
+					language: mockLang,
+					error: {
+						type: Constants.ERROR_TYPES.ERROR,
+						retry: false,
+						code: 'apierror-abstractwiki_run_fragment-service-unavailable',
+						zid: '',
+						zerror: null
+					}
+				};
+
+				it( 'shows a notice, and sets no timer', () => {
+					// E.g. a fragment from a section request, which has no job
+					store.processFragmentResponse( fragmentKey, unavailable );
+
+					expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, unavailableNotice );
+					// The fragment component requests the fragment again, not the store
+					expect( store.fragments[ fragmentKey ].unavailableRetryCount ).toBe( 0 );
+					expect( jest.getTimerCount() ).toBe( 0 );
+				} );
+
+				it( 'keeps the notice if the fragment is still pending, without the back-off', () => {
+					store.fragments[ fragmentKey ].isUnavailable = true;
+
+					store.processFragmentResponse( fragmentKey, { success: true, pending: true }, jest.fn() );
+
+					expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, unavailableNotice );
+					expect( store.fragments[ fragmentKey ].retryCount ).toBe( 0 );
+					expect( jest.getTimerCount() ).toBe( 0 );
+				} );
+
+				it( 'does not handle a pending fragment that does not wait for the service', () => {
+					store.processFragmentResponse( fragmentKey, { success: true, pending: true } );
+
+					expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+						language: mockLang,
+						isPending: true
+					} );
+				} );
+
+				it( 'sets the error if the fragment has no retry count', () => {
+					store.fragments[ fragmentKey ].unavailableRetryCount = undefined;
+
+					store.processFragmentResponse( fragmentKey, unavailable );
+
+					expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, unavailableError );
+				} );
+
+				it( 'sets the error if max retries reached', () => {
+					store.fragments[ fragmentKey ].unavailableRetryCount = 10;
+
+					store.processFragmentResponse( fragmentKey, unavailable );
+
+					expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, unavailableError );
+				} );
+
+				it( 'at the retry limit, a pending result shows pending without the back-off', () => {
+					store.fragments[ fragmentKey ].isUnavailable = true;
+					store.fragments[ fragmentKey ].unavailableRetryCount = 10;
+
+					store.processFragmentResponse( fragmentKey, { success: true, pending: true }, jest.fn() );
+
+					expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+						language: mockLang,
+						isPending: true
+					} );
+					expect( store.fragments[ fragmentKey ].retryCount ).toBe( 0 );
+					jest.advanceTimersByTime( 10000 );
+					expect( store.enqueueFragmentPreview ).not.toHaveBeenCalled();
 				} );
 			} );
 
@@ -1334,6 +1427,8 @@ describe( 'abstractWiki Pinia store', () => {
 			it( 'runs run fragment and stores successful response', async () => {
 				await store.requestFragmentPreview( payload, retryJob );
 
+				// Not a retry of a fragment that waits for a busy service: no count
+				expect( store.fragments[ fragmentKey ].unavailableRetryCount ).toBeUndefined();
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'abstractwiki_run_fragment',
 					format: 'json',
@@ -1348,6 +1443,24 @@ describe( 'abstractWiki Pinia store', () => {
 					{ success: true, value: 'rendered fragment' },
 					retryJob
 				);
+			} );
+
+			it( 'only reads the fragment (async), and counts a retry, while it waits for a busy service', async () => {
+				store.fragments[ fragmentKey ].isUnavailable = true;
+				store.fragments[ fragmentKey ].unavailableRetryCount = 0;
+
+				await store.requestFragmentPreview( payload, retryJob );
+
+				expect( store.fragments[ fragmentKey ].unavailableRetryCount ).toBe( 1 );
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_run_fragment',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_run_fragment_qid: mockQid,
+					abstractwiki_run_fragment_language: mockLang,
+					abstractwiki_run_fragment_fragment: JSON.stringify( fragmentsOf( mockAbstractContent )[ 1 ] ),
+					abstractwiki_run_fragment_async: true
+				}, { signal: undefined } );
 			} );
 
 			it( 'runs render fragment and stores failed unknown response (no retry)', async () => {
@@ -1414,6 +1527,7 @@ describe( 'abstractWiki Pinia store', () => {
 					hasError: false,
 					isLoading: false,
 					isPending: false,
+					isUnavailable: false,
 					retryCount: 0,
 					error: null,
 					html: 'some rendered fragment'
@@ -1431,6 +1545,7 @@ describe( 'abstractWiki Pinia store', () => {
 					hasError: true,
 					isLoading: false,
 					isPending: false,
+					isUnavailable: false,
 					retryCount: 0,
 					error: {
 						text: 'Some error message'
@@ -1451,6 +1566,7 @@ describe( 'abstractWiki Pinia store', () => {
 					hasError: true,
 					isLoading: false,
 					isPending: false,
+					isUnavailable: false,
 					retryCount: 0,
 					error: {
 						code: 'error-code',
@@ -1471,7 +1587,9 @@ describe( 'abstractWiki Pinia store', () => {
 					hasError: false,
 					isLoading: false,
 					isPending: false,
+					isUnavailable: false,
 					retryCount: 0,
+					unavailableRetryCount: 0,
 					error: null,
 					html: 'some unseen fragment'
 				} );
@@ -1488,7 +1606,9 @@ describe( 'abstractWiki Pinia store', () => {
 					hasError: false,
 					isLoading: false,
 					isPending: false,
+					isUnavailable: false,
 					retryCount: 0,
+					unavailableRetryCount: 0,
 					error: null,
 					html: 'same fragment in new language'
 				} );

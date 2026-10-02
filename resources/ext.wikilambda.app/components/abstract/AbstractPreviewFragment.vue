@@ -36,9 +36,10 @@
 			</div>
 		</div>
 
-		<!-- Fragment is loading (promise in flight) -->
+		<!-- Fragment is loading (promise in flight). A fragment that waits for a busy
+		rendering service keeps its notice while it loads, so that the layout does not move. -->
 		<cdx-progress-indicator
-			v-else-if="fragmentPreview.isLoading"
+			v-else-if="fragmentPreview.isLoading && !fragmentPreview.isUnavailable"
 			class="ext-wikilambda-app-abstract-preview-fragment-loading"
 		>
 			{{ i18n( 'wikilambda-loading' ).text() }}
@@ -94,6 +95,7 @@ const Constants = require( '../../Constants.js' );
 const useFragmentSelection = require( '../../composables/useFragmentSelection.js' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useInitImages = require( '../../composables/useInitImages.js' );
+const useVisibleTimeout = require( '../../composables/useVisibleTimeout.js' );
 const useMainStore = require( '../../store/index.js' );
 const ErrorData = require( '../../store/classes/ErrorData.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
@@ -105,6 +107,9 @@ const icons = require( '../../../lib/icons.json' );
 const SafeMessage = require( '../base/SafeMessage.vue' );
 // Codex components
 const { CdxMessage, CdxIcon, CdxProgressIndicator } = require( '../../../codex.js' );
+
+// Time (ms) between retries of a fragment that failed because the rendering service is busy
+const UNAVAILABLE_FRAGMENT_RETRY_DELAY = Constants.UNAVAILABLE_FRAGMENT_RETRY_MINUTES * 60 * 1000;
 
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-preview-fragment',
@@ -178,6 +183,40 @@ module.exports = exports = defineComponent( {
 			}
 		}, { deep: false, immediate: false } );
 
+		// Retry a fragment that waits for a busy rendering service
+		// =========================================================
+		// The fragment shows a notice. Request it again after the delay that the notice
+		// states, but not while a request for it runs, nor while the page is hidden.
+		const isWaitingForRetry = computed( () => (
+			!!fragmentPreview.value.isUnavailable && !fragmentPreview.value.isLoading
+		) );
+
+		const { start: startRetryTimeout, stop: stopRetryTimeout } = useVisibleTimeout(
+			retryWhileWaiting,
+			UNAVAILABLE_FRAGMENT_RETRY_DELAY
+		);
+
+		/**
+		 * Requests the fragment again. If the store starts no request for it (e.g. a
+		 * section request already gets this fragment), tries again after the delay.
+		 */
+		function retryWhileWaiting() {
+			retryPreview();
+			if ( isWaitingForRetry.value ) {
+				startRetryTimeout();
+			}
+		}
+
+		// Start the delay when the fragment waits, and again when the fragment changes
+		// (e.g. it moves or is edited). Stop it when the fragment does not wait any more.
+		watch( [ isWaitingForRetry, () => props.fragmentHash ], ( [ isWaiting ] ) => {
+			if ( isWaiting ) {
+				startRetryTimeout();
+			} else {
+				stopRetryTimeout();
+			}
+		}, { immediate: true } );
+
 		// Fragment error render information for the preview
 		const fragmentError = computed( () => {
 			if ( !fragmentPreview.value.hasError ) {
@@ -187,7 +226,7 @@ module.exports = exports = defineComponent( {
 
 			// Build best error message, in order of preference
 			// 1. parseable error message obtained from Z50K3 and the error arguments
-			// 2. if not available, use the error.code with the error type label as parameter
+			// 2. if not available, use the error.code with error.params, or else the error type label, as parameter
 			// 3. if not available, fall back to error.text
 			let errorData;
 			const parsedMessage = store.getHtmlErrorMessage( error.zid, error.zerror );
@@ -196,7 +235,7 @@ module.exports = exports = defineComponent( {
 			} else if ( error.code ) {
 				errorData = ErrorData.buildErrorData( {
 					errorMessageKey: error.code,
-					errorParams: [ store.getLabelData( error.zid ).label ]
+					errorParams: error.params || [ store.getLabelData( error.zid ).label ]
 				} );
 			} else {
 				errorData = ErrorData.buildErrorData( { errorMessage: error.text } );
@@ -205,7 +244,8 @@ module.exports = exports = defineComponent( {
 			return Object.assign( {}, error, {
 				type: error.type || Constants.ERROR_TYPES.ERROR,
 				message: errorData,
-				replicateLink: getFragmentReplicateLink()
+				// A busy service is not a problem with the fragment: no link to run it there
+				replicateLink: fragmentPreview.value.isUnavailable ? null : getFragmentReplicateLink()
 			} );
 		} );
 

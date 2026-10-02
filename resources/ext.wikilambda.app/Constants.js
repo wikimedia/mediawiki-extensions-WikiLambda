@@ -711,6 +711,10 @@ Constants.ABSTRACT_WIKI_SECTIONS = 'sections';
 Constants.ABSTRACT_WIKI_SECTION_LEDE = 'Q8776414';
 Constants.ABSTRACT_WIKI_SECTION_FRAGMENTS = 'fragments';
 Constants.ABSTRACT_WIKI_NEW_QID_PLACEHOLDER = 'Q0';
+// Minutes between retries of an Abstract Wiki fragment that failed because the rendering
+// service is busy. The server keeps this failure for one minute, so wait longer than that.
+// The notice shown to the user states this number.
+Constants.UNAVAILABLE_FRAGMENT_RETRY_MINUTES = 2;
 
 Constants.Z_ABSTRACT_RENDER_FUNCTION = 'Z825';
 Constants.Z_ABSTRACT_RENDER_FUNCTION_QID = 'Z825K1';

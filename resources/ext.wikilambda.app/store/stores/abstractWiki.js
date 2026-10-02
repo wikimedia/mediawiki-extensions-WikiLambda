@@ -15,6 +15,7 @@ const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.
 const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
 const storeUtils = require( '../../utils/storeUtils.js' );
+const { isUnavailableFragmentFailure } = require( '../../utils/errorUtils.js' );
 
 /* Time (ms) between processing jobs in the queue */
 const FRAGMENT_QUEUE_TIMEOUT = 2000;
@@ -24,6 +25,8 @@ const INITIAL_RETRY_DELAY = 2000;
 const RETRY_BACKOFF_FACTOR = 2;
 /* Maximum times to try each fragment */
 const MAX_FRAGMENT_RETRIES = 3;
+/* Maximum retries of a fragment that failed because the rendering service is busy */
+const MAX_UNAVAILABLE_FRAGMENT_RETRIES = 10;
 
 const abstractWikiStore = {
 	state: {
@@ -40,8 +43,13 @@ const abstractWikiStore = {
 		 *   "hasError":false,
 		 *   "error":null,
 		 *   "html":"<p>Rendered fragment.</p>",
-		 *   "retryCount":0
+		 *   "retryCount":0,
+		 *   "isUnavailable":false,
+		 *   "unavailableRetryCount":0
 		 * }
+		 *
+		 * isUnavailable is true while the fragment waits for a busy rendering service;
+		 * unavailableRetryCount counts the requests for it while it waits.
 		 */
 		fragments: {},
 		/**
@@ -552,7 +560,7 @@ const abstractWikiStore = {
 			// Set fragments as loading, without overwriting whatever data is available
 			keys.forEach( ( key ) => {
 				if ( !this.fragments[ key ] ) {
-					this.fragments[ key ] = { isLoading: true };
+					this.fragments[ key ] = { isLoading: true, unavailableRetryCount: 0 };
 				} else if ( this.fragments[ key ].isPending ) {
 					this.fragments[ key ].isLoading = true;
 				}
@@ -615,6 +623,10 @@ const abstractWikiStore = {
 		 *     - zerror: { ... }
 		 *     - params: [ 'Z528' ]
 		 *
+		 * An error because the rendering service is busy (HTTP 429 or 503) shows a
+		 * notice instead, and the fragment component requests the fragment again later,
+		 * until the server has rendered it. The error shows only when no retries are left.
+		 *
 		 * @param {string} fragmentKey
 		 * @param {Object} result
 		 * @param {Function} job
@@ -626,14 +638,41 @@ const abstractWikiStore = {
 			// Initialize payload for the setter
 			const fragmentPayload = { language };
 
-			if ( result && result.pending ) {
+			const fragmentStatus = this.fragments[ fragmentKey ];
+
+			// A fragment waits for a busy rendering service (e.g. rate limits) when it failed for
+			// that reason, or when it is still pending after that (the server job is not done yet).
+			const isUnavailableFragmentPending = !!result &&
+				!!result.pending &&
+				!!fragmentStatus &&
+				!!fragmentStatus.isUnavailable;
+			const isWaitingForService = isUnavailableFragmentFailure( result ) || isUnavailableFragmentPending;
+			// If reached max retries, the branches below show the result
+			const noUnavailableRetry = !fragmentStatus ||
+				fragmentStatus.unavailableRetryCount === undefined ||
+				fragmentStatus.unavailableRetryCount >= MAX_UNAVAILABLE_FRAGMENT_RETRIES;
+
+			if ( isWaitingForService && !noUnavailableRetry ) {
+				// Handle fragment that waits for a busy rendering service:
+				// ========================================================
+				// Show a notice. The fragment component requests the fragment again later.
+				fragmentPayload.isUnavailable = true;
+				fragmentPayload.error = {
+					type: Constants.ERROR_TYPES.NOTICE,
+					code: 'wikilambda-abstract-preview-fragment-unavailable',
+					params: [ mw.language.convertNumber( Constants.UNAVAILABLE_FRAGMENT_RETRY_MINUTES ) ],
+					retry: false
+				};
+
+			} else if ( result && result.pending ) {
 				// Handle pending fragment:
 				// ========================
 				// Queue retry if possible
-				const fragmentStatus = this.fragments[ fragmentKey ];
 
-				// If reached max retries or no job to queue, set fragment as pending and stop trying
-				const noRetry = !job || !fragmentStatus || fragmentStatus.retryCount === undefined;
+				// If reached max retries or no job to queue, set fragment as pending and stop trying.
+				// A fragment that waits for a busy service is at its retry limit here: no back-off.
+				const noRetry = !job || !fragmentStatus || fragmentStatus.retryCount === undefined ||
+					!!fragmentStatus.isUnavailable;
 				if ( noRetry || ++fragmentStatus.retryCount >= MAX_FRAGMENT_RETRIES ) {
 					fragmentPayload.isPending = true;
 				} else {
@@ -743,7 +782,7 @@ const abstractWikiStore = {
 
 			// Fragment not initialized yet: set initial object for key
 			if ( !( fragmentKey in this.fragments ) ) {
-				this.fragments[ fragmentKey ] = { retryCount: 0 };
+				this.fragments[ fragmentKey ] = { retryCount: 0, unavailableRetryCount: 0 };
 			}
 
 			const fragmentStatus = this.fragments[ fragmentKey ];
@@ -773,10 +812,20 @@ const abstractWikiStore = {
 			const { language } = payload;
 			const fragmentKey = `${ payload.fragmentHash }:${ language }`;
 
+			// While the fragment waits for a busy service, only read the stored value
+			// (async): the server job renders it, and we do not add to the load.
+			// Each of these requests is one retry of the fragment.
+			const fragmentStatus = this.fragments[ fragmentKey ];
+			const isUnavailable = !!fragmentStatus && !!fragmentStatus.isUnavailable;
+			if ( isUnavailable ) {
+				fragmentStatus.unavailableRetryCount++;
+			}
+
 			return runAbstractWikiFragment( {
 				language,
 				qid: payload.qid,
-				fragment: payload.fragment
+				fragment: payload.fragment,
+				async: isUnavailable
 			} ).then( ( data ) => {
 				// Processes both successful and failed fragments
 				this.processFragmentResponse( fragmentKey, data, job );
@@ -798,18 +847,20 @@ const abstractWikiStore = {
 		 * @param {string|undefined} payload.html
 		 * @param {boolean|undefined} payload.isPending
 		 * @param {boolean|undefined} payload.isLoading
+		 * @param {boolean|undefined} payload.isUnavailable
 		 * @param {Object|undefined} payload.error
 		 * @param {string|null} payload.error.text
 		 * @param {string|null} payload.error.code
+		 * @param {Array|undefined} payload.error.params i18n message parameters for the code
 		 * @param {string|null} payload.error.zid
 		 * @param {string|null} payload.error.type
 		 */
 		setRenderedFragment: function ( key, payload ) {
-			const { html = '', error, isLoading = false, isPending = false } = payload;
+			const { html = '', error, isLoading = false, isPending = false, isUnavailable = false } = payload;
 
 			// Initialize payload if it doesn't exist
 			if ( !( key in this.fragments ) ) {
-				this.fragments[ key ] = { retryCount: 0 };
+				this.fragments[ key ] = { retryCount: 0, unavailableRetryCount: 0 };
 			}
 
 			this.fragments[ key ].error = error || null;
@@ -818,6 +869,7 @@ const abstractWikiStore = {
 			this.fragments[ key ].isPending = isPending;
 			this.fragments[ key ].isLoading = isLoading;
 			this.fragments[ key ].hasError = !!error;
+			this.fragments[ key ].isUnavailable = isUnavailable;
 		},
 		/**
 		 * Inserts a blank or given hash into the sectionHashes structure

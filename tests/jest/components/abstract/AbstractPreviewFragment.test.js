@@ -302,6 +302,171 @@ describe( 'AbstractPreviewFragment', () => {
 		expect( wrapper.text() ).toContain( 'Wikifunctions returned a failed response: Some zerror happened' );
 	} );
 
+	it( 'renders the error params as message parameters when the error has them', async () => {
+		store.getFragmentPreview = jest.fn().mockReturnValue( {
+			html: '',
+			hasError: true,
+			error: {
+				type: 'notice',
+				code: 'wikilambda-abstract-preview-fragment-unavailable',
+				params: [ '2' ]
+			},
+			isLoading: false,
+			isPending: false
+		} );
+
+		wrapper = renderFragment();
+
+		await waitFor( () => {
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+		} );
+
+		expect( wrapper.text() ).toContain( 'The rendering service is busy right now. Trying again in' );
+		expect( wrapper.text() ).toContain( '2 minutes' );
+	} );
+
+	describe( 'fragment that waits for a busy rendering service', () => {
+		const delay = Constants.UNAVAILABLE_FRAGMENT_RETRY_MINUTES * 60 * 1000;
+
+		/**
+		 * Returns a stored preview of a fragment that waits for a busy rendering service.
+		 *
+		 * @param {Object} [overrides]
+		 * @return {Object}
+		 */
+		function busyPreview( overrides = {} ) {
+			return Object.assign( {
+				html: '',
+				hasError: true,
+				error: {
+					type: 'notice',
+					code: 'wikilambda-abstract-preview-fragment-unavailable',
+					params: [ '2' ],
+					retry: false
+				},
+				isLoading: false,
+				isPending: false,
+				isUnavailable: true
+			}, overrides );
+		}
+
+		/**
+		 * Changes the stored preview, and waits until the component updates.
+		 *
+		 * @param {Object} preview
+		 * @return {Promise}
+		 */
+		function setPreview( preview ) {
+			store.getFragmentPreview = jest.fn().mockReturnValue( preview );
+			return wrapper.vm.$nextTick();
+		}
+
+		beforeEach( () => {
+			jest.useFakeTimers();
+			store.getFragmentPreview = jest.fn().mockReturnValue( busyPreview() );
+		} );
+
+		afterEach( () => {
+			wrapper.unmount();
+			jest.useRealTimers();
+		} );
+
+		it( 'keeps the notice, without the progress indicator, while the fragment loads', () => {
+			store.getFragmentPreview = jest.fn().mockReturnValue( busyPreview( { isLoading: true } ) );
+
+			wrapper = renderFragment();
+
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-loading' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+		} );
+
+		it( 'does not show the link to Wikifunctions under the notice', () => {
+			wrapper = renderFragment();
+
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' ).exists() ).toBe( false );
+		} );
+
+		it( 'emits retry after the delay that the notice states', () => {
+			wrapper = renderFragment();
+
+			jest.advanceTimersByTime( delay - 1 );
+			expect( wrapper.emitted( 'retry' ) ).toBeFalsy();
+
+			jest.advanceTimersByTime( 1 );
+			expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
+		} );
+
+		it( 'emits retry again after the delay if the store starts no request', () => {
+			wrapper = renderFragment();
+
+			// Nothing handles the event, so the fragment still waits and is not loading
+			jest.advanceTimersByTime( delay );
+			expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
+
+			jest.advanceTimersByTime( delay );
+			expect( wrapper.emitted( 'retry' ) ).toHaveLength( 2 );
+		} );
+
+		it( 'does not emit retry while the fragment loads', async () => {
+			wrapper = renderFragment();
+			await setPreview( busyPreview( { isLoading: true } ) );
+
+			jest.advanceTimersByTime( delay * 2 );
+			expect( wrapper.emitted( 'retry' ) ).toBeFalsy();
+		} );
+
+		it( 'starts the delay again when a request ends with the notice', async () => {
+			wrapper = renderFragment();
+			await setPreview( busyPreview( { isLoading: true } ) );
+			jest.advanceTimersByTime( delay / 2 );
+
+			// The request ends: the fragment still waits for the service
+			await setPreview( busyPreview() );
+
+			jest.advanceTimersByTime( delay - 1 );
+			expect( wrapper.emitted( 'retry' ) ).toBeFalsy();
+			jest.advanceTimersByTime( 1 );
+			expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
+		} );
+
+		it( 'starts the delay again when the fragment changes', async () => {
+			wrapper = renderFragment();
+			jest.advanceTimersByTime( delay / 2 );
+
+			await wrapper.setProps( { fragmentHash: 'someother#' } );
+
+			jest.advanceTimersByTime( delay / 2 );
+			expect( wrapper.emitted( 'retry' ) ).toBeFalsy();
+			jest.advanceTimersByTime( delay / 2 );
+			expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
+		} );
+
+		it( 'does not emit retry when the fragment does not wait any more', async () => {
+			wrapper = renderFragment();
+			await setPreview( {
+				html: '<b>Rendered fragment</b>',
+				hasError: false,
+				error: null,
+				isLoading: false,
+				isPending: false,
+				isUnavailable: false
+			} );
+
+			jest.advanceTimersByTime( delay * 2 );
+			expect( wrapper.emitted( 'retry' ) ).toBeFalsy();
+		} );
+
+		it( 'stops its timer when it unmounts', () => {
+			wrapper = renderFragment();
+			const timerCount = jest.getTimerCount();
+
+			wrapper.unmount();
+
+			expect( jest.getTimerCount() ).toBe( timerCount - 1 );
+		} );
+	} );
+
 	it( 'emits retry when fragment preview becomes blank', async () => {
 		store.getFragmentPreview = jest.fn().mockReturnValue( {
 			html: '<em>Old fragment in italics</em>',

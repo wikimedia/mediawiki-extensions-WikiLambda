@@ -646,6 +646,8 @@ const apiUtils = {
 	 * @param {string} payload.qid
 	 * @param {string} payload.language
 	 * @param {Object} payload.fragment
+	 * @param {boolean} [payload.async] When true, the API only returns the stored value
+	 *  (or pending), and a server job renders the fragment
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -653,16 +655,20 @@ const apiUtils = {
 		// Should never work with foreign API
 		const api = new mw.Api();
 		const canonicalJson = JSON.stringify( hybridToCanonical( payload.fragment ) );
+		const params = {
+			action: 'abstractwiki_run_fragment',
+			format: 'json',
+			formatversion: '2',
+			abstractwiki_run_fragment_qid: payload.qid,
+			abstractwiki_run_fragment_language: payload.language,
+			abstractwiki_run_fragment_fragment: canonicalJson
+		};
+		if ( payload.async ) {
+			params.abstractwiki_run_fragment_async = true;
+		}
 
 		return new Promise( ( resolve, reject ) => {
-			api.get( {
-				action: 'abstractwiki_run_fragment',
-				format: 'json',
-				formatversion: '2',
-				abstractwiki_run_fragment_qid: payload.qid,
-				abstractwiki_run_fragment_language: payload.language,
-				abstractwiki_run_fragment_fragment: canonicalJson
-			}, {
+			api.get( params, {
 				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( data.abstractwiki_run_fragment ) )
