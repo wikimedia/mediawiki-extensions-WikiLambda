@@ -506,6 +506,46 @@ class ZObjectStoreTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertEquals( $zobject->getText(), $refetchedZObject->getText() );
 	}
 
+	public function testUpdateZObject_editConflict() {
+		$sysopUser = $this->getTestSysop()->getUser();
+		$this->insertZids( [ 'Z6' ] );
+
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		// Create the ZObject, and keep its first revision
+		$this->zobjectStore->createNewZObject( RequestContext::getMain(), $input, 'Create summary', $sysopUser );
+		$title = Title::newFromText( $zid, NS_MAIN );
+		$initialText = $this->zobjectStore->fetchZObjectByTitle( $title )->getText();
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
+		$initialRevision = $revisionStore->getKnownLatestRevision( $title )->getId();
+
+		// An edit based on the latest revision succeeds
+		$secondText = str_replace( "hello", "bye", $initialText );
+		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(), $zid, $secondText, 'Second summary', $sysopUser, EDIT_UPDATE, $initialRevision
+		);
+		$this->assertTrue( $status->isOK() );
+
+		// An edit based on the outdated first revision fails, and does not revert the second edit
+		$staleText = str_replace( "hello", "stale", $initialText );
+		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(), $zid, $staleText, 'Stale summary', $sysopUser, EDIT_UPDATE, $initialRevision
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, $status->getErrors() );
+		$this->assertStringContainsString(
+			wfMessage( 'wikilambda-edit-conflict-error-message' )->text(),
+			(string)$status->getErrors()
+		);
+
+		// HACK (T343717): Re-get the Title so it's not cached on what the latest revision is
+		$title = Title::newFromText( $zid, NS_MAIN );
+		$this->assertEquals( $secondText, $this->zobjectStore->fetchZObjectByTitle( $title )->getText() );
+	}
+
 	public function testUpdateZObject_nonTitle() {
 		$status = $this->zobjectStore->updateZObject(
 			RequestContext::getMain(),

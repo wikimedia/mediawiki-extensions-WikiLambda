@@ -21,6 +21,7 @@ describe( 'CurrentPage Pinia store', () => {
 		// Initialize the store state
 		store.jsonObject = { main: {} };
 		store.currentZid = Constants.NEW_ZID_PLACEHOLDER;
+		store.currentRevisionId = null;
 		store.createNewPage = false;
 		store.initialized = false;
 		store.dirty = false;
@@ -75,6 +76,17 @@ describe( 'CurrentPage Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getCurrentRevisionId', () => {
+			it( 'returns null when no revision is loaded', () => {
+				expect( store.getCurrentRevisionId ).toBeNull();
+			} );
+
+			it( 'returns the revision of the loaded root object', () => {
+				store.currentRevisionId = 12345;
+				expect( store.getCurrentRevisionId ).toBe( 12345 );
+			} );
+		} );
+
 		describe( 'getMultilingualDataCopy', () => {
 			it( 'returns the multilingual data copy', () => {
 				const multilingualDataCopy = {
@@ -125,6 +137,14 @@ describe( 'CurrentPage Pinia store', () => {
 				expect( store.currentZid ).toBe( 'Z0' );
 				store.setCurrentZid( 'Z10000' );
 				expect( store.currentZid ).toBe( 'Z10000' );
+			} );
+		} );
+
+		describe( 'setCurrentRevisionId', () => {
+			it( 'sets currentRevisionId to provided value', () => {
+				expect( store.currentRevisionId ).toBeNull();
+				store.setCurrentRevisionId( 12345 );
+				expect( store.currentRevisionId ).toBe( 12345 );
 			} );
 		} );
 

@@ -299,6 +299,29 @@ describe( 'apiUtils', () => {
 				{ signal: undefined }
 			);
 		} );
+
+		it( 'sends the base revision id when given', async () => {
+			apiPostWithEditTokenMock.mockResolvedValue( {
+				wikilambda_edit: { page: 'Z100', revisionId: 101 }
+			} );
+
+			await apiUtils.saveZObject( {
+				zid: 'Z100',
+				zobject: { Z1K1: 'Z2' },
+				summary: 'Saving',
+				language: 'en',
+				baseRevisionId: 100
+			} );
+
+			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith(
+				expect.objectContaining( {
+					action: 'wikilambda_edit',
+					zid: 'Z100',
+					baserevid: 100
+				} ),
+				{ signal: undefined }
+			);
+		} );
 	} );
 
 	describe( 'sanitiseHtmlFragment', () => {

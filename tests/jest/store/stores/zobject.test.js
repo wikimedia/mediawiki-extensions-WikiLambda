@@ -1061,6 +1061,8 @@ describe( 'zobject Pinia store', () => {
 					await store.initializeRootZObject( 'Z10001' );
 
 					expect( getMock ).toHaveBeenCalledWith( expectedPayload, { signal: undefined } );
+					// The displayed old revision is the base revision for view page saves
+					expect( store.getCurrentRevisionId ).toBe( 10002 );
 				} );
 
 				it( 'requests initial ZObject without revision', async () => {
@@ -1088,6 +1090,8 @@ describe( 'zobject Pinia store', () => {
 					await store.initializeRootZObject( 'Z10001' );
 
 					expect( getMock ).toHaveBeenCalledWith( expectedPayload, { signal: undefined } );
+					// The current revision is the base revision for view page saves
+					expect( store.getCurrentRevisionId ).toBe( 10003 );
 				} );
 
 				it( 'fetches the new revision on a diff page rather than the old (left-side) revision', async () => {

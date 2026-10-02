@@ -1149,6 +1149,10 @@ const zobjectStore = {
 				displayedRevision :
 				undefined;
 
+			// Keep the revision of the loaded content. View page saves send it as the
+			// base revision, so that they do not revert newer edits.
+			this.setCurrentRevisionId( revision || currentRevision || null );
+
 			// Calling the API without language parameter so that we get
 			// the unfiltered multilingual object
 			return fetchZObjects( {

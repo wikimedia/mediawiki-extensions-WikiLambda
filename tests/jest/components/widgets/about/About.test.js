@@ -457,6 +457,18 @@ describe( 'About', () => {
 				expect( store.setZMonolingualString ).not.toHaveBeenCalled();
 				expect( store.setZMonolingualStringset ).not.toHaveBeenCalled();
 			} );
+
+			it( 'submits with an edit conflict check, so it does not revert newer edits', () => {
+				const wrapper = renderAbout( { edit: false, type: 'Z6' } );
+				const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
+
+				publishDialog.props( 'submitAction' )( { summary: 'Some summary' } );
+
+				expect( store.submitZObject ).toHaveBeenCalledWith( {
+					summary: 'Some summary',
+					checkEditConflict: true
+				} );
+			} );
 		} );
 	} );
 

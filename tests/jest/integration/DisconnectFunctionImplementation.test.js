@@ -8,11 +8,10 @@
 
 const { fireEvent, waitFor } = require( '@testing-library/vue' );
 const { within } = require( '@testing-library/dom' );
-const { nextTick } = require( 'vue' );
 require( '@testing-library/jest-dom' );
 
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
-const { renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' );
+const { functionRevisionId, renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' );
 const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
 const existingTesterFromApi = require( './objects/existingTesterFromApi.js' );
 const expected = require( './objects/expectedZFunctionWithImplementationsAndTesters.js' );
@@ -58,6 +57,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			uselang: 'en',
 			summary: 'Removed list from the approved list of implementations',
 			zid: functionZid,
+			baserevid: functionRevisionId,
 			zobject:
 				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
 		}, { signal: undefined } );
@@ -140,6 +140,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			uselang: 'en',
 			summary: 'Removed list from the approved list of implementations',
 			zid: functionZid,
+			baserevid: functionRevisionId,
 			zobject:
 				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
 		}, { signal: undefined } );
@@ -147,15 +148,8 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		// ASSERT: The "disconnected" implementation is shown as disconnected.
 		expect( firstImplementationRow ).toHaveTextContent( 'Disconnected' );
 
-		// Ensures state is consistent after a few ticks (fading in message and implementation state updates)
-		// This is necessary because we can not verify this targeting the UI directly
-		// TODO: Make this work without waiting for the nextTick
-		await nextTick();
-		await nextTick();
-		await nextTick();
-		await nextTick();
-		await nextTick();
-		await nextTick();
+		// Wait until the disconnect finishes: on success, the table resets the selection
+		await waitFor( () => expect( within( firstImplementationRow ).getByRole( 'checkbox' ) ).not.toBeChecked() );
 
 		// ACT: Select the first "disconnected" implementation in the table.
 		await fireEvent.update( within( firstImplementationRow ).getByRole( 'checkbox' ), true );
@@ -171,7 +165,9 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 				formatversion: '2',
 				uselang: 'en',
 				summary: 'Added list to the approved list of implementations',
-				zid: functionZid
+				zid: functionZid,
+				// The second save is based on the revision that the first save created
+				baserevid: functionRevisionId + 1
 			} ), { signal: undefined }
 		);
 

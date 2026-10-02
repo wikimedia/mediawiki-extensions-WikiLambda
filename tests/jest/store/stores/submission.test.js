@@ -907,6 +907,59 @@ describe( 'zobject submission Pinia store', () => {
 				} );
 				expect( store.clearInvalidListItems ).toHaveBeenCalled();
 			} );
+
+			describe( 'edit conflict check', () => {
+				beforeEach( () => {
+					store.jsonObject.main = canonicalToHybrid( {
+						Z1K1: 'Z2',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z999' },
+						Z2K2: 'some object',
+						Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					} );
+					store.currentRevisionId = 12345;
+				} );
+
+				it( 'sends the loaded revision as base revision if checkEditConflict is set', () => {
+					store.submitZObject( { summary: 'A summary', checkEditConflict: true } );
+
+					expect( postWithEditTokenMock ).toHaveBeenCalledWith(
+						expect.objectContaining( { baserevid: 12345 } ),
+						{ signal: undefined }
+					);
+				} );
+
+				it( 'does not send a base revision by default', () => {
+					store.submitZObject( { summary: 'A summary' } );
+
+					expect( postWithEditTokenMock.mock.calls[ 0 ][ 0 ].baserevid ).toBeUndefined();
+				} );
+
+				it( 'does not send a base revision if the loaded revision is unknown', () => {
+					store.currentRevisionId = null;
+					store.submitZObject( { summary: 'A summary', checkEditConflict: true } );
+
+					// A null value would reach the API as an empty, invalid baserevid
+					expect( postWithEditTokenMock.mock.calls[ 0 ][ 0 ].baserevid ).toBeUndefined();
+				} );
+
+				it( 'stores the new revision returned by a successful save', async () => {
+					postWithEditTokenMock.mockResolvedValueOnce( {
+						wikilambda_edit: { page: 'Z999', revisionId: 12346 }
+					} );
+
+					const response = await store.submitZObject( { summary: 'A summary', checkEditConflict: true } );
+
+					expect( response ).toEqual( { page: 'Z999', revisionId: 12346 } );
+					expect( store.getCurrentRevisionId ).toBe( 12346 );
+				} );
+
+				it( 'keeps the loaded revision if the response has no revision', async () => {
+					const response = await store.submitZObject( { summary: 'A summary', checkEditConflict: true } );
+
+					expect( response ).toEqual( { page: 'sample' } );
+					expect( store.getCurrentRevisionId ).toBe( 12345 );
+				} );
+			} );
 		} );
 
 		describe( 'transformZObjectForSubmission', () => {

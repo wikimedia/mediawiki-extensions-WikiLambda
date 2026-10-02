@@ -61,6 +61,9 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 		// If zid is set, we should be editing it, if empty or Z0, we are creating a new zobject
 		$zid = $params[ 'zid' ];
 
+		// If baserevid is set, the edit fails when the ZObject has a different latest revision
+		$baseRevId = $params[ 'baserevid' ];
+
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
 		$creating = !$zid || $zid === ZTypeRegistry::Z_NULL_REFERENCE;
@@ -82,7 +85,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 			}
 
 			// Edit an existing ZObject
-			$response = $zObjectStore->updateZObject( $this, $zid, $zobject, $summary, $user, $editFlag );
+			$response = $zObjectStore->updateZObject( $this, $zid, $zobject, $summary, $user, $editFlag, $baseRevId );
 		}
 
 		if ( !$response->isOK() ) {
@@ -99,7 +102,8 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 				'success' => true,
 				'articleId' => $title->getArticleID(),
 				'title' => $title->getBaseText(),
-				'page' => $title->getBaseTitle()
+				'page' => $title->getBaseTitle(),
+				'revisionId' => $response->getWikiPage()->getLatest()
 			]
 		);
 	}
@@ -174,6 +178,11 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 			'zobject' => [
 				ParamValidator::PARAM_TYPE => 'text',
 				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'baserevid' => [
+				ParamValidator::PARAM_TYPE => 'integer',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => null,
 			]
 		] + $this->getWatchlistParams();
 	}

@@ -15,7 +15,7 @@ const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' 
 const existingImplementationByCompositionFromApi = require( './objects/existingImplementationByCompositionFromApi.js' );
 const existingTesterFromApi = require( './objects/existingTesterFromApi.js' );
 const expected = require( './objects/expectedZFunctionWithImplementationsAndTesters.js' );
-const { renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' );
+const { functionRevisionId, renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 const implementationByCompositionZid =
@@ -63,6 +63,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			uselang: 'en',
 			summary: 'Added list to the approved list of test cases',
 			zid: functionZid,
+			baserevid: functionRevisionId,
 			zobject:
 				JSON.stringify(
 					expected.zFunctionWithImplementationsAndTesters(

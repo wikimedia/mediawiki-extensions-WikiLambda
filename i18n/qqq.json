@@ -226,6 +226,7 @@
 	"wikilambda-diff-value-moved": "Shown on a diff page for a list item that was re-ordered, once on the removed side for where it was and once on the added side for where it now is. Parameters:\n* $1 - the item's position in the list on this side, where the first item is 1.\n* $2 - the item itself, as rendered HTML; do not escape it.",
 	"wikilambda-discard-edits": "Label for the discard edits button",
 	"wikilambda-edit": "Page heading for editing a ZObject page. Very similar in its function to {{msg-mw|editing}}, but doesn't have a parameter; see [https://phabricator.wikimedia.org/T359781 bug T359781].\n{{identical|Edit}}",
+	"wikilambda-edit-conflict-error-message": "Error message shown when a user tries to save a change from an object's view page (for example, connecting a test or implementation, or editing a label), but the object has been changed since the page was loaded. The save is blocked to avoid reverting the newer changes.",
 	"wikilambda-edit-monolingual-text-placeholder": "Placeholder text for a monolingual string input during edit",
 	"wikilambda-editor-additem": "{{ignore}}Label for button to add item",
 	"wikilambda-editor-additional-details-label": "Label for the additional details section of the editor.",

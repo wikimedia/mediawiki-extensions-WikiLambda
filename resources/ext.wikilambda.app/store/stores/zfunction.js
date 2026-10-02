@@ -240,7 +240,8 @@ module.exports = {
 			} );
 
 			return this.submitZObject( {
-				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-approved-summary', payload.zids )
+				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-approved-summary', payload.zids ),
+				checkEditConflict: true
 			} ).catch( ( /* ApiError */ e ) => {
 				// Reset old ZObject if something failed
 				this.setJsonObject( { namespace: Constants.STORED_OBJECTS.MAIN, zobject: zobjectCopy } );
@@ -271,7 +272,8 @@ module.exports = {
 			} );
 
 			return this.submitZObject( {
-				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids )
+				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-approved-summary', payload.zids ),
+				checkEditConflict: true
 			} )
 				.then( () => this.updateStoredObject() )
 				.catch( ( /* ApiError */ e ) => {
@@ -310,7 +312,8 @@ module.exports = {
 			this.deleteListItemsByKeyPath( { keyPath, indexes } );
 
 			return this.submitZObject( {
-				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids )
+				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-testers-deactivated-summary', payload.zids ),
+				checkEditConflict: true
 			} ).catch( ( /* ApiError */ e ) => {
 				// Reset old ZObject if something failed
 				this.setJsonObject( { namespace: Constants.STORED_OBJECTS.MAIN, zobject: zobjectCopy } );
@@ -346,7 +349,8 @@ module.exports = {
 			this.deleteListItemsByKeyPath( { keyPath, indexes } );
 
 			return this.submitZObject( {
-				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids )
+				summary: createConnectedItemsChangesSummaryMessage( 'wikilambda-updated-implementations-deactivated-summary', payload.zids ),
+				checkEditConflict: true
 			} )
 				.then( () => this.updateStoredObject() )
 				.catch( ( /* ApiError */ e ) => {

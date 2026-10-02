@@ -209,6 +209,7 @@
 	"wikilambda-diff-value-moved": "Position $1: $2",
 	"wikilambda-discard-edits": "Discard edits",
 	"wikilambda-edit": "Edit",
+	"wikilambda-edit-conflict-error-message": "This object has been changed since you loaded this page. Please reload the page and try again.",
 	"wikilambda-edit-monolingual-text-placeholder": "Enter text",
 	"wikilambda-editor-additem": "➕",
 	"wikilambda-editor-additional-details-label": "Additional details",

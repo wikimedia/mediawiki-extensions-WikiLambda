@@ -14,6 +14,7 @@ const { isTruthyOrEqual } = require( '../../utils/typeUtils.js' );
 module.exports = {
 	state: {
 		currentZid: Constants.NEW_ZID_PLACEHOLDER,
+		currentRevisionId: null,
 		createNewPage: false,
 		initialized: false,
 		dirty: false,
@@ -71,6 +72,17 @@ module.exports = {
 		 */
 		getCurrentZObjectId: function ( state ) {
 			return state.currentZid || Constants.NEW_ZID_PLACEHOLDER;
+		},
+
+		/**
+		 * Returns the revision ID of the root ZObject loaded in the store,
+		 * or null if unknown (e.g. when creating a new page).
+		 *
+		 * @param {Object} state
+		 * @return {number|null}
+		 */
+		getCurrentRevisionId: function ( state ) {
+			return state.currentRevisionId;
 		}
 	},
 
@@ -102,6 +114,15 @@ module.exports = {
 		 */
 		setCurrentZid: function ( currentZid ) {
 			this.currentZid = currentZid;
+		},
+
+		/**
+		 * Set the revision ID of the root ZObject loaded in the store
+		 *
+		 * @param {number|null} revisionId
+		 */
+		setCurrentRevisionId: function ( revisionId ) {
+			this.currentRevisionId = revisionId;
 		},
 
 		/**

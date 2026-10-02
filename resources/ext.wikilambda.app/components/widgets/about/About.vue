@@ -582,7 +582,8 @@ module.exports = exports = defineComponent( {
 		 * @return {Promise}
 		 */
 		function submitAction( { summary } ) {
-			return store.submitZObject( { summary } );
+			// Reject the edit if the object changed after this page loaded
+			return store.submitZObject( { summary, checkEditConflict: true } );
 		}
 
 		/**

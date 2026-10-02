@@ -30,6 +30,8 @@ const performTest =
 	new ApiMock( apiGetMock.performTestRequest, apiGetMock.performTestResponse, apiGetMock.actionMatcher );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+// Revision of the function that the view page loads
+const functionRevisionId = 12345;
 
 const runSetup = function () {
 	jest.useFakeTimers();
@@ -41,7 +43,8 @@ const runSetup = function () {
 
 	const apiPostWithEditTokenMock = jest.fn( () => Promise.resolve( {
 		wikilambda_edit: {
-			page: 'newPage'
+			page: 'newPage',
+			revisionId: functionRevisionId + 1
 		}
 	} ) );
 	mw.Api = jest.fn( () => ( {
@@ -59,6 +62,8 @@ const runSetup = function () {
 	mockWindowLocation( url );
 
 	global.mw.config.get = mockMWConfigGet( {
+		wgRevisionId: functionRevisionId,
+		wgCurRevisionId: functionRevisionId,
 		wgWikiLambda: {
 			createNewPage: false,
 			viewmode: true,
@@ -91,6 +96,7 @@ const renderForFunctionViewer = () => render(
 );
 
 module.exports = {
+	functionRevisionId: functionRevisionId,
 	runSetup: runSetup,
 	runTeardown: runTeardown,
 	renderForFunctionViewer: renderForFunctionViewer

@@ -302,6 +302,101 @@ class ApiZObjectEditorTest extends WikiLambdaApiTestCase {
 		$this->assertTrue( $zobject instanceof ZObjectContent );
 		// We compare the JSONs after decoding because it's saved prettified
 		$this->assertEquals( json_decode( $zobject->getText() ), json_decode( $data ) );
+
+		// The response returns the ID of the new revision
+		$this->assertSame( $title->getLatestRevID(), $result[0]['wikilambda_edit']['revisionId'] );
+	}
+
+	/**
+	 * Creates a ZObject and then edits it, so that its first revision is outdated.
+	 *
+	 * @return array With keys 'zid', 'outdatedRevId', 'latestRevId' and 'latestData'
+	 */
+	private function createZObjectWithTwoRevisions(): array {
+		$sysopUser = $this->getTestSysop()->getUser();
+		$zid = $this->store->getNextAvailableZid();
+
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. ' "Z2K2": "First value", "Z2K3":'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+		$this->store->createNewZObject( RequestContext::getMain(), $data, 'First revision', $sysopUser );
+		$outdatedRevId = Title::newFromText( $zid, NS_MAIN )->getLatestRevID();
+
+		$latestData = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
+			. ' "Z2K2": "Second value", "Z2K3":'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+		$this->store->updateZObject( RequestContext::getMain(), $zid, $latestData, 'Second revision', $sysopUser );
+
+		// HACK (T343717): Re-get the Title so it's not cached on what the latest revision is
+		$latestRevId = Title::newFromText( $zid, NS_MAIN )->getLatestRevID();
+		$this->assertNotSame( $outdatedRevId, $latestRevId );
+
+		return [
+			'zid' => $zid,
+			'outdatedRevId' => $outdatedRevId,
+			'latestRevId' => $latestRevId,
+			'latestData' => $latestData
+		];
+	}
+
+	public function testUpdateSuccess_matchingBaseRevId() {
+		[ 'zid' => $zid, 'latestRevId' => $latestRevId ] = $this->createZObjectWithTwoRevisions();
+
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
+			. ' "Z2K2": "Third value", "Z2K3":'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+
+		$result = $this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'summary' => 'Summary message',
+			'zid' => $zid,
+			'zobject' => $data,
+			'baserevid' => $latestRevId
+		] );
+		$this->assertTrue( $result[0]['wikilambda_edit']['success'] );
+
+		$title = Title::newFromText( $zid, NS_MAIN );
+		$this->assertNotSame( $latestRevId, $result[0]['wikilambda_edit']['revisionId'] );
+		$this->assertSame( $title->getLatestRevID(), $result[0]['wikilambda_edit']['revisionId'] );
+		$zobject = $this->store->fetchZObjectByTitle( $title );
+		$this->assertEquals( json_decode( $data ), json_decode( $zobject->getText() ) );
+	}
+
+	public function testUpdateFailed_editConflict() {
+		[
+			'zid' => $zid,
+			'outdatedRevId' => $outdatedRevId,
+			'latestRevId' => $latestRevId,
+			'latestData' => $latestData
+		] = $this->createZObjectWithTwoRevisions();
+
+		// Edit based on the outdated revision, e.g. from a view page loaded before the second revision
+		$staleData = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
+			. ' "Z2K2": "First value", "Z2K3":'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+
+		try {
+			$this->doApiRequestWithToken( [
+				'action' => 'wikilambda_edit',
+				'summary' => 'Summary message',
+				'zid' => $zid,
+				'zobject' => $staleData,
+				'baserevid' => $outdatedRevId
+			] );
+			$this->fail( 'Expected an edit conflict error' );
+		} catch ( ApiUsageException $e ) {
+			$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_UNKNOWN, $e->getMessage() );
+			$this->assertStringContainsString(
+				wfMessage( 'wikilambda-edit-conflict-error-message' )->text(),
+				json_encode( $e->getMessageObject()->getApiData() )
+			);
+		}
+
+		// The newer revision is still the latest one, with its content intact
+		$title = Title::newFromText( $zid, NS_MAIN );
+		$this->assertSame( $latestRevId, $title->getLatestRevID() );
+		$zobject = $this->store->fetchZObjectByTitle( $title );
+		$this->assertEquals( json_decode( $latestData ), json_decode( $zobject->getText() ) );
 	}
 
 	public function testCreateFailed_specifiedZIDWithoutAuth() {

@@ -248,19 +248,30 @@ module.exports = {
 		 * @param {Object} param
 		 * @param {Object} param.summary
 		 * @param {boolean} param.disconnectFunctionObjects
+		 * @param {boolean} param.checkEditConflict Whether to reject the edit if the object
+		 *  has a newer revision than the one loaded in the store
 		 * @return {Promise}
 		 */
-		submitZObject: function ( { summary, disconnectFunctionObjects = false } ) {
+		submitZObject: function ( { summary, disconnectFunctionObjects = false, checkEditConflict = false } ) {
 			this.transformZObjectForSubmission( disconnectFunctionObjects );
 
 			const zobject = hybridToCanonical( this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.MAIN ] ) );
 			const zid = this.isCreateNewPage ? undefined : this.getCurrentZObjectId;
+			// Send no base revision if it is unknown: mw.Api drops undefined, but not null
+			const baseRevisionId = ( checkEditConflict && this.getCurrentRevisionId ) || undefined;
 
 			return saveZObject( {
 				zobject,
 				zid,
 				summary,
-				language: this.getUserLangCode
+				language: this.getUserLangCode,
+				baseRevisionId
+			} ).then( ( response ) => {
+				// Keep the new revision, so that later saves from this page do not conflict
+				if ( response && response.revisionId ) {
+					this.setCurrentRevisionId( response.revisionId );
+				}
+				return response;
 			} );
 		},
 

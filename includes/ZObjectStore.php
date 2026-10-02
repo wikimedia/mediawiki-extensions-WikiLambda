@@ -40,6 +40,7 @@ use MediaWiki\User\UserGroupManager;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\FakeResultWrapper;
 use Wikimedia\Rdbms\IConnectionProvider;
+use Wikimedia\Rdbms\IDBAccessObject;
 use Wikimedia\Rdbms\IExpression;
 use Wikimedia\Rdbms\IReadableDatabase;
 use Wikimedia\Rdbms\IResultWrapper;
@@ -374,10 +375,13 @@ class ZObjectStore {
 	 * @param string $summary An edit summary to display in the page's history, Recent Changes, watchlists, etc.
 	 * @param User $user The user making the edit.
 	 * @param int $flags Either EDIT_UPDATE (default) if editing or EDIT_NEW if creating a page
+	 * @param int|null $baseRevId The revision ID that the edit is based on. If set, and the page
+	 *  has a different latest revision, the edit fails with an edit conflict error.
 	 * @return ZObjectPage
 	 */
 	public function updateZObject(
-		MessageLocalizer $context, string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE
+		MessageLocalizer $context, string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE,
+		?int $baseRevId = null
 	) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 
@@ -455,6 +459,22 @@ class ZObjectStore {
 			return ZObjectPage::newFatal( $error );
 		}
 
+		$page = $this->wikiPageFactory->newFromTitle( $title );
+
+		// Error: The page changed after the edit's base revision (edit conflict).
+		// Read the page from the primary DB. The save below uses this same state as the
+		// parent revision, thus a concurrent edit after this check also fails.
+		if ( !$creating && $baseRevId !== null ) {
+			$page->loadPageData( IDBAccessObject::READ_LATEST );
+			if ( $page->getLatest() !== $baseRevId ) {
+				$error = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+					[ 'message' => $context->msg( 'wikilambda-edit-conflict-error-message' )->text() ]
+				);
+				return ZObjectPage::newFatal( $error );
+			}
+		}
+
 		// Use ZObjectAuthorization service to check that the user has the required permissions
 		// while creating or editing an object
 		$fromContent = null;
@@ -479,7 +499,6 @@ class ZObjectStore {
 		}
 
 		// We prepare the content to be saved
-		$page = $this->wikiPageFactory->newFromTitle( $title );
 		try {
 			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
 		} catch ( Exception $e ) {

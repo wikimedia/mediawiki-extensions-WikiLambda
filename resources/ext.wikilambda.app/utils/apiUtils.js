@@ -125,6 +125,8 @@ const apiUtils = {
 	 * @param {string} payload.zid The zid of the object to update or undefined if new object
 	 * @param {string} payload.summary The update summary
 	 * @param {string} payload.language The  user language code
+	 * @param {number|undefined} payload.baseRevisionId The revision the edit is based on, if
+	 *  the API should reject the edit when the object has a newer revision
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -140,6 +142,7 @@ const apiUtils = {
 				summary: payload.summary || '',
 				zid: payload.zid,
 				zobject: JSON.stringify( payload.zobject ),
+				baserevid: payload.baseRevisionId,
 				uselang: payload.language
 			}, {
 				signal: payload.signal

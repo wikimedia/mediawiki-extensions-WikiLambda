@@ -11,7 +11,7 @@ const { within } = require( '@testing-library/dom' );
 require( '@testing-library/jest-dom' );
 
 const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
-const { renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' );
+const { functionRevisionId, renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' );
 const existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' );
 const existingImplementationByCompositionFromApi = require( './objects/existingImplementationByCompositionFromApi.js' );
 const expected = require( './objects/expectedZFunctionWithImplementationsAndTesters.js' );
@@ -60,6 +60,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			uselang: 'en',
 			summary: 'Removed list from the approved list of test cases',
 			zid: functionZid,
+			baserevid: functionRevisionId,
 			zobject:
 				JSON.stringify(
 					expected.zFunctionWithImplementationsAndTesters(
