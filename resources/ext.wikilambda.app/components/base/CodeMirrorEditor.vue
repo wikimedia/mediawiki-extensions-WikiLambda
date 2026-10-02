@@ -39,7 +39,7 @@
 </template>
 
 <script>
-const { defineComponent, computed, ref, shallowRef } = require( 'vue' );
+const { defineComponent, computed, ref, shallowRef, watch } = require( 'vue' );
 const PlainTextEditor = require( './PlainTextEditor.vue' );
 const {
 	customElementDefinitions,
@@ -55,6 +55,33 @@ const MAX_ROWS = 20;
 
 // The mode to use before the user selects a programming language.
 const DEFAULT_MODE = 'javascript';
+
+// Finds the name of the implementation function, for example Z12345 in
+// "function Z12345( Z12345K1 ) {". The declaration must start the line, so
+// that a nested function does not match.
+const IMPLEMENTATION_FUNCTION = /^function\s+(Z\d+)\s*\(/m;
+
+/**
+ * Gives the ESLint rules to add to the CodeMirror defaults in JavaScript mode.
+ *
+ * The orchestrator calls the implementation function, so the code does not
+ * use it. Thus no-unused-vars ignores the name of that function only. ESLint
+ * still checks all other variables and the arguments.
+ *
+ * @param {string|null} name Name of the implementation function, if found
+ * @return {Object} ESLint configuration
+ */
+function getJavaScriptLintConfig( name ) {
+	if ( !name ) {
+		// An empty configuration restores the CodeMirror defaults.
+		return { rules: {} };
+	}
+	return {
+		rules: {
+			'no-unused-vars': [ 1, { varsIgnorePattern: `^${ name }$` } ]
+		}
+	};
+}
 
 // CodeMirror lets the user pick a theme. Lock it to the plain one, so that the
 // editor looks the same as the ACE editor. CodeMirror still follows the skin's
@@ -157,13 +184,45 @@ module.exports = exports = defineComponent( {
 			};
 		}
 
+		// The ESLint worker of the editor. It is null in other modes.
+		let javaScriptWorker = null;
+
+		const implementationName = computed( () => {
+			const match = IMPLEMENTATION_FUNCTION.exec( props.value );
+			return match ? match[ 1 ] : null;
+		} );
+
 		/**
-		 * Adds the HTML rules once CodeMirror is ready. CodeMirror rebuilds the
-		 * editor when the mode changes, so this runs again after every change.
+		 * Sends the ESLint rules for the current implementation name to the
+		 * JavaScript worker.
+		 */
+		function updateJavaScriptLinter() {
+			const worker = javaScriptWorker;
+			if ( !worker ) {
+				return;
+			}
+			worker.onload( () => worker.setConfig(
+				getJavaScriptLintConfig( implementationName.value )
+			) );
+		}
+
+		// The user can rename the function, so update the rules each time.
+		watch( implementationName, updateJavaScriptLinter );
+
+		/**
+		 * Adds the rules for the mode once CodeMirror is ready. CodeMirror
+		 * rebuilds the editor when the mode changes, so this runs again after
+		 * every change.
 		 *
 		 * @param {Object} codeMirror The CodeMirror instance
 		 */
 		function onReady( codeMirror ) {
+			javaScriptWorker = null;
+			if ( editorMode.value === 'javascript' ) {
+				javaScriptWorker = ( codeMirror.langExtension && codeMirror.langExtension.worker ) || null;
+				updateJavaScriptLinter();
+				return;
+			}
 			if ( editorMode.value !== 'html' ) {
 				return;
 			}

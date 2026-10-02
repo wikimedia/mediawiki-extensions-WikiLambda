@@ -195,6 +195,69 @@ describe( 'CodeMirrorEditor', () => {
 		} );
 	} );
 
+	describe( 'JavaScript mode', () => {
+		let worker;
+
+		beforeEach( () => {
+			worker = {
+				onload: jest.fn( ( callback ) => callback() ),
+				setConfig: jest.fn()
+			};
+			codeMirror.langExtension = { worker };
+		} );
+
+		it( 'ignores only the unused implementation function in ESLint', async () => {
+			const wrapper = await renderCodeMirrorEditor( {
+				mode: 'javascript',
+				value: 'function Z41070( Z41070K1 ) {\n\treturn Z41070K1;\n}'
+			} );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+
+			expect( worker.setConfig ).toHaveBeenCalledWith( {
+				rules: {
+					'no-unused-vars': [ 1, { varsIgnorePattern: '^Z41070$' } ]
+				}
+			} );
+			expect( codeMirror.applyLinter ).not.toHaveBeenCalled();
+		} );
+
+		it( 'updates the rules when the user renames the function', async () => {
+			const wrapper = await renderCodeMirrorEditor( {
+				mode: 'javascript',
+				value: 'function Z41070() {}'
+			} );
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+
+			await wrapper.setProps( { value: 'function Z41071() {}' } );
+
+			expect( worker.setConfig ).toHaveBeenLastCalledWith( {
+				rules: {
+					'no-unused-vars': [ 1, { varsIgnorePattern: '^Z41071$' } ]
+				}
+			} );
+		} );
+
+		it( 'keeps the default rules if there is no implementation function', async () => {
+			const wrapper = await renderCodeMirrorEditor( {
+				mode: 'javascript',
+				value: '\tfunction Z41070() {}\nconst x = 1;'
+			} );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+
+			expect( worker.setConfig ).toHaveBeenCalledWith( { rules: {} } );
+		} );
+
+		it( 'does nothing if the mode has no worker', async () => {
+			codeMirror.langExtension = {};
+			const wrapper = await renderCodeMirrorEditor( { mode: 'javascript' } );
+
+			expect( () => wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror ) )
+				.not.toThrow();
+		} );
+	} );
+
 	it( 'adds no linter in a mode other than HTML', async () => {
 		const wrapper = await renderCodeMirrorEditor( { mode: 'json' } );
 
