@@ -11,22 +11,39 @@
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiWatchlistTrait;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Title\Title;
+use MediaWiki\User\Options\UserOptionsLookup;
+use MediaWiki\User\User;
+use MediaWiki\Watchlist\WatchedItemStoreInterface;
+use MediaWiki\Watchlist\WatchlistManager;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Stats\StatsFactory;
 
 class ApiZObjectEditor extends WikiLambdaApiBase {
 
+	use ApiWatchlistTrait;
+
 	public function __construct(
 		ApiMain $mainModule,
 		string $moduleName,
 		StatsFactory $statsFactory,
+		WatchlistManager $watchlistManager,
+		WatchedItemStoreInterface $watchedItemStore,
+		UserOptionsLookup $userOptionsLookup,
 	) {
 		parent::__construct( $mainModule, $moduleName, $statsFactory );
+
+		$this->watchlistExpiryEnabled = $this->getConfig()->get( MainConfigNames::WatchlistExpiry );
+		$this->watchlistMaxDuration = $this->getConfig()->get( MainConfigNames::WatchlistExpiryMaxDuration );
+		$this->watchlistManager = $watchlistManager;
+		$this->watchedItemStore = $watchedItemStore;
+		$this->userOptionsLookup = $userOptionsLookup;
 
 		$this->setUp();
 	}
@@ -46,7 +63,8 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
-		if ( !$zid || $zid === ZTypeRegistry::Z_NULL_REFERENCE ) {
+		$creating = !$zid || $zid === ZTypeRegistry::Z_NULL_REFERENCE;
+		if ( $creating ) {
 			// Create a new ZObject
 			$response = $zObjectStore->createNewZObject( $this, $zobject, $summary, $user );
 		} else {
@@ -60,6 +78,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 					WikiLambdaApiBase::dieWithZError( $zError, HttpStatus::FORBIDDEN );
 				}
 				$editFlag = EDIT_NEW;
+				$creating = true;
 			}
 
 			// Edit an existing ZObject
@@ -71,6 +90,8 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 		}
 
 		$title = $response->getTitle();
+		$this->updateWatchlist( $params, $title, $user, $creating );
+
 		$this->getResult()->addValue(
 			null,
 			$this->getModuleName(),
@@ -81,6 +102,25 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 				'page' => $title->getBaseTitle()
 			]
 		);
+	}
+
+	/**
+	 * Watch or unwatch the saved page, as the request and the user preferences specify.
+	 *
+	 * @param array $params
+	 * @param Title $title
+	 * @param User $user
+	 * @param bool $creating
+	 */
+	private function updateWatchlist( array $params, Title $title, User $user, bool $creating ): void {
+		// Core decides before the save, but a new ZID is known only after it, so apply watchcreations here.
+		$watch = $this->getWatchlistValue( $params['watchlist'], $title, $user ) || (
+			$creating && $this->getWatchlistValue( $params['watchlist'], $title, $user, 'watchcreations' )
+		);
+		$expiry = $watch ? $this->getExpiryFromParams(
+			$params, $title, $user, $creating ? 'watchcreations-expiry' : 'watchdefault-expiry'
+		) : null;
+		$this->watchlistManager->setWatch( $watch, $user, $title, $expiry );
 	}
 
 	/**
@@ -135,7 +175,7 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 				ParamValidator::PARAM_TYPE => 'text',
 				ParamValidator::PARAM_REQUIRED => true,
 			]
-		];
+		] + $this->getWatchlistParams();
 	}
 
 	/**

@@ -86,6 +86,8 @@
 	"apihelp-wikilambda_edit-param-summary": "Edit summary message",
 	"apihelp-wikilambda_edit-param-zid": "ZID of the ZObject to edit. If null, the ZObject will be newly created",
 	"apihelp-wikilambda_edit-param-zobject": "JSON representation of the ZObject to save",
+	"apihelp-wikilambda_edit-param-watchlist": "Unconditionally add or remove the page from the current user's watchlist, use preferences (ignored for bot users) or do not change watch.",
+	"apihelp-wikilambda_edit-param-watchlistexpiry": "Watchlist expiry timestamp. Omit this parameter entirely to leave the current expiry unchanged.",
 	"apierror-wikilambda_function_call-client-error": "Could not complete request due to client error",
 	"apierror-wikilambda_function_call-server-error": "Could not complete request due to server error",
 	"apierror-wikilambda_function_call-concurrency-limit": "You have too many function calls executing right now.",

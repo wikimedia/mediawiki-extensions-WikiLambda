@@ -216,6 +216,58 @@ describe( 'Publish Dialog', () => {
 		expect( store.submitZObject ).not.toHaveBeenCalled();
 	} );
 
+	describe( 'with the forceeditsummary preference', () => {
+		let originalGetImpl;
+
+		beforeEach( () => {
+			originalGetImpl = mw.user.options.get.getMockImplementation();
+			mw.user.options.get.mockImplementation( ( key ) => key === 'forceeditsummary' ? 1 : null );
+			store.isCreateNewPage = false;
+			store.isAbstractCreatePage = false;
+		} );
+
+		afterEach( () => {
+			mw.user.options.get.mockImplementation( originalGetImpl );
+		} );
+
+		const renderWithMessages = () => renderPublishDialog( {}, { stubs: { CdxMessage: false } } );
+
+		it( 'warns once on a blank summary, then publishes on the second click', async () => {
+			const wrapper = renderWithMessages();
+
+			await wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			expect( mockSubmitAction ).not.toHaveBeenCalled();
+			await waitFor( () => expect( wrapper.get( '.cdx-message--warning' ).text() ).toContain( 'You have not provided an edit summary' ) );
+
+			await wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			expect( mockSubmitAction ).toHaveBeenCalledWith( { summary: '' } );
+		} );
+
+		it( 'publishes at once when there is a summary', async () => {
+			const wrapper = renderWithMessages();
+			await wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' ).setValue( 'mock summary' );
+
+			await wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			expect( mockSubmitAction ).toHaveBeenCalledWith( { summary: 'mock summary' } );
+		} );
+
+		it( 'does not warn when creating a new object', async () => {
+			store.isCreateNewPage = true;
+			const wrapper = renderWithMessages();
+
+			await wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			expect( mockSubmitAction ).toHaveBeenCalled();
+		} );
+
+		it( 'does not warn when creating a new abstract article', async () => {
+			store.isAbstractCreatePage = true;
+			const wrapper = renderWithMessages();
+
+			await wrapper.get( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
+			expect( mockSubmitAction ).toHaveBeenCalled();
+		} );
+	} );
+
 	it( 'proceeds to publish when pressing Ctrl + Enter on Windows', async () => {
 		const wrapper = renderPublishDialog( {
 			showDialog: true

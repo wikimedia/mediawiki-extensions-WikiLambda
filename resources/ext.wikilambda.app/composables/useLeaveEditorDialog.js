@@ -27,6 +27,9 @@ module.exports = function useLeaveEditorDialog( { isDirty, onBeforeLeave } ) {
 	const leaveEditorCallback = ref( undefined );
 	const showLeaveEditorDialog = ref( false );
 
+	// Like core, respect the preference to not warn about unsaved changes.
+	const shouldWarn = () => isDirty.value && !!Number( mw.user.options.get( 'useeditwarning' ) );
+
 	function closeLeaveDialog() {
 		showLeaveEditorDialog.value = false;
 	}
@@ -88,7 +91,7 @@ module.exports = function useLeaveEditorDialog( { isDirty, onBeforeLeave } ) {
 	 * @param {Event} e the beforeunload event
 	 */
 	function handleUnload( e ) {
-		if ( isDirty.value ) {
+		if ( shouldWarn() ) {
 			e.preventDefault();
 		}
 	}
@@ -108,7 +111,7 @@ module.exports = function useLeaveEditorDialog( { isDirty, onBeforeLeave } ) {
 			window.location.href = targetUrl;
 		}
 
-		if ( isDirty.value ) {
+		if ( shouldWarn() ) {
 			leaveEditorCallback.value = leaveAction;
 			showLeaveEditorDialog.value = true;
 		} else {

@@ -47,7 +47,11 @@
 					{{ i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text() }}
 				</template>
 
-				<template v-if="hasKeyboardSubmitWarning" #warning>
+				<template v-if="hasMissingSummaryWarning" #warning>
+					<!-- eslint-disable-next-line vue/no-v-html -->
+					<span v-html="missingSummaryMessage"></span>
+				</template>
+				<template v-else-if="hasKeyboardSubmitWarning" #warning>
 					<!-- eslint-disable-next-line vue/no-v-html -->
 					<span v-html="keyboardSubmitMessage"></span>
 				</template>
@@ -142,6 +146,7 @@ module.exports = exports = defineComponent( {
 		// Dialog state
 		const summary = ref( '' );
 		const hasKeyboardSubmitWarning = ref( false );
+		const hasMissingSummaryWarning = ref( false );
 		const isPublishing = ref( false );
 
 		/**
@@ -150,6 +155,7 @@ module.exports = exports = defineComponent( {
 		 */
 		function closeDialog() {
 			hasKeyboardSubmitWarning.value = false;
+			hasMissingSummaryWarning.value = false;
 
 			// Clear all publish dialog errors/warnings (errorId: "main"), preserve field-level warnings
 			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
@@ -199,7 +205,30 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string}
 		 */
-		const status = computed( () => hasKeyboardSubmitWarning.value ? 'warning' : 'default' );
+		const status = computed( () => (
+			hasKeyboardSubmitWarning.value || hasMissingSummaryWarning.value ? 'warning' : 'default'
+		) );
+
+		/**
+		 * Returns whether to prompt the user once for a blank summary before publishing.
+		 * Like core, this applies only to edits of existing pages.
+		 *
+		 * @return {boolean}
+		 */
+		function shouldPromptForSummary() {
+			return !!Number( mw.user.options.get( 'forceeditsummary' ) ) &&
+				!store.isCreateNewPage &&
+				!store.isAbstractCreatePage &&
+				summary.value.trim() === '' &&
+				!hasMissingSummaryWarning.value;
+		}
+
+		/**
+		 * Returns the warning message for a blank summary.
+		 *
+		 * @return {string}
+		 */
+		const missingSummaryMessage = computed( () => i18n( 'missingsummary', primaryAction.value.label ).parse() );
 
 		// Submission state
 		/**
@@ -210,6 +239,10 @@ module.exports = exports = defineComponent( {
 		 * 2. If the response is successful, navigates to the content page.
 		 */
 		function publishPage() {
+			if ( shouldPromptForSummary() ) {
+				hasMissingSummaryWarning.value = true;
+				return;
+			}
 			if ( props.submitAction ) {
 				isPublishing.value = true;
 
@@ -317,9 +350,11 @@ module.exports = exports = defineComponent( {
 			handleSummaryKeydown,
 			hasErrors,
 			hasKeyboardSubmitWarning,
+			hasMissingSummaryWarning,
 			i18n,
 			keyboardSubmitMessage,
 			legalText,
+			missingSummaryMessage,
 			primaryAction,
 			publishPage,
 			status,

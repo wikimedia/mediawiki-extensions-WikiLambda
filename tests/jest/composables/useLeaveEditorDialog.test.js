@@ -170,6 +170,39 @@ describe( 'useLeaveEditorDialog composable', () => {
 		expect( preventDefault ).not.toHaveBeenCalled();
 	} );
 
+	describe( 'when the useeditwarning preference is off', () => {
+		let originalGetImpl;
+
+		beforeEach( () => {
+			originalGetImpl = mw.user.options.get.getMockImplementation();
+			mw.user.options.get.mockImplementation( ( key ) => key === 'useeditwarning' ? 0 : null );
+		} );
+
+		afterEach( () => {
+			mw.user.options.get.mockImplementation( originalGetImpl );
+		} );
+
+		it( 'leaveTo navigates immediately when dirty', () => {
+			const isDirty = ref( true );
+			const [ result ] = loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
+			const testUrl = 'https://example.com/page';
+
+			result.leaveTo( testUrl );
+
+			expect( result.showLeaveEditorDialog.value ).toBe( false );
+			expect( window.location.href ).toBe( testUrl );
+		} );
+
+		it( 'beforeunload when dirty does not call preventDefault', () => {
+			const isDirty = ref( true );
+			loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
+			const preventDefault = jest.fn();
+			getBeforeunloadHandler()( { preventDefault } );
+
+			expect( preventDefault ).not.toHaveBeenCalled();
+		} );
+	} );
+
 	it( 'closeLeaveDialog sets showLeaveEditorDialog to false', () => {
 		const isDirty = ref( true );
 		const [ result ] = loadComposable( () => useLeaveEditorDialog( { isDirty } ) );

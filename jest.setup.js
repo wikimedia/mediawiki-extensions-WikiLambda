@@ -66,6 +66,7 @@ class Title {
 const upstreami18n = {
 	'colon-separator': ': ',
 	'comma-separator': ', ',
+	missingsummary: '<strong>Reminder:</strong> You have not provided an edit summary.\nIf you click "$1" again, your edit will be published without one.',
 	parentheses: '($1)',
 	'quotation-marks': '"$1"'
 };
@@ -174,6 +175,10 @@ global.mw = {
 	},
 	user: {
 		isAnon: jest.fn().mockReturnValue( true ),
+		options: {
+			// Core defaults for the preferences that the app reads
+			get: jest.fn( ( key ) => ( { forceeditsummary: 0, useeditwarning: 1 } )[ key ] ?? null )
+		},
 		getRights: jest.fn().mockReturnValue( {
 			then: jest.fn().mockReturnValue( [] )
 		} )

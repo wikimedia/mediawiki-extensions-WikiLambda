@@ -17,7 +17,9 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiZObjectEditor
@@ -347,6 +349,160 @@ class ApiZObjectEditorTest extends WikiLambdaApiTestCase {
 		$this->assertTrue( $result[0]['wikilambda_edit']['success'] );
 		$this->assertEquals( 'Z12345', $result[0]['wikilambda_edit']['title'] );
 		$this->assertEquals( 'Z12345', $result[0]['wikilambda_edit']['page'] );
+	}
+
+	private function setWatchPreferences( User $user, bool $watchDefault, bool $watchCreations ): void {
+		$userOptionsManager = $this->getServiceContainer()->getUserOptionsManager();
+		$userOptionsManager->setOption( $user, 'watchdefault', $watchDefault );
+		$userOptionsManager->setOption( $user, 'watchcreations', $watchCreations );
+		$userOptionsManager->saveOptions( $user );
+	}
+
+	private function isWatched( User $user, string $zid ): bool {
+		return $this->getServiceContainer()->getWatchlistManager()
+			->isWatchedIgnoringRights( $user, Title::newFromText( $zid, NS_MAIN ) );
+	}
+
+	public static function provideWatchPreferencesOnCreate() {
+		return [
+			'no preferences' => [ false, false, false ],
+			'watchdefault' => [ true, false, true ],
+			'watchcreations' => [ false, true, true ],
+			'both preferences' => [ true, true, true ],
+		];
+	}
+
+	public static function provideWatchPreferencesOnEdit() {
+		return [
+			'no preferences' => [ false, false, false ],
+			'watchdefault' => [ true, false, true ],
+			'watchcreations' => [ false, true, false ],
+			'both preferences' => [ true, true, true ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideWatchPreferencesOnCreate
+	 */
+	public function testWatch_preferencesOnCreate( $watchDefault, $watchCreations, $expected ) {
+		$user = $this->getTestSysop()->getUser();
+		$this->setWatchPreferences( $user, $watchDefault, $watchCreations );
+		$newZid = $this->store->getNextAvailableZid();
+
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
+
+		$this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'summary' => 'Summary message',
+			'zobject' => $data
+		], null, $user );
+
+		$this->assertSame( $expected, $this->isWatched( $user, $newZid ) );
+	}
+
+	/**
+	 * @dataProvider provideWatchPreferencesOnCreate
+	 */
+	public function testWatch_preferencesOnCreateWithSpecifiedZid( $watchDefault, $watchCreations, $expected ) {
+		$user = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
+		$this->setWatchPreferences( $user, $watchDefault, $watchCreations );
+
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z12345" },'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3": { "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
+
+		$this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'zid' => 'Z12345',
+			'summary' => 'Summary message',
+			'zobject' => $data
+		], null, $user );
+
+		$this->assertSame( $expected, $this->isWatched( $user, 'Z12345' ) );
+	}
+
+	/**
+	 * @dataProvider provideWatchPreferencesOnEdit
+	 */
+	public function testWatch_preferencesOnEdit( $watchDefault, $watchCreations, $expected ) {
+		$user = $this->getTestSysop()->getUser();
+		$newZid = $this->store->getNextAvailableZid();
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. ' "Z2K2": "New ZObject", "Z2K3":'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+		$this->store->createNewZObject( RequestContext::getMain(), $data, 'New ZObject', $user );
+
+		$this->setWatchPreferences( $user, $watchDefault, $watchCreations );
+		$this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'summary' => 'Summary message',
+			'zid' => $newZid,
+			'zobject' => str_replace( '"Z0"', "\"$newZid\"", str_replace( 'New ZObject"', 'Changed"', $data ) )
+		], null, $user );
+
+		$this->assertSame( $expected, $this->isWatched( $user, $newZid ) );
+	}
+
+	public static function provideWatchlistParam() {
+		return [
+			'watch overrides preferences' => [ 'watch', false, true ],
+			'unwatch removes the page' => [ 'unwatch', true, false ],
+			'nochange keeps the page watched' => [ 'nochange', true, true ],
+			'nochange does not watch the page' => [ 'nochange', false, false ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideWatchlistParam
+	 */
+	public function testWatch_watchlistParam( $watchlist, $watchedBefore, $expected ) {
+		$user = $this->getTestSysop()->getUser();
+		$newZid = $this->store->getNextAvailableZid();
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. ' "Z2K2": "New ZObject", "Z2K3":'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+		$this->store->createNewZObject( RequestContext::getMain(), $data, 'New ZObject', $user );
+		$this->getServiceContainer()->getWatchlistManager()
+			->setWatch( $watchedBefore, $user, Title::newFromText( $newZid, NS_MAIN ) );
+
+		$this->setWatchPreferences( $user, true, true );
+		$this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'summary' => 'Summary message',
+			'zid' => $newZid,
+			'zobject' => str_replace( '"Z0"', "\"$newZid\"", str_replace( 'New ZObject"', 'Changed"', $data ) ),
+			'watchlist' => $watchlist
+		], null, $user );
+
+		$this->assertSame( $expected, $this->isWatched( $user, $newZid ) );
+	}
+
+	public function testWatch_expiryPreferenceOnCreate() {
+		$this->overrideConfigValue( MainConfigNames::WatchlistExpiry, true );
+		$user = $this->getTestSysop()->getUser();
+		$this->setWatchPreferences( $user, false, true );
+		$userOptionsManager = $this->getServiceContainer()->getUserOptionsManager();
+		$userOptionsManager->setOption( $user, 'watchdefault-expiry', '1 month' );
+		$userOptionsManager->setOption( $user, 'watchcreations-expiry', '1 week' );
+		$userOptionsManager->saveOptions( $user );
+		$newZid = $this->store->getNextAvailableZid();
+
+		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
+
+		$this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'summary' => 'Summary message',
+			'zobject' => $data
+		], null, $user );
+
+		$item = $this->getServiceContainer()->getWatchedItemStore()
+			->getWatchedItem( $user, Title::newFromText( $newZid, NS_MAIN ) );
+		$this->assertNotNull( $item );
+		$this->assertSame( 7, $item->getExpiryInDays() );
 	}
 
 }
