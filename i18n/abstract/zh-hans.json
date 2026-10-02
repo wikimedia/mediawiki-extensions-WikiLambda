@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ouclie"
+			"Ouclie",
+			"GuoPC"
 		]
 	},
 	"action-wikilambda-abstract-create": "创建新的抽象维基百科文章",
 	"action-wikilambda-abstract-edit": "编辑现有的抽象维基百科文章",
+	"action-wikilambda-abstract-run-unsaved-fragment": "渲染未保存的抽象维基百科片段",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "抽象维基百科文章“添加片段”菜单中提供的返回HTML的维基函数列表（按ZID分类）。最多可添加十个条目。",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "建议的维基函数",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-help-text": "最多可将10个返回HTML的维基函数按其ZID（例如<code>Z20756</code> ）添加到抽象维基百科文章片段菜单中。",
@@ -13,6 +15,7 @@
 	"content-model-abstractwiki": "抽象维基百科文章",
 	"right-wikilambda-abstract-create": "创建新的抽象维基百科文章",
 	"right-wikilambda-abstract-edit": "编辑现有的抽象维基百科文章",
+	"right-wikilambda-abstract-run-unsaved-fragment": "渲染未保存的抽象维基百科片段",
 	"specialpages-group-abstractwiki": "抽象维基百科页面",
 	"wikilambda-abstract-content-object": "抽象维基百科文章",
 	"wikilambda-abstract-edit-title": "为$1编辑抽象维基百科文章",

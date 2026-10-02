@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Brettchenweber"
+			"Brettchenweber",
+			"Ameisenigel"
 		]
 	},
 	"action-wikilambda-abstract-create": "neuen abstrakten Artikel zu erstellen",
 	"action-wikilambda-abstract-edit": "abstrakten Artikel zu bearbeiten",
+	"action-wikilambda-abstract-run-unsaved-fragment": "Nicht gespeicherte abstrakte Wikipedia-Fragmente rendern",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Vorgeschlagene Wikifunktionen für das abstrakte Wiki",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "Die Liste der HTML-rückgebenden Wiki-Funktionen (nach ZID), die im Menü „Fragment hinzufügen“ des Abstract-Artikels angeboten werden. Bis zu zehn Einträge.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Vorgeschlagene Wikifunktionen",
@@ -14,6 +16,7 @@
 	"content-model-abstractwiki": "Abstrakter Artikel",
 	"right-wikilambda-abstract-create": "Neuen abstrakten Artikel erstellen",
 	"right-wikilambda-abstract-edit": "Abstrakten Artikel bearbeiten",
+	"right-wikilambda-abstract-run-unsaved-fragment": "Nicht gespeicherte abstrakte Wikipedia-Fragmente rendern",
 	"specialpages-group-abstractwiki": "Abstrakte Wikipedia Seiten",
 	"wikilambda-abstract-content-object": "Abstrakter Artikel",
 	"wikilambda-abstract-edit-title": "Abstrakten Artikel für $1 bearbeiten",

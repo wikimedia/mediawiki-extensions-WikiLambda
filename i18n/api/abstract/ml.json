@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Akbarali"
+		]
+	},
+	"apihelp-abstractwiki_run_fragment-summary": "നൽകിയിരിക്കുന്ന വിക്കിഡാറ്റ ഐറ്റം ഐഡി, ഭാഷ സിഡ്, തീയതി എന്നിവയ്ക്കായി ഒരു അബ്സ്ട്രാക്റ്റ്  വിക്കിപീഡിയ ഉള്ളടക്ക ശകലം റെൻഡർ ചെയ്യുക.",
+	"apihelp-abstractwiki_run_fragment-param-async": "ഈ കോൾ അസിൻക്രണസ് ആയി പ്രവർത്തിപ്പിക്കണോ അതോ സിൻക്രണസ് ആയി പ്രവർത്തിപ്പിക്കണോ എന്ന്. അസിൻക്രണസ് ആയി വിളിച്ചാൽ, മൂല്യം തയ്യാറായില്ലെങ്കിൽ അത് pending=true എന്ന് തിരികെ നൽകും. സിൻക്രണസ് ആയി വിളിക്കുമ്പോൾ, വിക്കിഫങ്ഷനുകൾ ഫ്രാഗ്മെന്റ് റെൻഡർ ചെയ്യുന്നതുവരെ കാത്തിരിക്കുകയും ഫലമായുണ്ടാകുന്ന മൂല്യം തിരികെ നൽകുകയും ചെയ്യും.",
+	"apihelp-abstractwiki_run_fragment-param-qid": "വിക്കിഡാറ്റ ഐറ്റം ഐഡി ശകലങ്ങൾ റെൻഡർ ചെയ്യാൻ ഉപയോഗിച്ചു. അത് സാധുവായ ഒരു qid ആയിരിക്കണം.",
+	"apihelp-abstractwiki_run_fragment-param-language": "ഫ്രാഗ്മെന്റുകൾ റെൻഡർ ചെയ്യാൻ ഉപയോഗിക്കുന്ന Language ZObject ഐഡി. അത് സാധുവായ ഒരു Zid ആയിരിക്കണം.",
+	"apihelp-abstractwiki_run_fragment-param-date": "ശകലങ്ങൾ റെൻഡർ ചെയ്യാൻ ഉപയോഗിക്കുന്ന തീയതി സ്ട്രിംഗ്.",
+	"apihelp-abstractwiki_run_fragment-param-fragment": "ഒരു ഫ്രാഗ്മെന്റ് കോമ്പോസിഷൻ JSON. ഇത് ഒരു സാധുവായ ZObject ആയിരിക്കണം കൂടാതെ Z89/HTML ഫ്രാഗ്മെന്റ് തരത്തിലുള്ള ഒരു ഒബ്ജക്റ്റ് ഔട്ട്പുട്ട് ചെയ്യണം.",
+	"apihelp-abstractwiki_run_fragment-example-literal-html": "ഒരു ലിറ്ററൽ HTML ഒബ്ജക്റ്റ് ഉപയോഗിച്ച് ഒരു ഫ്രാഗ്മെന്റ് പ്രവർത്തിപ്പിക്കുക",
+	"apihelp-abstractwiki_run_fragment-example-composition": "qid, ഭാഷാ ആർഗ്യുമെന്റുകൾ ഉപയോഗിക്കുന്ന ഒരു കോമ്പോസിഷൻ ഉള്ള ഒരു ഫ്രാഗ്മെന്റ് പ്രവർത്തിപ്പിക്കുക.",
+	"apierror-abstractwiki_run_fragment-bad-fragment": "ഈ ശകലം സാധുവായ ഒരു ഫംഗ്ഷൻ കോൾ അല്ല.",
+	"apierror-abstractwiki_run_fragment-bad-response": "ആ ശകലം തെറ്റായ തരം തിരിച്ചു തന്നു.",
+	"apierror-abstractwiki_run_fragment-forbidden": "ഈ ഫ്രാഗ്മെന്റ് റെൻഡർ ചെയ്യുന്നതിന് ആവശ്യമായ അനുമതികൾ നിങ്ങൾക്കില്ല.",
+	"apierror-abstractwiki_run_fragment-not-enabled": "അബ്സ്ട്രാക്റ്റ് വിക്കിപീഡിയ ഭാഗങ്ങൾ റെൻഡർ ചെയ്യാൻ കഴിയുന്നില്ല: ഈ സവിശേഷത പ്രാപ്തമാക്കിയിട്ടില്ല.",
+	"apierror-abstractwiki_run_fragment-returned-zerror": "വിക്കിഫങ്ഷൻസ് പരാജയപ്പെട്ട ഒരു മറുപടി നൽകി: $1",
+	"apierror-abstractwiki_run_fragment-service-unavailable": "റെൻഡറിംഗ് സേവനം താൽക്കാലികമായി ലഭ്യമല്ല. ദയവായി പിന്നീട് വീണ്ടും ശ്രമിക്കുക.",
+	"apierror-abstractwiki_run_fragment-unknown-error": "അജ്ഞാതമായ ഒരു പിശക് കാരണം ഈ ഭാഗം റെൻഡർ ചെയ്യാൻ കഴിയുന്നില്ല."
+}

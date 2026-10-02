@@ -4,11 +4,13 @@
 			"Jérémy-Günther-Heinz Jähnick",
 			"VIGNERON",
 			"Wladek92",
-			"Wikipucine"
+			"Wikipucine",
+			"Jdforrester"
 		]
 	},
 	"action-wikilambda-abstract-create": "créer de nouveaux articles de la Wikipedia abstraite",
 	"action-wikilambda-abstract-edit": "modifier les articles existants de la Wikipedia abstraite",
+	"action-wikilambda-abstract-run-unsaved-fragment": "faire le rendu des fragments non sauvegardés de la Wikipedia abstraite",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-title": "Wikifunctions suggérées pour Abstract Wikipedia",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-description": "Liste des Wikifunctions (maximum dix) renvoyant du HTML (par Zid) proposées dans le menu « Ajouter un fragment » de l'article de la Wikipedia abstraite.",
 	"communityconfiguration-abstractwikisuggestedwikifunctions-suggestedfunctions-label": "Wikifunctions suggérées",
@@ -17,6 +19,7 @@
 	"content-model-abstractwiki": "Article de la Wikipedia abstraite",
 	"right-wikilambda-abstract-create": "Créer de nouveaux articles de la Wikipedia abstraite",
 	"right-wikilambda-abstract-edit": "Modifier des articles existants de la Wikipedia abstraite",
+	"right-wikilambda-abstract-run-unsaved-fragment": "Faire le rendu des fragments non sauvegardées de la Wikipedia abstraite",
 	"specialpages-group-abstractwiki": "Pages de la Wikipedia abstraite",
 	"wikilambda-abstract-content-object": "Article de la Wikipédia abstraite",
 	"wikilambda-abstract-edit-title": "Modifier l'article de la Wikipedia abstraite pour $1",
