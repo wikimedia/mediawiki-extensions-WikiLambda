@@ -20,6 +20,7 @@ const {
 	getZMultilingualStringsetLangs,
 	getZObjectType,
 	getZFunctionCallArgumentKeys,
+	getZFunctionCallFunctionId,
 	getZImplementationFunctionZid,
 	getZImplementationContentType,
 	getZTesterFunctionZid,
@@ -802,40 +803,82 @@ const zobjectStore = {
 		 *   the first argument should not be added.
 		 * * If the functionZid is undefined, we clear the old arguments but set no
 		 *   new ones.
+		 * * If the function is not in the store yet, we clear the old arguments
+		 *   at once, fetch the function, and then add the new arguments.
 		 *
 		 * @param {Object} payload
 		 * @param {Array} payload.keyPath
 		 * @param {string|undefined} payload.functionZid
+		 * @return {Promise} Resolves when the arguments are set
 		 */
 		setFunctionCallArguments: function ( payload ) {
 			const { keyPath, functionZid } = payload;
 
-			// target is key/Z3 object
-			const { target, finalKey } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
-
-			let newArgs = [];
-			let newKeys = [];
-
-			// 1. Get new argument definitions from payload.functionZid
-			if ( functionZid ) {
-				newArgs = this.getInputsOfFunctionZid( functionZid );
-				newKeys = newArgs.map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] );
+			// 1. If the function is not in the store yet, we do not know its inputs.
+			// Remove all the old arguments now, and add the new ones when the function is fetched.
+			if ( functionZid && !this.getStoredObject( functionZid ) ) {
+				this.removeFunctionCallArguments( { keyPath } );
+				return this.fetchZids( { zids: [ functionZid ] } ).then( () => {
+					// Stop if the function call changed or went away during the fetch
+					if ( getZFunctionCallFunctionId( this.getZObjectByKeyPath( keyPath ) ) !== functionZid ) {
+						return;
+					}
+					return this.addFunctionCallArguments( { keyPath, functionZid } );
+				} );
 			}
 
-			// 2. Get function call arguments from parentId
+			// 2. Else, remove the old arguments that the new function does not have,
+			// and add the new arguments that the function call does not have yet.
+			const newKeys = functionZid ?
+				this.getInputsOfFunctionZid( functionZid ).map( ( arg ) => arg[ Constants.Z_ARGUMENT_KEY ] ) :
+				[];
+			this.removeFunctionCallArguments( { keyPath, keepKeys: newKeys } );
+			return this.addFunctionCallArguments( { keyPath, functionZid } );
+		},
+
+		/**
+		 * Removes the arguments of a function call, except the ones in keepKeys.
+		 *
+		 * @param {Object} payload
+		 * @param {Array} payload.keyPath
+		 * @param {Array} [payload.keepKeys] Argument keys to keep
+		 */
+		removeFunctionCallArguments: function ( payload ) {
+			const { keyPath, keepKeys = [] } = payload;
+
+			// target is key/Z3 object
+			const { target, finalKey } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
 			const oldKeys = getZFunctionCallArgumentKeys( target[ finalKey ] );
 
-			// 3. For every current argument key: if it's not in new keys, remove it
 			oldKeys.forEach( ( key ) => {
-				if ( !newKeys.includes( key ) ) {
+				if ( !keepKeys.includes( key ) ) {
 					this.unsetPropertyByKeyPath( {
 						keyPath: [ ...keyPath, key ]
 					} );
 				}
 			} );
+		},
 
-			// 4. For every key of new arguments: if it's not set, set it to blank object
-			// 4.a. Omit first argument if parent key is a tester validation call
+		/**
+		 * Adds the arguments of a function to a function call, set to their
+		 * initial blank values. The arguments that the function call already
+		 * has do not change.
+		 * * If the function call is the value of a tester result validation (Z20K3)
+		 *   the first argument should not be added.
+		 * * If the function is not in the store, no arguments are added.
+		 *
+		 * @param {Object} payload
+		 * @param {Array} payload.keyPath
+		 * @param {string|undefined} payload.functionZid
+		 * @return {Promise} Resolves when the arguments are added
+		 */
+		addFunctionCallArguments: function ( payload ) {
+			const { keyPath, functionZid } = payload;
+
+			// 1. Get new argument definitions from payload.functionZid
+			const newArgs = functionZid ? this.getInputsOfFunctionZid( functionZid ) : [];
+
+			// 1.a. Omit first argument if parent key is a tester validation call
 			const parentKey = keyPath[ keyPath.length - 1 ];
 			if ( parentKey === Constants.Z_TESTER_VALIDATION ) {
 				newArgs.shift();
@@ -843,14 +886,18 @@ const zobjectStore = {
 
 			// If no args, exit early
 			if ( newArgs.length === 0 ) {
-				return;
+				return Promise.resolve();
 			}
 
-			// 4.b. Fetch all argument types before the creation of the blank objects
-			const argTypes = newArgs.map( ( arg ) => typeToString( arg[ Constants.Z_ARGUMENT_TYPE ], true ) );
-			this.fetchZids( { zids: [ ...new Set( argTypes ) ] } ).then( () => {
+			// 2. Get the current function call arguments: we do not change them
+			const { target, finalKey } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
+			const oldKeys = getZFunctionCallArgumentKeys( target[ finalKey ] );
 
-				// 4.c. Initialize all the new function call arguments
+			// 3. Fetch all argument types before the creation of the blank objects
+			const argTypes = newArgs.map( ( arg ) => typeToString( arg[ Constants.Z_ARGUMENT_TYPE ], true ) );
+			return this.fetchZids( { zids: [ ...new Set( argTypes ) ] } ).then( () => {
+
+				// 3.a. Initialize all the new function call arguments
 				let zids = [];
 				newArgs.forEach( ( arg ) => {
 					if ( oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
@@ -860,7 +907,7 @@ const zobjectStore = {
 					const key = arg[ Constants.Z_ARGUMENT_KEY ];
 					const type = arg[ Constants.Z_ARGUMENT_TYPE ];
 
-					// 4.d. If the key is a Wikidata enum identity, set it to the placeholder Z0
+					// 3.b. If the key is a Wikidata enum identity, set it to the placeholder Z0
 					const presetValue = key === Constants.Z_WIKIDATA_ENUM_IDENTITY ?
 						Constants.NEW_ZID_PLACEHOLDER :
 						undefined;
@@ -877,7 +924,7 @@ const zobjectStore = {
 					} );
 				} );
 
-				// 5. Asynchronously fetch the necessary zids. We don't need to wait
+				// 4. Asynchronously fetch the necessary zids. We don't need to wait
 				// to the fetch call because these will only be needed for labels.
 				zids = [ ...new Set( zids ) ];
 

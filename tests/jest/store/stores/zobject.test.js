@@ -2380,6 +2380,228 @@ describe( 'zobject Pinia store', () => {
 
 				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( expected );
 			} );
+
+			describe( 'when the function is not in the store yet', () => {
+				const unstoredFunction = {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z10336' },
+					Z2K2: {
+						Z1K1: 'Z8',
+						Z8K1: [ 'Z17', { Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z10336K1' } ],
+						Z8K2: 'Z6'
+					}
+				};
+
+				beforeEach( () => {
+					// Copy the fixture so that the fetch mocks do not change it
+					store.objects = Object.assign( {}, mockStoredObjects );
+					store.jsonObject.main = canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z10336',
+						Z882K1: 'Z6'
+					} } );
+				} );
+
+				it( 'fetches the function and then sets its arguments', async () => {
+					store.fetchZids = jest.fn( ( { zids } ) => {
+						if ( zids.includes( 'Z10336' ) ) {
+							store.objects.Z10336 = { success: true, data: unstoredFunction };
+						}
+						return Promise.resolve();
+					} );
+
+					await store.setFunctionCallArguments( {
+						keyPath: [ 'main', 'Z2K2' ],
+						functionZid: 'Z10336'
+					} );
+
+					expect( store.fetchZids ).toHaveBeenNthCalledWith( 1, { zids: [ 'Z10336' ] } );
+					expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+						Z1K1: 'Z7',
+						Z7K1: 'Z10336',
+						Z10336K1: ''
+					} );
+				} );
+
+				it( 'removes the old arguments before the function is fetched', () => {
+					store.fetchZids = jest.fn( () => new Promise( () => {} ) );
+
+					store.setFunctionCallArguments( {
+						keyPath: [ 'main', 'Z2K2' ],
+						functionZid: 'Z10336'
+					} );
+
+					expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+						Z1K1: 'Z7',
+						Z7K1: 'Z10336'
+					} );
+				} );
+
+				it( 'sets no arguments if the function call changes while the function is fetched', async () => {
+					// For example, a different function is selected before the fetch completes
+					let resolveFetch;
+					store.fetchZids = jest.fn( () => new Promise( ( resolve ) => {
+						resolveFetch = resolve;
+					} ) );
+
+					const pending = store.setFunctionCallArguments( {
+						keyPath: [ 'main', 'Z2K2' ],
+						functionZid: 'Z10336'
+					} );
+
+					// The user selects another function before the fetch is done
+					store.jsonObject.main = canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z882'
+					} } );
+					store.objects.Z10336 = { success: true, data: unstoredFunction };
+					resolveFetch();
+					await pending;
+
+					expect( store.fetchZids ).toHaveBeenCalledTimes( 1 );
+					expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+						Z1K1: 'Z7',
+						Z7K1: 'Z882'
+					} );
+				} );
+
+				it( 'sets no arguments if the function call is removed while the function is fetched', async () => {
+					// For example, the function call is an argument of a composition but the type changes before the fetch completes
+					store.jsonObject.main = canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K2: { Z1K1: 'Z7', Z7K1: 'Z802', Z802K1: { Z1K1: 'Z7', Z7K1: 'Z10336' } }
+					} } );
+					let resolveFetch;
+					store.fetchZids = jest.fn( () => new Promise( ( resolve ) => {
+						resolveFetch = resolve;
+					} ) );
+
+					const pending = store.setFunctionCallArguments( {
+						keyPath: [ 'main', 'Z2K2', 'Z14K2', 'Z802K1' ],
+						functionZid: 'Z10336'
+					} );
+
+					// The user removes the composition before the fetch is done
+					store.jsonObject.main = canonicalToHybrid( { Z2K2: {
+						Z1K1: 'Z14',
+						Z14K1: 'Z10336'
+					} } );
+					store.objects.Z10336 = { success: true, data: unstoredFunction };
+					resolveFetch();
+					await pending;
+
+					expect( store.fetchZids ).toHaveBeenCalledTimes( 1 );
+					expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+						Z1K1: 'Z14',
+						Z14K1: 'Z10336'
+					} );
+				} );
+
+				it( 'removes the old arguments and sets none if the function does not exist', async () => {
+					store.fetchZids = jest.fn( () => {
+						store.objects.Z10336 = { success: false, data: {} };
+						return Promise.resolve();
+					} );
+
+					await store.setFunctionCallArguments( {
+						keyPath: [ 'main', 'Z2K2' ],
+						functionZid: 'Z10336'
+					} );
+
+					expect( store.fetchZids ).toHaveBeenCalledTimes( 1 );
+					expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+						Z1K1: 'Z7',
+						Z7K1: 'Z10336'
+					} );
+				} );
+
+				it( 'removes the old arguments and sets none if the fetch is rejected', async () => {
+					store.fetchZids = jest.fn().mockRejectedValue( new Error( 'Network error' ) );
+
+					await expect( store.setFunctionCallArguments( {
+						keyPath: [ 'main', 'Z2K2' ],
+						functionZid: 'Z10336'
+					} ) ).rejects.toThrow( 'Network error' );
+
+					expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+						Z1K1: 'Z7',
+						Z7K1: 'Z10336'
+					} );
+				} );
+			} );
+		} );
+
+		describe( 'removeFunctionCallArguments', () => {
+			beforeEach( () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z882',
+					Z882K1: 'Z6',
+					Z882K2: 'Z1'
+				} } );
+			} );
+
+			it( 'removes all the arguments of the function call', () => {
+				store.removeFunctionCallArguments( { keyPath: [ 'main', 'Z2K2' ] } );
+
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z882'
+				} );
+			} );
+
+			it( 'keeps the arguments in keepKeys', () => {
+				store.removeFunctionCallArguments( {
+					keyPath: [ 'main', 'Z2K2' ],
+					keepKeys: [ 'Z882K1' ]
+				} );
+
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z882',
+					Z882K1: 'Z6'
+				} );
+			} );
+		} );
+
+		describe( 'addFunctionCallArguments', () => {
+			beforeEach( () => {
+				store.objects = mockStoredObjects;
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z882',
+					Z882K1: 'Z6'
+				} } );
+				store.fetchZids = jest.fn().mockResolvedValue();
+			} );
+
+			it( 'adds the missing arguments and does not change the existing ones', async () => {
+				await store.addFunctionCallArguments( {
+					keyPath: [ 'main', 'Z2K2' ],
+					functionZid: 'Z882'
+				} );
+
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z882',
+					Z882K1: 'Z6',
+					Z882K2: { Z1K1: 'Z9', Z9K1: '' }
+				} );
+			} );
+
+			it( 'adds no arguments if the function is not in the store', async () => {
+				await store.addFunctionCallArguments( {
+					keyPath: [ 'main', 'Z2K2' ],
+					functionZid: 'Z10336'
+				} );
+
+				expect( store.fetchZids ).not.toHaveBeenCalled();
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z882',
+					Z882K1: 'Z6'
+				} );
+			} );
 		} );
 
 		describe( 'setImplementationContentType', () => {
