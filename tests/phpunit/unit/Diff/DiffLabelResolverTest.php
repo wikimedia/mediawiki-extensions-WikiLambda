@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Language\Language;
-use MediaWiki\Languages\LanguageFactory;
+use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 use MediaWikiUnitTestCase;

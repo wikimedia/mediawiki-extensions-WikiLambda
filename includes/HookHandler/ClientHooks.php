@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Logging\ManualLogEntry;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Parser\ParserCache;
@@ -153,7 +154,7 @@ class ClientHooks implements
 	 * @param string $reason
 	 * @param int $pageID
 	 * @param RevisionRecord $deletedRev
-	 * @param \ManualLogEntry $logEntry
+	 * @param ManualLogEntry $logEntry
 	 * @param int $archivedRevisionCount
 	 * @return bool|void
 	 */
