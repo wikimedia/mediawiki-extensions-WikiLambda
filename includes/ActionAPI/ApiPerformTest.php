@@ -345,9 +345,9 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			// no matter which call miss has caused the re-execution.
 			$executeTestJob = new ExecuteTestAndCacheJob( [
 				// Initial test call already dereferenced with the literal function
-				'testCall' => $testDereferencedCall,
+				'testCall' => ZObjectUtils::arrayify( $testDereferencedCall ),
 				// Validation call without K1 (which will be replaced with test call result)
-				'validationCall' => $validationCall->getSerialized(),
+				'validationCall' => ZObjectUtils::arrayify( $validationCall->getSerialized() ),
 				// Function, implementation and test data
 				'functionZid' => $this->functionZid,
 				'functionRevision' => $this->functionRevision,
@@ -394,7 +394,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				'testZid' => $test['zid'],
 				'testRevision' => $test['revision'],
 				'passed' => $result['passed'],
-				'stashedResult' => $stashedResult->getSerialized()
+				'stashedResult' => ZObjectUtils::arrayify( $stashedResult->getSerialized() )
 			] );
 			$this->jobQueueGroup->push( $cacheTesterResultsJob );
 		}

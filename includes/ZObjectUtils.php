@@ -1149,6 +1149,20 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Deeply convert an arbitrarily-nested value into associative arrays, turning
+	 * any stdClass objects into arrays. This is the inverse of objectify().
+	 *
+	 * Use this for ZObjects in JobQueue params. EventBus logs an error for each
+	 * job that has an object in its params, as it can only check arrays and scalars.
+	 *
+	 * @param mixed $input
+	 * @return mixed The input with all stdClass objects converted to arrays
+	 */
+	public static function arrayify( $input ) {
+		return json_decode( json_encode( $input ), true );
+	}
+
+	/**
 	 * Given a Z22/Response Envelope object serialized as a stdClass,
 	 * and a string key, returns the value if set in the metadata, or
 	 * null if unset.

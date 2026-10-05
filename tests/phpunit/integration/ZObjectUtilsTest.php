@@ -1698,6 +1698,23 @@ EOT;
 		$this->assertInstanceOf( stdClass::class, $result[1] );
 	}
 
+	public function testArrayify_convertsNestedStdClassToArrays() {
+		$input = (object)[
+			'Z1K1' => 'Z7',
+			'Z7K1' => 'Z10000',
+			'Z10000K1' => [ 'Z6', (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'hello' ] ],
+		];
+
+		$result = ZObjectUtils::arrayify( $input );
+
+		$this->assertSame( [
+			'Z1K1' => 'Z7',
+			'Z7K1' => 'Z10000',
+			'Z10000K1' => [ 'Z6', [ 'Z1K1' => 'Z6', 'Z6K1' => 'hello' ] ],
+		], $result );
+		$this->assertEquals( $input, ZObjectUtils::objectify( $result ), 'Round-trips through objectify()' );
+	}
+
 	/**
 	 * @dataProvider provideDereferenceZFunction
 	 */
