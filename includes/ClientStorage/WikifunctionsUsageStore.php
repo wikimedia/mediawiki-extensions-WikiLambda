@@ -19,7 +19,7 @@ namespace MediaWiki\Extension\WikiLambda\ClientStorage;
 
 use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use Wikimedia\ObjectCache\WANObjectCache;
+use Wikimedia\ObjectCache\IWANCacheBuilder;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IReadableDatabase;
@@ -73,7 +73,7 @@ class WikifunctionsUsageStore {
 
 	public function __construct(
 		private readonly IConnectionProvider $dbProvider,
-		private readonly WANObjectCache $cache
+		private readonly IWANCacheBuilder $cache
 	) {
 	}
 
@@ -503,9 +503,9 @@ class WikifunctionsUsageStore {
 	 *
 	 * Both counts scan the Function's usage rows, so this is cached. The key is global
 	 * because the usage table is shared, so the answer does not depend on which wiki
-	 * asks. staleTTL and lockTSE together mean that, for the first moments after a key
-	 * expires, one thread per datacentre recomputes while the rest serve the previous
-	 * value; without staleTTL there would be no stale value to serve and so no mutex,
+	 * asks. keepStaleFor() and allowStale() together mean that, for the first moments after
+	 * a key expires, one thread per datacentre recomputes while the rest serve the previous
+	 * value; without keepStaleFor() there would be no stale value to serve and so no mutex,
 	 * and every concurrent request would scan the table at once.
 	 *
 	 * The page count stops at SUMMARY_PAGE_LIMIT; 'pagesLimited' says whether it did, so
@@ -524,28 +524,28 @@ class WikifunctionsUsageStore {
 		// Validate before the cache lookup, so a bad reference cannot make a cache key.
 		$functionId = self::functionToId( $function );
 
-		return $this->cache->getWithSetCallback(
-			$this->cache->makeGlobalKey( 'WikiLambda-usage-summary', (string)$functionId ),
-			self::SUMMARY_CACHE_TTL,
-			function () use ( $function ): array {
-				// The primary key is (function, wiki_id, page), so one row per page — as
-				// long as callers honour insertUsage()'s delete-first contract for
-				// namespace changes, which is also what Special:FunctionUsage's own total
-				// relies on. Reuse countUsage() so the two agree below the cap. Ask for one
-				// row past the cap, so we can tell "exactly the cap" from "more than it".
-				$pages = $this->countUsage( $function, null, self::SUMMARY_PAGE_LIMIT + 1 );
+		$callback = function () use ( $function ): array {
+			// The primary key is (function, wiki_id, page), so one row per page — as
+			// long as callers honour insertUsage()'s delete-first contract for
+			// namespace changes, which is also what Special:FunctionUsage's own total
+			// relies on. Reuse countUsage() so the two agree below the cap. Ask for one
+			// row past the cap, so we can tell "exactly the cap" from "more than it".
+			$pages = $this->countUsage( $function, null, self::SUMMARY_PAGE_LIMIT + 1 );
 
-				return [
-					'pages' => min( $pages, self::SUMMARY_PAGE_LIMIT ),
-					'wikis' => $this->countUsageWikis( $function ),
-					'pagesLimited' => $pages > self::SUMMARY_PAGE_LIMIT,
-				];
-			},
-			[
-				'staleTTL' => self::SUMMARY_CACHE_STALE_TTL,
-				'lockTSE' => self::SUMMARY_CACHE_LOCK,
-			]
-		);
+			return [
+				'pages' => min( $pages, self::SUMMARY_PAGE_LIMIT ),
+				'wikis' => $this->countUsageWikis( $function ),
+				'pagesLimited' => $pages > self::SUMMARY_PAGE_LIMIT,
+			];
+		};
+
+		return $this->cache->buildGetWithSetCallback()
+			->globalKey( 'WikiLambda-usage-summary', (string)$functionId )
+			->lifetime( self::SUMMARY_CACHE_TTL )
+			->keepStaleFor( self::SUMMARY_CACHE_STALE_TTL )
+			->allowStale( self::SUMMARY_CACHE_LOCK )
+			->callback( $callback )
+			->fetch();
 	}
 
 	/**
