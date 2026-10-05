@@ -738,6 +738,32 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertStringContainsString( "&lt;&lt;&lt;&gt;&gt;&gt;", $rc1->getOutput()->getHTML() );
 	}
 
+	public function testOnHtmlPageLinkRendererEnd_actionLinkKeepsQueryEncoded() {
+		$this->insertZids( [ 'Z1' ] );
+		$context = RequestContext::getMain();
+		$context->setLanguage( 'en' );
+		$context->setTitle( Title::makeTitle( NS_MAIN, 'Z1' ) );
+
+		$token = 'd41d8cd98f00b204e9800998ecf8427e+\\';
+		$text = 'rollback';
+		$attribs = [
+			'href' => '/w/index.php?title=Z1&action=rollback&from=Some+user%26co&token=' . urlencode( $token )
+		];
+		$ret = '';
+
+		$this->pageRenderingHandler->onHtmlPageLinkRendererEnd(
+			$this->getServiceContainer()->getLinkRenderer(),
+			Title::makeTitle( NS_MAIN, 'Z1' ),
+			true, $text, $attribs, $ret
+		);
+
+		$this->assertSame(
+			'/wiki/Z1?action=rollback&uselang=en&from=Some+user%26co&token=d41d8cd98f00b204e9800998ecf8427e%2B%5C',
+			$attribs['href'],
+			'Re-written action link keeps its query values URL-encoded (T395219)'
+		);
+	}
+
 	protected function getRecentChangesPage(): SpecialRecentChanges {
 		return new SpecialRecentChanges(
 			$this->getServiceContainer()->getWatchedItemStore(),

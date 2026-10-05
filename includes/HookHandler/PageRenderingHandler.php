@@ -318,27 +318,24 @@ class PageRenderingHandler implements
 		$query = $queryPos ? wfCgiToArray( substr( $attribs['href'], $queryPos + 1 ) ) : [];
 
 		$action = $query['action'] ?? 'view';
+		unset( $query['action'], $query['title'] );
 		if ( $action !== 'view' ) {
-			$attribs['href'] = '/wiki/' . $entityId . '?action=' . $action . '&uselang='
-				. $currentPageContentLanguageCode . '&';
+			$path = '/wiki/' . $entityId;
+			$query = array_merge( [ 'action' => $action, 'uselang' => $currentPageContentLanguageCode ], $query );
 		} elseif ( !isset( $query[ 'diff'] ) && !isset( $query['oldid'] ) ) {
 			if ( $targetTitle->getNamespace() !== NS_MAIN ) {
-				$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/'
-					. $targetTitle->getNsText() . ':' . $entityId . '?';
+				$path = '/view/' . $currentPageContentLanguageCode . '/'
+					. $targetTitle->getNsText() . ':' . $entityId;
 			} else {
-				$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/' . $entityId . '?';
+				$path = '/view/' . $currentPageContentLanguageCode . '/' . $entityId;
 			}
 		} else {
-			$attribs['href'] = '/wiki/' . $entityId . '?uselang=' . $currentPageContentLanguageCode . '&';
+			$path = '/wiki/' . $entityId;
+			$query = array_merge( [ 'uselang' => $currentPageContentLanguageCode ], $query );
 		}
 
-		unset( $query['action'] );
-		unset( $query['title'] );
-
-		foreach ( $query as $key => $value ) {
-			$attribs['href'] .= $key . '=' . $value . '&';
-		}
-		$attribs['href'] = substr( $attribs['href'], 0, -1 );
+		// (T395219) Encode the values again, else the '+' of a rollback token becomes a space.
+		$attribs['href'] = wfAppendQuery( $path, $query );
 
 		// **After this point, the only changes we're making are to the label ($text)**
 
