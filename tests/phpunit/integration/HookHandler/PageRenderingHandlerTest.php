@@ -775,7 +775,6 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideChangedTargetToViewUrl
-	 * @group Broken
 	 */
 	public function testChangedTargetToViewUrl(
 		$target, $expected, $create = true, $existing = true, $label = null, $attribs = [], $query = [], $lang = 'en'
@@ -786,6 +785,8 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 		$targetTitle = Title::newFromDBkey( $target );
 		$this->setUserLang( $lang );
+		// The hook does nothing without a context title.
+		RequestContext::getMain()->setTitle( Title::makeTitle( NS_SPECIAL, 'RecentChanges' ) );
 
 		if ( $create ) {
 			$this->insertZids( [ $target ] );
