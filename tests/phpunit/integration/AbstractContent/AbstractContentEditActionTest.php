@@ -14,6 +14,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentEditAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Html\Html;
 use MediaWiki\Page\Article;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Revision\RevisionRecord;
@@ -474,5 +475,59 @@ class AbstractContentEditActionTest extends WikiLambdaAbstractModeIntegrationTes
 		$this->assertSame( $secondRevId, $action->getOutput()->getRevisionId() );
 		// …without rewriting what the rest of the request sees.
 		$this->assertSame( $firstRevId, $request->getInt( 'oldid' ) );
+	}
+
+	/**
+	 * @param Title $title
+	 * @param string[] $jsons One revision per JSON string
+	 * @return int[] Revision IDs
+	 */
+	private function createRevisions( Title $title, array $jsons ): array {
+		$revIds = [];
+		foreach ( $jsons as $json ) {
+			$revIds[] = $this->editPage( $title, new AbstractWikiContent( $json ), '', self::TEST_ABSTRACT_NS )
+				->getNewRevision()->getId();
+		}
+		return $revIds;
+	}
+
+	public function testShow_undoLatestRevision() {
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		$firstJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}';
+		$secondJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}';
+		$revIds = $this->createRevisions( $title, [ $firstJson, $secondJson ] );
+		$action = $this->buildAction(
+			$title, new FauxRequest( [ 'undo' => $revIds[1], 'undoafter' => $revIds[0] ] )
+		);
+
+		$action->show();
+
+		$output = $action->getOutput();
+		$this->assertSame( $firstJson, $output->getJsConfigVars()[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertStringNotContainsString( 'cdx-message--error', $output->getHTML() );
+	}
+
+	public function testShow_undoFailure() {
+		// Abstract content has no three-way merge, so an older revision cannot be undone.
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+		$thirdJson = '{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z91"]}}}';
+		$revIds = $this->createRevisions( $title, [
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89"]}}}',
+			'{"qid":"Q42","sections":{"Q8776414":{"index":0,"fragments":["Z89","Z90"]}}}',
+			$thirdJson,
+		] );
+		$action = $this->buildAction(
+			$title, new FauxRequest( [ 'undo' => $revIds[1], 'undoafter' => $revIds[0] ] )
+		);
+
+		$action->show();
+
+		$output = $action->getOutput();
+		$this->assertSame( $thirdJson, $output->getJsConfigVars()[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertStringContainsString(
+			Html::errorBox( $output->msg( 'undo-failure' )->parse() ),
+			$output->getHTML()
+		);
+		$this->assertContains( 'mediawiki.codex.messagebox.styles', $output->getModuleStyles() );
 	}
 }

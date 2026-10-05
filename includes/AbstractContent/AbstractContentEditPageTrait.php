@@ -140,6 +140,20 @@ trait AbstractContentEditPageTrait {
 			);
 			// FIXME if jsonContent is false, then title and oldid don't match
 			$jsonContent = $awContent ? $awContent->getText() : false;
+
+			$undo = $request->getInt( 'undo' );
+			$undoAfter = $request->getInt( 'undoafter' );
+			if ( $undo > 0 && $undoAfter > 0 ) {
+				$undoStatus = UIUtils::getUndoContent(
+					$title, $undo, $undoAfter, $revisionStore, $contentHandlerFactory
+				);
+				if ( $undoStatus->isGood() ) {
+					$jsonContent = $undoStatus->getValue()->serialize();
+				} else {
+					$output->addModuleStyles( [ 'mediawiki.codex.messagebox.styles' ] );
+					$output->addHTML( Html::errorBox( $context->msg( $undoStatus->getMessages()[0] )->parse() ) );
+				}
+			}
 		} else {
 			// Content does not exist: generate empty content object
 			$jsonContent = $contentHandler->makeEmptyContent()->getText();
