@@ -123,7 +123,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			],
 			'429 too many requests' => [
 				HttpStatus::TOO_MANY_REQUESTS,
-				HttpStatus::SERVICE_UNAVAILABLE
+				HttpStatus::TOO_MANY_REQUESTS
 			],
 			'403 forbidden' => [
 				HttpStatus::FORBIDDEN,
@@ -472,11 +472,12 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			'zid_not_found (Z504) -> http 404' => [ 'Z504', 404, LogLevel::INFO ],
 			'resolved_object_without_z2k2 (Z513) -> http 409' => [ 'Z513', 409, LogLevel::INFO ],
 			'unknown_error (Z500) -> http 422' => [ 'Z500', 422, LogLevel::INFO ],
+			// Rate limits: expected under load, and the job tries again, so quiet
+			'orchestrator_rate_limit (Z570) -> http 429' => [ 'Z570', 429, LogLevel::INFO ],
 			// Errors that our services caused, or load problems: noisy
 			'user_not_permitted_to_evaluate_function (Z559) -> http 401' => [ 'Z559', 401, LogLevel::WARNING ],
 			'disallowed_root_object (Z553) -> http 403' => [ 'Z553', 403, LogLevel::WARNING ],
 			'orchestrator_time_limit (Z574) -> http 408' => [ 'Z574', 408, LogLevel::WARNING ],
-			'orchestrator_rate_limit (Z570) -> http 429' => [ 'Z570', 429, LogLevel::WARNING ],
 			'api_failure (Z530) -> http 500' => [ 'Z530', 500, LogLevel::WARNING ],
 			'not configured -> http 501' => [ 'Z530', 501, LogLevel::WARNING ],
 			'invalid_orchestrator_result (Z577) -> http 502' => [ 'Z577', 502, LogLevel::WARNING ],
@@ -545,6 +546,12 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 				json_encode( [ 'error' => [ 'code' => 'timeout', 'info' => 'Timeout' ] ] ),
 				HttpStatus::SERVICE_UNAVAILABLE,
 				HttpStatus::SERVICE_UNAVAILABLE,
+				'apierror-abstractwiki_run_fragment-service-unavailable'
+			],
+			'429 too many requests' => [
+				json_encode( [ 'error' => [ 'code' => 'ratelimited', 'info' => 'Rate limited' ] ] ),
+				HttpStatus::TOO_MANY_REQUESTS,
+				HttpStatus::TOO_MANY_REQUESTS,
 				'apierror-abstractwiki_run_fragment-service-unavailable'
 			],
 			'non-JSON response causes unknown error' => [

@@ -115,7 +115,8 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 				$httpStatusCode === HttpStatus::TOO_MANY_REQUESTS ||
 				$httpStatusCode === HttpStatus::SERVICE_UNAVAILABLE
 			) {
-				$this->logger->warning( __CLASS__
+				// AbstractWikiRequest already logged the failure at the correct level.
+				$this->logger->debug( __CLASS__
 					. ' rate limited ({httpStatusCode}) for qid:{qid} language:{language} and datetime:{datetime} ',
 					[
 						'qid' => $qid,

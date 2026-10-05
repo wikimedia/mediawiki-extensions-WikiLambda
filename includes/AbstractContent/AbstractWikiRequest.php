@@ -33,11 +33,12 @@ class AbstractWikiRequest {
 	 *
 	 * These do not have one cause. Some are our fault, e.g. NOT_IMPLEMENTED, when the wiki has
 	 * no configuration for a target API. Some are permission problems, e.g. UNAUTHORIZED and
-	 * FORBIDDEN. Some can be load problems, e.g. TOO_MANY_REQUESTS and REQUEST_TIMEOUT. We log
-	 * all of them noisily for now, until we know how frequently each one occurs in production.
+	 * FORBIDDEN. Some can be load problems, e.g. REQUEST_TIMEOUT. We log most of them noisily
+	 * for now, until we know how frequently each one occurs in production.
 	 *
 	 * Failures caused by the content are in HttpStatus::CONTENT_ERROR_CODES, and we log those
-	 * quietly. A code in neither list is one that we did not expect, and we log it as an error.
+	 * quietly. TOO_MANY_REQUESTS is an expected result of the rate limits, and we log it quietly
+	 * too. A code in none of these is one that we did not expect, and we log it as an error.
 	 */
 	private const WARNING_STATUS_CODES = [
 		// e.g. Z559/User not permitted to evaluate function
@@ -46,8 +47,6 @@ class AbstractWikiRequest {
 		HttpStatus::FORBIDDEN,
 		// e.g. Z574/Orchestrator time limit
 		HttpStatus::REQUEST_TIMEOUT,
-		// e.g. Z570/Orchestrator rate limit
-		HttpStatus::TOO_MANY_REQUESTS,
 		// e.g. Z530/API failure
 		HttpStatus::INTERNAL_SERVER_ERROR,
 		// e.g. this wiki has no Wikifunctions target API
@@ -149,6 +148,17 @@ class AbstractWikiRequest {
 						'fragmentKey' => $fragmentKey,
 						'httpStatusCode' => (string)$httpStatusCode,
 					] + $logContext
+				);
+			} elseif ( $httpStatusCode === HttpStatus::TOO_MANY_REQUESTS ) {
+				// e.g. Z570/Orchestrator rate limit, or the Wikifunctions API limits. The job
+				// tries again later, so log it without the trace.
+				$this->logger->info(
+					__METHOD__ . ': AbstractWikiRequest::callRenderFunctionCall was rate limited: {error}',
+					[
+						'error' => $e->getMessage(),
+						'fragmentKey' => $fragmentKey,
+						'httpStatusCode' => (string)$httpStatusCode,
+					]
 				);
 			} elseif ( in_array( $httpStatusCode, self::WARNING_STATUS_CODES, true ) ) {
 				$this->logger->warning(
@@ -368,14 +378,15 @@ class AbstractWikiRequest {
 		//   * 400/Z518 - ZObject type mismatch
 		if ( array_key_exists( 'error', $responseData ) ) {
 			$errorCode = $responseData[ 'error' ][ 'code' ];
-			// For 503 and 429, currently unavailable, try again later:
+			// For 503 and 429, currently unavailable, try again later. Keep the code, so that
+			// we can tell a rate limit from an outage.
 			if (
 				$apiHttpStatusCode === HttpStatus::SERVICE_UNAVAILABLE ||
 				$apiHttpStatusCode === HttpStatus::TOO_MANY_REQUESTS
 			) {
 				throw new WikifunctionCallException(
 					'apierror-abstractwiki_run_fragment-service-unavailable',
-					HttpStatus::SERVICE_UNAVAILABLE
+					$apiHttpStatusCode
 				);
 			}
 
