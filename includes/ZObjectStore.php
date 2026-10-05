@@ -2676,9 +2676,9 @@ class ZObjectStore {
 		?string $testerZID,
 		?int $testerRevision
 	) {
-		// Use primary database to avoid replication lag, as results may have
-		// just been written by ExecuteTestAndCacheJob or CacheTesterResultsJob
-		$dbr = $this->dbProvider->getPrimaryDatabase();
+		// A replica is sufficient. On a miss from lag, the caller gets the result from the
+		// orchestrator memcached entries, which the job wrote before this table.
+		$dbr = $this->dbProvider->getReplicaDatabase();
 
 		$purgeableResults = [];
 		$conditions = [];
