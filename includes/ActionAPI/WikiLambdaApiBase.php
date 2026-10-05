@@ -184,9 +184,8 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$zObjectAsStdClass = ( $zObject instanceof ZFunctionCall ) ? $zObject->getSerialized() : $zObject;
 		$zObjectAsString = json_encode( $zObjectAsStdClass );
 
-		// Get user authority and user name for rights, pool counter and logging
+		// Get user authority for rights
 		$userAuthority = $this->getContext()->getAuthority();
-		$userName = $userAuthority->getUser()->getName();
 
 		// Initial LOG: request and flags
 		$this->getLogger()->debug( __METHOD__ . ' called', [
@@ -268,30 +267,21 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$wasEvaluated = false;
 
 		try {
-			$method = __METHOD__;
 			$statsFactory = $this->statsFactory->withComponent( 'WikiLambda' );
 			// (T405554) Capture the moment we start contending for a PoolCounter worker slot. The
 			// existing 'mw_to_orchestrator_api_call_seconds' timer spans the whole handler, so both
 			// the queue-wait and the orchestrator call are hidden inside it; record them separately
 			// here so the SLO can tell true orchestrator latency (Envoy-bounded) from queue-wait.
 			$poolAcquireStart = microtime( true );
-			$work = new PoolCounterWorkViaCallback( self::FUNCTIONCALL_POOL_COUNTER_TYPE, $userName, [
-				'doWork' => function () use (
-					$queryArguments, $bypassCache, $method, $statsFactory, $poolAcquireStart, $origin,
-					&$wasEvaluated
+			$response = $this->runOrchestratorWork(
+				self::FUNCTIONCALL_POOL_COUNTER_TYPE,
+				'apierror-wikilambda_function_call-concurrency-limit',
+				function () use (
+					$queryArguments, $bypassCache, $statsFactory, $poolAcquireStart, $origin, &$wasEvaluated
 				) {
 					// (T405554) Time spent waiting for a free worker slot ('observe' takes milliseconds).
 					$statsFactory->getTiming( 'functioncall_pool_wait_seconds' )
 						->observe( 1000 * ( microtime( true ) - $poolAcquireStart ) );
-
-					$this->getLogger()->debug(
-						'{method} running {caller} request',
-						[
-							'method' => $method,
-							'caller' => static::class,
-							'query' => $queryArguments
-						]
-					);
 
 					// (T405554) Time only the orchestration round-trip (served from cache when hot),
 					// excluding handler pre-processing and the queue-wait recorded above. Recorded in
@@ -309,28 +299,8 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 							->observe( 1000 * ( microtime( true ) - $orchestrateStart ) );
 					}
 				},
-				// Failure Level #2: Execution is temporarily forbidden due to too many requests
-				// at once. Throw an exception so that the caller API can handle it as needed.
-				// E.g. FunctionCall might want to die with error, while PerformTest will
-				// return normally with all those tests that could be run before.
-				'error' => function ( Status $status ) use ( $queryArguments, $userName, $method ): never {
-					$this->getLogger()->info(
-						'{method} rejected {caller} request due to too many requests from source "{user}"',
-						[
-							'method' => $method,
-							'caller' => static::class,
-							'user' => $userName,
-							'query' => $queryArguments
-						]
-					);
-					$this->dieWithError(
-						[ "apierror-wikilambda_function_call-concurrency-limit" ],
-						null, null, HttpStatus::TOO_MANY_REQUESTS
-					);
-				}
-			] );
-
-			$response = $work->execute();
+				[ 'request' => $zObjectAsString, 'query' => $queryArguments ]
+			);
 
 			$responseOrigin = ( $response['cached'] ?? false ) ? 'cached' : 'evaluated';
 			$responseCachedEntities = json_encode( $response['cachedEntities'] ?? [] );
@@ -352,7 +322,59 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			// response envelope object, while ApiFunctionCall will just track the
 			// http status and return the result string without validating it)
 			return $response;
+		} finally {
+			// Charge the allowance for an orchestrator call, whatever its outcome. A failed call
+			// still costs the service, but a cached result and a request that the PoolCounter
+			// refused cost nothing, and $wasEvaluated stays false for both.
+			if ( $limitCalls && $wasEvaluated ) {
+				$this->rateLimiter->limit( $limitSubject, $executionRight, 1 );
+			}
+		}
+	}
 
+	/**
+	 * Make a request to the orchestrator, while the PoolCounter limits how many each user can run at once.
+	 *
+	 * Failure Levels #2 and #3 of executeFunctionCall() end the request with an error: too many
+	 * requests at once, an orchestrator that we cannot reach, or a request that timed out.
+	 *
+	 * @param string $poolCounterType
+	 * @param string $concurrencyErrorKey Message key of the error for too many requests at once
+	 * @param callable $doWork Makes the request to the orchestrator
+	 * @param array $logContext Extra context for the log messages
+	 * @return mixed The return value of $doWork
+	 * @throws ApiUsageException
+	 */
+	protected function runOrchestratorWork(
+		string $poolCounterType, string $concurrencyErrorKey, callable $doWork, array $logContext = []
+	): mixed {
+		$userName = $this->getUser()->getName();
+		$method = __METHOD__;
+		$work = new PoolCounterWorkViaCallback( $poolCounterType, $userName, [
+			'doWork' => function () use ( $doWork, $method, $logContext ) {
+				$this->getLogger()->debug(
+					'{method} running {caller} request',
+					[ 'method' => $method, 'caller' => static::class ] + $logContext
+				);
+				return $doWork();
+			},
+			// Failure Level #2: Execution is temporarily forbidden due to too many requests
+			// at once. Throw an exception so that the caller API can handle it as needed.
+			// E.g. FunctionCall might want to die with error, while PerformTest will
+			// return normally with all those tests that could be run before.
+			'error' => function ( Status $status ) use (
+				$concurrencyErrorKey, $userName, $method, $logContext
+			): never {
+				$this->getLogger()->info(
+					'{method} rejected {caller} request due to too many requests from source "{user}"',
+					[ 'method' => $method, 'caller' => static::class, 'user' => $userName ] + $logContext
+				);
+				$this->dieWithError( [ $concurrencyErrorKey ], null, null, HttpStatus::TOO_MANY_REQUESTS );
+			}
+		] );
+
+		try {
+			return $work->execute();
 		} catch ( OrchestratorException $exception ) {
 			// OrchestratorException can contain:
 			// * ConnectException: thrown when networking error
@@ -360,12 +382,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			// See: https://docs.guzzlephp.org/en/stable/quickstart.html#exceptions
 			$this->getLogger()->error(
 				__METHOD__ . ' failed to execute. {reason}: {exception}',
-				[
-					'reason' => $exception->getPrevious()->getMessage(),
-					'request' => $zObjectAsString,
-					'query' => $queryArguments,
-					'exception' => $exception,
-				]
+				[ 'reason' => $exception->getPrevious()->getMessage(), 'exception' => $exception ] + $logContext
 			);
 
 			// One ZError to rule them all: Connection Failure
@@ -383,24 +400,13 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			// (throws ApiUsageException)
 			$this->getLogger()->warning(
 				__METHOD__ . ' failed to execute with a TimeoutException: {exception}',
-				[
-					'request' => $zObjectAsString,
-					'query' => $queryArguments,
-					'exception' => $exception,
-				]
+				[ 'exception' => $exception ] + $logContext
 			);
 
 			$this->dieWithError(
 				[ "timeouterror-text", $exception->getLimit() ],
 				null, null, HttpStatus::SERVICE_UNAVAILABLE
 			);
-		} finally {
-			// Charge the allowance for an orchestrator call, whatever its outcome. A failed call
-			// still costs the service, but a cached result and a request that the PoolCounter
-			// refused cost nothing, and $wasEvaluated stays false for both.
-			if ( $limitCalls && $wasEvaluated ) {
-				$this->rateLimiter->limit( $limitSubject, $executionRight, 1 );
-			}
 		}
 	}
 

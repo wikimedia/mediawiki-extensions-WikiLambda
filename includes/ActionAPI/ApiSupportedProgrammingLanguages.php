@@ -10,16 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
-use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
-use MediaWiki\Status\Status;
 use Wikimedia\Stats\StatsFactory;
 
 class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
@@ -41,46 +36,24 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * TODO (T338251): Factor out some commonality with WikiLambdaApiBase::executeFunctionCall()
-	 * rather than rolling our own. (But note different end-point and error messages.)
-	 *
 	 * @inheritDoc
 	 */
 	protected function run() {
-		$pageResult = $this->getResult();
-
-		$work = new PoolCounterWorkViaCallback(
+		$response = $this->runOrchestratorWork(
 			'WikiLambdaSupportedProgrammingLanguages',
-			$this->getUser()->getName(),
-			[
-				'doWork' => function () {
-					return $this->orchestrator->getSupportedProgrammingLanguages();
-				},
-				'error' => function ( Status $status ): never {
-					$this->dieWithError(
-						[ "apierror-wikilambda_supported_programming_languages-concurrency-limit" ],
-						null, null, HttpStatus::TOO_MANY_REQUESTS
-					);
-				} ] );
+			'apierror-wikilambda_supported_programming_languages-concurrency-limit',
+			fn () => $this->orchestrator->getSupportedProgrammingLanguages()
+		);
 
-		try {
-			$response = $work->execute();
+		if ( $response->getStatusCode() < HttpStatus::BAD_REQUEST ) {
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
-		} catch ( ConnectException ) {
-			$this->dieWithError(
-				[
-					"apierror-wikilambda_supported_programming_languages-not-connected",
-					$this->orchestrator->getHost()
-				],
-				null, null, HttpStatus::INTERNAL_SERVER_ERROR
-			);
-		} catch ( ClientException | ServerException $exception ) {
-			$zError = ZErrorFactory::createEvaluationError( $exception->getResponse()->getReasonPhrase(), '' );
+		} else {
+			$zError = ZErrorFactory::createEvaluationError( $response->getReasonPhrase(), '' );
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result = [ 'data' => $zResponseObject->getSerialized() ];
 		}
-		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $result );
+		$this->getResult()->addValue( [ 'query' ], $this->getModuleName(), $result );
 	}
 
 	/**

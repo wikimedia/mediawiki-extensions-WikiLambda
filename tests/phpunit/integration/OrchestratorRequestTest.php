@@ -632,6 +632,28 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
 	}
 
+	public function testSupportedProgrammingLanguages_returnsErrorResponse() {
+		$mock = new MockHandler( [ new Response( HttpStatus::SERVICE_UNAVAILABLE ) ] );
+		$client = new Client( [ 'handler' => HandlerStack::create( $mock ) ] );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
+
+		$this->assertSame(
+			HttpStatus::SERVICE_UNAVAILABLE,
+			$orchestrator->getSupportedProgrammingLanguages()->getStatusCode()
+		);
+	}
+
+	public function testSupportedProgrammingLanguages_throwsOrchestratorExceptionOnConnectException() {
+		$mock = new MockHandler( [
+			new ConnectException( 'Connection refused', new Request( 'GET', '/1/v1/supported-programming-languages/' ) )
+		] );
+		$client = new Client( [ 'handler' => HandlerStack::create( $mock ) ] );
+		$orchestrator = new OrchestratorRequest( $this->getServiceContainer()->getTracer(), $client );
+
+		$this->expectException( OrchestratorException::class );
+		$orchestrator->getSupportedProgrammingLanguages();
+	}
+
 	// OrchestratorRequest::persistToCache
 	// ===================================
 

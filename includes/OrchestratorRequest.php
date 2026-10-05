@@ -571,10 +571,15 @@ class OrchestratorRequest {
 	 * Ask the function-orchestrator for the list of programming languages with evaluators currently configured.
 	 *
 	 * @return ResponseInterface Response interface returned by orchestrator network call.
+	 * @throws OrchestratorException If the orchestrator cannot be reached
 	 */
 	public function getSupportedProgrammingLanguages(): ResponseInterface {
 		// TODO (T338242): Use getAsync here.
-		return $this->guzzleClient->get( '/1/v1/supported-programming-languages/' );
+		try {
+			return $this->guzzleClient->get( '/1/v1/supported-programming-languages/', [ 'http_errors' => false ] );
+		} catch ( GuzzleException $e ) {
+			throw new OrchestratorException( $e->getMessage(), [], 0, $e );
+		}
 	}
 
 	/**
