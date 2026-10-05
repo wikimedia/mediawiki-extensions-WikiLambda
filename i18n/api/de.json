@@ -90,6 +90,7 @@
 	"apihelp-wikilambda_edit-param-summary": "Zusammenfassende Meldung bearbeiten",
 	"apihelp-wikilambda_edit-param-zid": "ZID des zu bearbeitenden ZObjekts. Wenn null, wird das ZObjekt neu erstellt",
 	"apihelp-wikilambda_edit-param-zobject": "JSON-Repräsentation des zu speichernden ZObjekts",
+	"apihelp-wikilambda_edit-param-watchlist": "Die Seite bedingungslos zur Beobachtungsliste des aktuellen Benutzers hinzufügen oder daraus entfernen, Einstellungen verwenden (wird bei Bot-Benutzern ignoriert) oder die Beobachtungsliste nicht ändern.",
 	"apierror-wikilambda_function_call-client-error": "Die Anfrage konnte aufgrund eines Clientfehlers nicht abgeschlossen werden.",
 	"apierror-wikilambda_function_call-server-error": "Die Anfrage konnte aufgrund eines Serverfehlers nicht abgeschlossen werden.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Du hast zu viele Funktionsaufrufe, die im Moment ausgeführt werden.",

@@ -73,6 +73,7 @@
 	"wikilambda-abstract-preview-fragment-retry": "Erneut versuchen",
 	"wikilambda-abstract-preview-in-language": "Erstellter Text",
 	"wikilambda-abstract-renderedwith": "Die Seite wurde aus [[meta:Special:MyLanguage/Abstract Wikipedia|abstrakten Wikipedia]] gerendert.",
+	"wikilambda-abstract-search-no-article": "– Noch kein Artikel vorhanden",
 	"wikilambda-abstract-special-create": "Neuen abstrakten Artikel erstellen",
 	"wikilambda-abstract-special-create-createbutton-label": "Erstellen",
 	"wikilambda-abstract-special-create-existing": "Für diesen Wikidata-Eintrag existiert bereits ein abstrakter Artikel:",

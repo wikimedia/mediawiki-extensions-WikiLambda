@@ -74,6 +74,7 @@
 	"wikilambda-abstract-preview-fragment-retry": "Ponów próbę",
 	"wikilambda-abstract-preview-in-language": "Wygenerowany tekst",
 	"wikilambda-abstract-renderedwith": "Strona została wygenerowana z [[meta:Special:MyLanguage/Abstract Wikipedia|Abstrakcyjnej Wikipedii]].",
+	"wikilambda-abstract-search-no-article": "– brak artykułu",
 	"wikilambda-abstract-special-create": "Utwórz nowy abstrakcyjny artykuł",
 	"wikilambda-abstract-special-create-createbutton-label": "Utwórz",
 	"wikilambda-abstract-special-create-existing": "Istnieje już abstrakcyjny artykuł dla tego elementu Wikidanych:",
