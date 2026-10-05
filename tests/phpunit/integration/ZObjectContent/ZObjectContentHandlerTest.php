@@ -234,7 +234,7 @@ class ZObjectContentHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 	public function testGetActionOverrides() {
 		$handler = $this->buildZObjectContentHandler();
 		$overrides = $handler->getActionOverrides();
-		$this->assertSame( ZObjectEditAction::class, $overrides[ 'edit' ] );
+		$this->assertSame( ZObjectEditAction::class, $overrides[ 'edit' ][ 'class' ] );
 	}
 
 	public function testPrepareSaveTransform_invalid() {

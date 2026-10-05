@@ -353,7 +353,13 @@ class ZObjectContentHandler extends ContentHandler {
 	 */
 	public function getActionOverrides() {
 		return [
-			'edit' => ZObjectEditAction::class,
+			'edit' => [
+				'class' => ZObjectEditAction::class,
+				'services' => [
+					'RevisionStore',
+					'ContentHandlerFactory'
+				]
+			],
 			'history' => ZObjectHistoryAction::class
 		];
 	}

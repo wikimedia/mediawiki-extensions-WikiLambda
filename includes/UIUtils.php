@@ -10,11 +10,17 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Content\Content;
+use MediaWiki\Content\IContentHandlerFactory;
 use MediaWiki\Html\Html;
 use MediaWiki\Output\OutputPage;
+use MediaWiki\Page\PageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
+use StatusValue;
 
 class UIUtils {
 	/**
@@ -113,6 +119,68 @@ class UIUtils {
 		$output->addHTML( Html::errorBox( $msg->parse() ) );
 
 		return false;
+	}
+
+	/**
+	 * Get the content that undoes revisions $undo back to $undoAfter, for use in an editor.
+	 *
+	 * Our edit actions replace core's EditPage, so they must do its undo work themselves.
+	 * This follows EditPage::getContentObject() and PageEditingHelper::getUndoContent(),
+	 * which are not available to extensions.
+	 *
+	 * @param PageIdentity $page
+	 * @param int $undo Newest revision to undo, from the 'undo' URL parameter
+	 * @param int $undoAfter Revision to restore, from the 'undoafter' URL parameter
+	 * @param RevisionStore $revisionStore
+	 * @param IContentHandlerFactory $contentHandlerFactory
+	 * @return StatusValue<Content> Good with the undone content, or fatal with core's
+	 *   'undo-norev', 'undo-failure' or 'undo-nochange' message
+	 */
+	public static function getUndoContent(
+		PageIdentity $page,
+		int $undo,
+		int $undoAfter,
+		RevisionStore $revisionStore,
+		IContentHandlerFactory $contentHandlerFactory
+	): StatusValue {
+		// (T297322) Look up through the page, so that revisions of other pages are not found.
+		$currentRev = $revisionStore->getRevisionByTitle( $page );
+		$undoRev = $revisionStore->getRevisionByTitle( $page, $undo );
+		$undoAfterRev = $revisionStore->getRevisionByTitle( $page, $undoAfter );
+
+		if (
+			!$currentRev || !$undoRev || !$undoAfterRev ||
+			$undoRev->isDeleted( RevisionRecord::DELETED_TEXT ) ||
+			$undoAfterRev->isDeleted( RevisionRecord::DELETED_TEXT )
+		) {
+			return StatusValue::newFatal( 'undo-norev' );
+		}
+
+		$currentContent = $currentRev->getContent( SlotRecord::MAIN );
+		$undoContent = $undoRev->getContent( SlotRecord::MAIN );
+		$undoAfterContent = $undoAfterRev->getContent( SlotRecord::MAIN );
+		if ( !$currentContent || !$undoContent || !$undoAfterContent ) {
+			return StatusValue::newFatal( 'undo-norev' );
+		}
+
+		$content = $contentHandlerFactory
+			->getContentHandler( $undoContent->getModel() )
+			->getUndoContent(
+				$currentContent,
+				$undoContent,
+				$undoAfterContent,
+				$currentRev->getId() === $undoRev->getId()
+			);
+
+		if ( !$content ) {
+			return StatusValue::newFatal( 'undo-failure' );
+		}
+
+		if ( $content->equals( $currentContent ) ) {
+			return StatusValue::newFatal( 'undo-nochange' );
+		}
+
+		return StatusValue::newGood( $content );
 	}
 
 }

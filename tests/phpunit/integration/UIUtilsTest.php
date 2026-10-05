@@ -13,6 +13,7 @@ use MediaWiki\Content\WikitextContent;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Html\Html;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\RevisionDelete\RevisionDeleter;
@@ -183,5 +184,96 @@ class UIUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 		);
 
 		$this->assertContains( 'mediawiki.codex.messagebox.styles', $output->getModuleStyles() );
+	}
+
+	// ------------------------------------------------------------------
+	// getUndoContent
+	// ------------------------------------------------------------------
+
+	/**
+	 * Create a wikitext page with one revision per given text.
+	 *
+	 * @param string $titleText
+	 * @param string[] $texts
+	 * @return array{0:Title,1:int[]} [ $title, $revisionIds ]
+	 */
+	private function createPageWithRevisions( string $titleText, array $texts ): array {
+		$title = Title::newFromText( $titleText, NS_HELP );
+		$revIds = [];
+		foreach ( $texts as $text ) {
+			$revIds[] = $this->editPage( $title, new WikitextContent( $text ), '', NS_HELP )
+				->getNewRevision()->getId();
+		}
+		return [ $title, $revIds ];
+	}
+
+	private function getUndoContent( Title $title, int $undo, int $undoAfter ) {
+		return UIUtils::getUndoContent(
+			$title,
+			$undo,
+			$undoAfter,
+			$this->getServiceContainer()->getRevisionStore(),
+			$this->getServiceContainer()->getContentHandlerFactory()
+		);
+	}
+
+	public function testGetUndoContent_latestRevision() {
+		[ $title, $revIds ] = $this->createPageWithRevisions( 'UIUtilsTest undo latest', [ 'A', 'B' ] );
+
+		$status = $this->getUndoContent( $title, $revIds[1], $revIds[0] );
+
+		$this->assertStatusGood( $status );
+		$this->assertSame( 'A', $status->getValue()->getText() );
+	}
+
+	public function testGetUndoContent_failureWhenMergeFails() {
+		// Without diff3, an undo before the current revision cannot merge.
+		$this->overrideConfigValue( MainConfigNames::Diff3, false );
+		[ $title, $revIds ] = $this->createPageWithRevisions(
+			'UIUtilsTest undo failure', [ 'A', 'B', 'C' ]
+		);
+
+		$status = $this->getUndoContent( $title, $revIds[1], $revIds[0] );
+
+		$this->assertStatusError( 'undo-failure', $status );
+	}
+
+	public function testGetUndoContent_noChangeWhenAlreadyUndone() {
+		[ $title, $revIds ] = $this->createPageWithRevisions(
+			'UIUtilsTest undo nochange', [ 'A', 'B', 'A' ]
+		);
+
+		$status = $this->getUndoContent( $title, $revIds[1], $revIds[0] );
+
+		$this->assertStatusError( 'undo-nochange', $status );
+	}
+
+	public function testGetUndoContent_noRevForUnknownRevision() {
+		[ $title, $revIds ] = $this->createPageWithRevisions( 'UIUtilsTest undo unknown', [ 'A', 'B' ] );
+
+		$status = $this->getUndoContent( $title, $revIds[1] + 1000, $revIds[0] );
+
+		$this->assertStatusError( 'undo-norev', $status );
+	}
+
+	public function testGetUndoContent_noRevForRevisionOfOtherPage() {
+		[ $title, $revIds ] = $this->createPageWithRevisions( 'UIUtilsTest undo page', [ 'A', 'B' ] );
+		[ , $otherRevIds ] = $this->createPageWithRevisions( 'UIUtilsTest undo other page', [ 'X' ] );
+
+		$status = $this->getUndoContent( $title, $revIds[1], $otherRevIds[0] );
+
+		$this->assertStatusError( 'undo-norev', $status );
+	}
+
+	public function testGetUndoContent_noRevForDeletedRevision() {
+		[ $title, $hiddenRevision ] = $this->createPageWithHiddenFirstRevision(
+			[ RevisionRecord::DELETED_TEXT ]
+		);
+		$currentRevId = $this->getServiceContainer()->getRevisionLookup()
+			->getRevisionByTitle( $title )->getId();
+
+		$status = $this->getUndoContent( $title, $currentRevId, $hiddenRevision->getId() );
+
+		$this->assertStatusError( 'undo-norev', $status );
 	}
 }

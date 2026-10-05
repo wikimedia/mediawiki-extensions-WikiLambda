@@ -1207,12 +1207,19 @@ const zobjectStore = {
 			// base revision, so that they do not revert newer edits.
 			this.setCurrentRevisionId( revision || currentRevision || null );
 
+			// (T335713) Use the content of an undo request. It can differ from all stored revisions.
+			const { undoContent } = this.getWikilambdaConfig;
+
 			// Calling the API without language parameter so that we get
 			// the unfiltered multilingual object
-			return fetchZObjects( {
-				zids: zid,
-				revisions: revision
-			} ).then( ( response ) => {
+			const responsePromise = undoContent ?
+				Promise.resolve( { [ zid ]: { data: JSON.parse( undoContent ) } } ) :
+				fetchZObjects( {
+					zids: zid,
+					revisions: revision
+				} );
+
+			return responsePromise.then( ( response ) => {
 				const zobject = response[ zid ].data;
 
 				// Initialize optional aliases key if absent

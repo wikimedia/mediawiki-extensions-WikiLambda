@@ -1126,6 +1126,46 @@ describe( 'zobject Pinia store', () => {
 					} ), { signal: undefined } );
 				} );
 
+				describe( 'for an undo request', () => {
+					const Z10001 = {
+						Z1K1: 'Z2',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z10001' },
+						Z2K2: 'undone',
+						Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					};
+					let originalConfig;
+
+					beforeEach( () => {
+						originalConfig = mw.config;
+						mockMWGetConfig( { wgWikiLambda: { undoContent: JSON.stringify( Z10001 ) } } );
+					} );
+
+					afterEach( () => {
+						mw.config = originalConfig;
+					} );
+
+					it( 'uses the undo content and does not fetch the ZObject', async () => {
+						store.setCurrentZid = jest.fn();
+						store.saveMultilingualDataCopy = jest.fn();
+						store.setJsonObject = jest.fn();
+						store.setInitialized = jest.fn();
+						store.fetchZids = jest.fn().mockResolvedValue();
+						const getMock = jest.fn();
+						mw.Api = jest.fn( () => ( { get: getMock } ) );
+
+						await store.initializeRootZObject( 'Z10001' );
+
+						expect( getMock ).not.toHaveBeenCalled();
+						expect( store.setJsonObject ).toHaveBeenCalledWith( {
+							namespace: Constants.STORED_OBJECTS.MAIN,
+							zobject: canonicalToHybrid( Object.assign( {}, Z10001, {
+								Z2K4: { Z1K1: 'Z32', Z32K1: [ 'Z31' ] },
+								Z2K5: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+							} ) )
+						} );
+					} );
+				} );
+
 				it( 'initializes empty description and alias fields', async () => {
 					store.setCurrentZid = jest.fn();
 					store.saveMultilingualDataCopy = jest.fn();

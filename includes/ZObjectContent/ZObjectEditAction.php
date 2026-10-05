@@ -11,15 +11,29 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 use MediaWiki\Actions\Action;
+use MediaWiki\Content\IContentHandlerFactory;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
 use MediaWiki\MainConfigNames;
+use MediaWiki\Page\Article;
+use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Skin\Skin;
 use MediaWiki\SpecialPage\SpecialPage;
 
 class ZObjectEditAction extends Action {
 	use ZObjectEditingPageTrait;
+
+	public function __construct(
+		Article $article,
+		IContextSource $context,
+		private readonly RevisionStore $revisionStore,
+		private readonly IContentHandlerFactory $contentHandlerFactory
+	) {
+		parent::__construct( $article, $context );
+	}
 
 	/**
 	 * @inheritDoc
@@ -137,10 +151,27 @@ class ZObjectEditAction extends Action {
 			) );
 		}
 
-		$this->generateZObjectPayload( $this->getContext(), $output, [
+		$jsConfigVars = [
 			'createNewPage' => false,
 			'zId' => $zId,
-		] );
+		];
+
+		$request = $this->getRequest();
+		$undo = $request->getInt( 'undo' );
+		$undoAfter = $request->getInt( 'undoafter' );
+		if ( $undo > 0 && $undoAfter > 0 ) {
+			$undoStatus = UIUtils::getUndoContent(
+				$this->getTitle(), $undo, $undoAfter, $this->revisionStore, $this->contentHandlerFactory
+			);
+			if ( $undoStatus->isGood() ) {
+				$jsConfigVars['undoContent'] = $undoStatus->getValue()->serialize();
+			} else {
+				$output->addModuleStyles( [ 'mediawiki.codex.messagebox.styles' ] );
+				$output->addHTML( Html::errorBox( $this->msg( $undoStatus->getMessages()[0] )->parse() ) );
+			}
+		}
+
+		$this->generateZObjectPayload( $this->getContext(), $output, $jsConfigVars );
 	}
 
 	/**
