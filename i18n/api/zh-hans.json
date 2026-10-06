@@ -5,6 +5,7 @@
 			"Plana",
 			"Stang",
 			"U.T.",
+			"Villager-bloc-h",
 			"Zhang8569",
 			"沈澄心"
 		]
@@ -18,6 +19,8 @@
 	"apierror-query+wikilambdaload_zobjects-notzobject": "ZObjectStore为“$1”加载了一个非ZObject。",
 	"apihelp-wikilambda_edit-summary": "创建或编辑 ZObject。",
 	"apihelp-wikilambda_edit-param-summary": "编辑摘要消息",
+	"apihelp-wikilambda_edit-param-watchlist": "无条件地将页面加入至当前用户的监视列表或将其移除（忽略机器人用户），使用设置或不更改监视。",
+	"apihelp-wikilambda_edit-param-watchlistexpiry": "监视列表期限时间戳。完全忽略该参数可保持当前期限不变。",
 	"apierror-wikilambda_function_call-concurrency-limit": "目前您执行了太多函数调用。",
 	"apihelp-wikilambda_perform_test-param-nocache": "是否使用缓存",
 	"apihelp-wikifunctions_html_sanitiser-example-prohibited": "带有禁止 HTML 的示例调用。"

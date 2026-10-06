@@ -400,6 +400,8 @@
 	"wikilambda-functioncall-metadata-cached": "この応答はキャッシュから取得されました",
 	"wikilambda-functioncall-metadata-cache-fresh": "最新データに基づいて生成された応答",
 	"wikilambda-functioncall-metadata-cache-freshen-button": "最新データで実行",
+	"wikilambda-functioncall-metadata-cache-help-label": "結果の起源について",
+	"wikilambda-functioncall-metadata-cache-help-link": "https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Provenance_metadata_and_result_freshening",
 	"wikilambda-functioncall-metadata-cache-stored": "キャッシュされた関数呼び出し",
 	"wikilambda-functioncall-metadata-cache-test-call-stored": "キャッシュされたテスト呼び出し",
 	"wikilambda-functioncall-metadata-cache-test-result-key": "(ZIDと版について) テスト済み",

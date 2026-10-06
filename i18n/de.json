@@ -631,6 +631,7 @@
 	"wikilambda-commons-image-error-not-found": "Bild nicht gefunden.",
 	"wikilambda-commons-image-error-unavailable": "Bild vorübergehend nicht verfügbar.",
 	"wikilambda-codeeditor-image-element-description": "In der gerenderten Ausgabe wird dieses Element als tatsächliches Bild angezeigt.",
+	"wikilambda-codeeditor-image-element-detail": "Bild von Commons",
 	"wikilambda-zobjectselector-label": "Objekt",
 	"wikilambda-zobjectselector-no-results": "Keine Ergebnisse gefunden.",
 	"wikilambda-ztester-missing-call-function": "Aufruf ist leer. Bitte wähle eine Funktion",

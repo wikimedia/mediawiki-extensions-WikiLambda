@@ -221,6 +221,7 @@
 	"wikilambda-editor-label-select-programming-language-empty": "Vyberte programovací jazyk",
 	"wikilambda-editor-label-select-programming-language-label": "Vyberte programovací jazyk",
 	"wikilambda-editor-leave-edit-mode-header": "Opustit editační režim",
+	"wikilambda-editor-monolingual-string-expand": "Rozbalte pro výběr jazyka",
 	"wikilambda-editor-multilingual-string-loadmore": "{{PLURAL:$1|$1 jazyk|$1 jazyky|$1 jazyků}}",
 	"wikilambda-editor-output-title": "Výstup",
 	"wikilambda-editor-publish-dialog-header": "Zveřejnit vaše změny",
