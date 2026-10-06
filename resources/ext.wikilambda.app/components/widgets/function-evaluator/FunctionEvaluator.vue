@@ -118,6 +118,7 @@
 						<wl-evaluation-result
 							v-else
 							:content-type="contentType"
+							:function-call="submittedFunctionCall"
 							@freshen-result="freshenResult"
 						></wl-evaluation-result>
 					</template>
@@ -194,6 +195,8 @@ module.exports = exports = defineComponent( {
 		const running = ref( false );
 		const hasResult = ref( false );
 		const isLoading = ref( true );
+		// Copy of the function call at the time the user runs it
+		const submittedFunctionCall = ref( null );
 
 		// Function call data
 		/**
@@ -433,6 +436,7 @@ module.exports = exports = defineComponent( {
 		function clearResult() {
 			hasResult.value = false;
 			running.value = false;
+			submittedFunctionCall.value = null;
 		}
 
 		/**
@@ -444,73 +448,80 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
-		 * Runs the function call with the freshen-result property so
-		 * that the call is executed again, without using cached data.
+		 * Runs the call of the shown result again with the freshen-result
+		 * property, so that the server does not use cached data. It runs the
+		 * submitted call, not the current inputs, which the user can change
+		 * after the run.
 		 */
 		function freshenResult() {
-			callFunction( true );
+			callFunction( true, submittedFunctionCall.value );
+		}
+
+		/**
+		 * Returns a copy of the call to send on an implementation page. Its
+		 * function (Z7K1) is the stored function with this implementation as
+		 * its only implementation (Z8K4). Users who can run unsaved code run
+		 * the edited implementation; other users run the saved one by its ZID.
+		 *
+		 * @param {Object} call
+		 * @return {Object}
+		 */
+		function buildImplementationCall( call ) {
+			const storedFunction = store.getStoredObject( props.functionZid );
+			const implementation = store.userCanRunUnsavedCode ?
+				hybridToCanonical( store.getZObjectByKeyPath( [
+					Constants.STORED_OBJECTS.MAIN,
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				] ) ) :
+				store.getCurrentZObjectId;
+
+			if ( !storedFunction || !implementation ) {
+				return call;
+			}
+			// Copy the function so that the stored one keeps its implementations
+			const functionObject = Object.assign( {}, storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ], {
+				[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, implementation ]
+			} );
+			return Object.assign( {}, call, {
+				[ Constants.Z_FUNCTION_CALL_FUNCTION ]: functionObject
+			} );
 		}
 
 		/**
 		 * Performs the function call
 		 *
 		 * @param {boolean} freshResult
+		 * @param {Object} [call] The call to run. Defaults to the current inputs.
 		 */
-		function callFunction( freshResult = false ) {
-			const funcCall = JSON.parse( JSON.stringify( functionCall.value ) );
-			// If we are in an implementation page, we build raw function call with raw implementation:
-			// 1. Replace Z7K1 with the whole Z8 object: we assume it's in the store
-			// 2. Replace te Z8K4 with [ Z14, implementation ]
-			if ( forImplementation.value ) {
-				const storedFunction = store.getStoredObject( props.functionZid );
-				// If user can run unsaved code, we get the raw implementation,
-				// else, we use the current persisted version by using its Zid
-				const thisImplementation = () => {
-					const hybrid = store.getZObjectByKeyPath( [
-						Constants.STORED_OBJECTS.MAIN,
-						Constants.Z_PERSISTENTOBJECT_VALUE
-					] );
-					return hybridToCanonical( hybrid );
-				};
-				const implementation = store.userCanRunUnsavedCode ?
-					thisImplementation() :
-					store.getCurrentZObjectId;
-
-				if ( storedFunction && implementation ) {
-					const functionObject = storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-					functionObject[ Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
-						Constants.Z_IMPLEMENTATION,
-						implementation
-					];
-					funcCall[ Constants.Z_FUNCTION_CALL_FUNCTION ] = functionObject;
-				}
-			}
+		function callFunction( freshResult = false, call = functionCall.value ) {
+			// Keep a copy of the call that runs. The result shows this call, not the
+			// current inputs, which the user can change after the run (T433744).
+			const submittedCall = JSON.parse( JSON.stringify( call ) );
 
 			running.value = true;
-
-			// Clear errors and perform the function call
 			store.clearErrors( Constants.STORED_OBJECTS.RESPONSE );
 
-			// Perform the function call using .then() chain
 			store.callZFunction( {
-				functionCall: funcCall,
+				functionCall: forImplementation.value ?
+					buildImplementationCall( submittedCall ) :
+					submittedCall,
 				resultKeyPath: [ Constants.STORED_OBJECTS.RESPONSE ],
 				freshResult
 			} ).then( () => {
-				// Once the function call is done, update the state
 				running.value = false;
 				hasResult.value = true;
+				// Set the copy with its response, so that the shown result and
+				// its share link come from the same run
+				submittedFunctionCall.value = submittedCall;
 
 				// Log an event using Test Kitchen's core interaction events
-				const interactionData = {
+				submitInteraction( 'call', {
 					zobjecttype: store.getCurrentZObjectType || null,
 					zobjectid: store.getCurrentZObjectId || null,
 					zlang: store.getUserLangZid || null,
 					selectedfunctionzid: selectedFunctionZid.value || null,
 					haserrors: !!store.hasMetadataErrors
-				};
-
-				submitInteraction( 'call', interactionData );
+				} );
 			} );
 		}
 
@@ -544,6 +555,7 @@ module.exports = exports = defineComponent( {
 			isSelectedFunctionFetched,
 			running,
 			showFunctionSelector,
+			submittedFunctionCall,
 			title,
 			userCanRunFunction: store.userCanRunFunction,
 			waitAndCallFunction,

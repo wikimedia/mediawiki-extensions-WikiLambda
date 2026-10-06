@@ -210,10 +210,21 @@ describe( 'EvaluationResult', () => {
 			}
 		};
 
+		// The inputs in the store changed after the user ran the function
+		const editedFunctionCall = {
+			Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+			Z7K1: { Z1K1: 'Z9', Z9K1: 'Z801' },
+			Z801K1: { Z1K1: 'Z6', Z6K1: 'EDITED' }
+		};
+
+		function renderWithFunctionCall( props = {} ) {
+			return renderEvaluationResult( { functionCall, ...props } );
+		}
+
 		beforeEach( () => {
 			store.getZObjectByKeyPath = jest.fn( ( keyPath ) => {
 				if ( keyPath && keyPath[ 0 ] === 'call' ) {
-					return functionCall;
+					return editedFunctionCall;
 				}
 				if ( keyPath && keyPath[ 0 ] === 'response' ) {
 					return responseObject;
@@ -223,35 +234,26 @@ describe( 'EvaluationResult', () => {
 		} );
 
 		it( 'should render share button when function is selected', () => {
-			const wrapper = renderEvaluationResult();
+			const wrapper = renderWithFunctionCall();
 
 			const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
 			expect( shareButton.exists() ).toBe( true );
 		} );
 
-		it( 'should not render share button when no function is selected', () => {
-			store.getZObjectByKeyPath = jest.fn( ( keyPath ) => {
-				if ( keyPath && keyPath[ 0 ] === 'call' ) {
-					return null;
-				}
-				if ( keyPath && keyPath[ 0 ] === 'response' ) {
-					return responseObject;
-				}
-				return null;
-			} );
+		it( 'should not render share button when no function call is given', () => {
 			const wrapper = renderEvaluationResult();
 
 			const buttons = wrapper.findAllComponents( { name: 'cdx-button' } );
 			expect( buttons.length ).toBe( 1 );
 		} );
 
-		it( 'should generate and copy share URL when share button is clicked', async () => {
+		it( 'should copy the share URL of the submitted call, not of the edited inputs', async () => {
 			const canonicalFunctionCall = {
 				Z1K1: 'Z7',
 				Z7K1: 'Z801',
 				Z801K1: 'KOEKIE'
 			};
-			const wrapper = renderEvaluationResult();
+			const wrapper = renderWithFunctionCall();
 
 			const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
 
@@ -270,7 +272,7 @@ describe( 'EvaluationResult', () => {
 		} );
 
 		it( 'should show check icon message after clicking share', async () => {
-			const wrapper = renderEvaluationResult();
+			const wrapper = renderWithFunctionCall();
 			const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
 
 			// Initially shows "Copy result link"
@@ -284,7 +286,7 @@ describe( 'EvaluationResult', () => {
 		} );
 
 		it( 'should not render share button when contentType is Z_TESTER', () => {
-			const wrapper = renderEvaluationResult( {
+			const wrapper = renderWithFunctionCall( {
 				contentType: Constants.Z_TESTER
 			} );
 
@@ -293,7 +295,7 @@ describe( 'EvaluationResult', () => {
 		} );
 
 		it( 'should not render share button when contentType is Z_IMPLEMENTATION', () => {
-			const wrapper = renderEvaluationResult( {
+			const wrapper = renderWithFunctionCall( {
 				contentType: Constants.Z_IMPLEMENTATION
 			} );
 
@@ -302,7 +304,7 @@ describe( 'EvaluationResult', () => {
 		} );
 
 		it( 'should render share button when contentType is undefined (function page)', () => {
-			const wrapper = renderEvaluationResult( {
+			const wrapper = renderWithFunctionCall( {
 				contentType: undefined
 			} );
 
@@ -311,25 +313,14 @@ describe( 'EvaluationResult', () => {
 		} );
 
 		describe( 'when the share URL is too long', () => {
-			beforeEach( () => {
-				const longFunctionCall = {
-					Z1K1: 'Z7',
-					Z7K1: 'Z801',
-					Z801K1: 'a'.repeat( Constants.URL_CHARS_MAX )
-				};
-				store.getZObjectByKeyPath = jest.fn( ( keyPath ) => {
-					if ( keyPath && keyPath[ 0 ] === 'call' ) {
-						return longFunctionCall;
-					}
-					if ( keyPath && keyPath[ 0 ] === 'response' ) {
-						return responseObject;
-					}
-					return null;
-				} );
-			} );
+			const longFunctionCall = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'a'.repeat( Constants.URL_CHARS_MAX )
+			};
 
 			it( 'disables the share button and explains why in the tooltip', () => {
-				const wrapper = renderEvaluationResult();
+				const wrapper = renderWithFunctionCall( { functionCall: longFunctionCall } );
 
 				const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
 				expect( shareButton.attributes( 'disabled' ) ).toBeDefined();
@@ -337,7 +328,7 @@ describe( 'EvaluationResult', () => {
 			} );
 
 			it( 'does not copy the share URL', () => {
-				const wrapper = renderEvaluationResult();
+				const wrapper = renderWithFunctionCall( { functionCall: longFunctionCall } );
 
 				wrapper.vm.shareFunction();
 
@@ -347,7 +338,7 @@ describe( 'EvaluationResult', () => {
 		} );
 
 		it( 'enables the share button with the default tooltip when the share URL is short', () => {
-			const wrapper = renderEvaluationResult();
+			const wrapper = renderWithFunctionCall();
 
 			const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
 			expect( shareButton.attributes( 'disabled' ) ).toBeUndefined();

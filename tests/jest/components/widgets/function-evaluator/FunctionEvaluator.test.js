@@ -253,6 +253,37 @@ describe( 'FunctionEvaluator', () => {
 			expect( component.exists() ).toBe( true );
 		} );
 
+		it( 'passes the submitted function call to the result, not the edited inputs', async () => {
+			const liveFunctionCall = JSON.parse( JSON.stringify( hybridFunctionCall ) );
+			store.getZObjectByKeyPath = createGettersWithFunctionsMock( liveFunctionCall );
+			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+			store.getStoredObject = createGettersWithFunctionsMock( storedFunction );
+			// The user changes an input while the function runs
+			store.callZFunction.mockImplementation( () => {
+				liveFunctionCall.Z10000K1.Z6K1 = 'new test text';
+				return Promise.resolve();
+			} );
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000' } );
+
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
+
+			const runButton = wrapper.get( '[data-testid="evaluator-run-button"]' )
+				.findComponent( { name: 'cdx-button' } );
+			await runButton.trigger( 'click' );
+
+			await waitFor( () => {
+				expect( wrapper.findComponent( { name: 'wl-evaluation-result' } ).exists() ).toBe( true );
+			} );
+
+			// The user changes an input after the run
+			liveFunctionCall.Z10000K2.Z6K1 = 'new test text after run';
+
+			const result = wrapper.findComponent( { name: 'wl-evaluation-result' } );
+			expect( result.props( 'functionCall' ) ).toEqual( hybridFunctionCall );
+		} );
+
 		it( 'clears result when selected function changes', async () => {
 			store.getZObjectByKeyPath = createGettersWithFunctionsMock( hybridFunctionCall );
 			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
@@ -364,6 +395,37 @@ describe( 'FunctionEvaluator', () => {
 
 			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 2 ) );
 			expect( store.callZFunction ).toHaveBeenCalledWith( {
+				freshResult: true,
+				functionCall: hybridFunctionCall,
+				resultKeyPath: [ 'response' ]
+			} );
+		} );
+
+		it( 'freshens the call of the shown result, not the edited inputs', async () => {
+			const liveFunctionCall = JSON.parse( JSON.stringify( hybridFunctionCall ) );
+			store.getZObjectByKeyPath = createGettersWithFunctionsMock( liveFunctionCall );
+			store.getConnectedObjects = createGettersWithFunctionsMock( [ 'Z10001', 'Z10002' ] );
+
+			const wrapper = renderFunctionEvaluator();
+
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
+
+			const runButton = wrapper.get( '[data-testid="evaluator-run-button"]' )
+				.findComponent( { name: 'cdx-button' } );
+			await runButton.trigger( 'click' );
+
+			await waitFor( () => {
+				expect( wrapper.findComponent( { name: 'wl-evaluation-result' } ).exists() ).toBe( true );
+			} );
+
+			// The user changes an input, and then freshens the shown result
+			liveFunctionCall.Z10000K1.Z6K1 = 'new test text';
+			wrapper.findComponent( { name: 'wl-evaluation-result' } ).vm.$emit( 'freshen-result' );
+
+			await waitFor( () => expect( store.callZFunction ).toHaveBeenCalledTimes( 2 ) );
+			expect( store.callZFunction ).toHaveBeenNthCalledWith( 2, {
 				freshResult: true,
 				functionCall: hybridFunctionCall,
 				resultKeyPath: [ 'response' ]
@@ -498,6 +560,8 @@ describe( 'FunctionEvaluator', () => {
 				functionCall: implementationCall,
 				resultKeyPath: [ 'response' ]
 			} );
+			// The stored function keeps its implementations
+			expect( storedFunction.Z2K2.Z8K4 ).toEqual( [ 'Z14', 'Z10001', 'Z10002' ] );
 		} );
 
 		it( 'renders no function selected message when function does not exist', async () => {

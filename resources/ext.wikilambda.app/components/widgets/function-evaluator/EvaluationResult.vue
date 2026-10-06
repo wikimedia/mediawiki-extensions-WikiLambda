@@ -107,6 +107,11 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: false,
 			default: undefined
+		},
+		functionCall: {
+			type: Object,
+			required: false,
+			default: null
 		}
 	},
 	emits: [ 'freshen-result' ],
@@ -178,13 +183,12 @@ module.exports = exports = defineComponent( {
 
 		// Function call data
 		/**
-		 * Returns the selected function call object
+		 * Returns the function call that produced this result. Later
+		 * changes to the inputs do not change it (T433744).
 		 *
-		 * @return {Object|undefined}
+		 * @return {Object|null}
 		 */
-		const selectedFunctionCall = computed( () => store.getZObjectByKeyPath(
-			[ Constants.STORED_OBJECTS.FUNCTION_CALL ]
-		) );
+		const selectedFunctionCall = computed( () => props.functionCall );
 
 		/**
 		 * Returns the selected function ZID from the function call
