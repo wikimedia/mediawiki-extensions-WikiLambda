@@ -38,8 +38,9 @@ module.exports = function useShareUrl() {
 		}
 
 		try {
-			const decodedJson = decodeURIComponent( callParam );
-			const zobject = JSON.parse( decodedJson );
+			// URLSearchParams.get() already decodes the value. Do not decode it again,
+			// because a second decode fails on a '%' in the function call.
+			const zobject = JSON.parse( callParam );
 
 			if ( !zobject || zobject[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_FUNCTION_CALL ) {
 				shareUrlError.value = i18n(

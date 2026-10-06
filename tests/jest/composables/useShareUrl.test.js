@@ -6,6 +6,7 @@
 const loadComposable = require( '../helpers/loadComposable.js' );
 const { mockWindowLocation, restoreWindowLocation } = require( '../fixtures/location.js' );
 const useShareUrl = require( '../../../resources/ext.wikilambda.app/composables/useShareUrl.js' );
+const urlUtils = require( '../../../resources/ext.wikilambda.app/utils/urlUtils.js' );
 
 describe( 'useShareUrl', () => {
 	let share;
@@ -109,6 +110,30 @@ describe( 'useShareUrl', () => {
 			const functionCall = { Z1K1: 'Z7', Z7K1: 'Z801', Z801K1: 'hello & world = test' };
 			const encodedJson = encodeURIComponent( JSON.stringify( functionCall ) );
 			mockWindowLocation( `http://example.com/wiki/Special:RunFunction?call=${ encodedJson }` );
+
+			loadFunctionCallFromUrl();
+
+			expect( sharedFunctionCall.value ).toEqual( functionCall );
+			expect( shareUrlError.value ).toBeNull();
+		} );
+
+		it( 'should handle a percent sign in the function call', () => {
+			const { sharedFunctionCall, shareUrlError, loadFunctionCallFromUrl } = share;
+			const functionCall = { Z1K1: 'Z7', Z7K1: 'Z801', Z801K1: 'grew by 5% in 2020, not %41' };
+			const encodedJson = encodeURIComponent( JSON.stringify( functionCall ) );
+			mockWindowLocation( `http://example.com/wiki/Special:RunFunction?call=${ encodedJson }` );
+
+			loadFunctionCallFromUrl();
+
+			expect( sharedFunctionCall.value ).toEqual( functionCall );
+			expect( shareUrlError.value ).toBeNull();
+		} );
+
+		it( 'should load the function call from a URL made by generateShareUrl', () => {
+			const { sharedFunctionCall, shareUrlError, loadFunctionCallFromUrl } = share;
+			const functionCall = { Z1K1: 'Z7', Z7K1: 'Z801', Z801K1: '5% + 10% = 15%, café' };
+			mockWindowLocation( 'http://example.com/wiki/Z801' );
+			mockWindowLocation( urlUtils.generateShareUrl( functionCall ) );
 
 			loadFunctionCallFromUrl();
 
