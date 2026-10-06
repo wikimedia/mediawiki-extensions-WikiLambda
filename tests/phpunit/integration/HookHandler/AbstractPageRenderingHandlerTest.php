@@ -791,6 +791,18 @@ class AbstractPageRenderingHandlerTest extends WikiLambdaAbstractClientIntegrati
 		$this->assertStringContainsString( 'Abstract Wikipedia', $footerItems['renderedwith'] );
 	}
 
+	public function testOnSkinAddFooterLinks_nullTitle_doesNothing(): void {
+		$skin = $this->createMock( Skin::class );
+		$skin->method( 'getTitle' )->willReturn( null );
+
+		$footerItems = [];
+
+		$handler = $this->buildHandler();
+		$handler->onSkinAddFooterLinks( $skin, 'info', $footerItems );
+
+		$this->assertCount( 0, $footerItems );
+	}
+
 	// onSkinTemplateNavigation__Universal
 	// ===================================
 	// On Abstract Content surfaces, synthesise article-like tabs: a local Read tab, off-wiki

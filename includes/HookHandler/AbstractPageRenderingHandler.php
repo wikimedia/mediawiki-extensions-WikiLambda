@@ -466,6 +466,9 @@ class AbstractPageRenderingHandler implements
 	public function onSkinAddFooterLinks( Skin $skin, string $key, array &$footerItems ) {
 		if ( $key === 'info' ) {
 			$title = $skin->getTitle();
+			if ( !$title ) {
+				return;
+			}
 
 			// If not AbstractClient mode and not the Special:PreviewAbstract, exit early
 			if (
