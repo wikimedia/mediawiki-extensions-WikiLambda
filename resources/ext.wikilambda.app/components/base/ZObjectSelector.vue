@@ -60,7 +60,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
+const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useMainStore = require( '../../store/index.js' );
@@ -245,6 +245,8 @@ module.exports = exports = defineComponent( {
 		const lookupDelayMs = 300;
 		let lookupDelayTimer = null;
 		let lookupAbortController = null;
+		// Set when the component starts to unmount
+		let isUnmounting = false;
 
 		// Configuration
 		/**
@@ -683,6 +685,9 @@ module.exports = exports = defineComponent( {
 			//    2.b. The field text matches one lookup option.
 			//         E.g. we write "String", we see "String" in the lookup and we exit
 			//         thinking that writing the option will be enough
+			//    2.c. The field text matches more than one lookup option. (Future proofing)
+			//         E.g. two objects have the same label. We cannot know which one
+			//         the user wants, so the user must select one from the menu.
 			// 3. Something is selected previously, and we blur with empty text field
 			// 4. Something is selected previously, and we blur with non-empty text field
 			//    4.a. The field text doesn't match any lookup options
@@ -691,23 +696,34 @@ module.exports = exports = defineComponent( {
 
 			// Logic:
 			// Nothing selected:
-			// * match?: set selectedValue
-			// * no match?: clear inputValue
+			// * exactly one match?: set selectedValue
+			// * no match, or more than one match?: clear inputValue
 			// Something selected:
 			// * match already selected?: do nothing
-			// * match?: set selectedValue
-			// * no match?: set inputValue to selectedLabel
+			// * exactly one match?: set selectedValue
+			// * no match, or more than one match?: set inputValue to selectedLabel
+
+			// Do nothing if the component is unmounting. For example, the selected
+			// type replaces the parent object, and the browser blurs the removed
+			// input. The input still has the search text, which can match a
+			// different option (T428310).
+			if ( isUnmounting ) {
+				return;
+			}
 
 			// If current inputValue matches selected label, do nothing:
 			if ( inputValue.value === selectedLabel.value ) {
 				return;
 			}
 
-			// Match current inputValue with available menu options:
-			const match = lookupResults.value.find( ( option ) => option.label === inputValue.value );
-			if ( match ) {
+			// Match current inputValue with available menu options. An option can
+			// show more than once, so count the different values.
+			const matchingValues = [ ...new Set( lookupResults.value
+				.filter( ( option ) => option.label === inputValue.value )
+				.map( ( option ) => option.value ) ) ];
+			if ( matchingValues.length === 1 ) {
 				// Select new value
-				onSelect( match.value );
+				onSelect( matchingValues[ 0 ] );
 			} else {
 				// Reset to old value
 				inputValue.value = selectedLabel.value;
@@ -728,6 +744,12 @@ module.exports = exports = defineComponent( {
 		} );
 
 		// Lifecycle
+		onBeforeUnmount( () => {
+			isUnmounting = true;
+			clearTimeout( lookupDelayTimer );
+			abortLookup();
+		} );
+
 		onMounted( () => {
 			inputValue.value = selectedLabel.value;
 			if ( isEnum.value ) {

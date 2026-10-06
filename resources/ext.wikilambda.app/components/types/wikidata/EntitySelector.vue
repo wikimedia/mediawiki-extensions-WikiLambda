@@ -27,7 +27,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
+const { computed, defineComponent, inject, onBeforeUnmount, onMounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -81,6 +81,10 @@ module.exports = exports = defineComponent( {
 		let lookupDelayTimer = null;
 		const lookupDelayMs = 300;
 		let lookupAbortController = null;
+		// The menu option that the user selected last
+		let selectedOption = null;
+		// Set when the component starts to unmount
+		let isUnmounting = false;
 
 		/**
 		 * Return the placeholder string depending on the item to select
@@ -257,6 +261,8 @@ module.exports = exports = defineComponent( {
 				inputValue.value = props.entityLabel;
 				return;
 			}
+			// Find the selected option in the lookup results. If not found, set it to null (T437287).
+			selectedOption = lookupResults.value.find( ( option ) => option.value === value ) || null;
 
 			emit( 'select-wikidata-entity', value || '' );
 		}
@@ -274,20 +280,46 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
-		 * On blur, select the value that matches the inputValue if valid;
-		 * else, restore the previous selected value.
+		 * On blur, if exactly one option matches the inputValue, select it;
+		 * else, restore the previous selected value. If the input shows the
+		 * label of the selected value, keep it.
 		 */
 		function onBlur() {
+			// Do nothing if the component is unmounting. The browser can blur
+			// the removed input, and the input text can match another option.
+			if ( isUnmounting ) {
+				return;
+			}
+
 			// If current inputValue matches selected lexeme, do nothing:
 			if ( inputValue.value === props.entityLabel ) {
 				return;
 			}
 
-			// Match current inputValue with available menu options:
-			const match = lookupResults.value.find( ( option ) => option.label === inputValue.value );
-			if ( match ) {
+			// If the input shows the label of the selected entity, keep it. Its
+			// entityLabel can still be loading (then it is its ID), and other
+			// entities can have the same label (T437287). The search that runs
+			// after a selection can remove the selected option from the results,
+			// so also check the option that the user selected.
+			const isSelectedEntity = ( option ) => option.value === props.entityId &&
+				option.label === inputValue.value;
+			if (
+				( selectedOption && isSelectedEntity( selectedOption ) ) ||
+				lookupResults.value.some( isSelectedEntity )
+			) {
+				return;
+			}
+
+			// Match current inputValue with available menu options. Select only
+			// if exactly one entity matches; if more entities have this label, the
+			// user must select one from the menu. An option can show more than
+			// once, so count the different values.
+			const matchingValues = [ ...new Set( lookupResults.value
+				.filter( ( option ) => option.label === inputValue.value )
+				.map( ( option ) => option.value ) ) ];
+			if ( matchingValues.length === 1 ) {
 				// Select new value
-				onSelect( match.value );
+				onSelect( matchingValues[ 0 ] );
 			} else {
 				// Reset to old value
 				inputValue.value = props.entityLabel;
@@ -315,6 +347,12 @@ module.exports = exports = defineComponent( {
 		} );
 
 		// Lifecycle
+		onBeforeUnmount( () => {
+			isUnmounting = true;
+			clearTimeout( lookupDelayTimer );
+			abortLookup();
+		} );
+
 		onMounted( () => {
 			inputValue.value = props.entityLabel;
 		} );

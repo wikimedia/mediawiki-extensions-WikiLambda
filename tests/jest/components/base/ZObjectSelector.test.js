@@ -349,6 +349,97 @@ describe( 'ZObjectSelector', () => {
 			expect( lookup.props( 'inputValue' ) ).toBe( 'Monolingual text' );
 		} );
 
+		it( 'on blur, does not select a value when more than one option has the input label', async () => {
+			store.lookupZObjectLabels.mockResolvedValue( {
+				labels: [
+					{ page_title: 'Z11', page_type: 'Z4', label: 'Text', match_label: 'Text', type_label: 'Type' },
+					{ page_title: 'Z12', page_type: 'Z4', label: 'Text', match_label: 'Text', type_label: 'Type' }
+				]
+			} );
+
+			const onSelectItem = jest.fn();
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE,
+				selectedZid: Constants.Z_STRING,
+				onSelectItem
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:input-value', 'Text' );
+			await waitFor( () => expect( lookup.props( 'menuItems' ).length ).toBe( 2 ) );
+
+			lookup.vm.$emit( 'blur' );
+
+			// Two objects have the label "Text": select none, restore the selected label
+			await waitFor( () => expect( lookup.props( 'inputValue' ) ).toBe( 'String' ) );
+			expect( onSelectItem ).not.toHaveBeenCalled();
+		} );
+
+		it( 'on blur, selects a value that matches in more than one option', async () => {
+			// The same object can match the search more than once (for example, by an alias)
+			store.lookupZObjectLabels.mockResolvedValue( {
+				labels: [
+					{ page_title: 'Z11', page_type: 'Z4', label: 'Monolingual text', match_label: 'Monolingual text', type_label: 'Type' },
+					{ page_title: 'Z11', page_type: 'Z4', label: 'Monolingual text', match_label: 'Text', type_label: 'Type' }
+				]
+			} );
+
+			const onSelectItem = jest.fn();
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE,
+				selectedZid: Constants.Z_STRING,
+				onSelectItem
+			} );
+
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:input-value', 'Monolingual text' );
+			await waitFor( () => expect( lookup.props( 'menuItems' ).length ).toBe( 2 ) );
+
+			lookup.vm.$emit( 'blur' );
+
+			expect( onSelectItem ).toHaveBeenCalledWith( 'Z11' );
+		} );
+
+		it( 'on blur while unmounting, does not select a matching value', async () => {
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
+
+			// Use a listener: wrapper.unmount() clears the emitted events
+			const onSelectItem = jest.fn();
+			const wrapper = renderZObjectSelector( {
+				type: Constants.Z_TYPE,
+				selectedZid: '',
+				onSelectItem
+			} );
+
+			// The search text is the label of the first option
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			lookup.vm.$emit( 'update:input-value', 'Monolingual text' );
+			await waitFor( () => expect( lookup.props( 'menuItems' ).length ).toBe( 2 ) );
+
+			// The user selects the second option
+			lookup.vm.$emit( 'update:selected', 'Z12' );
+			expect( onSelectItem.mock.calls ).toEqual( [ [ 'Z12' ] ] );
+
+			// The selection replaces the parent object, which removes this selector.
+			// Like Chrome, blur the input when it is removed from the page.
+			const input = wrapper.get( 'input' ).element;
+			const removeChild = Node.prototype.removeChild;
+			let blurred = false;
+			const removeChildSpy = jest.spyOn( Node.prototype, 'removeChild' ).mockImplementation( function ( child ) {
+				if ( !blurred && child.contains( input ) ) {
+					blurred = true;
+					input.dispatchEvent( new Event( 'blur' ) );
+				}
+				return removeChild.call( this, child );
+			} );
+			wrapper.unmount();
+			removeChildSpy.mockRestore();
+
+			// The blur does not select the first option
+			expect( blurred ).toBe( true );
+			expect( onSelectItem.mock.calls ).toEqual( [ [ 'Z12' ] ] );
+		} );
+
 		it( 'appends lookup results when loading more', async () => {
 			jest.useFakeTimers();
 			try {

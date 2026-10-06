@@ -319,6 +319,126 @@ describe( 'WikidataEntitySelector', () => {
 			expect( wrapper.emitted() ).not.toHaveProperty( 'select-wikidata-entity' );
 		} );
 
+		it( 'keeps the selected value when its label is loading and other options have the same label', async () => {
+			// Mock lookup to return two "turtle" results
+			store.lookupWikidataEntities.mockResolvedValue( mockTurtleLookupResults );
+
+			// The second "turtle" is selected, but its label is not loaded yet,
+			// so the label is its ID
+			const wrapper = renderEntitySelector( {
+				entityId: 'L333333',
+				entityLabel: 'L333333'
+			} );
+
+			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			// The lookup sets the input to the label of the selected menu item
+			lookup.vm.$emit( 'update:inputValue', 'turtle' );
+
+			// Run all pending timers (including the 300ms debounce)
+			jest.runAllTimers();
+
+			await waitFor( () => {
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			lookup.vm.$emit( 'blur' );
+
+			// Keep the selected value; do not select the first "turtle"
+			expect( lookup.props( 'inputValue' ) ).toBe( 'turtle' );
+			expect( wrapper.emitted() ).not.toHaveProperty( 'select-wikidata-entity' );
+		} );
+
+		it( 'keeps the selected value when the search after the selection does not return it', async () => {
+			store.lookupWikidataEntities.mockResolvedValue( mockTurtleLookupResults );
+
+			const wrapper = renderEntitySelector();
+			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			lookup.vm.$emit( 'update:inputValue', 'turtle' );
+			jest.runAllTimers();
+			await waitFor( () => {
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			// Select the second "turtle"; its label is not loaded yet
+			lookup.vm.$emit( 'update:selected', 'L333333' );
+			await wrapper.setProps( { entityId: 'L333333', entityLabel: 'L333333' } );
+
+			// The lookup sets the input to the label of the selected item, and the
+			// new search does not return the selected item
+			store.lookupWikidataEntities.mockResolvedValue( {
+				search: [ mockTurtleLookupResults.search[ 0 ] ],
+				searchContinue: null
+			} );
+			lookup.vm.$emit( 'update:inputValue', 'turtle' );
+			jest.runAllTimers();
+			await waitFor( () => {
+				expect( lookup.props( 'menuItems' ).length ).toBe( 1 );
+			} );
+
+			lookup.vm.$emit( 'blur' );
+
+			// Keep the selected value; do not select the other "turtle"
+			expect( wrapper.emitted( 'select-wikidata-entity' ) ).toEqual( [ [ 'L333333' ] ] );
+		} );
+
+		it( 'does not select a value when more than one option has the input label', async () => {
+			// Mock lookup to return two "turtle" results
+			store.lookupWikidataEntities.mockResolvedValue( mockTurtleLookupResults );
+
+			const wrapper = renderEntitySelector();
+			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			lookup.vm.$emit( 'update:inputValue', 'turtle' );
+			jest.runAllTimers();
+			await waitFor( () => {
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			// Blur without selecting anything from the menu
+			lookup.vm.$emit( 'blur' );
+
+			// Two entities have the label "turtle": select none, restore the input
+			await waitFor( () => {
+				expect( lookup.props( 'inputValue' ) ).toBe( '' );
+			} );
+			expect( wrapper.emitted() ).not.toHaveProperty( 'select-wikidata-entity' );
+		} );
+
+		it( 'does not select a value on blur while unmounting', async () => {
+			// Mock lookup to return "pangolin" results: one fully matches
+			store.lookupWikidataEntities.mockResolvedValue( mockPangolinLookupResults );
+
+			// Use a listener: wrapper.unmount() clears the emitted events
+			const onSelectWikidataEntity = jest.fn();
+			const wrapper = renderEntitySelector( { onSelectWikidataEntity } );
+			const lookup = wrapper.findComponent( { name: 'cdx-lookup' } );
+
+			lookup.vm.$emit( 'update:inputValue', 'pangolin' );
+			jest.runAllTimers();
+			await waitFor( () => {
+				expect( lookup.props( 'menuItems' ).length ).toBe( 2 );
+			} );
+
+			// Like Chrome, blur the input when it is removed from the page
+			const element = wrapper.element;
+			const removeChild = Node.prototype.removeChild;
+			let blurred = false;
+			const removeChildSpy = jest.spyOn( Node.prototype, 'removeChild' ).mockImplementation( function ( child ) {
+				if ( !blurred && child === element ) {
+					blurred = true;
+					lookup.vm.$emit( 'blur' );
+				}
+				return removeChild.call( this, child );
+			} );
+			wrapper.unmount();
+			removeChildSpy.mockRestore();
+
+			expect( blurred ).toBe( true );
+			expect( onSelectWikidataEntity ).not.toHaveBeenCalled();
+		} );
+
 		it( 'resets to previous value when input has no match', async () => {
 			// Mock lookup to return "pangolin" results
 			store.lookupWikidataEntities.mockResolvedValue( mockPangolinLookupResults );
