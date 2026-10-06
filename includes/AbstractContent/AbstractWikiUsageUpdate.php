@@ -88,7 +88,7 @@ class AbstractWikiUsageUpdate extends DataUpdate {
 		} catch ( Throwable $e ) {
 			$this->logger->warning(
 				__METHOD__ . ': Failed to record usage for {page}: {message}',
-				[ 'page' => $this->title->getPrefixedDBkey(), 'message' => $e->getMessage() ]
+				[ 'page' => $this->title->getPrefixedDBkey(), 'message' => $e->getMessage(), 'exception' => $e ]
 			);
 		}
 	}

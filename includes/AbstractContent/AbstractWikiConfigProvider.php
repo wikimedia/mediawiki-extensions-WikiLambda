@@ -89,7 +89,7 @@ class AbstractWikiConfigProvider {
 		} catch ( Throwable $e ) {
 			$this->logger->warning(
 				__METHOD__ . ': CommunityConfiguration lookup for {id} failed: {msg}',
-				[ 'id' => self::AW_OPTEDIN_PROVIDER_ID, 'msg' => $e->getMessage() ]
+				[ 'id' => self::AW_OPTEDIN_PROVIDER_ID, 'msg' => $e->getMessage(), 'exception' => $e ]
 			);
 		}
 

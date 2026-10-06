@@ -293,7 +293,7 @@ class ClientHooks implements
 		} catch ( Throwable $e ) {
 			$this->logger->warning(
 				__METHOD__ . ': CommunityConfiguration lookup for {id} failed: {msg}',
-				[ 'id' => $providerId, 'msg' => $e->getMessage() ]
+				[ 'id' => $providerId, 'msg' => $e->getMessage(), 'exception' => $e ]
 			);
 		}
 		return [];

@@ -121,6 +121,7 @@ class ExecuteTestAndCacheJob extends Job implements GenericParameterJob {
 				__CLASS__ . ' test orchestration call failed, will retry: {error}',
 				$logContext + [
 					'error' => $e->getMessage(),
+					'exception' => $e,
 					'request' => $e->getRequest()
 				]
 			);

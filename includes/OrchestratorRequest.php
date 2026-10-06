@@ -391,7 +391,7 @@ class OrchestratorRequest {
 			} catch ( ZErrorException $e ) {
 				$this->logger->info(
 					__METHOD__ . ' could not build expected test result: {message}',
-					[ 'message' => $e->getMessage() ]
+					[ 'message' => $e->getMessage(), 'exception' => $e ]
 				);
 				$expectedValue = new ZReference( ZTypeRegistry::Z_VOID );
 			}
@@ -515,6 +515,7 @@ class OrchestratorRequest {
 					'responseBody' => substr( $responseBody, 0, 1000 ),
 					'httpStatusCode' => $httpStatusCode,
 					'exceptionMessage' => $e->getMessage(),
+					'exception' => $e,
 				]
 			);
 

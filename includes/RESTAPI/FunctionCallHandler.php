@@ -157,7 +157,8 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				$errorMessage,
 				[
 					'target' => $target,
-					'error' => $e->getMessage()
+					'error' => $e->getMessage(),
+					'exception' => $e
 				]
 			);
 			$span->setAttributes( [
@@ -175,7 +176,8 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				$errorMessage,
 				[
 					'target' => $target,
-					'error' => $e->getMessage()
+					'error' => $e->getMessage(),
+					'exception' => $e
 				]
 			);
 			$span->setAttributes( [
@@ -921,7 +923,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$errorMessage = __METHOD__ . ' executed ApiFunctionCall which threw an ApiUsageException: {error}';
 			$this->logger->info(
 				$errorMessage,
-				[ 'error' => $e->getMessage() ]
+				[ 'error' => $e->getMessage(), 'exception' => $e ]
 			);
 			$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
 				->setAttributes( [
@@ -951,7 +953,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 			$errorMessage = __METHOD__ . ' executed ApiFunctionCall which threw an unhandled exception: {error}';
 			$this->logger->warning(
 				$errorMessage,
-				[ 'error' => $e->getMessage() ]
+				[ 'error' => $e->getMessage(), 'exception' => $e ]
 			);
 			$span->setSpanStatus( SpanInterface::SPAN_STATUS_ERROR )
 				->setAttributes( [

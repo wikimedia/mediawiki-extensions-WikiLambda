@@ -151,8 +151,8 @@ class WikiLambdaRESTHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 					// still diagnose the original problem even though the pretty-printer failed.
 					return isset( $context['zerror'] )
 						&& $context['zerror'] === $serialized
-						&& isset( $context['error'] )
-						&& $context['error'] instanceof ZErrorException;
+						&& isset( $context['exception'] )
+						&& $context['exception'] instanceof ZErrorException;
 				} )
 			);
 

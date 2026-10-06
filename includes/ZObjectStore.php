@@ -402,7 +402,7 @@ class ZObjectStore {
 		} catch ( ZErrorException $e ) {
 			$this->logger->info(
 				__METHOD__ . ': makeContent threw ZErrorException for {zid}: {message}',
-				[ 'zid' => $zid, 'message' => $e->getMessage() ]
+				[ 'zid' => $zid, 'message' => $e->getMessage(), 'exception' => $e ]
 			);
 			return ZObjectPage::newFatal( $e->getZError() );
 		} catch ( ContentSerializationException $mwe ) {

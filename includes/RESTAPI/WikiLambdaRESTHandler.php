@@ -35,7 +35,7 @@ abstract class WikiLambdaRESTHandler extends SimpleHandler {
 				__METHOD__ . ' called but an error was thrown when trying to report an error',
 				[
 					'zerror' => $zerror->getSerialized(),
-					'error' => $e,
+					'exception' => $e,
 				]
 			);
 

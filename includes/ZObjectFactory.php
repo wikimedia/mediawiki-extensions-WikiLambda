@@ -60,7 +60,7 @@ class ZObjectFactory {
 		} catch ( ZErrorException $e ) {
 			self::getLogger()->info(
 				__METHOD__ . ': Parsing input failed: {message}',
-				[ 'message' => $e->getMessage() ]
+				[ 'message' => $e->getMessage(), 'exception' => $e ]
 			);
 			throw new ZErrorException(
 				ZErrorFactory::createValidationZError( $e->getZError() )
@@ -77,7 +77,7 @@ class ZObjectFactory {
 			} catch ( ZErrorException $e ) {
 				self::getLogger()->info(
 					__METHOD__ . ': type loading failed: {message}',
-					[ 'message' => $e->getMessage() ]
+					[ 'message' => $e->getMessage(), 'exception' => $e ]
 				);
 				throw new ZErrorException(
 					ZErrorFactory::createValidationZError( $e->getZError() )
@@ -90,7 +90,7 @@ class ZObjectFactory {
 			} catch ( ZErrorException $e ) {
 				self::getLogger()->info(
 					__METHOD__ . ': type parsing failed: {message}',
-					[ 'message' => $e->getMessage() ]
+					[ 'message' => $e->getMessage(), 'exception' => $e ]
 				);
 				throw new ZErrorException(
 					ZErrorFactory::createValidationZError( $e->getZError() )
@@ -128,7 +128,7 @@ class ZObjectFactory {
 			} catch ( ZErrorException $e ) {
 				self::getLogger()->info(
 					__METHOD__ . ': validating key failed: {message}',
-					[ 'message' => $e->getMessage() ]
+					[ 'message' => $e->getMessage(), 'exception' => $e ]
 				);
 				throw new ZErrorException(
 					ZErrorFactory::createValidationZError( $e->getZError() )
@@ -298,7 +298,7 @@ class ZObjectFactory {
 					$arrayIndex = $index + 1;
 					self::getLogger()->info(
 						__METHOD__ . ': Key {index} broken: {message}',
-						[ 'index' => $arrayIndex, 'message' => $e->getMessage() ]
+						[ 'index' => $arrayIndex, 'message' => $e->getMessage(), 'exception' => $e ]
 					);
 					throw new ZErrorException(
 						ZErrorFactory::createArrayElementZError( (string)( $arrayIndex ), $e->getZError() )
@@ -415,7 +415,7 @@ class ZObjectFactory {
 					} catch ( ZErrorException $e ) {
 						self::getLogger()->info(
 							__METHOD__ . ': Key value {key} broken: {message}',
-							[ 'key' => $key, 'message' => $e->getMessage() ]
+							[ 'key' => $key, 'message' => $e->getMessage(), 'exception' => $e ]
 						);
 						throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 					}
@@ -460,7 +460,7 @@ class ZObjectFactory {
 				} catch ( ZErrorException $e ) {
 					self::getLogger()->info(
 						__METHOD__ . ': Additional key {key} broken: {message}',
-						[ 'key' => $key, 'message' => $e->getMessage() ]
+						[ 'key' => $key, 'message' => $e->getMessage(), 'exception' => $e ]
 					);
 					throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 				}
