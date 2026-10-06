@@ -492,7 +492,9 @@ const abstractWikiStore = {
 					section,
 					sectionPath: payload.sectionPath,
 					language,
-					keys: keysToFetch,
+					// View mode sends no fragments and gets all of the section back,
+					// so the keys must match all of them.
+					keys: neededFragments ? keysToFetch : neededKeys,
 					fragments: neededFragments ?
 						keysToFetch.map( ( key ) => fragmentByKey.get( key ) ) :
 						undefined

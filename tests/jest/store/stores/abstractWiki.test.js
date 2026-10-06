@@ -888,6 +888,47 @@ describe( 'abstractWiki Pinia store', () => {
 
 				expect( postMock ).toHaveBeenCalledTimes( 1 );
 			} );
+
+			it( 'processes every fragment of the section in view mode when a key repeats', async () => {
+				Object.defineProperty( store, 'getViewMode', { value: true } );
+				const rendered = [
+					{ success: true, value: '<p>Fragment 1</p>' },
+					{ success: true, value: '<p>Fragment 2</p>' },
+					{ success: true, value: '<p>Fragment 1</p>' }
+				];
+				getMock.mockResolvedValue( { abstractwiki_fetch_section: { [ ledeQid ]: rendered } } );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments: [ ...fragments, fragments[ 0 ] ],
+					fragmentHashes: [ ...fragmentHashes, 'hash1' ]
+				} );
+
+				expect( store.setError ).not.toHaveBeenCalled();
+				expect( store.processFragmentResponse ).toHaveBeenCalledTimes( 3 );
+				expect( store.processFragmentResponse ).toHaveBeenNthCalledWith( 3, `hash1:${ mockLang }`, rendered[ 2 ] );
+			} );
+
+			it( 'processes every fragment of the section in view mode when another section fetches a key', async () => {
+				Object.defineProperty( store, 'getViewMode', { value: true } );
+				store.fragmentPromises.set( `hash1:${ mockLang }`, Promise.resolve() );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.setError ).not.toHaveBeenCalled();
+				expect( store.processFragmentResponse ).toHaveBeenCalledTimes( 2 );
+				expect( store.processFragmentResponse ).toHaveBeenNthCalledWith(
+					2, `hash2:${ mockLang }`, { success: true, value: '<p>Fragment 2</p>' }
+				);
+			} );
 		} );
 
 		describe( 'processFragmentResponse', () => {
