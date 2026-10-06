@@ -157,11 +157,11 @@
 		},
 		"WikiLambdaUseCodeEditor": {
 			"description": "If true, use the bundled ACE code editor for code, HTML and JSON fields. Ignored when WikiLambdaUseCodeMirror is true. If both are false, a plain textarea is used.",
-			"value": true
+			"value": false
 		},
 		"WikiLambdaUseCodeMirror": {
 			"description": "If true, use the CodeMirror extension for code, HTML and JSON fields, in place of the bundled ACE code editor. Takes precedence over WikiLambdaUseCodeEditor. Has no effect if the CodeMirror extension is not installed.",
-			"value": false
+			"value": true
 		}
 	},
 	"ConfigRegistry": {

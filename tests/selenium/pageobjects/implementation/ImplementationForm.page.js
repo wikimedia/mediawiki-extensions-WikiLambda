@@ -132,9 +132,10 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async setCodeEditor( codeInstructions ) {
-		const codeBlock = this.contentBlock.$( '[data-testid="ace-code-editor"]' );
-		await codeBlock.$( './textarea' ).waitForExist();
-		await codeBlock.click();
+		// Click the last line, so that ArrowUp moves the cursor into the function body.
+		const lastLine = this.contentBlock.$( '[data-testid="codemirror-code-editor"] .cm-line:last-child' );
+		await lastLine.waitForDisplayed();
+		await lastLine.click();
 		await browser.keys( codeInstructions );
 	}
 

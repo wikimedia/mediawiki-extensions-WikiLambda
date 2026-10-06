@@ -113,19 +113,8 @@ class Implementation extends Page {
 	 * @return {Array<string>}
 	 */
 	async getCodeEditorLines() {
-		const codeBlock = this.contentBlock.$( '[data-testid="ace-code-editor"]' );
-		const code = await codeBlock.$$( './/div[contains(@class,"ace_line") and @role="option"]' );
-		const lineOfCodeArray = [];
-		code.forEach( async ( line ) => {
-			const spans = await line.$$( 'span' );
-			let lineOfCode = '';
-			spans.forEach( async ( span ) => {
-				const text = await ElementActions.getText( span );
-				lineOfCode += text;
-			} );
-			lineOfCodeArray.push( lineOfCode );
-		} );
-		return lineOfCodeArray;
+		const lines = this.contentBlock.$$( '[data-testid="codemirror-code-editor"] .cm-line' );
+		return lines.map( async ( line ) => ( await ElementActions.getText( line ) ).trim() );
 	}
 
 	// #endregion
