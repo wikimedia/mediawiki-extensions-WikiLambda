@@ -86,8 +86,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// Store the ZObject in the object cache, for faster retrieval here and (in future) in the orchestrator
 		$cacheKey = $this->zObjectCache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $zid );
 		$this->logger->debug(
-			__METHOD__ . ' writing new ZObject value to cache "' . $zid . '": type "' . $ztype . '".',
-			[ 'instance' => $zid, 'type' => $ztype ]
+			__METHOD__ . ' writing new ZObject value to cache "{zid}": type "{type}"',
+			[ 'zid' => $zid, 'type' => $ztype ]
 		);
 		$cacheResult = $this->zObjectCache->set(
 			$cacheKey,
@@ -95,7 +95,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$this->zObjectCache::TTL_MONTH
 		);
 		if ( !$cacheResult ) {
-			$this->logger->warning( __METHOD__ . ' failed to cache new ZObject "' . $zid . '".', [ 'zid' => $zid ] );
+			$this->logger->warning( __METHOD__ . ' failed to cache new ZObject "{zid}"', [ 'zid' => $zid ] );
 		}
 		if ( $this->orchestrator ) {
 			$queryZ2 = $this->zObject->getObject();
@@ -456,8 +456,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		if ( !$typeContent ) {
 			// Error: type is not found, nothing we can do except log
 			$this->logger->warning(
-				__METHOD__ . ' failed to update relations for "' . $zid . '": type "' . $type . '" not found',
-				[ 'instance' => $zid, 'type' => $type ]
+				__METHOD__ . ' failed to update relations for "{zid}": type "{type}" not found',
+				[ 'zid' => $zid, 'type' => $type ]
 			);
 			return [];
 		}
@@ -467,8 +467,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		} catch ( ZErrorException $e ) {
 			// Error: type is not valid, nothing we can do except log
 			$this->logger->warning(
-				__METHOD__ . ' failed to update relations for "' . $zid . '": type "' . $type . '" not valid',
-				[ 'instance' => $zid, 'type' => $type, 'responseError' => $e ]
+				__METHOD__ . ' failed to update relations for "{zid}": type "{type}" not valid',
+				[ 'zid' => $zid, 'type' => $type, 'exception' => $e ]
 			);
 			return [];
 		}

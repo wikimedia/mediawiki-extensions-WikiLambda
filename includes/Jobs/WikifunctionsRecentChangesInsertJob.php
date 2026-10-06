@@ -157,7 +157,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 						__CLASS__ . ' triggered for {item} deletion/undeletion with unknown type {type}; data error?',
 						[
 							'item' => $this->params['target'],
-							'action' => $changeData['type'],
+							'type' => $changeData['type'],
 						]
 					);
 					return true;
@@ -218,7 +218,7 @@ class WikifunctionsRecentChangesInsertJob extends Job implements GenericParamete
 						__CLASS__ . ' triggered for {item} with unrecognised type {type}; data error?',
 						[
 							'item' => $this->params['target'],
-							'action' => $changeData['type'],
+							'type' => $changeData['type'],
 						]
 					);
 					return true;

@@ -123,7 +123,7 @@ class PagePostSaveHandler implements
 		} catch ( ZErrorException $ze ) {
 			// (T406708): Something's gone wrong; log and exit.
 			$this->logger->error(
-				__METHOD__ . ': Failed to get ZID/Type for {obj} revision {rev}: {error}',
+				__METHOD__ . ': Failed to get ZID/Type for {obj} revision {rev}: {message}',
 				[
 					'obj' => $targetTitle->getDBkey(),
 					'rev' => $newId,

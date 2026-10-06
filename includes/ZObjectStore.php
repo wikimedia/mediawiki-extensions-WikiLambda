@@ -141,7 +141,7 @@ class ZObjectStore {
 		}
 
 		$this->logger->warning(
-			__METHOD__ . ' at first got "' . $targetZid . '" — exists; slower query gets: "Z' . $highestZid . '".',
+			__METHOD__ . ' at first got "{targetZid}" — exists; slower query gets: "Z{highestZid}".',
 			[ 'targetZid' => $targetZid, 'highestZid' => $highestZid ]
 		);
 
@@ -314,8 +314,8 @@ class ZObjectStore {
 		} catch ( ZErrorException $e ) {
 			// Error: Make content will only fail if JSON is invalid
 			$this->logger->warning(
-				__METHOD__ . ' triggered an error on creating content for page "' . $zid . '"',
-				[ 'responseError' => $e ]
+				__METHOD__ . ' triggered an error on creating content for page "{zid}"',
+				[ 'zid' => $zid, 'exception' => $e ]
 			);
 			throw $e;
 		}
@@ -325,8 +325,8 @@ class ZObjectStore {
 		} catch ( Exception $e ) {
 			// Error: Database or MediaWiki exception
 			$this->logger->warning(
-				__METHOD__ . ' triggered an error on publish for page "' . $zid . '"',
-				[ 'responseError' => $e ]
+				__METHOD__ . ' triggered an error on publish for page "{zid}"',
+				[ 'zid' => $zid, 'exception' => $e ]
 			);
 			throw $e;
 		}
@@ -335,8 +335,8 @@ class ZObjectStore {
 		if ( !$status->isOK() ) {
 			$statusMessage = $status->getMessage();
 			$this->logger->info(
-				__METHOD__ . ' got a non-OK Status on publish, for page "' . $zid . '"',
-				[ 'responseStatus' => var_export( $statusMessage, true ) ]
+				__METHOD__ . ' got a non-OK Status on publish, for page "{zid}"',
+				[ 'zid' => $zid, 'responseStatus' => var_export( $statusMessage, true ) ]
 			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
@@ -505,8 +505,8 @@ class ZObjectStore {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 
 			$this->logger->warning(
-				__METHOD__ . ' triggered an error on publish, e.g. rate limited, for page "' . $zid . '"',
-				[ 'responseError' => $e ]
+				__METHOD__ . ' triggered an error on publish, e.g. rate limited, for page "{zid}"',
+				[ 'zid' => $zid, 'exception' => $e ]
 			);
 
 			if ( $e instanceof ZErrorException ) {
@@ -532,8 +532,8 @@ class ZObjectStore {
 			// Error: Other doUserEditContent related errors
 
 			$this->logger->info(
-				__METHOD__ . ' got a non-OK Status on publish, for page "' . $zid . '"',
-				[ 'responseStatus' => var_export( $status, true ) ]
+				__METHOD__ . ' got a non-OK Status on publish, for page "{zid}"',
+				[ 'zid' => $zid, 'responseStatus' => var_export( $status, true ) ]
 			);
 
 			$error = ZErrorFactory::createZErrorInstance(
@@ -2734,15 +2734,15 @@ class ZObjectStore {
 
 			// Something's got mis-inserted, somehow
 			$this->logger->error(
-				__METHOD__ . ' retrieved a non-ZResponseEnvelope: ' . $responseObjectString,
+				__METHOD__ . ' retrieved a non-ZResponseEnvelope',
 				[ 'responseObject' => $responseObjectString ]
 			);
 		} catch ( ZErrorException $ze ) {
 			// Something's gone wrong in the ZObjectFactory creation
 			$this->logger->warning(
-				__METHOD__ . ' threw from ZObjectFactory; deleting: ' . $ze->getZErrorMessage(),
+				__METHOD__ . ' threw from ZObjectFactory; deleting: {message}',
 				// Limit length to 10 KiB, to avoid jsonTruncated errors in production
-				[ 'exception' => substr( var_export( $ze, true ), 0, 10240 ) ]
+				[ 'message' => $ze->getZErrorMessage(), 'exception' => substr( var_export( $ze, true ), 0, 10240 ) ]
 			);
 
 			$dbw = $this->dbProvider->getPrimaryDatabase();
@@ -2753,9 +2753,9 @@ class ZObjectStore {
 		} catch ( Exception $e ) {
 			// Something's gone differently wrong, somehow
 			$this->logger->error(
-				__METHOD__ . ' threw a non-ZErrorException somehow: ' . $e->getMessage(),
+				__METHOD__ . ' threw a non-ZErrorException somehow: {message}',
 				// Limit length to 10 KiB, to avoid jsonTruncated errors in production
-				[ 'exception' => substr( var_export( $e, true ), 0, 10240 ) ]
+				[ 'message' => $e->getMessage(), 'exception' => substr( var_export( $e, true ), 0, 10240 ) ]
 			);
 		}
 

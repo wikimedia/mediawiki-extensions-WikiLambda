@@ -603,7 +603,7 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 		if ( $typeParser === false ) {
 			// User is trying to use a parameter that can't be parsed from text
 			$errorMessage =
-				__METHOD__ . ' called on {target} with an unparseable input, {targetTypeZid} in position {pos}';
+				__METHOD__ . ' called on {target} with an unparseable input, {targetTypeZid} at key {key}';
 			$this->logger->debug(
 				$errorMessage,
 				[
