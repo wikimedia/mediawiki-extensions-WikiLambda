@@ -104,9 +104,10 @@ module.exports = exports = defineComponent( {
 }
 
 // The selection stays after the pointer goes away, and it can be visible at
-// the same time as the pointer highlight, so it must look different.
+// the same time as the pointer highlight, so it must look different. Use a
+// stronger fill and no outline, because a thick outline is too strong.
 .ext-wikilambda-app-abstract-preview__highlight-layer-rect--selected {
-	background: transparent;
-	box-shadow: inset 0 0 0 2px @border-color-progressive;
+	background: rgba( 109, 169, 247, 0.3 ); // #6da9f7
+	box-shadow: none;
 }
 </style>

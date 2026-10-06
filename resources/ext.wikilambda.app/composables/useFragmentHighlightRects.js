@@ -12,6 +12,72 @@
 const { onBeforeUnmount, ref, watch } = require( 'vue' );
 
 /**
+ * Tell if two rectangles are on the same line. They must overlap vertically
+ * by more than half of the shorter rectangle. A raised reference such as
+ * "[2]" then joins its own line, and two lines that touch stay separate.
+ *
+ * @memberof module:ext.wikilambda.app.composables.useFragmentHighlightRects
+ * @param {Object} a - Box with top and bottom
+ * @param {Object} b - Box with top and bottom
+ * @return {boolean}
+ */
+function isOnSameLine( a, b ) {
+	const overlap = Math.min( a.bottom, b.bottom ) - Math.max( a.top, b.top );
+	const smallerHeight = Math.min( a.bottom - a.top, b.bottom - b.top );
+	return overlap > smallerHeight / 2;
+}
+
+/**
+ * Join the client rectangles of a range into one box for each line.
+ *
+ * A range gives a rectangle for each text run and each element in it, and
+ * the rectangles of an element and of its text overlap. Overlapped
+ * translucent rectangles paint darker areas, so join them. A block, such
+ * as a table, covers all the text in it, so it becomes one box.
+ *
+ * @memberof module:ext.wikilambda.app.composables.useFragmentHighlightRects
+ * @param {Array<DOMRect>} clientRects
+ * @return {Array<Object>} Boxes with top, left, bottom and right, in page order
+ */
+function mergeLineRects( clientRects ) {
+	const boxes = [];
+
+	for ( const r of clientRects ) {
+		if ( !r.width || !r.height ) {
+			continue;
+		}
+
+		let box = {
+			top: r.top,
+			left: r.left,
+			bottom: r.top + r.height,
+			right: r.left + r.width
+		};
+
+		// A box that grows can touch a box that it did not touch before,
+		// so start again after each join.
+		let i = 0;
+		while ( i < boxes.length ) {
+			if ( isOnSameLine( boxes[ i ], box ) ) {
+				box = {
+					top: Math.min( boxes[ i ].top, box.top ),
+					left: Math.min( boxes[ i ].left, box.left ),
+					bottom: Math.max( boxes[ i ].bottom, box.bottom ),
+					right: Math.max( boxes[ i ].right, box.right )
+				};
+				boxes.splice( i, 1 );
+				i = 0;
+			} else {
+				i++;
+			}
+		}
+		boxes.push( box );
+	}
+
+	return boxes.sort( ( a, b ) => ( a.top - b.top ) || ( a.left - b.left ) );
+}
+
+/**
  * Composable that computes container-local rectangles for the highlighted fragment's
  * DOM nodes. Recomputes only when the highlighted keyPath changes (e.g. on hover).
  *
@@ -35,40 +101,37 @@ module.exports = function useFragmentHighlightRects( containerRef, highlightedKe
 			return;
 		}
 
-		const nodes = getFragmentNodes( highlightedKeyPath.value );
+		// A node that the page removed after the registration cannot be
+		// a range boundary.
+		const nodes = ( getFragmentNodes( highlightedKeyPath.value ) || [] )
+			.filter( ( n ) => n.isConnected );
 
-		if ( !nodes || !nodes.length ) {
+		if ( !nodes.length ) {
 			return;
 		}
+
+		// Measure the full fragment, with its plain text, and not only its
+		// elements. Otherwise only the links and the references get
+		// the highlight.
+		const range = document.createRange();
+		range.setStartBefore( nodes[ 0 ] );
+		range.setEndAfter( nodes[ nodes.length - 1 ] );
+		const lineBoxes = mergeLineRects( Array.from( range.getClientRects() ) );
 
 		const containerBox = containerRef.value.getBoundingClientRect();
 		const newRects = [];
 		const padding = 0;
 
-		// Use only element nodes so we don't get extra rects for text nodes
-		// (e.g. whitespace between <sup> elements that would create a strange middle bump).
-		const elementNodes = nodes.filter( ( n ) => n.nodeType === 1 );
-
-		// Rendered fragment can be plain text (no elements); then use the container's bounds.
-		const elementsToMeasure = elementNodes.length > 0 ?
-			elementNodes :
-			( nodes[ 0 ].parentElement ? [ nodes[ 0 ].parentElement ] : [] );
-
-		for ( let i = 0; i < elementsToMeasure.length; i++ ) {
-			const el = elementsToMeasure[ i ];
-			const r = el.getBoundingClientRect();
-
-			if ( !r.width || !r.height ) {
-				continue;
-			}
+		for ( let i = 0; i < lineBoxes.length; i++ ) {
+			const box = lineBoxes[ i ];
 
 			// Slightly inflate the rectangle so the highlight extends beyond
 			// the element bounds (useful when the fragment is behind a table
 			// or other content with its own background).
-			let top = r.top - containerBox.top - padding;
-			let left = r.left - containerBox.left - padding;
-			let width = r.width + padding * 2;
-			let height = r.height + padding * 2;
+			let top = box.top - containerBox.top - padding;
+			let left = box.left - containerBox.left - padding;
+			let width = box.right - box.left + padding * 2;
+			let height = box.bottom - box.top + padding * 2;
 
 			if ( top < 0 ) {
 				height += top;

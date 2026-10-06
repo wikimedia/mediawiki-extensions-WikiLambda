@@ -20,7 +20,7 @@ const RECT_SELECTOR = '.ext-wikilambda-app-abstract-preview__highlight-layer-rec
 const SELECTED_SELECTOR = '.ext-wikilambda-app-abstract-preview__highlight-layer-rect--selected';
 
 /**
- * Build an element-like node that reports fixed bounds.
+ * Build an element-like node in the document that occupies one line.
  *
  * @param {number} top
  * @return {Object}
@@ -28,7 +28,25 @@ const SELECTED_SELECTOR = '.ext-wikilambda-app-abstract-preview__highlight-layer
 function elementNode( top ) {
 	return {
 		nodeType: 1,
-		getBoundingClientRect: () => ( { top: top, left: 10, width: 100, height: 20 } )
+		isConnected: true,
+		clientRects: [ { top: top, left: 10, width: 100, height: 20 } ]
+	};
+}
+
+/**
+ * Build a range that reports the client rects of its start node. jsdom has
+ * no layout, so it cannot measure a range.
+ *
+ * @return {Object}
+ */
+function fakeRange() {
+	let startNode = null;
+	return {
+		setStartBefore: ( node ) => {
+			startNode = node;
+		},
+		setEndAfter: () => {},
+		getClientRects: () => startNode.clientRects
 	};
 }
 
@@ -53,12 +71,18 @@ describe( 'AbstractPreviewHighlightLayer', () => {
 	}
 
 	beforeEach( () => {
+		jest.spyOn( document, 'createRange' ).mockImplementation( fakeRange );
+
 		store = useMainStore();
 		store.getHighlightedFragment = undefined;
 		store.getSelectedFragment = undefined;
 
 		nodesByKeyPath[ hoveredKeyPath ] = [ elementNode( 100 ) ];
 		nodesByKeyPath[ selectedKeyPath ] = [ elementNode( 300 ) ];
+	} );
+
+	afterEach( () => {
+		jest.restoreAllMocks();
 	} );
 
 	it( 'renders no rectangles when nothing is hovered or selected', () => {
