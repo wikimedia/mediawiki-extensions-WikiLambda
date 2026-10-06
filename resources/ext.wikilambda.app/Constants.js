@@ -467,6 +467,10 @@ Constants.WIKIDATA_REQUEST_TIME_WINDOW = 100;
 Constants.DESCRIPTION_CHARS_MAX = 200;
 Constants.INPUT_CHARS_MAX = 50;
 Constants.LABEL_CHARS_MAX = 50;
+// Maximum length of a generated URL. Wikimedia servers reject request
+// lines longer than 8190 bytes with HTTP 414 (T439078). MediaWiki core uses
+// the same limit for long mw.Api GET requests.
+Constants.URL_CHARS_MAX = 7500;
 
 // Breakpoints
 Constants.BREAKPOINTS = {

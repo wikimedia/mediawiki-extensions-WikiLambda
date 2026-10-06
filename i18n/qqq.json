@@ -324,6 +324,7 @@
 	"wikilambda-function-evaluator-running": "Message showing that the function evaluator is waiting for the return of the function call",
 	"wikilambda-function-evaluator-share-button": "Label for the button that creates a shareable link to the current function call",
 	"wikilambda-function-evaluator-share-button-tooltip": "Tooltip for the button that creates a shareable link to the current function call",
+	"wikilambda-function-evaluator-share-button-tooltip-too-long": "Tooltip for the disabled button that creates a shareable link to the current function call. The button is disabled because the link would be too long for the server to open. The button label is {{msg-mw|wikilambda-function-evaluator-share-button}}.",
 	"wikilambda-function-evaluator-share-error-invalid-json": "Error message displayed when the URL contains an invalid JSON parameter for the function call",
 	"wikilambda-function-evaluator-share-error-invalid-structure": "Error message displayed when the URL contains a JSON parameter that is not a valid ZObject structure for a function call",
 	"wikilambda-function-evaluator-title": "Title of the Function Evaluator widget in the Special Function Evaluation page",

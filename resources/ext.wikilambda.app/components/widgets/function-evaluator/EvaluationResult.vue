@@ -44,7 +44,8 @@
 			</cdx-button>
 			<cdx-button
 				v-if="showShareButton"
-				v-tooltip:bottom="i18n( 'wikilambda-function-evaluator-share-button-tooltip' ).text()"
+				v-tooltip:bottom="shareButtonTooltip"
+				:disabled="isShareUrlTooLong"
 				data-testid="evaluation-result-share-button"
 				@click="shareFunction"
 			>
@@ -211,19 +212,52 @@ module.exports = exports = defineComponent( {
 				props.contentType !== Constants.Z_IMPLEMENTATION );
 
 		/**
-		 * Generates a shareable URL for the current function call and copies it to clipboard
+		 * Returns a shareable URL for the current function call
+		 * (appends the canonical function call to the current page URL)
+		 *
+		 * @return {string|null}
+		 */
+		const shareUrl = computed( () => {
+			if ( !selectedFunctionCall.value ) {
+				return null;
+			}
+			try {
+				return urlUtils.generateShareUrl( hybridToCanonical( selectedFunctionCall.value ) );
+			} catch ( _e ) {
+				// The template reads this value. Do not let an error stop the render.
+				return null;
+			}
+		} );
+
+		/**
+		 * Returns whether the shareable URL is too long for the servers (T439078)
+		 *
+		 * @return {boolean}
+		 */
+		const isShareUrlTooLong = computed( () => !!shareUrl.value &&
+			shareUrl.value.length > Constants.URL_CHARS_MAX );
+
+		/**
+		 * Returns the tooltip of the share button. If the URL is too long,
+		 * the tooltip tells why the button is disabled.
+		 *
+		 * @return {string}
+		 */
+		const shareButtonTooltip = computed( () => isShareUrlTooLong.value ?
+			i18n( 'wikilambda-function-evaluator-share-button-tooltip-too-long' ).text() :
+			i18n( 'wikilambda-function-evaluator-share-button-tooltip' ).text() );
+
+		/**
+		 * Copies the shareable URL for the current function call to clipboard
 		 */
 		function shareFunction() {
+			if ( !shareUrl.value || isShareUrlTooLong.value ) {
+				return;
+			}
 			try {
-				// Convert to canonical form
-				const canonicalFunctionCall = hybridToCanonical( selectedFunctionCall.value );
-
-				// Generate shareable URL (appends to current page)
-				const shareUrl = urlUtils.generateShareUrl( canonicalFunctionCall );
-
 				// Copy to clipboard
 				clipboard.copyToClipboard(
-					shareUrl,
+					shareUrl.value,
 					() => {
 						linkCopied.value = true;
 						const interactionData = {
@@ -285,6 +319,7 @@ module.exports = exports = defineComponent( {
 			iconLink,
 			iconCheck,
 			implementationName,
+			isShareUrlTooLong,
 			linkCopied,
 			metadata,
 			responseKey,
@@ -292,6 +327,7 @@ module.exports = exports = defineComponent( {
 			responseObject,
 			showMetadata,
 			showShareButton,
+			shareButtonTooltip,
 			shareFunction,
 			warningCount
 		};

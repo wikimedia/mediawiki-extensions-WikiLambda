@@ -9,6 +9,7 @@
 const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const createLabelDataMock = require( '../../helpers/getterHelpers.js' ).createLabelDataMock;
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractPreviewFragment = require( '../../../../resources/ext.wikilambda.app/components/abstract/AbstractPreviewFragment.vue' );
 
@@ -371,6 +372,57 @@ describe( 'AbstractPreviewFragment', () => {
 		} );
 
 		jest.useRealTimers();
+	} );
+
+	describe( 'replicate in Wikifunctions link length', () => {
+		beforeEach( () => {
+			store.getFragmentPreview = jest.fn().mockReturnValue( {
+				html: '',
+				hasError: true,
+				error: {
+					retry: true,
+					type: 'error',
+					text: 'Some error'
+				},
+				isLoading: false,
+				isPending: false
+			} );
+		} );
+
+		function mockFragmentWithArgument( value ) {
+			store.getZObjectByKeyPath = jest.fn().mockReturnValue( {
+				Z1K1: 'Z7',
+				Z7K1: 'Z10000',
+				Z10000K1: value
+			} );
+		}
+
+		async function findErrorMessage() {
+			const message = wrapper.findComponent( { name: 'cdx-message' } );
+			await waitFor( () => expect( message.exists() ).toBe( true ) );
+			return message;
+		}
+
+		it( 'renders the link when the URL is close to the limit', async () => {
+			mockFragmentWithArgument( 'a'.repeat( Constants.URL_CHARS_MAX - 200 ) );
+			wrapper = renderFragment();
+
+			const message = await findErrorMessage();
+			const link = message.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' );
+			expect( link.exists() ).toBe( true );
+			expect( link.attributes( 'href' ).length ).toBeLessThanOrEqual( Constants.URL_CHARS_MAX );
+		} );
+
+		it( 'does not render the link when the encoded URL is too long', async () => {
+			// Each 'é' is encoded as '%C3%A9': the raw call is short,
+			// but the encoded URL is longer than the limit.
+			mockFragmentWithArgument( 'é'.repeat( Math.ceil( Constants.URL_CHARS_MAX / 6 ) ) );
+			wrapper = renderFragment();
+
+			const message = await findErrorMessage();
+			expect( message.text() ).toContain( 'Some error' );
+			expect( message.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' ).exists() ).toBe( false );
+		} );
 	} );
 
 	// Highlight

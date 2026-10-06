@@ -307,6 +307,7 @@
 	"wikilambda-function-evaluator-running": "Running…",
 	"wikilambda-function-evaluator-share-button": "Copy result link",
 	"wikilambda-function-evaluator-share-button-tooltip": "Copies a link to this function along with your inputs",
+	"wikilambda-function-evaluator-share-button-tooltip-too-long": "This result link is too long to share",
 	"wikilambda-function-evaluator-share-error-invalid-json": "Cannot load function call: Invalid JSON format in URL parameter.",
 	"wikilambda-function-evaluator-share-error-invalid-structure": "Cannot load function call: Invalid ZObject structure in URL parameter.",
 	"wikilambda-function-evaluator-title": "Try a function",

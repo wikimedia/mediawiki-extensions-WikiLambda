@@ -309,5 +309,49 @@ describe( 'EvaluationResult', () => {
 			const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
 			expect( shareButton.exists() ).toBe( true );
 		} );
+
+		describe( 'when the share URL is too long', () => {
+			beforeEach( () => {
+				const longFunctionCall = {
+					Z1K1: 'Z7',
+					Z7K1: 'Z801',
+					Z801K1: 'a'.repeat( Constants.URL_CHARS_MAX )
+				};
+				store.getZObjectByKeyPath = jest.fn( ( keyPath ) => {
+					if ( keyPath && keyPath[ 0 ] === 'call' ) {
+						return longFunctionCall;
+					}
+					if ( keyPath && keyPath[ 0 ] === 'response' ) {
+						return responseObject;
+					}
+					return null;
+				} );
+			} );
+
+			it( 'disables the share button and explains why in the tooltip', () => {
+				const wrapper = renderEvaluationResult();
+
+				const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
+				expect( shareButton.attributes( 'disabled' ) ).toBeDefined();
+				expect( wrapper.vm.shareButtonTooltip ).toBe( 'This result link is too long to share' );
+			} );
+
+			it( 'does not copy the share URL', () => {
+				const wrapper = renderEvaluationResult();
+
+				wrapper.vm.shareFunction();
+
+				expect( navigator.clipboard.writeText ).not.toHaveBeenCalled();
+				expect( wrapper.vm.linkCopied ).toBe( false );
+			} );
+		} );
+
+		it( 'enables the share button with the default tooltip when the share URL is short', () => {
+			const wrapper = renderEvaluationResult();
+
+			const shareButton = wrapper.findAllComponents( { name: 'cdx-button' } )[ 1 ];
+			expect( shareButton.attributes( 'disabled' ) ).toBeUndefined();
+			expect( wrapper.vm.shareButtonTooltip ).toBe( 'Copies a link to this function along with your inputs' );
+		} );
 	} );
 } );

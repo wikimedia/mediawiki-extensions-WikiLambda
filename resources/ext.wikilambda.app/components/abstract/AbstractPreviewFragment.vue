@@ -212,9 +212,9 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Creates a link to replicate the fragment function call in
 		 * Wikifunctions, shown when rendering a fragment error message.
-		 * Returns null when fragment is not available or fragment is not
+		 * Returns null when fragment is not available, fragment is not
 		 * defined by a simple call to a function reference (no page to
-		 * redirect to)
+		 * redirect to), or the link is too long for the servers (T439078)
 		 *
 		 * @return {string|null}
 		 */
@@ -262,16 +262,19 @@ module.exports = exports = defineComponent( {
 			);
 
 			// If function call function is a reference, create the link to the
-			// function page. Else, return blank string.
+			// function page. Else, return null.
 			if ( typeof fragment[ Constants.Z_FUNCTION_CALL_FUNCTION ] !== 'string' ) {
 				return null;
 			}
 
-			return urlUtils.generateViewUrl( {
+			const url = urlUtils.generateViewUrl( {
 				langCode: store.getUserLangCode,
 				zid: fragment[ Constants.Z_FUNCTION_CALL_FUNCTION ],
 				params: { call: JSON.stringify( fragment ) }
 			} );
+
+			// Do not show the link if it is too long. The server rejects it.
+			return url.length <= Constants.URL_CHARS_MAX ? url : null;
 		}
 
 		/**

@@ -1116,6 +1116,7 @@
 				"wikilambda-function-evaluator-run-function",
 				"wikilambda-function-evaluator-share-button",
 				"wikilambda-function-evaluator-share-button-tooltip",
+				"wikilambda-function-evaluator-share-button-tooltip-too-long",
 				"wikilambda-function-evaluator-share-error-invalid-json",
 				"wikilambda-function-evaluator-share-error-invalid-structure",
 				"wikilambda-loggedout-error-message",
