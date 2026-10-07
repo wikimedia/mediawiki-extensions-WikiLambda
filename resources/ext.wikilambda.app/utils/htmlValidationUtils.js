@@ -2,12 +2,7 @@
  * WikiLambda Vue editor: HTML validation utilities
  *
  * The rules find HTML that the parser removes or rejects, and report it in the
- * code editor. AceEditor.vue and CodeMirrorEditor.vue use the same rules, so
- * both editors report the same problems.
- *
- * Every match stays inside one element or one attribute. Because of this, a
- * rule gives the same result on one line at a time (ACE, which needs a row and
- * a column) as on the full document (CodeMirror, which needs an offset).
+ * code editor.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

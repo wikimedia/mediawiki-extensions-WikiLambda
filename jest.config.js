@@ -61,8 +61,6 @@ module.exports = {
 
 	// An array of regexp pattern strings used to skip coverage collection
 	coveragePathIgnorePatterns: [
-		// Ignore upstream libraries
-		'resources/lib/',
 		// Ignore index.js initialization scripts
 		'resources/ext.wikilambda.app/index.js',
 		'resources/ext.wikilambda.app/components/index.js',

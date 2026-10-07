@@ -155,12 +155,8 @@
 			"description": "Allowlist of language codes that get their own per-language CirrusSearch fields (zobject_labels.<lang> etc.) when WikiLambdaEnableSearchIndexFields is on. All other languages are still searchable via the zobject_labels_all catch-all field. Deliberately small; to be tuned with the Search Platform team (T390562 M1).",
 			"value": [ "en" ]
 		},
-		"WikiLambdaUseCodeEditor": {
-			"description": "If true, use the bundled ACE code editor for code, HTML and JSON fields. Ignored when WikiLambdaUseCodeMirror is true. If both are false, a plain textarea is used.",
-			"value": false
-		},
 		"WikiLambdaUseCodeMirror": {
-			"description": "If true, use the CodeMirror extension for code, HTML and JSON fields, in place of the bundled ACE code editor. Takes precedence over WikiLambdaUseCodeEditor. Has no effect if the CodeMirror extension is not installed.",
+			"description": "If true, use the CodeMirror extension for code, HTML and JSON fields. If false, or if the CodeMirror extension is not installed, a plain textarea is used.",
 			"value": true
 		}
 	},
@@ -554,7 +550,6 @@
 				"ext.wikilambda.app/composables/useInitImages.js",
 				"ext.wikilambda.app/composables/useInitReferences.js",
 				"ext.wikilambda.app/composables/useMenuAction.js",
-				"ext.wikilambda.app/composables/useDarkMode.js",
 				"ext.wikilambda.app/composables/usePageTitle.js",
 				"ext.wikilambda.app/composables/useShareUrl.js",
 				"ext.wikilambda.app/composables/useTestResults.js",
@@ -592,7 +587,6 @@
 				"ext.wikilambda.app/components/abstract/AbstractTitle.vue",
 				"ext.wikilambda.app/components/base/ZObjectSelector.vue",
 				"ext.wikilambda.app/components/base/ClipboardDialog.vue",
-				"ext.wikilambda.app/components/base/AceEditor.vue",
 				"ext.wikilambda.app/components/base/CodeEditor.vue",
 				"ext.wikilambda.app/components/base/CodeMirrorEditor.vue",
 				"ext.wikilambda.app/components/base/CustomDialogHeader.vue",
@@ -682,12 +676,9 @@
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataItem.vue",
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataTestResult.vue",
 				"ext.wikilambda.app/components/widgets/function-usage/FunctionUsage.vue",
-				"lib/ace/src/ace.js",
-				"lib/ace/src/ext-language_tools.js",
 				{
 					"name": "ext.wikilambda.app/config.json",
 					"config": [
-						"WikiLambdaUseCodeEditor",
 						"WikiLambdaUseCodeMirror"
 					]
 				},
@@ -1168,7 +1159,6 @@
 			]
 		}
 	},
-	"ForeignResourcesDir": "resources/lib",
 	"APIModules": {
 		"wikilambda_fetch": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ActionAPI\\ApiZObjectFetcher",

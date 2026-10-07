@@ -1,12 +1,8 @@
 <!--
 	WikiLambda Vue component: the code editor the app uses.
 
-	Two configuration flags select the editor:
-	* $wgWikiLambdaUseCodeMirror uses the CodeMirror extension.
-	* $wgWikiLambdaUseCodeEditor uses the ACE editor that WikiLambda bundles.
-	CodeMirror wins if both are true. A plain textarea is used if both are
-	false, or if CodeMirror is asked for but the extension is not installed and
-	ACE is off.
+	$wgWikiLambdaUseCodeMirror selects the CodeMirror extension. A plain
+	textarea is used if the flag is false, or if CodeMirror is not installed.
 
 	Every editor has the same props and the same 'change' event.
 
@@ -23,7 +19,6 @@
 
 <script>
 const { defineComponent, computed } = require( 'vue' );
-const AceEditor = require( './AceEditor.vue' );
 const CodeMirrorEditor = require( './CodeMirrorEditor.vue' );
 const PlainTextEditor = require( './PlainTextEditor.vue' );
 const config = require( '../../config.json' );
@@ -41,9 +36,6 @@ function getEditorComponent() {
 	// getState() gives null if the module is not registered.
 	if ( config.WikiLambdaUseCodeMirror && mw.loader.getState( CODE_MIRROR_MODULE ) ) {
 		return CodeMirrorEditor;
-	}
-	if ( config.WikiLambdaUseCodeEditor ) {
-		return AceEditor;
 	}
 	return PlainTextEditor;
 }

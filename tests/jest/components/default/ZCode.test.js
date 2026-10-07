@@ -110,7 +110,7 @@ describe( 'ZCode', () => {
 			expect( wrapper.find( 'div' ).exists() ).toBe( true );
 		} );
 
-		it( 'displays the ace editor', () => {
+		it( 'displays the code editor', () => {
 			const wrapper = renderZCode();
 
 			expect( wrapper.find( '.ext-wikilambda-app-code__code-editor' ).exists() ).toBe( true );

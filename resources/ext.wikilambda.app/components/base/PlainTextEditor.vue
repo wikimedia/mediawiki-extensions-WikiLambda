@@ -1,9 +1,9 @@
 <!--
 	WikiLambda Vue component: plain textarea, with no syntax highlighting.
 
-	Selected by CodeEditor.vue when $wgWikiLambdaUseCodeEditor and
-	$wgWikiLambdaUseCodeMirror are both false. CodeMirrorEditor.vue also uses it
-	if the CodeMirror modules do not load.
+	Selected by CodeEditor.vue when $wgWikiLambdaUseCodeMirror is false, or when
+	CodeMirror is not installed. CodeMirrorEditor.vue also uses it if the
+	CodeMirror modules do not load.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT

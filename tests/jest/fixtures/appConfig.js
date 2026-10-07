@@ -11,6 +11,5 @@
 'use strict';
 
 module.exports = {
-	WikiLambdaUseCodeEditor: true,
-	WikiLambdaUseCodeMirror: false
+	WikiLambdaUseCodeMirror: true
 };

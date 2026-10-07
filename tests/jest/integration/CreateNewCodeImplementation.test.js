@@ -67,12 +67,11 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( programmingLanguageDropdownField ).toHaveTextContent( programmingLanguageToSelect );
 
 		// ASSERT: Check that the code editor is visible
-		const codeEditor = await getByTestId( 'ace-code-editor' );
+		const codeEditor = await getByTestId( 'code-editor' );
 		expect( codeEditor ).toBeVisible();
 
 		// ASSERT: Check that the code editor starts with a function definition
-		const codeEditorInstance = window.ace.edit( codeEditor );
-		expect( codeEditorInstance.getValue() ).toContain( 'function' );
+		expect( codeEditor.value ).toContain( 'function' );
 
 		//* -- Label section
 		// ACT: Set the label for the implementation

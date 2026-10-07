@@ -2,8 +2,7 @@
 	WikiLambda Vue wrapper component for the CodeMirror extension
 	https://www.mediawiki.org/wiki/Extension:CodeMirror
 
-	Selected by CodeEditor.vue when $wgWikiLambdaUseCodeMirror is true. It has
-	the same props and events as AceEditor.vue, so the two are interchangeable.
+	Selected by CodeEditor.vue when $wgWikiLambdaUseCodeMirror is true.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
@@ -49,7 +48,7 @@ const {
 // The modules needed to build the editor. The mode module loads on demand.
 const CODE_MIRROR_MODULES = [ 'ext.CodeMirror.VueComponent', 'ext.CodeMirror.lib' ];
 
-// The editor starts at five rows and grows to twenty, as the ACE editor does.
+// The editor starts at five rows and grows to twenty.
 const MIN_ROWS = 5;
 const MAX_ROWS = 20;
 
@@ -83,9 +82,9 @@ function getJavaScriptLintConfig( name ) {
 	};
 }
 
-// CodeMirror lets the user pick a theme. Lock it to the plain one, so that the
-// editor looks the same as the ACE editor. CodeMirror still follows the skin's
-// dark mode, because it adds the '-light' or '-dark' suffix itself.
+// CodeMirror lets the user pick a theme. Lock it to the plain one. CodeMirror
+// still follows the skin's dark mode, because it adds the '-light' or '-dark'
+// suffix itself.
 const DEFAULT_THEME = 'default';
 
 module.exports = exports = defineComponent( {
@@ -140,8 +139,8 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Reports every HTML problem to CodeMirror.
 		 *
-		 * The rules are shared with AceEditor.vue. They run on the whole
-		 * document, because CodeMirror puts a diagnostic at an offset.
+		 * The rules run on the whole document, because CodeMirror puts a
+		 * diagnostic at an offset.
 		 *
 		 * @param {string} text Contents of the editor
 		 * @return {Object[]} CodeMirror diagnostics

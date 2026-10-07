@@ -1,6 +1,6 @@
 /*!
  * WikiLambda unit test suite for the CodeEditor component, which selects the
- * editor to use from the configuration flags.
+ * editor to use from the configuration flag.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -10,7 +10,6 @@
 const { shallowMount } = require( '@vue/test-utils' );
 const appConfig = require( '../../fixtures/appConfig.js' );
 const CodeEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeEditor.vue' );
-const AceEditor = require( '../../../../resources/ext.wikilambda.app/components/base/AceEditor.vue' );
 const CodeMirrorEditor = require( '../../../../resources/ext.wikilambda.app/components/base/CodeMirrorEditor.vue' );
 const PlainTextEditor = require( '../../../../resources/ext.wikilambda.app/components/base/PlainTextEditor.vue' );
 
@@ -18,17 +17,6 @@ const CODE_MIRROR_MODULE = 'ext.CodeMirror.VueComponent';
 
 describe( 'CodeEditor', () => {
 	const defaults = Object.assign( {}, appConfig );
-
-	/**
-	 * Set the configuration flags for one test.
-	 *
-	 * @param {boolean} useCodeEditor
-	 * @param {boolean} useCodeMirror
-	 */
-	function setFlags( useCodeEditor, useCodeMirror ) {
-		appConfig.WikiLambdaUseCodeEditor = useCodeEditor;
-		appConfig.WikiLambdaUseCodeMirror = useCodeMirror;
-	}
 
 	/**
 	 * Report the CodeMirror module as installed, or as absent.
@@ -53,50 +41,34 @@ describe( 'CodeEditor', () => {
 		mw.loader.using.mockResolvedValue( jest.fn() );
 	} );
 
-	it( 'uses the ACE editor by default', () => {
-		const wrapper = shallowMount( CodeEditor, { props: { mode: 'python' } } );
-
-		expect( wrapper.findComponent( AceEditor ).exists() ).toBe( true );
-	} );
-
-	it( 'uses CodeMirror when WikiLambdaUseCodeMirror is true', () => {
-		setFlags( true, true );
+	it( 'uses CodeMirror by default', () => {
 		setCodeMirrorInstalled( true );
 
 		const wrapper = shallowMount( CodeEditor, { props: { mode: 'python' } } );
 
 		expect( wrapper.findComponent( CodeMirrorEditor ).exists() ).toBe( true );
-		expect( wrapper.findComponent( AceEditor ).exists() ).toBe( false );
 	} );
 
-	it( 'falls back to the ACE editor when the CodeMirror extension is absent', () => {
-		setFlags( true, true );
-		setCodeMirrorInstalled( false );
-
+	it( 'uses a plain textarea when the CodeMirror extension is absent', () => {
 		const wrapper = shallowMount( CodeEditor, { props: { mode: 'python' } } );
 
-		expect( wrapper.findComponent( AceEditor ).exists() ).toBe( true );
+		expect( wrapper.findComponent( PlainTextEditor ).exists() ).toBe( true );
 		expect( wrapper.findComponent( CodeMirrorEditor ).exists() ).toBe( false );
 	} );
 
-	it( 'uses a plain textarea when both flags are false', () => {
-		setFlags( false, false );
+	it( 'uses a plain textarea when WikiLambdaUseCodeMirror is false', () => {
+		appConfig.WikiLambdaUseCodeMirror = false;
+		setCodeMirrorInstalled( true );
 
 		const wrapper = shallowMount( CodeEditor, { props: { mode: 'python' } } );
 
 		expect( wrapper.findComponent( PlainTextEditor ).exists() ).toBe( true );
+		expect( wrapper.findComponent( CodeMirrorEditor ).exists() ).toBe( false );
 	} );
 
-	it( 'uses a plain textarea when CodeMirror is asked for, is absent, and ACE is off', () => {
-		setFlags( false, true );
-		setCodeMirrorInstalled( false );
+	it( 'passes the mode and the theme to CodeMirror', () => {
+		setCodeMirrorInstalled( true );
 
-		const wrapper = shallowMount( CodeEditor, { props: { mode: 'python' } } );
-
-		expect( wrapper.findComponent( PlainTextEditor ).exists() ).toBe( true );
-	} );
-
-	it( 'passes the mode and the theme to the ACE editor', () => {
 		const wrapper = shallowMount( CodeEditor, {
 			props: {
 				value: 'pepsi cola',
@@ -107,7 +79,7 @@ describe( 'CodeEditor', () => {
 			}
 		} );
 
-		expect( wrapper.findComponent( AceEditor ).props() ).toEqual( expect.objectContaining( {
+		expect( wrapper.findComponent( CodeMirrorEditor ).props() ).toEqual( expect.objectContaining( {
 			value: 'pepsi cola',
 			mode: 'python',
 			theme: 'chrome',
@@ -117,8 +89,6 @@ describe( 'CodeEditor', () => {
 	} );
 
 	it( 'does not give the mode or the theme to a plain textarea', () => {
-		setFlags( false, false );
-
 		const wrapper = shallowMount( CodeEditor, {
 			props: { value: 'pepsi cola', mode: 'python', theme: 'chrome' }
 		} );
@@ -130,9 +100,11 @@ describe( 'CodeEditor', () => {
 	} );
 
 	it( 'passes on the change event of the editor', () => {
+		setCodeMirrorInstalled( true );
+
 		const wrapper = shallowMount( CodeEditor, { props: { value: '' } } );
 
-		wrapper.findComponent( AceEditor ).vm.$emit( 'change', 'fanta' );
+		wrapper.findComponent( CodeMirrorEditor ).vm.$emit( 'change', 'fanta' );
 
 		expect( wrapper.emitted( 'change' ) ).toEqual( [ [ 'fanta' ] ] );
 	} );
