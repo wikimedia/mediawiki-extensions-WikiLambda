@@ -80,6 +80,39 @@ describe( 'zFunction Pinia store', () => {
 					'Z123K10'
 				] );
 			} );
+
+			it( 'returns the key path to the terminal text value of the input label', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z123K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'old label' }
+					] } }
+				] } } );
+
+				const labels = store.getZFunctionInputLabels( 'Z1002' );
+
+				const expected = 'main.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2.Z6K1';
+				expect( labels[ 0 ].keyPath ).toEqual( expected );
+			} );
+
+			it( 'returns the edited label when it looks like a ZID', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z123K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'old label' }
+					] } }
+				] } } );
+
+				// Edit the label with its key path, like the input label field does
+				const labels = store.getZFunctionInputLabels( 'Z1002' );
+				store.setZMonolingualString( {
+					parentKeyPath: [ 'main', 'Z2K2', 'Z8K1', '1', 'Z17K3', 'Z12K1' ],
+					itemKeyPath: labels[ 0 ].keyPath,
+					value: 'Z10000',
+					lang: 'Z1002'
+				} );
+
+				const expected = 'Z10000';
+				expect( store.getZFunctionInputLabels( 'Z1002' )[ 0 ].value ).toEqual( expected );
+			} );
 		} );
 
 		describe( 'getZFunctionOutput', () => {

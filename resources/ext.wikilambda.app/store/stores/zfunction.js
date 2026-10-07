@@ -45,8 +45,8 @@ module.exports = {
 		 * Returns the array of input data: its label for a given language (if any)
 		 * and general input information, sorted by the input key.
 		 * For each input in the function, it returns:
-		 * * keyPath: string key path to the monolingual object that contains the input
-		 *   label for the given language, or undefined if the label doesn't exist yet.
+		 * * keyPath: string key path to the terminal text value of the input label
+		 *   for the given language, or undefined if the label doesn't exist yet.
 		 * * value: terminal text value of the input label for the given language, or
 		 *   empty string if it doesn't exist yet.
 		 * * key: terminal string value of the input key.
@@ -84,7 +84,8 @@ module.exports = {
 								Constants.Z_ARGUMENT_LABEL,
 								Constants.Z_MULTILINGUALSTRING_VALUE,
 								label.index,
-								Constants.Z_MONOLINGUALSTRING_VALUE
+								Constants.Z_MONOLINGUALSTRING_VALUE,
+								Constants.Z_STRING_VALUE
 							].join( '.' ) :
 							undefined;
 
