@@ -81,22 +81,10 @@ module.exports = exports = defineComponent( {
 		 * @param {string} newValue
 		 */
 		function setValue( newValue ) {
-			/**
-			 * Update the value of the HTML fragment (Z89K1) with the new value.
-			 *
-			 * There is an edge case where acejs will trigger an empty change that we process as an event object
-			 * we don't want to update our object with that bad data
-			 * TODO (T324605): this deserves a deeper investigation
-			 *
-			 * If there is an error, we do not emit the 'set-value' event.
-			 * This is to prevent the code editor from being updated with an invalid value.
-			 */
-			if ( typeof newValue !== 'object' ) {
-				emit( 'set-value', {
-					keyPath: [ Constants.Z_HTML_FRAGMENT_VALUE, Constants.Z_STRING_VALUE ],
-					value: newValue
-				} );
-			}
+			emit( 'set-value', {
+				keyPath: [ Constants.Z_HTML_FRAGMENT_VALUE, Constants.Z_STRING_VALUE ],
+				value: newValue
+			} );
 		}
 
 		// Watch

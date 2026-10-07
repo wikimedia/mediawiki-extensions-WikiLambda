@@ -261,17 +261,12 @@ module.exports = exports = defineComponent( {
 		 * @param {string} code
 		 */
 		function updateCode( code ) {
-			// there is an edge case where acejs will trigger an empty change that we process as an event object
-			// we don't want to update our object with that bad data
-			// TODO (T324605): this deserves a deeper investigation
-			if ( typeof code !== 'object' ) {
-				store.clearErrors( codeErrorId );
-				emit( 'set-value', {
-					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
-					value: code
-				} );
-				checkDebugMessage( code );
-			}
+			store.clearErrors( codeErrorId );
+			emit( 'set-value', {
+				keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
+				value: code
+			} );
+			checkDebugMessage( code );
 		}
 
 		// Programming language data
