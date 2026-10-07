@@ -19,7 +19,7 @@
 			compact
 			:model-value="value"
 			:mode="editorMode"
-			:theme="editorTheme"
+			:theme="theme"
 			:read-only="readOnly"
 			:disabled="disabled"
 			:rows="minRows"
@@ -152,10 +152,6 @@ module.exports = exports = defineComponent( {
 			type: String,
 			default: DEFAULT_MODE
 		},
-		theme: {
-			type: String,
-			default: null
-		},
 		readOnly: {
 			type: Boolean,
 			default: false
@@ -177,7 +173,6 @@ module.exports = exports = defineComponent( {
 		// CodeMirror needs a mode, but the language is empty until the user
 		// picks one. The editor is disabled until then, so the mode is unseen.
 		const editorMode = computed( () => props.mode || DEFAULT_MODE );
-		const editorTheme = computed( () => props.theme || DEFAULT_THEME );
 
 		// ResourceLoader loads each module only once, however many editors
 		// the page has.
@@ -367,8 +362,8 @@ module.exports = exports = defineComponent( {
 		return {
 			editorComponent,
 			editorMode,
-			editorTheme,
 			loadFailed,
+			theme: DEFAULT_THEME,
 			minRows: MIN_ROWS,
 			maxRows: MAX_ROWS,
 			onReady

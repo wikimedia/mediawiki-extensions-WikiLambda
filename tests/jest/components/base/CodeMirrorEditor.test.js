@@ -121,12 +121,6 @@ describe( 'CodeMirrorEditor', () => {
 		} );
 	} );
 
-	it( 'uses the theme prop in place of the default theme', async () => {
-		const wrapper = await renderCodeMirrorEditor( { theme: 'monokai' } );
-
-		expect( wrapper.findComponent( CodeMirrorStub ).props( 'theme' ) ).toBe( 'monokai' );
-	} );
-
 	it( 'uses JavaScript until the user selects a programming language', async () => {
 		const wrapper = await renderCodeMirrorEditor( { mode: '' } );
 

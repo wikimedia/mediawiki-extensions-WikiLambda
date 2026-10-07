@@ -49,10 +49,6 @@ module.exports = exports = defineComponent( {
 			type: String,
 			default: 'javascript'
 		},
-		theme: {
-			type: String,
-			default: null
-		},
 		readOnly: {
 			type: Boolean,
 			default: false
@@ -66,8 +62,8 @@ module.exports = exports = defineComponent( {
 	setup( props ) {
 		const editorComponent = getEditorComponent();
 
-		// A plain textarea has no mode and no theme. Do not give it these, or
-		// they become attributes of the textarea element.
+		// A plain textarea has no mode. Do not give it one, or it becomes an
+		// attribute of the textarea element.
 		const editorProps = computed( () => Object.assign(
 			{
 				value: props.value,
@@ -76,7 +72,7 @@ module.exports = exports = defineComponent( {
 			},
 			editorComponent === PlainTextEditor ?
 				{} :
-				{ mode: props.mode, theme: props.theme }
+				{ mode: props.mode }
 		) );
 
 		return {

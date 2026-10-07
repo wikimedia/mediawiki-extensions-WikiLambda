@@ -52,14 +52,13 @@ describe( 'CodeEditor', () => {
 		expect( wrapper.findComponent( CodeMirrorEditor ).exists() ).toBe( false );
 	} );
 
-	it( 'passes the mode and the theme to CodeMirror', () => {
+	it( 'passes the mode to CodeMirror', () => {
 		setCodeMirrorInstalled( true );
 
 		const wrapper = shallowMount( CodeEditor, {
 			props: {
 				value: 'pepsi cola',
 				mode: 'python',
-				theme: 'chrome',
 				readOnly: true,
 				disabled: true
 			}
@@ -68,21 +67,19 @@ describe( 'CodeEditor', () => {
 		expect( wrapper.findComponent( CodeMirrorEditor ).props() ).toEqual( expect.objectContaining( {
 			value: 'pepsi cola',
 			mode: 'python',
-			theme: 'chrome',
 			readOnly: true,
 			disabled: true
 		} ) );
 	} );
 
-	it( 'does not give the mode or the theme to a plain textarea', () => {
+	it( 'does not give the mode to a plain textarea', () => {
 		const wrapper = shallowMount( CodeEditor, {
-			props: { value: 'pepsi cola', mode: 'python', theme: 'chrome' }
+			props: { value: 'pepsi cola', mode: 'python' }
 		} );
 		const textarea = wrapper.findComponent( PlainTextEditor );
 
 		expect( textarea.props( 'value' ) ).toBe( 'pepsi cola' );
 		expect( textarea.attributes( 'mode' ) ).toBeUndefined();
-		expect( textarea.attributes( 'theme' ) ).toBeUndefined();
 	} );
 
 	it( 'passes on the change event of the editor', () => {
