@@ -47,13 +47,9 @@
 					{{ i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text() }}
 				</template>
 
-				<template v-if="hasMissingSummaryWarning" #warning>
+				<template v-if="warningMessage" #warning>
 					<!-- eslint-disable-next-line vue/no-v-html -->
-					<span v-html="missingSummaryMessage"></span>
-				</template>
-				<template v-else-if="hasKeyboardSubmitWarning" #warning>
-					<!-- eslint-disable-next-line vue/no-v-html -->
-					<span v-html="keyboardSubmitMessage"></span>
+					<span v-html="warningMessage"></span>
 				</template>
 			</cdx-field>
 
@@ -297,6 +293,26 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
+		 * Returns the warning message to show below the summary field, or an
+		 * empty string. The missing summary warning has priority.
+		 *
+		 * Use one #warning slot, not two slots with v-if and v-else-if.
+		 * ResourceLoader changes the newline between the two slots to a space,
+		 * and then Vue does not find the v-if for the v-else-if.
+		 *
+		 * @return {string}
+		 */
+		const warningMessage = computed( () => {
+			if ( hasMissingSummaryWarning.value ) {
+				return missingSummaryMessage.value;
+			}
+			if ( hasKeyboardSubmitWarning.value ) {
+				return keyboardSubmitMessage.value;
+			}
+			return '';
+		} );
+
+		/**
 		 * Handles the keydown event on the summary text field.
 		 * - If the user presses Ctrl/Cmd + Enter, publishes the page.
 		 * - If the user presses Enter, shows a warning message.
@@ -349,16 +365,13 @@ module.exports = exports = defineComponent( {
 			errors,
 			handleSummaryKeydown,
 			hasErrors,
-			hasKeyboardSubmitWarning,
-			hasMissingSummaryWarning,
 			i18n,
-			keyboardSubmitMessage,
 			legalText,
-			missingSummaryMessage,
 			primaryAction,
 			publishPage,
 			status,
-			summary
+			summary,
+			warningMessage
 		};
 	}
 } );
