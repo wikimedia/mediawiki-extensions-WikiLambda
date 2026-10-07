@@ -44,6 +44,11 @@ you have cloned the `mediawiki/core` repository.
   git clone <https://gerrit.wikimedia.org/r/mediawiki/extensions/CommunityConfiguration>
   ```
   When CommunityConfiguration is loaded, WikiLambda registers two providers (visible at `Special:CommunityConfiguration`): `WikifunctionsSuggestions` for the recommended-Wikifunctions list shown in the VisualEditor `{{#function:…}}` dialog (on client-mode wikis), and `AbstractWikiSuggestedWikifunctions` for the HTML-returning functions offered in the Abstract Article "Add fragment" menu (on the abstract-mode wiki). Without CommunityConfiguration loaded, neither list is populated — install it on any wiki where you want administrators to be able to curate these lists.
+  For code editing:
+  ```
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/CodeMirror
+  ```
+  When CodeMirror is loaded, WikiLambda uses it to edit code, HTML and JSON, with syntax highlighting and linting. Without CodeMirror, these fields are plain text areas.
   For Wikidata content use:
   ```
   git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Wikibase
@@ -73,6 +78,7 @@ you have cloned the `mediawiki/core` repository.
   wfLoadExtensions( ['WikimediaMessages', 'UniversalLanguageSelector'] ); # Required
   wfLoadExtensions( ['EventLogging', 'EventBus', 'TestKitchen'] ); # Recommended, for metrics
   wfLoadExtensions( ['CommunityConfiguration'] ); # Recommended, for configuration
+  wfLoadExtensions( ['CodeMirror'] ); # Recommended, for code editing
   ```
 * Add any other optional (advanced) settings following the documentation below.
 * Run `php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` (or `docker compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` if MediaWiki is setup through Docker) to give your Admin user the special rights for creating and editing ZObjects.

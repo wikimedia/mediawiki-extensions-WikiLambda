@@ -154,10 +154,6 @@
 		"WikiLambdaSearchIndexLanguages": {
 			"description": "Allowlist of language codes that get their own per-language CirrusSearch fields (zobject_labels.<lang> etc.) when WikiLambdaEnableSearchIndexFields is on. All other languages are still searchable via the zobject_labels_all catch-all field. Deliberately small; to be tuned with the Search Platform team (T390562 M1).",
 			"value": [ "en" ]
-		},
-		"WikiLambdaUseCodeMirror": {
-			"description": "If true, use the CodeMirror extension for code, HTML and JSON fields. If false, or if the CodeMirror extension is not installed, a plain textarea is used.",
-			"value": true
 		}
 	},
 	"ConfigRegistry": {
@@ -676,12 +672,6 @@
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataItem.vue",
 				"ext.wikilambda.app/components/widgets/function-evaluator/FunctionMetadataTestResult.vue",
 				"ext.wikilambda.app/components/widgets/function-usage/FunctionUsage.vue",
-				{
-					"name": "ext.wikilambda.app/config.json",
-					"config": [
-						"WikiLambdaUseCodeMirror"
-					]
-				},
 				{
 					"name": "lib/icons.json",
 					"callback": "MediaWiki\\ResourceLoader\\CodexModule::getIcons",

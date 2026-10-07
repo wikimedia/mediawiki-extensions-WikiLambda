@@ -1,8 +1,7 @@
 <!--
 	WikiLambda Vue component: the code editor the app uses.
 
-	$wgWikiLambdaUseCodeMirror selects the CodeMirror extension. A plain
-	textarea is used if the flag is false, or if CodeMirror is not installed.
+	Uses the CodeMirror extension if it is installed, or a plain textarea if not.
 
 	Every editor has the same props and the same 'change' event.
 
@@ -21,7 +20,6 @@
 const { defineComponent, computed } = require( 'vue' );
 const CodeMirrorEditor = require( './CodeMirrorEditor.vue' );
 const PlainTextEditor = require( './PlainTextEditor.vue' );
-const config = require( '../../config.json' );
 
 // The ResourceLoader module that CodeMirrorEditor.vue needs. CodeMirror is an
 // optional dependency, so the module is absent if it is not installed.
@@ -34,7 +32,7 @@ const CODE_MIRROR_MODULE = 'ext.CodeMirror.VueComponent';
  */
 function getEditorComponent() {
 	// getState() gives null if the module is not registered.
-	if ( config.WikiLambdaUseCodeMirror && mw.loader.getState( CODE_MIRROR_MODULE ) ) {
+	if ( mw.loader.getState( CODE_MIRROR_MODULE ) ) {
 		return CodeMirrorEditor;
 	}
 	return PlainTextEditor;

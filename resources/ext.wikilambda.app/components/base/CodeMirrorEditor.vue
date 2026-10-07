@@ -2,7 +2,7 @@
 	WikiLambda Vue wrapper component for the CodeMirror extension
 	https://www.mediawiki.org/wiki/Extension:CodeMirror
 
-	Selected by CodeEditor.vue when $wgWikiLambdaUseCodeMirror is true.
+	Selected by CodeEditor.vue when the CodeMirror extension is installed.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
