@@ -986,9 +986,14 @@ const zobjectStore = {
 			if ( itemKeyPath ) {
 				// If itemKeyPath exists, means the monolingual stringset object for this language
 				// already exists; we change the terminal value of its text.
+				// Wrap each ZID-like string, so that it is not read as a reference.
+				const strings = value.map( ( text ) => this.createObjectByType( {
+					type: Constants.Z_STRING,
+					value: text
+				} ) );
 				this.setValueByKeyPath( {
 					keyPath: itemKeyPath.split( '.' ),
-					value: canonicalToHybrid( [ Constants.Z_STRING, ...value ] )
+					value: canonicalToHybrid( [ Constants.Z_STRING, ...strings ] )
 				} );
 			} else {
 				// If itemKeyPath doesn't exist, we need to add a new monolingual stringset

@@ -276,6 +276,22 @@ describe( 'factory Pinia store', () => {
 					const result = store.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
+
+				it( 'wraps an initial value that looks like a ZID, so that it is not a reference', () => {
+					const payload = {
+						type: Constants.Z_MONOLINGUALSTRINGSET,
+						lang: 'Z1004',
+						value: [ 'Z10000', 'one' ]
+					};
+					const expected = {
+						Z1K1: 'Z31',
+						Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+						Z31K2: [ 'Z6', { Z1K1: 'Z6', Z6K1: 'Z10000' }, 'one' ]
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
 			} );
 
 			describe( 'createZString', () => {

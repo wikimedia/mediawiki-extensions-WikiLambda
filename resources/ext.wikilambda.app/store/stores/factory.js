@@ -327,8 +327,14 @@ module.exports = {
 		 * {
 		 *  Z1K1: Z31,
 		 *  Z31K1: { Z1K1: Z9, Z9K1: payload.lang },
-		 *  Z31K2: [ 'Z6', { Z1K1: Z6, Z6K1: payload.value } ]
+		 *  Z31K2: [ 'Z6', <one item for each string in payload.value> ]
 		 * }
+		 * Each item is created with createZString:
+		 * * If the string looks like a ZID, the item is a wrapped string:
+		 *   'Z10000' gives { Z1K1: Z6, Z6K1: 'Z10000' }
+		 * * Else, the item is the string: 'foo' gives 'foo'
+		 * For example, payload.value [ 'Z10000', 'foo' ] gives:
+		 *  Z31K2: [ 'Z6', { Z1K1: Z6, Z6K1: 'Z10000' }, 'foo' ]
 		 *
 		 * @return {Function}
 		 */
@@ -347,7 +353,11 @@ module.exports = {
 				value[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 				if ( payload.value ) {
 					payload.value.forEach( ( stringValue ) => {
-						value[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ].push( stringValue );
+						// Wrap a ZID-like string, so that it is not read as a reference
+						value[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ].push( this.createObjectByType( {
+							type: Constants.Z_STRING,
+							value: stringValue
+						} ) );
 					} );
 				}
 				return value;

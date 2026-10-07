@@ -2533,6 +2533,58 @@ describe( 'zobject Pinia store', () => {
 				expect( store.jsonObject.main.Z2K3.Z32K1[ 3 ].Z31K1 ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z1004' } );
 				expect( hybridToCanonical( store.jsonObject.main.Z2K3.Z32K1[ 3 ].Z31K2 ) ).toEqual( expected );
 			} );
+
+			describe( 'with a value that looks like a ZID', () => {
+				// In canonical form, a bare 'Z10000' is a reference, so the string must be wrapped
+				const wrappedAlias = { Z1K1: 'Z6', Z6K1: 'Z10000' };
+
+				it( 'keeps it as a string when it adds a new monolingual stringset', () => {
+					store.setZMonolingualStringset( {
+						parentKeyPath: [ 'main', 'Z2K3', 'Z32K1' ],
+						itemKeyPath: undefined,
+						value: [ 'Z10000' ],
+						lang: 'Z1004'
+					} );
+
+					const expected = [ 'Z6', wrappedAlias ];
+					expect( hybridToCanonical( store.jsonObject.main.Z2K3.Z32K1[ 3 ].Z31K2 ) ).toEqual( expected );
+				} );
+
+				it( 'keeps it as a string when it sets an existing monolingual stringset', () => {
+					store.setZMonolingualStringset( {
+						parentKeyPath: [ 'main', 'Z2K3', 'Z32K1' ],
+						itemKeyPath: 'main.Z2K3.Z32K1.1.Z31K2', // hybrid format
+						value: [ 'one name', 'Z10000' ],
+						lang: 'Z1002'
+					} );
+
+					const expected = [ 'Z6', 'one name', wrappedAlias ];
+					expect( hybridToCanonical( store.jsonObject.main.Z2K3.Z32K1[ 1 ].Z31K2 ) ).toEqual( expected );
+				} );
+
+				it( 'keeps a stored value when the user adds another value in the same language', () => {
+					store.jsonObject.main = canonicalToHybrid( {
+						Z2K2: 'some content',
+						Z2K4: {
+							Z1K1: 'Z32',
+							Z32K1: [ 'Z31', { Z1K1: 'Z31', Z31K1: 'Z1002', Z31K2: [ 'Z6', wrappedAlias ] } ]
+						}
+					} );
+
+					// The alias input sends all the values of the language as plain strings
+					store.setZMonolingualStringset( {
+						parentKeyPath: [ 'main', 'Z2K4', 'Z32K1' ],
+						itemKeyPath: 'main.Z2K4.Z32K1.1.Z31K2', // hybrid format
+						value: [ 'Z10000', 'new name' ],
+						lang: 'Z1002'
+					} );
+
+					const expected = [ 'Z6', wrappedAlias, 'new name' ];
+					expect( hybridToCanonical( store.jsonObject.main.Z2K4.Z32K1[ 1 ].Z31K2 ) ).toEqual( expected );
+					// The alias input shows both values (a reference would show as an empty chip)
+					expect( store.getZPersistentAlias( 'Z1002' ).value ).toEqual( [ 'Z10000', 'new name' ] );
+				} );
+			} );
 		} );
 	} );
 } );
