@@ -86,7 +86,6 @@
 	"apierror-wikilambda_function_call-server-error": "Non poteva terminar le requesta a causa de un error del servitor",
 	"apierror-wikilambda_function_call-concurrency-limit": "Tu ha troppo de appellos de function in execution in iste momento.",
 	"apierror-wikilambda_function_call-response-malformed": "Le responsa del appello de function es defectuose: '$1'.",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "Non poteva trovar le servitor '$1', probabilemente perque le orchestrator non es active. Per favor consulta le file README pro adder le orchestrator a tu configuration docker-compose.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Tu ha requestate le linguages de programmation troppo de vices.",
 	"apihelp-query+wikilambdafn_search-summary": "Iste lista de consultas API cerca le IDs de tote le ZObjects associate a un ID de ZFunction fornite",
 	"apihelp-query+wikilambdafn_search-example-simple": "Cercar IDs de ZImplementation que son associate a un ID de ZFunction date",

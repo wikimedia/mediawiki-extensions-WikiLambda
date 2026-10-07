@@ -65,7 +65,6 @@
 	"apihelp-wikilambda_edit-param-zobject": "JSON-reprezentacija ZObjekta za shranitev",
 	"apierror-wikilambda_function_call-concurrency-limit": "Trenutno se izvaja preveč klicev funkcij.",
 	"apierror-wikilambda_function_call-response-malformed": "Odgovor na klic funkcije je bil pokvarjen: »$1«.",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "Ni bilo mogoče razrešiti gostitelja »$1«, verjetno zato, ker orkestrator ne deluje. Prosimo, preberite README, če želite dodati orkestrator vaši konfiguraciji docker-compose.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Programske jezike ste zshtevali prevečkrat.",
 	"apihelp-query+wikilambdafn_search-summary": "Ta seznam API-poizvedb išče ID-je vseh ZObjektov, povezanih s podanim ID-jem ZFunkcije",
 	"apihelp-query+wikilambdafn_search-example-simple": "Iskanje ID-jev ZImplementacije, povezanih z ID-jem podane ZFunkcije",

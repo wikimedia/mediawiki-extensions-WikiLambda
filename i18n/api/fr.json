@@ -99,7 +99,6 @@
 	"apierror-wikilambda_function_call-server-error": "Impossible de terminer la demande en raison d'une erreur du serveur",
 	"apierror-wikilambda_function_call-concurrency-limit": "Vous avez actuellement trop d’appels de fonctions en cours d’exécution.",
 	"apierror-wikilambda_function_call-response-malformed": "Échec dans la réponse à l’appel de fonction : '$1'",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "Impossible de résoudre l’hôte « $1 », probablement parce que l’orchestrateur ne s'exécute pas. Veuillez consulter le README pour ajouter l’orchestrateur à votre configuration « docker-compose ».",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Vous avez trop souvent demandé les langages de programmation.",
 	"apihelp-query+wikilambdafn_search-summary": "Cette liste de requêtes d’API cherche les identifiants de tous les Z-Objets associés à un identifiant de Z-Fonction.",
 	"apihelp-query+wikilambdafn_search-example-simple": "Rechercher les identifiants de Z-MiseEnŒuvre qui sont associés avec un identifiant de Z-Fonction donné",

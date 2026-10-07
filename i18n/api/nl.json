@@ -90,7 +90,6 @@
 	"apierror-wikilambda_function_call-server-error": "De aanvraag kon niet worden voltooid vanwege een serverfout",
 	"apierror-wikilambda_function_call-concurrency-limit": "Er worden momenteel te veel functieaanroepen uitgevoerd.",
 	"apierror-wikilambda_function_call-response-malformed": "Fout in antwoord op functieaanroep: ‘$1’.",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "Kan host ‘$1’ niet opzoeken, waarschijnlijk omdat de Orchestrator niet actief is. Raadpleeg de README om de Orchestrator toe te voegen aan uw docker-compose-configuratie.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "U hebt te vaak programmeertalen aangevraagd.",
 	"apihelp-query+wikilambdafn_search-summary": "Deze API-querylijst zoekt naar de ID’s van alle ZObjects die zijn gekoppeld aan een opgegeven ZFunction-ID",
 	"apihelp-query+wikilambdafn_search-example-simple": "Zoek naar ZImplementation-ID’s die zijn gekoppeld aan een bepaalde ZFunction-ID",

@@ -95,7 +95,6 @@
 	"apierror-wikilambda_function_call-server-error": "Die Anfrage konnte aufgrund eines Serverfehlers nicht abgeschlossen werden.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Du hast zu viele Funktionsaufrufe, die im Moment ausgeführt werden.",
 	"apierror-wikilambda_function_call-response-malformed": "Die Antwort des Funktionsaufrufs war fehlerhaft: „$1“.",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "Host „$1“ konnte nicht aufgelöst werden, wahrscheinlich weil der Orchestrator nicht läuft. Bitte lies das README, um den Orchestrator zu deiner docker-compose-Konfiguration hinzuzufügen.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Du hast zu oft nach Programmiersprachen angefragt.",
 	"apihelp-query+wikilambdafn_search-summary": "Diese API-Abfrageliste sucht nach den IDs aller ZObjekte, die einer bereitgestellten ZFunktions-ID zugeordnet sind",
 	"apihelp-query+wikilambdafn_search-example-simple": "Suchen nach ZImplementierungs-IDs, die einer bestimmten ZFunktions-ID zugeordnet sind",

@@ -89,7 +89,6 @@
 	"apierror-wikilambda_function_call-server-error": "Lama dhammaystiri karin codsiga sababo la xiriira khalad dhinaca adeegaha ah",
 	"apierror-wikilambda_function_call-concurrency-limit": "Waxaad hadda haysataa wicitaanno Shaqo oo badan oo socda.",
 	"apierror-wikilambda_function_call-response-malformed": "Jawaabta wicitaanka Shaqada ayaa jabtay: '$1'.",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "Lama xallin karin martigeliyaha '$1', waxaana suuragal ah in maamulaha habayntu uusan shaqaynayn. Fadlan eeg README si aad ugu darto maamulaha habaynta qaabeynta docker-compose-kaaga.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Waxaad codsatay luuqadaha barnaamijyada marar badan oo aad u badan.",
 	"apihelp-query+wikilambdafn_search-summary": "Liiskan weydiimaha API-ga wuxuu raadiyaa aqoonsiyada dhammaan ZObject-yada la xiriira ZFunction ID la bixiyay",
 	"apihelp-query+wikilambdafn_search-example-simple": "Raadi aqoonsiyada ZImplementation ee la xiriira ZFunction ID la bixiyay",

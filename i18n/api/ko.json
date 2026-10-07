@@ -87,7 +87,6 @@
 	"apierror-wikilambda_function_call-server-error": "서버 오류로 요청을 완료할 수 없습니다",
 	"apierror-wikilambda_function_call-concurrency-limit": "실행중인 함수 호출이 너무 많습니다.",
 	"apierror-wikilambda_function_call-response-malformed": "함수 호출 응답이 손상되었습니다: '$1'.",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "호스트 '$1'을(를) 해결할 수 없습니다. 오케스트레이터가 실행 중이 아니기 때문일 수 있습니다. docker-compose 구성에 오케스트레이터를 추가하려면 README를 참조하세요.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "프로그래밍 언어를 너무 많이 요청했습니다.",
 	"apihelp-query+wikilambdafn_search-summary": "이 API 쿼리 목록은 제공된 Z함수 ID와 연결된 모든 Z객체의 ID를 검색합니다",
 	"apihelp-query+wikilambdafn_search-example-simple": "주어진 Z함수 ID와 연결된 Z구현 ID를 검색합니다",

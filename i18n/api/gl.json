@@ -89,7 +89,6 @@
 	"apierror-wikilambda_function_call-server-error": "Non se puido completar a solicitude debido a un erro do servidor",
 	"apierror-wikilambda_function_call-concurrency-limit": "Tes demasiadas chamadas a funcións executándose nestes intres.",
 	"apierror-wikilambda_function_call-response-malformed": "Interrompeuse a resposta da chamada á función: «$1».",
-	"apierror-wikilambda_supported_programming_languages-not-connected": "Non se puido resolver o servidor «$1», probablemente porque o orquestrador non se está a executar. Consulta o ficheiro README para engadir o orquestrador á túa configuración de docker-compose.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Solicitaches linguaxes de programación demasiadas veces.",
 	"apihelp-query+wikilambdafn_search-summary": "Esta lista de consultas á API busca os identificadores de todos os ZObjects asociados cun identificador de ZFunction indicado",
 	"apihelp-query+wikilambdafn_search-example-simple": "Buscar os identificadores de ZImplementation que estean asociados a un identificador de ZFunction indicado",

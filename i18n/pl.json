@@ -301,6 +301,7 @@
 	"wikilambda-function-evaluator-running": "Wykonywanie…",
 	"wikilambda-function-evaluator-share-button": "Skopiuj link do wyniku",
 	"wikilambda-function-evaluator-share-button-tooltip": "Kopiuje link do tej funkcji wraz z wprowadzonymi danymi",
+	"wikilambda-function-evaluator-share-button-tooltip-too-long": "Ten link do wyników jest zbyt długi, aby go udostępnić",
 	"wikilambda-function-evaluator-share-error-invalid-json": "Nie udało się wczytać wywołania funkcji: nieprawidłowy format JSON w parametrze adresu URL.",
 	"wikilambda-function-evaluator-share-error-invalid-structure": "Nie udało się wczytać wywołania funkcji: nieprawidłowa struktura obiektu Z w parametrze adresu URL.",
 	"wikilambda-function-evaluator-title": "Wypróbuj funkcję",
