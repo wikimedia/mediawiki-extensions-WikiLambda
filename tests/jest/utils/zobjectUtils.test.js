@@ -371,6 +371,14 @@ describe( 'zobjectUtils', () => {
 			expect( zobjectUtils.getZMonolingualTextValue( zobject ) ).toBe( expected );
 			expect( zobjectUtils.getZMonolingualTextValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
 		} );
+
+		it( 'returns a ZID-like terminal value that canonical form wraps as a string', () => {
+			const zobject = { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: { Z1K1: 'Z6', Z6K1: 'Z10001' } };
+			const expected = 'Z10001';
+
+			expect( zobjectUtils.getZMonolingualTextValue( zobject ) ).toBe( expected );
+			expect( zobjectUtils.getZMonolingualTextValue( canonicalToHybrid( zobject ) ) ).toBe( expected );
+		} );
 	} );
 
 	describe( 'getZMonolingualLangValue', () => {

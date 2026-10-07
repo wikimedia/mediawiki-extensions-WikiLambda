@@ -586,6 +586,28 @@ describe( 'library Pinia store', () => {
 				expect( descriptionData.isUserLang ).toBe( false );
 				expect( descriptionData.isFallbackLang ).toBe( true );
 			} );
+
+			it( 'Returns a ZID-like description as a string', () => {
+				// Canonical form wraps a ZID-like string as a Z6 (T437013)
+				store.objects = Object.assign( {}, mockStoredObjects, {
+					Z40979: {
+						success: true,
+						data: {
+							Z1K1: 'Z2',
+							Z2K1: { Z1K1: 'Z6', Z6K1: 'Z40979' },
+							Z2K2: { Z1K1: 'Z20', Z20K1: 'Z801' },
+							Z2K5: {
+								Z1K1: 'Z12',
+								Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: { Z1K1: 'Z6', Z6K1: 'Z10000' } } ]
+							}
+						}
+					}
+				} );
+
+				const descriptionData = store.getDescription( 'Z40979' );
+
+				expect( descriptionData.label ).toBe( 'Z10000' );
+			} );
 		} );
 
 		describe( 'lookupFunctions', () => {
@@ -1258,6 +1280,84 @@ describe( 'library Pinia store', () => {
 					expect( store.setLabel ).toHaveBeenCalledWith( arg1Label );
 					expect( store.setLabel ).toHaveBeenCalledWith( arg2Label );
 					expect( store.setLabel ).toHaveBeenCalledWith( arg3Label );
+				} );
+
+				describe( 'with ZID-like labels', () => {
+					// Canonical form wraps a ZID-like string as a Z6 (T437013)
+					const wrapped = ( value ) => ( { Z1K1: 'Z6', Z6K1: value } );
+					const multilingual = ( value ) => ( {
+						Z1K1: 'Z12',
+						Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: wrapped( value ) } ]
+					} );
+					const mockApiResponse = ( zid, value ) => ( {
+						batchcomplete: '',
+						query: {
+							wikilambdaload_zobjects: {
+								[ zid ]: {
+									success: true,
+									data: {
+										Z1K1: 'Z2',
+										Z2K1: wrapped( zid ),
+										Z2K2: value,
+										Z2K3: multilingual( 'Z10000' )
+									}
+								}
+							}
+						}
+					} );
+
+					beforeEach( () => {
+						store.setLabel = jest.fn();
+					} );
+
+					it( 'stores the object label as a string', async () => {
+						getMock = jest.fn().mockResolvedValue( mockApiResponse( 'Z40978', {
+							Z1K1: 'Z20',
+							Z20K1: 'Z801'
+						} ) );
+
+						await store.fetchZids( { zids: [ 'Z40978' ] } );
+
+						expect( store.setLabel ).toHaveBeenCalledWith( new LabelData( 'Z40978', 'Z10000', 'Z1002' ) );
+					} );
+
+					it( 'stores the type key labels as strings', async () => {
+						getMock = jest.fn().mockResolvedValue( mockApiResponse( 'Z40980', {
+							Z1K1: 'Z4',
+							Z4K1: wrapped( 'Z40980' ),
+							Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z40980K1', Z3K3: multilingual( 'Z10001' ) } ]
+						} ) );
+
+						await store.fetchZids( { zids: [ 'Z40980' ] } );
+
+						expect( store.setLabel ).toHaveBeenCalledWith( new LabelData( 'Z40980K1', 'Z10001', 'Z1002' ) );
+					} );
+
+					it( 'stores the error type key labels as strings', async () => {
+						getMock = jest.fn().mockResolvedValue( mockApiResponse( 'Z40981', {
+							Z1K1: 'Z50',
+							Z50K1: [ 'Z3', { Z1K1: 'Z3', Z3K1: 'Z6', Z3K2: 'Z40981K1', Z3K3: multilingual( 'Z10002' ) } ]
+						} ) );
+
+						await store.fetchZids( { zids: [ 'Z40981' ] } );
+
+						expect( store.setLabel ).toHaveBeenCalledWith( new LabelData( 'Z40981K1', 'Z10002', 'Z1002' ) );
+					} );
+
+					it( 'stores the argument labels as strings', async () => {
+						getMock = jest.fn().mockResolvedValue( mockApiResponse( 'Z40982', {
+							Z1K1: 'Z8',
+							Z8K1: [ 'Z17', { Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z40982K1', Z17K3: multilingual( 'Z10003' ) } ],
+							Z8K2: 'Z6',
+							Z8K3: [ 'Z20' ],
+							Z8K4: [ 'Z14' ],
+							Z8K5: wrapped( 'Z40982' )
+						} ) );
+
+						await store.fetchZids( { zids: [ 'Z40982' ] } );
+
+						expect( store.setLabel ).toHaveBeenCalledWith( new LabelData( 'Z40982K1', 'Z10003', 'Z1002' ) );
+					} );
 				} );
 			} );
 		} );

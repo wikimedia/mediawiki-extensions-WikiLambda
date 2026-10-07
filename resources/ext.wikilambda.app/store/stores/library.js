@@ -19,6 +19,7 @@ const LabelData = require( '../classes/LabelData.js' );
 const {
 	getZArgumentReferenceTerminalValue,
 	getZFunctionCallFunctionId,
+	getZMonolingualTextValue,
 	getZObjectType,
 	getZReferenceTerminalValue
 } = require( '../../utils/zobjectUtils.js' );
@@ -767,7 +768,7 @@ module.exports = {
 				const description = multiStr[ Constants.Z_MULTILINGUALSTRING_VALUE ][ 1 ];
 				return new LabelData(
 					zid,
-					description[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+					getZMonolingualTextValue( description ),
 					description[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ],
 					this.getLanguageIsoCodeOfZLang( description[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] )
 				);
@@ -1156,7 +1157,7 @@ module.exports = {
 						if ( multiStr.length === 1 ) {
 							const labelData = new LabelData(
 								zid,
-								multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+								getZMonolingualTextValue( multiStr[ 0 ] ),
 								multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 							);
 							dependentZids.push( multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
@@ -1185,7 +1186,7 @@ module.exports = {
 									if ( keyLabels.length === 1 ) {
 										const labelData = new LabelData(
 											key[ Constants.Z_KEY_ID ],
-											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+											getZMonolingualTextValue( keyLabels[ 0 ] ),
 											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 										);
 										dependentZids.push( keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
@@ -1207,7 +1208,7 @@ module.exports = {
 									if ( keyLabels.length === 1 ) {
 										const labelData = new LabelData(
 											key[ Constants.Z_KEY_ID ],
-											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+											getZMonolingualTextValue( keyLabels[ 0 ] ),
 											keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 										);
 										dependentZids.push( keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
@@ -1243,7 +1244,7 @@ module.exports = {
 
 										const labelData = new LabelData(
 											arg[ Constants.Z_ARGUMENT_KEY ],
-											argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+											getZMonolingualTextValue( argLabels[ 0 ] ),
 											argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 										);
 										dependentZids.push( argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
