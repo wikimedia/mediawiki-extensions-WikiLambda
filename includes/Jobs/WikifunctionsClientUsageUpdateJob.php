@@ -36,9 +36,10 @@ class WikifunctionsClientUsageUpdateJob extends Job implements GenericParameterJ
 		// Note: This will set $this->params, though we don't use it.
 		parent::__construct( 'wikifunctionsClientUsageUpdate', $params );
 
-		$this->targetFunction = $params['targetFunction'];
-		$this->targetPageText = $params['targetPageText'];
-		$this->targetPageNamespace = $params['targetPageNamespace'];
+		// (T440432) A job from a later version has other params. Let run() reject it as an invalid ZID.
+		$this->targetFunction = $params['targetFunction'] ?? '';
+		$this->targetPageText = $params['targetPageText'] ?? '';
+		$this->targetPageNamespace = $params['targetPageNamespace'] ?? 0;
 
 		// Non-injected items
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaClient' );
