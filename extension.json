@@ -941,6 +941,7 @@
 				"wikilambda-functioncall-metadata-caching",
 				"wikilambda-functioncall-metadata-errors",
 				"wikilambda-functioncall-metadata-errors-summary",
+				"wikilambda-functioncall-metadata-errors-message",
 				"wikilambda-functioncall-metadata-errors-args",
 				"wikilambda-functioncall-metadata-errors-children",
 				"wikilambda-functioncall-metadata-errors-none",

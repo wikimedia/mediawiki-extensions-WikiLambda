@@ -697,7 +697,8 @@ Constants.METADATA_CONTENT_TYPE = {
 	TEXT: 1,
 	LINK: 2,
 	HTML: 3,
-	ZOBJECT: 4
+	ZOBJECT: 4,
+	ERROR_MESSAGE: 5
 };
 
 Constants.QUEUE_STATUS = {

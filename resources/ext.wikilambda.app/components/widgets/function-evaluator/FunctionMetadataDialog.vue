@@ -553,18 +553,18 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
-		 * Returns the error section summary, which consists on the labelized
-		 * error type, followed by the string arguments (if any) in parenthesis:
-		 * <Error type label> (<1st arg label>: "<value>", ..., <nth arg label>: "<value>")
-		 *
-		 * E.g. 'Bad input format (expected format: "dd/m/yyyy", current value: "boo")'
+		 * Returns the error section summary. For explicit errors, this is
+		 * the labelized error type. The full error message is in the body
+		 * of the section, because links in the accordion header do not
+		 * work (T439423).
 		 *
 		 * @return {ErrorData|string}
 		 */
 		function getErrorSummary() {
 			// Check for explicit errors first
 			if ( hasExplicitErrors( keyValues.value ) ) {
-				return getExplicitErrorSummary();
+				const errorData = extractErrorData( keyValues.value.get( 'errors' ) );
+				return errorData ? store.getLabelData( errorData.errorType ).label : '';
 			}
 
 			// Check for test failure
@@ -581,37 +581,25 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
-		 * Returns the explicit error section summary
+		 * Returns an ad-hoc error message, which consists on the labelized
+		 * error type, followed by the string arguments (if any) in parenthesis:
+		 * <Error type label> (<1st arg label>: "<value>", ..., <nth arg label>: "<value>")
 		 *
-		 * @return {ErrorData|string}
+		 * E.g. 'Bad input format (expected format: "dd/m/yyyy", current value: "boo")'
+		 *
+		 * @param {Object} errorData
+		 * @return {string}
 		 */
-		function getExplicitErrorSummary() {
-			const error = keyValues.value.get( 'errors' );
-			const errorData = extractErrorData( error );
-
-			// If Error message can be composed using the error type Z50K3 field,
-			// return ErrorData object so that it renders with SafeMessage and injects html
-			const parsedMessage = store.getHtmlErrorMessage( errorData.errorType, error );
-			if ( parsedMessage ) {
-				return ErrorData.buildErrorData( {
-					errorMessage: parsedMessage
-				} );
-			}
-
-			// Otherwise, build an ad-hoc error message using the error type label
-			// followed by the error arguments in parenthesis
+		function buildDefaultErrorMessage( errorData ) {
 			const colon = i18n( 'colon-separator' ).text();
 			const comma = i18n( 'comma-separator' ).text();
 
-			if ( !errorData ) {
-				return '';
-			}
 			// Return labelized parent error type
 			const title = store.getLabelData( errorData.errorType ).label;
 			const args = [];
 			for ( const arg of errorData.stringArgs ) {
 				const key = store.getLabelData( arg.key ).label;
-				// Keep plain text here; this summary is rendered via Vue text interpolation,
+				// Keep plain text here; this message is rendered via Vue text interpolation,
 				// so escaping now causes entity text (e.g. "&lt;") to appear to users.
 				const value = i18n( 'quotation-marks', arg.value ).text();
 				args.push( `${ key }${ colon }${ value }` );
@@ -826,6 +814,35 @@ module.exports = exports = defineComponent( {
 				};
 			}
 			return undefined;
+		}
+
+		/**
+		 * Transform method.
+		 * Returns the error message of the root error. If the error type
+		 * has a message (Z50K3), the error arguments replace its parameters.
+		 * The message can contain HTML, so the template renders it with
+		 * SafeMessage. Else, returns an ad-hoc message with the error type
+		 * label and the error arguments.
+		 *
+		 * @param {Mixed} value
+		 * @return {Object | undefined}
+		 */
+		function getErrorMessage( value ) {
+			const data = extractErrorData( value );
+			if ( !data ) {
+				return undefined;
+			}
+			const parsedMessage = store.getHtmlErrorMessage( data.errorType, value );
+			if ( parsedMessage ) {
+				return {
+					type: Constants.METADATA_CONTENT_TYPE.ERROR_MESSAGE,
+					value: ErrorData.buildErrorData( { errorMessage: parsedMessage } )
+				};
+			}
+			return {
+				type: Constants.METADATA_CONTENT_TYPE.TEXT,
+				value: buildDefaultErrorMessage( data )
+			};
 		}
 
 		/**
@@ -1068,6 +1085,7 @@ module.exports = exports = defineComponent( {
 		const transforms = {
 			getDebugLogs,
 			getErrorChildren,
+			getErrorMessage,
 			getErrorStringArgs,
 			getErrorType,
 			getImplementationLink,
@@ -1265,6 +1283,7 @@ module.exports = exports = defineComponent( {
 					const item = {
 						// possible message keys:
 						// * wikilambda-functioncall-metadata-errors-summary
+						// * wikilambda-functioncall-metadata-errors-message
 						// * wikilambda-functioncall-metadata-validator-errors-summary
 						// * wikilambda-functioncall-metadata-expected-result
 						// * wikilambda-functioncall-metadata-actual-result

@@ -25,6 +25,10 @@
 			></wl-function-metadata-test-result>
 			<!-- Isolate the value, so that a value such as "70 ms" keeps its order on RTL pages -->
 			<bdi v-else-if="item.data.type === METADATA_CONTENT_TYPE.TEXT">{{ item.data.value }}</bdi>
+			<wl-safe-message
+				v-else-if="item.data.type === METADATA_CONTENT_TYPE.ERROR_MESSAGE"
+				:error="item.data.value"
+			></wl-safe-message>
 		</template>
 		<ul v-if="item.content" class="ext-wikilambda-app-function-metadata-item__content">
 			<wl-function-metadata-item
@@ -42,12 +46,14 @@ const { defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const FunctionMetadataTestResult = require( './FunctionMetadataTestResult.vue' );
+const SafeMessage = require( '../../base/SafeMessage.vue' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-function-metadata-item',
 	components: {
 		'wl-function-metadata-item': this,
-		'wl-function-metadata-test-result': FunctionMetadataTestResult
+		'wl-function-metadata-test-result': FunctionMetadataTestResult,
+		'wl-safe-message': SafeMessage
 	},
 	props: {
 		keyString: {

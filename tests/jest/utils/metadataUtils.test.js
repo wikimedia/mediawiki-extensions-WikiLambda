@@ -22,6 +22,12 @@ describe( 'metadataUtils', () => {
 		expect( errorsConfig.open ).toBe( true );
 		expect( Array.isArray( errorsConfig.keys ) ).toBe( true );
 		expect( errorsConfig.keys.length ).toBeGreaterThan( 0 );
+		// Error message goes after the error type
+		expect( errorsConfig.keys[ 1 ] ).toEqual( {
+			key: 'errors',
+			title: 'wikilambda-functioncall-metadata-errors-message',
+			transform: 'getErrorMessage'
+		} );
 	} );
 
 	it( 'contains implementation configuration', () => {

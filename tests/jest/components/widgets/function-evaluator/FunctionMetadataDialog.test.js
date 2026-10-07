@@ -495,34 +495,37 @@ describe( 'dialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Not wellformed (subtype: "Z523")' );
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Not wellformed' );
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
-			expect( keys.length ).toBe( 6 );
+			expect( keys.length ).toBe( 7 );
 
 			// Error type (key=errors):
 			expect( keys[ 0 ].text() ).toContain( 'Error type:' );
 			expect( keys[ 0 ].find( 'a' ).text() ).toBe( 'Not wellformed' );
 			expect( keys[ 0 ].find( 'a' ).attributes().href ).toContain( 'Z502' );
+			// Error message (key=errors): no localised message, so the ad-hoc message
+			expect( keys[ 1 ].text() ).toContain( 'Error message:' );
+			expect( keys[ 1 ].text() ).toContain( 'Not wellformed (subtype: "Z523")' );
 			// Error arguments (key=errors):
-			expect( keys[ 1 ].text() ).toContain( 'subtype: "Z523"' );
+			expect( keys[ 2 ].text() ).toContain( 'subtype: "Z523"' );
 			// Error stack trace (key=errors):
-			expect( keys[ 2 ].text() ).toContain( 'Missing Z1K1' );
-			expect( keys[ 2 ].find( 'a' ).attributes().href ).toContain( 'Z523' );
+			expect( keys[ 3 ].text() ).toContain( 'Missing Z1K1' );
+			expect( keys[ 3 ].find( 'a' ).attributes().href ).toContain( 'Z523' );
 
 			// Validation error (key=validationErrors):
-			expect( keys[ 3 ].text() ).toContain( 'Validation error type:' );
-			expect( keys[ 3 ].find( 'a' ).text() ).toBe( 'Key value not wellformed' );
-			expect( keys[ 3 ].find( 'a' ).attributes().href ).toContain( 'Z526' );
+			expect( keys[ 4 ].text() ).toContain( 'Validation error type:' );
+			expect( keys[ 4 ].find( 'a' ).text() ).toBe( 'Key value not wellformed' );
+			expect( keys[ 4 ].find( 'a' ).attributes().href ).toContain( 'Z526' );
 
 			// Expected result (key=expectedTestResult):
-			expect( keys[ 4 ].text() ).toContain( 'Expected result:' );
-			expect( keys[ 4 ].text() ).toContain( 'ABC' );
+			expect( keys[ 5 ].text() ).toContain( 'Expected result:' );
+			expect( keys[ 5 ].text() ).toContain( 'ABC' );
 			// Actual result (key=actualTestResult):
-			expect( keys[ 5 ].text() ).toContain( 'Actual result:' );
-			expect( keys[ 5 ].text() ).toContain( 'CBA' );
+			expect( keys[ 6 ].text() ).toContain( 'Actual result:' );
+			expect( keys[ 6 ].text() ).toContain( 'CBA' );
 
 			// Check Wikifunctions.Debug message
 			const message = wrapper.findAllComponents( { name: 'cdx-message' } );
@@ -537,30 +540,35 @@ describe( 'dialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
-			const expectedHeaderDescription = 'Z500 (Z500K1: "<button onmouseover="window.location = \'//www.example.com\'">")';
+			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Z500' );
 
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( expectedHeaderDescription );
+			// Error message (key=errors): the ad-hoc message shows the argument as text
+			const keys = section.findAll( '.cdx-accordion__content .ext-wikilambda-app-function-metadata-item' );
+			const expectedMessage = 'Z500 (Z500K1: "<button onmouseover="window.location = \'//www.example.com\'">")';
+			expect( keys[ 1 ].text() ).toContain( expectedMessage );
+			expect( keys[ 1 ].find( 'button' ).exists() ).toBe( false );
 		} );
 
-		it( 'renders the error section with sanitized html error message', async () => {
-			const htmlErrorMessage = 'Some <b>error message</b>';
-			store.sanitiseHtml.mockResolvedValue( htmlErrorMessage );
+		it( 'renders the localised error message as an item in the section body, not in the header', async () => {
+			const htmlErrorMessage = 'Please <a href="/wiki/Special:NewLexeme">create a new lexeme</a>';
 			store.getHtmlErrorMessage = jest.fn().mockReturnValue( htmlErrorMessage );
 
 			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataErrors } );
-			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
-			expect( sections.length ).toBe( 1 );
-			const section = sections[ 0 ];
+			const section = wrapper.findAllComponents( { name: 'cdx-accordion' } )[ 0 ];
 
-			// Check header
-			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( '{{PLURAL:$1|Error|Errors}}' );
-			await wrapper.vm.$nextTick();
+			// Check header: error type label only, without links
+			const header = section.find( '.cdx-accordion__header__description' );
+			expect( header.text() ).toBe( 'Not wellformed' );
+			expect( header.find( 'a' ).exists() ).toBe( false );
 
-			const safeMessage = section.findComponent( { name: 'wl-safe-message' } );
-			expect( safeMessage ).toBeDefined();
-
-			await wrapper.vm.$nextTick();
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( 'Some error message' );
+			// Check content: sanitised localised message with its link
+			const keys = section.findAll( '.cdx-accordion__content .ext-wikilambda-app-function-metadata-item' );
+			const message = keys[ 1 ];
+			await waitFor( () => expect( message.find( 'a' ).exists() ).toBe( true ) );
+			expect( store.sanitiseHtml ).toHaveBeenCalledWith( htmlErrorMessage );
+			expect( message.text() ).toContain( 'Error message:' );
+			expect( message.text() ).toContain( 'Please create a new lexeme' );
+			expect( message.find( 'a' ).attributes().href ).toBe( '/wiki/Special:NewLexeme' );
 		} );
 
 		it( 'does not link a sub-error whose type is not a Zid', () => {
@@ -571,7 +579,7 @@ describe( 'dialog', () => {
 
 			// Error stack trace (key=errors): the sub-error type is not a Zid,
 			// so it must render as plain text and not as a link.
-			const stackTrace = keys[ 2 ];
+			const stackTrace = keys[ 3 ];
 			expect( stackTrace.text() ).toContain( 'Stack trace:' );
 
 			const subError = stackTrace.element.querySelector( 'ul li' );
@@ -883,9 +891,11 @@ describe( 'dialog', () => {
 			sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
 			expect( sections.length ).toBe( 3 );
 
-			// The accordion description renders as plain text (not HTML), so the text value should show raw characters.
-			expect( sections[ 0 ].find( '.cdx-accordion__header__description' ).text() )
+			// The error message renders as plain text (not HTML), so the text value should show raw characters.
+			const errorMessage = sections[ 0 ].findAll( '.ext-wikilambda-app-function-metadata-item' )[ 1 ];
+			expect( errorMessage.text() )
 				.toContain( '"some error in child function call: <button onmouseover="window.location = \'//www.example.com\'">"' );
+			expect( errorMessage.find( 'button' ).exists() ).toBe( false );
 		} );
 
 		it( 'flags the function calls which raised warnings in the selector', () => {

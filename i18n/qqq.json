@@ -439,6 +439,7 @@
 	"wikilambda-functioncall-metadata-errors-args": "Label for the list of string arguments contained by the error which provide more detailed data about the issue.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-errors-children": "Label for the list of sub-errors that are part of the top-level error. These are errors that have occurred before and might indicate the principal origin of the issue.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-errors-debug-hint": "Label for the hint that appears in the metadata dialog when there is an error returned from a function call.\n\n{{doc-wikilambda}}",
+	"wikilambda-functioncall-metadata-errors-message": "Label for the error message of the error returned from a function call. The message comes from the error type, or else it shows the error type and the error data.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-errors-none": "String indicating no errors came back from a function call. Follows {{msg-mw|Wikilambda-functioncall-metadata-errors}}.",
 	"wikilambda-functioncall-metadata-errors-summary": "Label for the brief form summary of any error(s) returned from a function call.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-evaluation": "Title for the evaluation keys in the metadata dialog.\n\n{{doc-wikilambda}}",
