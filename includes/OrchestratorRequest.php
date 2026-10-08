@@ -426,8 +426,9 @@ class OrchestratorRequest {
 			);
 		}
 
-		// 3.d. Remove generic function call cache metadata key
+		// 3.d. Remove generic function call cache metadata keys
 		$testMetadata->setValueForKey( new ZString( 'functionCallCachedOn' ), null );
+		$testMetadata->setValueForKey( new ZString( 'functionCallFreshResult' ), null );
 
 		return [
 			'passed' => $passed,

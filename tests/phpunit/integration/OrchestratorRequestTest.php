@@ -615,6 +615,71 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( ZTypeRegistry::Z_VOID, $expectedTestResult->getZValue() );
 	}
 
+	public function testOrchestrateTestExecution_setsTestMetadata() {
+		$testCallTimestamp = '2026-09-11T00:00:00Z';
+		$validationCallTimestamp = '2026-09-12T00:00:00Z';
+
+		$testCall = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10000"}' );
+		$validationCall = json_decode( '{"Z1K1":"Z7","Z7K1":"Z10001"}' );
+
+		// Test call served from the cache, with both generic function call metadata keys
+		$testEnvelope = $this->makeSuccessEnvelope( '{"Z1K1":"Z6","Z6K1":"some result"}', [
+			'someExistingKey' => 'and its value',
+			'functionCallCachedOn' => $testCallTimestamp,
+			'functionCallFreshResult' => $testCallTimestamp,
+		] );
+		$cachedTestResponse = [ 'result' => $testEnvelope, 'httpStatusCode' => HttpStatus::OK ];
+
+		// Validation call served from the cache, returning Z41/true
+		$validationEnvelope = $this->makeSuccessEnvelope( '{"Z1K1":"Z9","Z9K1":"Z41"}', [
+			'functionCallCachedOn' => $validationCallTimestamp,
+		] );
+		$cachedValidationResponse = [ 'result' => $validationEnvelope, 'httpStatusCode' => HttpStatus::OK ];
+
+		$mockCache = $this->createMock( MemcachedWrapper::class );
+		$mockCache
+			->method( 'makeKey' )
+			->willReturn( 'some-mock-key' );
+		$mockCache
+			->method( 'get' )
+			->willReturnOnConsecutiveCalls( $cachedTestResponse, $cachedValidationResponse );
+		$mockCache
+			->expects( $this->never() )
+			->method( 'set' );
+		$this->setService( 'WikiLambdaMemcachedWrapper', $mockCache );
+
+		// Never consumed: both calls are cache hits
+		$guzzleResponse = new Response( HttpStatus::OK, [], '' );
+		$orchestrator = $this->getOrchestratorWithMockResponse( $guzzleResponse );
+
+		$result = $orchestrator->orchestrateTestExecution( $testCall, $validationCall, true );
+
+		$this->assertTrue( $result[ 'passed' ] );
+		$this->assertFalse( $result[ 'hasErrors' ] );
+
+		$metadata = $result[ 'metadata' ];
+
+		// Test-specific cache timestamps are added
+		$this->assertSame(
+			$testCallTimestamp,
+			$metadata->getValueGivenKey( new ZString( 'testCallCachedOn' ) )->getZValue()
+		);
+		$this->assertSame(
+			$validationCallTimestamp,
+			$metadata->getValueGivenKey( new ZString( 'validationCallCachedOn' ) )->getZValue()
+		);
+
+		// Generic function call cache metadata keys are removed
+		$this->assertNull( $metadata->getValueGivenKey( new ZString( 'functionCallCachedOn' ) ) );
+		$this->assertNull( $metadata->getValueGivenKey( new ZString( 'functionCallFreshResult' ) ) );
+
+		// Other metadata keys are preserved
+		$this->assertSame(
+			'and its value',
+			$metadata->getValueGivenKey( new ZString( 'someExistingKey' ) )->getZValue()
+		);
+	}
+
 	// OrchestratorRequest::getSupportedProgrammingLanguages
 	// =====================================================
 
