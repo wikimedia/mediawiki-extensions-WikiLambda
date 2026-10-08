@@ -593,7 +593,7 @@
 	"wikilambda-tester-details-for": "تفاصيل مقابل $1",
 	"wikilambda-tester-no-results": "لم يُعثر على نتائج اختبارات. يُرجى إضافة تنفيذ واختبار لرؤية النتائج.",
 	"wikilambda-tester-none-found": "ستظهر الاختبارات التي تُنشئها هنا.",
-	"wikilambda-tester-refresh": "ينعش",
+	"wikilambda-tester-refresh": "تحديث",
 	"wikilambda-tester-results-caption": "نتائج اختبارات الدالة مقابل التنفيذات",
 	"wikilambda-tester-results-current-implementation": "التنفيذ الحالي",
 	"wikilambda-tester-results-current-test": "الاختبار الحالي",
