@@ -406,6 +406,7 @@
 	"wikilambda-zobject-missing-attached-function": "Fuktio on tyhjä. Valitse toinen.",
 	"wikilambda-zobject-to-string-enter-string": "Syötä merkkijono",
 	"wikilambda-zobject-to-string-select-object": "Valitse $1",
+	"wikilambda-codeeditor-image-element-detail": "Commons-kuva",
 	"wikilambda-zobjectselector-label": "Objekti",
 	"wikilambda-zobjectselector-no-results": "Tuloksia ei löytynyt.",
 	"wikilambda-ztester-missing-call-function": "Kutsu on tyhjä. Valitse funktio.",

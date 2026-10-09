@@ -202,6 +202,7 @@
 	"wikilambda-diff-value-moved": "Booska $1: $2",
 	"wikilambda-discard-edits": "Iska tuur wax ka beddellada",
 	"wikilambda-edit": "Wax ka badal",
+	"wikilambda-edit-conflict-error-message": "Shaygan waa la beddelay tan iyo markii aad boggan soo dejisay. Fadlan dib u soo geli bogga oo isku day mar kale.",
 	"wikilambda-edit-monolingual-text-placeholder": "Geli qoraal",
 	"wikilambda-editor-additional-details-label": "Faahfaahin dheeraad ah",
 	"wikilambda-editor-argument-list-label": "Liiska doodaha",

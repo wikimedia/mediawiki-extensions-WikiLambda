@@ -203,6 +203,7 @@
 	"wikilambda-diff-value-moved": "Posición $1: $2",
 	"wikilambda-discard-edits": "Desbotar as edicións",
 	"wikilambda-edit": "Editar",
+	"wikilambda-edit-conflict-error-message": "Este obxecto foi modificado desde que cargaches esta páxina. Recarga a páxina e inténtao de novo.",
 	"wikilambda-edit-monolingual-text-placeholder": "Escribe o texto",
 	"wikilambda-editor-additional-details-label": "Detalles adicionais",
 	"wikilambda-editor-argument-list-label": "Lista de argumentos",

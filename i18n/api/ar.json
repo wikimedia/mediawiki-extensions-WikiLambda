@@ -88,6 +88,7 @@
 	"apihelp-wikilambda_edit-param-zobject": "تمثيل JSON لـ ZObject لحفظه",
 	"apihelp-wikilambda_edit-param-watchlist": "قم بإضافة الصفحة أو إزالتها من قائمة مراقبة المستخدم الحالي دون قيد أو شرط، أو استخدم التفضيلات (يتم تجاهلها بالنسبة لمستخدمي الروبوتات) أو لا تقم بتغيير قائمة المراقبة.",
 	"apihelp-wikilambda_edit-param-watchlistexpiry": "تاريخ انتهاء صلاحية قائمة المراقبة. احذف هذا المعامل تمامًا لترك تاريخ الانتهاء الحالي دون تغيير.",
+	"apihelp-wikilambda_edit-param-baserevid": "معرّف المراجعة التي يستند إليها التعديل. إذا كان للكائن ZObject مراجعة أحدث مختلفة، فسيفشل التعديل مع ظهور خطأ تعارض في التعديل.",
 	"apierror-wikilambda_function_call-client-error": "لم نتمكن من إكمال الطلب بسبب خطأ العميل",
 	"apierror-wikilambda_function_call-server-error": "لم يتمكن من إكمال الطلب بسبب خطأ في الخادم",
 	"apierror-wikilambda_function_call-concurrency-limit": "لديك عدد كبير جدًا من مكالمات الوظائف التي يتم تنفيذها الآن.",

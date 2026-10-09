@@ -214,6 +214,7 @@
 	"wikilambda-diff-value-moved": "المركز $1 : $2",
 	"wikilambda-discard-edits": "تجاهل التعديلات",
 	"wikilambda-edit": "عدل",
+	"wikilambda-edit-conflict-error-message": "تم تغيير هذا العنصر منذ تحميلك لهذه الصفحة. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.",
 	"wikilambda-edit-monolingual-text-placeholder": "أدخل النص",
 	"wikilambda-editor-additional-details-label": "تفاصيل إضافية",
 	"wikilambda-editor-argument-list-label": "قائمة الوسائط",
