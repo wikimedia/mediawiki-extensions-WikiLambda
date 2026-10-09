@@ -44,6 +44,15 @@ const metadataUtils = {
 			],
 			link: 'getImplementationHelpLink'
 		},
+		functionCalls: {
+			title: 'wikilambda-functioncall-metadata-function-calls',
+			description: 'getFunctionCallsSummary',
+			keys: [
+				{ key: 'functionCallCounts', title: 'wikilambda-functioncall-metadata-function-calls-most-called', transform: 'getDebugLogs' },
+				{ key: 'functionCallTotal', title: 'wikilambda-functioncall-metadata-function-calls-total' },
+				{ key: 'functionCallDistinctFunctions', title: 'wikilambda-functioncall-metadata-function-calls-distinct-functions' }
+			]
+		},
 		caching: {
 			title: 'wikilambda-functioncall-metadata-caching',
 			description: 'getCachingSummary',

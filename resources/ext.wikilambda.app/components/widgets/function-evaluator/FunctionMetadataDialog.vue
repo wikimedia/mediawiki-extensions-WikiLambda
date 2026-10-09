@@ -645,6 +645,32 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Returns the function calls section summary, e.g. "3104 calls, 40 Functions".
+		 * Includes the call total and the Function count, each only if present.
+		 *
+		 * @return {string}
+		 */
+		function getFunctionCallsSummary() {
+			const comma = i18n( 'comma-separator' ).text();
+			const total = keyValues.value.get( 'functionCallTotal' );
+			const distinctFunctions = keyValues.value.get( 'functionCallDistinctFunctions' );
+			const summaryParts = [];
+			if ( total !== undefined ) {
+				summaryParts.push( i18n(
+					'wikilambda-functioncall-metadata-function-calls-summary-calls',
+					getStringValue( total )
+				).text() );
+			}
+			if ( distinctFunctions !== undefined ) {
+				summaryParts.push( i18n(
+					'wikilambda-functioncall-metadata-function-calls-summary-functions',
+					getStringValue( distinctFunctions )
+				).text() );
+			}
+			return summaryParts.join( comma );
+		}
+
+		/**
 		 * Returns the summary for the caching info section
 		 *
 		 * @return {string}
@@ -1138,6 +1164,7 @@ module.exports = exports = defineComponent( {
 			getErrorSummary,
 			getWarningsSummary,
 			getImplementationSummary,
+			getFunctionCallsSummary,
 			getCachingSummary,
 			getDurationSummary,
 			getCpuUsageSummary,
@@ -1171,6 +1198,7 @@ module.exports = exports = defineComponent( {
 					// * wikilambda-functioncall-metadata-errors
 					// * wikilambda-functioncall-metadata-warnings
 					// * wikilambda-functioncall-metadata-implementation
+					// * wikilambda-functioncall-metadata-function-calls
 					// * wikilambda-functioncall-metadata-duration
 					// * wikilambda-functioncall-metadata-orchestration
 					// * wikilambda-functioncall-metadata-evaluation
@@ -1226,6 +1254,9 @@ module.exports = exports = defineComponent( {
 						// * wikilambda-functioncall-metadata-implementation-name
 						// * wikilambda-functioncall-metadata-implementation-id
 						// * wikilambda-functioncall-metadata-implementation-type
+						// * wikilambda-functioncall-metadata-function-calls-most-called
+						// * wikilambda-functioncall-metadata-function-calls-total
+						// * wikilambda-functioncall-metadata-function-calls-distinct-functions
 						// * wikilambda-functioncall-metadata-duration
 						// * wikilambda-functioncall-metadata-start-time
 						// * wikilambda-functioncall-metadata-end-time

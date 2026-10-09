@@ -33,6 +33,18 @@ describe( 'metadataUtils', () => {
 		expect( implConfig.keys.length ).toBe( 3 );
 	} );
 
+	it( 'contains function calls configuration', () => {
+		const functionCallsConfig = metadataUtils.metadataKeys.functionCalls;
+		expect( functionCallsConfig ).toBeDefined();
+		expect( functionCallsConfig.title ).toBe( 'wikilambda-functioncall-metadata-function-calls' );
+		expect( functionCallsConfig.description ).toBe( 'getFunctionCallsSummary' );
+		expect( functionCallsConfig.keys.map( ( item ) => item.key ) ).toEqual( [
+			'functionCallCounts',
+			'functionCallTotal',
+			'functionCallDistinctFunctions'
+		] );
+	} );
+
 	it( 'contains duration configuration with sections', () => {
 		const durationConfig = metadataUtils.metadataKeys.duration;
 		expect( durationConfig ).toBeDefined();

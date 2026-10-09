@@ -376,6 +376,12 @@ const metadataFreshCall = convertSetToMap( {
 	functionCallFreshResult: '2026-06-04T00:00:00Z',
 } );
 
+const metadataFunctionCalls = convertSetToMap( {
+	functionCallCounts: [ 'Z6', 'Z802: 2', 'Z10000: 1' ],
+	functionCallTotal: '3',
+	functionCallDistinctFunctions: '2'
+} );
+
 module.exports = {
 	metadataBasic,
 	metadataErrors,
@@ -393,5 +399,6 @@ module.exports = {
 	metadataCachedTestOddKey,
 	metadataCachedCall,
 	metadataFreshCall,
+	metadataFunctionCalls,
 	convertSetToMap
 };

@@ -610,6 +610,82 @@ describe( 'dialog', () => {
 		} );
 	} );
 
+	describe( 'with function call metadata', () => {
+		it( 'renders the function calls section', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataFunctionCalls } );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const section = sections[ 0 ];
+
+			// Check header
+			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Function calls' );
+			const summary = section.find( '.cdx-accordion__header__description' ).text();
+			expect( summary ).toContain( '3 calls' );
+			expect( summary ).toContain( '2 Functions' );
+
+			// Check content
+			const content = section.find( '.cdx-accordion__content' );
+			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+			expect( keys.length ).toBe( 3 );
+
+			expect( keys[ 0 ].text() ).toContain( 'Most-called Functions:' );
+			const list = keys[ 0 ].findAll( 'ul > li' );
+			expect( list.length ).toBe( 2 );
+			expect( list[ 0 ].text() ).toBe( 'Z802: 2' );
+			expect( list[ 1 ].text() ).toBe( 'Z10000: 1' );
+
+			expect( keys[ 1 ].text() ).toContain( 'Number of calls:' );
+			expect( keys[ 1 ].text() ).toContain( '3' );
+
+			expect( keys[ 2 ].text() ).toContain( 'Number of Functions called:' );
+			expect( keys[ 2 ].text() ).toContain( '2' );
+		} );
+
+		it( 'shows only the call count in the summary when the function count is missing', () => {
+			const wrapper = renderFunctionMetadataDialog( {
+				metadata: metadata.convertSetToMap( {
+					functionCallTotal: '5'
+				} )
+			} );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const summary = sections[ 0 ].find( '.cdx-accordion__header__description' ).text();
+			expect( summary ).toContain( '5 calls' );
+			expect( summary ).not.toContain( 'Function' );
+		} );
+
+		it( 'shows only the function count in the summary when the call count is missing', () => {
+			const wrapper = renderFunctionMetadataDialog( {
+				metadata: metadata.convertSetToMap( {
+					functionCallDistinctFunctions: '1'
+				} )
+			} );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			const summary = sections[ 0 ].find( '.cdx-accordion__header__description' ).text();
+			expect( summary ).toContain( '1 Function' );
+			expect( summary ).not.toContain( 'call' );
+		} );
+
+		it( 'shows no summary when both counts are missing', () => {
+			const wrapper = renderFunctionMetadataDialog( {
+				metadata: metadata.convertSetToMap( {
+					functionCallCounts: [ 'Z6', 'Z802: 2' ]
+				} )
+			} );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			expect( sections[ 0 ].find( '.cdx-accordion__header__title' ).text() ).toBe( 'Function calls' );
+			expect( sections[ 0 ].find( '.cdx-accordion__header__description' ).text() ).toBe( '' );
+		} );
+
+		it( 'does not render the function calls section when there are no call counts', () => {
+			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
+			const titles = wrapper.findAll( '.cdx-accordion__header__title' ).map( ( title ) => title.text() );
+			expect( titles ).not.toContain( 'Function calls' );
+		} );
+	} );
+
 	describe( 'with warning metadata', () => {
 		beforeEach( () => {
 			store.getLabelData = createLabelDataMock( {
