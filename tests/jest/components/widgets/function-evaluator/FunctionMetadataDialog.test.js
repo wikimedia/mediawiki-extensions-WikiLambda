@@ -71,10 +71,23 @@ describe( 'dialog', () => {
 			expect( selector.exists() ).toBe( false );
 		} );
 
+		it( 'does not compile sections if not open', () => {
+			const wrapper = renderFunctionMetadataDialog( {
+				open: false,
+				metadata: metadata.metadataBasic
+			} );
+
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 0 );
+			expect( wrapper.vm.sections.length ).toBe( 0 );
+		} );
+
 		it( 'renders an untitled implementation section', () => {
 			const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataBasic } );
 
 			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 6 );
+
 			const section = sections[ 0 ];
 
 			// Check header

@@ -492,7 +492,7 @@ module.exports = exports = defineComponent( {
 		 * @return {Array}
 		 */
 		const sections = computed( () => {
-			if ( !keyValues.value ) {
+			if ( !props.open || !keyValues.value ) {
 				return [];
 			}
 			return compileSections( metadataKeys );
