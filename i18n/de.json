@@ -386,6 +386,7 @@
 	"wikilambda-functioncall-metadata-cache-test-result-key": "Getestet für (zids und Versionien )",
 	"wikilambda-functioncall-metadata-cache-test-result-stored": "Cached Testergebnis",
 	"wikilambda-functioncall-metadata-cache-test-validation-stored": "Cached Validierungsaufruf",
+	"wikilambda-functioncall-metadata-cache-wikidata-entities": "Cached Wikidata-Entitäten",
 	"wikilambda-functioncall-metadata-caching": "Herkunft",
 	"wikilambda-functioncall-metadata-cpu-usage": "CPU-Auslastung",
 	"wikilambda-functioncall-metadata-duration": "Dauer",

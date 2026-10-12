@@ -499,6 +499,7 @@
 	"wikilambda-commons-image-error-not-found": "Bild net fonnt.",
 	"wikilambda-commons-image-error-unavailable": "Bild temporär net disponibel.",
 	"wikilambda-codeeditor-image-element-description": "Am gerenderte Resultat gëtt dëst Element als en tatsächlecht Bild ugewisen.",
+	"wikilambda-codeeditor-image-element-detail": "Commons-Bild",
 	"wikilambda-zobjectselector-label": "Objet",
 	"wikilambda-zobjectselector-no-results": "Keng Resultater fonnt.",
 	"wikilambda-ztester-missing-call-function": "Den Opruff ass eidel. Sicht wgl. eng Funktioun eraus.",
