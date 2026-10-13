@@ -153,6 +153,8 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 		// The legacy parser does not know {{#function:…}}, so its output reports no
 		// Functions for every page. Acting on it would delete every row (T393716).
 		$page = $this->getExistingTestPage( 'Template:Shared usage legacy' );
+		$legacyOptions = ParserOptions::newFromAnon();
+		$legacyOptions->setUseParsoid( false );
 
 		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
 		$jobQueueGroup->expects( $this->never() )->method( 'lazyPush' );
@@ -161,7 +163,7 @@ class ClientHooksTest extends WikiLambdaClientIntegrationTestCase {
 			$this->getServiceContainer()->getParserCache(),
 			$this->newRenderUsing( [], $page->getLatest() ),
 			$page->getTitle(),
-			ParserOptions::newFromAnon(),
+			$legacyOptions,
 			$page->getLatest()
 		);
 	}
