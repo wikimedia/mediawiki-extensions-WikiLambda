@@ -45,11 +45,33 @@ describe( 'CodeMirrorEditor', () => {
 		return wrapper;
 	}
 
+	/**
+	 * Make a completion context with the cursor at the end of the text. Its
+	 * matchBefore() works like the one of CodeMirror.
+	 *
+	 * @param {string} text Text before the cursor
+	 * @param {string} [node] Name of the syntax node at the cursor
+	 * @return {Object} CodeMirror completion context
+	 */
+	function contextFor( text, node = 'VariableName' ) {
+		return {
+			node,
+			matchBefore: ( regex ) => {
+				// eslint-disable-next-line security/detect-non-literal-regexp -- The regex comes from the component.
+				const from = text.search( new RegExp( `(?:${ regex.source })$`, regex.flags ) );
+				return from < 0 ? null : { from, to: text.length, text: text.slice( from ) };
+			}
+		};
+	}
+
 	beforeEach( () => {
 		languageFacet = { facet: 'language' };
 		languageData = { of: jest.fn( ( value ) => value ) };
 		lib = {
 			language: languageFacet,
+			ifNotIn: jest.fn( ( nodes, source ) => ( context ) => (
+				nodes.includes( context.node ) ? null : source( context )
+			) ),
 			snippetCompletion: jest.fn( ( template, options ) => ( { template, ...options } ) )
 		};
 		codeMirror = {
@@ -189,13 +211,22 @@ describe( 'CodeMirrorEditor', () => {
 			const wrapper = await renderCodeMirrorEditor( { mode: 'html', readOnly: true } );
 
 			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
 
 			expect( codeMirror.applyLinter ).toHaveBeenCalled();
-			expect( codeMirror.applyExtension ).not.toHaveBeenCalled();
+			expect( autocomplete( contextFor( '<e' ) ) ).toBeNull();
 		} );
 	} );
 
 	describe( 'JavaScript mode', () => {
+		// The names the evaluators give the implementation code.
+		const evaluatorGlobals = {
+			Wikifunctions: 'readonly',
+			ZObject: 'readonly',
+			ZReference: 'readonly',
+			ZPair: 'readonly'
+		};
+
 		let worker;
 
 		beforeEach( () => {
@@ -215,6 +246,7 @@ describe( 'CodeMirrorEditor', () => {
 			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
 
 			expect( worker.setConfig ).toHaveBeenCalledWith( {
+				globals: evaluatorGlobals,
 				rules: {
 					'no-unused-vars': [ 1, { varsIgnorePattern: '^Z41070$' } ]
 				}
@@ -232,6 +264,7 @@ describe( 'CodeMirrorEditor', () => {
 			await wrapper.setProps( { value: 'function Z41071() {}' } );
 
 			expect( worker.setConfig ).toHaveBeenLastCalledWith( {
+				globals: evaluatorGlobals,
 				rules: {
 					'no-unused-vars': [ 1, { varsIgnorePattern: '^Z41071$' } ]
 				}
@@ -246,19 +279,146 @@ describe( 'CodeMirrorEditor', () => {
 
 			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
 
-			expect( worker.setConfig ).toHaveBeenCalledWith( { rules: {} } );
+			expect( worker.setConfig ).toHaveBeenCalledWith( { globals: evaluatorGlobals, rules: {} } );
 		} );
 
-		it( 'does nothing if the mode has no worker', async () => {
-			codeMirror.langExtension = {};
+		it( 'suggests the Wikifunctions methods with their parameters', async () => {
 			const wrapper = await renderCodeMirrorEditor( { mode: 'javascript' } );
 
-			expect( () => wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror ) )
-				.not.toThrow();
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+			const result = autocomplete( contextFor( 'return Wikifunctions.' ) );
+
+			expect( result.from ).toBe( 21 );
+			expect( result.options.map( ( { label, template, detail } ) => [ label, template, detail ] ) )
+				.toEqual( [
+					[ 'Call', "Call( '${zid}', ${args} )${}", '(zid, ...args)' ],
+					[ 'Error', "Error( '${errorType}', [ ${errorArgs} ] )${}", '(errorType, errorArgs)' ],
+					[ 'Debug', 'Debug( ${message} )${}', '(message)' ]
+				] );
+			result.options.forEach( ( option ) => {
+				expect( option.type ).toBe( 'method' );
+				expect( option.boost ).toBe( 99 );
+			} );
+		} );
+
+		it( 'replaces only the method name after "Wikifunctions."', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'javascript' } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+
+			expect( autocomplete( contextFor( 'x = Wikifunctions.De' ) ).from ).toBe( 18 );
+		} );
+
+		it( 'suggests nothing if the text before the cursor is not "Wikifunctions."', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'javascript' } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+
+			expect( autocomplete( contextFor( 'Wikifunctions' ) ) ).toBeNull();
+			expect( autocomplete( contextFor( 'myWikifunctions.' ) ) ).toBeNull();
+			expect( autocomplete( contextFor( 'Wikifunctions.Call( ' ) ) ).toBeNull();
+		} );
+
+		it( 'shows the description and a documentation link for each method', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'javascript' } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+			const infos = autocomplete( contextFor( 'Wikifunctions.' ) ).options
+				.map( ( option ) => option.info() );
+
+			expect( infos.map( ( info ) => info.textContent ) ).toEqual( [
+				'Calls a function and returns its result. Code can call only some built-in functions, for example the functions that fetch Wikidata items. How to create implementations?',
+				'Stops the function with an error of the given type. Give the error arguments as a list of strings. How to create implementations?',
+				'Adds a message to the debug log in the response metadata. How to create implementations?'
+			] );
+			const link = infos[ 0 ].querySelector( 'a' );
+			expect( link.getAttribute( 'href' ) ).toBe(
+				'//www.wikifunctions.org/wiki/Special:MyLanguage/Wikifunctions:How_to_create_implementations'
+			);
+			expect( link.target ).toBe( '_blank' );
+			expect( link.rel ).toBe( 'noopener' );
+		} );
+
+		it( 'does not suggest the Wikifunctions methods in strings and comments', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'javascript' } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+
+			[ 'String', 'TemplateString', 'RegExp', 'LineComment', 'BlockComment' ].forEach( ( node ) => {
+				expect( autocomplete( contextFor( 'Wikifunctions.', node ) ) ).toBeNull();
+			} );
+			expect( autocomplete( contextFor( 'Wikifunctions.', 'PropertyName' ) ).options ).toHaveLength( 3 );
+		} );
+
+		it( 'does not suggest anything in a disabled editor', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'javascript', disabled: true } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+
+			expect( autocomplete( contextFor( 'Wikifunctions.' ) ) ).toBeNull();
+		} );
+
+		it( 'suggests the Wikifunctions methods after the user selects JavaScript', async () => {
+			// A new implementation starts disabled in the default mode. When the
+			// user selects JavaScript, the editor becomes editable but CodeMirror
+			// does not send 'ready' again.
+			const wrapper = await renderCodeMirrorEditor( { mode: '', disabled: true } );
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+
+			await wrapper.setProps( { mode: 'javascript', disabled: false } );
+
+			expect( autocomplete( contextFor( 'Wikifunctions.' ) ).options ).toHaveLength( 3 );
 		} );
 	} );
 
-	it( 'adds no linter in a mode other than HTML', async () => {
+	describe( 'Python mode', () => {
+		it( 'suggests the Wikifunctions methods in the Python style', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'python' } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+			const result = autocomplete( contextFor( 'return Wikifunctions.' ) );
+
+			expect( codeMirror.applyLinter ).not.toHaveBeenCalled();
+			expect( result.from ).toBe( 21 );
+			expect( result.options.map( ( { label, template, detail } ) => [ label, template, detail ] ) )
+				.toEqual( [
+					[ 'Call', 'Call("${zid}", ${args})${}', '(zid, *args)' ],
+					[ 'Error', 'Error("${error_type}", [${error_args}])${}', '(error_type, error_args)' ],
+					[ 'Debug', 'Debug(${message})${}', '(message)' ]
+				] );
+		} );
+
+		it( 'does not suggest the Wikifunctions methods in strings and comments', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'python' } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+
+			[ 'String', 'FormatString', 'Comment' ].forEach( ( node ) => {
+				expect( autocomplete( contextFor( 'Wikifunctions.', node ) ) ).toBeNull();
+			} );
+			expect( autocomplete( contextFor( 'Wikifunctions.', 'PropertyName' ) ).options ).toHaveLength( 3 );
+		} );
+
+		it( 'does not suggest anything in a read-only editor', async () => {
+			const wrapper = await renderCodeMirrorEditor( { mode: 'python', readOnly: true } );
+
+			wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );
+			const { autocomplete } = languageData.of.mock.calls[ 0 ][ 0 ];
+
+			expect( autocomplete( contextFor( 'Wikifunctions.' ) ) ).toBeNull();
+		} );
+	} );
+
+	it( 'adds no linter and no suggestions in JSON mode', async () => {
 		const wrapper = await renderCodeMirrorEditor( { mode: 'json' } );
 
 		wrapper.findComponent( CodeMirrorStub ).vm.$emit( 'ready', codeMirror );

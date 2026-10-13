@@ -38,7 +38,7 @@
 </template>
 
 <script>
-const { defineComponent, computed, ref, shallowRef, watch } = require( 'vue' );
+const { defineComponent, computed, inject, ref, shallowRef, watch } = require( 'vue' );
 const PlainTextEditor = require( './PlainTextEditor.vue' );
 const {
 	customElementDefinitions,
@@ -60,8 +60,58 @@ const DEFAULT_MODE = 'javascript';
 // that a nested function does not match.
 const IMPLEMENTATION_FUNCTION = /^function\s+(Z\d+)\s*\(/m;
 
+// The evaluators give the implementation code these names.
+const EVALUATOR_GLOBALS = {
+	Wikifunctions: 'readonly',
+	ZObject: 'readonly',
+	ZReference: 'readonly',
+	ZPair: 'readonly'
+};
+
+// The methods of the Wikifunctions object that the user can call. Each
+// suggestion adds the parameters of the method, in the style of the language.
+// The last field of each template moves the cursor after the call.
+const WIKIFUNCTIONS_METHODS = [
+	{
+		name: 'Call',
+		description: 'wikilambda-codeeditor-wikifunctions-call-description',
+		javascript: { template: "Call( '${zid}', ${args} )${}", detail: '(zid, ...args)' },
+		python: { template: 'Call("${zid}", ${args})${}', detail: '(zid, *args)' }
+	},
+	{
+		name: 'Error',
+		description: 'wikilambda-codeeditor-wikifunctions-error-description',
+		javascript: { template: "Error( '${errorType}', [ ${errorArgs} ] )${}", detail: '(errorType, errorArgs)' },
+		python: { template: 'Error("${error_type}", [${error_args}])${}', detail: '(error_type, error_args)' }
+	},
+	{
+		name: 'Debug',
+		description: 'wikilambda-codeeditor-wikifunctions-debug-description',
+		javascript: { template: 'Debug( ${message} )${}', detail: '(message)' },
+		python: { template: 'Debug(${message})${}', detail: '(message)' }
+	}
+];
+
+// The syntax nodes of strings and comments in JavaScript and Python. The
+// editor does not suggest the Wikifunctions methods in them.
+const NO_SUGGESTION_NODES = [
+	'String',
+	'TemplateString',
+	'FormatString',
+	'RegExp',
+	'LineComment',
+	'BlockComment',
+	'Comment'
+];
+
 /**
- * Gives the ESLint rules to add to the CodeMirror defaults in JavaScript mode.
+ * Gives the ESLint configuration to add to the CodeMirror defaults in
+ * JavaScript mode.
+ *
+ * The evaluators give the code the names in EVALUATOR_GLOBALS. Tell ESLint
+ * that these names are read-only globals, so that no-undef does not report
+ * them. Each call to setConfig() replaces the previous configuration, so each
+ * call sends the globals.
  *
  * The orchestrator calls the implementation function, so the code does not
  * use it. Thus no-unused-vars ignores the name of that function only. ESLint
@@ -72,10 +122,11 @@ const IMPLEMENTATION_FUNCTION = /^function\s+(Z\d+)\s*\(/m;
  */
 function getJavaScriptLintConfig( name ) {
 	if ( !name ) {
-		// An empty configuration restores the CodeMirror defaults.
-		return { rules: {} };
+		// An empty rules object gives the CodeMirror default rules.
+		return { globals: EVALUATOR_GLOBALS, rules: {} };
 	}
 	return {
+		globals: EVALUATOR_GLOBALS,
 		rules: {
 			'no-unused-vars': [ 1, { varsIgnorePattern: `^${ name }$` } ]
 		}
@@ -116,6 +167,8 @@ module.exports = exports = defineComponent( {
 	},
 	emits: [ 'change' ],
 	setup( props ) {
+		const i18n = inject( 'i18n' );
+
 		// State
 		const editorComponent = shallowRef( null );
 		const lib = shallowRef( null );
@@ -183,6 +236,75 @@ module.exports = exports = defineComponent( {
 			};
 		}
 
+		/**
+		 * Makes the information panel for a Wikifunctions method: the
+		 * description of the method and a link to the documentation.
+		 *
+		 * @param {string} description Message key of the description
+		 * @return {HTMLElement} Contents of the information panel
+		 */
+		function getWikifunctionsMethodInfo( description ) {
+			const info = document.createElement( 'div' );
+			info.append( i18n( description ).text(), ' ' );
+			const link = document.createElement( 'a' );
+			link.href = i18n( 'wikilambda-editor-howto-implementation-link' ).text();
+			// Open the link in a new tab, so that the user does not leave the editor.
+			link.target = '_blank';
+			link.rel = 'noopener';
+			link.textContent = i18n( 'wikilambda-editor-howto-implementation-text' ).text();
+			info.append( link );
+			return info;
+		}
+
+		/**
+		 * Suggests the methods of the Wikifunctions object after the user
+		 * types "Wikifunctions.". Each suggestion adds the parameters of the
+		 * method.
+		 *
+		 * @param {Object} context CodeMirror completion context
+		 * @return {Object|null} CodeMirror completion result, or null for no match
+		 */
+		function getWikifunctionsCompletions( context ) {
+			const before = context.matchBefore( /\bWikifunctions\.[A-Za-z]*/ );
+			if ( !before ) {
+				return null;
+			}
+			const { snippetCompletion } = lib.value;
+			return {
+				// Keep "Wikifunctions.", and replace only the method name after it.
+				from: before.from + 'Wikifunctions.'.length,
+				options: WIKIFUNCTIONS_METHODS.map( ( method ) => {
+					const { template, detail } = method[ editorMode.value ];
+					return snippetCompletion( template, {
+						label: method.name,
+						detail: detail,
+						type: 'method',
+						// When the user asks for suggestions in Python, the
+						// built-in Python names also fill the list. Put the
+						// methods at the top.
+						boost: 99,
+						info: () => getWikifunctionsMethodInfo( method.description )
+					} );
+				} )
+			};
+		}
+
+		/**
+		 * Gives the completion source for the mode of the editor.
+		 *
+		 * @return {Function|null} CodeMirror completion source, or null if the
+		 *  mode has no suggestions
+		 */
+		function getCompletionSource() {
+			if ( editorMode.value === 'html' ) {
+				return getCustomElementCompletions;
+			}
+			if ( editorMode.value === 'javascript' || editorMode.value === 'python' ) {
+				return lib.value.ifNotIn( NO_SUGGESTION_NODES, getWikifunctionsCompletions );
+			}
+			return null;
+		}
+
 		// The ESLint worker of the editor. It is null in other modes.
 		let javaScriptWorker = null;
 
@@ -209,9 +331,9 @@ module.exports = exports = defineComponent( {
 		watch( implementationName, updateJavaScriptLinter );
 
 		/**
-		 * Adds the rules for the mode once CodeMirror is ready. CodeMirror
-		 * rebuilds the editor when the mode changes, so this runs again after
-		 * every change.
+		 * Adds the rules and the suggestions for the mode once CodeMirror is
+		 * ready. CodeMirror rebuilds the editor when the mode changes, so this
+		 * runs again after every change.
 		 *
 		 * @param {Object} codeMirror The CodeMirror instance
 		 */
@@ -220,23 +342,25 @@ module.exports = exports = defineComponent( {
 			if ( editorMode.value === 'javascript' ) {
 				javaScriptWorker = ( codeMirror.langExtension && codeMirror.langExtension.worker ) || null;
 				updateJavaScriptLinter();
-				return;
 			}
-			if ( editorMode.value !== 'html' ) {
-				return;
+			if ( editorMode.value === 'html' ) {
+				codeMirror.applyLinter( getHtmlDiagnostics );
 			}
 
-			codeMirror.applyLinter( getHtmlDiagnostics );
-
-			// Suggestions are of no use in an editor the user cannot type in.
-			if ( props.readOnly || props.disabled ) {
+			const source = getCompletionSource();
+			if ( !source ) {
 				return;
 			}
 			const language = codeMirror.view.state.facet( lib.value.language );
 			if ( language ) {
-				codeMirror.applyExtension(
-					language.data.of( { autocomplete: getCustomElementCompletions } )
-				);
+				codeMirror.applyExtension( language.data.of( {
+					// Suggestions are of no use in an editor the user cannot
+					// type in. CodeMirror does not send 'ready' again when the
+					// editor becomes editable, so check at each request.
+					autocomplete: ( context ) => ( props.readOnly || props.disabled ) ?
+						null :
+						source( context )
+				} ) );
 			}
 		}
 
