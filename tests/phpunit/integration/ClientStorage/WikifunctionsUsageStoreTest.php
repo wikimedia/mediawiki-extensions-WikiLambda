@@ -247,11 +247,11 @@ class WikifunctionsUsageStoreTest extends WikiLambdaClientIntegrationTestCase {
 		$this->assertSame( 2, $this->store->countUsageWikis( 'Z10044' ) );
 	}
 
+	/**
+	 * Test that the WANObjectCache "allowStale" feature works as expected
+	 * @see WikifunctionsUsageStore::getUsageSummary
+	 */
 	public function testGetUsageSummary_outlivesItsTtlSoOneThreadCanRefreshIt() {
-		// WANObjectCache only takes the regeneration mutex when it still has a value for
-		// the threads that lose it, and it only has one if the entry outlives its logical
-		// TTL in the store. Were staleTTL dropped, the entry would vanish at expiry and
-		// every concurrent request would rescan the table at once.
 		$clock = microtime( true );
 		$cache = $this->getServiceContainer()->getMainWANObjectCache();
 		$cache->setMockTime( $clock );

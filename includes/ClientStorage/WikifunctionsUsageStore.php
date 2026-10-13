@@ -36,16 +36,6 @@ class WikifunctionsUsageStore {
 	private const SUMMARY_CACHE_TTL = 15 * 60;
 
 	/**
-	 * How long past its TTL to keep a usage summary in the backend.
-	 *
-	 * This is what makes SUMMARY_CACHE_LOCK work: WANObjectCache only takes the
-	 * regeneration mutex when it still has a value to hand the threads that lose it, and
-	 * it only still has one if the entry outlives its logical TTL in the store. Must be at
-	 * least SUMMARY_CACHE_LOCK, or the value goes away part-way through the lock window.
-	 */
-	private const SUMMARY_CACHE_STALE_TTL = 60;
-
-	/**
 	 * How long after expiry to let just one thread per datacentre recompute a summary,
 	 * while the rest serve the stale value.
 	 */
@@ -664,10 +654,8 @@ class WikifunctionsUsageStore {
 	 *
 	 * Both counts scan the Function's usage rows, so this is cached. The key is global
 	 * because the usage table is shared, so the answer does not depend on which wiki
-	 * asks. keepStaleFor() and allowStale() together mean that, for the first moments after
-	 * a key expires, one thread per datacentre recomputes while the rest serve the previous
-	 * value; without keepStaleFor() there would be no stale value to serve and so no mutex,
-	 * and every concurrent request would scan the table at once.
+	 * asks. allowStale() means that, for the first moments after a key expires, one thread
+	 * per datacentre recomputes while the rest serve the previous value.
 	 *
 	 * The page count stops at SUMMARY_PAGE_LIMIT; 'pagesLimited' says whether it did, so
 	 * callers can render "1,000+" rather than implying an exact figure. The wiki count
@@ -703,7 +691,6 @@ class WikifunctionsUsageStore {
 		return $this->cache->buildGetWithSetCallback()
 			->globalKey( 'WikiLambda-usage-summary', (string)$functionId )
 			->lifetime( self::SUMMARY_CACHE_TTL )
-			->keepStaleFor( self::SUMMARY_CACHE_STALE_TTL )
 			->allowStale( self::SUMMARY_CACHE_LOCK )
 			->callback( $callback )
 			->fetch();
