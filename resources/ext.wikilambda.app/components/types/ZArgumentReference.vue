@@ -10,7 +10,10 @@
 		data-testid="z-argument-reference"
 	>
 		<template v-if="!edit">
-			<cdx-icon :icon="icon"></cdx-icon>
+			<cdx-icon
+				:icon="icon"
+				class="ext-wikilambda-app-argument-reference__icon"
+			></cdx-icon>
 			<span
 				:lang="argumentLabelData.langCode"
 				:dir="argumentLabelData.langDir"
@@ -217,6 +220,10 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-argument-reference {
+	.ext-wikilambda-app-argument-reference__icon.cdx-icon {
+		padding-inline-end: @spacing-25;
+	}
+
 	.ext-wikilambda-app-argument-reference__errors {
 		margin-top: @spacing-50;
 	}
