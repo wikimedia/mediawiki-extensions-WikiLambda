@@ -578,6 +578,10 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-object-string-renderer__text {
 		margin: 0;
 		line-height: @spacing-200;
+		// T407594: Ensure proper word breaking and wrapping for long strings.
+		// For example: rational numbers examples
+		word-break: normal;
+		overflow-wrap: anywhere;
 	}
 
 	.ext-wikilambda-app-object-string-renderer__rendering {
@@ -596,5 +600,11 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-object-string-renderer__examples-link {
 		.cdx-mixin-link();
 	}
+}
+
+// T407594: The dialog teleports out of the component root, so this rule is not nested.
+.ext-wikilambda-app-object-string-renderer__examples {
+	word-break: normal;
+	overflow-wrap: anywhere;
 }
 </style>
