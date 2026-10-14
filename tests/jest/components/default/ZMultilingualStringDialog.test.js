@@ -147,7 +147,7 @@ describe( 'ZMultilingualStringDialog', () => {
 		it( 'displays available languages that are not visible', async () => {
 			const wrapper = renderZMultilingualStringDialog();
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 			// Should display non-visible languages (Spanish, French, Russian)
 			// English (Z1002) is visible, so should not be in the available list
@@ -158,7 +158,7 @@ describe( 'ZMultilingualStringDialog', () => {
 		it( 'shows suggested languages section when no items are available', async () => {
 			const wrapper = renderZMultilingualStringDialog( { items: mockEmptyItems } );
 
-			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__group-title' );
+			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__group-title' );
 			expect( sectionTitles.length ).toBeGreaterThan( 0 );
 			// Check for suggested languages label
 			const suggestedSection = sectionTitles.some( ( title ) => title.text().toLowerCase().includes( 'suggest' ) );
@@ -169,12 +169,12 @@ describe( 'ZMultilingualStringDialog', () => {
 		it( 'displays language items with their labels and values', async () => {
 			const wrapper = renderZMultilingualStringDialog();
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 			// Each item should have a title (language name) and field (value or "add language")
 			languageItems.forEach( ( item ) => {
-				const title = item.find( '.ext-wikilambda-app-z-multilingual-string-dialog__item-title' );
-				const field = item.find( '.ext-wikilambda-app-z-multilingual-string-dialog__item-field' );
+				const title = item.find( '.ext-wikilambda-app-dialog-item-list__item-title' );
+				const field = item.find( '.ext-wikilambda-app-dialog-item-list__item-description' );
 
 				expect( title.exists() ).toBe( true );
 				expect( field.exists() ).toBe( true );
@@ -184,7 +184,7 @@ describe( 'ZMultilingualStringDialog', () => {
 		it( 'displays languages in sorted order', () => {
 			const wrapper = renderZMultilingualStringDialog();
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item-title' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item-title' );
 
 			if ( languageItems.length > 1 ) {
 				const labels = languageItems.map( ( item ) => item.text() );
@@ -197,29 +197,23 @@ describe( 'ZMultilingualStringDialog', () => {
 	} );
 
 	describe( 'user interactions', () => {
-		it( 'shows cancel button when search input is focused', async () => {
+		it( 'has a search input with a clear button and no cancel button', () => {
 			const wrapper = renderZMultilingualStringDialog();
 
 			const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
-			await searchInput.vm.$emit( 'focus' );
-
-			const cancelButton = wrapper.find( '.ext-wikilambda-app-z-multilingual-string-dialog__search-cancel' );
-			expect( cancelButton.exists() ).toBe( true );
+			expect( searchInput.props( 'clearable' ) ).toBe( true );
+			expect( wrapper.findAll( 'button' ).filter( ( button ) => button.text() === 'Cancel' ).length ).toBe( 0 );
 		} );
 
-		it( 'clears search when cancel button is clicked', async () => {
+		it( 'clears the search when the clear button of the search input is clicked', async () => {
 			const wrapper = renderZMultilingualStringDialog();
 
 			// First type in search
 			const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 			await searchInput.setValue( 'test search' );
-			await searchInput.vm.$emit( 'focus' );
 
-			const cancelButton = wrapper.find( '.ext-wikilambda-app-z-multilingual-string-dialog__search-cancel' );
-			expect( cancelButton.exists() ).toBe( true );
-
-			// Click cancel button
-			await cancelButton.trigger( 'click' );
+			// Click the clear button of the search input
+			await wrapper.find( '.cdx-text-input__clear-icon' ).trigger( 'click' );
 
 			// Search input should be cleared
 			expect( searchInput.props( 'modelValue' ) ).toBe( '' );
@@ -247,7 +241,7 @@ describe( 'ZMultilingualStringDialog', () => {
 			} );
 
 			// Should display the lookup results
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 		} );
 
@@ -266,14 +260,14 @@ describe( 'ZMultilingualStringDialog', () => {
 			await searchInput.setValue( '' );
 
 			// Should return to showing regular available languages
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThanOrEqual( 0 );
 		} );
 
 		it( 'emits add-language event when a language item is clicked in edit mode', async () => {
 			const wrapper = renderZMultilingualStringDialog();
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
 			// Find and click the button inside the language item (Spanish or Russian)
@@ -290,7 +284,7 @@ describe( 'ZMultilingualStringDialog', () => {
 		it( 'emits add-language event when a language item is clicked in view mode', async () => {
 			const wrapper = renderZMultilingualStringDialog( { edit: false } );
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
 			// Find and click the button inside the language item
@@ -314,12 +308,12 @@ describe( 'ZMultilingualStringDialog', () => {
 
 			// The English item should be in the list but marked differently
 			// When clicked, it should close the dialog instead of adding
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 
 			// Find the English item by checking if it has a value (not "add language" text)
 			let englishItemButton;
 			for ( const item of languageItems ) {
-				const field = item.find( '.ext-wikilambda-app-z-multilingual-string-dialog__item-field' );
+				const field = item.find( '.ext-wikilambda-app-dialog-item-list__item-description' );
 				const addLanguageSpan = field.find( '.ext-wikilambda-app-z-multilingual-string-dialog__item-add-language' );
 
 				// If it has a value (not "add language"), it's the visible one
@@ -357,7 +351,7 @@ describe( 'ZMultilingualStringDialog', () => {
 				expect( store.fetchZids ).toHaveBeenCalled();
 			} );
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
 			// Click the button inside a language item that's not in the store
@@ -389,18 +383,18 @@ describe( 'ZMultilingualStringDialog', () => {
 			const wrapper = renderZMultilingualStringDialog( { items: mockEmptyItems } );
 
 			// Should display suggested languages section
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 
 			// Should display section title for suggested languages
-			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__group-title' );
+			const sectionTitles = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__group-title' );
 			expect( sectionTitles.length ).toBeGreaterThan( 0 );
 		} );
 
 		it( 'displays suggested language items with add language text', () => {
 			const wrapper = renderZMultilingualStringDialog( { items: mockEmptyItems } );
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 
 			// Each suggested language should show "add language" text (no value yet)
 			languageItems.forEach( ( item ) => {
@@ -449,7 +443,7 @@ describe( 'ZMultilingualStringDialog', () => {
 			const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
 			await searchInput.setValue( 'russian' );
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			expect( languageItems.length ).toBeGreaterThan( 0 );
 			// Should have called the API
 			expect( store.lookupZObjectLabels ).toHaveBeenCalled();
@@ -466,7 +460,7 @@ describe( 'ZMultilingualStringDialog', () => {
 				expect( store.lookupZObjectLabels ).toHaveBeenCalled();
 			} );
 
-			const languageItems = wrapper.findAll( '.ext-wikilambda-app-z-multilingual-string-dialog__item' );
+			const languageItems = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 			// Should display search results
 			expect( languageItems.length ).toBeGreaterThanOrEqual( 0 );
 		} );

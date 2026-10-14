@@ -44,9 +44,11 @@ describe( 'AbstractContentSection', () => {
 				provide: {
 					useMenuAction: () => mockMenuActions
 				},
+				renderStubDefaultSlot: true,
 				stubs: {
 					'wl-abstract-content-fragment': true,
-					'cdx-menu-button': true,
+					'wl-abstract-add-content-dialog': true,
+					'cdx-button': true,
 					'cdx-icon': true
 				}
 			},
@@ -92,22 +94,10 @@ describe( 'AbstractContentSection', () => {
 			action_source: 'abstractwiki'
 		};
 
-		it( 'emits change event when adding an empty fragment', () => {
-			const wrapper = renderSection();
-
-			wrapper.findComponent( { name: 'cdx-menu-button' } )
-				.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT );
-
-			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
-				'change',
-				Object.assign( {}, identity, { action_subtype: 'add_fragment_empty' } )
-			);
-		} );
-
 		it( 'emits change event with the function zid when adding a suggested fragment', () => {
 			const wrapper = renderSection();
 
-			wrapper.findComponent( { name: 'cdx-menu-button' } ).vm.$emit( 'update:selected', 'Z10001' );
+			wrapper.findComponent( { name: 'wl-abstract-add-content-dialog' } ).vm.$emit( 'select', 'Z10001' );
 
 			expect( mw.testKitchen.getInstrument().send ).toHaveBeenCalledWith(
 				'change',
@@ -188,54 +178,53 @@ describe( 'AbstractContentSection', () => {
 		expect( fragment.props( 'edit' ) ).toBe( true );
 	} );
 
-	it( 'does not show add fragment menu button when edit=false', () => {
+	it( 'does not show the add content button and dialog when edit=false', () => {
 		const wrapper = renderSection( { edit: false } );
 
-		const button = wrapper.findComponent( { name: 'cdx-menu-button' } );
-		expect( button.exists() ).toBe( false );
+		expect( wrapper.findComponent( { name: 'cdx-button' } ).exists() ).toBe( false );
+		expect( wrapper.findComponent( { name: 'wl-abstract-add-content-dialog' } ).exists() ).toBe( false );
 	} );
 
-	it( 'shows add fragment menu button when edit=true', () => {
+	it( 'shows the add content button and a closed dialog when edit=true', () => {
 		const wrapper = renderSection();
 
-		const button = wrapper.findComponent( { name: 'cdx-menu-button' } );
+		const button = wrapper.findComponent( { name: 'cdx-button' } );
 		expect( button.exists() ).toBe( true );
+		expect( button.text() ).toContain( 'Add content' );
+		const dialog = wrapper.findComponent( { name: 'wl-abstract-add-content-dialog' } );
+		expect( dialog.exists() ).toBe( true );
+		expect( dialog.props( 'open' ) ).toBe( false );
 	} );
 
-	it( 'adds special function fragments to the menu button', () => {
+	it( 'opens the add content dialog when clicking the add content button', async () => {
 		const wrapper = renderSection();
 
-		const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
-		const menuItems = menuButton.props( 'menuItems' );
+		const button = wrapper.findComponent( { name: 'cdx-button' } );
+		button.vm.$emit( 'click' );
+		await wrapper.vm.$nextTick();
 
-		// Expect two sections
-		expect( menuItems.length ).toBe( 2 );
-		// Expect second section to contain two items
-		expect( menuItems[ 1 ].items.length ).toBe( 2 );
-		expect( menuItems[ 1 ].items[ 0 ].value ).toBe( 'Z10001' );
-		expect( menuItems[ 1 ].items[ 0 ].label ).toBe( 'Add section title' );
-		expect( menuItems[ 1 ].items[ 1 ].value ).toBe( 'Z10002' );
-		expect( menuItems[ 1 ].items[ 1 ].label ).toBe( 'Add paragraph' );
+		const dialog = wrapper.findComponent( { name: 'wl-abstract-add-content-dialog' } );
+		expect( dialog.props( 'open' ) ).toBe( true );
 	} );
 
-	it( 'adds a fragment at the end when clicking add fragment', () => {
+	it( 'closes the add content dialog without adding a fragment', async () => {
 		const wrapper = renderSection();
 
-		const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
-		menuButton.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT );
+		wrapper.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
+		await wrapper.vm.$nextTick();
+		const dialog = wrapper.findComponent( { name: 'wl-abstract-add-content-dialog' } );
+		dialog.vm.$emit( 'close-dialog' );
+		await wrapper.vm.$nextTick();
 
-		expect( mockMenuActions.addListItem ).toHaveBeenCalledWith(
-			{ type: Constants.Z_FUNCTION_CALL },
-			section.fragmentsPath,
-			section.fragments.length
-		);
+		expect( dialog.props( 'open' ) ).toBe( false );
+		expect( mockMenuActions.addListItem ).not.toHaveBeenCalled();
 	} );
 
-	it( 'adds a function fragment at the end when clicking add special fragment', () => {
+	it( 'adds a function fragment at the end when selecting a suggested function', () => {
 		const wrapper = renderSection();
 
-		const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
-		menuButton.vm.$emit( 'update:selected', 'Z10001' );
+		const dialog = wrapper.findComponent( { name: 'wl-abstract-add-content-dialog' } );
+		dialog.vm.$emit( 'select', 'Z10001' );
 
 		expect( mockMenuActions.addListItem ).toHaveBeenCalledWith(
 			{ type: Constants.Z_FUNCTION_CALL, value: 'Z10001' },

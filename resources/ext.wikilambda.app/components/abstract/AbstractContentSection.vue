@@ -59,19 +59,21 @@
 				:style="{ top: `${ insertionOffset }px` }"
 			></div>
 		</div>
-		<!-- Add fragment menu button in edit mode -->
-		<cdx-menu-button
-			v-if="edit"
-			class="ext-wikilambda-app-abstract-content-section-fragment-menu"
-			action="default"
-			weight="normal"
-			:aria-label="i18n( 'wikilambda-abstract-menu-fragments-accessible-label' ).text()"
-			:menu-items="menuItems"
-			:selected="null"
-			@update:selected="addFragment"
-		>
-			<cdx-icon :icon="iconAdd"></cdx-icon>
-		</cdx-menu-button>
+		<!-- Add content button and dialog in edit mode -->
+		<template v-if="edit">
+			<cdx-button
+				class="ext-wikilambda-app-abstract-content-section-add-content"
+				@click="openAddContentDialog"
+			>
+				<cdx-icon :icon="iconAdd"></cdx-icon>
+				{{ i18n( 'wikilambda-abstract-add-content-button-label' ).text() }}
+			</cdx-button>
+			<wl-abstract-add-content-dialog
+				:open="showAddContentDialog"
+				@close-dialog="closeAddContentDialog"
+				@select="addContent"
+			></wl-abstract-add-content-dialog>
+		</template>
 		<wl-clipboard-dialog
 			:open="showClipboard"
 			expected-type="Z89"
@@ -82,7 +84,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, nextTick, ref, watch } = require( 'vue' );
+const { defineComponent, inject, nextTick, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useEventLog = require( '../../composables/useEventLog.js' );
@@ -94,11 +96,12 @@ const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
 const { getListItemKey } = require( '../../utils/zobjectUtils.js' );
 
 // Abstract components
+const AbstractAddContentDialog = require( './AbstractAddContentDialog.vue' );
 const AbstractContentFragment = require( './AbstractContentFragment.vue' );
 // Base components
 const ClipboardDialog = require( '../base/ClipboardDialog.vue' );
 // Codex components
-const { CdxMenuButton, CdxIcon } = require( '../../../codex.js' );
+const { CdxButton, CdxIcon } = require( '../../../codex.js' );
 
 // Event subtypes for the fragment actions that we log. The clipboard actions are
 // absent on purpose: the clipboard store and dialog log them as copy and paste.
@@ -117,9 +120,10 @@ const GAP_SPACE = 4;
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-content-section',
 	components: {
+		'wl-abstract-add-content-dialog': AbstractAddContentDialog,
 		'wl-abstract-content-fragment': AbstractContentFragment,
 		'wl-clipboard-dialog': ClipboardDialog,
-		'cdx-menu-button': CdxMenuButton,
+		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
 	props: {
@@ -182,33 +186,22 @@ module.exports = exports = defineComponent( {
 			closeClipboard();
 		}
 
+		// Add content dialog vars
+		const showAddContentDialog = ref( false );
+
 		/**
-		 * Returns the menu items for the Add fragment [+] menu button.
-		 *
-		 * @return {Array}
+		 * Opens the Add content dialog.
 		 */
-		const menuItems = computed( () => {
-			const basicActionGroup = {
-				label: i18n( 'wikilambda-abstract-menu-group-basic-fragments' ).text(),
-				hideLabel: true,
-				items: [ {
-					label: i18n( 'wikilambda-abstract-menu-option-add-empty-fragment' ).text(),
-					value: Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT
-				} ]
-			};
-			const specialActionGroup = {
-				label: i18n( 'wikilambda-abstract-menu-group-special-fragments' ).text(),
-				hideLabel: true,
-				items: store.getSuggestedHtmlFunctions.map( ( zid ) => ( {
-					label: i18n( 'wikilambda-abstract-menu-option-add-named-fragment',
-						store.getLabelData( zid ).label ).text(),
-					value: zid
-				} ) )
-			};
-			return store.getSuggestedHtmlFunctions.length > 0 ?
-				[ basicActionGroup, specialActionGroup ] :
-				[ basicActionGroup ];
-		} );
+		function openAddContentDialog() {
+			showAddContentDialog.value = true;
+		}
+
+		/**
+		 * Closes the Add content dialog with no action.
+		 */
+		function closeAddContentDialog() {
+			showAddContentDialog.value = false;
+		}
 
 		/**
 		 * Adds a new fragment at the end of the list
@@ -216,17 +209,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value
 		 */
 		function addFragment( value ) {
-			if ( value === Constants.LIST_MENU_OPTIONS.ADD_FRAGMENT ) {
-				addListItem(
-					{ type: Constants.Z_FUNCTION_CALL },
-					props.section.fragmentsPath,
-					props.section.fragments.length
-				);
-				submitInteraction( 'change', store.getInteractionData, 'add_fragment_empty' );
-				return;
-			}
-
-			// Any other value is a zid, we need to:
+			// The value is a zid, we need to:
 			// * make sure it's a function zid
 			// * make sure function returns HTML
 			// * create function call to this function
@@ -267,6 +250,17 @@ module.exports = exports = defineComponent( {
 				selectedfunctionzid: value
 			} );
 			submitInteraction( 'change', interactionData, 'add_fragment_suggested' );
+		}
+
+		/**
+		 * Closes the Add content dialog and adds the selected content
+		 * at the end of the section.
+		 *
+		 * @param {string} value
+		 */
+		function addContent( value ) {
+			closeAddContentDialog();
+			addFragment( value );
 		}
 
 		/**
@@ -549,8 +543,10 @@ module.exports = exports = defineComponent( {
 			startDrag,
 			pasteFromClipboard,
 			showClipboard,
-			addFragment,
-			menuItems,
+			addContent,
+			closeAddContentDialog,
+			openAddContentDialog,
+			showAddContentDialog,
 			performAction,
 			regenerateHash,
 			getListItemKey,

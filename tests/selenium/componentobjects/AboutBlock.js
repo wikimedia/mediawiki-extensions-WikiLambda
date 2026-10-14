@@ -199,7 +199,8 @@ class AboutBlock {
 	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getLanguageItem( language ) {
-		const itemSelector = `.//div[text()="${ language }"]`;
+		const itemSelector = './/span[contains(@class,"ext-wikilambda-app-dialog-item-list__item-title")' +
+			` and normalize-space()="${ language }"]`;
 		const itemElement = await this.languagesDialogBox.$( itemSelector );
 		await itemElement.waitForDisplayed();
 		return itemElement.parentElement();

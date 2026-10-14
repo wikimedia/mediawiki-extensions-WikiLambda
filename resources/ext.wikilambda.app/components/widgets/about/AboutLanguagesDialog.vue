@@ -26,77 +26,49 @@
 						data-testid="search-language"
 						class="ext-wikilambda-app-about-languages-dialog__search-input"
 						:placeholder="i18n( 'wikilambda-about-widget-search-language-placeholder' ).text()"
+						clearable
 						@update:model-value="updateSearchTerm"
-						@focus="showSearchCancel = true"
 					></cdx-search-input>
-					<cdx-button
-						v-if="showSearchCancel"
-						action="default"
-						weight="quiet"
-						class="ext-wikilambda-app-about-languages-dialog__search-cancel"
-						@click="clearSearch"
-					>
-						{{ i18n( 'wikilambda-cancel' ).text() }}
-					</cdx-button>
 				</div>
 			</template>
 			<!-- Dialog Body: Language Items block -->
-			<div class="ext-wikilambda-app-about-languages-dialog__items">
-				<section
-					v-for="group in itemGroups"
-					:key="group.id"
-					class="ext-wikilambda-app-about-languages-dialog__group"
-				>
-					<h3
-						v-if="group.title"
-						class="ext-wikilambda-app-about-languages-dialog__group-title"
+			<wl-dialog-item-list
+				class="ext-wikilambda-app-about-languages-dialog__items"
+				:groups="itemGroups"
+				item-key="langZid"
+				@select="( item ) => editLanguage( item.langZid )"
+			>
+				<template #item="{ item }">
+					<span
+						class="ext-wikilambda-app-dialog-item-list__item-title"
+						:lang="item.langLabelData.langCode"
+						:dir="item.langLabelData.langDir"
 					>
-						{{ group.title }}
-					</h3>
-					<ul class="ext-wikilambda-app-list-reset ext-wikilambda-app-about-languages-dialog__list">
-						<li
-							v-for="( item, index ) in group.items"
-							:key="`dialog-lang-${group.id}-${index}`"
-							class="ext-wikilambda-app-about-languages-dialog__item"
-						>
-							<button
-								type="button"
-								class="ext-wikilambda-app-button-reset
-									ext-wikilambda-app-about-languages-dialog__item-button"
-								@click="editLanguage( item.langZid )"
-							>
-								<div
-									class="ext-wikilambda-app-about-languages-dialog__item-title"
-									:lang="item.langLabelData.langCode"
-									:dir="item.langLabelData.langDir"
-								>
-									{{ item.langLabelData.label }}
-								</div>
-								<div class="ext-wikilambda-app-about-languages-dialog__item-field">
-									<span
-										v-if="item.hasMultilingualData"
-										:class="{
-											'ext-wikilambda-app-about-languages-dialog__item-untitled': !item.hasName
-										}"
-									>{{ item.name }}</span>
-									<span v-else class="ext-wikilambda-app-about-languages-dialog__item-add-language">
-										{{ i18n( 'wikilambda-about-widget-add-language' ).text() }}
-									</span>
-								</div>
-							</button>
-						</li>
-					</ul>
-				</section>
-			</div>
+						{{ item.langLabelData.label }}
+					</span>
+					<span class="ext-wikilambda-app-dialog-item-list__item-description">
+						<span
+							v-if="item.hasMultilingualData"
+							:class="{
+								'ext-wikilambda-app-about-languages-dialog__item-untitled': !item.hasName
+							}"
+						>{{ item.name }}</span>
+						<span v-else class="ext-wikilambda-app-about-languages-dialog__item-add-language">
+							{{ i18n( 'wikilambda-about-widget-add-language' ).text() }}
+						</span>
+					</span>
+				</template>
+			</wl-dialog-item-list>
 		</cdx-dialog>
 	</div>
 </template>
 
 <script>
 const { computed, defineComponent, inject, ref } = require( 'vue' );
-const { CdxButton, CdxDialog, CdxSearchInput } = require( '../../../../codex.js' );
+const { CdxDialog, CdxSearchInput } = require( '../../../../codex.js' );
 const Constants = require( '../../../Constants.js' );
 const CustomDialogHeader = require( '../../base/CustomDialogHeader.vue' );
+const DialogItemList = require( '../../base/DialogItemList.vue' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const useMainStore = require( '../../../store/index.js' );
 const { createLabelComparator } = require( '../../../utils/sortUtils.js' );
@@ -104,10 +76,10 @@ const { createLabelComparator } = require( '../../../utils/sortUtils.js' );
 module.exports = exports = defineComponent( {
 	name: 'wl-about-languages-dialog',
 	components: {
-		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
 		'cdx-search-input': CdxSearchInput,
-		'wl-custom-dialog-header': CustomDialogHeader
+		'wl-custom-dialog-header': CustomDialogHeader,
+		'wl-dialog-item-list': DialogItemList
 	},
 	props: {
 		open: {
@@ -123,7 +95,6 @@ module.exports = exports = defineComponent( {
 
 		// Search functionality
 		const searchTerm = ref( '' );
-		const showSearchCancel = ref( false );
 
 		// Lookup results
 		const lookupResults = ref( [] );
@@ -137,7 +108,6 @@ module.exports = exports = defineComponent( {
 		function closeDialog() {
 			searchTerm.value = '';
 			lookupResults.value = [];
-			showSearchCancel.value = false;
 			emit( 'close-dialog' );
 		}
 
@@ -238,17 +208,9 @@ module.exports = exports = defineComponent( {
 		// Search functionality
 
 		/**
-		 * Clear the search field and results
-		 */
-		function clearSearch() {
-			searchTerm.value = '';
-			updateSearchTerm( '' );
-			showSearchCancel.value = false;
-		}
-
-		/**
 		 * Update the lookupResults when there's a new search
-		 * term in the language search box.
+		 * term in the language search box. The clear button of
+		 * the search box sets an empty term, which clears the results.
 		 *
 		 * @param {string} value
 		 */
@@ -379,13 +341,11 @@ module.exports = exports = defineComponent( {
 		} );
 
 		return {
-			clearSearch,
 			closeDialog,
 			editLanguage,
 			itemGroups,
 			i18n,
 			searchTerm,
-			showSearchCancel,
 			updateSearchTerm
 		};
 	}
@@ -402,48 +362,6 @@ module.exports = exports = defineComponent( {
 
 	.ext-wikilambda-app-about-languages-dialog__search {
 		padding: @spacing-100 0 0;
-		display: flex;
-		gap: @spacing-150;
-	}
-
-	.ext-wikilambda-app-about-languages-dialog__search-input {
-		flex-grow: 1;
-	}
-
-	.ext-wikilambda-app-about-languages-dialog__search-cancel {
-		flex-grow: 0;
-	}
-
-	.ext-wikilambda-app-about-languages-dialog__group-title {
-		padding: @spacing-50 @spacing-150;
-		margin: 0;
-		font-weight: @font-weight-bold;
-		color: @color-subtle;
-		font-size: inherit;
-	}
-
-	.ext-wikilambda-app-about-languages-dialog__item {
-		margin: 0;
-		padding: 0;
-	}
-
-	.ext-wikilambda-app-about-languages-dialog__item-button {
-		width: 100%;
-		padding: @spacing-50 @spacing-150;
-		text-align: left;
-
-		&:hover {
-			background-color: @background-color-interactive;
-		}
-	}
-
-	.ext-wikilambda-app-about-languages-dialog__item-title {
-		margin: 0;
-	}
-
-	.ext-wikilambda-app-about-languages-dialog__item-field {
-		margin: 0;
-		color: @color-subtle;
 	}
 
 	.ext-wikilambda-app-about-languages-dialog__item-untitled {

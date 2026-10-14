@@ -94,26 +94,51 @@ describe( 'AboutLanguagesDialog', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-about-languages-dialog__search' ).exists() ).toBe( true );
 	} );
 
+	it( 'renders a search box with a clear button and no cancel button', () => {
+		const wrapper = renderAboutLanguagesDialog();
+
+		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
+		expect( searchInput.props( 'clearable' ) ).toBe( true );
+		expect( wrapper.findAll( 'button' ).filter( ( button ) => button.text() === 'Cancel' ).length ).toBe( 0 );
+	} );
+
+	it( 'shows the languages again when the clear button of the search box is clicked', async () => {
+		store.lookupZObjectLabels.mockResolvedValue( mockLookupLanguages );
+		const wrapper = renderAboutLanguagesDialog();
+		const initialCount = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' ).length;
+
+		const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
+		searchInput.vm.$emit( 'update:modelValue', 'Chin' );
+		await waitFor( () => {
+			expect( wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' ).length ).toBe( 3 );
+		} );
+
+		await wrapper.find( '.cdx-text-input__clear-icon' ).trigger( 'click' );
+
+		expect( searchInput.props( 'modelValue' ) ).toBe( '' );
+		expect( wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' ).length ).toBe( initialCount );
+	} );
+
 	it( 'renders user language and fallback chain under "Suggested languages"', () => {
 		const wrapper = renderAboutLanguagesDialog();
 
 		// Find the suggested languages section
-		const sections = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__group' );
+		const sections = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__group' );
 		const suggestedSection = sections.find( ( section ) => {
-			const title = section.find( '.ext-wikilambda-app-about-languages-dialog__group-title' );
+			const title = section.find( '.ext-wikilambda-app-dialog-item-list__group-title' );
 			return title.exists() && title.text().includes( 'Suggested languages' );
 		} );
 		expect( suggestedSection.exists() ).toBe( true );
 
 		// Find items in the suggested section
-		const items = suggestedSection.findAll( '.ext-wikilambda-app-about-languages-dialog__item' );
+		const items = suggestedSection.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 		// Spanish
-		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Español' );
-		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field' ).text() ).toBe( 'Nombre' );
+		expect( items[ 0 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Español' );
+		expect( items[ 0 ].find( '.ext-wikilambda-app-dialog-item-list__item-description' ).text() ).toBe( 'Nombre' );
 		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( false );
 		// English
-		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'English' );
-		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field' ).text() ).toBe( 'Name' );
+		expect( items[ 1 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'English' );
+		expect( items[ 1 ].find( '.ext-wikilambda-app-dialog-item-list__item-description' ).text() ).toBe( 'Name' );
 		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( false );
 	} );
 
@@ -121,34 +146,34 @@ describe( 'AboutLanguagesDialog', () => {
 		const wrapper = renderAboutLanguagesDialog();
 
 		// Find the other languages section
-		const sections = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__group' );
+		const sections = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__group' );
 		const otherSection = sections.find( ( section ) => {
-			const title = section.find( '.ext-wikilambda-app-about-languages-dialog__group-title' );
+			const title = section.find( '.ext-wikilambda-app-dialog-item-list__group-title' );
 			return title.exists() && title.text().includes( 'Other languages' );
 		} );
 		expect( otherSection.exists() ).toBe( true );
 
 		// Find items in the other section
-		const items = otherSection.findAll( '.ext-wikilambda-app-about-languages-dialog__item' );
+		const items = otherSection.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 		// Croatian
-		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Croatian' );
-		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field' ).text() ).toBe( 'Untitled' );
+		expect( items[ 0 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Croatian' );
+		expect( items[ 0 ].find( '.ext-wikilambda-app-dialog-item-list__item-description' ).text() ).toBe( 'Untitled' );
 		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( true );
 		// Euskera
-		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Euskera' );
-		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field' ).text() ).toBe( 'Izena' );
+		expect( items[ 1 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Euskera' );
+		expect( items[ 1 ].find( '.ext-wikilambda-app-dialog-item-list__item-description' ).text() ).toBe( 'Izena' );
 		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( false );
 		// Italian
-		expect( items[ 2 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Italian' );
-		expect( items[ 2 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field' ).text() ).toBe( 'Untitled' );
+		expect( items[ 2 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Italian' );
+		expect( items[ 2 ].find( '.ext-wikilambda-app-dialog-item-list__item-description' ).text() ).toBe( 'Untitled' );
 		expect( items[ 2 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( true );
 		// Quechua
-		expect( items[ 3 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Quechua' );
-		expect( items[ 3 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field' ).text() ).toBe( 'Suti' );
+		expect( items[ 3 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Quechua' );
+		expect( items[ 3 ].find( '.ext-wikilambda-app-dialog-item-list__item-description' ).text() ).toBe( 'Suti' );
 		expect( items[ 3 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( false );
 		// Telugu
-		expect( items[ 4 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Telugu' );
-		expect( items[ 4 ].find( '.ext-wikilambda-app-about-languages-dialog__item-field' ).text() ).toBe( 'Untitled' );
+		expect( items[ 4 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Telugu' );
+		expect( items[ 4 ].find( '.ext-wikilambda-app-dialog-item-list__item-description' ).text() ).toBe( 'Untitled' );
 		expect( items[ 4 ].find( '.ext-wikilambda-app-about-languages-dialog__item-untitled' ).exists() ).toBe( true );
 	} );
 
@@ -170,25 +195,25 @@ describe( 'AboutLanguagesDialog', () => {
 		} );
 
 		// Find the other languages section
-		const sections = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__group' );
+		const sections = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__group' );
 		const otherSection = sections.find( ( section ) => {
-			const title = section.find( '.ext-wikilambda-app-about-languages-dialog__group-title' );
+			const title = section.find( '.ext-wikilambda-app-dialog-item-list__group-title' );
 			return title.exists() && title.text().includes( 'Other languages' );
 		} );
 		expect( otherSection.exists() ).toBe( true );
 
 		// Find items in the other section
-		const items = otherSection.findAll( '.ext-wikilambda-app-about-languages-dialog__item' );
+		const items = otherSection.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 		// The fallback languages (English and Español) have been removed from "Other languages".
 		// The remaining languages (by their zids) are: Z1314 (Euskera), Z1678 (Quechua),
 		// Z1787 (Italian), Z1272 (croatian), and Z1429 (Telugu).
 		// When sorted case-insensitively, the expected order is:
 		// "croatian", "Euskera", "Italian", "Quechua", "Telugu"
-		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'croatian' );
-		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Euskera' );
-		expect( items[ 2 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Italian' );
-		expect( items[ 3 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Quechua' );
-		expect( items[ 4 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Telugu' );
+		expect( items[ 0 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'croatian' );
+		expect( items[ 1 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Euskera' );
+		expect( items[ 2 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Italian' );
+		expect( items[ 3 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Quechua' );
+		expect( items[ 4 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Telugu' );
 	} );
 
 	it( 'triggers language lookup when writing in the search box', async () => {
@@ -201,16 +226,16 @@ describe( 'AboutLanguagesDialog', () => {
 
 		// Wait until lookup results are rendered
 		await waitFor( () => {
-			expect( wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__item' ).length ).toBe( 3 );
+			expect( wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' ).length ).toBe( 3 );
 		} );
 
 		// Shows the lookup results:
-		const items = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__item' );
-		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Chinese' );
+		const items = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
+		expect( items[ 0 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Chinese' );
 		expect( items[ 0 ].find( '.ext-wikilambda-app-about-languages-dialog__item-add-language' ).text() ).toBe( 'Add language' );
-		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Kachin' );
+		expect( items[ 1 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Kachin' );
 		expect( items[ 1 ].find( '.ext-wikilambda-app-about-languages-dialog__item-add-language' ).text() ).toBe( 'Add language' );
-		expect( items[ 2 ].find( '.ext-wikilambda-app-about-languages-dialog__item-title' ).text() ).toBe( 'Wu Chinese' );
+		expect( items[ 2 ].find( '.ext-wikilambda-app-dialog-item-list__item-title' ).text() ).toBe( 'Wu Chinese' );
 		expect( items[ 2 ].find( '.ext-wikilambda-app-about-languages-dialog__item-add-language' ).text() ).toBe( 'Add language' );
 
 		// Fetches additional language information:
@@ -226,7 +251,7 @@ describe( 'AboutLanguagesDialog', () => {
 	it( 'emits add-language event when clicking on an item', () => {
 		const wrapper = renderAboutLanguagesDialog();
 
-		const items = wrapper.findAll( '.ext-wikilambda-app-about-languages-dialog__item' );
+		const items = wrapper.findAll( '.ext-wikilambda-app-dialog-item-list__item' );
 
 		// ACT: click on Euskera item button
 		const language = items[ 3 ];
