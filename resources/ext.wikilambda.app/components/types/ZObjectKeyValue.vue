@@ -207,6 +207,7 @@ module.exports = exports = defineComponent( {
 			getZMonolingualLangValue,
 			getZObjectType,
 			getZReferenceTerminalValue,
+			hasArgumentReference,
 			isWikidataFetch,
 			key,
 			parentKey,
@@ -458,7 +459,15 @@ module.exports = exports = defineComponent( {
 			// Set layout config for types with renderer:
 			// If there's no built-in component yet, check if the type has a string renderer.
 			// The renderer component will allow expansion but will handle expansion internally.
-			if ( !layout.component && store.hasRenderer( type.value ) && store.hasParser( type.value ) ) {
+			// The renderer cannot run with an object that contains argument references (e.g. a
+			// literal in a composition), so use the default layout. The check does not read
+			// string and reference values, so typing in a field does not run it again.
+			if (
+				!layout.component &&
+				store.hasRenderer( type.value ) &&
+				store.hasParser( type.value ) &&
+				!hasArgumentReference( props.objectValue )
+			) {
 				// TODO (T359669): Currently there are no type distinctions between renderers,
 				// all are string renderers. Whenever we create more types of renderers,
 				// we should consider checking the right type in here.

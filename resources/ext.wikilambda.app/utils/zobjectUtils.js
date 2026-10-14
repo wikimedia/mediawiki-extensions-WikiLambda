@@ -849,6 +849,42 @@ const zobjectUtils = {
 	},
 
 	/**
+	 * Returns whether the given object contains an argument reference/Z18
+	 * at any level. E.g. a literal inside a composition can contain function
+	 * calls that use the composition arguments. Only the enclosing function
+	 * call can resolve these argument references.
+	 *
+	 * The function does not read the values of strings/Z6 and references/Z9,
+	 * because these cannot contain an argument reference. Thus, a computed
+	 * property that calls this function does not run again when the user
+	 * types in a field. It runs again only when the object structure changes.
+	 *
+	 * The input object can be canonical or hybrid.
+	 *
+	 * @param {Object|Array|string} value
+	 * @return {boolean}
+	 */
+	hasArgumentReference: function ( value ) {
+		if ( !value || typeof value !== 'object' ) {
+			return false;
+		}
+
+		if ( Array.isArray( value ) ) {
+			return value.some( ( item ) => zobjectUtils.hasArgumentReference( item ) );
+		}
+
+		const type = zobjectUtils.getZObjectType( value );
+		if ( type === Constants.Z_ARGUMENT_REFERENCE ) {
+			return true;
+		}
+		if ( type === Constants.Z_STRING || type === Constants.Z_REFERENCE ) {
+			return false;
+		}
+
+		return Object.keys( value ).some( ( key ) => zobjectUtils.hasArgumentReference( value[ key ] ) );
+	},
+
+	/**
 	 * Generic recursive walker for ZObjects.
 	 * Calls a callback for every object visited and returns the result of this
 	 * callback.

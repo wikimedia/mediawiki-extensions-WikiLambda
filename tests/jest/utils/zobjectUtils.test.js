@@ -2451,6 +2451,110 @@ describe( 'zobjectUtils', () => {
 		} );
 	} );
 
+	describe( 'hasArgumentReference', () => {
+		it( 'returns false for terminal and empty values', () => {
+			expect( zobjectUtils.hasArgumentReference( undefined ) ).toBe( false );
+			expect( zobjectUtils.hasArgumentReference( 'Z1002' ) ).toBe( false );
+			expect( zobjectUtils.hasArgumentReference( 'some string' ) ).toBe( false );
+		} );
+
+		it( 'returns false for a literal without argument references', () => {
+			const canonical = {
+				Z1K1: 'Z20420',
+				Z20420K1: { Z1K1: 'Z20159', Z20159K1: { Z1K1: 'Z13518', Z13518K1: '2024' } },
+				Z20420K2: 'Z16102',
+				Z20420K3: { Z1K1: 'Z13518', Z13518K1: '14' }
+			};
+			expect( zobjectUtils.hasArgumentReference( canonical ) ).toBe( false );
+			expect( zobjectUtils.hasArgumentReference( canonicalToHybrid( canonical ) ) ).toBe( false );
+		} );
+
+		it( 'returns true for an argument reference', () => {
+			const canonical = { Z1K1: 'Z18', Z18K1: 'Z10001K1' };
+			expect( zobjectUtils.hasArgumentReference( canonical ) ).toBe( true );
+			expect( zobjectUtils.hasArgumentReference( canonicalToHybrid( canonical ) ) ).toBe( true );
+		} );
+
+		it( 'returns true for a literal with a nested argument reference', () => {
+			const canonical = {
+				Z1K1: 'Z20420',
+				Z20420K1: { Z1K1: 'Z20159', Z20159K1: { Z1K1: 'Z18', Z18K1: 'Z10001K1' } },
+				Z20420K2: 'Z16102',
+				Z20420K3: { Z1K1: 'Z13518', Z13518K1: '14' }
+			};
+			expect( zobjectUtils.hasArgumentReference( canonical ) ).toBe( true );
+			expect( zobjectUtils.hasArgumentReference( canonicalToHybrid( canonical ) ) ).toBe( true );
+		} );
+
+		it( 'returns true for a literal with argument references inside function calls', () => {
+			// Simplified composition literal of Z17290
+			const canonical = {
+				Z1K1: 'Z16683',
+				Z16683K1: {
+					Z1K1: 'Z7',
+					Z7K1: 'Z16728',
+					Z16728K1: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z17105',
+						Z17105K1: { Z1K1: 'Z18', Z18K1: 'Z17120K1' }
+					}
+				}
+			};
+			expect( zobjectUtils.hasArgumentReference( canonical ) ).toBe( true );
+			expect( zobjectUtils.hasArgumentReference( canonicalToHybrid( canonical ) ) ).toBe( true );
+		} );
+
+		it( 'returns false for a literal with function calls without argument references', () => {
+			const canonical = {
+				Z1K1: 'Z10001',
+				Z10001K1: [
+					{ Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' },
+					{ Z1K1: { Z1K1: 'Z7', Z7K1: 'Z882', Z882K1: 'Z6', Z882K2: 'Z6' }, K1: 'one', K2: 'two' }
+				],
+				Z10001K2: { Z1K1: 'Z7', Z7K1: 'Z6821', Z6821K1: { Z1K1: 'Z6091', Z6091K1: 'Q42' } }
+			};
+			expect( zobjectUtils.hasArgumentReference( canonical ) ).toBe( false );
+			expect( zobjectUtils.hasArgumentReference( canonicalToHybrid( canonical ) ) ).toBe( false );
+		} );
+
+		it( 'returns true for a typed list with an argument reference', () => {
+			const canonical = {
+				Z1K1: 'Z10001',
+				Z10001K1: [ 'Z6', 'one', { Z1K1: 'Z18', Z18K1: 'Z10000K1' } ]
+			};
+			expect( zobjectUtils.hasArgumentReference( canonical ) ).toBe( true );
+			expect( zobjectUtils.hasArgumentReference( canonicalToHybrid( canonical ) ) ).toBe( true );
+		} );
+
+		it( 'in a computed, runs again when the structure changes but not when a string changes', () => {
+			const { computed, reactive } = require( 'vue' );
+			const value = reactive( canonicalToHybrid( {
+				Z1K1: 'Z20420',
+				Z20420K1: { Z1K1: 'Z13518', Z13518K1: '2024' },
+				Z20420K2: 'Z16102'
+			} ) );
+			let runs = 0;
+			const result = computed( () => {
+				runs++;
+				return zobjectUtils.hasArgumentReference( value );
+			} );
+
+			expect( result.value ).toBe( false );
+			expect( runs ).toBe( 1 );
+
+			// Type in a field: the computed does not run again
+			value.Z20420K1.Z13518K1.Z6K1 = '2025';
+			value.Z20420K2.Z9K1 = 'Z16103';
+			expect( result.value ).toBe( false );
+			expect( runs ).toBe( 1 );
+
+			// Change a key to an argument reference: the computed runs again
+			value.Z20420K1.Z13518K1 = canonicalToHybrid( { Z1K1: 'Z18', Z18K1: 'Z10001K1' } );
+			expect( result.value ).toBe( true );
+			expect( runs ).toBe( 2 );
+		} );
+	} );
+
 	describe( 'walkZObject', () => {
 		it( 'returns empty array when obj is undefined', () => {
 			const visitor = jest.fn().mockReturnValue( [] );

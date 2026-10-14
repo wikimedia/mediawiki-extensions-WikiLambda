@@ -31,6 +31,7 @@ const {
 	getZCodeProgrammingLanguageId,
 	getZHTMLFragmentTerminalValue,
 	getZKeyIsIdentity,
+	hasArgumentReference,
 	isWikidataEntity,
 	isWikidataLiteral,
 	isWikidataFetch,
@@ -127,6 +128,7 @@ module.exports = function useZObject( { keyPath } = {} ) {
 		getZCodeProgrammingLanguageId,
 		getZHTMLFragmentTerminalValue,
 		getZKeyIsIdentity,
+		hasArgumentReference,
 		// Wikidata methods
 		isWikidataEntity,
 		isWikidataLiteral,

@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const { reactive } = require( 'vue' );
 const { shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
@@ -235,6 +236,46 @@ describe( 'ZObjectKeyValue', () => {
 			const wrapper = renderZObjectKeyValue();
 
 			expect( wrapper.findComponent( { name: 'wl-z-object-string-renderer' } ).exists() ).toBe( true );
+		} );
+
+		it( 'fallback z-object-key-value-set with renderer and parser when the object has argument references', () => {
+			store.hasRenderer = createGettersWithFunctionsMock( true );
+			store.hasParser = createGettersWithFunctionsMock( true );
+
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z30000' },
+				Z30000K1: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+					Z18K1: { Z1K1: 'Z6', Z6K1: 'Z10001K1' }
+				}
+			};
+
+			const wrapper = renderZObjectKeyValue();
+
+			expect( wrapper.findComponent( { name: 'wl-z-object-string-renderer' } ).exists() ).toBe( false );
+			expect( wrapper.findComponent( { name: 'wl-z-object-key-value-set' } ).exists() ).toBe( true );
+		} );
+
+		it( 'fallback z-object-key-value-set with renderer and parser when a key changes to an argument reference', async () => {
+			store.hasRenderer = createGettersWithFunctionsMock( true );
+			store.hasParser = createGettersWithFunctionsMock( true );
+
+			objectValue = reactive( {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z30000' },
+				Z30000K1: { Z1K1: 'Z6', Z6K1: '' }
+			} );
+
+			const wrapper = renderZObjectKeyValue( { edit: true } );
+			expect( wrapper.findComponent( { name: 'wl-z-object-string-renderer' } ).exists() ).toBe( true );
+
+			objectValue.Z30000K1 = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+				Z18K1: { Z1K1: 'Z6', Z6K1: 'Z10001K1' }
+			};
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.findComponent( { name: 'wl-z-object-string-renderer' } ).exists() ).toBe( false );
+			expect( wrapper.findComponent( { name: 'wl-z-object-key-value-set' } ).exists() ).toBe( true );
 		} );
 
 		it( 'fallback z-object-key-value-set', () => {
