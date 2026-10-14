@@ -129,7 +129,7 @@ describe( 'FunctionInputLanguage', () => {
 		} ] );
 	} );
 
-	it( 'triggers async validation and fails for zid not found', async () => {
+	it( 'triggers async validation and fails for ID not found', async () => {
 		const wrapper = renderFunctionInputLanguage( {
 			value: 'Z99999'
 		} );

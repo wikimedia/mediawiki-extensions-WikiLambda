@@ -204,7 +204,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			'error_in_evaluation (Z507) -> http 400' => [ 'Z507', 400 ],
 			'user_not_permitted_to_evaluate_function (Z559) -> http 401' => [ 'Z559', 401 ],
 			'disallowed_root_object (Z553) -> http 403' => [ 'Z553', 403 ],
-			'zid_not_found (Z504) -> http 404' => [ 'Z504', 404 ],
+			'id_not_found (Z504) -> http 404' => [ 'Z504', 404 ],
 			'orchestrator_time_limit (Z574) -> http 408' => [ 'Z574', 408 ],
 			'resolved_object_without_z2k2 (Z513) -> http 409' => [ 'Z513', 409 ],
 			'unknown_error (Z500) -> http 422' => [ 'Z500', 422 ],
@@ -469,7 +469,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			// Errors that the fragment caused: quiet
 			'error_in_evaluation (Z507) -> http 400' => [ 'Z507', 400, LogLevel::INFO ],
 			// (T434117) A missing ZID is the fragment's fault, not ours
-			'zid_not_found (Z504) -> http 404' => [ 'Z504', 404, LogLevel::INFO ],
+			'id_not_found (Z504) -> http 404' => [ 'Z504', 404, LogLevel::INFO ],
 			'resolved_object_without_z2k2 (Z513) -> http 409' => [ 'Z513', 409, LogLevel::INFO ],
 			'unknown_error (Z500) -> http 422' => [ 'Z500', 422, LogLevel::INFO ],
 			// Rate limits: expected under load, and the job tries again, so quiet

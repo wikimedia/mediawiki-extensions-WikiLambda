@@ -135,7 +135,7 @@ class ZObjectContentHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$title = Title::newFromText( $unavailableZid, NS_MAIN );
 
 		$this->expectException( ZErrorException::class );
-		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND );
 		ZObjectContentHandler::getExternalRepresentation( $title );
 	}
 

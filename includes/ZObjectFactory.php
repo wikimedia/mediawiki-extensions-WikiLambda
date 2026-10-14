@@ -360,7 +360,7 @@ class ZObjectFactory {
 			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 					[
 						'data' => $typeZid
 					]
@@ -376,7 +376,7 @@ class ZObjectFactory {
 			);
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 					[
 						'data' => $typeZid
 					]
@@ -615,7 +615,7 @@ class ZObjectFactory {
 					);
 					throw new ZErrorException(
 						ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+							ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 							[
 								'data' => $type->getZValue()
 							]

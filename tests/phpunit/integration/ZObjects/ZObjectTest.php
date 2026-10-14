@@ -328,7 +328,7 @@ EOT;
 
 		// Human-readable Errors
 		$zerror = ZErrorFactory::createZErrorInstance(
-			ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+			ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 			[ 'data' => 'Z404' ]
 		);
 		$validationZerror = ZErrorFactory::createValidationZError( $zerror );

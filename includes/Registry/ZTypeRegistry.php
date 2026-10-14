@@ -591,10 +591,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 */
 	public function getZObjectTypeFromKey( string $key ): string {
 		if ( !$this->isZObjectKeyKnown( $key ) ) {
-			// Error Z504: Zid not found
+			// Error Z504: ID not found
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 					[ 'data' => $key ]
 				)
 			);
@@ -667,10 +667,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 */
 	public function isZObjectInstanceOfType( ZObject $object, string $type ): bool {
 		if ( !$this->isZObjectKeyKnown( $type ) ) {
-			// Error Z504: ZID not found
+			// Error Z504: ID not found
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 					[ 'data' => $type ]
 				)
 			);

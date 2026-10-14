@@ -203,7 +203,7 @@ class ZObjectContentHandler extends ContentHandler {
 		if ( $zObject === false ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 					[ 'data' => (string)$zObjectTitle ]
 				)
 			);

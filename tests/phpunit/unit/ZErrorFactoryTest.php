@@ -372,8 +372,8 @@ class ZErrorFactoryTest extends MediaWikiUnitTestCase {
 				[ ZString::class ],
 				[ 'some feature' ],
 			],
-			'Z504 zid not found' => [
-				ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+			'Z504 ID not found' => [
+				ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 				[ 'data' => 'Z12345' ],
 				[ ZString::class ],
 				[ 'Z12345' ],

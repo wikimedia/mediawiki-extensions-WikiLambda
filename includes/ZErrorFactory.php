@@ -346,7 +346,7 @@ class ZErrorFactory {
 				$zErrorValue[] = $payload['childError'];
 				break;
 
-			case ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND:
+			case ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND:
 				$zErrorValue[] = new ZString( $payload['data'] );
 				break;
 

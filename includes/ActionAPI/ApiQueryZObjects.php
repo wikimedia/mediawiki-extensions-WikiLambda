@@ -70,12 +70,12 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 			);
 		}
 
-		// Check for unavailable ZObject and throw ZID_NOT_FOUND exception
+		// Check for unavailable ZObject and throw ID_NOT_FOUND exception
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 		if ( !$title || !$title->exists() ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 					[ "data" => $zid ]
 				)
 			);

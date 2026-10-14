@@ -388,7 +388,7 @@ module.exports = {
 		 * Returns the persisted object for a given ZID if that was successfully
 		 * fetched from the DB and saved in the state. Else returns undefined.
 		 *
-		 * If the function Zid returned an error (e.g. Zid not found), the
+		 * If the function ZID returned an error (e.g. ID not found), the
 		 * error was stored, but this getter will return undefined.
 		 *
 		 * @param {Object} state
@@ -408,7 +408,7 @@ module.exports = {
 		/**
 		 * Returns the object for a given ZID that was fetched using fetchZids.
 		 * If the object was not fetched, returns undefined.
-		 * If the object was fetched but returned an error (e.g. Zid not found),
+		 * If the object was fetched but returned an error (e.g. ID not found),
 		 * returns the error object.
 		 *
 		 * This getter is specially designed to be used from Visual Editor,

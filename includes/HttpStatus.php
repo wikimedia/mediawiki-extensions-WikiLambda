@@ -49,7 +49,7 @@ class HttpStatus {
 	public const CONTENT_ERROR_CODES = [
 		// e.g. Z518/ZObject type mismatch
 		self::BAD_REQUEST,
-		// e.g. Z504/ZID not found
+		// e.g. Z504/ID not found
 		self::NOT_FOUND,
 		// e.g. Z513/Resolved object without Z2K2
 		self::CONFLICT,

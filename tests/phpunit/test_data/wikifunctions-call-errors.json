@@ -1,6 +1,6 @@
 [
 	{
-		"description": "Returns ZID not found error for {{#function:join|foo|bar}}",
+		"description": "Returns ID not found error for {{#function:join|foo|bar}}",
 		"request": {
 			"target": "join",
 			"arguments": {

@@ -65,7 +65,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$errorKey = $actualError->getErrorKey();
 		$this->assertEquals( $expectedError[0], $actualError->getCode() );
 
-		// Assert zerror is Z504/Zid not found
+		// Assert zerror is Z504/ID not found
 		$messageValue = $actualError->getMessageValue();
 		$this->assertEquals( 'wikilambda-zerror', $messageValue->getKey() );
 		$this->assertEquals( $expectedError[1], $messageValue->getParams()[0]->getValue() );
@@ -193,7 +193,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		try {
 			$this->executeHandler( $handler, $request );
 		} catch ( LocalizedHttpException $exception ) {
-			// Assert Z504/Zid not found
+			// Assert Z504/ID not found
 			$this->assertHttpAndZError( [ 400, 'Z504', [ 'target' => 'Z802', 'mode' => 'input' ] ], $exception );
 		}
 	}
@@ -267,7 +267,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		try {
 			$this->executeHandler( $handler, $request );
 		} catch ( LocalizedHttpException $exception ) {
-			// Assert Z504/Zid not found
+			// Assert Z504/ID not found
 			$this->assertHttpAndZError( [ 400, 'Z504', [ 'target' => '{Z1K1:Z8,…}' ] ], $exception );
 		}
 	}
@@ -287,7 +287,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		try {
 			$this->executeHandler( $handler, $request );
 		} catch ( LocalizedHttpException $exception ) {
-			// Assert Z504/Zid not found
+			// Assert Z504/ID not found
 			$this->assertHttpAndZError( [ 400, 'Z504', [ 'target' => 'Z0' ] ], $exception );
 		}
 	}
@@ -567,7 +567,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			false,
 			[
 				HttpStatus::BAD_REQUEST,
-				ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+				ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 				[ 'target' => 'BADFUNCTIONZID' ]
 			]
 		];
@@ -577,7 +577,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			false,
 			[
 				HttpStatus::BAD_REQUEST,
-				ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+				ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 				[ 'target' => 'Z333333' ]
 			]
 		];
@@ -822,7 +822,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			null,
 			[
 				HttpStatus::BAD_REQUEST,
-				ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+				ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 				[ 'target' => 'Z20040', 'mode' => 'input' ]
 			]
 		];
@@ -939,7 +939,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			null,
 			[
 				HttpStatus::BAD_REQUEST,
-				ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+				ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 				[ 'target' => 'Z20040' ]
 			]
 		];
@@ -1006,7 +1006,7 @@ class FunctionCallHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			null,
 			[
 				HttpStatus::BAD_REQUEST,
-				ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+				ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND,
 				[ 'target' => $functionZid, 'mode' => 'output' ]
 			]
 		];

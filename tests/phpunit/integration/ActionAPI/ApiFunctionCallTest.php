@@ -311,7 +311,7 @@ class ApiFunctionCallTest extends WikiLambdaApiTestCase {
 			/* expectedHttpStatusCode= */ 403,
 		];
 
-		yield 'Orchestrator returns 404: ZID not found (Z504)' => [
+		yield 'Orchestrator returns 404: ID not found (Z504)' => [
 			/* requestString= */ '{"Z1K1":"Z7","Z7K1":"Z801","Z801K1":"mock-404-zid-not-found"}',
 			/* expectedSuccess= */ true,
 			/* expectedHttpStatusCode= */ 404,

@@ -257,7 +257,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 			case HttpStatus::BAD_REQUEST:
 			case HttpStatus::NOT_FOUND:
 				switch ( $zerrorCode ) {
-					case ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND:
+					case ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND:
 						// Error cases:
 						// * Function not found
 						// * Input reference not found

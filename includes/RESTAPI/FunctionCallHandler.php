@@ -231,9 +231,9 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				'exception.message' => $errorMessage
 			] )->end();
 
-			// Dies with Z_ERROR_ZID_NOT_FOUND
+			// Dies with Z_ERROR_ID_NOT_FOUND
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND, [ 'data' => $target ] ),
 				HttpStatus::BAD_REQUEST,
 				[ 'target' => $target ]
 			);
@@ -252,9 +252,9 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				'exception.message' => $errorMessage
 			] )->end();
 
-			// Dies with Z_ERROR_ZID_NOT_FOUND
+			// Dies with Z_ERROR_ID_NOT_FOUND
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND, [ 'data' => $target ] ),
 				HttpStatus::BAD_REQUEST,
 				[ 'target' => $target ]
 			);
@@ -537,10 +537,10 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				'exception.message' => $errorMessage
 			] )->end();
 
-			// Dies with Z_ERROR_ZID_NOT_FOUND
+			// Dies with Z_ERROR_ID_NOT_FOUND
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $targetTypeZid ]
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND, [ 'data' => $targetTypeZid ]
 				),
 				HttpStatus::BAD_REQUEST,
 				[
@@ -679,10 +679,10 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				'exception.message' => $errorMessage
 			] )->end();
 
-			// Die with Z_ERROR_ZID_NOT_FOUND
+			// Die with Z_ERROR_ID_NOT_FOUND
 			$this->dieRESTfullyWithZError(
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $providedArgument ]
+					ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND, [ 'data' => $providedArgument ]
 				),
 				HttpStatus::BAD_REQUEST,
 				[
@@ -781,9 +781,9 @@ class FunctionCallHandler extends WikiLambdaRESTHandler {
 				'exception.message' => $errorMessage
 			] )->end();
 
-			// Dies with Z_ERROR_ZID_NOT_FOUND
+			// Dies with Z_ERROR_ID_NOT_FOUND
 			$this->dieRESTfullyWithZError(
-				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND, [ 'data' => $target ] ),
+				ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_ID_NOT_FOUND, [ 'data' => $target ] ),
 				HttpStatus::BAD_REQUEST,
 				[
 					'target' => $target,

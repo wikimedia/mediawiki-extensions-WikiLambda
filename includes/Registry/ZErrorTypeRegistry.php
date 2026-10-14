@@ -27,7 +27,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_INVALID_SYNTAX = 'Z501';
 	public const Z_ERROR_NOT_WELLFORMED = 'Z502';
 	public const Z_ERROR_NOT_IMPLEMENTED_YET = 'Z503';
-	public const Z_ERROR_ZID_NOT_FOUND = 'Z504';
+	public const Z_ERROR_ID_NOT_FOUND = 'Z504';
 	public const Z_ERROR_ARGUMENT_COUNT_MISMATCH = 'Z505';
 	public const Z_ERROR_ARGUMENT_TYPE_MISMATCH = 'Z506';
 	public const Z_ERROR_EVALUATION = 'Z507';
