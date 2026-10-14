@@ -335,14 +335,14 @@ EOT;
 		$zerrorLabelized = <<<EOT
 {
     "type": "Error",
-    "error type": "ZID not found",
+    "error type": "ID not found",
     "error value": {
         "type": {
             "type": "Function call",
             "function": "Errortype to type",
-            "errortype": "ZID not found"
+            "errortype": "ID not found"
         },
-        "ZID": {
+        "ID": {
             "type": "String",
             "value": "Z404"
         }

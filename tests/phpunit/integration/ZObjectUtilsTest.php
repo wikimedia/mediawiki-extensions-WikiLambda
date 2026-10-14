@@ -998,7 +998,7 @@ class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 		];
 
 		$zobject = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z504"},"Z504K1":"Z404"}';
-		$translated = '{"type":{"type":"Z7","Z7K1":"Errortype to type","errortype":"ZID not found"},"ZID":"Z404"}';
+		$translated = '{"type":{"type":"Z7","Z7K1":"Errortype to type","errortype":"ID not found"},"ID":"Z404"}';
 		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
 		$this->assertSame( $translated, json_encode( $result ) );
 	}
@@ -1016,7 +1016,7 @@ class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 			. '"Z885K2":"unknown function argument key"},'
 			. '"Z504K2":"unknown error key",'
 			. '"Z1K2": "unknown global key"}';
-		$translated = '{"type":{"type":"Z7","Z7K1":"Errortype to type","errortype":"ZID not found",'
+		$translated = '{"type":{"type":"Z7","Z7K1":"Errortype to type","errortype":"ID not found",'
 			. '"Z885K2":"unknown function argument key"},'
 			. '"Z504K2":"unknown error key",'
 			. '"Z1K2":"unknown global key"}';
@@ -1033,7 +1033,7 @@ class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 		];
 
 		$zobject = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z504"},"K1":"Z404"}';
-		$translated = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"ZID not found"},"ZID":"Z404"}';
+		$translated = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"ID not found"},"ID":"Z404"}';
 		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
 		$this->assertSame( $translated, json_encode( $result ) );
 
@@ -1202,10 +1202,10 @@ class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 	public static function provideGetLabelOfGlobalKey_error() {
 		return [
 			'existing label in existing lang' => [
-				'Z504K1', 'en', 'ZID'
+				'Z504K1', 'en', 'ID'
 			],
 			'existing label in non existing lang, english fallback' => [
-				'Z504K1', 'fr', 'ZID'
+				'Z504K1', 'fr', 'ID'
 			],
 			'non existing label in existing lang' => [
 				'Z504K2', 'en', 'Z504K2'
@@ -1252,7 +1252,7 @@ class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 				'K1',
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z504"}, "K1": "Z404" }',
 				'en',
-				'ZID'
+				'ID'
 			],
 			'invalid local label from errortype' => [
 				'K2',

@@ -265,8 +265,8 @@ describe( 'ApiError class', () => {
 				error: {
 					code: 'wikilambda-zerror',
 					info: 'Error of type Z504',
-					title: 'ZID not found',
-					message: 'ZID not found',
+					title: 'ID not found',
+					message: 'ID not found',
 					zerror: {
 						Z1K1: 'Z5',
 						Z5K1: 'Z504',

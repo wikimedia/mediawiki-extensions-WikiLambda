@@ -1939,8 +1939,8 @@
             "wlzl_zobject_zid": "Z504",
             "wlzl_type": "Z50",
             "wlzl_language": "Z1002",
-            "wlzl_label": "ZID not found",
-            "wlzl_label_normalised": "zid not found",
+            "wlzl_label": "ID not found",
+            "wlzl_label_normalised": "id not found",
             "wlzl_label_primary": "1",
             "wlzl_return_type": null
         },

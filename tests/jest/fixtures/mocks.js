@@ -1443,8 +1443,8 @@ const mockApiResponseFor = function ( zids ) {
 };
 
 const mock504Error = ( zid ) => ( {
-	title: "ZID not found",
-	message: "ZID not found",
+	title: "ID not found",
+	message: "ID not found",
 	zerror: {
 		Z1K1: "Z5",
 		Z5K1: "Z504",
