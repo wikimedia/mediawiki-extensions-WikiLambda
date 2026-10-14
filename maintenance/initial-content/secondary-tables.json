@@ -4717,6 +4717,42 @@
             "wlzl_return_type": "Z881"
         },
         {
+            "wlzl_zobject_zid": "Z874",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Arbitrary Argument Signature Filter Function",
+            "wlzl_label_normalised": "arbitrary argument signature filter function",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": "Z1"
+        },
+        {
+            "wlzl_zobject_zid": "Z874",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z874",
+            "wlzl_label_normalised": "z874",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": "Z1"
+        },
+        {
+            "wlzl_zobject_zid": "Z875",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Arbitrary Argument Signature Map Function",
+            "wlzl_label_normalised": "arbitrary argument signature map function",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": "Z881"
+        },
+        {
+            "wlzl_zobject_zid": "Z875",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z875",
+            "wlzl_label_normalised": "z875",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": "Z881"
+        },
+        {
             "wlzl_zobject_zid": "Z876",
             "wlzl_type": "Z8",
             "wlzl_language": "Z1002",
@@ -4769,6 +4805,24 @@
             "wlzl_label_normalised": "z877",
             "wlzl_label_primary": "0",
             "wlzl_return_type": "Z40"
+        },
+        {
+            "wlzl_zobject_zid": "Z879",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Arbitrary Argument Signature Apply Function",
+            "wlzl_label_normalised": "arbitrary argument signature apply function",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": "Z1"
+        },
+        {
+            "wlzl_zobject_zid": "Z879",
+            "wlzl_type": "Z8",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z879",
+            "wlzl_label_normalised": "z879",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": "Z1"
         },
         {
             "wlzl_zobject_zid": "Z881",
@@ -5536,6 +5590,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z974",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Arbitrary Argument Signature Filter",
+            "wlzl_label_normalised": "built-in implementation of arbitrary argument signature filter",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z974",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z974",
+            "wlzl_label_normalised": "z974",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z975",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Arbitrary Argument Signature Map",
+            "wlzl_label_normalised": "built-in implementation of arbitrary argument signature map",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z975",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z975",
+            "wlzl_label_normalised": "z975",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z976",
             "wlzl_type": "Z14",
             "wlzl_language": "Z1002",
@@ -5568,6 +5658,24 @@
             "wlzl_language": "Z1360",
             "wlzl_label": "Z977",
             "wlzl_label_normalised": "z977",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z979",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Built-in implementation of Arbitrary Argument Signature Apply",
+            "wlzl_label_normalised": "built-in implementation of arbitrary argument signature apply",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z979",
+            "wlzl_type": "Z14",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z979",
+            "wlzl_label_normalised": "z979",
             "wlzl_label_primary": "0",
             "wlzl_return_type": null
         },
@@ -46736,6 +46844,62 @@
             "wlzo_related_type": "Z14"
         },
         {
+            "wlzo_main_zid": "Z874",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K1",
+            "wlzo_related_zobject": "Z8",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z874",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K1",
+            "wlzo_related_zobject": "Z881(Z881(Z1))",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z874",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K2",
+            "wlzo_related_zobject": "Z1",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z874",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K4",
+            "wlzo_related_zobject": "Z974",
+            "wlzo_related_type": "Z14"
+        },
+        {
+            "wlzo_main_zid": "Z875",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K1",
+            "wlzo_related_zobject": "Z8",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z875",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K1",
+            "wlzo_related_zobject": "Z881(Z881(Z1))",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z875",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K2",
+            "wlzo_related_zobject": "Z881(Z1)",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z875",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K4",
+            "wlzo_related_zobject": "Z975",
+            "wlzo_related_type": "Z14"
+        },
+        {
             "wlzo_main_zid": "Z876",
             "wlzo_main_type": "Z8",
             "wlzo_key": "Z8K1",
@@ -46796,6 +46960,34 @@
             "wlzo_main_type": "Z8",
             "wlzo_key": "Z8K4",
             "wlzo_related_zobject": "Z977",
+            "wlzo_related_type": "Z14"
+        },
+        {
+            "wlzo_main_zid": "Z879",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K1",
+            "wlzo_related_zobject": "Z8",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z879",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K1",
+            "wlzo_related_zobject": "Z881(Z1)",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z879",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K2",
+            "wlzo_related_zobject": "Z1",
+            "wlzo_related_type": "Z4"
+        },
+        {
+            "wlzo_main_zid": "Z879",
+            "wlzo_main_type": "Z8",
+            "wlzo_key": "Z8K4",
+            "wlzo_related_zobject": "Z979",
             "wlzo_related_type": "Z14"
         },
         {
@@ -48480,6 +48672,16 @@
             "wlzf_type": "Z14"
         },
         {
+            "wlzf_ref_zid": "Z974",
+            "wlzf_zfunction_zid": "Z874",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z975",
+            "wlzf_zfunction_zid": "Z875",
+            "wlzf_type": "Z14"
+        },
+        {
             "wlzf_ref_zid": "Z976",
             "wlzf_zfunction_zid": "Z876",
             "wlzf_type": "Z14"
@@ -48487,6 +48689,11 @@
         {
             "wlzf_ref_zid": "Z977",
             "wlzf_zfunction_zid": "Z877",
+            "wlzf_type": "Z14"
+        },
+        {
+            "wlzf_ref_zid": "Z979",
+            "wlzf_zfunction_zid": "Z879",
             "wlzf_type": "Z14"
         },
         {
