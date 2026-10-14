@@ -177,20 +177,20 @@ describe( 'dialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'CPU usage' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( '130.9 ms' );
+			expect( section.find( '.cdx-accordion__header__description bdi' ).text() ).toBe( '130.9 ms' );
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 3 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
-			expect( keys[ 0 ].text() ).toContain( '85.790 ms' );
+			expect( keys[ 0 ].find( 'bdi' ).text() ).toBe( '85.790 ms' );
 
 			expect( keys[ 1 ].text() ).toContain( 'Evaluation:' );
-			expect( keys[ 1 ].text() ).toContain( '45.110 ms' );
+			expect( keys[ 1 ].find( 'bdi' ).text() ).toBe( '45.110 ms' );
 
 			expect( keys[ 2 ].text() ).toContain( 'Execution:' );
-			expect( keys[ 2 ].text() ).toContain( '<50 μs' );
+			expect( keys[ 2 ].find( 'bdi' ).text() ).toBe( '<50 μs' );
 		} );
 
 		it( 'renders the memory usage section', () => {
@@ -200,20 +200,20 @@ describe( 'dialog', () => {
 
 			// Check header
 			expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Memory usage' );
-			expect( section.find( '.cdx-accordion__header__description' ).text() ).toBe( '132.0 MiB' );
+			expect( section.find( '.cdx-accordion__header__description bdi' ).text() ).toBe( '132.0 MiB' );
 
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
 			expect( keys.length ).toBe( 3 );
 			expect( keys[ 0 ].text() ).toContain( 'Orchestration:' );
-			expect( keys[ 0 ].text() ).toContain( '115.43 MiB' );
+			expect( keys[ 0 ].find( 'bdi' ).text() ).toBe( '115.43 MiB' );
 
 			expect( keys[ 1 ].text() ).toContain( 'Evaluation:' );
-			expect( keys[ 1 ].text() ).toContain( '15.57 MiB' );
+			expect( keys[ 1 ].find( 'bdi' ).text() ).toBe( '15.57 MiB' );
 
 			expect( keys[ 2 ].text() ).toContain( 'Execution:' );
-			expect( keys[ 2 ].text() ).toContain( '1 MiB' );
+			expect( keys[ 2 ].find( 'bdi' ).text() ).toBe( '1 MiB' );
 		} );
 
 		it( 'renders the server section', () => {

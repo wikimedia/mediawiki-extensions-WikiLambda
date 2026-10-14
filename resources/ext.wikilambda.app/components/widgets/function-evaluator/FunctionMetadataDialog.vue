@@ -84,7 +84,8 @@
 						:lang="section.description.langCode"
 						:dir="section.description.langDir"
 					>{{ section.description.labelOrUntitled }}</span>
-					<span v-else>{{ section.description }}</span>
+					<!-- Isolate the value, so that a value such as "70 ms" keeps its order on RTL pages -->
+					<bdi v-else>{{ section.description }}</bdi>
 				</template>
 				<template v-if="section.content.length">
 					<ul class="ext-wikilambda-app-function-metadata-dialog__content">

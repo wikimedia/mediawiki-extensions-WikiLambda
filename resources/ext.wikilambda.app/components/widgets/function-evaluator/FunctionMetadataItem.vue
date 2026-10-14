@@ -23,7 +23,8 @@
 				:value="item.data.value"
 				:key-string="keyString"
 			></wl-function-metadata-test-result>
-			<span v-else-if="item.data.type === METADATA_CONTENT_TYPE.TEXT">{{ item.data.value }}</span>
+			<!-- Isolate the value, so that a value such as "70 ms" keeps its order on RTL pages -->
+			<bdi v-else-if="item.data.type === METADATA_CONTENT_TYPE.TEXT">{{ item.data.value }}</bdi>
 		</template>
 		<ul v-if="item.content" class="ext-wikilambda-app-function-metadata-item__content">
 			<wl-function-metadata-item
