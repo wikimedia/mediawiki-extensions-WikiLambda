@@ -3010,31 +3010,26 @@ class ZObjectStore {
 	/**
 	 * Remove a reference to an implementation or tester from a function, if needed.
 	 *
-	 * If the ZObject with $zid is an implementation or tester, this will find the function(s)
-	 * referencing it and remove the reference.
+	 * Find the functions that list $zid in Z8K4/Implementations or in Z8K3/Testers,
+	 * and remove $zid from these lists.
+	 *
+	 * The search uses the wikilambda_zobject_join table, and not the content of $zid.
+	 * When a page is deleted, the deletion updates run after the page row is removed,
+	 * so the content of $zid is possibly not available.
 	 *
 	 * @param string $zid
 	 */
 	public function removeFunctionReferenceIfImplementationOrTester( string $zid ): void {
 		$functionReferenceKeys = [
-			ZTypeRegistry::Z_IMPLEMENTATION => ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
-			ZTypeRegistry::Z_TESTER => ZTypeRegistry::Z_FUNCTION_TESTERS
+			ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS => ZTypeRegistry::Z_IMPLEMENTATION,
+			ZTypeRegistry::Z_FUNCTION_TESTERS => ZTypeRegistry::Z_TESTER
 		];
-		$content = $this->fetchZObject( $zid );
-		if ( !$content || !$content->isValid() ) {
-			return;
+		foreach ( $functionReferenceKeys as $key => $type ) {
+			$functionZids = $this->findFunctionsReferencingZObjectByKey( $zid, $key );
+			foreach ( $functionZids as $functionZid ) {
+				$this->removeReferenceFromFunction( $functionZid, $key, $type, $zid );
+			}
 		}
-		$type = $content->getZType();
-		$key = $functionReferenceKeys[$type] ?? null;
-		if ( !$key ) {
-			return;
-		}
-		$functionZids = $this->findFunctionsReferencingZObjectByKey( $zid, $key );
-		$functionZid = $functionZids[0] ?? null;
-		if ( !$functionZid ) {
-			return;
-		}
-		$this->removeReferenceFromFunction( $functionZid, $key, $type, $zid );
 	}
 
 	/**

@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -2464,16 +2465,65 @@ class ZObjectStoreTest extends WikiLambdaRepoModeIntegrationTestCase {
 	}
 
 	public function testRemoveFunctionReferenceIfImplementationOrTester_returnsEarlyForInvalidContent() {
-		// Non-existent ZID → fetchZObject returns false → early return
+		// Non-existent ZID → no function references it → nothing to remove
 		$this->zobjectStore->removeFunctionReferenceIfImplementationOrTester( 'Z999997' );
 		$this->addToAssertionCount( 1 );
 	}
 
 	public function testRemoveFunctionReferenceIfImplementationOrTester_returnsEarlyForNonImplNonTester() {
-		// Z17 is a Key (Z3), not an implementation or tester
+		// Z17 is a Key (Z3), not an implementation or tester → no function references it
 		$this->insertZids( [ 'Z17' ] );
 		$this->zobjectStore->removeFunctionReferenceIfImplementationOrTester( 'Z17' );
 		$this->addToAssertionCount( 1 );
+	}
+
+	public function testRemoveFunctionReferenceIfImplementationOrTester_afterTesterPageDeletion() {
+		$this->insertZids( [ 'Z8', 'Z14', 'Z20', 'Z6' ] );
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		// Create a tester, and a function that connects it
+		$testerZid = $this->zobjectStore->getNextAvailableZid();
+		$testerInput = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $testerZid . '" },'
+			. '"Z2K2": { "Z1K1": "Z20", "Z20K1": "Z1", "Z20K2": "Z0", "Z20K3": "Z0" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $testerInput, 'Create tester', $sysopUser
+		);
+		$functionInput = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. '"Z2K2": { "Z1K1": "Z8",'
+			. '"Z8K1": [ "Z17" ],'
+			. '"Z8K2": "Z1",'
+			. '"Z8K3": [ "Z20", "' . $testerZid . '" ],'
+			. '"Z8K4": [ "Z14" ],'
+			. '"Z8K5": "Z0" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$functionPage = $this->zobjectStore->createNewZObject(
+			RequestContext::getMain(), $functionInput, 'Create function', $sysopUser
+		);
+		$this->assertTrue( $functionPage->isOK() );
+		$functionZid = $functionPage->getTitle()->getBaseText();
+
+		// Remove the tester from the object cache, as for an old object
+		$cache = WikiLambdaServices::getMemcachedWrapper();
+		$cache->delete( $cache->makeKey( ZObjectStore::ZOBJECT_CACHE_KEY_PREFIX, $testerZid ) );
+
+		// Delete the tester page; the deletion updates run after the page row is removed
+		$this->deletePage(
+			$this->getServiceContainer()->getWikiPageFactory()->newFromTitle( Title::newFromText( $testerZid ) ),
+			'Test delete',
+			$sysopUser
+		);
+		DeferredUpdates::doUpdates();
+
+		$functionContent = $this->zobjectStore->fetchZObjectByTitle( Title::newFromText( $functionZid ) );
+		$this->assertInstanceOf( ZObjectContent::class, $functionContent );
+		$testerList = $functionContent->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
+		$testerZids = array_map(
+			static function ( $ref ) { return $ref->getZValue();
+			},
+			$testerList->getAsArray()
+		);
+		$this->assertNotContains( $testerZid, $testerZids );
 	}
 
 	// ------------------------------------------------------------------
