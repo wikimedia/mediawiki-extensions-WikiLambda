@@ -599,6 +599,8 @@ const apiUtils = {
 	 * @param {string} payload.section
 	 * @param {string} payload.language
 	 * @param {Array|undefined} payload.fragments
+	 * @param {number|undefined} payload.revision Revision/id to read the persisted fragments from
+	 *  or latest revision if undefined. Ignored when fragments given.
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -612,7 +614,8 @@ const apiUtils = {
 			abstractwiki_fetch_section_topic: payload.topic,
 			abstractwiki_fetch_section_section: payload.section,
 			abstractwiki_fetch_section_language: payload.language,
-			abstractwiki_fetch_section_fragments: payload.fragments
+			abstractwiki_fetch_section_fragments: payload.fragments,
+			abstractwiki_fetch_section_revision: payload.revision
 		};
 		const options = { signal: payload.signal };
 		// Fetching a section's persisted fragments is an idempotent read served as

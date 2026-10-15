@@ -18,6 +18,7 @@
 	"apihelp-abstractwiki_fetch_section-param-language": "The Language ZObject Id used to render the fragments. It should be a valid Zid.",
 	"apihelp-abstractwiki_fetch_section-param-date": "The date string used to render the fragments.",
 	"apihelp-abstractwiki_fetch_section-param-fragments": "An optional array of fragments for which to return their rendered values. If the array is empty, the returned fragments will be the ones stored for the given section Qid as per the current revision. When the array is not empty, it must contain a list of fragment function calls. These might differ from the ones persisted in the section (for example, they are being actively edited and their current state is not persisted), and these requests require additional rights.",
+	"apihelp-abstractwiki_fetch_section-param-revision": "An optional revision ID of the topic's Abstract Wikipedia page. If given, and no \"fragments\" are passed, the returned fragments will be the ones stored for the given section Qid as per that revision instead of the current one.",
 	"apihelp-abstractwiki_fetch_section-example-lede": "Fetch the rendered fragments of a given section.",
 	"apihelp-abstractwiki_fetch_section-example-unsaved": "Fetch the rendered values of a list of unsaved fragments.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "The fragment is not a valid function call.",

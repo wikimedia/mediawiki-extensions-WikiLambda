@@ -21,6 +21,7 @@
 	"apihelp-abstractwiki_fetch_section-param-language": "{{doc-apihelp-param|abstractwiki_fetch_section}}\n\n{{doc-wikilambda}}",
 	"apihelp-abstractwiki_fetch_section-param-date": "{{doc-apihelp-param|abstractwiki_fetch_section}}\n\n{{doc-wikilambda}}",
 	"apihelp-abstractwiki_fetch_section-param-fragments": "{{doc-apihelp-param|abstractwiki_fetch_section}}\n\n{{doc-wikilambda}}",
+	"apihelp-abstractwiki_fetch_section-param-revision": "{{doc-apihelp-param|abstractwiki_fetch_section}}\n\n{{doc-wikilambda}}",
 	"apihelp-abstractwiki_fetch_section-example-lede": "{{doc-apihelp-example|abstractwiki_fetch_section}}\n\n{{doc-wikilambda}}",
 	"apihelp-abstractwiki_fetch_section-example-unsaved": "{{doc-apihelp-example|abstractwiki_fetch_section}}\n\n{{doc-wikilambda}}",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Error message when an Abstract Wikipedia fragment sent to the API is a not a well-formed JSON representation of a function call\n\n{{doc-wikilambda}}",

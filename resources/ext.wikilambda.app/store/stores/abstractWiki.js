@@ -56,6 +56,12 @@ const abstractWikiStore = {
 		fragmentPromises: new Map(),
 		sectionHashes: {},
 		qid: undefined,
+		/**
+		 * Revision ID of the displayed Abstract Wiki content, only set when it is
+		 * not the latest revision (e.g. ?oldid=X or a diff page). Lets view mode
+		 * fetch the persisted fragments of that revision (not default to latest one)
+		 */
+		revisionId: undefined,
 		highlight: undefined,
 		/**
 		 * KeyPath of the fragment that the user selected. Unlike `highlight`,
@@ -77,6 +83,16 @@ const abstractWikiStore = {
 		 */
 		getAbstractWikiId: function ( state ) {
 			return state.qid;
+		},
+		/**
+		 * Returns the revision ID of the displayed Abstract Wiki content, or
+		 * undefined if the displayed content is the latest revision
+		 *
+		 * @param {Object} state
+		 * @return {number|undefined}
+		 */
+		getAbstractWikiRevisionId: function ( state ) {
+			return state.revisionId;
 		},
 		/**
 		 * Returns the Abstract Wiki sections with UI metadata.
@@ -248,6 +264,14 @@ const abstractWikiStore = {
 			this.jsonObject[ Constants.STORED_OBJECTS.ABSTRACT ][ Constants.ABSTRACT_WIKI_QID ] = qid;
 		},
 		/**
+		 * Sets the revision Id of the displayed Abstract Wiki content
+		 *
+		 * @param {number|undefined} revisionId
+		 */
+		setAbstractWikiRevisionId: function ( revisionId ) {
+			this.revisionId = revisionId;
+		},
+		/**
 		 * @param {string} sectionQid
 		 * @param {Array} sectionHashes
 		 */
@@ -307,6 +331,12 @@ const abstractWikiStore = {
 				zobject: content
 			} );
 			this.setAbstractWikiId( title );
+
+			const displayedRevision = mw.config.get( 'wgRevisionId' );
+			const currentRevision = mw.config.get( 'wgCurRevisionId' );
+			this.setAbstractWikiRevisionId(
+				( displayedRevision && displayedRevision !== currentRevision ) ? displayedRevision : undefined
+			);
 
 			// Initialize hashes for all fragments for all sections
 			const hashPromises = [];
@@ -532,7 +562,8 @@ const abstractWikiStore = {
 				topic: payload.topic,
 				section,
 				language: payload.language,
-				fragments: payload.fragments ? JSON.stringify( payload.fragments ) : undefined
+				fragments: payload.fragments ? JSON.stringify( payload.fragments ) : undefined,
+				revision: payload.fragments ? undefined : this.getAbstractWikiRevisionId
 			} ).then( ( data ) => {
 				// renderedFragments must have the same length as fragments
 				const renderedFragments = data[ section ] || [];

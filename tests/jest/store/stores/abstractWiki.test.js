@@ -68,6 +68,7 @@ describe( 'abstractWiki Pinia store', () => {
 		store.fragmentPromises = new Map();
 		store.sectionHashes = {};
 		store.qid = undefined;
+		store.revisionId = undefined;
 		store.highlight = undefined;
 		store.previewLanguageZid = mockLang;
 
@@ -87,6 +88,18 @@ describe( 'abstractWiki Pinia store', () => {
 			it( 'returns the qid when it is set', () => {
 				store.qid = mockQid;
 				expect( store.getAbstractWikiId ).toBe( mockQid );
+			} );
+		} );
+
+		describe( 'getAbstractWikiRevisionId', () => {
+			it( 'returns undefined when revisionId is not set', () => {
+				store.revisionId = undefined;
+				expect( store.getAbstractWikiRevisionId ).toBeUndefined();
+			} );
+
+			it( 'returns the revisionId when it is set', () => {
+				store.revisionId = 100;
+				expect( store.getAbstractWikiRevisionId ).toBe( 100 );
 			} );
 		} );
 
@@ -327,6 +340,13 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'setAbstractWikiRevisionId', () => {
+			it( 'sets the revisionId in the state', () => {
+				store.setAbstractWikiRevisionId( 100 );
+				expect( store.revisionId ).toBe( 100 );
+			} );
+		} );
+
 		describe( 'setAbstractSectionHashes', () => {
 			beforeEach( () => {
 				store.sectionHashes = {};
@@ -371,6 +391,13 @@ describe( 'abstractWiki Pinia store', () => {
 		} );
 
 		describe( 'initializeAbstractWikiContent', () => {
+			const mockRevisions = {};
+
+			afterEach( () => {
+				delete mockRevisions.displayed;
+				delete mockRevisions.current;
+			} );
+
 			beforeEach( () => {
 				// Mock WikiLambdaConfig
 				Object.defineProperty( store, 'getWikilambdaConfig', {
@@ -396,8 +423,32 @@ describe( 'abstractWiki Pinia store', () => {
 					if ( key === 'wgWikiLambdaAbstractSuggestions' ) {
 						return [ 'Z10001', 'badzid', 'Z10002' ];
 					}
+					if ( key === 'wgRevisionId' ) {
+						return mockRevisions.displayed;
+					}
+					if ( key === 'wgCurRevisionId' ) {
+						return mockRevisions.current;
+					}
 					return originalConfigGet ? originalConfigGet( key ) : null;
 				} );
+			} );
+
+			it( 'sets the revisionId when displaying an old revision', async () => {
+				mockRevisions.displayed = 100;
+				mockRevisions.current = 200;
+
+				await store.initializeAbstractWikiContent();
+
+				expect( store.getAbstractWikiRevisionId ).toBe( 100 );
+			} );
+
+			it( 'does not set the revisionId when displaying the latest revision', async () => {
+				mockRevisions.displayed = 200;
+				mockRevisions.current = 200;
+
+				await store.initializeAbstractWikiContent();
+
+				expect( store.getAbstractWikiRevisionId ).toBeUndefined();
 			} );
 
 			it( 'initializes the Abstract Wiki content', async () => {
@@ -721,6 +772,44 @@ describe( 'abstractWiki Pinia store', () => {
 					abstractwiki_fetch_section_section: ledeQid,
 					abstractwiki_fetch_section_language: mockLang
 				}, { signal: undefined } );
+			} );
+
+			it( 'sends the stored revision in view mode', async () => {
+				Object.defineProperty( store, 'getViewMode', { value: true } );
+				store.revisionId = 100;
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( getMock ).toHaveBeenCalledWith( {
+					action: 'abstractwiki_fetch_section',
+					format: 'json',
+					formatversion: '2',
+					abstractwiki_fetch_section_topic: mockQid,
+					abstractwiki_fetch_section_section: ledeQid,
+					abstractwiki_fetch_section_language: mockLang,
+					abstractwiki_fetch_section_revision: 100
+				}, { signal: undefined } );
+			} );
+
+			it( 'does not request a revision in edit mode', async () => {
+				store.revisionId = 100;
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( postMock ).toHaveBeenCalled();
+				expect( postMock.mock.calls[ 0 ][ 0 ].abstractwiki_fetch_section_revision ).toBeUndefined();
 			} );
 
 			it( 'makes the API call as a POST with a fragments array in edit mode', async () => {

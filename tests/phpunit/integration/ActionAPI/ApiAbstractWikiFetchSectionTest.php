@@ -240,6 +240,44 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$this->assertTrue( $result[2][ 'pending' ] );
 	}
 
+	public function testFetchSection_withRevision(): void {
+		$qid = 'Q42';
+		$oldRevisionId = 123;
+		$oldFragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>old literal</b>' ];
+		$newFragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>new literal</b>' ];
+
+		$contentFor = static fn ( array $fragments ) => new AbstractWikiContent( json_encode( [
+			'qid' => $qid,
+			'sections' => [ 'Q8776414' => [ 'index' => 0, 'fragments' => [ 'Z89', ...$fragments ] ] ]
+		] ) );
+		$contentHandler = $this->createMock( AbstractWikiContentHandler::class );
+		$contentHandler->method( 'getAbstractContentForTitle' )->willReturnCallback(
+			static fn ( $revisionStore, $title, $revisionId ) => $revisionId === $oldRevisionId ?
+				$contentFor( [ $oldFragment ] ) :
+				$contentFor( [ $newFragment, $newFragment ] )
+		);
+		$factory = $this->createMock( IContentHandlerFactory::class );
+		$factory->method( 'getContentHandler' )->willReturn( $contentHandler );
+		$this->setService( 'ContentHandlerFactory', $factory );
+		$this->setService( 'TitleFactory', $this->createMockTitleFactory( $qid ) );
+
+		$value = [ 'success' => true, 'value' => '<b>old content</b>' ];
+		$this->setService( 'AbstractWikiFragmentStore', $this->createMockFragmentStore( [
+			[ $oldFragment, $this->makeFragment( $qid, 'en', $value ) ]
+		] ) );
+
+		$result = $this->doApiRequest( [
+			'action' => 'abstractwiki_fetch_section',
+			'abstractwiki_fetch_section_topic' => 'Q42',
+			'abstractwiki_fetch_section_section' => 'Q8776414',
+			'abstractwiki_fetch_section_language' => 'Z1002',
+			'abstractwiki_fetch_section_revision' => $oldRevisionId,
+		] )[0][ 'abstractwiki_fetch_section' ][ 'Q8776414' ];
+
+		$this->assertCount( 1, $result );
+		$this->assertSame( '<b>old content</b>', $result[0][ 'value' ] );
+	}
+
 	// Request with fragments
 	// ======================
 

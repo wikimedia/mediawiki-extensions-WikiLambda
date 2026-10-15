@@ -70,6 +70,7 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		$sectionQid = $params[ 'section' ];
 		$languageZid = $params[ 'language' ];
 		$fragmentsStr = $params[ 'fragments' ];
+		$revisionId = $params[ 'revision' ];
 
 		// Today's datetime, needed for the fragmentStore getter
 		$datetime = ConvertibleTimestamp::now( TS::MW );
@@ -82,7 +83,9 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		//
 		// * If there's no list of fragments sent in the request body, we run all the
 		//   persisted fragments from the given section. This action can be freely
-		//   done during read page and with a lower autority.
+		//   done during read page and with a lower authority.
+		//   If a revision is given (i.e. when viewing old revision or diff), we read the
+		//   fragments from that revision instead of the latest.
 		//
 		// * If there's a specified list of fragments in the output, we will fetch those,
 		//   assuming they are being edited so their content is not the persisted one.
@@ -92,7 +95,7 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		if ( $fragmentsStr === null ) {
 			// No fragments passed in the request: fetch all fragments from the section
 			$unsavedFragments = false;
-			$fragments = $this->getStoredSectionFragments( $topicQid, $sectionQid );
+			$fragments = $this->getStoredSectionFragments( $topicQid, $sectionQid, $revisionId );
 		} else {
 			// Fragments passed in the request: we check permissions and validate
 			$fragments = json_decode( $fragmentsStr, true );
@@ -144,13 +147,19 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 	}
 
 	/**
-	 * Retrieves the list of fragments stored in the given section as per its latest revision.
+	 * Retrieves the list of fragments stored in the given section as per the given
+	 * revision, or as per its latest revision if none given.
 	 *
 	 * @param string $topicQid
 	 * @param string $sectionQid
+	 * @param int|null $revisionId
 	 * @return array
 	 */
-	private function getStoredSectionFragments( string $topicQid, string $sectionQid ): array {
+	private function getStoredSectionFragments(
+		string $topicQid,
+		string $sectionQid,
+		?int $revisionId = null
+	): array {
 		// 1. Get the AW content
 		$contentHandler = $this->contentHandlerFactory->getContentHandler( CONTENT_MODEL_ABSTRACT );
 		'@phan-var AbstractWikiContentHandler $contentHandler';
@@ -170,7 +179,7 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		}
 
 		$awContent = $contentHandler->getAbstractContentForTitle(
-			$this->revisionStore, $title, null, $this->getAuthority()
+			$this->revisionStore, $title, $revisionId, $this->getAuthority()
 		);
 		if ( $awContent === false || !$awContent->isValid() ) {
 			$this->dieWithError(
@@ -260,6 +269,10 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 			],
 			'fragments' => [
 				ParamValidator::PARAM_TYPE => 'text',
+				ParamValidator::PARAM_REQUIRED => false,
+			],
+			'revision' => [
+				ParamValidator::PARAM_TYPE => 'integer',
 				ParamValidator::PARAM_REQUIRED => false,
 			],
 		];
