@@ -1139,7 +1139,8 @@ module.exports = exports = defineComponent( {
 			// Don't show freshen button if the response comes from performing a test
 			if (
 				keyValues.value.has( 'testCallCachedOn' ) ||
-				keyValues.value.has( 'validationCallCachedOn' )
+				keyValues.value.has( 'validationCallCachedOn' ) ||
+				keyValues.value.has( 'testResultCachedOn' )
 			) {
 				return undefined;
 			}
