@@ -155,43 +155,30 @@ class OrchestratorRequest {
 			throw new OrchestratorException( $e->getMessage(), $query, 0, $e );
 		}
 
-		// 3. Write to the Object Cache (except when bypassCache=true)
+		// 3. Standardized log for Orchestrator Request result for every case
+		$httpStatus = $response['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
+		$loggerArgs = [ __METHOD__ . ' evaluated response for {key} returned HTTP {status}', [
+			'key' => $requestKey,
+			'status' => $httpStatus,
+			'source' => $origin ?: 'wf-repo'
+		] ];
+
+		if (
+			( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
+			( $httpStatus === HttpStatus::TOO_MANY_REQUESTS ) ||
+			( $httpStatus === HttpStatus::REQUEST_TIMEOUT )
+		) {
+			// System error (http 408, 429 or >=500): log as WARNING
+			$this->logger->warning( ...$loggerArgs );
+		} else {
+			// Successful request or content error: log as INFO
+			$this->logger->info( ...$loggerArgs );
+		}
+
+		// 4. Write to the Object Cache (except when bypassCache=true)
 		if ( !$bypassCache ) {
-			// (T338243) Set TTL conditionally:
-			// * success (http 200)           TTL_MONTH
-			// * bad request (http 400-422)   TTL_WEEK
-			// * too many requests (http 429) TTL_MINUTE
-			// * server error (http >= 500)   TTL_MINUTE
-			$httpStatus = $response['httpStatusCode'] ?? HttpStatus::INTERNAL_SERVER_ERROR;
-			$loggerArgs = [ __METHOD__ . ' evaluated response for {key} returned HTTP {status}', [
-				'key' => $requestKey,
-				'status' => $httpStatus,
-				'source' => $origin ?: 'null'
-			] ];
-
-			// Default: All possible bad request status, set to TTL_WEEK
-			$exptime = $this->objectCache::TTL_WEEK;
-
-			if ( self::isAWFragmentRequest( $origin ) || self::isWikifunctionsClientRequest( $origin ) ) {
-				// (T432869) Set all values to a minute TTL when the request
-				// is for rendering an Abstract Wiki or an Embedded fragment.
-				$exptime = $this->objectCache::TTL_MINUTE;
-			} elseif (
-				( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
-				( $httpStatus === HttpStatus::TOO_MANY_REQUESTS ) ||
-				( $httpStatus === HttpStatus::REQUEST_TIMEOUT )
-			) {
-				// Recoverable system errors: set to TTL_MINUTE
-				$exptime = $this->objectCache::TTL_MINUTE;
-				$this->logger->warning( ...$loggerArgs );
-			} elseif ( $httpStatus === HttpStatus::OK ) {
-				// Successful value: set to TTL_MONTH
-				$exptime = $this->objectCache::TTL_MONTH;
-				$this->logger->info( ...$loggerArgs );
-			} else {
-				// Default: TTL_WEEK
-				$this->logger->info( ...$loggerArgs );
-			}
+			// Get TTL conditioned by status and origin
+			$exptime = self::getOrchestratorResponseTTL( $httpStatus, $origin );
 
 			// Let's avoid deserializing-serializing just to add a few metadata keys before caching
 			$stampedResponse = json_decode( $response[ 'result' ] );
@@ -215,7 +202,7 @@ class OrchestratorRequest {
 			] );
 		}
 
-		// 4. Add metadata key about the call being newly generated with latest data;
+		// 5. Add metadata key about the call being newly generated with latest data;
 		// get cachedWikidataEntities key: if missing, the call is considered fresh
 		$stampedResponse = json_decode( $response[ 'result' ] );
 		$cachedWikidataEntities = ZObjectUtils::getMetaDataValue( $stampedResponse, 'cachedWikidataEntities' );
@@ -730,6 +717,45 @@ class OrchestratorRequest {
 	private function getFailedResponseEnvelope( $zErrorObject ): ZResponseEnvelope {
 		$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
 		return new ZResponseEnvelope( null, $zResponseMap );
+	}
+
+	/**
+	 * Returns the TTL for the caching of the response received from the Orchestrator.
+	 *
+	 * (T338243) Set TTL conditionally depending on the returned status:
+	 * - success (http 200): TTL_MONTH
+	 * - failure due to a content error (http 400-422): TTL_WEEK
+	 * - failure due to a recoverable error (http 408, 429 or >=500): TTL_MINUTE
+	 *
+	 * (T432869) Set all values to a minute TTL when the request
+	 * is for rendering an Abstract Wiki or an Embedded fragment.
+	 *
+	 * @param int $httpStatus
+	 * @param string $origin
+	 * @return int
+	 */
+	private static function getOrchestratorResponseTTL( $httpStatus, $origin ): int {
+		// Request originated from an AW or Embedded fragment: set to TTL_MINUTE
+		if ( self::isAWFragmentRequest( $origin ) || self::isWikifunctionsClientRequest( $origin ) ) {
+			return MemcachedWrapper::TTL_MINUTE;
+		}
+
+		// Recoverable system errors: set to TTL_MINUTE
+		if (
+			( $httpStatus >= HttpStatus::INTERNAL_SERVER_ERROR ) ||
+			( $httpStatus === HttpStatus::TOO_MANY_REQUESTS ) ||
+			( $httpStatus === HttpStatus::REQUEST_TIMEOUT )
+		) {
+			return MemcachedWrapper::TTL_MINUTE;
+		}
+
+		// Successful value: set to TTL_MONTH
+		if ( $httpStatus === HttpStatus::OK ) {
+			return MemcachedWrapper::TTL_MONTH;
+		}
+
+		// Default: TTL_WEEK
+		return MemcachedWrapper::TTL_WEEK;
 	}
 
 	/**
