@@ -419,6 +419,7 @@
 	"wikilambda-functioncall-metadata-accessible-title": "Label for the dialog that shows metadata about a function call, available for screen readers.",
 	"wikilambda-functioncall-metadata-actual-result": "Label for the actual result returned from a tester's test run.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall-metadata-fresh": "Summary for the caching section in the function call metadata, stating that the response was requested fresh, without retrieving the result or data from the cache.\n\n{{doc-wikilambda}}.",
+	"wikilambda-functioncall-metadata-fresh-cached-entities": "Summary for the caching section in the function call metadata, stating that the response was newly generated and not retrieved from the cache, but that some of the Wikidata entities it used were retrieved from the cache.\n\n{{doc-wikilambda}}.",
 	"wikilambda-functioncall-metadata-cached": "Summary for the caching section in the function call metadata, stating that the response was retrieved from a cache.\n\n{{doc-wikilambda}}.",
 	"wikilambda-functioncall-metadata-cache-fresh": "Label for the time when the function call was executed with the latest data.\n\n{{doc-wikilambda}}.",
 	"wikilambda-functioncall-metadata-cache-freshen-button": "Label for the button that allows users to re-request the call again but without using cached data or responses.\n\n{{doc-wikilambda}}",

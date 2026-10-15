@@ -411,6 +411,40 @@ describe( 'dialog', () => {
 				expect( section.find( 'a.ext-wikilambda-app-function-metadata-dialog__link' ).exists() ).toBe( true );
 			} );
 
+			it( 'renders the caching section for a new call that used cached Wikidata entities', () => {
+				store.userHasRight = createGettersWithFunctionsMock( true );
+
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataFreshCallCachedEntities } );
+				const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const section = sections[ 0 ];
+
+				// Check header
+				expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
+				expect( section.find( '.cdx-accordion__header__description' ).text() )
+					.toBe( 'This response was newly generated, but used cached Wikidata entities' );
+
+				// Check content
+				const content = section.find( '.cdx-accordion__content' );
+				const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
+				expect( keys.length ).toBe( 1 );
+				expect( keys[ 0 ].text() ).toContain( 'Cached Wikidata entities:' );
+				expect( keys[ 0 ].text() ).toContain( 'L512' );
+
+				// Renders the freshen button, because the Wikidata entities came from the cache
+				expect( section.findComponent( { name: 'cdx-button' } ).exists() ).toBe( true );
+			} );
+
+			it( 'renders the caching section for a cached test that used cached Wikidata entities', () => {
+				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataCachedTestCachedEntities } );
+				const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+				const section = sections[ 0 ];
+
+				// Check header
+				expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
+				expect( section.find( '.cdx-accordion__header__description' ).text() )
+					.toBe( 'This response was retrieved from the cache' );
+			} );
+
 			it( 'emits freshen-result when the freshen result button is clicked', async () => {
 				store.userHasRight = createGettersWithFunctionsMock( true );
 

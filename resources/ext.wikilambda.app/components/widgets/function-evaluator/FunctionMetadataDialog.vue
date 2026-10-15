@@ -672,15 +672,32 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
-		 * Returns the summary for the caching info section
+		 * Returns the summary for the caching info section:
+		 * * The call is fresh (functionCallFreshResult key is present)
+		 * * The call is fresh, but it used cached Wikidata entities (cachedWikidataEntities
+		 *   key is present, and no key with a cache timestamp is present) (T440536)
+		 * * Else, the call result came from the cache
+		 *
+		 * Test metadata does not have the functionCallCachedOn key,
+		 * so we also check the keys with the test cache timestamps.
 		 *
 		 * @return {string}
 		 */
 		function getCachingSummary() {
-			const isFresh = keyValues.value.has( 'functionCallFreshResult' );
-			return isFresh ?
-				i18n( 'wikilambda-functioncall-metadata-fresh' ).text() :
-				i18n( 'wikilambda-functioncall-metadata-cached' ).text();
+			if ( keyValues.value.has( 'functionCallFreshResult' ) ) {
+				return i18n( 'wikilambda-functioncall-metadata-fresh' ).text();
+			}
+			const cachedOnKeys = [
+				'functionCallCachedOn',
+				'testCallCachedOn',
+				'validationCallCachedOn',
+				'testResultCachedOn'
+			];
+			const isCachedResult = cachedOnKeys.some( ( key ) => keyValues.value.has( key ) );
+			if ( !isCachedResult && keyValues.value.has( 'cachedWikidataEntities' ) ) {
+				return i18n( 'wikilambda-functioncall-metadata-fresh-cached-entities' ).text();
+			}
+			return i18n( 'wikilambda-functioncall-metadata-cached' ).text();
 		}
 
 		/**

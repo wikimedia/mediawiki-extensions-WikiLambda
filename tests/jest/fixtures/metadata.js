@@ -376,6 +376,18 @@ const metadataFreshCall = convertSetToMap( {
 	functionCallFreshResult: '2026-06-04T00:00:00Z',
 } );
 
+// A new call which used cached Wikidata entities: it has no cache timestamp.
+const metadataFreshCallCachedEntities = convertSetToMap( {
+	cachedWikidataEntities: [ 'Z6', 'L512' ]
+} );
+
+// A test which used cached Wikidata entities: the test calls came from the cache.
+const metadataCachedTestCachedEntities = convertSetToMap( {
+	testCallCachedOn: '2026-06-02T00:00:00Z',
+	validationCallCachedOn: '2026-06-03T00:00:00Z',
+	cachedWikidataEntities: [ 'Z6', 'L512' ]
+} );
+
 const metadataFunctionCalls = convertSetToMap( {
 	functionCallCounts: [ 'Z6', 'Z802: 2', 'Z10000: 1' ],
 	functionCallPairCounts: [ 'Z6', 'Z10000 → Z802: 2', '(top level) → Z10000: 1' ],
@@ -400,6 +412,8 @@ module.exports = {
 	metadataCachedTestOddKey,
 	metadataCachedCall,
 	metadataFreshCall,
+	metadataFreshCallCachedEntities,
+	metadataCachedTestCachedEntities,
 	metadataFunctionCalls,
 	convertSetToMap
 };

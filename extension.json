@@ -926,6 +926,7 @@
 				"wikilambda-function-are-you-sure-dialog-description",
 				"wikilambda-functioncall-metadata-accessible-title",
 				"wikilambda-functioncall-metadata-fresh",
+				"wikilambda-functioncall-metadata-fresh-cached-entities",
 				"wikilambda-functioncall-metadata-cached",
 				"wikilambda-functioncall-metadata-cache-fresh",
 				"wikilambda-functioncall-metadata-cache-freshen-button",
