@@ -348,6 +348,7 @@
 	"wikilambda-invalidzobjecttitle": "Den Titel „$1“, deen Dir uginn hutt, ass fir en Objet net gülteg.",
 	"wikilambda-languagelabel": "Sprooch",
 	"wikilambda-limitreport-failedcalls": "Feelgeschloe Wikifunctions-Opriff",
+	"wikilambda-limitreport-totalcalls": "Wikifunctions-Opriff",
 	"wikilambda-list-empty-state": "0 Elementer",
 	"wikilambda-list-item-label": "Element $1",
 	"wikilambda-list-items-label": "Elementer",
