@@ -415,7 +415,6 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$this->logger = $logger;
 	}
 
-	/** @inheritDoc */
 	public function getLogger(): LoggerInterface {
 		return $this->logger;
 	}

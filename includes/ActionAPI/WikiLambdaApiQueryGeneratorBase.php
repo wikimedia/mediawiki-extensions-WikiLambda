@@ -79,7 +79,6 @@ abstract class WikiLambdaApiQueryGeneratorBase extends ApiQueryGeneratorBase imp
 		$this->logger = $logger;
 	}
 
-	/** @inheritDoc */
 	public function getLogger(): LoggerInterface {
 		return $this->logger;
 	}
