@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"KormiSK"
+		]
+	},
+	"wikilambda-functioncall-metadata-function-calls": "Volania funkcií",
+	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Počet volaných funkcií",
+	"wikilambda-functioncall-metadata-function-calls-most-called": "Najčastejšie volané funkcie",
+	"wikilambda-functioncall-metadata-function-calls-total": "Počet volaní",
+	"wikilambda-limitreport-failedcalls": "Neúspešné volania Wikifunkcií",
+	"wikilambda-limitreport-totalcalls": "Volania Wikifunkcií",
+	"wikilambda-limitreport-uncachedcalls": "Neuložené volania Wikifunkcií"
+}
