@@ -957,6 +957,7 @@
 				"wikilambda-functioncall-metadata-implementation-type",
 				"wikilambda-functioncall-metadata-function-calls",
 				"wikilambda-functioncall-metadata-function-calls-most-called",
+				"wikilambda-functioncall-metadata-function-calls-pairs",
 				"wikilambda-functioncall-metadata-function-calls-total",
 				"wikilambda-functioncall-metadata-function-calls-distinct-functions",
 				"wikilambda-functioncall-metadata-function-calls-summary-calls",

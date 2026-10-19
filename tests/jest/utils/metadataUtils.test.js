@@ -40,6 +40,7 @@ describe( 'metadataUtils', () => {
 		expect( functionCallsConfig.description ).toBe( 'getFunctionCallsSummary' );
 		expect( functionCallsConfig.keys.map( ( item ) => item.key ) ).toEqual( [
 			'functionCallCounts',
+			'functionCallPairCounts',
 			'functionCallTotal',
 			'functionCallDistinctFunctions'
 		] );

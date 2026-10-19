@@ -378,6 +378,7 @@ const metadataFreshCall = convertSetToMap( {
 
 const metadataFunctionCalls = convertSetToMap( {
 	functionCallCounts: [ 'Z6', 'Z802: 2', 'Z10000: 1' ],
+	functionCallPairCounts: [ 'Z6', 'Z10000 → Z802: 2', '(top level) → Z10000: 1' ],
 	functionCallTotal: '3',
 	functionCallDistinctFunctions: '2'
 } );

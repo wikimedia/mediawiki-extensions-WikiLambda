@@ -430,6 +430,7 @@
 	"wikilambda-functioncall-metadata-function-calls": "Function calls",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Number of Functions called",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "Most-called Functions",
+	"wikilambda-functioncall-metadata-function-calls-pairs": "Most frequent calls (caller → called)",
 	"wikilambda-functioncall-metadata-function-calls-summary-calls": "{{PLURAL:$1|$1 call|$1 calls}}",
 	"wikilambda-functioncall-metadata-function-calls-summary-functions": "{{PLURAL:$1|$1 Function|$1 Functions}}",
 	"wikilambda-functioncall-metadata-function-calls-total": "Number of calls",

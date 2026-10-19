@@ -626,7 +626,7 @@ describe( 'dialog', () => {
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
-			expect( keys.length ).toBe( 3 );
+			expect( keys.length ).toBe( 4 );
 
 			expect( keys[ 0 ].text() ).toContain( 'Most-called Functions:' );
 			const list = keys[ 0 ].findAll( 'ul > li' );
@@ -634,11 +634,17 @@ describe( 'dialog', () => {
 			expect( list[ 0 ].text() ).toBe( 'Z802: 2' );
 			expect( list[ 1 ].text() ).toBe( 'Z10000: 1' );
 
-			expect( keys[ 1 ].text() ).toContain( 'Number of calls:' );
-			expect( keys[ 1 ].text() ).toContain( '3' );
+			expect( keys[ 1 ].text() ).toContain( 'Most frequent calls (caller → called):' );
+			const pairList = keys[ 1 ].findAll( 'ul > li' );
+			expect( pairList.length ).toBe( 2 );
+			expect( pairList[ 0 ].text() ).toBe( 'Z10000 → Z802: 2' );
+			expect( pairList[ 1 ].text() ).toBe( '(top level) → Z10000: 1' );
 
-			expect( keys[ 2 ].text() ).toContain( 'Number of Functions called:' );
-			expect( keys[ 2 ].text() ).toContain( '2' );
+			expect( keys[ 2 ].text() ).toContain( 'Number of calls:' );
+			expect( keys[ 2 ].text() ).toContain( '3' );
+
+			expect( keys[ 3 ].text() ).toContain( 'Number of Functions called:' );
+			expect( keys[ 3 ].text() ).toContain( '2' );
 		} );
 
 		it( 'shows only the call count in the summary when the function count is missing', () => {

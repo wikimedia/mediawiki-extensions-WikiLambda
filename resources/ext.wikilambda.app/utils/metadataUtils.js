@@ -49,6 +49,7 @@ const metadataUtils = {
 			description: 'getFunctionCallsSummary',
 			keys: [
 				{ key: 'functionCallCounts', title: 'wikilambda-functioncall-metadata-function-calls-most-called', transform: 'getDebugLogs' },
+				{ key: 'functionCallPairCounts', title: 'wikilambda-functioncall-metadata-function-calls-pairs', transform: 'getDebugLogs' },
 				{ key: 'functionCallTotal', title: 'wikilambda-functioncall-metadata-function-calls-total' },
 				{ key: 'functionCallDistinctFunctions', title: 'wikilambda-functioncall-metadata-function-calls-distinct-functions' }
 			]

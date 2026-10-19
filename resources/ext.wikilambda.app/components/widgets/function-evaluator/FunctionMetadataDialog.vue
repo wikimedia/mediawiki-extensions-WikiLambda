@@ -1257,6 +1257,7 @@ module.exports = exports = defineComponent( {
 						// * wikilambda-functioncall-metadata-implementation-id
 						// * wikilambda-functioncall-metadata-implementation-type
 						// * wikilambda-functioncall-metadata-function-calls-most-called
+						// * wikilambda-functioncall-metadata-function-calls-pairs
 						// * wikilambda-functioncall-metadata-function-calls-total
 						// * wikilambda-functioncall-metadata-function-calls-distinct-functions
 						// * wikilambda-functioncall-metadata-duration
