@@ -1066,6 +1066,7 @@
 				"wikilambda-abstract-menu-option-insert-before",
 				"wikilambda-abstract-menu-option-move-after",
 				"wikilambda-abstract-menu-option-move-before",
+				"wikilambda-abstract-menu-option-try-function-call",
 				"wikilambda-abstract-preview-fragment-max-retries",
 				"wikilambda-abstract-preview-fragment-missing",
 				"wikilambda-abstract-preview-fragment-pending",

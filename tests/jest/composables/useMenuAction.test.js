@@ -376,4 +376,37 @@ describe( 'useMenuAction', () => {
 			expect( store.swapHashAtKeyPath ).toHaveBeenCalledWith( keyPath, 1 );
 		} );
 	} );
+
+	describe( 'openFunctionCallLink', () => {
+		const keyPath = 'abstractwiki.sections.Q8776414.fragments.2';
+		let openSpy;
+
+		beforeEach( () => {
+			openSpy = jest.spyOn( window, 'open' ).mockImplementation( () => null );
+		} );
+
+		afterEach( () => {
+			openSpy.mockRestore();
+		} );
+
+		it( 'builds the link when it is called and opens it in a new tab', () => {
+			store.getFunctionCallLink = jest.fn().mockReturnValue( '/view/en/Z444?call=%7B%7D' );
+			expect( store.getFunctionCallLink ).not.toHaveBeenCalled();
+
+			menuAction.openFunctionCallLink( keyPath );
+
+			expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+			expect( openSpy ).toHaveBeenCalledTimes( 1 );
+			expect( openSpy ).toHaveBeenCalledWith( '/view/en/Z444?call=%7B%7D', '_blank', 'noopener' );
+		} );
+
+		it( 'does nothing when there is no link', () => {
+			store.getFunctionCallLink = jest.fn().mockReturnValue( null );
+
+			menuAction.openFunctionCallLink( keyPath );
+
+			expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+			expect( openSpy ).not.toHaveBeenCalled();
+		} );
+	} );
 } );

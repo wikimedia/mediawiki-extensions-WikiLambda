@@ -42,6 +42,7 @@
 					@add-arg="addArgument"
 					@delete-arg="deleteArgument"
 					@copy="copyToClipboard"
+					@try-function-call="openFunctionCallLink( keyPath )"
 				></wl-mode-selector>
 				<wl-function-selector-help
 					v-if="showFunctionSelectorHelp"
@@ -219,7 +220,8 @@ module.exports = exports = defineComponent( {
 			moveBefore,
 			moveAfter,
 			addListItem,
-			deleteListItem
+			deleteListItem,
+			openFunctionCallLink
 		} = useMenuAction();
 
 		// Expansion state
@@ -957,6 +959,7 @@ module.exports = exports = defineComponent( {
 			listItemCount,
 			moveAfter,
 			moveBefore,
+			openFunctionCallLink,
 			parentExpectedType,
 			renderComponent,
 			showFunctionSelectorHelp,

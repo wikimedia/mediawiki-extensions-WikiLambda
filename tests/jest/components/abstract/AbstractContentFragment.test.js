@@ -45,6 +45,7 @@ describe( 'AbstractContentFragment', () => {
 		store.setHighlightedFragment = jest.fn();
 		store.getSelectedFragment = undefined;
 		store.setSelectedFragment = jest.fn();
+		store.getFunctionCallLink = jest.fn().mockReturnValue( '/view/en/Z444?call=%7B%7D' );
 	} );
 
 	it( 'renders without errors', () => {
@@ -112,6 +113,94 @@ describe( 'AbstractContentFragment', () => {
 				wrapper.vm.menuItems[ 0 ].items[ 1 ];
 
 			expect( moveAfterItem.disabled ).toBe( true );
+		} );
+	} );
+
+	describe( 'try fragment on Wikifunctions', () => {
+		function findTryItem( wrapper ) {
+			const items = wrapper.vm.menuItems.flatMap( ( group ) => group.items );
+			return items.find( ( item ) => item.value === Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL );
+		}
+
+		async function openMenu( wrapper, event = 'click' ) {
+			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment-menu' ).trigger( event );
+		}
+
+		it( 'does not build the link before the menu opens', () => {
+			const wrapper = renderFragment();
+
+			expect( findTryItem( wrapper ) ).toBeUndefined();
+			expect( store.getFunctionCallLink ).not.toHaveBeenCalled();
+		} );
+
+		it( 'shows the try option with the external link icon when the menu opens and there is a link', async () => {
+			const wrapper = renderFragment();
+
+			await openMenu( wrapper );
+
+			const tryItem = findTryItem( wrapper );
+			expect( tryItem ).toBeDefined();
+			expect( tryItem.label ).toBe( 'Try on Wikifunctions' );
+			expect( tryItem.icon ).toBe( '<path data-testid="mock-icon-cdxIconLinkExternal"/>' );
+			expect( tryItem.url ).toBeUndefined();
+			expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'checks the link when the menu opens with the keyboard', async () => {
+			const wrapper = renderFragment();
+
+			await openMenu( wrapper, 'keydown' );
+
+			expect( findTryItem( wrapper ) ).toBeDefined();
+		} );
+
+		it( 'places the try option after paste in the clipboard group, and the delete option last', async () => {
+			const wrapper = renderFragment();
+
+			await openMenu( wrapper );
+
+			const groups = wrapper.vm.menuItems;
+			expect( groups.at( -2 ).items.map( ( item ) => item.value ) ).toEqual( [
+				Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
+				Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD,
+				Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL
+			] );
+			expect( groups.at( -1 ).items.map( ( item ) => item.value ) ).toEqual( [
+				Constants.LIST_MENU_OPTIONS.DELETE_ITEM
+			] );
+		} );
+
+		it( 'does not show the try option when there is no link', async () => {
+			store.getFunctionCallLink = jest.fn().mockReturnValue( null );
+			const wrapper = renderFragment();
+
+			await openMenu( wrapper );
+
+			expect( findTryItem( wrapper ) ).toBeUndefined();
+			expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'checks the link again each time the menu opens', async () => {
+			const wrapper = renderFragment();
+			await openMenu( wrapper );
+			expect( findTryItem( wrapper ) ).toBeDefined();
+
+			// The editor changes the fragment, so there is no link now
+			store.getFunctionCallLink.mockReturnValue( null );
+			await openMenu( wrapper );
+
+			expect( findTryItem( wrapper ) ).toBeUndefined();
+		} );
+
+		it( 'emits the try action when the try option is selected', () => {
+			const wrapper = renderFragment();
+
+			const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			menuButton.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL );
+
+			expect( wrapper.emitted( 'action' ) ).toEqual( [
+				[ { action: Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL } ]
+			] );
 		} );
 	} );
 

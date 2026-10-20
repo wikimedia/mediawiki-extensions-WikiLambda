@@ -60,7 +60,8 @@ describe( 'AbstractContentSection', () => {
 			addListItem: jest.fn(),
 			moveAfter: jest.fn(),
 			moveBefore: jest.fn(),
-			deleteListItem: jest.fn()
+			deleteListItem: jest.fn(),
+			openFunctionCallLink: jest.fn()
 		};
 		store = useMainStore();
 		store.setFunctionCallArguments = jest.fn();
@@ -212,6 +213,15 @@ describe( 'AbstractContentSection', () => {
 		fragment.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.DELETE_ITEM } );
 
 		expect( mockMenuActions.deleteListItem ).toHaveBeenCalledWith( keyPath );
+	} );
+
+	it( 'opens the function call of the selected fragment on Wikifunctions', () => {
+		const wrapper = renderSection();
+
+		const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+		fragment.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL } );
+
+		expect( mockMenuActions.openFunctionCallLink ).toHaveBeenCalledWith( keyPath );
 	} );
 
 	it( 'refreshes a fragment hash when fragment child component detects a change', async () => {

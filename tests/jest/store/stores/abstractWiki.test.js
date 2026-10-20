@@ -187,6 +187,236 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getFunctionCallLink', () => {
+			const fragmentPath = 'abstractwiki.sections.Q8776414.fragments.1';
+
+			function setFragment( fragment ) {
+				store.jsonObject.abstractwiki = {
+					qid: mockQid,
+					sections: {
+						Q8776414: {
+							index: 0,
+							fragments: [ { Z1K1: 'Z9', Z9K1: 'Z89' }, fragment ]
+						}
+					}
+				};
+			}
+
+			function getCall( url ) {
+				const params = new URLSearchParams( url.split( '?' )[ 1 ] );
+				return JSON.parse( params.get( 'call' ) );
+			}
+
+			function argumentReference( key ) {
+				return {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' },
+					Z18K1: { Z1K1: 'Z6', Z6K1: key }
+				};
+			}
+
+			// A hybrid function call to Z10001 with arguments for the topic and the language
+			const innerCall = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+				Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
+				Z10001K1: argumentReference( 'Z825K1' ),
+				Z10001K2: argumentReference( 'Z825K2' )
+			};
+
+			beforeEach( () => {
+				store.qid = mockQid;
+				Object.defineProperty( store, 'getUserLangCode', { value: 'en' } );
+			} );
+
+			afterEach( () => {
+				jest.useRealTimers();
+			} );
+
+			it( 'returns a link to the function page with the article context replaced', () => {
+				jest.useFakeTimers();
+				jest.setSystemTime( new Date( '2026-08-31T12:00:00Z' ) );
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: { Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' }, Z18K1: { Z1K1: 'Z6', Z6K1: 'Z825K1' } },
+					Z10000K2: { Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' }, Z18K1: { Z1K1: 'Z6', Z6K1: 'Z825K2' } },
+					Z10000K3: { Z1K1: { Z1K1: 'Z9', Z9K1: 'Z18' }, Z18K1: { Z1K1: 'Z6', Z6K1: 'Z825K3' } }
+				} );
+
+				const url = store.getFunctionCallLink( fragmentPath );
+
+				expect( url.startsWith( '/view/en/Z10000?' ) ).toBe( true );
+				expect( getCall( url ) ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z10000',
+					Z10000K1: { Z1K1: 'Z6091', Z6091K1: mockQid },
+					Z10000K2: mockLang,
+					Z10000K3: {
+						Z1K1: 'Z7',
+						Z7K1: 'Z20808',
+						Z20808K1: '2026-08-31',
+						Z20808K2: mockLang
+					}
+				} );
+			} );
+
+			it( 'returns null when the fragment has an empty function reference', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when the function is an empty string', () => {
+				setFragment( { Z1K1: 'Z7', Z7K1: '' } );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when the function is not a reference', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
+					}
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when the fragment is not an object', () => {
+				setFragment( { Z1K1: 'Z9', Z9K1: 'Z89' } );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when there is no fragment at the key path', () => {
+				setFragment( { Z1K1: 'Z9', Z9K1: 'Z89' } );
+
+				expect( store.getFunctionCallLink( 'abstractwiki.sections.Q8776414.fragments.5' ) ).toBeNull();
+			} );
+
+			it( 'returns the link when the URL is close to the limit', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: { Z1K1: 'Z6', Z6K1: 'a'.repeat( Constants.URL_CHARS_MAX - 200 ) }
+				} );
+
+				const url = store.getFunctionCallLink( fragmentPath );
+
+				expect( url.length ).toBeGreaterThan( Constants.URL_CHARS_MAX - 200 );
+				expect( url.length ).toBeLessThanOrEqual( Constants.URL_CHARS_MAX );
+			} );
+
+			it( 'returns null when the encoded URL is longer than the limit', () => {
+				// Each 'é' is encoded as '%C3%A9': the call is short,
+				// but the encoded URL is longer than the limit.
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: { Z1K1: 'Z6', Z6K1: 'é'.repeat( Math.ceil( Constants.URL_CHARS_MAX / 6 ) ) }
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns a link for a function call in an argument of a fragment', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: innerCall
+				} );
+
+				const url = store.getFunctionCallLink( `${ fragmentPath }.Z10000K1` );
+
+				expect( url.startsWith( '/view/en/Z10001?' ) ).toBe( true );
+				expect( getCall( url ) ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z10001',
+					Z10001K1: { Z1K1: 'Z6091', Z6091K1: mockQid },
+					Z10001K2: mockLang
+				} );
+			} );
+
+			it( 'returns a link for a function call in a typed list item of a fragment', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: [ { Z1K1: 'Z9', Z9K1: 'Z1' }, innerCall ]
+				} );
+
+				const url = store.getFunctionCallLink( `${ fragmentPath }.Z10000K1.1` );
+
+				expect( url.startsWith( '/view/en/Z10001?' ) ).toBe( true );
+				expect( getCall( url ) ).toEqual( {
+					Z1K1: 'Z7',
+					Z7K1: 'Z10001',
+					Z10001K1: { Z1K1: 'Z6091', Z6091K1: mockQid },
+					Z10001K2: mockLang
+				} );
+			} );
+
+			it( 'returns null when the function call has an empty argument reference', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: argumentReference( '' )
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when the function call has an argument reference that Wikifunctions cannot resolve', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: argumentReference( 'Z10000K1' )
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when a function call at a lower level has an empty argument reference', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z10000K1: {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
+						Z10001K1: argumentReference( 'Z825K1' ),
+						Z10001K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10002' },
+							Z10002K1: argumentReference( '' )
+						}
+					}
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when the object is not a function call', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z10000' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+
+			it( 'returns null when the function is not a valid function reference', () => {
+				setFragment( {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+					Z7K1: { Z1K1: 'Z9', Z9K1: 'Z0' }
+				} );
+
+				expect( store.getFunctionCallLink( fragmentPath ) ).toBeNull();
+			} );
+		} );
+
 		describe( 'getHighlightedFragment', () => {
 			it( 'returns undefined if no highlighted fragment', () => {
 				expect( store.getHighlightedFragment ).toBeUndefined();

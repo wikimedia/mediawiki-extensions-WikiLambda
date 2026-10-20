@@ -9,6 +9,8 @@
 			:aria-label="i18n( 'wikilambda-mode-selector-button-label' ).text()"
 			:disabled="disabled"
 			@update:selected="selectMode"
+			@click="checkCallLink"
+			@keydown="checkCallLink"
 		>
 			<cdx-icon :icon="icon" size="small"></cdx-icon>
 		</cdx-menu-button>
@@ -70,7 +72,8 @@ module.exports = exports = defineComponent( {
 		'move-after',
 		'move-before',
 		'set-type',
-		'set-value'
+		'set-value',
+		'try-function-call'
 	],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
@@ -145,6 +148,43 @@ module.exports = exports = defineComponent( {
 				parts[ 3 ] === Constants.ABSTRACT_WIKI_SECTION_FRAGMENTS
 			);
 		} );
+
+		/**
+		 * Returns whether the menu can show the option to try the function call
+		 * on Wikifunctions. The value must be a function call in an abstract fragment.
+		 * The option is not available for a call that fetches a Wikidata entity,
+		 * or for a call in a type position (an object type key or a typed list type key).
+		 * This check does not build the link, thus it is fast.
+		 *
+		 * @return {boolean}
+		 */
+		const showTryFunctionCall = computed( () => {
+			if (
+				!isAbstractFragment.value ||
+				typeString.value !== Constants.Z_FUNCTION_CALL ||
+				isWikidataItem.value
+			) {
+				return false;
+			}
+			// Check only the keys inside the fragment. Under a Z1K1 key or a list type key (0),
+			// a function call builds a type, so there is nothing to try.
+			const fragmentParts = props.keyPath.split( '.' ).slice( 5 );
+			return !fragmentParts.some( ( part ) => part === Constants.Z_OBJECT_TYPE || isKeyTypedListType( part ) );
+		} );
+
+		// The menu shows the try option only when there is a link
+		const hasCallLink = ref( false );
+
+		/**
+		 * Check if there is a link to try the function call on Wikifunctions.
+		 * The menu button calls this function when the user opens the menu with
+		 * the pointer or the keyboard. To build the link is slow, because it reads
+		 * the full function call. Thus the menu does not build it at each edit.
+		 * The function builds the link only when the menu can show the option.
+		 */
+		function checkCallLink() {
+			hasCallLink.value = showTryFunctionCall.value && !!store.getFunctionCallLink( props.keyPath );
+		}
 
 		/**
 		 * Whether the key expects a Wikidata item type.
@@ -313,6 +353,8 @@ module.exports = exports = defineComponent( {
 		 */
 		const menuItems = computed( () => {
 			const items = [];
+			// The delete actions go last in the menu
+			const deleteActionGroups = [];
 			// Literals and resolvers, sorted by label:
 			const resolvers = getResolverMenuItems();
 			const literals = getLiteralMenuItems();
@@ -334,7 +376,7 @@ module.exports = exports = defineComponent( {
 			// If it's a list item, add list item operations:
 			// * Move item one position before
 			// * Move item one position after
-			// * Delete item
+			// * Delete item (last in the menu)
 			if ( isKeyTypedListItem( key.value ) ) {
 				const isFirst = key.value === '1';
 				const isLast = key.value === String( listCount.value );
@@ -372,7 +414,7 @@ module.exports = exports = defineComponent( {
 					items.push( moveActionsGroup );
 				}
 				// Always show the delete action
-				items.push( deleteActionGroup );
+				deleteActionGroups.push( deleteActionGroup );
 			}
 
 			// If we are setting a function call function Id with a non-ref,
@@ -409,7 +451,7 @@ module.exports = exports = defineComponent( {
 						}
 					]
 				};
-				items.push( deleteArgumentActionGroup );
+				deleteActionGroups.push( deleteArgumentActionGroup );
 			}
 
 			// Clipboard options
@@ -427,8 +469,19 @@ module.exports = exports = defineComponent( {
 						icon: icons.cdxIconPaste
 					} ]
 				};
+				// Try the function call on Wikifunctions: only when there is a link
+				if ( hasCallLink.value ) {
+					clipboardActionGroup.items.push( {
+						label: i18n( 'wikilambda-abstract-menu-option-try-function-call' ).text(),
+						value: Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL,
+						icon: icons.cdxIconLinkExternal
+					} );
+				}
 				items.push( clipboardActionGroup );
 			}
+
+			// Delete actions
+			items.push( ...deleteActionGroups );
 
 			return items;
 		} );
@@ -472,6 +525,12 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
+			// Function call actions:
+			if ( value === Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL ) {
+				emit( 'try-function-call' );
+				return;
+			}
+
 			// Value mutation actions:
 			if ( value !== selected.value ) {
 				const newType = menuItems.value[ 0 ].items.find( ( menu ) => menu.value === value );
@@ -507,6 +566,7 @@ module.exports = exports = defineComponent( {
 
 		// Return all properties and methods for the template
 		return {
+			checkCallLink,
 			closeClipboard,
 			icon,
 			menuItems,

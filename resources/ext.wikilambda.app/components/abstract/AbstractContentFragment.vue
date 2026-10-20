@@ -28,6 +28,8 @@
 			:menu-items="menuItems"
 			:selected="null"
 			@update:selected="selectAction"
+			@click="checkCallLink"
+			@keydown="checkCallLink"
 		>
 			<cdx-icon
 				class="ext-wikilambda-app-abstract-content-fragment-menu__icon"
@@ -91,6 +93,19 @@ module.exports = exports = defineComponent( {
 
 		const fragmentCount = computed( () => store.getParentListCount( props.keyPath.split( '.' ) ) );
 
+		// The menu shows the try option only when there is a link
+		const hasCallLink = ref( false );
+
+		/**
+		 * Check if there is a link to try the function call on Wikifunctions.
+		 * The menu button calls this function when the user opens the menu with
+		 * the pointer or the keyboard. To build the link is slow, because it reads
+		 * the full function call. Thus the menu does not build it at each edit.
+		 */
+		function checkCallLink() {
+			hasCallLink.value = !!store.getFunctionCallLink( props.keyPath );
+		}
+
 		const key = computed( () => {
 			const parts = props.keyPath.split( '.' );
 			return parts[ parts.length - 1 ];
@@ -129,7 +144,8 @@ module.exports = exports = defineComponent( {
 					icon: icons.cdxIconTableAddRowAfter
 				} ]
 			};
-			// clipboard options
+			// clipboard options, and try the function call on Wikifunctions
+			// when there is a link
 			const clipboardActionGroup = {
 				label: i18n( 'wikilambda-clipboard-menu-group' ).text(),
 				hideLabel: true,
@@ -141,7 +157,11 @@ module.exports = exports = defineComponent( {
 					label: i18n( 'wikilambda-clipboard-menu-option-paste' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD,
 					icon: icons.cdxIconPaste
-				} ]
+				}, ...( hasCallLink.value ? [ {
+					label: i18n( 'wikilambda-abstract-menu-option-try-function-call' ).text(),
+					value: Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL,
+					icon: icons.cdxIconLinkExternal
+				} ] : [] ) ]
 			};
 			// delete item
 			const deleteActionGroup = {
@@ -236,6 +256,7 @@ module.exports = exports = defineComponent( {
 		);
 
 		return {
+			checkCallLink,
 			i18n,
 			icon,
 			isHighlighted,

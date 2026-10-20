@@ -21,7 +21,7 @@ const { canonicalToHybrid } = require( '../utils/schemata.js' );
  * @return {Object} Error composable API
  */
 module.exports = function useMenuAction() {
-	const mainStore = useMainStore();
+	const store = useMainStore();
 
 	/**
 	 * Whether the given keypath belongs to the main or the abstractwiki namespaces
@@ -46,12 +46,12 @@ module.exports = function useMenuAction() {
 		const parts = keyPath.split( '.' );
 		// For main, set dirty page
 		if ( parts[ 0 ] === Constants.STORED_OBJECTS.MAIN ) {
-			mainStore.setDirty();
+			store.setDirty();
 			return;
 		}
 		// For fragments, set dirty page
 		if ( parts[ 0 ] === Constants.STORED_OBJECTS.ABSTRACT ) {
-			mainStore.setDirty();
+			store.setDirty();
 		}
 	}
 
@@ -63,14 +63,14 @@ module.exports = function useMenuAction() {
 	 * @param {string} keyPath
 	 */
 	function addBefore( payload, keyPath ) {
-		const value = mainStore.createObjectByType( payload );
+		const value = store.createObjectByType( payload );
 
 		// Shift fragment previews before inserting the item
 		if ( isAbstractFragment( keyPath ) ) {
-			mainStore.insertHashAtKeyPath( keyPath );
+			store.insertHashAtKeyPath( keyPath );
 		}
 
-		mainStore.insertListItemAtKeyPath( {
+		store.insertListItemAtKeyPath( {
 			keyPath: keyPath.split( '.' ),
 			value
 		} );
@@ -86,17 +86,17 @@ module.exports = function useMenuAction() {
 	 * @param {string} keyPath
 	 */
 	function addAfter( payload, keyPath ) {
-		const value = mainStore.createObjectByType( payload );
+		const value = store.createObjectByType( payload );
 
 		const next = keyPath.split( '.' );
 		next[ next.length - 1 ] = String( Number( next[ next.length - 1 ] ) + 1 );
 
 		// Shift fragment previews before inserting the item
 		if ( isAbstractFragment( keyPath ) ) {
-			mainStore.insertHashAtKeyPath( next.join( '.' ) );
+			store.insertHashAtKeyPath( next.join( '.' ) );
 		}
 
-		mainStore.insertListItemAtKeyPath( {
+		store.insertListItemAtKeyPath( {
 			keyPath: next,
 			value
 		} );
@@ -114,9 +114,9 @@ module.exports = function useMenuAction() {
 	 * @param {number} nextKey - current size of the list (and next key)
 	 */
 	function addListItem( payload, keyPath, nextKey ) {
-		const value = mainStore.createObjectByType( payload );
+		const value = store.createObjectByType( payload );
 		const newItemPath = `${ keyPath }.${ nextKey }`;
-		mainStore.pushItemsByKeyPath( {
+		store.pushItemsByKeyPath( {
 			keyPath: keyPath.split( '.' ),
 			values: [ canonicalToHybrid( value ) ]
 		} );
@@ -134,7 +134,7 @@ module.exports = function useMenuAction() {
 	function deleteListItem( keyPath ) {
 		const listKeyPath = keyPath.split( '.' ).slice( 0, -1 );
 		const lastItem = keyPath.split( '.' ).slice( -1 );
-		mainStore.deleteListItemsByKeyPath( {
+		store.deleteListItemsByKeyPath( {
 			keyPath: listKeyPath,
 			indexes: lastItem
 		} );
@@ -143,7 +143,7 @@ module.exports = function useMenuAction() {
 
 		// If list item is deleted, we need to shift all next items to a previous position
 		if ( isAbstractFragment( keyPath ) ) {
-			mainStore.deleteHashAtKeyPath( keyPath );
+			store.deleteHashAtKeyPath( keyPath );
 		}
 	}
 
@@ -174,7 +174,7 @@ module.exports = function useMenuAction() {
 	 * @param {number} offset -1 or 1
 	 */
 	function moveByOffset( keyPath, offset ) {
-		mainStore.moveListItemByKeyPath( {
+		store.moveListItemByKeyPath( {
 			keyPath: keyPath.split( '.' ),
 			offset
 		} );
@@ -185,7 +185,21 @@ module.exports = function useMenuAction() {
 		// immediately in the preview; otherwise a change will be detected causing
 		// delayed re-hasing and update, but will come a couple seconds later.
 		if ( isAbstractFragment( keyPath ) ) {
-			mainStore.swapHashAtKeyPath( keyPath, offset );
+			store.swapHashAtKeyPath( keyPath, offset );
+		}
+	}
+
+	/**
+	 * Opens the function call at the given keyPath on Wikifunctions in a new tab.
+	 * It builds the link at that moment, so the link has the latest changes
+	 * and the date of today. It does nothing when there is no link.
+	 *
+	 * @param {string} keyPath
+	 */
+	function openFunctionCallLink( keyPath ) {
+		const url = store.getFunctionCallLink( keyPath );
+		if ( url ) {
+			window.open( url, '_blank', 'noopener' );
 		}
 	}
 
@@ -197,6 +211,7 @@ module.exports = function useMenuAction() {
 		deleteListItem,
 		moveBefore,
 		moveAfter,
+		openFunctionCallLink,
 		setDirtyKeyPath
 	};
 };

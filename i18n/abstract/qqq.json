@@ -69,6 +69,7 @@
 	"wikilambda-abstract-menu-option-insert-before": "Label for the menu option to insert a fragment above the selected one.",
 	"wikilambda-abstract-menu-option-move-after": "Label for the menu option to move the selected fragment one position below",
 	"wikilambda-abstract-menu-option-move-before": "Label for the menu option to move the selected fragment one position above.",
+	"wikilambda-abstract-menu-option-try-function-call": "Label for the menu option to try a function call on Wikifunctions, in the Abstract Wikipedia editor. The option is in the actions menu of a fragment, and in the menu of a function call inside a fragment. The option opens that function call on Wikifunctions in a new tab, with the inputs filled in, so that the editor can try the function call and change the inputs there.",
 	"wikilambda-abstract-preview-fragment-max-retries": "Error message when an Abstract Wikipedia fragment tried to render too many times, requesting the user to try again later.",
 	"wikilambda-abstract-preview-fragment-missing": "Label for the tag shown in the Abstract Wikipedia interface preview section, to replace a fragment that has not been requested yet.",
 	"wikilambda-abstract-preview-fragment-pending": "Label for the tag shown in the Abstract Wikipedia interface preview section, to replace a fragment that has been requested but is still pending for rendering.",

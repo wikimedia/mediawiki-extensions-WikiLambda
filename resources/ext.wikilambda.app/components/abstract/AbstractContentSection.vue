@@ -94,7 +94,8 @@ module.exports = exports = defineComponent( {
 			addListItem,
 			moveAfter,
 			moveBefore,
-			deleteListItem
+			deleteListItem,
+			openFunctionCallLink
 		} = menuActions();
 
 		const iconAdd = icons.cdxIconAdd;
@@ -257,6 +258,11 @@ module.exports = exports = defineComponent( {
 			if ( payload.action === Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD ) {
 				showClipboard.value = true;
 				copyToKeyPath.value = itemKeyPath;
+				return;
+			}
+
+			if ( payload.action === Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL ) {
+				openFunctionCallLink( itemKeyPath );
 				return;
 			}
 		}

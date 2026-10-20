@@ -98,9 +98,6 @@ const useInitImages = require( '../../composables/useInitImages.js' );
 const useVisibleTimeout = require( '../../composables/useVisibleTimeout.js' );
 const useMainStore = require( '../../store/index.js' );
 const ErrorData = require( '../../store/classes/ErrorData.js' );
-const urlUtils = require( '../../utils/urlUtils.js' );
-const { hybridToCanonical } = require( '../../utils/schemata.js' );
-const { walkAndTransformZObject, createParserCall } = require( '../../utils/zobjectUtils.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Base components
@@ -245,77 +242,9 @@ module.exports = exports = defineComponent( {
 				type: error.type || Constants.ERROR_TYPES.ERROR,
 				message: errorData,
 				// A busy service is not a problem with the fragment: no link to run it there
-				replicateLink: fragmentPreview.value.isUnavailable ? null : getFragmentReplicateLink()
+				replicateLink: fragmentPreview.value.isUnavailable ? null : store.getFunctionCallLink( props.keyPath )
 			} );
 		} );
-
-		/**
-		 * Creates a link to replicate the fragment function call in
-		 * Wikifunctions, shown when rendering a fragment error message.
-		 * Returns null when fragment is not available, fragment is not
-		 * defined by a simple call to a function reference (no page to
-		 * redirect to), or the link is too long for the servers (T439078)
-		 *
-		 * @return {string|null}
-		 */
-		function getFragmentReplicateLink() {
-			// Get the fragment from the store; we could pass it down the props but
-			// we only need it once in the (hopefully) exceptional case of an error.
-			let fragment = hybridToCanonical( store.getZObjectByKeyPath( props.keyPath.split( '.' ) ) );
-			if ( typeof fragment !== 'object' ) {
-				return null;
-			}
-
-			// 1. Replace arguments with their literal values
-			const isArgReference = ( obj, key ) => (
-				( Constants.Z_ARGUMENT_REFERENCE_KEY in obj ) &&
-				( obj[ Constants.Z_ARGUMENT_REFERENCE_KEY ] === key )
-			);
-
-			// 1.a. Transform Z18(Z825K1) into Z6091(qid)
-			fragment = walkAndTransformZObject(
-				fragment,
-				( node ) => isArgReference( node, Constants.Z_ABSTRACT_RENDER_FUNCTION_QID ),
-				() => ( {
-					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_WIKIDATA_REFERENCE_ITEM,
-					[ Constants.Z_WIKIDATA_REFERENCE_ITEM_ID ]: store.getAbstractWikiId
-				} )
-			);
-
-			// 1.b. Transform Z18(Z825K2) into Z9(previewlang)
-			fragment = walkAndTransformZObject(
-				fragment,
-				( node ) => isArgReference( node, Constants.Z_ABSTRACT_RENDER_FUNCTION_LANGUAGE ),
-				() => store.getPreviewLanguageZid
-			);
-
-			// 1.c. Transform Z18(Z825K3) into a date parser call
-			const today = new Date().toISOString().slice( 0, 10 );
-			fragment = walkAndTransformZObject(
-				fragment,
-				( node ) => isArgReference( node, Constants.Z_ABSTRACT_RENDER_FUNCTION_DATE ),
-				() => createParserCall( {
-					parserZid: Constants.Z_DATE_PARSER,
-					zobject: today,
-					zlang: store.getPreviewLanguageZid
-				} )
-			);
-
-			// If function call function is a reference, create the link to the
-			// function page. Else, return null.
-			if ( typeof fragment[ Constants.Z_FUNCTION_CALL_FUNCTION ] !== 'string' ) {
-				return null;
-			}
-
-			const url = urlUtils.generateViewUrl( {
-				langCode: store.getUserLangCode,
-				zid: fragment[ Constants.Z_FUNCTION_CALL_FUNCTION ],
-				params: { call: JSON.stringify( fragment ) }
-			} );
-
-			// Do not show the link if it is too long. The server rejects it.
-			return url.length <= Constants.URL_CHARS_MAX ? url : null;
-		}
 
 		/**
 		 * Renders the preview of the given fragment for the

@@ -634,6 +634,43 @@ describe( 'ZObjectKeyValue', () => {
 					value: objectValue
 				} );
 			} );
+
+			describe( 'try function call on Wikifunctions', () => {
+				const callLink = '/view/en/Z10000?call=%7B%7D';
+				let openSpy;
+
+				beforeEach( () => {
+					openSpy = jest.spyOn( window, 'open' ).mockImplementation( () => null );
+				} );
+
+				afterEach( () => {
+					openSpy.mockRestore();
+				} );
+
+				it( 'opens the function call on Wikifunctions if the mode selector emits try-function-call', () => {
+					keyPath = 'abstractwiki.sections.Q8776414.fragments.1.Z444K1';
+					objectValue = {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
+					};
+					store.getFunctionCallLink = jest.fn().mockReturnValue( callLink );
+
+					const wrapper = renderZObjectKeyValue( {
+						edit: true
+					}, {
+						stubs: {
+							WlKeyBlock: false
+						}
+					} );
+
+					const modeSelector = wrapper.findComponent( { name: 'wl-mode-selector' } );
+					modeSelector.vm.$emit( 'try-function-call' );
+
+					expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+					expect( openSpy ).toHaveBeenCalledTimes( 1 );
+					expect( openSpy ).toHaveBeenCalledWith( callLink, '_blank', 'noopener' );
+				} );
+			} );
 		} );
 
 		describe( 'disable edit', () => {

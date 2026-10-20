@@ -9,10 +9,11 @@
 const Constants = require( '../../Constants.js' );
 const { fetchAbstractWikiSection, saveAbstractWikiContent, runAbstractWikiFragment } = require( '../../utils/apiUtils.js' );
 const { extractZIDs } = require( '../../utils/schemata.js' );
-const { buildAbstractWikiTitle } = require( '../../utils/urlUtils.js' );
+const { buildAbstractWikiTitle, generateViewUrl } = require( '../../utils/urlUtils.js' );
 const { extractWikidataItemIds, isWikidataQid } = require( '../../utils/wikidataUtils.js' );
 const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
 const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
+const { createParserCall, hasArgumentReference, walkAndTransformZObject } = require( '../../utils/zobjectUtils.js' );
 const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
 const storeUtils = require( '../../utils/storeUtils.js' );
 const { isUnavailableFragmentFailure } = require( '../../utils/errorUtils.js' );
@@ -174,6 +175,103 @@ const abstractWikiStore = {
 			return ( fragmentHash, langZid ) => {
 				const fragmentKey = `${ fragmentHash }:${ langZid }`;
 				return state.fragments[ fragmentKey ];
+			};
+		},
+		/**
+		 * Returns a link to the function page on Wikifunctions that runs the
+		 * function call at the key path, with its inputs filled in. The function
+		 * call can be a fragment, or a function call at a lower level in a fragment.
+		 *
+		 * The link uses the current editor state, so it includes the unsaved
+		 * changes. The article context exists only on Abstract Wikipedia, so
+		 * the link replaces the arguments of the render function (Z825):
+		 * * Z825K1 (topic) becomes a Wikidata item reference to the article QID,
+		 * * Z825K2 (language) becomes the preview language,
+		 * * Z825K3 (date) becomes a call to the date parser with the date of today.
+		 *
+		 * The getter returns null when:
+		 * * the object at the key path is not a function call,
+		 * * the function is not a valid function reference, for example when
+		 *   the editor did not choose a function yet,
+		 * * an argument reference stays that Wikifunctions cannot resolve,
+		 *   for example an empty argument reference,
+		 * * the link is longer than Constants.URL_CHARS_MAX, because the servers
+		 *   reject it (T439078).
+		 *
+		 * The components decide where to show the link.
+		 *
+		 * @return {Function}
+		 */
+		getFunctionCallLink: function () {
+			/**
+			 * @param {string} keyPath
+			 * @return {string|null}
+			 */
+			return ( keyPath ) => {
+				let call = hybridToCanonical( this.getZObjectByKeyPath( keyPath.split( '.' ) ) );
+				if (
+					!call ||
+					typeof call !== 'object' ||
+					call[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_FUNCTION_CALL
+				) {
+					return null;
+				}
+
+				// The link opens the function page, so the function must be a reference.
+				// An empty reference means that the editor did not choose a function yet.
+				const functionZid = call[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+				if ( typeof functionZid !== 'string' || !isValidZidFormat( functionZid ) ) {
+					return null;
+				}
+
+				const isArgReference = ( node, key ) => (
+					( Constants.Z_ARGUMENT_REFERENCE_KEY in node ) &&
+					( node[ Constants.Z_ARGUMENT_REFERENCE_KEY ] === key )
+				);
+
+				// Replace Z18(Z825K1) with a Wikidata item reference to the article QID
+				call = walkAndTransformZObject(
+					call,
+					( node ) => isArgReference( node, Constants.Z_ABSTRACT_RENDER_FUNCTION_QID ),
+					() => ( {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_WIKIDATA_REFERENCE_ITEM,
+						[ Constants.Z_WIKIDATA_REFERENCE_ITEM_ID ]: this.getAbstractWikiId
+					} )
+				);
+
+				// Replace Z18(Z825K2) with the preview language
+				call = walkAndTransformZObject(
+					call,
+					( node ) => isArgReference( node, Constants.Z_ABSTRACT_RENDER_FUNCTION_LANGUAGE ),
+					() => this.getPreviewLanguageZid
+				);
+
+				// Replace Z18(Z825K3) with a call to the date parser with the date of today
+				const today = new Date().toISOString().slice( 0, 10 );
+				call = walkAndTransformZObject(
+					call,
+					( node ) => isArgReference( node, Constants.Z_ABSTRACT_RENDER_FUNCTION_DATE ),
+					() => createParserCall( {
+						parserZid: Constants.Z_DATE_PARSER,
+						zobject: today,
+						zlang: this.getPreviewLanguageZid
+					} )
+				);
+
+				// Wikifunctions cannot resolve the argument references that stay,
+				// for example an empty one or one to a key other than Z825K1-K3.
+				if ( hasArgumentReference( call ) ) {
+					return null;
+				}
+
+				const url = generateViewUrl( {
+					langCode: this.getUserLangCode,
+					zid: functionZid,
+					params: { call: JSON.stringify( call ) }
+				} );
+
+				// The servers reject URLs that are too long (T439078)
+				return url.length <= Constants.URL_CHARS_MAX ? url : null;
 			};
 		},
 		/**

@@ -594,7 +594,8 @@ Constants.LIST_MENU_OPTIONS = {
 	DELETE_ARG: 'delete-arg',
 	COPY_CLIPBOARD: 'copy',
 	PASTE_CLIPBOARD: 'paste',
-	ADD_FRAGMENT: 'add-fragment'
+	ADD_FRAGMENT: 'add-fragment',
+	TRY_FUNCTION_CALL: 'try-function-call'
 };
 
 Constants.PATHS = {

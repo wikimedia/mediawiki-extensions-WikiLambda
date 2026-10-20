@@ -69,6 +69,7 @@
 	"wikilambda-abstract-menu-option-insert-before": "Insert fragment before",
 	"wikilambda-abstract-menu-option-move-after": "Move fragment after",
 	"wikilambda-abstract-menu-option-move-before": "Move fragment before",
+	"wikilambda-abstract-menu-option-try-function-call": "Try on Wikifunctions",
 	"wikilambda-abstract-preview-fragment-max-retries": "Reached max retries. Try again later.",
 	"wikilambda-abstract-preview-fragment-missing": "Missing",
 	"wikilambda-abstract-preview-fragment-pending": "Pending",

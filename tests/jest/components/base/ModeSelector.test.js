@@ -372,7 +372,7 @@ describe( 'ModeSelector', () => {
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 4 );
-			expect( menu.vm.menuItems[ 2 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
+			expect( menu.vm.menuItems.at( -1 ).items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 
 		it( 'emits delete-list-item event when selecting delete menu option', async () => {
@@ -514,7 +514,7 @@ describe( 'ModeSelector', () => {
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			expect( menu.vm.menuItems.length ).toBe( 2 );
-			expect( menu.vm.menuItems[ 0 ].items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
+			expect( menu.vm.menuItems.at( -1 ).items[ 0 ].value ).toEqual( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 	} );
 
@@ -724,7 +724,7 @@ describe( 'ModeSelector', () => {
 			} );
 
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
-			expect( menu.vm.menuItems[ 1 ].items.at( -1 ).value ).toBe( 'delete-arg' );
+			expect( menu.vm.menuItems.at( -1 ).items.at( -1 ).value ).toBe( 'delete-arg' );
 		} );
 
 		it( 'emits add-arg event when selecting add-arg menu option', async () => {
@@ -740,6 +740,191 @@ describe( 'ModeSelector', () => {
 			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
 			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.DELETE_ARG );
 			await waitFor( () => expect( wrapper.emitted() ).toHaveProperty( 'delete-arg' ) );
+		} );
+	} );
+
+	describe( 'try function call on Wikifunctions', () => {
+		const fragmentPath = 'abstractwiki.sections.Q8776414.fragments.1';
+		const callLink = '/view/en/Z10000?call=%7B%7D';
+		const functionCall = {
+			Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+			Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
+		};
+
+		function getMenuItems( wrapper ) {
+			return wrapper.findComponent( { name: 'cdx-menu-button' } ).vm.menuItems;
+		}
+
+		function findTryItem( wrapper ) {
+			const items = getMenuItems( wrapper ).flatMap( ( group ) => group.items );
+			return items.find( ( item ) => item.value === Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL );
+		}
+
+		async function openMenu( wrapper, event = 'click' ) {
+			await wrapper.find( '[data-testid="mode-selector-button"]' ).trigger( event );
+		}
+
+		/**
+		 * Opens the menu and checks that it has no try option and that
+		 * it does not build the link.
+		 *
+		 * @param {Object} wrapper
+		 */
+		async function expectNoTryItem( wrapper ) {
+			await openMenu( wrapper );
+
+			expect( findTryItem( wrapper ) ).toBeUndefined();
+			expect( store.getFunctionCallLink ).not.toHaveBeenCalled();
+		}
+
+		beforeEach( () => {
+			keyPath = `${ fragmentPath }.Z444K1`;
+			objectValue = functionCall;
+			store.getFunctionCallLink = jest.fn().mockReturnValue( callLink );
+		} );
+
+		it( 'does not build the link before the menu opens', () => {
+			const wrapper = renderModeSelector( { keyPath, objectValue } );
+
+			expect( findTryItem( wrapper ) ).toBeUndefined();
+			expect( store.getFunctionCallLink ).not.toHaveBeenCalled();
+		} );
+
+		it( 'shows the try option after paste in the clipboard group when the menu opens and there is a link', async () => {
+			const wrapper = renderModeSelector( { keyPath, objectValue } );
+
+			await openMenu( wrapper );
+
+			const clipboardGroup = getMenuItems( wrapper ).at( -1 );
+			expect( clipboardGroup.label ).toBe( 'Clipboard options' );
+			expect( clipboardGroup.items.map( ( item ) => item.value ) ).toEqual( [
+				Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
+				Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD,
+				Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL
+			] );
+
+			const tryItem = clipboardGroup.items.at( -1 );
+			expect( tryItem.value ).toBe( Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL );
+			expect( tryItem.label ).toBe( 'Try on Wikifunctions' );
+			expect( tryItem.icon ).toBe( '<path data-testid="mock-icon-cdxIconLinkExternal"/>' );
+			expect( tryItem.url ).toBeUndefined();
+			expect( tryItem.disabled ).toBeUndefined();
+			expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'keeps the delete option last for a function call in a list', async () => {
+			store.getParentListCount = createGettersWithFunctionsMock( 3 );
+			keyPath = `${ fragmentPath }.Z444K2.2`;
+			const wrapper = renderModeSelector( { keyPath, objectValue } );
+
+			await openMenu( wrapper );
+
+			const groups = getMenuItems( wrapper );
+			expect( groups.at( -2 ).items.at( -1 ).value ).toBe( Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL );
+			expect( groups.at( -1 ).items.map( ( item ) => item.value ) ).toEqual( [
+				Constants.LIST_MENU_OPTIONS.DELETE_ITEM
+			] );
+		} );
+
+		it( 'checks the link when the menu opens with the keyboard', async () => {
+			const wrapper = renderModeSelector( { keyPath, objectValue } );
+
+			await openMenu( wrapper, 'keydown' );
+
+			expect( findTryItem( wrapper ) ).toBeDefined();
+			expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'does not show the try option when there is no link', async () => {
+			store.getFunctionCallLink = jest.fn().mockReturnValue( null );
+			const wrapper = renderModeSelector( { keyPath, objectValue } );
+
+			await openMenu( wrapper );
+
+			expect( findTryItem( wrapper ) ).toBeUndefined();
+			expect( store.getFunctionCallLink ).toHaveBeenCalledWith( keyPath );
+		} );
+
+		it( 'does not show the try option outside of an abstract fragment', async () => {
+			const wrapper = renderModeSelector( { keyPath: 'main.Z2K2.Z444K1', objectValue } );
+
+			await expectNoTryItem( wrapper );
+		} );
+
+		it( 'does not show the try option for a string', async () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue: { Z1K1: 'Z6', Z6K1: 'some string' }
+			} );
+
+			await expectNoTryItem( wrapper );
+		} );
+
+		it( 'does not show the try option for a reference', async () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue: { Z1K1: 'Z9', Z9K1: 'Z10000' }
+			} );
+
+			await expectNoTryItem( wrapper );
+		} );
+
+		it( 'does not show the try option for a function call in an object type key', async () => {
+			const wrapper = renderModeSelector( { keyPath: `${ fragmentPath }.Z444K1.Z1K1`, objectValue } );
+
+			await expectNoTryItem( wrapper );
+		} );
+
+		it( 'does not show the try option for a function call in a typed list type key', async () => {
+			const wrapper = renderModeSelector( { keyPath: `${ fragmentPath }.Z444K2.0`, objectValue } );
+
+			await expectNoTryItem( wrapper );
+		} );
+
+		it( 'does not show the try option for a function call inside a type', async () => {
+			const wrapper = renderModeSelector( { keyPath: `${ fragmentPath }.Z444K1.Z1K1.Z882K1`, objectValue } );
+
+			await expectNoTryItem( wrapper );
+		} );
+
+		it( 'does not show the try option for a call that fetches a Wikidata entity', async () => {
+			const wrapper = renderModeSelector( {
+				keyPath,
+				objectValue: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: Constants.Z_FUNCTION_CALL },
+					Z7K1: { Z1K1: 'Z9', Z9K1: Constants.Z_WIKIDATA_FETCH_ITEM },
+					[ Constants.Z_WIKIDATA_FETCH_ITEM_ID ]: {
+						Z1K1: { Z1K1: 'Z9', Z9K1: Constants.Z_WIKIDATA_REFERENCE_ITEM },
+						[ Constants.Z_WIKIDATA_REFERENCE_ITEM_ID ]: { Z1K1: 'Z6', Z6K1: 'Q42' }
+					}
+				},
+				expectedType: Constants.Z_WIKIDATA_ITEM
+			} );
+
+			await expectNoTryItem( wrapper );
+		} );
+
+		it( 'checks the link again each time the menu opens', async () => {
+			const wrapper = renderModeSelector( { keyPath, objectValue } );
+			await openMenu( wrapper );
+			expect( findTryItem( wrapper ) ).toBeDefined();
+
+			// The editor changes the function call, so there is no link now
+			store.getFunctionCallLink.mockReturnValue( null );
+			await openMenu( wrapper );
+
+			expect( findTryItem( wrapper ) ).toBeUndefined();
+		} );
+
+		it( 'emits try-function-call and does not emit set-type when the try option is selected', async () => {
+			const wrapper = renderModeSelector( { keyPath, objectValue } );
+			await openMenu( wrapper );
+
+			const menu = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			menu.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL );
+
+			expect( wrapper.emitted( 'try-function-call' ) ).toHaveLength( 1 );
+			expect( wrapper.emitted() ).not.toHaveProperty( 'set-type' );
 		} );
 	} );
 } );
