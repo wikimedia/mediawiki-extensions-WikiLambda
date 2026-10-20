@@ -1086,6 +1086,14 @@ class ZObjectUtils {
 				return $function;
 			}
 
+			// Edge case: escaped strings are values, not references, so we keep them as is
+			if (
+				isset( $vars[ ZTypeRegistry::Z_OBJECT_TYPE ] ) &&
+				( $vars[ ZTypeRegistry::Z_OBJECT_TYPE ] === ZTypeRegistry::Z_STRING )
+			) {
+				return $call;
+			}
+
 			// Else, iterate through values and replace canonical
 			// references or recurse over the rest of the keys
 			foreach ( $vars as $key => $value ) {

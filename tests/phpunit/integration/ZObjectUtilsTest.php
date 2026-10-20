@@ -1798,6 +1798,31 @@ EOT;
 			json_decode( $expected )
 		];
 
+		// Use case: The target function's Zid is passed as an escaped string input,
+		// which should stay a string and not be replaced
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z10000", "Z10000K1": { "Z1K1": "Z6", "Z6K1": "Z10000" } }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": ' . $mockFunction
+			. ', "Z10000K1": { "Z1K1": "Z6", "Z6K1": "Z10000" } }';
+		yield 'Escaped string with the target function Zid is not replaced' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
+		// Use case: target function's Zid is passed as an escaped string inside a list,
+		// which should stay a string and not be replaced
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z10000",'
+			. ' "Z10000K1": [ "Z6", { "Z1K1": "Z6", "Z6K1": "Z10000" } ] }';
+		$expected = '{ "Z1K1": "Z7", "Z7K1": ' . $mockFunction
+			. ', "Z10000K1": [ "Z6", { "Z1K1": "Z6", "Z6K1": "Z10000" } ] }';
+		yield 'Escaped string with the target function Zid inside a list is not replaced' => [
+			json_decode( $call ),
+			$functionZid,
+			json_decode( $mockFunction ),
+			json_decode( $expected )
+		];
+
 		// Edge case: Direct reference
 		$call = '"Z10000"';
 		$expected = $mockFunction;
