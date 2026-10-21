@@ -132,6 +132,25 @@ const urlUtils = {
 	},
 
 	/**
+	 * Generate a URL for a page on Wikifunctions, such as a special page.
+	 * On Wikifunctions (repo mode) the URL is a link on the current wiki.
+	 *
+	 * @param {Object} payload - The options for generating the URL.
+	 * @param {string} payload.title - The page title with underscores, e.g. 'Special:CreateObject'.
+	 * @param {Object} [payload.params] - Optional query parameters.
+	 * @return {string} - The generated URL.
+	 */
+	generateWikifunctionsPageUrl: function ( { title, params = {} } ) {
+		const targetBaseUrl = urlUtils.normalizeBaseUrl( mw.config.get( 'wgWikifunctionsBaseUrl' ) );
+		if ( !targetBaseUrl ) {
+			return new mw.Title( title ).getUrl( params );
+		}
+		const query = new URLSearchParams( params ).toString();
+		const queryString = query ? `?${ query }` : '';
+		return new URL( `/wiki/${ title }${ queryString }`, targetBaseUrl ).toString();
+	},
+
+	/**
 	 * Get a parameter by name from the URL
 	 *
 	 * @param {string} name

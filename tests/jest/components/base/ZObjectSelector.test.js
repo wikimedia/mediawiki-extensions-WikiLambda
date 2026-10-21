@@ -493,6 +493,115 @@ describe( 'ZObjectSelector', () => {
 				jest.useRealTimers();
 			}
 		} );
+
+		describe( 'no-results slot', () => {
+			// Renders the content that the lookup menu shows when a search finds nothing
+			const lookupStub = {
+				name: 'cdx-lookup',
+				template: '<div class="no-results"><slot name="no-results"></slot></div>'
+			};
+
+			it( 'shows the no results message if the slot is not set', () => {
+				const wrapper = renderZObjectSelector( {}, { global: { stubs: { 'cdx-lookup': lookupStub } } } );
+
+				expect( wrapper.get( '.no-results' ).text() ).toBe( 'No results found.' );
+			} );
+
+			it( 'replaces the no results message with the slot content', () => {
+				const wrapper = renderZObjectSelector( {}, {
+					slots: { 'no-results': '<a class="help-link" href="#">Help</a>' },
+					global: { stubs: { 'cdx-lookup': lookupStub } }
+				} );
+
+				const noResults = wrapper.get( '.no-results' );
+				expect( noResults.text() ).toBe( 'Help' );
+				expect( noResults.find( '.help-link' ).exists() ).toBe( true );
+			} );
+		} );
+
+		it( 'shows a progress bar and not the no-results content until the search is finished', async () => {
+			store.lookupZObjectLabels.mockResolvedValue( { labels: [], searchContinue: null } );
+			const wrapper = renderZObjectSelector();
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+
+			expect( lookup.props( 'menuConfig' ) ).toEqual( expect.objectContaining( {
+				showPending: false,
+				showNoResultsSlot: null
+			} ) );
+
+			lookup.vm.$emit( 'update:input-value', 'nothing' );
+			await wrapper.vm.$nextTick();
+
+			expect( lookup.props( 'menuConfig' ) ).toEqual( expect.objectContaining( {
+				showPending: true,
+				showNoResultsSlot: false
+			} ) );
+
+			await waitFor( () => expect( lookup.props( 'menuConfig' ) ).toEqual( expect.objectContaining( {
+				searchQuery: 'nothing',
+				showPending: false,
+				showNoResultsSlot: null
+			} ) ) );
+		} );
+
+		it( 'shows a progress bar when the focus starts a search for the selected label', async () => {
+			let resolveLookup;
+			store.lookupZObjectLabels.mockReturnValue( new Promise( ( resolve ) => {
+				resolveLookup = resolve;
+			} ) );
+			const wrapper = renderZObjectSelector( { selectedZid: Constants.Z_STRING } );
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			await wrapper.vm.$nextTick();
+
+			expect( lookup.props( 'inputValue' ) ).toBe( 'String' );
+			expect( lookup.props( 'menuConfig' ).showPending ).toBe( false );
+
+			lookup.vm.$emit( 'focus' );
+			await wrapper.vm.$nextTick();
+
+			expect( store.lookupZObjectLabels ).toHaveBeenCalledWith( expect.objectContaining( { input: 'String' } ) );
+			expect( lookup.props( 'menuConfig' ) ).toEqual( expect.objectContaining( {
+				showPending: true,
+				showNoResultsSlot: false
+			} ) );
+
+			resolveLookup( mockLookupValues );
+
+			await waitFor( () => expect( lookup.props( 'menuConfig' ) ).toEqual( expect.objectContaining( {
+				showPending: false,
+				showNoResultsSlot: null
+			} ) ) );
+		} );
+
+		it( 'does not show a progress bar after a value is selected', async () => {
+			store.lookupZObjectLabels.mockResolvedValue( mockLookupValues );
+			const wrapper = renderZObjectSelector();
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+
+			lookup.vm.$emit( 'update:input-value', 'Str' );
+			await waitFor( () => expect( lookup.props( 'menuItems' ).length ).toBe( 2 ) );
+
+			await wrapper.setProps( { selectedZid: Constants.Z_STRING } );
+			await wrapper.vm.$nextTick();
+
+			// The lookup has the selected value as key, so it is a new component
+			const newLookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+			expect( newLookup.props( 'inputValue' ) ).toBe( 'String' );
+			expect( newLookup.props( 'menuConfig' ).showPending ).toBe( false );
+		} );
+
+		it( 'shows the no-results content after a failed search', async () => {
+			store.lookupZObjectLabels.mockRejectedValue( { code: 'http' } );
+			const wrapper = renderZObjectSelector();
+			const lookup = wrapper.getComponent( { name: 'cdx-lookup' } );
+
+			lookup.vm.$emit( 'update:input-value', 'nothing' );
+
+			await waitFor( () => expect( lookup.props( 'menuConfig' ) ).toEqual( expect.objectContaining( {
+				showPending: false,
+				showNoResultsSlot: null
+			} ) ) );
+		} );
 	} );
 
 	describe( 'Select', () => {

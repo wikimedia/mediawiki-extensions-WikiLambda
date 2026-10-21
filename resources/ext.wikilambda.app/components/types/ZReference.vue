@@ -34,7 +34,14 @@
 					:exclude-zids="excludeZids"
 					data-testid="z-reference-selector"
 					@select-item="setValue"
-				></wl-z-object-selector>
+				>
+					<!-- Next steps when the search finds no function, also to replace a selected one -->
+					<template v-if="isAbstractFunctionSelector" #no-results>
+						<wl-function-search-next-steps
+							:return-type="returnType"
+						></wl-function-search-next-steps>
+					</template>
+				</wl-z-object-selector>
 				<span
 					v-if="showHelperInfo"
 					class="ext-wikilambda-app-reference__helper-text"
@@ -58,6 +65,7 @@ const useMainStore = require( '../../store/index.js' );
 const urlUtils = require( '../../utils/urlUtils.js' );
 
 // Base components
+const FunctionSearchNextSteps = require( './../base/FunctionSearchNextSteps.vue' );
 const FunctionSelectorHelp = require( './../base/FunctionSelectorHelp.vue' );
 const ZObjectSelector = require( './../base/ZObjectSelector.vue' );
 const WikidataReferenceSelector = require( './wikidata/ReferenceSelector.vue' );
@@ -65,6 +73,7 @@ const WikidataReferenceSelector = require( './wikidata/ReferenceSelector.vue' );
 module.exports = exports = defineComponent( {
 	name: 'wl-z-reference',
 	components: {
+		'wl-function-search-next-steps': FunctionSearchNextSteps,
 		'wl-function-selector-help': FunctionSelectorHelp,
 		'wl-z-object-selector': ZObjectSelector,
 		'wl-wikidata-reference-selector': WikidataReferenceSelector
@@ -181,17 +190,24 @@ module.exports = exports = defineComponent( {
 		);
 
 		/**
+		 * Whether this is a function selector in Abstract content, with a bound return type.
+		 *
+		 * @return {boolean}
+		 */
+		const isAbstractFunctionSelector = computed( () => {
+			const isAbstractContent = store.isAbstractContent();
+			const isFunctionSelector = key.value === Constants.Z_FUNCTION_CALL_FUNCTION;
+			const hasBoundReturnType = !!returnType.value;
+			return isAbstractContent && isFunctionSelector && hasBoundReturnType;
+		} );
+
+		/**
 		 * Whether to show the helper row (text + help button) for the function selector
 		 * in Abstract content. Only shown when the field is empty (no function selected).
 		 *
 		 * @return {boolean}
 		 */
-		const showHelperInfo = computed( () => {
-			const isAbstractContent = store.isAbstractContent();
-			const isFunctionSelector = key.value === Constants.Z_FUNCTION_CALL_FUNCTION;
-			const hasBoundReturnType = !!returnType.value;
-			return isAbstractContent && isFunctionSelector && hasBoundReturnType && !value.value;
-		} );
+		const showHelperInfo = computed( () => isAbstractFunctionSelector.value && !value.value );
 
 		/**
 		 * Returns helper text for the function selector in Abstract content.
@@ -259,6 +275,7 @@ module.exports = exports = defineComponent( {
 
 		return {
 			excludeZids,
+			isAbstractFunctionSelector,
 			isWikidataEnum,
 			returnType,
 			returnTypeLabel,

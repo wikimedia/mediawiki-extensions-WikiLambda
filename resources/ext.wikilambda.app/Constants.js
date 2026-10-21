@@ -605,7 +605,11 @@ Constants.PATHS = {
 	CREATE_OBJECT_TITLE: 'Special:CreateObject',
 	FUNCTION_USAGE_TITLE: 'Special:FunctionUsage',
 	RUN_FUNCTION_TITLE: 'Special:RunFunction',
+	LIST_OBJECTS_BY_TYPE_TITLE: 'Special:ListObjectsByType',
 	LIST_OBJECTS_BY_TYPE_TYPE: 'Special:ListObjectsByType/Z4',
+	// Pages on Abstract Wikipedia, not on Wikifunctions
+	SUGGESTED_FUNCTIONS_TITLE: 'Project:Suggested_functions',
+	USEFUL_FUNCTIONS_TITLE: 'Project:Useful_functions_for_article_composition',
 	ROUTE_FORMAT_ONE: '/w/index.php',
 	ROUTE_FORMAT_TWO: '/wiki/'
 };

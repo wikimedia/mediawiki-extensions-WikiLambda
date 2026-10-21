@@ -5,6 +5,9 @@
 	Receives an input parameter to filter the type of ZObjects that
 	it will search and display (e.g. Z4 for selecting only types)
 
+	The optional slot no-results replaces the message that the lookup
+	menu shows when a search finds nothing.
+
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
 -->
@@ -29,7 +32,7 @@
 			:disabled="disabled"
 			:placeholder="lookupPlaceholder"
 			:menu-items="menuItems"
-			:menu-config="lookupConfig"
+			:menu-config="lookupMenuConfig"
 			:start-icon="startIcon"
 			:status="errorLookupStatus"
 			data-testid="z-object-selector-lookup"
@@ -40,7 +43,9 @@
 			@focus="onFocus"
 		>
 			<template #no-results>
-				{{ i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
+				<slot name="no-results">
+					{{ i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
+				</slot>
 			</template>
 		</cdx-lookup>
 		<div
@@ -247,6 +252,8 @@ module.exports = exports = defineComponent( {
 		let lookupAbortController = null;
 		// Set when the component starts to unmount
 		let isUnmounting = false;
+		// The search term of the search that is not finished, if any
+		const pendingSearchTerm = ref( null );
 
 		// Configuration
 		/**
@@ -363,6 +370,28 @@ module.exports = exports = defineComponent( {
 			// Otherwise show the lookup results
 			return lookupResults.value;
 		} );
+
+		/**
+		 * Returns true while the search for the current input is not finished:
+		 * during the lookup delay, and until the response arrives. This includes
+		 * the search for the selected label when the field gets the focus.
+		 *
+		 * @return {boolean}
+		 */
+		const isLookupPending = computed( () => !!inputValue.value &&
+			inputValue.value === pendingSearchTerm.value );
+
+		/**
+		 * Returns the configuration of the lookup menu. While the search is not
+		 * finished, the menu shows a progress bar and not the no-results content.
+		 *
+		 * @return {Object}
+		 */
+		const lookupMenuConfig = computed( () => Object.assign( {}, lookupConfig.value, {
+			showPending: isLookupPending.value,
+			// null: Codex shows the no-results content when there are no menu items
+			showNoResultsSlot: isLookupPending.value ? false : null
+		} ) );
 
 		/**
 		 * Returns the placeholder for the Lookup selector, either
@@ -484,6 +513,7 @@ module.exports = exports = defineComponent( {
 			if ( input !== inputValue.value ) {
 				return;
 			}
+			pendingSearchTerm.value = null;
 
 			const { labels, searchContinue } = data;
 
@@ -536,6 +566,7 @@ module.exports = exports = defineComponent( {
 			if ( error.code === 'abort' || searchTerm !== inputValue.value ) {
 				return;
 			}
+			pendingSearchTerm.value = null;
 			lookupConfig.value.searchQuery = searchTerm;
 			if ( !lookupConfig.value.searchContinue ) {
 				lookupResults.value = [];
@@ -566,6 +597,7 @@ module.exports = exports = defineComponent( {
 		 * @param {string} input
 		 */
 		function getLookupResults( input ) {
+			pendingSearchTerm.value = input;
 			const signal = resetAbortController();
 			store.lookupZObjectLabels( {
 				// Users often paste a link to an Object instead of typing its Zid
@@ -615,7 +647,8 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
-			// Search after 300 ms
+			// Search after 300 ms. The search is pending from now on.
+			pendingSearchTerm.value = input;
 			clearTimeout( lookupDelayTimer );
 			lookupDelayTimer = setTimeout( () => {
 				getLookupResults( input );
@@ -765,7 +798,7 @@ module.exports = exports = defineComponent( {
 			hasFieldErrors,
 			inputValue,
 			isEnum,
-			lookupConfig,
+			lookupMenuConfig,
 			lookupPlaceholder,
 			menuItems,
 			onBlur,

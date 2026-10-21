@@ -13,6 +13,7 @@ const {
 	isLinkCurrentPath,
 	generateViewUrl,
 	generateEditUrl,
+	generateWikifunctionsPageUrl,
 	generateShareUrl,
 	buildAbstractWikiTitle,
 	extractIdFromUrl
@@ -208,6 +209,40 @@ describe( 'urlUtils', () => {
 			} );
 
 			expect( url ).toBe( 'http://www.wikifunctions.org/wiki/Z123?uselang=en&action=edit' );
+		} );
+	} );
+
+	describe( 'generateWikifunctionsPageUrl', () => {
+		it( 'generates a link on the current wiki without a configured base URL', () => {
+			const url = generateWikifunctionsPageUrl( { title: 'Special:CreateObject' } );
+
+			expect( url ).toBe( '/wiki/Special:CreateObject' );
+		} );
+
+		it( 'generates a link with parameters on the current wiki', () => {
+			const url = generateWikifunctionsPageUrl( {
+				title: 'Special:CreateObject',
+				params: { zid: 'Z8' }
+			} );
+
+			expect( url ).toBe( '/w/index.php?zid=Z8&title=Special:CreateObject' );
+		} );
+
+		it( 'generates a full URL with the configured wikifunctions base URL', () => {
+			withWikifunctionsBaseUrl( 'https://wikifunctions.org' );
+			const url = generateWikifunctionsPageUrl( {
+				title: 'Special:ListObjectsByType/Z8',
+				params: { return_type: 'Z89' }
+			} );
+
+			expect( url ).toBe( 'https://wikifunctions.org/wiki/Special:ListObjectsByType/Z8?return_type=Z89' );
+		} );
+
+		it( 'supports a protocol-relative configured wikifunctions base URL', () => {
+			withWikifunctionsBaseUrl( '//www.wikifunctions.org' );
+			const url = generateWikifunctionsPageUrl( { title: 'Wikifunctions:Project_chat' } );
+
+			expect( url ).toBe( 'http://www.wikifunctions.org/wiki/Wikifunctions:Project_chat' );
 		} );
 	} );
 

@@ -193,6 +193,74 @@ describe( 'ZReference', () => {
 			expect( wrapper.findComponent( { name: 'wl-function-selector-help' } ).exists() ).toBe( true );
 		} );
 
+		describe( 'next steps when the function search finds nothing', () => {
+			// Renders the slot that the selector shows in its menu when a search finds nothing
+			const selectorStub = {
+				name: 'wl-z-object-selector',
+				template: '<div class="selector-no-results"><slot name="no-results"></slot></div>'
+			};
+
+			/**
+			 * Renders a function field, with the given return type.
+			 *
+			 * @param {Object} props - Props to pass to the component
+			 * @return {Object} Mounted wrapper
+			 */
+			function renderFunctionField( props = {} ) {
+				return renderZReference( {
+					keyPath: functionCallKeyPath,
+					objectValue: emptyObjectValue,
+					edit: true,
+					expectedType: Constants.Z_FUNCTION,
+					parentExpectedType: Constants.Z_HTML_FRAGMENT,
+					...props
+				}, { global: { stubs: { 'wl-z-object-selector': selectorStub } } } );
+			}
+
+			beforeEach( () => {
+				store.isAbstractContent = jest.fn().mockReturnValue( true );
+			} );
+
+			it( 'adds the next steps to the selector menu in abstract content', () => {
+				const wrapper = renderFunctionField();
+
+				const nextSteps = wrapper.get( '.selector-no-results' )
+					.findComponent( { name: 'wl-function-search-next-steps' } );
+				expect( nextSteps.exists() ).toBe( true );
+				expect( nextSteps.props( 'returnType' ) ).toBe( Constants.Z_HTML_FRAGMENT );
+			} );
+
+			it( 'adds the next steps when the field already has a function', () => {
+				const wrapper = renderFunctionField( { objectValue: { Z1K1: 'Z9', Z9K1: 'Z10000' } } );
+
+				expect( wrapper.findComponent( { name: 'wl-function-search-next-steps' } ).exists() ).toBe( true );
+				// The helper text is only for an empty field
+				expect( wrapper.find( '.ext-wikilambda-app-reference__helper-text' ).exists() ).toBe( false );
+			} );
+
+			it( 'uses the return type of a nested function field', () => {
+				const wrapper = renderFunctionField( { parentExpectedType: Constants.Z_STRING } );
+
+				const nextSteps = wrapper.findComponent( { name: 'wl-function-search-next-steps' } );
+				expect( nextSteps.props( 'returnType' ) ).toBe( Constants.Z_STRING );
+			} );
+
+			it( 'does not add the next steps outside abstract content', () => {
+				store.isAbstractContent = jest.fn().mockReturnValue( false );
+				const wrapper = renderFunctionField();
+
+				expect( wrapper.findComponent( { name: 'wl-function-search-next-steps' } ).exists() ).toBe( false );
+			} );
+
+			it( 'does not add the next steps to a field that is not a function field', () => {
+				const wrapper = renderZReference( { edit: true }, {
+					global: { stubs: { 'wl-z-object-selector': selectorStub } }
+				} );
+
+				expect( wrapper.findComponent( { name: 'wl-function-search-next-steps' } ).exists() ).toBe( false );
+			} );
+		} );
+
 		it( 'returns empty returnType when the key is a function call but parent expected type is unbound', async () => {
 			const wrapper = renderZReference( {
 				keyPath: functionCallKeyPath,
