@@ -15,6 +15,7 @@
 	"apihelp-abstractwiki_fetch_section-param-language": "Aqoonsiga Shayga Luuqadda (Language ZObject Id) ee loo adeegsaday soo bandhigista qaybaha. Waa inuu noqdaa Zid sax ah.",
 	"apihelp-abstractwiki_fetch_section-param-date": "Xargaha taariikhda ee loo adeegsaday soo bandhigista qaybaha.",
 	"apihelp-abstractwiki_fetch_section-param-fragments": "Tix ikhtiyaari ah oo qaybo ah oo loo soo celinayo qiimayaashooda la soo bandhigay. Haddii tixdu madhan tahay, qaybaha la soo celinayo waxay noqon doonaan kuwa lagu kaydiyay qaybta Qid ee la bixiyay sida ku cad dib u eegista hadda jirta. Marka tixdu aanay madhnayn, waa inay ka koobnaataa liis wicitaanno shaqo oo qaybo ah. Kuwani way ka duwanaan karaan kuwa lagu kaydiyay qaybta (tusaale ahaan, haddii si firfircoon wax looga beddelayo oo xaaladdooda hadda aan la kaydin), codsiyadanina waxay u baahan yihiin xuquuqo dheeraad ah.",
+	"apihelp-abstractwiki_fetch_section-param-revision": "Aqoonsiga dib u eegista ee ikhtiyaariga ah ee bogga Abstract Wikipedia ee mawduuca. Haddii la bixiyo, oo aan la soo gudbin \"fragments\", qaybaha la soo celinayo waxay noqonayaan kuwa lagu kaydiyay Qid-ga qaybtaas sida ku cad dib u eegistaas, halkii laga isticmaali lahaa kuwa hadda jira.",
 	"apihelp-abstractwiki_fetch_section-example-lede": "Soo qaado qaybaha la soo bandhigay ee qayb la bixiyay.",
 	"apihelp-abstractwiki_fetch_section-example-unsaved": "Soo qaado qiimayaasha la soo bandhigay ee liiska qaybaha aan la kaydin.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Qaybtu ma aha wicitaan shaqo oo sax ah.",
