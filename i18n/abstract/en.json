@@ -45,7 +45,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "Fragment actions menu",
 	"wikilambda-abstract-fragment-failing": "Content unavailable",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "Only functions that return a $2 ($1) are listed.",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|How to use a function with a different return type]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|How to use a function with a different return type]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Select a function outputting a $2 ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "This field expects a function which returns a $2 ($1). Only functions with that return type are shown in the search.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "Why some functions aren't listed",
