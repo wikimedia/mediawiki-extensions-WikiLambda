@@ -47,9 +47,6 @@ class InputDropdown {
 		const resolvedInputSelector = await inputSelector;
 		await inputSelector.waitForDisplayed();
 		await ElementActions.setInput( resolvedInputSelector, inputText );
-		// TODO: remove this hardcoded pause after https://phabricator.wikimedia.org/T414022 is fixed
-		// eslint-disable-next-line wdio/no-pause
-		await browser.pause( 2000 );
 		const optionSelector = await resolvedParentSelector.$( `bdi=${ inputText }` );
 		await ElementActions.doClick( optionSelector );
 	}
