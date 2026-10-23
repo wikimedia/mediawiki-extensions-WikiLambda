@@ -316,6 +316,7 @@
 	"wikilambda-functioncall-metadata-expected-result": "Erwaart Resultat",
 	"wikilambda-functioncall-metadata-function-calls": "Funktiounsopriff",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Zuel vun den opgeruffene Funktiounen",
+	"wikilambda-functioncall-metadata-function-calls-summary-calls": "{{PLURAL:$1|$1 Opruff|$1 Opriff}}",
 	"wikilambda-functioncall-metadata-function-calls-total": "Zuel vun den Opriff",
 	"wikilambda-functioncall-metadata-show-raw-json": "Réien JSON weisen",
 	"wikilambda-functioncall-metadata-hostname": "Server",
