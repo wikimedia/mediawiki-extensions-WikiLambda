@@ -24,7 +24,8 @@ class WikifunctionsCallDefaultValues {
 	private const WIKIDATA_ITEM_REFERENCE = 'Z6091';
 	private const GREGORIAN_CALENDAR_DATE = 'Z20420';
 
-	public const GREGORIAN_CALENDAR_DATE_FORMAT = 'd-m-Y';
+	// Use ISO 8601 so the date reader reads it the same way in every language
+	public const GREGORIAN_CALENDAR_DATE_FORMAT = 'Y-m-d';
 
 	/**
 	 * Returns the map of type IDs to default value callbacks.
@@ -99,7 +100,7 @@ class WikifunctionsCallDefaultValues {
 
 	/**
 	 * Default Value Callable for Date/Z20420:
-	 * Returns today's date in the current locale in the format 'dd-mm-yyyy'
+	 * Returns today's date in the wiki's local timezone in the format 'yyyy-mm-dd'
 	 *
 	 * @param array $context
 	 * @return string

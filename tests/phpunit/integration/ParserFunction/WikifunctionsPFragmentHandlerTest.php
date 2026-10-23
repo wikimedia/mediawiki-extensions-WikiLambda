@@ -258,7 +258,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'target' => 'Z10000',
 			'arguments' => [
 				'Z10000K1' => '15-01-2001',
-				'Z10000K2' => $today->format( 'd-m-Y' )
+				'Z10000K2' => $today->format( 'Y-m-d' )
 			],
 			'parseLang' => 'en',
 			'renderLang' => 'en',

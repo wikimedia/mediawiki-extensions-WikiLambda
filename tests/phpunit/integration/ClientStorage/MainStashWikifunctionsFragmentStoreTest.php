@@ -484,7 +484,7 @@ class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 
 		yield 'call with old temporal/dynamic argument, but no render date' => [
 			[
-				'arguments' => [ 'Z10000K1' => '27-08-2022' ],
+				'arguments' => [ 'Z10000K1' => '2022-08-27' ],
 				'temporalArgs' => [ 'Z10000K1' ]
 			] + $call,
 			$value,
@@ -493,7 +493,7 @@ class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 
 		yield 'call with fresh temporal/dynamic argument, but no render date' => [
 			[
-				'arguments' => [ 'Z10000K1' => '28-08-2026' ],
+				'arguments' => [ 'Z10000K1' => '2026-08-28' ],
 				'temporalArgs' => [ 'Z10000K1' ],
 			] + $call,
 			$value,
@@ -502,7 +502,7 @@ class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 
 		yield 'call with old temporal/dynamic argument, and 2-day old render date' => [
 			[
-				'arguments' => [ 'Z10000K1' => '27-08-2022' ],
+				'arguments' => [ 'Z10000K1' => '2022-08-27' ],
 				'temporalArgs' => [ 'Z10000K1' ]
 			] + $call,
 			[ 'renderDate' => '20260826000000' ] + $value,
@@ -511,7 +511,7 @@ class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 
 		yield 'call with fresh temporal/dynamic argument, and fresh render date' => [
 			[
-				'arguments' => [ 'Z10000K1' => '28-08-2026' ],
+				'arguments' => [ 'Z10000K1' => '2026-08-28' ],
 				'temporalArgs' => [ 'Z10000K1' ],
 			] + $call,
 			[ 'renderDate' => '20260828000000' ] + $value,
