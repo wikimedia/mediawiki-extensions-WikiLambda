@@ -281,14 +281,4 @@ class PageEditingHandler implements
 		return true;
 	}
 
-	/**
-	 * Utility function to round-trip data through JSON encoding/decoding
-	 *
-	 * @param mixed $data
-	 * @return array
-	 */
-	private function roundTripJson( $data ): array {
-		return json_decode( json_encode( $data ), true );
-	}
-
 }
