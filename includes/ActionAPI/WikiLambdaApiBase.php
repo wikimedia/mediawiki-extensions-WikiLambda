@@ -101,9 +101,6 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$this->run();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	protected function run() {
 		// Failure Level #3: Service is not implemented, die with error
 		// (throws ApiUsageException)
