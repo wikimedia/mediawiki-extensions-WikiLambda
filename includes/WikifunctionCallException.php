@@ -29,12 +29,16 @@ class WikifunctionCallException extends Exception {
 	 * @param int $httpStatusCode
 	 * @param ?stdClass $zerror
 	 * @param array $params
+	 * @param array $freshnessMetadata Freshness metadata of the failed response, if
+	 *  Wikifunctions answered with one; see AbstractWikiRequest::getFreshnessMetadata().
+	 *  Not part of toArray(), so the serialized error keeps its shape. (T441561)
 	 */
 	public function __construct(
 		private readonly string $msg,
 		private readonly int $httpStatusCode = HttpStatus::BAD_REQUEST,
 		private readonly ?stdClass $zerror = null,
-		private readonly array $params = []
+		private readonly array $params = [],
+		private readonly array $freshnessMetadata = []
 	) {
 		parent::__construct( $this->getMessageObject()->text() );
 	}
@@ -65,6 +69,16 @@ class WikifunctionCallException extends Exception {
 	 */
 	public function getZError() {
 		return $this->zerror;
+	}
+
+	/**
+	 * Freshness metadata of the failed response; empty if there was none,
+	 * e.g. when Wikifunctions could not be reached. (T441561)
+	 *
+	 * @return array<string,string|string[]>
+	 */
+	public function getFreshnessMetadata(): array {
+		return $this->freshnessMetadata;
 	}
 
 	/**

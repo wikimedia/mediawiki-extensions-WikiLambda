@@ -63,10 +63,12 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *   wikifunctions_function_call and wait for its response.
 	 *
 	 * A successful fragment will contain a 'success' flag set to true,
-	 * and the sanitized rendered fragment as 'value':
+	 * and the sanitized rendered fragment as 'value'. It may also contain
+	 * the render's freshness metadata as 'metadata' (T441561):
 	 * [
 	 *   'success' => true,
-	 *   'value' => '<em>sanitized fragment</em>'
+	 *   'value' => '<em>sanitized fragment</em>',
+	 *   'metadata' => [ 'functionCallFreshResult' => '2026-10-23T10:00:00Z' ]
 	 * ]
 	 *
 	 * A pending fragment will contain a 'success' flag set to true,

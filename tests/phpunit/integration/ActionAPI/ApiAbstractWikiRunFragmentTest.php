@@ -107,7 +107,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		// Response
 		$storedValue = [
 			'success' => true,
-			'value' => '<b>fresh content</b>'
+			'value' => '<b>fresh content</b>',
+			'metadata' => [ 'functionCallFreshResult' => '2023-07-26T04:00:00Z' ],
+			'renderDate' => '20230726040000'
 		];
 
 		// Mock fragment store: returns fresh value
@@ -138,6 +140,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$this->assertArrayHasKey( 'value', $result );
 		$this->assertTrue( $result[ 'success' ] );
 		$this->assertSame( '<b>fresh content</b>', $result[ 'value' ] );
+		// (T441561) The freshness metadata and render date come back unchanged
+		$this->assertSame( $storedValue[ 'metadata' ], $result[ 'metadata' ] );
+		$this->assertSame( $storedValue[ 'renderDate' ], $result[ 'renderDate' ] );
 	}
 
 	/**
@@ -158,7 +163,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		// Response
 		$storedValue = [
 			'success' => true,
-			'value' => '<b>stale content</b>'
+			'value' => '<b>stale content</b>',
+			'metadata' => [ 'functionCallFreshResult' => '2023-07-26T04:00:00Z' ],
+			'renderDate' => '20230726040000'
 		];
 
 		// Mock fragment store: returns stale value
@@ -209,7 +216,12 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		// Response
 		$renderedFragment = [
 			'success' => true,
-			'value' => '<b>rendered fragment</b>'
+			'value' => '<b>rendered fragment</b>',
+			'metadata' => [
+				'functionCallCachedOn' => '2023-07-26T04:00:00Z',
+				'cachedWikidataEntities' => [ 'Z6', 'Q42', 'L1-F2' ]
+			],
+			'renderDate' => $datetime
 		];
 
 		// Mock fragment store: returns missing fragment value
@@ -242,6 +254,9 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$this->assertArrayHasKey( 'value', $result );
 		$this->assertTrue( $result[ 'success' ] );
 		$this->assertSame( '<b>rendered fragment</b>', $result[ 'value' ] );
+		// (T441561) The freshness metadata and render date come back unchanged
+		$this->assertSame( $renderedFragment[ 'metadata' ], $result[ 'metadata' ] );
+		$this->assertSame( $renderedFragment[ 'renderDate' ], $result[ 'renderDate' ] );
 	}
 
 	/**

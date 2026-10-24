@@ -60,15 +60,21 @@ abstract class AWFragmentStore {
 	 * 'success' and 'value' keys that indicate the fragment render status:
 	 *
 	 * When the fragment was successfully built, 'value' contains a string with the final
-	 * (rendered and sanitized) HTML:
+	 * (rendered and sanitized) HTML. It may also contain a 'metadata' key, with the
+	 * freshness metadata that Wikifunctions returned for the render (T441561); see
+	 * AbstractWikiRequest::getFreshnessMetadata(). Fragments stored before this was
+	 * added have no 'metadata' key.
 	 *
 	 * E.g.: [
 	 *   'success' => true,
-	 *   'value' => '<b>sanitized html</b>'
+	 *   'value' => '<b>sanitized html</b>',
+	 *   'metadata' => [ 'functionCallFreshResult' => '2026-10-23T10:00:00Z' ]
 	 * ]
 	 *
 	 * When the fragment returned an error, 'value' contains structured error data
-	 * which can be deserialized into a WikifunctioCallException with fromArray()
+	 * which can be deserialized into a WikifunctioCallException with fromArray().
+	 * If Wikifunctions answered with the error, the value may also contain a
+	 * 'metadata' key, as for a successful render (T441561).
 	 *
 	 * E.g.: [
 	 *   'success' => false,
@@ -101,11 +107,14 @@ abstract class AWFragmentStore {
 	 * fragment used to build the cache key, and the rendered value.
 	 *
 	 * Value contains an array with the keys success and value. Value contains
-	 * either the successfully rendered html fragment, or the error information:
+	 * either the successfully rendered html fragment, or the error information.
+	 * A render that Wikifunctions answered, successfully or with an error, may also
+	 * have a 'metadata' key with its freshness metadata (T441561):
 	 *
 	 * E.g.: [
 	 *   'success' => true,
-	 *   'value' => '<b>sanitized html</b>'
+	 *   'value' => '<b>sanitized html</b>',
+	 *   'metadata' => [ 'functionCallFreshResult' => '2026-10-23T10:00:00Z' ]
 	 * ]
 	 *
 	 * @param string $topicQid

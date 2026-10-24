@@ -198,6 +198,40 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		}
 	}
 
+	public function testCallRenderFunctionCall_voidResponseCarriesFreshnessMetadata() {
+		// (T441561) A failed response says how fresh it is, as a successful one does
+		$freshnessMetadata = [
+			'functionCallFreshResult' => '2026-10-23T10:00:00Z',
+			'cachedWikidataEntities' => [ 'Z6', 'L1-F2' ]
+		];
+		$factory = $this->getMockHttpFactoryForVoidZError( 'Z507', 400, $freshnessMetadata + [
+			'orchestrationDuration' => '120 ms'
+		] );
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		try {
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
+			$this->fail( 'Expected WikifunctionCallException was not thrown' );
+		} catch ( WikifunctionCallException $e ) {
+			$this->assertSame( $freshnessMetadata, $e->getFreshnessMetadata() );
+			// The serialized error keeps its shape
+			$this->assertArrayNotHasKey( 'metadata', $e->toArray() );
+		}
+	}
+
+	public function testCallRenderFunctionCall_failureBeforeAnAnswerHasNoFreshnessMetadata() {
+		// (T441561) Wikifunctions could not be reached: there is no response to say anything
+		$factory = $this->getMockHttpFactory( StatusValue::newFatal( 'http-request-error' ), '', 0 );
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		try {
+			$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
+			$this->fail( 'Expected WikifunctionCallException was not thrown' );
+		} catch ( WikifunctionCallException $e ) {
+			$this->assertSame( [], $e->getFreshnessMetadata() );
+		}
+	}
+
 	public static function provideOrchestratorVoidResponses(): array {
 		return [
 			// 4xx
@@ -249,8 +283,10 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 
 		$result = $request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 
-		$this->assertArrayHasKey( 'Z89K1', $result );
-		$this->assertSame( $htmlContent, $result[ 'Z89K1' ] );
+		$this->assertArrayHasKey( 'Z89K1', $result[ 'htmlFragment' ] );
+		$this->assertSame( $htmlContent, $result[ 'htmlFragment' ][ 'Z89K1' ] );
+		// No metadata in the response, so no freshness metadata
+		$this->assertSame( [], $result[ 'metadata' ] );
 	}
 
 	public function testCallRenderFunctionCall_successWithNormalFormZ6() {
@@ -281,8 +317,68 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 
 		$result = $request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
 
-		$this->assertArrayHasKey( 'Z89K1', $result );
-		$this->assertSame( $htmlContent, $result[ 'Z89K1' ] );
+		$this->assertArrayHasKey( 'Z89K1', $result[ 'htmlFragment' ] );
+		$this->assertSame( $htmlContent, $result[ 'htmlFragment' ][ 'Z89K1' ] );
+	}
+
+	/**
+	 * (T441561) The freshness metadata of the response is returned with the fragment,
+	 * canonicalised; other metadata keys, and malformed values, are left out.
+	 *
+	 * @dataProvider provideFreshnessMetadata
+	 */
+	public function testCallRenderFunctionCall_freshnessMetadata( array $metadataItems, array $expected ) {
+		$factory = $this->getMockHttpFactoryForSuccess( '<b>Hello World</b>', $metadataItems );
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		$result = $request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ] );
+
+		$this->assertSame( $expected, $result[ 'metadata' ] );
+	}
+
+	public static function provideFreshnessMetadata(): array {
+		return [
+			'cached call, canonical form' => [
+				[
+					'functionCallCachedOn' => '2026-10-23T10:00:00Z',
+					'cachedWikidataEntities' => [ 'Z6', 'Q42', 'L1-F2' ],
+					'orchestrationDuration' => '120 ms',
+				],
+				[
+					'functionCallCachedOn' => '2026-10-23T10:00:00Z',
+					'cachedWikidataEntities' => [ 'Z6', 'Q42', 'L1-F2' ],
+				],
+			],
+			'fresh call' => [
+				[ 'functionCallFreshResult' => '2026-10-23T10:00:00Z' ],
+				[ 'functionCallFreshResult' => '2026-10-23T10:00:00Z' ],
+			],
+			'normal form strings and list' => [
+				[
+					'functionCallCachedOn' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => '2026-10-23T10:00:00Z' ],
+					'cachedWikidataEntities' => [
+						'Z6',
+						(object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'Q42' ],
+						(object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'P31' ],
+					],
+				],
+				[
+					'functionCallCachedOn' => '2026-10-23T10:00:00Z',
+					'cachedWikidataEntities' => [ 'Z6', 'Q42', 'P31' ],
+				],
+			],
+			'malformed values are left out' => [
+				[
+					'functionCallCachedOn' => [ 'Z6', 'not a timestamp' ],
+					'cachedWikidataEntities' => 'Q42',
+				],
+				[],
+			],
+			'no freshness keys' => [
+				[ 'orchestrationDuration' => '120 ms' ],
+				[],
+			],
+		];
 	}
 
 	public function testCallRenderFunctionCall_z89k1NotStringLike() {
@@ -329,7 +425,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 			'languageZid' => 'Z1002',
 			'datetime' => '20260514040500',
 			'fragmentKey' => 'hashed-fragment',
-			'value' => [ 'success' => true, 'value' => $htmlContent ]
+			'value' => [ 'success' => true, 'value' => $htmlContent, 'renderDate' => '20260514040500' ]
 		] );
 
 		$request = $this->buildAbstractWikiRequest( $factory, $fragmentStore );
@@ -345,6 +441,46 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		// Assert returned structure
 		$this->assertTrue( $result[ 'success' ] );
 		$this->assertArrayHasKey( 'value', $result );
+		// (T441561) The returned value has the render date, as the stored one does
+		$this->assertSame( '20260514040500', $result[ 'renderDate' ] );
+		// No freshness metadata in the response, so no 'metadata' key stored
+		$this->assertArrayNotHasKey( 'metadata', $result );
+	}
+
+	public function testFetchRenderedAWFragment_successStoresFreshnessMetadata() {
+		// (T441561) The render's freshness metadata is stored with the fragment
+		$htmlContent = '<b>Hello World</b>';
+		$freshnessMetadata = [
+			'functionCallCachedOn' => '2026-10-23T10:00:00Z',
+			'cachedWikidataEntities' => [ 'Z6', 'Q42' ],
+		];
+		$factory = $this->getMockHttpFactoryForSuccess( $htmlContent, $freshnessMetadata );
+
+		$expectedValue = [
+			'success' => true,
+			'value' => $htmlContent,
+			'metadata' => $freshnessMetadata,
+			'renderDate' => '20260514040500'
+		];
+		$fragmentStore = $this->getMockFragmentStoreForSetter( [
+			'topicQid' => 'Q42',
+			'languageZid' => 'Z1002',
+			'datetime' => '20260514040500',
+			'fragmentKey' => 'hashed-fragment',
+			'value' => $expectedValue
+		] );
+
+		$request = $this->buildAbstractWikiRequest( $factory, $fragmentStore );
+
+		$result = $request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* datetime= */ '20260514040500',
+			/* fragmentKey= */ 'hashed-fragment',
+		);
+
+		$this->assertSame( $expectedValue, $result );
 	}
 
 	public function testFetchRenderedAWFragment_userErrorWithoutZError() {
@@ -372,7 +508,8 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 					'httpStatusCode' => 400,
 					'zerror' => null,
 					'params' => []
-				]
+				],
+				'renderDate' => '20260514040500'
 			]
 		] );
 
@@ -412,7 +549,8 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 					'httpStatusCode' => $httpStatusCode,
 					'zerror' => $zerror,
 					'params' => [ $zerrorType ]
-				]
+				],
+				'renderDate' => '20260514040500'
 			]
 		] );
 
@@ -430,6 +568,50 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		$this->assertFalse( $result[ 'success' ] );
 		$this->assertNotNull( $result[ 'value' ][ 'zerror' ] );
 		$this->assertSame( $zerrorType, $result[ 'value' ][ 'zerror' ]->Z5K1 );
+	}
+
+	public function testFetchRenderedAWFragment_userErrorStoresFreshnessMetadata() {
+		// (T441561) A failure caused by the content is stored for a month; its provenance
+		// can explain it, e.g. an outdated cached Wikidata entity
+		$zerrorType = 'Z507';
+		$httpStatusCode = 400;
+		$freshnessMetadata = [
+			'functionCallCachedOn' => '2026-10-23T10:00:00Z',
+			'cachedWikidataEntities' => [ 'Z6', 'L1-F2' ]
+		];
+		$factory = $this->getMockHttpFactoryForVoidZError( $zerrorType, $httpStatusCode, $freshnessMetadata );
+
+		$expectedValue = [
+			'success' => false,
+			'value' => [
+				'msg' => 'apierror-abstractwiki_run_fragment-returned-zerror',
+				'httpStatusCode' => $httpStatusCode,
+				'zerror' => $this->mockZErrorFromZErrorType( $zerrorType ),
+				'params' => [ $zerrorType ]
+			],
+			'metadata' => $freshnessMetadata,
+			'renderDate' => '20260514040500'
+		];
+		$fragmentStore = $this->getMockFragmentStoreForSetter( [
+			'topicQid' => 'Q42',
+			'languageZid' => 'Z1002',
+			'datetime' => '20260514040500',
+			'fragmentKey' => 'hashed-fragment',
+			'value' => $expectedValue
+		] );
+
+		$request = $this->buildAbstractWikiRequest( $factory, $fragmentStore );
+
+		$result = $request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* datetime= */ '20260514040500',
+			/* fragmentKey= */ 'hashed-fragment',
+		);
+
+		$this->assertFalse( $result[ 'success' ] );
+		$this->assertSame( $freshnessMetadata, $result[ 'metadata' ] );
 	}
 
 	/**
@@ -516,7 +698,8 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 					'httpStatusCode' => $expectedHttpStatus,
 					'zerror' => null,
 					'params' => []
-				]
+				],
+				'renderDate' => '20260514040500'
 			]
 		] );
 
@@ -641,9 +824,22 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 	 * Build a mock HttpRequestFactory that returns a successful Z89 HTML fragment response.
 	 *
 	 * @param string $htmlContent The HTML string to place in Z89K1
+	 * @param array $metadataItems Key-value pairs to place in the Z22K2 metadata map
 	 * @return HttpRequestFactory
 	 */
-	private function getMockHttpFactoryForSuccess( string $htmlContent ): HttpRequestFactory {
+	private function getMockHttpFactoryForSuccess(
+		string $htmlContent,
+		array $metadataItems = []
+	): HttpRequestFactory {
+		$metadata = (object)[];
+		if ( $metadataItems ) {
+			$mapItems = [];
+			foreach ( $metadataItems as $key => $value ) {
+				$mapItems[] = (object)[ 'K1' => $key, 'K2' => $value ];
+			}
+			$metadata = (object)[ 'K1' => [ 'Z882', ...$mapItems ] ];
+		}
+
 		$responseBody = json_encode( [
 			'wikilambda_function_call' => [
 				'data' => json_encode( [
@@ -651,7 +847,7 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 						'Z1K1' => 'Z89',
 						'Z89K1' => $htmlContent
 					],
-					'Z22K2' => (object)[]
+					'Z22K2' => $metadata
 				] )
 			]
 		] );
@@ -697,15 +893,21 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 	 *
 	 * @param string $zerrorType
 	 * @param int $httpStatus
+	 * @param array $metadataItems Other key-value pairs to place in the Z22K2 metadata map
 	 * @return HttpRequestFactory
 	 */
-	private function getMockHttpFactoryForVoidZError( $zerrorType, $httpStatus ): HttpRequestFactory {
+	private function getMockHttpFactoryForVoidZError(
+		$zerrorType,
+		$httpStatus,
+		array $metadataItems = []
+	): HttpRequestFactory {
 		$zerror = $this->mockZErrorFromZErrorType( $zerrorType );
+		$mapItems = [ (object)[ 'K1' => 'errors', 'K2' => $zerror ] ];
+		foreach ( $metadataItems as $key => $value ) {
+			$mapItems[] = (object)[ 'K1' => $key, 'K2' => $value ];
+		}
 		$metadata = (object)[
-			'K1' => [
-				'Z882',
-				(object)[ 'K1' => 'errors', 'K2' => $zerror ]
-			]
+			'K1' => [ 'Z882', ...$mapItems ]
 		];
 
 		$responseBody = json_encode( [

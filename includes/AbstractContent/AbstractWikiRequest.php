@@ -23,6 +23,7 @@ use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use stdClass;
 use Wikimedia\Stats\StatsFactory;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
@@ -59,6 +60,18 @@ class AbstractWikiRequest {
 		HttpStatus::GATEWAY_TIMEOUT,
 	];
 
+	/**
+	 * Response metadata keys that tell editors how fresh a rendered fragment is:
+	 * * functionCallCachedOn: when Wikifunctions cached the result, if it came from its cache
+	 * * functionCallFreshResult: when the result was made, if it used no cached Wikidata entities
+	 * * cachedWikidataEntities: the Wikidata entities that the orchestrator took from its cache
+	 */
+	private const FRESHNESS_METADATA_KEYS = [
+		'functionCallCachedOn',
+		'functionCallFreshResult',
+		'cachedWikidataEntities',
+	];
+
 	private LoggerInterface $logger;
 	private StatsFactory $statsFactory;
 
@@ -80,6 +93,14 @@ class AbstractWikiRequest {
 	 *
 	 * Returns an associative array containing the cached value, either a
 	 * successfully rendered and sanitised fragment, or a failed one.
+	 *
+	 * A render that Wikifunctions answered, successfully or with an error, also
+	 * stores, under 'metadata', the freshness metadata that Wikifunctions returned
+	 * with it (see FRESHNESS_METADATA_KEYS), when there is any. A failure before
+	 * Wikifunctions answered (e.g. it could not be reached) has none. Every render,
+	 * successful or not, has its render date and time under
+	 * 'renderDate', so that the value returned here is the same as the one that a
+	 * later read from the AWFragmentStore returns. (T441561)
 	 *
 	 * Callers:
 	 * * Jobs/CacheAbstractContentFragmentJob
@@ -111,7 +132,8 @@ class AbstractWikiRequest {
 
 		try {
 			// 2. Run fragment function call, should return a Z89/Html fragment object
-			$htmlFragment = $this->callRenderFunctionCall( $functionCall );
+			$response = $this->callRenderFunctionCall( $functionCall );
+			$htmlFragment = $response[ 'htmlFragment' ];
 
 			// 2.1. If successful, render the Z89K1/Html fragment value
 			$sanitizedHtml = $this->fragmentRenderer->render(
@@ -127,10 +149,20 @@ class AbstractWikiRequest {
 			$renderedValue[ 'success' ] = true;
 			$renderedValue[ 'value' ] = $sanitizedHtml;
 
+			// ... with its freshness metadata, if any (T441561)
+			if ( $response[ 'metadata' ] ) {
+				$renderedValue[ 'metadata' ] = $response[ 'metadata' ];
+			}
+
 		} catch ( WikifunctionCallException $e ) {
 			// 2.2. If failure, log and prepare the error payload to be stored
 			$renderedValue[ 'success' ] = false;
 			$renderedValue[ 'value' ] = $e->toArray();
+
+			// ... with the freshness metadata of the failed response, if any (T441561)
+			if ( $e->getFreshnessMetadata() ) {
+				$renderedValue[ 'metadata' ] = $e->getFreshnessMetadata();
+			}
 
 			$httpStatusCode = $e->getHttpStatusCode();
 
@@ -184,6 +216,10 @@ class AbstractWikiRequest {
 				);
 			}
 		}
+
+		// 3. Add the render date. The store adds it to the value that it stores, but
+		// not to this one, which callers such as ApiAbstractWikiRunFragment return.
+		$renderedValue[ 'renderDate' ] = $datetime;
 
 		// 4. Set the fragment in the AWFragmentStore
 		$this->fragmentStore->setRenderedAWFragment(
@@ -289,8 +325,12 @@ class AbstractWikiRequest {
 	/**
 	 * Performs remote call to Wikifunctions' wikilambda_function_call Action API
 	 *
+	 * Returns an array with the keys:
+	 * * 'htmlFragment': the HTML fragment (Z89) response object, as an array
+	 * * 'metadata': the freshness metadata of the response; see getFreshnessMetadata()
+	 *
 	 * @param array $functionCall
-	 * @return array HTML fragment (Z89) response object
+	 * @return array{htmlFragment:array,metadata:array}
 	 * @throws WikifunctionCallException
 	 */
 	public function callRenderFunctionCall( array $functionCall ): array {
@@ -463,7 +503,10 @@ class AbstractWikiRequest {
 				'apierror-abstractwiki_run_fragment-returned-zerror',
 				$orchestratorHttpStatusCode,
 				$zerror,
-				[ $zerror->{'Z5K1'} ?? 'No error code provided' ]
+				[ $zerror->{'Z5K1'} ?? 'No error code provided' ],
+				// A failed response says how fresh it is too, e.g. that it used a
+				// cached Wikidata entity, which may be why it failed (T441561)
+				self::getFreshnessMetadata( $responseEnvelope )
 			);
 		}
 
@@ -489,6 +532,50 @@ class AbstractWikiRequest {
 			);
 		}
 
-		return (array)$htmlFragment;
+		return [
+			'htmlFragment' => (array)$htmlFragment,
+			'metadata' => self::getFreshnessMetadata( $responseEnvelope ),
+		];
+	}
+
+	/**
+	 * Picks the freshness metadata out of a Z22/Response envelope's metadata map,
+	 * so that it can be stored with the rendered fragment and shown to editors. (T441561)
+	 *
+	 * Values are canonicalised, and kept only when they have the expected shape:
+	 * * 'functionCallCachedOn' and 'functionCallFreshResult': ISO 8601 timestamp strings
+	 * * 'cachedWikidataEntities': a canonical typed list of strings, e.g.
+	 *   [ 'Z6', 'Q42', 'L1-F2' ], the same form used by Wikifunctions UI code.
+	 *
+	 * E.g.: [
+	 *   'functionCallFreshResult' => '2026-10-23T10:00:00Z',
+	 *   'cachedWikidataEntities' => [ 'Z6', 'Q42' ]
+	 * ]
+	 *
+	 * @param stdClass $responseEnvelope
+	 * @return array<string,string|string[]> Empty if the response has no freshness metadata
+	 */
+	private static function getFreshnessMetadata( stdClass $responseEnvelope ): array {
+		$freshnessMetadata = [];
+		foreach ( self::FRESHNESS_METADATA_KEYS as $key ) {
+			$value = ZObjectUtils::getMetaDataValue( $responseEnvelope, $key );
+			if ( $value === null ) {
+				continue;
+			}
+			// Should already be canonical, but canonicalize to be sure: the orchestrator builds these values
+			// in normal form, and other values of this response have arrived in normal form (T426297).
+			$value = ZObjectUtils::canonicalize( $value );
+
+			$isWellFormed = $key === 'cachedWikidataEntities'
+				? ( is_array( $value ) && array_is_list( $value )
+					&& count( array_filter( $value, 'is_string' ) ) === count( $value ) )
+				: is_string( $value );
+
+			// Malformed metadata is not worth failing the render for; leave it out.
+			if ( $isWellFormed ) {
+				$freshnessMetadata[ $key ] = $value;
+			}
+		}
+		return $freshnessMetadata;
 	}
 }
