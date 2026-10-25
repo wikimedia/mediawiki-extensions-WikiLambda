@@ -20,7 +20,6 @@ use MediaWiki\Hook\InitializeArticleMaybeRedirectHook;
 use MediaWiki\Hook\LinkTargetIsAlwaysKnownBatchHook;
 use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkTarget;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Article;
 use MediaWiki\Page\Hook\Article__MissingArticleConditionsHook;
@@ -35,7 +34,6 @@ use MediaWiki\Skin\Skin;
 use MediaWiki\SpecialPage\SpecialPageFactory;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
-use Psr\Log\LoggerInterface;
 use Wikimedia\Rdbms\IConnectionProvider;
 
 class AbstractPageRenderingHandler implements
@@ -49,11 +47,6 @@ class AbstractPageRenderingHandler implements
 	LinkTargetIsAlwaysKnownBatchHook
 {
 
-	private LoggerInterface $logger;
-	private ?array $optedInCache = null;
-
-	private const AW_OPTEDIN_PROVIDER_ID = 'AbstractWikiOptedInArticles';
-
 	public function __construct(
 		private readonly WikiLambdaMode $mode,
 		private readonly SpecialPageFactory $specialPageFactory,
@@ -62,8 +55,6 @@ class AbstractPageRenderingHandler implements
 		private readonly AbstractWikiConfigProvider $awConfigProvider,
 		private readonly IConnectionProvider $dbProvider,
 	) {
-		// Non-injected items
-		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstractClient' );
 	}
 
 	/**
