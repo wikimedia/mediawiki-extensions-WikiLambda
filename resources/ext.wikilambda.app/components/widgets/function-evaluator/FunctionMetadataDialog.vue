@@ -132,7 +132,7 @@
 const { computed, defineComponent, inject, ref } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
-const { metadataKeys } = require( '../../../utils/metadataUtils.js' );
+const { metadataKeys, getStringValue, toRelativeTime, getListOfIds } = require( '../../../utils/metadataUtils.js' );
 const LabelData = require( '../../../store/classes/LabelData.js' );
 const ErrorData = require( '../../../store/classes/ErrorData.js' );
 const useMainStore = require( '../../../store/index.js' );
@@ -140,9 +140,7 @@ const { extractErrorData, extractWarningsData, escapeHtml } = require( '../../..
 const { isValidZidFormat } = require( '../../../utils/typeUtils.js' );
 const { extractZIDs } = require( '../../../utils/schemata.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
-const { isWikidataEntityId } = require( '../../../utils/wikidataUtils.js' );
 const icons = require( '../../../../lib/icons.json' );
-const DateFormatter = require( 'mediawiki.DateFormatter' );
 
 // Widget components
 const FunctionMetadataItem = require( './FunctionMetadataItem.vue' );
@@ -744,23 +742,6 @@ module.exports = exports = defineComponent( {
 		}
 
 		// Transform functions
-		/**
-		 * Transform method.
-		 * Given a mixed type value returns a string
-		 * either by returning its Z6K1, or strigifying it
-		 *
-		 * @param {Mixed} value
-		 * @return {string}
-		 */
-		function getStringValue( value ) {
-			if ( typeof value === 'string' ) {
-				return value;
-			}
-			if ( ( typeof value === 'object' ) && ( value[ Constants.Z_STRING_VALUE ] ) ) {
-				return value[ Constants.Z_STRING_VALUE ];
-			}
-			return JSON.stringify( value );
-		}
 
 		/**
 		 * Transform method.
@@ -987,27 +968,6 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Transform method.
-		 * Attempts to render a relative timestamp given a
-		 * datetime string in ISO 8601 format
-		 *
-		 * @param {string} input
-		 * @return {Object}
-		 */
-		function toRelativeTime( input ) {
-			const date = new Date( input );
-			const isValidDate = !Number.isNaN( date.getTime() );
-			const value = isValidDate ?
-				DateFormatter.formatRelativeTimeOrDate( date ) :
-				input;
-
-			return {
-				type: Constants.METADATA_CONTENT_TYPE.TEXT,
-				value
-			};
-		}
-
-		/**
-		 * Transform method.
 		 * Returns the raw zobject value for test results (expected/actual)
 		 * with a special type flag to render it with the toggle component.
 		 *
@@ -1049,37 +1009,19 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Transform method.
-		 * Returns a list of Wikidata item Qids.
+		 * Returns a list of Wikidata item Qids, linked to their Wikidata pages.
 		 *
 		 * @param {Array} value
-		 * @return {Object}
+		 * @return {Object|string}
 		 */
-		function getListOfIds( value ) {
-			if ( !Array.isArray( value ) ) {
-				return getStringValue( value );
-			}
-			// Remove benjamin item and make sure all items are Wikidata entities
-			const qids = value.slice( 1 ).filter( ( id ) => isWikidataEntityId( id ) );
-			const urlGetters = {
+		function getListOfWikidataIds( value ) {
+			return getListOfIds( value, {
 				Q: store.getItemUrl,
 				L: store.getLexemeUrl,
 				P: store.getPropertyUrl,
 				LF: store.getLexemeFormUrl,
 				LS: store.getLexemeSenseUrl
-			};
-			// Convert items to links
-			const links = qids.map( ( id ) => {
-				// Key by the first letter of each part of the ID (e.g. L1-F2 url getter keyed by LF)
-				const buildUrlFor = urlGetters[ id.split( '-' ).map( ( part ) => part[ 0 ] ).join( '' ) ];
-				const href = buildUrlFor ? buildUrlFor( id ) : null;
-				return href ?
-					`<a href="${ href }" target="_blank">${ id }</a>` :
-					`<span>${ id }</span>`;
 			} );
-			return {
-				type: Constants.METADATA_CONTENT_TYPE.HTML,
-				value: `<span>${ links.join( ', ' ) }</span>`
-			};
 		}
 
 		const transforms = {
@@ -1090,7 +1032,7 @@ module.exports = exports = defineComponent( {
 			getErrorType,
 			getImplementationLink,
 			getLinksOfTestKey,
-			getListOfIds,
+			getListOfWikidataIds,
 			getStringValue,
 			getTestResultValue,
 			getWarningsList,
