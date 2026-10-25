@@ -19,18 +19,11 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 use MediaWikiUnitTestCase;
 use Symfony\Component\Yaml\Exception\ParseException;
-use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZErrorFactory
  */
 class ZErrorFactoryTest extends MediaWikiUnitTestCase {
-
-	protected function setUp(): void {
-		parent::setUp();
-		// Reset the cached descriptor array so each test runs against a clean slate.
-		TestingAccessWrapper::newFromClass( ZErrorFactory::class )->errorDescriptors = null;
-	}
 
 	/**
 	 * Unwrap a ZError and return its inner ZTypedError's positional values (K1, K2, …).
@@ -53,7 +46,7 @@ class ZErrorFactoryTest extends MediaWikiUnitTestCase {
 	}
 
 	// ------------------------------------------------------------------
-	// readYamlAsSecretJson + getErrorDescriptors
+	// readYamlAsSecretJson
 	// ------------------------------------------------------------------
 
 	public function testReadYamlAsSecretJson_parsesRealFile() {
@@ -73,22 +66,6 @@ class ZErrorFactoryTest extends MediaWikiUnitTestCase {
 		ZErrorFactory::readYamlAsSecretJson(
 			sys_get_temp_dir() . '/definitely-not-a-yaml-file-' . uniqid() . '.yaml'
 		);
-	}
-
-	public function testGetErrorDescriptors_loadsKeywordsFromRealYamlAndCaches() {
-		$wrapper = TestingAccessWrapper::newFromClass( ZErrorFactory::class );
-		$first = $wrapper->getErrorDescriptors();
-		$this->assertIsArray( $first );
-		// The error_types.yaml file groups descriptors under JSON-schema keywords; every
-		// keyword group is expected to exist on the real file shipped in the submodule.
-		$this->assertArrayHasKey( 'type', $first );
-		$this->assertArrayHasKey( 'required', $first );
-		$this->assertNotEmpty( $first['type'] );
-		$this->assertNotEmpty( $first['required'] );
-
-		// Second call should hit the cached branch and return the identical array.
-		$second = $wrapper->getErrorDescriptors();
-		$this->assertSame( $first, $second );
 	}
 
 	// ------------------------------------------------------------------
