@@ -404,6 +404,7 @@
 	"wikilambda-functioncall-metadata-function-calls": "Chamadas de función",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Número de funcións chamadas",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "Funcións máis chamadas",
+	"wikilambda-functioncall-metadata-function-calls-pairs": "Chamadas máis frecuentes (quen chama → a quen chaman)",
 	"wikilambda-functioncall-metadata-function-calls-summary-calls": "{{PLURAL:$1|$1 chamada|$1 chamadas}}",
 	"wikilambda-functioncall-metadata-function-calls-summary-functions": "{{PLURAL:$1|$1 función|$1 funcións}}",
 	"wikilambda-functioncall-metadata-function-calls-total": "Número de chamadas",

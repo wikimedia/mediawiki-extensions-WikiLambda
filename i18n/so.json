@@ -403,6 +403,7 @@
 	"wikilambda-functioncall-metadata-function-calls": "Wicitaannada Wikifunctions",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Tirada hawlaha la wacay",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "Hawlaha inta badan la waco",
+	"wikilambda-functioncall-metadata-function-calls-pairs": "Wicitaannada ugu badan (wicitaanada → la wacay)",
 	"wikilambda-functioncall-metadata-function-calls-summary-calls": "{{PLURAL:$1|$1 wicitaan|$1 wicitaano}}",
 	"wikilambda-functioncall-metadata-function-calls-summary-functions": "{{PLURAL:$1|$1 hawl|$1 hawlood}}",
 	"wikilambda-functioncall-metadata-function-calls-total": "Tirada wicitaannada",

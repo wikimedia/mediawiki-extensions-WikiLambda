@@ -12,6 +12,7 @@
 	"wikilambda-abstract-lastupdatedat": "Tämä sivu on päivitetty viimeksi $1 klo $2.",
 	"wikilambda-abstract-preview-fragment-missing": "Puuttuu",
 	"wikilambda-abstract-preview-fragment-pending": "Odottaa",
+	"wikilambda-abstract-preview-fragment-unavailable": "Renderöintipalvelussa on juuri nyt ruuhkaa. Yritetään uudelleen {{PLURAL:$1| $1 minuutin}} kuluttua.",
 	"wikilambda-abstract-tab-createlocal": "Luo paikallinen artikkeli",
 	"wikilambda-abstract-tab-edit": "Muokkaa yhteenvetoa"
 }

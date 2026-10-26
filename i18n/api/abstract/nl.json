@@ -16,6 +16,7 @@
 	"apihelp-abstractwiki_fetch_section-param-language": "De taal-ZObject-ID die gebruikt wordt om de fragmenten te verwerken. Dit moet een geldige Zid zijn.",
 	"apihelp-abstractwiki_fetch_section-param-date": "De datumtekst die gebruikt wordt om de fragmenten te verwerken.",
 	"apihelp-abstractwiki_fetch_section-param-fragments": "Een optionele array met fragmenten waarvan de weergegeven waarden moeten worden geretourneerd. Als de array leeg is, zijn de geretourneerde fragmenten dezelfde als die volgens de huidige versie voor de opgegeven sectie-Qid zijn opgeslagen. Als de array niet leeg is, moet er een lijst met fragmentfunctie-aanroepen in staan. Deze kunnen afwijken van degenen die in de sectie zijn vastgelegd (bijvoorbeeld omdat ze op dat moment actief worden bewerkt en hun huidige status nog niet is vastgelegd). In dat geval zijn aanvullende rechten vereist.",
+	"apihelp-abstractwiki_fetch_section-param-revision": "Een optionele versie-ID van de Wikipedia-pagina met het abstract van het onderwerp. Indien opgegeven en er geen \"fragmenten\" worden doorgegeven, worden de fragmenten teruggegeven die voor de opgegeven sectie-QID zijn opgeslagen volgens die versie, in plaats van de huidige versie.",
 	"apihelp-abstractwiki_fetch_section-example-lede": "De verwerkte fragmenten van een bepaalde sectie ophalen.",
 	"apihelp-abstractwiki_fetch_section-example-unsaved": "De verwerkte waarden van een lijst met niet-opgeslagen fragmenten ophalen.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Het fragment is geen geldige functieaanroep.",

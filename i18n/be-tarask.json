@@ -9,6 +9,7 @@
 	"action-wikilambda-create-generic-enum": "стварэньне новага агульнага пералічванага тыпу",
 	"action-wikilambda-edit-generic-enum-item": "рэдагаваньне элемэнтаў існага агульнага пералічванага тыпу",
 	"action-wikilambda-edit-generic-enum-type": "рэдагаваньне тыпу элемэнтаў існага агульнага пералічванага тыпу",
+	"wikilambda-functionlookup-remove-button-label": "Прыбраць",
 	"group-functioneer": "Функцыянэры",
 	"group-functioneer-member": "{{GENDER:$1|функцыянэр|функцыянэрка}}",
 	"grouppage-functioneer": "{{ns:project}}:Функцыянэры",
