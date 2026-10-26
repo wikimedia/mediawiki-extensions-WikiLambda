@@ -712,4 +712,71 @@ describe( 'AbstractPreviewFragment', () => {
 			} ) );
 		} );
 	} );
+
+	describe( 'provenance popover', () => {
+		beforeEach( () => {
+			store.getProvenanceFragment = undefined;
+			store.setProvenanceFragment = jest.fn();
+		} );
+
+		it( 'does not show the popover when another fragment has it open', () => {
+			store.getProvenanceFragment = 'abstractwiki.sections.Q8776414.fragments.2';
+			wrapper = renderFragment();
+
+			expect( wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).exists() ).toBe( false );
+		} );
+
+		it( 'shows the popover, pointing at the fragment, when it is opened for this fragment', async () => {
+			const preview = { html: '<p>Some text</p>', metadata: null, renderDate: null };
+			store.getFragmentPreview = jest.fn().mockReturnValue( preview );
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+			// The anchor is a template ref, which is set once the fragment has mounted
+			await wrapper.vm.$nextTick();
+
+			const popover = wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } );
+			expect( popover.exists() ).toBe( true );
+			expect( popover.props( 'open' ) ).toBe( true );
+			expect( popover.props( 'fragmentPreview' ) ).toEqual( preview );
+			expect( popover.props( 'anchor' ) ).toBe(
+				wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' ).element
+			);
+		} );
+
+		it( 'closes the popover when it asks to close', () => {
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+
+			wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).vm.$emit( 'update:open', false );
+
+			expect( store.setProvenanceFragment ).toHaveBeenCalledWith( undefined );
+		} );
+
+		it( 'closes the popover when the fragment changes', async () => {
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+
+			await wrapper.setProps( { fragmentHash: 'somebetter#' } );
+
+			expect( store.setProvenanceFragment ).toHaveBeenCalledWith( undefined );
+		} );
+
+		it( 'does not close the popover of another fragment when this fragment changes', async () => {
+			store.getProvenanceFragment = 'abstractwiki.sections.Q8776414.fragments.2';
+			wrapper = renderFragment();
+
+			await wrapper.setProps( { fragmentHash: 'somebetter#' } );
+
+			expect( store.setProvenanceFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'closes the popover on unmount', () => {
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+
+			wrapper.unmount();
+
+			expect( store.setProvenanceFragment ).toHaveBeenCalledWith( undefined );
+		} );
+	} );
 } );

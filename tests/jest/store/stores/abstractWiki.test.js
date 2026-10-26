@@ -446,6 +446,18 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getProvenanceFragment', () => {
+			it( 'returns undefined if no provenance popover is open', () => {
+				expect( store.getProvenanceFragment ).toBeUndefined();
+			} );
+
+			it( 'returns the keyPath of the fragment whose provenance popover is open', () => {
+				const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+				store.provenance = keyPath;
+				expect( store.getProvenanceFragment ).toBe( keyPath );
+			} );
+		} );
+
 		describe( 'getSuggestedHtmlFunctions', () => {
 			it( 'returns empty list if nothing set', () => {
 				expect( store.getSuggestedHtmlFunctions ).toEqual( [] );
@@ -1289,7 +1301,34 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
 					language: mockLang,
 					html: '<p>rendered</p>',
-					isPending: false
+					isPending: false,
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
+				} );
+			} );
+
+			it( 'keeps the metadata and render date of a successful fragment', () => {
+				const metadata = {
+					functionCallCachedOn: '2026-10-24T00:47:20Z',
+					cachedWikidataEntities: [ 'Z6', 'Q42' ]
+				};
+				const result = {
+					success: true,
+					value: '<p>rendered</p>',
+					metadata,
+					renderDate: '20261024004720'
+				};
+
+				store.processFragmentResponse( fragmentKey, result );
+
+				expect( store.setRenderedFragment ).toHaveBeenCalledWith( fragmentKey, {
+					language: mockLang,
+					html: '<p>rendered</p>',
+					isPending: false,
+					metadata,
+					renderDate: '20261024004720',
+					fromFragmentStore: false
 				} );
 			} );
 
@@ -1368,7 +1407,10 @@ describe( 'abstractWiki Pinia store', () => {
 						code: 'apierror-abstractwiki_run_fragment-returned-zerror',
 						zid: 'Z500',
 						zerror: { Z1K1: 'Z5' }
-					}
+					},
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				} );
 			} );
 
@@ -1400,7 +1442,10 @@ describe( 'abstractWiki Pinia store', () => {
 						code: 'apierror-abstractwiki_run_fragment-service-unavailable',
 						zid: '',
 						zerror: null
-					}
+					},
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				};
 
 				it( 'shows a notice, and sets no timer', () => {
@@ -1464,6 +1509,37 @@ describe( 'abstractWiki Pinia store', () => {
 				} );
 			} );
 
+			it( 'keeps whether a fragment came from the fragment store', () => {
+				store.processFragmentResponse( fragmentKey, {
+					success: true,
+					value: '<p>rendered</p>',
+					fromFragmentStore: true
+				} );
+				store.processFragmentResponse( fragmentKey, {
+					success: false,
+					value: { info: 'some unpredictable error structure' },
+					fromFragmentStore: true
+				} );
+
+				expect( store.setRenderedFragment.mock.calls[ 0 ][ 1 ].fromFragmentStore ).toBe( true );
+				expect( store.setRenderedFragment.mock.calls[ 1 ][ 1 ].fromFragmentStore ).toBe( true );
+			} );
+
+			it( 'keeps the render date and metadata of a failed fragment', () => {
+				const metadata = { cachedWikidataEntities: [ 'Z6', 'L1-F2' ] };
+				const result = {
+					success: false,
+					value: { info: 'some unpredictable error structure' },
+					metadata,
+					renderDate: '20261024004720'
+				};
+
+				store.processFragmentResponse( fragmentKey, result );
+
+				expect( store.setRenderedFragment.mock.calls[ 0 ][ 1 ].renderDate ).toBe( '20261024004720' );
+				expect( store.setRenderedFragment.mock.calls[ 0 ][ 1 ].metadata ).toEqual( metadata );
+			} );
+
 			it( 'sets fragment with unknown error', () => {
 				const result = {
 					success: false,
@@ -1478,7 +1554,10 @@ describe( 'abstractWiki Pinia store', () => {
 						type: Constants.ERROR_TYPES.ERROR,
 						retry: false,
 						text: 'Unable to render this fragment due to an unknown error.'
-					}
+					},
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				} );
 			} );
 		} );
@@ -1849,8 +1928,46 @@ describe( 'abstractWiki Pinia store', () => {
 					isUnavailable: false,
 					retryCount: 0,
 					error: null,
-					html: 'some rendered fragment'
+					html: 'some rendered fragment',
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				} );
+			} );
+
+			it( 'sets the metadata and render date of a rendered fragment', () => {
+				const metadata = { functionCallFreshResult: '2026-10-24T00:47:20Z' };
+				store.setRenderedFragment( fragmentKey, {
+					html: 'some rendered fragment',
+					metadata,
+					renderDate: '20261024004720'
+				} );
+
+				expect( store.fragments[ fragmentKey ].metadata ).toEqual( metadata );
+				expect( store.fragments[ fragmentKey ].renderDate ).toBe( '20261024004720' );
+			} );
+
+			it( 'sets whether the fragment came from the fragment store', () => {
+				store.setRenderedFragment( fragmentKey, {
+					html: 'some rendered fragment',
+					fromFragmentStore: true
+				} );
+
+				expect( store.fragments[ fragmentKey ].fromFragmentStore ).toBe( true );
+			} );
+
+			it( 'keeps the metadata of a failed fragment', () => {
+				// A failure that Wikifunctions answered says how fresh it was too (T441583)
+				store.setRenderedFragment( fragmentKey, {
+					error: { text: 'Some error message' },
+					metadata: { functionCallFreshResult: '2026-10-24T00:47:20Z' },
+					renderDate: '20261024004720'
+				} );
+
+				expect( store.fragments[ fragmentKey ].metadata ).toEqual( {
+					functionCallFreshResult: '2026-10-24T00:47:20Z'
+				} );
+				expect( store.fragments[ fragmentKey ].renderDate ).toBe( '20261024004720' );
 			} );
 
 			it( 'sets failed rendered fragment with error text', () => {
@@ -1869,7 +1986,10 @@ describe( 'abstractWiki Pinia store', () => {
 					error: {
 						text: 'Some error message'
 					},
-					html: ''
+					html: '',
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				} );
 			} );
 
@@ -1891,7 +2011,10 @@ describe( 'abstractWiki Pinia store', () => {
 						code: 'error-code',
 						zid: 'Z555'
 					},
-					html: ''
+					html: '',
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				} );
 			} );
 
@@ -1910,7 +2033,10 @@ describe( 'abstractWiki Pinia store', () => {
 					retryCount: 0,
 					unavailableRetryCount: 0,
 					error: null,
-					html: 'some unseen fragment'
+					html: 'some unseen fragment',
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				} );
 			} );
 
@@ -1929,7 +2055,10 @@ describe( 'abstractWiki Pinia store', () => {
 					retryCount: 0,
 					unavailableRetryCount: 0,
 					error: null,
-					html: 'same fragment in new language'
+					html: 'same fragment in new language',
+					metadata: null,
+					renderDate: null,
+					fromFragmentStore: false
 				} );
 			} );
 		} );
@@ -2211,6 +2340,23 @@ describe( 'abstractWiki Pinia store', () => {
 				store.setSelectedFragment( undefined );
 
 				expect( store.selection ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'setProvenanceFragment', () => {
+			it( 'opens the provenance popover of a fragment', () => {
+				const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
+				store.setProvenanceFragment( keyPath );
+
+				expect( store.provenance ).toBe( keyPath );
+			} );
+
+			it( 'closes the provenance popover', () => {
+				store.provenance = 'abstractwiki.sections.Q8776414.fragments.1';
+
+				store.setProvenanceFragment( undefined );
+
+				expect( store.provenance ).toBeUndefined();
 			} );
 
 			it( 'does not disturb the pointer highlight', () => {

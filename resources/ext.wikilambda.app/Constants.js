@@ -595,7 +595,8 @@ Constants.LIST_MENU_OPTIONS = {
 	COPY_CLIPBOARD: 'copy',
 	PASTE_CLIPBOARD: 'paste',
 	ADD_FRAGMENT: 'add-fragment',
-	TRY_FUNCTION_CALL: 'try-function-call'
+	TRY_FUNCTION_CALL: 'try-function-call',
+	SHOW_PROVENANCE: 'show-provenance'
 };
 
 Constants.PATHS = {

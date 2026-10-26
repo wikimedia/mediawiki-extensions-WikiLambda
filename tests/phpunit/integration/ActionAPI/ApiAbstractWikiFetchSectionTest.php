@@ -238,6 +238,12 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 		$this->assertTrue( $result[2][ 'success' ] );
 		$this->assertTrue( $result[2][ 'pending' ] );
+
+		// (T441583) Stored fragments, successful or failed, say that they came
+		// from the store; a pending one did not come from anywhere yet
+		$this->assertTrue( $result[0][ 'fromFragmentStore' ] );
+		$this->assertTrue( $result[1][ 'fromFragmentStore' ] );
+		$this->assertArrayNotHasKey( 'fromFragmentStore', $result[2] );
 	}
 
 	public function testFetchSection_withRevision(): void {

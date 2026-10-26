@@ -135,12 +135,14 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 				$datetime
 			);
 
-			// 4.2. Add fragment (in any state) to the response array for the section
+			// 4.2. Add fragment (in any state) to the response array for the section.
+			// A rendered one came from the store; say so for the editor's
+			// provenance popover (T441583).
 			$fragmentResult = $awFragment->isMissing() ? [
 				'success' => true,
 				'pending' => true,
 				'value' => AWFragmentStore::createPendingFragmentBlock( $language->getCode() )
-			] : $awFragment->getValue();
+			] : $awFragment->getValue() + [ 'fromFragmentStore' => true ];
 
 			$this->getResult()->addValue( [ $this->getModuleName(), $sectionQid ], null, $fragmentResult );
 		}

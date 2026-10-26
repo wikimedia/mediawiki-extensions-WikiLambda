@@ -411,7 +411,7 @@ describe( 'dialog', () => {
 				expect( section.find( 'a.ext-wikilambda-app-function-metadata-dialog__link' ).exists() ).toBe( true );
 			} );
 
-			it( 'renders the caching section for a new call that used cached Wikidata entities', () => {
+			it( 'renders the caching section for a newly generated result that used cached Wikidata entities', () => {
 				store.userHasRight = createGettersWithFunctionsMock( true );
 
 				const wrapper = renderFunctionMetadataDialog( { metadata: metadata.metadataFreshCallCachedEntities } );

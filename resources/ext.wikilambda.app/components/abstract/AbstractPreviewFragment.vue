@@ -85,6 +85,15 @@
 			></div>
 			<!-- eslint-enable vue/no-v-html -->
 		</template>
+
+		<!-- Provenance popover, opened from the fragment menu (T441583) -->
+		<wl-abstract-preview-provenance
+			v-if="isProvenanceOpen"
+			:open="isProvenanceOpen"
+			:anchor="rootRef"
+			:fragment-preview="fragmentPreview"
+			@update:open="onProvenanceOpenUpdate"
+		></wl-abstract-preview-provenance>
 	</div>
 </template>
 
@@ -100,6 +109,8 @@ const useMainStore = require( '../../store/index.js' );
 const ErrorData = require( '../../store/classes/ErrorData.js' );
 const icons = require( '../../../lib/icons.json' );
 
+// Abstract components
+const AbstractPreviewProvenance = require( './AbstractPreviewProvenance.vue' );
 // Base components
 const SafeMessage = require( '../base/SafeMessage.vue' );
 // Codex components
@@ -111,6 +122,7 @@ const UNAVAILABLE_FRAGMENT_RETRY_DELAY = Constants.UNAVAILABLE_FRAGMENT_RETRY_MI
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-preview-fragment',
 	components: {
+		'wl-abstract-preview-provenance': AbstractPreviewProvenance,
 		'wl-safe-message': SafeMessage,
 		'cdx-message': CdxMessage,
 		'cdx-icon': CdxIcon,
@@ -341,11 +353,40 @@ module.exports = exports = defineComponent( {
 			{ immediate: true, flush: 'post' }
 		);
 
+		// Provenance popover
+		// ==================
+
+		const isProvenanceOpen = computed( () => store.getProvenanceFragment === props.keyPath );
+
+		/**
+		 * Close the provenance popover when Codex asks to, e.g. on a click
+		 * outside it, the Escape key, or its close button.
+		 *
+		 * @param {boolean} open
+		 */
+		function onProvenanceOpenUpdate( open ) {
+			if ( !open ) {
+				store.setProvenanceFragment( undefined );
+			}
+		}
+
+		// The popover describes one render of the fragment: when the fragment
+		// changes, the render it described is gone, so close the popover.
+		watch( () => props.fragmentHash, () => {
+			if ( isProvenanceOpen.value ) {
+				store.setProvenanceFragment( undefined );
+			}
+		} );
+
 		// On unmount, remove highlight state
 		onUnmounted( () => {
 			unsetHighlight();
 			if ( fragmentHighlightRegistry ) {
 				fragmentHighlightRegistry.unregisterFragmentNodes( props.keyPath );
+			}
+			// A fragment that goes away must not keep its popover open
+			if ( isProvenanceOpen.value ) {
+				store.setProvenanceFragment( undefined );
 			}
 		} );
 
@@ -356,10 +397,12 @@ module.exports = exports = defineComponent( {
 			contentRef,
 			errorRef,
 			isMissing,
+			isProvenanceOpen,
 			isSelected,
 			missingCanRetry,
 			missingLabel,
 			onFocusIn,
+			onProvenanceOpenUpdate,
 			rootRef,
 			selectFragment,
 			setHighlight,

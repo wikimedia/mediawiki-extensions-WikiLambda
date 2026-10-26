@@ -143,6 +143,8 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		// (T441561) The freshness metadata and render date come back unchanged
 		$this->assertSame( $storedValue[ 'metadata' ], $result[ 'metadata' ] );
 		$this->assertSame( $storedValue[ 'renderDate' ], $result[ 'renderDate' ] );
+		// (T441583) The editor's provenance popover says it came from the store
+		$this->assertTrue( $result[ 'fromFragmentStore' ] );
 	}
 
 	/**
@@ -196,6 +198,8 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$this->assertArrayHasKey( 'value', $result );
 		$this->assertTrue( $result[ 'success' ] );
 		$this->assertSame( '<b>stale content</b>', $result[ 'value' ] );
+		// (T441583) The editor's provenance popover says it came from the store
+		$this->assertTrue( $result[ 'fromFragmentStore' ] );
 	}
 
 	/**
@@ -257,6 +261,8 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		// (T441561) The freshness metadata and render date come back unchanged
 		$this->assertSame( $renderedFragment[ 'metadata' ], $result[ 'metadata' ] );
 		$this->assertSame( $renderedFragment[ 'renderDate' ], $result[ 'renderDate' ] );
+		// (T441583) Rendered for this request, so not from the store
+		$this->assertArrayNotHasKey( 'fromFragmentStore', $result );
 	}
 
 	/**
@@ -455,6 +461,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 
 		$this->assertTrue( $result[ 'success' ] );
 		$this->assertTrue( $result[ 'pending' ] );
+		$this->assertArrayNotHasKey( 'fromFragmentStore', $result );
 	}
 
 	/**
@@ -518,5 +525,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$this->assertArrayHasKey( 'value', $result );
 		$this->assertFalse( $result[ 'success' ] );
 		$this->assertEquals( $failureValue[ 'value' ], $result[ 'value' ] );
+		// (T441583) A stored failure also came from the store
+		$this->assertTrue( $result[ 'fromFragmentStore' ] );
 	}
 }

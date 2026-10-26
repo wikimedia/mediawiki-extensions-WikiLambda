@@ -71,6 +71,10 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *   'metadata' => [ 'functionCallFreshResult' => '2026-10-23T10:00:00Z' ]
 	 * ]
 	 *
+	 * A fragment, successful or failed, that was read from the AWFragmentStore
+	 * rather than rendered for this request also has 'fromFragmentStore' set
+	 * to true (T441583).
+	 *
 	 * A pending fragment will contain a 'success' flag set to true,
 	 * and a 'pending' flag, also set to true:
 	 * [
@@ -165,9 +169,10 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 			/* revalidate= */ $async
 		);
 
-		// Stale or fresh, return the payload and be done
+		// Stale or fresh, return the payload and be done. Say that it came from
+		// the store, for the editor's provenance popover (T441583).
 		if ( !$awFragment->isMissing() ) {
-			return $awFragment->getValue();
+			return $awFragment->getValue() + [ 'fromFragmentStore' => true ];
 		}
 
 		// Missing fragment:

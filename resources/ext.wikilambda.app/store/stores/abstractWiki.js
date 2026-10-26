@@ -45,6 +45,9 @@ const abstractWikiStore = {
 		 *   "hasError":false,
 		 *   "error":null,
 		 *   "html":"<p>Rendered fragment.</p>",
+		 *   "metadata":{ "functionCallFreshResult":"2026-10-24T00:47:20Z" },
+		 *   "renderDate":"20261024004720",
+		 *   "fromFragmentStore":true,
 		 *   "retryCount":0,
 		 *   "isUnavailable":false,
 		 *   "unavailableRetryCount":0
@@ -52,6 +55,13 @@ const abstractWikiStore = {
 		 *
 		 * isUnavailable is true while the fragment waits for a busy rendering service;
 		 * unavailableRetryCount counts the requests for it while it waits.
+		 *
+		 * "metadata" is the freshness metadata stored with a render, successful or
+		 * failed, that Wikifunctions answered, and
+		 * "renderDate" the time (in MediaWiki's YmdHis format) the fragment was
+		 * rendered and stored. Both are null when not known. "fromFragmentStore" is
+		 * true when the server read the render from its fragment store, rather than
+		 * rendering it for this request. (T441583)
 		 */
 		fragments: {},
 		/**
@@ -79,6 +89,11 @@ const abstractWikiStore = {
 		 * another fragment or clears the selection.
 		 */
 		selection: undefined,
+		/**
+		 * KeyPath of the fragment whose provenance popover is open, or
+		 * undefined when none is open. Only one can be open at a time.
+		 */
+		provenance: undefined,
 		previewLanguageZid: undefined,
 		suggestedHtmlFunctions: [],
 		fragmentQueue: [],
@@ -292,6 +307,15 @@ const abstractWikiStore = {
 		 */
 		getSelectedFragment: function ( state ) {
 			return state.selection;
+		},
+		/**
+		 * Returns the keyPath of the fragment whose provenance popover is open
+		 *
+		 * @param {Object} state
+		 * @return {string|undefined}
+		 */
+		getProvenanceFragment: function ( state ) {
+			return state.provenance;
 		},
 		/**
 		 * Returns the array with suggested html functions
@@ -714,6 +738,9 @@ const abstractWikiStore = {
 		 * * Success:
 		 *   - success: true
 		 *   - value: html blob
+		 *   - metadata: freshness metadata (optional, T441583)
+		 *   - renderDate: render time, YmdHis (optional)
+		 *   - fromFragmentStore: true if read from the fragment store (optional)
 		 * * Pending:
 		 *   - success: true
 		 *   - pending: true
@@ -725,6 +752,9 @@ const abstractWikiStore = {
 		 *     - httpStatusCode: 400
 		 *     - zerror: { ... }
 		 *     - params: [ 'Z528' ]
+		 *   - metadata: freshness metadata, if Wikifunctions answered (optional)
+		 *   - renderDate: render time, YmdHis (optional)
+		 *   - fromFragmentStore: true if read from the fragment store (optional)
 		 *
 		 * An error because the rendering service is busy (HTTP 429 or 503) shows a
 		 * notice instead, and the fragment component requests the fragment again later,
@@ -799,6 +829,10 @@ const abstractWikiStore = {
 				// ==========================
 				fragmentPayload.html = result.value;
 				fragmentPayload.isPending = false;
+				// Keep its provenance information, for the provenance popover (T441583)
+				fragmentPayload.metadata = result.metadata || null;
+				fragmentPayload.renderDate = result.renderDate || null;
+				fragmentPayload.fromFragmentStore = !!result.fromFragmentStore;
 
 			} else {
 				// Handle failed fragment:
@@ -823,6 +857,11 @@ const abstractWikiStore = {
 				}
 
 				fragmentPayload.error = error;
+				// A stored failure also knows when it was rendered, and, if Wikifunctions
+				// answered with the error, how fresh that answer was (T441583)
+				fragmentPayload.metadata = ( result && result.metadata ) || null;
+				fragmentPayload.renderDate = ( result && result.renderDate ) || null;
+				fragmentPayload.fromFragmentStore = !!result && !!result.fromFragmentStore;
 
 				const interactionData = Object.assign( {}, this.getInteractionData, {
 					selectedfunctionzid: error.zid || null
@@ -967,9 +1006,21 @@ const abstractWikiStore = {
 		 * @param {Array|undefined} payload.error.params i18n message parameters for the code
 		 * @param {string|null} payload.error.zid
 		 * @param {string|null} payload.error.type
+		 * @param {Object|null|undefined} payload.metadata Freshness metadata of the render
+		 * @param {string|null|undefined} payload.renderDate Render time, YmdHis
+		 * @param {boolean|undefined} payload.fromFragmentStore Read from the fragment store
 		 */
 		setRenderedFragment: function ( key, payload ) {
-			const { html = '', error, isLoading = false, isPending = false, isUnavailable = false } = payload;
+			const {
+				html = '',
+				error,
+				isLoading = false,
+				isPending = false,
+				isUnavailable = false,
+				metadata = null,
+				renderDate = null,
+				fromFragmentStore = false
+			} = payload;
 
 			// Initialize payload if it doesn't exist
 			if ( !( key in this.fragments ) ) {
@@ -983,6 +1034,9 @@ const abstractWikiStore = {
 			this.fragments[ key ].isLoading = isLoading;
 			this.fragments[ key ].hasError = !!error;
 			this.fragments[ key ].isUnavailable = isUnavailable;
+			this.fragments[ key ].metadata = metadata;
+			this.fragments[ key ].renderDate = renderDate;
+			this.fragments[ key ].fromFragmentStore = fromFragmentStore;
 		},
 		/**
 		 * Inserts a blank or given hash into the sectionHashes structure
@@ -1141,6 +1195,15 @@ const abstractWikiStore = {
 		 */
 		setSelectedFragment: function ( keyPath ) {
 			this.selection = keyPath;
+		},
+		/**
+		 * Open the provenance popover of the fragment with the given keyPath.
+		 * Pass undefined to close it.
+		 *
+		 * @param {string|undefined} keyPath
+		 */
+		setProvenanceFragment: function ( keyPath ) {
+			this.provenance = keyPath;
 		},
 		/**
 		 * Sets a list of zids as suggested functions that return HTML fragments

@@ -305,6 +305,16 @@ describe( 'AbstractContentSection', () => {
 		expect( mockMenuActions.openFunctionCallLink ).toHaveBeenCalledWith( keyPath );
 	} );
 
+	it( 'selects the fragment and opens its provenance popover', () => {
+		const wrapper = renderSection();
+
+		const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+		fragment.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.SHOW_PROVENANCE } );
+
+		expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
+		expect( store.setProvenanceFragment ).toHaveBeenCalledWith( keyPath );
+	} );
+
 	it( 'refreshes a fragment hash when fragment child component detects a change', async () => {
 		const fragmentHash = await sha256( JSON.stringify( stabilize( fragmentCall ) ) );
 

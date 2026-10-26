@@ -327,6 +327,14 @@ module.exports = exports = defineComponent( {
 				openFunctionCallLink( itemKeyPath );
 				return;
 			}
+
+			if ( payload.action === Constants.LIST_MENU_OPTIONS.SHOW_PROVENANCE ) {
+				// Selecting the fragment moves its generated text into view, and the
+				// popover opens on the generated text (T441583)
+				store.setSelectedFragment( itemKeyPath );
+				store.setProvenanceFragment( itemKeyPath );
+				return;
+			}
 		}
 
 		// Fragment dragging

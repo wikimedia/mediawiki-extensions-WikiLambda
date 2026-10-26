@@ -93,6 +93,27 @@ describe( 'AbstractContentFragment', () => {
 			] );
 		} );
 
+		it( 'offers "Show provenance" in its own group, after the clipboard group and before delete', () => {
+			const wrapper = renderFragment();
+
+			const groups = wrapper.vm.menuItems;
+			const clipboardGroup = groups[ 2 ];
+			const provenanceGroup = groups[ 3 ];
+			const deleteGroup = groups[ 4 ];
+
+			expect( clipboardGroup.items.map( ( item ) => item.value ) ).toEqual( [
+				Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
+				Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD
+			] );
+			expect( provenanceGroup.items ).toHaveLength( 1 );
+			expect( provenanceGroup.items[ 0 ] ).toEqual( expect.objectContaining( {
+				label: 'Show provenance',
+				value: Constants.LIST_MENU_OPTIONS.SHOW_PROVENANCE
+			} ) );
+			expect( provenanceGroup.items[ 0 ].icon ).toBeTruthy();
+			expect( deleteGroup.items[ 0 ].value ).toBe( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
+		} );
+
 		it( 'disables move-before when fragment is first', () => {
 			const wrapper = renderFragment( {
 				keyPath: 'abstractwiki.sections.Q8776414.fragments.1'
@@ -160,7 +181,11 @@ describe( 'AbstractContentFragment', () => {
 			await openMenu( wrapper );
 
 			const groups = wrapper.vm.menuItems;
-			expect( groups.at( -2 ).items.map( ( item ) => item.value ) ).toEqual( [
+			// Find the clipboard group by its first item: other groups, such as
+			// the provenance group (T441583), can come between it and delete
+			const clipboardGroup = groups.find( ( group ) => group.items[ 0 ].value ===
+				Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD );
+			expect( clipboardGroup.items.map( ( item ) => item.value ) ).toEqual( [
 				Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
 				Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD,
 				Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL
