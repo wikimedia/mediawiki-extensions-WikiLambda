@@ -395,7 +395,7 @@ describe( 'dialog', () => {
 				// Check header
 				expect( section.find( '.cdx-accordion__header__title' ).text() ).toBe( 'Provenance' );
 				expect( section.find( '.cdx-accordion__header__description' ).text() )
-					.toBe( 'This response was not retrieved from the cache' );
+					.toBe( 'This response was newly generated' );
 
 				// Check content
 				const content = section.find( '.cdx-accordion__content' );

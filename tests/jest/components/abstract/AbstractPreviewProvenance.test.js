@@ -72,14 +72,14 @@ describe( 'AbstractPreviewProvenance', () => {
 		expect( wrapper.emitted( 'update:open' ) ).toEqual( [ [ false ] ] );
 	} );
 
-	it( 'says that the response was not retrieved from the cache, for a fresh result', () => {
+	it( 'says that the response was newly generated, for a fresh result', () => {
 		const wrapper = renderProvenance( {
 			metadata: { functionCallFreshResult: '2026-10-24T00:47:20Z' },
 			renderDate: '20261024004720'
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-provenance__summary' ).text() )
-			.toBe( 'This response was not retrieved from the cache' );
+			.toBe( 'This response was newly generated' );
 	} );
 
 	it( 'says that a new response used cached Wikidata entities, when it did', () => {
@@ -115,7 +115,7 @@ describe( 'AbstractPreviewProvenance', () => {
 			.toBe( 'This response was retrieved from the cache' );
 	} );
 
-	it( 'says that the text was rendered earlier and stored, when it came from the fragment store', () => {
+	it( 'says that the text was generated earlier and stored, when it came from the fragment store', () => {
 		const wrapper = renderProvenance( {
 			metadata: { functionCallFreshResult: '2026-10-24T00:47:20Z' },
 			renderDate: '20261024004720',
@@ -123,7 +123,7 @@ describe( 'AbstractPreviewProvenance', () => {
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-provenance__summary' ).text() )
-			.toBe( 'This text was rendered earlier and stored' );
+			.toBe( 'This text was generated earlier and stored' );
 		// The rows still say how Wikifunctions made the response
 		expect( getRows( wrapper ) ).toEqual( [
 			'Fragment rendered: 4 minutes ago',
@@ -131,7 +131,7 @@ describe( 'AbstractPreviewProvenance', () => {
 		] );
 	} );
 
-	it( 'says that a stored fragment without metadata was rendered earlier and stored', () => {
+	it( 'says that a stored fragment without metadata was generated earlier and stored', () => {
 		const wrapper = renderProvenance( {
 			metadata: null,
 			renderDate: '20261024004720',
@@ -139,7 +139,7 @@ describe( 'AbstractPreviewProvenance', () => {
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-provenance__summary' ).text() )
-			.toBe( 'This text was rendered earlier and stored' );
+			.toBe( 'This text was generated earlier and stored' );
 		expect( getRows( wrapper ) ).toEqual( [ 'Fragment rendered: 4 minutes ago' ] );
 	} );
 

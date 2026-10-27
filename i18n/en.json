@@ -401,7 +401,7 @@
 	"wikilambda-functioncall-error-unknown-zid-category-desc": "Pages with attempted Wikifunctions calls that request an unknown Object",
 	"wikilambda-functioncall-metadata-accessible-title": "Dialog letting you see the metadata of the function call result",
 	"wikilambda-functioncall-metadata-actual-result": "Actual result",
-	"wikilambda-functioncall-metadata-fresh": "This response was not retrieved from the cache",
+	"wikilambda-functioncall-metadata-fresh": "This response was newly generated",
 	"wikilambda-functioncall-metadata-fresh-cached-entities": "This response was newly generated, but used cached Wikidata entities",
 	"wikilambda-functioncall-metadata-cached": "This response was retrieved from the cache",
 	"wikilambda-functioncall-metadata-cache-fresh": "Response generated with latest data",

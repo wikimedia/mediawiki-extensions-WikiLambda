@@ -77,7 +77,7 @@
 	"wikilambda-abstract-preview-fragment-replicate": "View details in Wikifunctions",
 	"wikilambda-abstract-preview-fragment-retry": "Retry",
 	"wikilambda-abstract-preview-fragment-unavailable": "The rendering service is busy right now. Trying again in {{PLURAL:$1|$1 minute|$1 minutes}}.",
-	"wikilambda-abstract-preview-provenance-fragment-store": "This text was rendered earlier and stored",
+	"wikilambda-abstract-preview-provenance-fragment-store": "This text was generated earlier and stored",
 	"wikilambda-abstract-preview-provenance-render-date": "Fragment rendered",
 	"wikilambda-abstract-preview-provenance-unavailable": "No provenance information is available for this fragment",
 	"wikilambda-abstract-preview-in-language": "Generated text",
