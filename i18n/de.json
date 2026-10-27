@@ -8,7 +8,8 @@
 			"ElBe",
 			"FF-11",
 			"GünniBusch",
-			"Justman10000"
+			"Justman10000",
+			"McDutchie"
 		]
 	},
 	"wikilambda-desc": "Ermöglicht das Schreiben, Verwalten und Auswerten von Funktionen in einem zentralen Wiki.",
@@ -66,7 +67,7 @@
 	"action-wikilambda-edit-user-function": "von Benutzern bereitgestellte Funktion bearbeiten",
 	"action-wikilambda-execute": "Funktionen ausführen",
 	"action-wikilambda-execute-unsaved-code": "nicht gespeicherten Implementierungscode auszuführen",
-	"action-wikilambda-request-fresh-result": "eine neue Ausführung beantragen",
+	"action-wikilambda-request-fresh-result": "eine neue Ausführung anzufordern",
 	"communityconfiguration-abstractwikioptedinarticles-description": "Die Liste der Artikel, die aus dem abstrakten Wikipedia-Inhalt generiert wurden.",
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label": "Titel",
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-label": "Themen-QID",

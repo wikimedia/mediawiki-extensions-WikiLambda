@@ -415,6 +415,7 @@
 	"wikilambda-functioncall-metadata-function-calls": "استدعاءات الدوال",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "عدد الدوال المستدعاة",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "أكثر الوظائف استدعاءً",
+	"wikilambda-functioncall-metadata-function-calls-pairs": "أكثر المكالمات تكرارًا (المتصل ← المتصل به)",
 	"wikilambda-functioncall-metadata-function-calls-summary-calls": "{{PLURAL:$1|مكالمة $1|مكالمات $1}}",
 	"wikilambda-functioncall-metadata-function-calls-summary-functions": "{{PLURAL:$1|$1 دالة|$1 دوال}}",
 	"wikilambda-functioncall-metadata-function-calls-total": "عدد المكالمات",
