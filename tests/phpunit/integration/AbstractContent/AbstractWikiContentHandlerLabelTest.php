@@ -14,6 +14,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentImageRenderer;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Title\Title;
@@ -45,7 +46,8 @@ class AbstractWikiContentHandlerLabelTest extends WikiLambdaClientIntegrationTes
 			$this->getServiceContainer()->getMainConfig(),
 			$this->createNoOpMock( AWArticleStore::class ),
 			$this->getServiceContainer()->get( 'WikiLambdaWikidataEntityLookup' ),
-			$this->getServiceContainer()->getRevisionLookup()
+			$this->getServiceContainer()->getRevisionLookup(),
+			$this->createMock( WikifunctionsFragmentImageRenderer::class )
 		);
 	}
 

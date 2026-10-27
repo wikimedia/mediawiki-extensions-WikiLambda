@@ -33,8 +33,11 @@ class WikifunctionsFragmentImageRenderer {
 	/** No leading zeros, so that each Commons page has one M-ID and one cache key. */
 	private const MID_PATTERN = '/^M[1-9]\d*$/';
 
-	/** The render waits for the Commons API, so do not use the longer default timeout. */
+	/** The render or parse waits for the Commons API, so do not use the longer default timeout. */
 	private const COMMONS_API_TIMEOUT_SECONDS = 2;
+
+	/** The Commons API takes at most 50 page IDs, and scales at most 50 images, per request. */
+	private const COMMONS_API_MAX_PAGE_IDS = 50;
 
 	/**
 	 * Sentinel returned by doFetchCommonsImageData() when the Commons page does not exist.
@@ -101,7 +104,7 @@ class WikifunctionsFragmentImageRenderer {
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-invalid-size', 'error', $alt );
 		}
 
-		$fetchResult = $this->fetchCommonsImageData( $mid, $size );
+		$fetchResult = $this->fetchCommonsImageData( [ $mid ], $size )[$mid];
 
 		if ( $fetchResult === null ) {
 			$this->logger->warning( __METHOD__ . ': Commons API request failed', [ 'mid' => $mid ] + $logContext );
@@ -146,40 +149,75 @@ class WikifunctionsFragmentImageRenderer {
 	}
 
 	/**
-	 * Fetch image metadata from the Commons API for a given M-ID and size.
+	 * Get the Commons file names for Commons M-IDs.
 	 *
-	 * Returns a data array on success, the FETCH_NOT_FOUND sentinel when the Commons page
-	 * does not exist, or null on a transient API/network failure.
+	 * This uses the same cached Commons data as render(), and makes one Commons API
+	 * request for up to 50 M-IDs that are not in the cache.
+	 *
+	 * @param string[] $mids Commons M-IDs, e.g. "M68960758"
+	 * @return array<string,string> File names without the namespace, e.g. "Example.jpg", keyed
+	 *   by M-ID in the order of $mids. Leaves out M-IDs that are not valid, files that do not
+	 *   exist, and M-IDs whose Commons API request failed.
+	 */
+	public function getFileNames( array $mids ): array {
+		$validMids = array_filter( $mids, static fn ( $mid ) => preg_match( self::MID_PATTERN, $mid ) === 1 );
+
+		// Use the default size of image elements. Then the cache key is the same as for a render,
+		// e.g. the fragment preview in the editor.
+		$fileNames = [];
+		foreach ( $this->fetchCommonsImageData( $validMids, 'thumb' ) as $mid => $fetchResult ) {
+			if ( is_array( $fetchResult ) && ( $fetchResult['title'] ?? '' ) !== '' ) {
+				$fileNames[$mid] = preg_replace( '/^File:/i', '', $fetchResult['title'] );
+			}
+		}
+		return $fileNames;
+	}
+
+	/**
+	 * Fetch image metadata from the Commons API for the given M-IDs and size.
+	 *
+	 * Returns, for each M-ID, a data array on success, the FETCH_NOT_FOUND sentinel when the
+	 * Commons page does not exist, or null on a transient API/network failure.
 	 *
 	 * Results are cached in MemcachedWrapper: successful results for one day, missing pages
 	 * for one hour, and failures for one minute.
 	 *
-	 * @param string $mid e.g. "M68960758"
+	 * @param string[] $mids e.g. [ "M68960758" ]
 	 * @param string $size e.g. "thumb"
-	 * @return array|string|null Data array, FETCH_NOT_FOUND sentinel, or null on error
+	 * @return array<string,array|string|null> Keyed by M-ID, in the order of $mids
 	 */
-	private function fetchCommonsImageData( string $mid, string $size ): array|string|null {
+	private function fetchCommonsImageData( array $mids, string $size ): array {
+		$results = [];
+		$cacheKeys = [];
+		$uncachedPageIds = [];
+		foreach ( $mids as $mid ) {
+			$cacheKeys[$mid] = $this->objectCache->makeKey( self::COMMONS_FILE_DATA_CACHE_KEY_PREFIX, $mid, $size );
+			$cached = $this->objectCache->get( $cacheKeys[$mid] );
+			if ( $cached === false ) {
+				$results[$mid] = null;
+				$uncachedPageIds[$mid] = (int)substr( $mid, 1 );
+			} else {
+				$results[$mid] = ( is_array( $cached ) || $cached === self::FETCH_NOT_FOUND ) ? $cached : null;
+			}
+		}
+
 		$thumbWidth = $this->thumbWidthForSize( $size );
-		$cacheKey = $this->objectCache->makeKey( self::COMMONS_FILE_DATA_CACHE_KEY_PREFIX, $mid, $size );
-
-		$cached = $this->objectCache->get( $cacheKey );
-		if ( $cached !== false ) {
-			return ( is_array( $cached ) || $cached === self::FETCH_NOT_FOUND ) ? $cached : null;
+		foreach ( array_chunk( $uncachedPageIds, self::COMMONS_API_MAX_PAGE_IDS, true ) as $pageIds ) {
+			$fetchResults = $this->doFetchCommonsImageData( array_values( $pageIds ), $thumbWidth );
+			foreach ( $pageIds as $mid => $pageId ) {
+				$result = $fetchResults[$pageId] ?? null;
+				$results[$mid] = $result;
+				if ( is_array( $result ) ) {
+					$this->objectCache->set( $cacheKeys[$mid], $result, MemcachedWrapper::TTL_DAY );
+				} elseif ( $result === self::FETCH_NOT_FOUND ) {
+					$this->objectCache->set( $cacheKeys[$mid], $result, MemcachedWrapper::TTL_HOUR );
+				} else {
+					$this->objectCache->set( $cacheKeys[$mid], self::FETCH_FAILED, MemcachedWrapper::TTL_MINUTE );
+				}
+			}
 		}
 
-		// Extract the numeric page ID from the M-ID
-		$pageId = (int)substr( $mid, 1 );
-		$result = $this->doFetchCommonsImageData( $pageId, $thumbWidth );
-
-		if ( is_array( $result ) ) {
-			$this->objectCache->set( $cacheKey, $result, MemcachedWrapper::TTL_DAY );
-		} elseif ( $result === self::FETCH_NOT_FOUND ) {
-			$this->objectCache->set( $cacheKey, $result, MemcachedWrapper::TTL_HOUR );
-		} else {
-			$this->objectCache->set( $cacheKey, self::FETCH_FAILED, MemcachedWrapper::TTL_MINUTE );
-		}
-
-		return $result;
+		return $results;
 	}
 
 	/**
@@ -196,21 +234,21 @@ class WikifunctionsFragmentImageRenderer {
 	}
 
 	/**
-	 * Make the HTTP request to the Commons API.
+	 * Make one HTTP request to the Commons API for several Commons pages.
 	 *
-	 * Uses imageinfo with iiurlwidth so the API computes the thumbnail URL directly.
+	 * Uses imageinfo with iiurlwidth so the API computes the thumbnail URLs directly.
 	 *
-	 * Returns a data array on success, FETCH_NOT_FOUND when the Commons page is missing or
-	 * is not a file, or null on a network/API error.
+	 * Returns, keyed by page ID, a data array on success or FETCH_NOT_FOUND when the Commons
+	 * page is missing or is not a file. Leaves out pages that have a network/API error.
 	 *
-	 * @param int $pageId Numeric Commons page ID
+	 * @param int[] $pageIds Numeric Commons page IDs, at most COMMONS_API_MAX_PAGE_IDS
 	 * @param int $thumbWidth Desired thumbnail width in pixels
-	 * @return array|string|null
+	 * @return array<int,array|string>
 	 */
-	private function doFetchCommonsImageData( int $pageId, int $thumbWidth ): array|string|null {
+	private function doFetchCommonsImageData( array $pageIds, int $thumbWidth ): array {
 		$url = wfAppendQuery( self::COMMONS_API_URL, [
 			'action' => 'query',
-			'pageids' => $pageId,
+			'pageids' => implode( '|', $pageIds ),
 			'prop' => 'imageinfo',
 			'iiprop' => 'url|size|mime',
 			'iiurlwidth' => $thumbWidth,
@@ -225,41 +263,46 @@ class WikifunctionsFragmentImageRenderer {
 
 		if ( !$status->isOK() ) {
 			$this->logger->warning( __METHOD__ . ': Commons API request failed', [
-				'pageId' => $pageId,
+				'pageIds' => implode( '|', $pageIds ),
 				'httpStatus' => $request->getStatus(),
 			] );
-			return null;
+			return [];
 		}
 
 		$response = json_decode( $request->getContent(), true );
 		if ( !is_array( $response ) ) {
-			return null;
+			return [];
 		}
 
-		$pages = $response['query']['pages'] ?? [];
-		if ( !$pages ) {
-			return null;
-		}
+		$results = [];
+		foreach ( $response['query']['pages'] ?? [] as $page ) {
+			$pageId = $page['pageid'] ?? null;
+			if ( !is_int( $pageId ) ) {
+				continue;
+			}
 
-		$page = reset( $pages );
-		if ( isset( $page['missing'] ) || isset( $page['invalid'] ) ) {
-			return self::FETCH_NOT_FOUND;
-		}
+			if ( isset( $page['missing'] ) || isset( $page['invalid'] ) ) {
+				$results[$pageId] = self::FETCH_NOT_FOUND;
+				continue;
+			}
 
-		// The page exists but is not a file, e.g. a gallery page
-		$imageinfo = $page['imageinfo'][0] ?? null;
-		if ( !$imageinfo ) {
-			return self::FETCH_NOT_FOUND;
-		}
+			// The page exists but is not a file, e.g. a gallery page
+			$imageinfo = $page['imageinfo'][0] ?? null;
+			if ( !$imageinfo ) {
+				$results[$pageId] = self::FETCH_NOT_FOUND;
+				continue;
+			}
 
-		return [
-			'title' => $page['title'] ?? '',
-			'descriptionUrl' => $imageinfo['descriptionurl'] ?? null,
-			'thumbUrl' => $imageinfo['thumburl'] ?? null,
-			'thumbWidth' => $imageinfo['thumbwidth'] ?? null,
-			'thumbHeight' => $imageinfo['thumbheight'] ?? null,
-			'mime' => $imageinfo['mime'] ?? '',
-		];
+			$results[$pageId] = [
+				'title' => $page['title'] ?? '',
+				'descriptionUrl' => $imageinfo['descriptionurl'] ?? null,
+				'thumbUrl' => $imageinfo['thumburl'] ?? null,
+				'thumbWidth' => $imageinfo['thumbwidth'] ?? null,
+				'thumbHeight' => $imageinfo['thumbheight'] ?? null,
+				'mime' => $imageinfo['mime'] ?? '',
+			];
+		}
+		return $results;
 	}
 
 	/**

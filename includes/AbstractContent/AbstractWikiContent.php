@@ -108,6 +108,44 @@ EOD;
 	}
 
 	/**
+	 * Get the Commons media IDs (M-IDs) of all the Z310/Commons media references
+	 * in the fragments of this article, at any depth.
+	 *
+	 * @return string[] Unique M-IDs, e.g. "M132324317", in first-seen order.
+	 */
+	public function getCommonsMediaIds(): array {
+		$mids = [];
+		foreach ( $this->getSections() ?? [] as $section ) {
+			$fragments = $section['fragments'] ?? null;
+			if ( is_array( $fragments ) ) {
+				self::collectCommonsMediaIds( $fragments, $mids );
+			}
+		}
+		return array_keys( $mids );
+	}
+
+	/**
+	 * Walk a ZObject and add the M-ID of each Z310/Commons media reference to the set.
+	 *
+	 * @param array $zobject
+	 * @param array<string,true> &$mids
+	 */
+	private static function collectCommonsMediaIds( array $zobject, array &$mids ): void {
+		if ( ( $zobject[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? null ) === ZTypeRegistry::Z_COMMONS_MEDIA_REFERENCE ) {
+			$mid = $zobject[ ZTypeRegistry::Z_COMMONS_MEDIA_REFERENCE_ID ] ?? null;
+			if ( is_string( $mid ) && preg_match( '/^M[1-9]\d*$/', $mid ) ) {
+				$mids[ $mid ] = true;
+			}
+			return;
+		}
+		foreach ( $zobject as $value ) {
+			if ( is_array( $value ) ) {
+				self::collectCommonsMediaIds( $value, $mids );
+			}
+		}
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function getTextForSearchIndex() {

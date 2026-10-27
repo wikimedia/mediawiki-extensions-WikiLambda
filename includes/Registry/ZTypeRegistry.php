@@ -202,6 +202,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_WIKIDATA_REFERENCE_LEXEME_SENSE
 	];
 
+	// Commons Media Reference Type:
+	public const Z_COMMONS_MEDIA_REFERENCE = 'Z310';
+	public const Z_COMMONS_MEDIA_REFERENCE_ID = 'Z310K1';
+
 	// Wikidata Entity Fetch Functions:
 	public const Z_WIKIDATA_FETCH_ITEM = 'Z6821';
 	public const Z_WIKIDATA_FETCH_ITEM_ID = 'Z6821K1';

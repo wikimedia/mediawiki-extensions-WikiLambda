@@ -23,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsClientStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsUsageStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentImageRenderer;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentRenderer;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -102,6 +103,13 @@ class WikiLambdaServices {
 	 */
 	public static function getPFragmentRenderer(): WikifunctionsFragmentRenderer {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaPFragmentRenderer' );
+	}
+
+	/**
+	 * @return WikifunctionsFragmentImageRenderer
+	 */
+	public static function getFragmentImageRenderer(): WikifunctionsFragmentImageRenderer {
+		return MediaWikiServices::getInstance()->getService( 'WikiLambdaFragmentImageRenderer' );
 	}
 
 	/**

@@ -23,10 +23,12 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentHistoryAction;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContentHandler;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentImageRenderer;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Page\Article;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Parser\ParserOutputLinkTypes;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
@@ -47,8 +49,13 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 
 	/**
 	 * @param string|null $modelId
+	 * @param WikifunctionsFragmentImageRenderer|null $imageRenderer When null, creates a
+	 *   mock that finds no Commons files.
 	 */
-	private function buildAbstractWikiContentHandler( ?string $modelId = null ): AbstractWikiContentHandler {
+	private function buildAbstractWikiContentHandler(
+		?string $modelId = null,
+		?WikifunctionsFragmentImageRenderer $imageRenderer = null
+	): AbstractWikiContentHandler {
 		$mockWikidataEntityLookup = $this->mockWikidataEntityLookup( [
 			'Q42' => [ 'en' => 'Douglas Adams' ],
 		] );
@@ -57,7 +64,8 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 			$this->getServiceContainer()->getMainConfig(),
 			$this->createNoOpMock( AWArticleStore::class ),
 			$mockWikidataEntityLookup,
-			$this->getServiceContainer()->getRevisionLookup()
+			$this->getServiceContainer()->getRevisionLookup(),
+			$imageRenderer ?? $this->createMock( WikifunctionsFragmentImageRenderer::class )
 		);
 	}
 
@@ -321,6 +329,63 @@ class AbstractWikiContentHandlerTest extends WikiLambdaAbstractModeIntegrationTe
 		$this->assertSame( 'en', $wikiLambdaVars['zlang'] );
 		$this->assertTrue( $wikiLambdaVars['viewmode'] );
 		$this->assertArrayHasKey( 'content', $wikiLambdaVars );
+	}
+
+	/**
+	 * @dataProvider provideGenerateHtml
+	 */
+	public function testFillParserOutput_recordsCommonsImages( bool $generateHtml ) {
+		$imageRenderer = $this->createMock( WikifunctionsFragmentImageRenderer::class );
+		$imageRenderer->expects( $this->once() )
+			->method( 'getFileNames' )
+			->with( [ 'M132324317', 'M3', 'M2' ] )
+			// M3 does not exist, or the Commons API request failed
+			->willReturn( [ 'M132324317' => 'BracCroatia sentinel 2 (cropped).jpg', 'M2' => 'Brac-Hafen.jpg' ] );
+		$handler = $this->buildAbstractWikiContentHandler( null, $imageRenderer );
+
+		$imageCall = static fn ( $mid ) => [
+			'Z1K1' => 'Z7',
+			'Z7K1' => 'Z36038',
+			'Z36038K1' => [ 'Z1K1' => 'Z310', 'Z310K1' => $mid ],
+			'Z36038K2' => 'alt text',
+		];
+		$jsonContent = json_encode( [
+			'qid' => 'Q42',
+			'sections' => [
+				'Q8776414' => [
+					'index' => 0,
+					'fragments' => [ 'Z89', $imageCall( 'M132324317' ), $imageCall( 'M3' ), $imageCall( 'M2' ) ],
+				],
+			],
+		] );
+		$content = $handler->makeContent( $jsonContent, null, CONTENT_MODEL_ABSTRACT );
+
+		$title = Title::newFromText( 'Q42', self::TEST_ABSTRACT_NS );
+
+		$params = $this->createMock( ContentParseParams::class );
+		$params->method( 'getGenerateHtml' )->willReturn( $generateHtml );
+		$params->method( 'getPage' )->willReturn( $title->toPageReference() );
+		$params->method( 'getParserOptions' )->willReturn( ParserOptions::newFromAnon() );
+
+		$output = new ParserOutput();
+
+		$this->runPrivateMethod( $handler, 'fillParserOutput', [ $content, $params, &$output ] );
+
+		// GlobalUsage reads the files from this list after the links update
+		$this->assertSame(
+			[ 'BracCroatia_sentinel_2_(cropped).jpg', 'Brac-Hafen.jpg' ],
+			array_map(
+				static fn ( $link ) => $link['link']->getDBkey(),
+				$output->getLinkList( ParserOutputLinkTypes::MEDIA )
+			)
+		);
+	}
+
+	public static function provideGenerateHtml() {
+		return [
+			'With HTML (page view)' => [ true ],
+			'Without HTML (links update)' => [ false ],
+		];
 	}
 
 	public function testGetSecondaryDataUpdates() {

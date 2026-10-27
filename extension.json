@@ -55,7 +55,8 @@
 				"MainConfig",
 				"AbstractWikiArticleStore",
 				"WikiLambdaWikidataEntityLookup",
-				"RevisionLookup"
+				"RevisionLookup",
+				"WikiLambdaFragmentImageRenderer"
 			]
 		}
 	},

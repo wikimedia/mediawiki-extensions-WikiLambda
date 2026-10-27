@@ -65,6 +65,67 @@ class AbstractWikiContentTest extends WikiLambdaAbstractModeIntegrationTestCase 
 	}
 
 	/**
+	 * @dataProvider provideGetCommonsMediaIds
+	 */
+	public function testGetCommonsMediaIds( array $sections, array $expected ) {
+		$testObject = new AbstractWikiContent( json_encode( [ 'qid' => 'Q922', 'sections' => $sections ] ) );
+		$this->assertSame( $expected, $testObject->getCommonsMediaIds() );
+	}
+
+	public static function provideGetCommonsMediaIds() {
+		$imageCall = static fn ( $mid ) => [
+			'Z1K1' => 'Z7',
+			'Z7K1' => 'Z36038',
+			'Z36038K1' => [ 'Z1K1' => 'Z310', 'Z310K1' => $mid ],
+			'Z36038K2' => 'alt text',
+		];
+
+		return [
+			'No sections' => [ [], [] ],
+			'Only the fragment type marker' => [
+				[ 'Q8776414' => [ 'index' => 0, 'fragments' => [ 'Z89' ] ] ],
+				[]
+			],
+			'Fragments without a Commons media reference' => [
+				[ 'Q8776414' => [ 'index' => 0, 'fragments' => [
+					'Z89',
+					[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z35672', 'Z35672K1' => [ 'Z1K1' => 'Z18', 'Z18K1' => 'Z825K2' ] ],
+				] ] ],
+				[]
+			],
+			'Reference as a function call argument' => [
+				[ 'Q8776414' => [ 'index' => 0, 'fragments' => [ 'Z89', $imageCall( 'M132324317' ) ] ] ],
+				[ 'M132324317' ]
+			],
+			'Deeply nested reference' => [
+				[ 'Q8776414' => [ 'index' => 0, 'fragments' => [
+					'Z89',
+					[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z10000', 'Z10000K1' => [ 'Z7', $imageCall( 'M2' ) ] ],
+				] ] ],
+				[ 'M2' ]
+			],
+			'Several sections, with duplicates, in first-seen order' => [
+				[
+					'Q8776414' => [ 'index' => 0, 'fragments' => [ 'Z89', $imageCall( 'M3' ), $imageCall( 'M1' ) ] ],
+					'Q1111111' => [ 'index' => 1, 'fragments' => [ 'Z89', $imageCall( 'M1' ), $imageCall( 'M2' ) ] ],
+				],
+				[ 'M3', 'M1', 'M2' ]
+			],
+			'Values that are not M-IDs are skipped' => [
+				[ 'Q8776414' => [ 'index' => 0, 'fragments' => [
+					'Z89',
+					$imageCall( '132324317' ),
+					$imageCall( 'Mabc' ),
+					$imageCall( 'M05' ),
+					$imageCall( [ 'Z1K1' => 'Z18', 'Z18K1' => 'Z825K1' ] ),
+					$imageCall( 'M5' ),
+				] ] ],
+				[ 'M5' ]
+			],
+		];
+	}
+
+	/**
 	 * @dataProvider provideIsEmpty
 	 */
 	public function testIsEmpty( string $jsonContent, bool $expectedEmpty ) {

@@ -55,18 +55,23 @@ return [
 		return WikiLambdaServices::buildMemcachedWrapper( $services );
 	},
 
-	'WikiLambdaPFragmentRenderer' => static function ( MediaWikiServices $services ): WikifunctionsFragmentRenderer {
-		$imageRenderer = new WikifunctionsFragmentImageRenderer(
+	'WikiLambdaFragmentImageRenderer' => static function (
+		MediaWikiServices $services
+	): WikifunctionsFragmentImageRenderer {
+		return new WikifunctionsFragmentImageRenderer(
 			LoggerFactory::getInstance( 'WikiLambda' ),
 			$services->getHttpRequestFactory(),
 			WikiLambdaServices::getMemcachedWrapper(),
 			$services->getBadFileLookup()
 		);
+	},
+
+	'WikiLambdaPFragmentRenderer' => static function ( MediaWikiServices $services ): WikifunctionsFragmentRenderer {
 		return new WikifunctionsFragmentRenderer(
 			LoggerFactory::getInstance( 'WikiLambda' ),
 			$services->getUserFactory(),
 			$services->getMainConfig(),
-			$imageRenderer
+			WikiLambdaServices::getFragmentImageRenderer()
 		);
 	},
 

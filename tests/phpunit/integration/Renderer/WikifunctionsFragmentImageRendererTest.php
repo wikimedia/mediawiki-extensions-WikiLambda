@@ -133,6 +133,23 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		return $cache;
 	}
 
+	/**
+	 * Build an imageinfo API page for a file, as the Commons API returns it.
+	 */
+	private static function makeApiPage( int $pageId, string $title ): array {
+		return [
+			'pageid' => $pageId,
+			'title' => $title,
+			'imageinfo' => [ [
+				'thumburl' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/x.jpg/250px-x.jpg',
+				'thumbwidth' => 250,
+				'thumbheight' => 188,
+				'descriptionurl' => 'https://commons.wikimedia.org/wiki/' . $title,
+				'mime' => 'image/jpeg',
+			] ],
+		];
+	}
+
 	// ------------------------------------------------------------------
 	// Input validation — authoring problems return warning figures
 	// ------------------------------------------------------------------
@@ -273,7 +290,7 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		$body = [
 			'query' => [
 				'pages' => [
-					[ 'missing' => true, 'title' => 'File:Does-not-exist.jpg' ]
+					[ 'pageid' => 99999999, 'missing' => true ]
 				]
 			]
 		];
@@ -535,5 +552,84 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 			->willReturn( $this->makeHttpRequest( self::VALID_API_RESPONSE ) );
 
 		$this->buildRenderer( $factory )->render( 'M68960758', 'thumb', null );
+	}
+
+	// ------------------------------------------------------------------
+	// File name lookup
+	// ------------------------------------------------------------------
+
+	public function testGetFileNames_validResponse() {
+		$renderer = $this->buildRenderer( $this->makeHttpFactory( self::VALID_API_RESPONSE ) );
+		$this->assertSame( [ 'M68960758' => 'Cat.jpg' ], $renderer->getFileNames( [ 'M68960758' ] ) );
+	}
+
+	public function testGetFileNames_invalidMids_doNotCallApi() {
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->never() )->method( 'create' );
+
+		$renderer = $this->buildRenderer( $factory );
+		$this->assertSame( [], $renderer->getFileNames( [ 'not-an-mid', '68960758' ] ) );
+	}
+
+	public function testGetFileNames_missingPage() {
+		$renderer = $this->buildRenderer( $this->makeHttpFactory( [
+			'query' => [ 'pages' => [ [ 'pageid' => 1, 'missing' => true ] ] ]
+		] ) );
+		$this->assertSame( [], $renderer->getFileNames( [ 'M1' ] ) );
+	}
+
+	public function testGetFileNames_apiError() {
+		$renderer = $this->buildRenderer( $this->makeHttpFactory( '', false ) );
+		$this->assertSame( [], $renderer->getFileNames( [ 'M68960758' ] ) );
+	}
+
+	public function testGetFileNames_oneRequestForTheUncachedMids() {
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->once() )
+			->method( 'create' )
+			->with( $this->callback( static fn ( string $url ) => str_contains( $url, 'pageids=1%7C3&' ) ) )
+			// The API does not return the pages in the order of the request.
+			->willReturn( $this->makeHttpRequest( [ 'query' => [ 'pages' => [
+				[ 'pageid' => 3, 'missing' => true ],
+				self::makeApiPage( 1, 'File:One.jpg' ),
+			] ] ] ) );
+
+		$cacheStore = [ 'WikiLambdaCommonsFileData:M2:thumb' => [ 'title' => 'File:Two.jpg' ] ];
+		$renderer = $this->buildRenderer( $factory, $this->makeInMemoryCache( $cacheStore ) );
+
+		$this->assertSame(
+			[ 'M2' => 'Two.jpg', 'M1' => 'One.jpg' ],
+			$renderer->getFileNames( [ 'M2', 'M1', 'M3' ] )
+		);
+	}
+
+	public function testGetFileNames_splitsRequestsAt50Mids() {
+		$requestedPageIdCounts = [];
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->exactly( 2 ) )
+			->method( 'create' )
+			->willReturnCallback( function ( string $url ) use ( &$requestedPageIdCounts ) {
+				parse_str( parse_url( $url, PHP_URL_QUERY ), $query );
+				$requestedPageIdCounts[] = count( explode( '|', $query['pageids'] ) );
+				return $this->makeHttpRequest( [ 'query' => [ 'pages' => [] ] ] );
+			} );
+
+		$mids = array_map( static fn ( $pageId ) => "M$pageId", range( 1, 51 ) );
+		$this->buildRenderer( $factory )->getFileNames( $mids );
+
+		$this->assertSame( [ 50, 1 ], $requestedPageIdCounts );
+	}
+
+	public function testGetFileNames_sharesCacheWithRender() {
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->once() )
+			->method( 'create' )
+			->willReturn( $this->makeHttpRequest( self::VALID_API_RESPONSE ) );
+
+		$cacheStore = [];
+		$renderer = $this->buildRenderer( $factory, $this->makeInMemoryCache( $cacheStore ) );
+		$this->assertSame( [ 'M68960758' => 'Cat.jpg' ], $renderer->getFileNames( [ 'M68960758' ] ) );
+		// The render must use the cached data, not make a new HTTP request.
+		$this->assertStringContainsString( '<img', $renderer->render( 'M68960758', 'thumb', null ) );
 	}
 }

@@ -22,6 +22,7 @@ use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\TextSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
+use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsFragmentImageRenderer;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -53,13 +54,15 @@ class AbstractWikiContentHandler extends ContentHandler {
 	 * @param AWArticleStore $articleStore
 	 * @param WikidataEntityLookup $entityLookup
 	 * @param RevisionLookup $revisionLookup
+	 * @param WikifunctionsFragmentImageRenderer $imageRenderer
 	 */
 	public function __construct(
 		$modelId,
 		private readonly Config $config,
 		private readonly AWArticleStore $articleStore,
 		private readonly WikidataEntityLookup $entityLookup,
-		private readonly RevisionLookup $revisionLookup
+		private readonly RevisionLookup $revisionLookup,
+		private readonly WikifunctionsFragmentImageRenderer $imageRenderer
 	) {
 		if ( $modelId !== CONTENT_MODEL_ABSTRACT ) {
 			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
@@ -276,6 +279,17 @@ class AbstractWikiContentHandler extends ContentHandler {
 			);
 			// Exit early, as the rest of the code relies on the stored content being ours.
 			return;
+		}
+
+		// (T428362) Record the Commons files that the article uses. The links update writes
+		// them to imagelinks, and GlobalUsage then shows this page under "File usage on other
+		// wikis" on Commons. Do this before the early return, as LinksUpdate asks for the
+		// non-HTML version.
+		foreach ( $this->imageRenderer->getFileNames( $content->getCommonsMediaIds() ) as $fileName ) {
+			$fileTitle = Title::makeTitleSafe( NS_FILE, $fileName );
+			if ( $fileTitle ) {
+				$parserOutput->addImage( $fileTitle->getDBkey() );
+			}
 		}
 
 		// Don't do further work if the requester doesn't want the HTML version generated.
