@@ -186,22 +186,19 @@ module.exports = function useMenuAction() {
 	 * @param {number} toIndex Position for the item
 	 */
 	function moveTo( keyPath, toIndex ) {
-		store.moveListItemByKeyPath( {
-			keyPath: keyPath.split( '.' ),
-			toIndex
-		} );
+		// A fragment also moves its preview hash, so that the preview shows the
+		// change at once instead of after the delayed rehash, and its highlight
+		// and selection, which hold the fragment keyPath.
+		if ( isAbstractFragment( keyPath ) ) {
+			store.moveFragmentAtKeyPath( keyPath, toIndex );
+		} else {
+			store.moveListItemByKeyPath( {
+				keyPath: keyPath.split( '.' ),
+				toIndex
+			} );
+		}
 
 		setDirtyKeyPath( keyPath );
-
-		// If fragments are moved, move the fragment keys for reflecting the change
-		// immediately in the preview; otherwise a change will be detected causing
-		// delayed re-hasing and update, but will come a couple seconds later.
-		// The highlight and the selection hold a fragment keyPath, so they must
-		// also follow the fragment to its new position.
-		if ( isAbstractFragment( keyPath ) ) {
-			store.moveHashAtKeyPath( keyPath, toIndex );
-			store.relocateHighlightAndSelectionForMove( keyPath, toIndex );
-		}
 	}
 
 	/**

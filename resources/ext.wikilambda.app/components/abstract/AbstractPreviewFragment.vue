@@ -174,8 +174,11 @@ module.exports = exports = defineComponent( {
 		// * immediate should be false, to not cause fragment-level requests on mount
 		//   or when requesting a new language; in thas case, it's the section-level
 		//   component who should make a block sectionr request for initialization.
+		// A fragment without a hash is new, and it has no content to render yet:
+		// it shows the missing state. A move of fragments can give this position
+		// such a fragment, and its render would only fail.
 		watch( fragmentPreview, ( newPreview ) => {
-			if ( newPreview.isBlank ) {
+			if ( newPreview.isBlank && props.fragmentHash ) {
 				retryPreview();
 			}
 		}, { deep: false, immediate: false } );

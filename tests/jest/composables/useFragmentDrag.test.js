@@ -21,6 +21,16 @@ describe( 'useFragmentDrag', () => {
 	let drag;
 	let wrapper;
 	let onDrop;
+	// Distance that the page scrolled down since the start of the test
+	let scrolled;
+
+	/**
+	 * Move a rectangle as the page scroll moves it in the viewport.
+	 *
+	 * @param {Object} rect
+	 * @return {Object}
+	 */
+	const shift = ( rect ) => Object.assign( {}, rect, { top: rect.top - scrolled } );
 
 	/**
 	 * Dispatch a pointer event on the window, as the browser does during a drag.
@@ -46,10 +56,11 @@ describe( 'useFragmentDrag', () => {
 	);
 
 	beforeEach( () => {
+		scrolled = 0;
 		onDrop = jest.fn();
 		const [ result, testWrapper ] = loadComposable( () => useFragmentDrag( {
-			getListRect: () => listRect,
-			getFragmentRects: () => fragmentRects,
+			getListRect: () => shift( listRect ),
+			getFragmentRects: () => fragmentRects.map( shift ),
 			onDrop
 		} ) );
 		drag = result;
@@ -92,6 +103,34 @@ describe( 'useFragmentDrag', () => {
 			expect( drag.draggedIndex.value ).toBeNull();
 		} );
 
+		it( 'does not let the pointer down start a text selection', () => {
+			const event = pointerDown( { preventDefault: jest.fn() } );
+			drag.startDrag( event, 1 );
+
+			expect( event.preventDefault ).toHaveBeenCalled();
+		} );
+
+		it( 'stops a text selection during the drag', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+
+			const event = new Event( 'selectstart', { bubbles: true, cancelable: true } );
+			document.body.dispatchEvent( event );
+
+			expect( event.defaultPrevented ).toBe( true );
+		} );
+
+		it( 'allows a text selection after the drag', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			firePointer( 'pointerup', { clientX: 50, clientY: 155 } );
+
+			const event = new Event( 'selectstart', { bubbles: true, cancelable: true } );
+			document.body.dispatchEvent( event );
+
+			expect( event.defaultPrevented ).toBe( false );
+		} );
+
 		it( 'ignores the moves of another pointer', () => {
 			drag.startDrag( pointerDown(), 1 );
 			firePointer( 'pointermove', { pointerId: 2, clientX: 50, clientY: 900 } );
@@ -123,6 +162,18 @@ describe( 'useFragmentDrag', () => {
 			// The pointer passed the middle of the first two fragments
 			expect( drag.insertionPoint.value ).toBe( 3 );
 			expect( drag.insertionOffset.value ).toBe( 40 );
+		} );
+
+		it( 'follows the page when it scrolls under the pointer', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 135 } );
+			expect( drag.insertionPoint.value ).toBe( 3 );
+
+			scrolled = 20;
+			window.dispatchEvent( new Event( 'scroll' ) );
+
+			// The fragments moved up under the pointer, which now passes all three
+			expect( drag.insertionPoint.value ).toBe( 4 );
 		} );
 	} );
 
@@ -229,6 +280,78 @@ describe( 'useFragmentDrag', () => {
 			firePointer( 'pointerup', { clientX: 50, clientY: 155 } );
 
 			expect( onDrop ).not.toHaveBeenCalled();
+		} );
+
+		it( 'keeps the Escape of a drag from the other listeners', () => {
+			const otherListener = jest.fn();
+			document.addEventListener( 'keydown', otherListener );
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+
+			const event = new Event( 'keydown', { bubbles: true, cancelable: true } );
+			event.key = 'Escape';
+			document.body.dispatchEvent( event );
+
+			expect( drag.isDragging.value ).toBe( false );
+			expect( otherListener ).not.toHaveBeenCalled();
+			document.removeEventListener( 'keydown', otherListener );
+		} );
+
+		it( 'lets the Escape through when the drag did not start', () => {
+			const otherListener = jest.fn();
+			document.addEventListener( 'keydown', otherListener );
+			drag.startDrag( pointerDown(), 1 );
+
+			const event = new Event( 'keydown', { bubbles: true, cancelable: true } );
+			event.key = 'Escape';
+			document.body.dispatchEvent( event );
+
+			expect( otherListener ).toHaveBeenCalledTimes( 1 );
+			document.removeEventListener( 'keydown', otherListener );
+		} );
+	} );
+
+	describe( 'the click after the drop', () => {
+		let clickListener;
+
+		beforeEach( () => {
+			clickListener = jest.fn();
+			document.body.addEventListener( 'click', clickListener );
+		} );
+
+		afterEach( () => {
+			document.body.removeEventListener( 'click', clickListener );
+		} );
+
+		const click = () => document.body.dispatchEvent( new Event( 'click', { bubbles: true, cancelable: true } ) );
+
+		it( 'swallows the click that follows the drop', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			firePointer( 'pointerup', { clientX: 50, clientY: 155 } );
+			click();
+
+			expect( clickListener ).not.toHaveBeenCalled();
+		} );
+
+		it( 'keeps a later click', async () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			firePointer( 'pointerup', { clientX: 50, clientY: 155 } );
+			await new Promise( ( resolve ) => {
+				setTimeout( resolve );
+			} );
+			click();
+
+			expect( clickListener ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'keeps the click on the drag handle when the drag did not start', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointerup', { clientX: 50, clientY: 110 } );
+			click();
+
+			expect( clickListener ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );

@@ -18,7 +18,7 @@
 		@pointerleave="unsetHighlight"
 		@focusin="onFocusIn"
 		@focusout="unsetHighlight"
-		@click="onClick"
+		@click="selectFragment"
 	>
 		<!-- The drag handle needs no accessible name: the actions menu gives the
 		same moves to the keyboard, and a second control adds no function -->
@@ -94,7 +94,7 @@ module.exports = exports = defineComponent( {
 		},
 		/**
 		 * Whether the user drags a fragment of this section. The pointer
-		 * follows the drag, so it must not highlight or select a fragment.
+		 * follows the drag, so it must not highlight a fragment.
 		 */
 		dragging: {
 			type: Boolean,
@@ -266,17 +266,6 @@ module.exports = exports = defineComponent( {
 			selectFragment();
 		}
 
-		/**
-		 * Select the fragment on a click. A drag ends with a pointer up, which
-		 * also gives a click, so a drag must not select a fragment.
-		 */
-		function onClick() {
-			if ( props.dragging ) {
-				return;
-			}
-			selectFragment();
-		}
-
 		// Fragment hashing
 		// ================
 
@@ -306,9 +295,9 @@ module.exports = exports = defineComponent( {
 			iconDrag,
 			isHighlighted,
 			isSelected,
-			onClick,
 			onFocusIn,
 			rootRef,
+			selectFragment,
 			setHighlight,
 			unsetHighlight,
 			htmlFragmentType,

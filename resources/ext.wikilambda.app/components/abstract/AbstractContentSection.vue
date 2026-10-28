@@ -14,12 +14,17 @@
 		</div>
 		<!-- Section fragments -->
 		<div ref="listRef" class="ext-wikilambda-app-abstract-content-section-fragments">
-			<template v-for="( fragment, index ) in section.fragments">
+			<!-- The key must be on the template: then a fragment component moves
+			with its fragment. A key on the inner element makes Vue compare the
+			list by position, so a move would remount the moved fragments. -->
+			<template
+				v-for="( fragment, index ) in section.fragments"
+				:key="getListItemKey( fragment, index )"
+			>
 				<!-- TODO: we should probably remove the benjamin item from the
 				fragments list, then we can remove the v-if and wrapper template -->
 				<wl-abstract-content-fragment
 					v-if="index !== 0"
-					:key="getListItemKey( fragment, index )"
 					class="ext-wikilambda-app-abstract-content-section-fragment"
 					:edit="edit"
 					:key-path="`${ section.fragmentsPath }.${ index }`"
@@ -61,7 +66,7 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, ref } = require( 'vue' );
+const { computed, defineComponent, inject, nextTick, ref } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useEventLog = require( '../../composables/useEventLog.js' );
@@ -259,12 +264,12 @@ module.exports = exports = defineComponent( {
 			}
 
 			if ( payload.action === Constants.LIST_MENU_OPTIONS.MOVE_BEFORE ) {
-				moveBefore( itemKeyPath );
+				keepFocus( () => moveBefore( itemKeyPath ) );
 				return;
 			}
 
 			if ( payload.action === Constants.LIST_MENU_OPTIONS.MOVE_AFTER ) {
-				moveAfter( itemKeyPath );
+				keepFocus( () => moveAfter( itemKeyPath ) );
 				return;
 			}
 
@@ -351,6 +356,27 @@ module.exports = exports = defineComponent( {
 				moveTo( `${ props.section.fragmentsPath }.${ fragmentIndex }`, targetIndex );
 			}
 		} );
+
+		/**
+		 * Move a fragment with the actions menu and keep the focus. Vue moves
+		 * the node of the fragment to its new place, and the browser takes the
+		 * focus away from a node that moves, so give it back to the element
+		 * that had it.
+		 *
+		 * @param {Function} move
+		 */
+		function keepFocus( move ) {
+			const focused = document.activeElement;
+			move();
+			nextTick( () => {
+				if (
+					focused && focused !== document.body &&
+					focused.isConnected && document.activeElement !== focused
+				) {
+					focused.focus();
+				}
+			} );
+		}
 
 		// Fragment hashing
 		// ================

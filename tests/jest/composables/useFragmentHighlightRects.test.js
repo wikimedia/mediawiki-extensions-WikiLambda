@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const { ref } = require( 'vue' );
+const { ref, watch } = require( 'vue' );
 const { waitFor } = require( '@testing-library/vue' );
 
 const loadComposable = require( '../helpers/loadComposable.js' );
@@ -99,6 +99,32 @@ describe( 'useFragmentHighlightRects', () => {
 		} );
 		expect( range.setStartBefore ).toHaveBeenCalledWith( first );
 		expect( range.setEndAfter ).toHaveBeenCalledWith( last );
+	} );
+
+	it( 'measures after the preview registers the nodes of a moved fragment again', async () => {
+		const containerRef = ref( {
+			getBoundingClientRect: () => ( { top: 0, left: 0 } )
+		} );
+		const highlightedKeyPath = ref( undefined );
+		// After a move, the old nodes are out of the document, and the preview
+		// gives the new nodes only in a later post-flush watcher
+		let nodes = [ { nodeType: 1, isConnected: false } ];
+		const getFragmentNodes = () => nodes;
+		mockRangeRects( [ rect( 30, 50, 80, 20 ) ] );
+
+		const [ result ] = loadComposable( () => {
+			const composable = useFragmentHighlightRects( containerRef, highlightedKeyPath, getFragmentNodes );
+			watch( highlightedKeyPath, () => {
+				nodes = [ connectedNode() ];
+			}, { flush: 'post' } );
+			return composable;
+		} );
+
+		highlightedKeyPath.value = 'section.1';
+
+		await waitFor( () => {
+			expect( result.rects.value ).toHaveLength( 1 );
+		} );
 	} );
 
 	it( 'joins the text and the links of one line into a single rect', async () => {

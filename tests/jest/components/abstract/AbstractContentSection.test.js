@@ -33,7 +33,7 @@ describe( 'AbstractContentSection', () => {
 	let mockMenuActions;
 	let store;
 
-	function renderSection( props = {} ) {
+	function renderSection( props = {}, mountOptions = {} ) {
 		return shallowMount( AbstractContentSection, {
 			props: {
 				section,
@@ -49,7 +49,8 @@ describe( 'AbstractContentSection', () => {
 					'cdx-menu-button': true,
 					'cdx-icon': true
 				}
-			}
+			},
+			...mountOptions
 		} );
 	}
 
@@ -419,6 +420,49 @@ describe( 'AbstractContentSection', () => {
 			firePointer( 'pointerup', { clientX: 50, clientY: 115 } );
 
 			expect( mockMenuActions.moveTo ).not.toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'moving fragments', () => {
+		const fragmentA = JSON.parse( JSON.stringify( fragmentCall ) );
+		const fragmentB = JSON.parse( JSON.stringify( fragmentCall ) );
+
+		it( 'keeps the fragment components when the fragments move', async () => {
+			const wrapper = renderSection( {
+				section: Object.assign( {}, section, { fragments: [ benjaminType, fragmentA, fragmentB ] } )
+			} );
+			const before = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } )
+				.map( ( fragment ) => fragment.vm );
+
+			await wrapper.setProps( {
+				section: Object.assign( {}, section, { fragments: [ benjaminType, fragmentB, fragmentA ] } )
+			} );
+
+			// The components move with their fragments: Vue does not destroy and recreate them
+			const after = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } )
+				.map( ( fragment ) => fragment.vm );
+			expect( after[ 0 ] ).toBe( before[ 1 ] );
+			expect( after[ 1 ] ).toBe( before[ 0 ] );
+		} );
+
+		it( 'gives the focus back after a move with the actions menu', async () => {
+			const button = document.createElement( 'button' );
+			// The browser takes the focus away from a node that moves
+			mockMenuActions.moveBefore = jest.fn( () => button.blur() );
+			const wrapper = renderSection( {
+				section: Object.assign( {}, section, { fragments: [ benjaminType, fragmentA, fragmentB ] } )
+			}, { attachTo: document.body } );
+			const rows = wrapper.vm.listRef.querySelectorAll( '.ext-wikilambda-app-abstract-content-section-fragment' );
+			rows[ 1 ].appendChild( button );
+			button.focus();
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 1 ].vm.$emit( 'action', { action: Constants.LIST_MENU_OPTIONS.MOVE_BEFORE } );
+			await wrapper.vm.$nextTick();
+
+			expect( mockMenuActions.moveBefore ).toHaveBeenCalledWith( `${ section.fragmentsPath }.2` );
+			expect( document.activeElement ).toBe( button );
+			wrapper.unmount();
 		} );
 	} );
 

@@ -461,21 +461,6 @@ describe( 'AbstractContentFragment', () => {
 			expect( store.setHighlightedFragment ).not.toHaveBeenCalled();
 		} );
 
-		it( 'does not select a fragment on the click that ends a drag', async () => {
-			const wrapper = renderFragment( { dragging: true } );
-
-			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).trigger( 'click' );
-
-			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
-		} );
-
-		it( 'selects a fragment on a click outside a drag', async () => {
-			const wrapper = renderFragment();
-
-			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).trigger( 'click' );
-
-			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
-		} );
 	} );
 
 } );

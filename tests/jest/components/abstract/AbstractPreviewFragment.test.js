@@ -87,6 +87,32 @@ describe( 'AbstractPreviewFragment', () => {
 		expect( retryButton.exists() ).toBe( true );
 	} );
 
+	it( 'requests a preview when the fragment changes to a hash without a preview', async () => {
+		store.getFragmentPreview = jest.fn( ( hash ) => ( hash === fragmentHash ?
+			{ isLoading: false, isPending: false, hasError: false, html: '<p>Text</p>' } :
+			undefined
+		) );
+		wrapper = renderFragment();
+
+		await wrapper.setProps( { fragmentHash: 'someother#' } );
+
+		expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
+	} );
+
+	it( 'does not request a preview when the fragment changes to one without a hash', async () => {
+		store.getFragmentPreview = jest.fn( ( hash ) => ( hash === fragmentHash ?
+			{ isLoading: false, isPending: false, hasError: false, html: '<p>Text</p>' } :
+			undefined
+		) );
+		wrapper = renderFragment();
+
+		// A move gave this position a new fragment, which has no hash yet
+		await wrapper.setProps( { fragmentHash: null } );
+
+		expect( wrapper.emitted( 'retry' ) ).toBeUndefined();
+		expect( wrapper.text() ).toContain( 'Missing' );
+	} );
+
 	it( 'emits retry when retry button is clicked on missing fragmen', async () => {
 		wrapper = renderFragment();
 		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );

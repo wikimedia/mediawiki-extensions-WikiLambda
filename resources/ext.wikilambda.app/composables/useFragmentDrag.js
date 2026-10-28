@@ -59,6 +59,8 @@ module.exports = function useFragmentDrag( options ) {
 	// Position of the pointer down, to measure the distance for the threshold
 	let origin = null;
 	let pointerId = null;
+	// Last position of the pointer during the drag, to update after a scroll
+	let pointer = null;
 
 	// Distance from the top of the list to the line that shows the target
 	const insertionOffset = computed( () => getInsertionOffset(
@@ -66,6 +68,35 @@ module.exports = function useFragmentDrag( options ) {
 		getListRect(),
 		getFragmentRects()
 	) );
+
+	/**
+	 * Update the target position for the last pointer position. The pointer
+	 * can stay in place while the page scrolls under it, so a scroll also
+	 * calls this.
+	 *
+	 * @return {undefined}
+	 */
+	function update() {
+		insertionPoint.value = getInsertionPoint( pointer, getListRect(), getFragmentRects() );
+	}
+
+	/**
+	 * Swallow the click that the browser gives after the pointer up of a drag.
+	 * Without this, the click selects the fragment under the pointer. The
+	 * listener goes away after this task, so it cannot swallow a later click.
+	 *
+	 * @return {undefined}
+	 */
+	function suppressClick() {
+		const swallow = ( event ) => {
+			event.stopPropagation();
+			event.preventDefault();
+		};
+		window.addEventListener( 'click', swallow, { capture: true, once: true } );
+		setTimeout( () => {
+			window.removeEventListener( 'click', swallow, { capture: true } );
+		} );
+	}
 
 	/**
 	 * Stop listening for the pointer and clear the state of the drag.
@@ -76,13 +107,16 @@ module.exports = function useFragmentDrag( options ) {
 		window.removeEventListener( 'pointermove', onPointerMove );
 		window.removeEventListener( 'pointerup', onPointerUp );
 		window.removeEventListener( 'pointercancel', onPointerCancel );
-		window.removeEventListener( 'keydown', onKeyDown );
+		window.removeEventListener( 'keydown', onKeyDown, { capture: true } );
+		window.removeEventListener( 'scroll', onScroll );
+		window.removeEventListener( 'selectstart', onSelectStart );
 
 		draggedIndex.value = null;
 		insertionPoint.value = null;
 		isDragging.value = false;
 		origin = null;
 		pointerId = null;
+		pointer = null;
 	}
 
 	/**
@@ -106,10 +140,10 @@ module.exports = function useFragmentDrag( options ) {
 			return;
 		}
 
-		const pointer = { x: event.clientX, y: event.clientY };
+		const position = { x: event.clientX, y: event.clientY };
 
 		if ( !isDragging.value ) {
-			if ( !passesDragThreshold( origin, pointer ) ) {
+			if ( !passesDragThreshold( origin, position ) ) {
 				return;
 			}
 			isDragging.value = true;
@@ -117,7 +151,8 @@ module.exports = function useFragmentDrag( options ) {
 
 		// The pointer must not select the text of the fragments during a drag
 		event.preventDefault();
-		insertionPoint.value = getInsertionPoint( pointer, getListRect(), getFragmentRects() );
+		pointer = position;
+		update();
 	}
 
 	/**
@@ -134,12 +169,17 @@ module.exports = function useFragmentDrag( options ) {
 
 		const fragmentIndex = draggedIndex.value;
 		const target = insertionPoint.value;
+		const dragged = isDragging.value;
 
-		if ( isDragging.value && target !== null && changesOrder( target, fragmentIndex ) ) {
+		if ( dragged && target !== null && changesOrder( target, fragmentIndex ) ) {
 			onDrop( fragmentIndex, getTargetIndex( target, fragmentIndex ) );
 		}
 
 		endDrag();
+
+		if ( dragged ) {
+			suppressClick();
+		}
 	}
 
 	/**
@@ -157,14 +197,42 @@ module.exports = function useFragmentDrag( options ) {
 	}
 
 	/**
-	 * Stop the drag when the user presses Escape.
+	 * Stop the drag when the user presses Escape. The listener runs in the
+	 * capture phase, so the Escape stops here during a drag: it must not
+	 * also clear the fragment selection, which listens on the document.
 	 *
 	 * @param {KeyboardEvent} event
 	 * @return {undefined}
 	 */
 	function onKeyDown( event ) {
-		if ( event.key === 'Escape' ) {
-			cancelDrag();
+		if ( event.key !== 'Escape' ) {
+			return;
+		}
+		if ( isDragging.value ) {
+			event.stopPropagation();
+		}
+		cancelDrag();
+	}
+
+	/**
+	 * Stop a text selection while the pointer drags: the pointer moves over
+	 * text, and it must not select it.
+	 *
+	 * @param {Event} event
+	 * @return {undefined}
+	 */
+	function onSelectStart( event ) {
+		event.preventDefault();
+	}
+
+	/**
+	 * Follow the page when it scrolls during a drag.
+	 *
+	 * @return {undefined}
+	 */
+	function onScroll() {
+		if ( isDragging.value && pointer ) {
+			update();
 		}
 	}
 
@@ -184,6 +252,12 @@ module.exports = function useFragmentDrag( options ) {
 
 		endDrag();
 
+		// The pointer down on the drag handle must not start a text selection
+		// that grows as the pointer moves. A click on the handle stays a click.
+		if ( typeof event.preventDefault === 'function' ) {
+			event.preventDefault();
+		}
+
 		origin = { x: event.clientX, y: event.clientY };
 		pointerId = event.pointerId === undefined ? null : event.pointerId;
 		draggedIndex.value = fragmentIndex;
@@ -191,7 +265,9 @@ module.exports = function useFragmentDrag( options ) {
 		window.addEventListener( 'pointermove', onPointerMove );
 		window.addEventListener( 'pointerup', onPointerUp );
 		window.addEventListener( 'pointercancel', onPointerCancel );
-		window.addEventListener( 'keydown', onKeyDown );
+		window.addEventListener( 'keydown', onKeyDown, { capture: true } );
+		window.addEventListener( 'scroll', onScroll, { passive: true } );
+		window.addEventListener( 'selectstart', onSelectStart );
 	}
 
 	// A component that goes away during a drag must not leave the listeners

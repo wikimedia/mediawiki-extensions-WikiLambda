@@ -1977,7 +1977,7 @@ describe( 'zobject Pinia store', () => {
 				expect( () => {
 					store.moveListItemByKeyPath( {
 						keyPath: [ 'main', 'Z2K3', 'does', 'not', 'exist' ],
-						offset: 1
+						toIndex: 2
 					} );
 				} ).toThrowError();
 			} );
@@ -1986,7 +1986,7 @@ describe( 'zobject Pinia store', () => {
 				expect( () => {
 					store.moveListItemByKeyPath( {
 						keyPath: [ 'main', 'Z2K1' ],
-						offset: 1
+						toIndex: 2
 					} );
 				} ).toThrowError( 'Unable to mutate state: Expected Array at key path, found object' );
 			} );
@@ -1995,7 +1995,7 @@ describe( 'zobject Pinia store', () => {
 				expect( () => {
 					store.moveListItemByKeyPath( {
 						keyPath: [ 'main', 'Z2K2', 'bad index' ],
-						offset: 1
+						toIndex: 2
 					} );
 				} ).toThrowError( 'Unable to mutate state: Invalid array index: "bad index"' );
 			} );
@@ -2004,7 +2004,7 @@ describe( 'zobject Pinia store', () => {
 				expect( () => {
 					store.moveListItemByKeyPath( {
 						keyPath: [ 'main', 'Z2K2', 4 ],
-						offset: 1
+						toIndex: 5
 					} );
 				} ).toThrowError( 'Unable to mutate state: New index "5" out of bounds' );
 			} );
@@ -2013,7 +2013,7 @@ describe( 'zobject Pinia store', () => {
 				expect( () => {
 					store.moveListItemByKeyPath( {
 						keyPath: [ 'main', 'Z2K2', 1 ],
-						offset: -2
+						toIndex: -1
 					} );
 				} ).toThrowError( 'Unable to mutate state: New index "-1" out of bounds' );
 			} );
@@ -2022,7 +2022,7 @@ describe( 'zobject Pinia store', () => {
 				expect( () => {
 					store.moveListItemByKeyPath( {
 						keyPath: [ 'main', 'Z2K2', 0 ],
-						offset: 1
+						toIndex: 2
 					} );
 				} ).toThrowError( 'Unable to mutate state: Invalid array index: "0"' );
 			} );
@@ -2039,7 +2039,7 @@ describe( 'zobject Pinia store', () => {
 			it( 'moves an item one position forward', () => {
 				store.moveListItemByKeyPath( {
 					keyPath: [ 'main', 'Z2K2', 1 ],
-					offset: 1
+					toIndex: 2
 				} );
 
 				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
@@ -2049,7 +2049,7 @@ describe( 'zobject Pinia store', () => {
 			it( 'moves an item one position back', () => {
 				store.moveListItemByKeyPath( {
 					keyPath: [ 'main', 'Z2K2', 4 ],
-					offset: -1
+					toIndex: 3
 				} );
 
 				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
@@ -2086,17 +2086,6 @@ describe( 'zobject Pinia store', () => {
 				expect( canonical ).toEqual( [ 'Z1', 'una', 'dola', 'tela', 'catola' ] );
 			} );
 
-			it( 'gives precedence to the absolute index over the offset', () => {
-				store.moveListItemByKeyPath( {
-					keyPath: [ 'main', 'Z2K2', 1 ],
-					offset: 1,
-					toIndex: 4
-				} );
-
-				const canonical = hybridToCanonical( store.jsonObject.main.Z2K2 );
-				expect( canonical ).toEqual( [ 'Z1', 'dola', 'tela', 'catola', 'una' ] );
-			} );
-
 			it( 'throws error when the absolute index is out of bounds', () => {
 				expect( () => {
 					store.moveListItemByKeyPath( {
@@ -2112,7 +2101,7 @@ describe( 'zobject Pinia store', () => {
 						keyPath: [ 'main', 'Z2K2', 1 ],
 						toIndex: 'bad index'
 					} );
-				} ).toThrowError( 'Unable to mutate state: New index "NaN" out of bounds' );
+				} ).toThrowError( 'Unable to mutate state: New index "bad index" out of bounds' );
 			} );
 
 			it( 'relocates field errors across a multi-position move', () => {
@@ -2145,123 +2134,13 @@ describe( 'zobject Pinia store', () => {
 
 				store.moveListItemByKeyPath( {
 					keyPath: [ 'main', 'Z2K2', 1 ],
-					offset: 1
+					toIndex: 2
 				} );
 
 				// 'una' moved to index 2 and 'dola' to index 1; their errors followed
 				expect( store.errors ).toEqual( {
 					'main.Z2K2.2': [ 'error-for-una' ],
 					'main.Z2K2.1': [ 'error-for-dola' ]
-				} );
-			} );
-		} );
-
-		describe( 'moveListItemAcrossListsByKeyPath', () => {
-			beforeEach( () => {
-				store.jsonObject.main = canonicalToHybrid( {
-					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z123' },
-					Z2K2: {
-						Z1K1: 'Z7',
-						K1: [ 'Z6', 'una', 'dola' ],
-						K2: [ 'Z6', 'tela', 'catola' ]
-					}
-				} );
-			} );
-
-			it( 'moves an item to a position in another list', () => {
-				store.moveListItemAcrossListsByKeyPath( {
-					fromKeyPath: [ 'main', 'Z2K2', 'K1', 1 ],
-					toKeyPath: [ 'main', 'Z2K2', 'K2', 1 ]
-				} );
-
-				expect( hybridToCanonical( store.jsonObject.main.Z2K2.K1 ) ).toEqual( [ 'Z6', 'dola' ] );
-				expect( hybridToCanonical( store.jsonObject.main.Z2K2.K2 ) )
-					.toEqual( [ 'Z6', 'una', 'tela', 'catola' ] );
-			} );
-
-			it( 'appends an item when the target position is the length of the target list', () => {
-				store.moveListItemAcrossListsByKeyPath( {
-					fromKeyPath: [ 'main', 'Z2K2', 'K1', 2 ],
-					toKeyPath: [ 'main', 'Z2K2', 'K2', 3 ]
-				} );
-
-				expect( hybridToCanonical( store.jsonObject.main.Z2K2.K1 ) ).toEqual( [ 'Z6', 'una' ] );
-				expect( hybridToCanonical( store.jsonObject.main.Z2K2.K2 ) )
-					.toEqual( [ 'Z6', 'tela', 'catola', 'dola' ] );
-			} );
-
-			it( 'throws error when both key paths belong to the same list', () => {
-				expect( () => {
-					store.moveListItemAcrossListsByKeyPath( {
-						fromKeyPath: [ 'main', 'Z2K2', 'K1', 1 ],
-						toKeyPath: [ 'main', 'Z2K2', 'K1', 2 ]
-					} );
-				} ).toThrowError( 'Unable to mutate state: Both key paths belong to the same list' );
-			} );
-
-			it( 'throws error when the source key path is not an item in an array', () => {
-				expect( () => {
-					store.moveListItemAcrossListsByKeyPath( {
-						fromKeyPath: [ 'main', 'Z2K1' ],
-						toKeyPath: [ 'main', 'Z2K2', 'K2', 1 ]
-					} );
-				} ).toThrowError( 'Unable to mutate state: Expected Array at key path, found object' );
-			} );
-
-			it( 'throws error when the target key path is not an item in an array', () => {
-				expect( () => {
-					store.moveListItemAcrossListsByKeyPath( {
-						fromKeyPath: [ 'main', 'Z2K2', 'K1', 1 ],
-						toKeyPath: [ 'main', 'Z2K1' ]
-					} );
-				} ).toThrowError( 'Unable to mutate state: Expected Array at key path, found object' );
-			} );
-
-			it( 'throws error when the item to move is the list type item', () => {
-				expect( () => {
-					store.moveListItemAcrossListsByKeyPath( {
-						fromKeyPath: [ 'main', 'Z2K2', 'K1', 0 ],
-						toKeyPath: [ 'main', 'Z2K2', 'K2', 1 ]
-					} );
-				} ).toThrowError( 'Unable to mutate state: Invalid array index: "0"' );
-			} );
-
-			it( 'throws error when the target position is the list type position', () => {
-				expect( () => {
-					store.moveListItemAcrossListsByKeyPath( {
-						fromKeyPath: [ 'main', 'Z2K2', 'K1', 1 ],
-						toKeyPath: [ 'main', 'Z2K2', 'K2', 0 ]
-					} );
-				} ).toThrowError( 'Unable to mutate state: Invalid array index: "0"' );
-			} );
-
-			it( 'throws error when the target position is past the end of the target list', () => {
-				expect( () => {
-					store.moveListItemAcrossListsByKeyPath( {
-						fromKeyPath: [ 'main', 'Z2K2', 'K1', 1 ],
-						toKeyPath: [ 'main', 'Z2K2', 'K2', 4 ]
-					} );
-				} ).toThrowError( 'Unable to mutate state: Invalid array index: "4"' );
-			} );
-
-			it( 'relocates field errors so they follow the moved item to the target list', () => {
-				store.errors = {
-					'main.Z2K2.K1.1': [ 'error-for-una' ],
-					'main.Z2K2.K1.2': [ 'error-for-dola' ],
-					'main.Z2K2.K2.1': [ 'error-for-tela' ]
-				};
-
-				store.moveListItemAcrossListsByKeyPath( {
-					fromKeyPath: [ 'main', 'Z2K2', 'K1', 1 ],
-					toKeyPath: [ 'main', 'Z2K2', 'K2', 1 ]
-				} );
-
-				// 'una' took the first position of K2; 'dola' moved down in K1
-				// and 'tela' moved up in K2
-				expect( store.errors ).toEqual( {
-					'main.Z2K2.K2.1': [ 'error-for-una' ],
-					'main.Z2K2.K1.1': [ 'error-for-dola' ],
-					'main.Z2K2.K2.2': [ 'error-for-tela' ]
 				} );
 			} );
 		} );

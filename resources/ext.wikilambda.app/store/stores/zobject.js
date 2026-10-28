@@ -609,20 +609,16 @@ const zobjectStore = {
 		},
 
 		/**
-		 * Moves an item in a typed list to a new position.
-		 * Use `offset` to move the item a relative distance.
-		 * Use `toIndex` to move the item to an absolute position.
-		 * `toIndex` has precedence over `offset`.
+		 * Moves an item in a typed list to a new position in the same list.
 		 * The first item in a typed list holds the list type.
 		 * The item to move and its new position must not be the first item.
 		 *
 		 * @param {Object} payload
 		 * @param {Array} payload.keyPath
-		 * @param {number} [payload.offset]
-		 * @param {number} [payload.toIndex]
+		 * @param {number} payload.toIndex Position for the item
 		 */
 		moveListItemByKeyPath: function ( payload ) {
-			const { keyPath, offset, toIndex } = payload;
+			const { keyPath, toIndex } = payload;
 			const { target, finalKey } = resolveZObjectByKeyPath( this.jsonObject, keyPath );
 
 			if ( !Array.isArray( target ) ) {
@@ -634,9 +630,9 @@ const zobjectStore = {
 				throw new Error( `Unable to mutate state: Invalid array index: "${ finalKey }"` );
 			}
 
-			const newIndex = ( toIndex === undefined ) ? index + offset : Number( toIndex );
+			const newIndex = Number( toIndex );
 			if ( !Number.isInteger( newIndex ) || newIndex < 1 || newIndex >= target.length ) {
-				throw new Error( `Unable to mutate state: New index "${ newIndex }" out of bounds` );
+				throw new Error( `Unable to mutate state: New index "${ toIndex }" out of bounds` );
 			}
 
 			// Relocate any field errors so they follow the moved item's new position
@@ -645,62 +641,6 @@ const zobjectStore = {
 			// Perform mutation:
 			const [ item ] = target.splice( index, 1 );
 			target.splice( newIndex, 0, item );
-		},
-
-		/**
-		 * Moves an item from one typed list to a position in a different
-		 * typed list. Both lists must hold the same item type.
-		 *
-		 * `fromKeyPath` points to the item to move.
-		 * `toKeyPath` points to the position for the item in the target list.
-		 * The item goes before the item that holds that position. To put the
-		 * item at the end of the target list, give the length of that list.
-		 *
-		 * The first item in a typed list holds the list type, so neither
-		 * position must be the first item.
-		 *
-		 * Use `moveListItemByKeyPath` to move an item inside one list.
-		 *
-		 * @param {Object} payload
-		 * @param {Array} payload.fromKeyPath
-		 * @param {Array} payload.toKeyPath
-		 */
-		moveListItemAcrossListsByKeyPath: function ( payload ) {
-			const { fromKeyPath, toKeyPath } = payload;
-			const source = resolveZObjectByKeyPath( this.jsonObject, fromKeyPath );
-			const destination = resolveZObjectByKeyPath( this.jsonObject, toKeyPath );
-
-			if ( !Array.isArray( source.target ) ) {
-				throw new Error(
-					`Unable to mutate state: Expected Array at key path, found ${ typeof source.target }` );
-			}
-
-			if ( !Array.isArray( destination.target ) ) {
-				throw new Error(
-					`Unable to mutate state: Expected Array at key path, found ${ typeof destination.target }` );
-			}
-
-			if ( source.target === destination.target ) {
-				throw new Error( 'Unable to mutate state: Both key paths belong to the same list' );
-			}
-
-			const fromIndex = Number( source.finalKey );
-			if ( !Number.isInteger( fromIndex ) || fromIndex < 1 || fromIndex >= source.target.length ) {
-				throw new Error( `Unable to mutate state: Invalid array index: "${ source.finalKey }"` );
-			}
-
-			// The target position can be the length of the list, to append the item
-			const toIndex = Number( destination.finalKey );
-			if ( !Number.isInteger( toIndex ) || toIndex < 1 || toIndex > destination.target.length ) {
-				throw new Error( `Unable to mutate state: Invalid array index: "${ destination.finalKey }"` );
-			}
-
-			// Relocate any field errors so they follow the moved item to the target list
-			this.relocateErrorsForListTransfer( fromKeyPath, toKeyPath );
-
-			// Perform mutation:
-			const [ item ] = source.target.splice( fromIndex, 1 );
-			destination.target.splice( toIndex, 0, item );
 		},
 
 		/**

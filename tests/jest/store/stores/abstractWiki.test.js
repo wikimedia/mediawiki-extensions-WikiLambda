@@ -2014,15 +2014,22 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.sectionHashes.Q101 ).toBeUndefined();
 			} );
 
-			it( 'does nothing if the new position is out of bounds', () => {
+			it( 'pads the hashes when the new position has no hash yet', () => {
 				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
 				store.moveHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 3 );
-				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2' ] );
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash2', null, 'hash1' ] );
 			} );
 
-			it( 'does nothing if the current position is out of bounds', () => {
+			it( 'pads the hashes when the moved fragment has no hash yet', () => {
+				// Fragments 3 and 4 are new, so they have no hash
 				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
-				store.moveHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.3', 1 );
+				store.moveHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.4', 1 );
+				expect( store.sectionHashes.Q101 ).toEqual( [ null, 'hash1', 'hash2', null ] );
+			} );
+
+			it( 'does nothing if the new position is not a number', () => {
+				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ] };
+				store.moveHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 'bad index' );
 				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1', 'hash2' ] );
 			} );
 
@@ -2042,64 +2049,6 @@ describe( 'abstractWiki Pinia store', () => {
 				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ], Q102: [ 'goodhash' ] };
 				store.moveHashAtKeyPath( 'abstractwiki.sections.Q101.fragments.1', 2 );
 				expect( store.sectionHashes.Q102 ).toEqual( [ 'goodhash' ] );
-			} );
-		} );
-
-		describe( 'transferHashAtKeyPath', () => {
-			beforeEach( () => {
-				store.sectionHashes = {};
-			} );
-
-			it( 'moves a hash to a position in another section', () => {
-				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ], Q102: [ 'other1', 'other2' ] };
-				store.transferHashAtKeyPath(
-					'abstractwiki.sections.Q101.fragments.1',
-					'abstractwiki.sections.Q102.fragments.2'
-				);
-				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash2' ] );
-				expect( store.sectionHashes.Q102 ).toEqual( [ 'other1', 'hash1', 'other2' ] );
-			} );
-
-			it( 'appends a hash at the end of the target section', () => {
-				store.sectionHashes = { Q101: [ 'hash1', 'hash2' ], Q102: [ 'other1' ] };
-				store.transferHashAtKeyPath(
-					'abstractwiki.sections.Q101.fragments.2',
-					'abstractwiki.sections.Q102.fragments.2'
-				);
-				expect( store.sectionHashes.Q101 ).toEqual( [ 'hash1' ] );
-				expect( store.sectionHashes.Q102 ).toEqual( [ 'other1', 'hash2' ] );
-			} );
-
-			it( 'initializes the hashes of the target section if they do not exist', () => {
-				store.sectionHashes = { Q101: [ 'hash1' ] };
-				store.transferHashAtKeyPath(
-					'abstractwiki.sections.Q101.fragments.1',
-					'abstractwiki.sections.Q102.fragments.1'
-				);
-				expect( store.sectionHashes.Q101 ).toEqual( [] );
-				expect( store.sectionHashes.Q102 ).toEqual( [ 'hash1' ] );
-			} );
-
-			it( 'gives a blank hash to the target section if the source section has none', () => {
-				store.sectionHashes = { Q102: [ 'other1' ] };
-				store.transferHashAtKeyPath(
-					'abstractwiki.sections.Q101.fragments.1',
-					'abstractwiki.sections.Q102.fragments.1'
-				);
-				expect( store.sectionHashes.Q102 ).toEqual( [ null, 'other1' ] );
-			} );
-
-			it( 'does not affect the sections that the move leaves alone', () => {
-				store.sectionHashes = {
-					Q101: [ 'hash1' ],
-					Q102: [ 'other1' ],
-					Q103: [ 'goodhash' ]
-				};
-				store.transferHashAtKeyPath(
-					'abstractwiki.sections.Q101.fragments.1',
-					'abstractwiki.sections.Q102.fragments.1'
-				);
-				expect( store.sectionHashes.Q103 ).toEqual( [ 'goodhash' ] );
 			} );
 		} );
 
@@ -2160,62 +2109,73 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.highlight ).toBeUndefined();
 				expect( store.selection ).toBeUndefined();
 			} );
+
+			it( 'does nothing if the new position is not a number', () => {
+				store.selection = path( 'Q101', 2 );
+				store.relocateHighlightAndSelectionForMove( path( 'Q101', 1 ), 'bad index' );
+				expect( store.selection ).toBe( path( 'Q101', 2 ) );
+			} );
 		} );
 
-		describe( 'relocateHighlightAndSelectionForTransfer', () => {
-			const path = ( qid, index ) => `abstractwiki.sections.${ qid }.fragments.${ index }`;
+		describe( 'moveFragmentAtKeyPath', () => {
+			const path = ( index ) => `abstractwiki.sections.Q101.fragments.${ index }`;
+			const fragment = ( name ) => ( { Z1K1: 'Z7', Z7K1: name } );
 
 			beforeEach( () => {
+				store.jsonObject.abstractwiki = {
+					qid: mockQid,
+					sections: {
+						Q101: {
+							index: 0,
+							fragments: [ { Z1K1: 'Z9', Z9K1: 'Z89' }, fragment( 'A' ), fragment( 'B' ), fragment( 'C' ) ]
+						}
+					}
+				};
+				store.sectionHashes = { Q101: [ 'hashA', 'hashB', 'hashC' ] };
+				store.errors = {};
 				store.highlight = undefined;
 				store.selection = undefined;
 			} );
 
-			it( 'moves the selection to the target section with the moved fragment', () => {
-				store.selection = path( 'Q101', 2 );
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 2 ), path( 'Q102', 1 ) );
-				expect( store.selection ).toBe( path( 'Q102', 1 ) );
+			it( 'moves the fragment', () => {
+				store.moveFragmentAtKeyPath( path( 1 ), 3 );
+
+				const names = store.jsonObject.abstractwiki.sections.Q101.fragments.slice( 1 )
+					.map( ( item ) => item.Z7K1 );
+				expect( names ).toEqual( [ 'B', 'C', 'A' ] );
 			} );
 
-			it( 'moves the highlight to the target section with the moved fragment', () => {
-				store.highlight = path( 'Q101', 2 );
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 2 ), path( 'Q102', 3 ) );
-				expect( store.highlight ).toBe( path( 'Q102', 3 ) );
+			it( 'moves the preview hash with the fragment', () => {
+				store.moveFragmentAtKeyPath( path( 1 ), 3 );
+
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hashB', 'hashC', 'hashA' ] );
 			} );
 
-			it( 'shifts a selected source fragment after the old position down one place', () => {
-				store.selection = path( 'Q101', 3 );
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 1 ), path( 'Q102', 1 ) );
-				expect( store.selection ).toBe( path( 'Q101', 2 ) );
+			it( 'moves the selection and the highlight with the fragment', () => {
+				store.selection = path( 1 );
+				store.highlight = path( 2 );
+
+				store.moveFragmentAtKeyPath( path( 1 ), 3 );
+
+				expect( store.selection ).toBe( path( 3 ) );
+				expect( store.highlight ).toBe( path( 1 ) );
 			} );
 
-			it( 'leaves a selected source fragment before the old position alone', () => {
-				store.selection = path( 'Q101', 1 );
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 3 ), path( 'Q102', 1 ) );
-				expect( store.selection ).toBe( path( 'Q101', 1 ) );
+			it( 'moves the field errors with the fragment', () => {
+				store.errors = { [ path( 1 ) ]: [ 'error-for-A' ] };
+
+				store.moveFragmentAtKeyPath( path( 1 ), 3 );
+
+				expect( store.errors ).toEqual( { [ path( 3 ) ]: [ 'error-for-A' ] } );
 			} );
 
-			it( 'shifts a selected target fragment at the new position up one place', () => {
-				store.selection = path( 'Q102', 2 );
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 1 ), path( 'Q102', 2 ) );
-				expect( store.selection ).toBe( path( 'Q102', 3 ) );
-			} );
+			it( 'changes nothing else when the position is out of bounds', () => {
+				store.selection = path( 1 );
 
-			it( 'leaves a selected target fragment before the new position alone', () => {
-				store.selection = path( 'Q102', 1 );
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 1 ), path( 'Q102', 2 ) );
-				expect( store.selection ).toBe( path( 'Q102', 1 ) );
-			} );
+				expect( () => store.moveFragmentAtKeyPath( path( 1 ), 4 ) ).toThrowError();
 
-			it( 'leaves a selected fragment in an unrelated section alone', () => {
-				store.selection = path( 'Q103', 1 );
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 1 ), path( 'Q102', 1 ) );
-				expect( store.selection ).toBe( path( 'Q103', 1 ) );
-			} );
-
-			it( 'leaves a blank highlight and selection alone', () => {
-				store.relocateHighlightAndSelectionForTransfer( path( 'Q101', 1 ), path( 'Q102', 1 ) );
-				expect( store.highlight ).toBeUndefined();
-				expect( store.selection ).toBeUndefined();
+				expect( store.sectionHashes.Q101 ).toEqual( [ 'hashA', 'hashB', 'hashC' ] );
+				expect( store.selection ).toBe( path( 1 ) );
 			} );
 		} );
 

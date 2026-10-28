@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const { onBeforeUnmount, ref, watch } = require( 'vue' );
+const { nextTick, onBeforeUnmount, ref, watch } = require( 'vue' );
 
 /**
  * Tell if two rectangles are on the same line. They must overlap vertically
@@ -154,8 +154,11 @@ module.exports = function useFragmentHighlightRects( containerRef, highlightedKe
 	}
 
 	// Recompute when the highlighted fragment changes (e.g. on hover).
+	// After a move of a fragment, the preview fragments register their nodes
+	// again only after this post-flush watcher, so wait one more tick before
+	// measuring. Otherwise the measure reads detached nodes and gives no rectangle.
 	watch( highlightedKeyPath, () => {
-		updateRects();
+		nextTick( updateRects );
 	}, { flush: 'post' } );
 
 	// A selected fragment keeps its rectangles for as long as the selection
