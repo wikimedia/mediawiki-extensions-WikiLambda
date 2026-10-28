@@ -76,6 +76,7 @@
 	"wikilambda-abstract-preview-fragment-retry": "Opnieuw proberen",
 	"wikilambda-abstract-preview-in-language": "Gegenereerde tekst",
 	"wikilambda-abstract-renderedwith": "Deze pagina is gegenereerd vanuit [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",
+	"wikilambda-abstract-search-no-article": "– Nog geen pagina",
 	"wikilambda-abstract-special-create": "Nieuw Abstract Article maken",
 	"wikilambda-abstract-special-create-createbutton-label": "Aanmaken",
 	"wikilambda-abstract-special-create-existing": "Er bestaat al een Abstract Article voor dat Wikidata Item:",
