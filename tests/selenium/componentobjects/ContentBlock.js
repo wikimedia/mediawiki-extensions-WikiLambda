@@ -11,7 +11,6 @@
  * @license MIT
  */
 
-import { Element as WebdriverIOElementType } from 'webdriverio';
 import ElementActions from '../utils/ElementActions.js';
 
 class ContentBlock {
@@ -30,9 +29,9 @@ class ContentBlock {
 	 * Get the section of the content block
 	 *
 	 * @param {string} label - label for the section
-	 * @param {Promise<WebdriverIOElementType>} [parentSection] - Section of
+	 * @param {Promise<WebdriverIO.Element>} [parentSection] - Section of
 	 * the content block which is parent for other section of the content block - Optional param
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getSectionOfContentBlock( label, parentSection ) {
 		const resolvedParentSection = await parentSection;
@@ -49,9 +48,9 @@ class ContentBlock {
 	 * Get the mode selector the given label in the content block
 	 *
 	 * @param {string} label - label for the section
-	 * @param {Promise<WebdriverIOElementType>} [parentSection] - Section of
+	 * @param {Promise<WebdriverIO.Element>} [parentSection] - Section of
 	 * the content block which is parent for other section of the content block - Optional param
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getSectionModeSelector( label, parentSection ) {
 		const resolvedParentSection = await parentSection;
@@ -69,7 +68,7 @@ class ContentBlock {
 	 *
 	 * @param {string} label - label for the section
 	 * @param {string} mode - new mode to set
-	 * @param {Promise<WebdriverIOElementType>} [parentSection] - Section of
+	 * @param {Promise<WebdriverIO.Element>} [parentSection] - Section of
 	 */
 	async selectMode( label, mode, parentSection ) {
 		const resolvedParentSection = await parentSection;
@@ -91,9 +90,9 @@ class ContentBlock {
 	 * Get the toggle button for the section of the content block
 	 *
 	 * @param {string} label - label for the section
-	 * @param {Promise<WebdriverIOElementType>} [parentSection] - Section of
+	 * @param {Promise<WebdriverIO.Element>} [parentSection] - Section of
 	 * the content block which is parent for other section of the content block - Optional param
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getSectionToggleButton( label, parentSection ) {
 		const resolvedParentSection = await parentSection;
@@ -111,7 +110,7 @@ class ContentBlock {
 	 *
 	 * @async
 	 * @param {string} label - label for the section
-	 * @param {Promise<WebdriverIOElementType>} [parentSection] - Section of
+	 * @param {Promise<WebdriverIO.Element>} [parentSection] - Section of
 	 * the content block which is parent for other section of the content block - Optional param
 	 * @return {void}
 	 */
@@ -124,7 +123,7 @@ class ContentBlock {
 	 * Toggle the only child of the section of the content block
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} section - Section of
+	 * @param {Promise<WebdriverIO.Element>} section - Section of
 	 * the content block
 	 * @return {void}
 	 */

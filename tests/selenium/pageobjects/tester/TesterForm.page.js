@@ -19,7 +19,6 @@ import AboutBlock from '../../componentobjects/AboutBlock.js';
 import InputDropdown from '../../componentobjects/InputDropdown.js';
 import ElementActions from '../../utils/ElementActions.js';
 import ZObjectPublish from '../../componentobjects/ZObjectPublish.js';
-import { Element as WebdriverIOElementType } from 'webdriverio';
 import ContentBlock from '../../componentobjects/ContentBlock.js';
 import FunctionExplorerBlock from '../../componentobjects/FunctionExplorerBlock.js';
 import i18n from '../../utils/i18n.js';
@@ -107,7 +106,7 @@ class TesterPage extends Page {
 	 * Get the section of the call function block depending on the label
 	 *
 	 * @param {string} label - label for the section
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	getCallFunctionBlockSection( label ) {
 		return ContentBlock.getSectionOfContentBlock( label, this.callFunctionBlock );
@@ -198,7 +197,7 @@ class TesterPage extends Page {
 	 * Get the section of the validation block depending on the label
 	 *
 	 * @param {string} label - label for the section
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	getValidationBlockSection( label ) {
 		return ContentBlock.getSectionOfContentBlock( label, this.validationBlock );

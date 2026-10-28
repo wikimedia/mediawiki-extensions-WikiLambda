@@ -12,7 +12,6 @@
  */
 
 import ElementActions from '../utils/ElementActions.js';
-import { Element as WebdriverIOElementType } from 'webdriverio';
 
 class AboutBlock {
 	get aboutBlock() {
@@ -42,7 +41,7 @@ class AboutBlock {
 	 *
 	 * @async
 	 * @param {string} language
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getLanguageAccordion( language ) {
 		const accordionSelector = `.//span[text()="${ language }"]`;
@@ -58,8 +57,8 @@ class AboutBlock {
 	 * language block in the About widget.
 	 *
 	 * @async
-	 * @param {WebdriverIOElementType} parentBlock
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @param {WebdriverIO.Element} parentBlock
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getLabelInput( parentBlock ) {
 		return parentBlock.$( '[data-testid="about-name-field"] [data-testid="text-input"]' );
@@ -70,8 +69,8 @@ class AboutBlock {
 	 * language block in the About widget.
 	 *
 	 * @async
-	 * @param {WebdriverIOElementType} parentBlock
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @param {WebdriverIO.Element} parentBlock
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getDescriptionInput( parentBlock ) {
 		return parentBlock.$( '[data-testid="about-description-field"] [data-testid="text-area"]' );
@@ -82,8 +81,8 @@ class AboutBlock {
 	 * language block in the About widget.
 	 *
 	 * @async
-	 * @param {WebdriverIOElementType} parentBlock
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @param {WebdriverIO.Element} parentBlock
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getAliasInput( parentBlock ) {
 		return parentBlock.$( '[data-testid="about-aliases-field"] input' );
@@ -197,7 +196,7 @@ class AboutBlock {
 	 * matches the given language.
 	 *
 	 * @param {string} language
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	async getLanguageItem( language ) {
 		const itemSelector = `.//div[text()="${ language }"]`;

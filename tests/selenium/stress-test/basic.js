@@ -24,7 +24,7 @@
  * However this can not be used as blocked by T324766
  */
 
-const { config } = require( '../wdio.conf' );
+import { config as baseConfig } from '../wdio.conf.js';
 
 const specs = [];
 const specsRootDir = 'tests/selenium/specs';
@@ -46,8 +46,8 @@ try {
 	console.log( 'Error occured' );
 }
 
-exports.config = {
-	...config,
+export const config = {
+	...baseConfig,
 	specs: specs,
 	specFileRetries: 0
 };

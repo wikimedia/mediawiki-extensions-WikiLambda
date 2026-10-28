@@ -17,7 +17,6 @@
 import Page from 'wdio-mediawiki/Page.js';
 import ElementActions from '../../utils/ElementActions.js';
 import AboutBlock from '../../componentobjects/AboutBlock.js';
-import { Element as WebdriverIOElementType } from 'webdriverio';
 import ContentBlock from '../../componentobjects/ContentBlock.js';
 
 class Tester extends Page {
@@ -123,7 +122,7 @@ class Tester extends Page {
 	 * Get the section of the call function block depending on the label
 	 *
 	 * @param {string} label - label for the section
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	getCallFunctionBlockSection( label ) {
 		return ContentBlock.getSectionOfContentBlock( label, this.callFunctionBlock );
@@ -133,7 +132,7 @@ class Tester extends Page {
 	 * Get the call function condition parameter
 	 *
 	 * @param {string} condition
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	async getCallFunctionConditionParameter( condition ) {
 		const conditionParameterBlock = await this.getCallFunctionBlockSection( 'condition' );
@@ -144,7 +143,7 @@ class Tester extends Page {
 	 * Get the call function then parameter
 	 *
 	 * @param {string} thenInput
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	async getCallFunctionThenParameter( thenInput ) {
 		const thenParameterBlock = await this.getCallFunctionBlockSection( 'then' );
@@ -155,7 +154,7 @@ class Tester extends Page {
 	 * Get the call function else parameter
 	 *
 	 * @param {string} elseInput
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	async getCallFunctionElseParameter( elseInput ) {
 		const elseParameterBlock = await this.getCallFunctionBlockSection( 'else' );
@@ -180,7 +179,7 @@ class Tester extends Page {
 	 * Get the section of the validation block depending on the label
 	 *
 	 * @param {string} label - label for the section
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	getValidationBlockSection( label ) {
 		return ContentBlock.getSectionOfContentBlock( label, this.validationBlock );
@@ -190,7 +189,7 @@ class Tester extends Page {
 	 * Get the validation block second string parameter
 	 *
 	 * @param {string} secondStringTrue
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	async getValidationParameter( secondStringTrue ) {
 		const validationParameterBlock = await this.getValidationBlockSection( 'second string' );
@@ -201,7 +200,7 @@ class Tester extends Page {
 	 * Get the validation block function
 	 *
 	 * @param {string} ZObjectLabel
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	async getValidationBlockFunction( ZObjectLabel ) {
 		const validationBlockFunction = await this.getValidationBlockSection( 'function' );

@@ -15,14 +15,12 @@
  * @license MIT
  */
 
-import { Element as WebdriverIOElementType } from 'webdriverio';
-
 class ElementActions {
 	/**
 	 * Wait for the element to be displayed, then click on the element
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} selector - selector of the element to be clicked
+	 * @param {Promise<WebdriverIO.Element>} selector - selector of the element to be clicked
 	 * @return {boolean}
 	 */
 	async doClick( selector ) {
@@ -39,7 +37,7 @@ class ElementActions {
 	 * Wait for the element to be displayed and enabled, then click on the element
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} selector - selector of the element to be clicked
+	 * @param {Promise<WebdriverIO.Element>} selector - selector of the element to be clicked
 	 * @return {void}
 	 */
 	async doEnabledClick( selector ) {
@@ -52,7 +50,7 @@ class ElementActions {
 	 * Wait for the element to be displayed, then set the text into the input
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} selector - selector of the input field
+	 * @param {Promise<WebdriverIO.Element>} selector - selector of the input field
 	 * @param {string} inputText - Text to enter into the input field
 	 * @return {void}
 	 */
@@ -76,7 +74,7 @@ class ElementActions {
 	 * Get the value from the input selector
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} inputSelector
+	 * @param {Promise<WebdriverIO.Element>} inputSelector
 	 * @return {string}
 	 */
 	async getValue( inputSelector ) {
@@ -89,7 +87,7 @@ class ElementActions {
 	 * Get the text from the selector
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} selector
+	 * @param {Promise<WebdriverIO.Element>} selector
 	 * @return {string}
 	 */
 	async getText( selector ) {
@@ -104,7 +102,7 @@ class ElementActions {
 	 * The following is a temporarily solution to clear the input.
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} inputSelector - selector of the input field
+	 * @param {Promise<WebdriverIO.Element>} inputSelector - selector of the input field
 	 */
 	async clearInput( inputSelector ) {
 		await inputSelector.waitForDisplayed();
@@ -116,7 +114,7 @@ class ElementActions {
 	 * Scroll element into viewport
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} selector - Selector of the element
+	 * @param {Promise<WebdriverIO.Element>} selector - Selector of the element
 	 * @return {void}
 	 */
 	async scrollIntoView( selector ) {

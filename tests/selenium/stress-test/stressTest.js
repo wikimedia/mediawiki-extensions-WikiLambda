@@ -13,7 +13,7 @@
 /**
  * @file contains the code to execute each spec file multiple times
  */
-const { execSync } = require( 'child_process' );
+import { execSync } from 'child_process';
 
 const specFiles = [ 'basic.js', 'connect.js', 'function.js', 'implementation.js', 'tester.js', 'type.js' ];
 

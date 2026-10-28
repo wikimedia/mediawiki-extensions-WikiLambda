@@ -11,7 +11,6 @@
  */
 
 import ElementActions from '../utils/ElementActions.js';
-import { Element as WebdriverIOElementType } from 'webdriverio';
 
 class InputDropdown {
 	/**
@@ -19,7 +18,7 @@ class InputDropdown {
 	 * clear the current text selection (Select All + Backspace).
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} inputSelector - Codex lookup input element
+	 * @param {Promise<WebdriverIO.Element>} inputSelector - Codex lookup input element
 	 * @return {void}
 	 */
 	async clearLookupInput( inputSelector ) {
@@ -36,9 +35,9 @@ class InputDropdown {
 	 * Set the input field to input text and select the input text from the dropdown
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} parentSelector - Nearest parent selector of
+	 * @param {Promise<WebdriverIO.Element>} parentSelector - Nearest parent selector of
 	 * input element
-	 * @param {Promise<WebdriverIOElementType>} inputSelector - Selector of the input element
+	 * @param {Promise<WebdriverIO.Element>} inputSelector - Selector of the input element
 	 * @param {string} inputText - Text to enter into the input field
 	 * @return {void}
 	 */
@@ -55,9 +54,9 @@ class InputDropdown {
 	 * Select the input text from the dropdown
 	 *
 	 * @async
-	 * @param {Promise<WebdriverIOElementType>} parentSelector - Nearest parent selector of
+	 * @param {Promise<WebdriverIO.Element>} parentSelector - Nearest parent selector of
 	 * readonly input element
-	 * @param {Promise<WebdriverIOElementType>} inputSelector - Selector of the
+	 * @param {Promise<WebdriverIO.Element>} inputSelector - Selector of the
 	 * readonly input element
 	 * @param {string} inputText - Text to be selected from dropdown
 	 * @return {void}

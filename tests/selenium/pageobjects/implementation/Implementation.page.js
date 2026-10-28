@@ -15,7 +15,6 @@
  * @license MIT
  */
 
-import { Element as WebdriverIOElementType } from 'webdriverio';
 import Page from 'wdio-mediawiki/Page.js';
 import ElementActions from '../../utils/ElementActions.js';
 import AboutBlock from '../../componentobjects/AboutBlock.js';
@@ -76,7 +75,7 @@ class Implementation extends Page {
 	 * Get the Content Block Function Link selector
 	 *
 	 * @param {string} ZObjectLabel - ZObject of type Z8
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	getContentBlockFunctionLinkSelector( ZObjectLabel ) {
 		return this.contentBlock.$( `.//a[text()="${ ZObjectLabel }"]` );
@@ -86,7 +85,7 @@ class Implementation extends Page {
 	 * Get the implementation type selector
 	 *
 	 * @param {string} implementationType - "code" or "composition"
-	 * @return {Promise<WebdriverIOElementType>}
+	 * @return {Promise<WebdriverIO.Element>}
 	 */
 	getImplementationTypeSelector( implementationType ) {
 		return this.contentBlock.$( '[data-testid="implementation-type"]' )

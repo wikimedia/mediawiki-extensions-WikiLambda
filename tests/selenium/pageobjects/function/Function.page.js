@@ -10,7 +10,6 @@ import ElementActions from '../../utils/ElementActions.js';
 import EvaluateFunctionBlock from '../../componentobjects/EvaluateFunctionBlock.js';
 import AboutBlock from '../../componentobjects/AboutBlock.js';
 import InputDropdown from '../../componentobjects/InputDropdown.js';
-import { Element as WebdriverIOElementType } from 'webdriverio';
 import i18n from '../../utils/i18n.js';
 
 class FunctionPage extends Page {
@@ -159,7 +158,7 @@ class FunctionPage extends Page {
 	 *
 	 * @async
 	 * @param {string} result - expected result
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	async getEvaluateFunctionResultSelector( result ) {
 		return EvaluateFunctionBlock.orchestrationResultBlock.$( `//*[@data-testid="view-only-string" and contains(text(), "${ result }")]` );
@@ -260,7 +259,7 @@ class FunctionPage extends Page {
 	 * Get the row of the implementations table
 	 *
 	 * @param {number} index - index of the row in the table body
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	getImplementationsTableRow( index ) {
 		const tbody = this.implementationsTable.$( './tbody' );
@@ -361,7 +360,7 @@ class FunctionPage extends Page {
 	 * Get the row of the test cases table
 	 *
 	 * @param {number} index - index of the row in the table body
-	 * @return {WebdriverIOElementType}
+	 * @return {WebdriverIO.Element}
 	 */
 	getTestCasesTableRow( index ) {
 		const tbody = this.testCasesTable.$( './tbody' );

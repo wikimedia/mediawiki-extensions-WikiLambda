@@ -5,8 +5,6 @@
  * @license MIT
  */
 
-import WebdriverIO from 'webdriverio';
-
 class ObjectSelector {
 	get menu() {
 		return this.context.$( '.cdx-menu' );

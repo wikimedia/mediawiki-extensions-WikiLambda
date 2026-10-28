@@ -12,6 +12,7 @@
 	},
 	"rules": {
 		"wdio/no-pause": "warn",
-		"max-len": "off"
+		"max-len": "off",
+		"jsdoc/no-undefined-types": [ "warn", { "definedTypes": [ "WebdriverIO" ] } ]
 	}
 }
