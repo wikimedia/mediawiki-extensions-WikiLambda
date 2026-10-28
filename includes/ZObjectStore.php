@@ -513,6 +513,13 @@ class ZObjectStore {
 			$currentRevision = $this->revisionStore->getKnownLatestRevision( $title );
 			$fromContent = $currentRevision->getSlots()->getContent( SlotRecord::MAIN );
 			'@phan-var ZObjectContent $fromContent';
+
+			// (T341199) A change to the signature of a function makes its implementations and
+			// testers incorrect, so disconnect them. Do this before the authorization check:
+			// the user must also have the rights to disconnect them.
+			if ( $this->isFunctionSignatureChange( $fromContent, $content ) ) {
+				$content = $this->disconnectFunctionObjects( $content );
+			}
 		}
 		$authorizationService = WikiLambdaServices::getZObjectAuthorization();
 		$status = $authorizationService->authorize( $fromContent, $content, $user, $title );
@@ -581,6 +588,90 @@ class ZObjectStore {
 
 		// Success: return WikiPage
 		return ZObjectPage::newSuccess( $page );
+	}
+
+	/**
+	 * Returns whether an edit changes the signature of a function: the number of
+	 * inputs, the key or type of an input, or the output type.
+	 *
+	 * @param ZObjectContent $fromContent The latest revision of the object
+	 * @param ZObjectContent $toContent The edited object
+	 * @return bool
+	 */
+	private function isFunctionSignatureChange( ZObjectContent $fromContent, ZObjectContent $toContent ): bool {
+		if (
+			!$fromContent->isValid() ||
+			$fromContent->getZType() !== ZTypeRegistry::Z_FUNCTION ||
+			$toContent->getZType() !== ZTypeRegistry::Z_FUNCTION
+		) {
+			return false;
+		}
+
+		$fromObject = ZObjectUtils::canonicalize( $fromContent->getObject() );
+		$toObject = ZObjectUtils::canonicalize( $toContent->getObject() );
+		'@phan-var \stdClass $fromObject';
+		'@phan-var \stdClass $toObject';
+		$fromFunction = $fromObject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE };
+		$toFunction = $toObject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE };
+
+		if ( !ZObjectUtils::isTypeEqualTo(
+			$fromFunction->{ ZTypeRegistry::Z_FUNCTION_RETURN_TYPE },
+			$toFunction->{ ZTypeRegistry::Z_FUNCTION_RETURN_TYPE }
+		) ) {
+			return true;
+		}
+
+		// The first item of a canonical list is the type of its items
+		$fromInputs = array_slice( $fromFunction->{ ZTypeRegistry::Z_FUNCTION_ARGUMENTS }, 1 );
+		$toInputs = array_slice( $toFunction->{ ZTypeRegistry::Z_FUNCTION_ARGUMENTS }, 1 );
+		if ( count( $fromInputs ) !== count( $toInputs ) ) {
+			return true;
+		}
+		foreach ( $fromInputs as $index => $fromInput ) {
+			$toInput = $toInputs[ $index ];
+			if (
+				$fromInput->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_ID } !==
+					$toInput->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_ID } ||
+				!ZObjectUtils::isTypeEqualTo(
+					$fromInput->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE },
+					$toInput->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE }
+				)
+			) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the function with empty lists of testers and implementations.
+	 * If the lists are already empty, returns the same content.
+	 *
+	 * @param ZObjectContent $content A valid function
+	 * @return ZObjectContent
+	 */
+	private function disconnectFunctionObjects( ZObjectContent $content ): ZObjectContent {
+		// Canonicalize makes a copy, thus this does not change $content
+		$object = ZObjectUtils::canonicalize( $content->getObject() );
+		'@phan-var \stdClass $object';
+		$function = $object->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE };
+
+		$emptyLists = [
+			ZTypeRegistry::Z_FUNCTION_TESTERS => [ ZTypeRegistry::Z_TESTER ],
+			ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS => [ ZTypeRegistry::Z_IMPLEMENTATION ],
+		];
+		$changed = false;
+		foreach ( $emptyLists as $key => $emptyList ) {
+			if ( ( $function->$key ?? $emptyList ) !== $emptyList ) {
+				$function->$key = $emptyList;
+				$changed = true;
+			}
+		}
+
+		if ( !$changed ) {
+			return $content;
+		}
+		return new ZObjectContent( FormatJson::encode( $object, true, FormatJson::UTF8_OK ) );
 	}
 
 	/**

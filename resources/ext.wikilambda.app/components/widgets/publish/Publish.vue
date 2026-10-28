@@ -72,11 +72,6 @@ module.exports = exports = defineComponent( {
 		'wl-widget-base': WidgetBase
 	},
 	props: {
-		functionSignatureChanged: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
 		isDirty: {
 			type: Boolean,
 			required: false,
@@ -143,18 +138,14 @@ module.exports = exports = defineComponent( {
 
 		// Publish actions
 		/**
-		 * Call store action for ZObject submission, with summary and
-		 * flag to know whether to disconnect implementations and tests.
+		 * Call store action for ZObject submission, with summary.
 		 *
 		 * @param {Object} payload
 		 * @param {string} payload.summary
 		 * @return {Promise}
 		 */
 		function submitAction( { summary } ) {
-			return store.submitZObject( {
-				summary,
-				disconnectFunctionObjects: props.functionSignatureChanged
-			} );
+			return store.submitZObject( { summary } );
 		}
 
 		/**

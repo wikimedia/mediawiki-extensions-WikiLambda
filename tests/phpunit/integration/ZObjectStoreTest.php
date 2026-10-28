@@ -23,6 +23,7 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\RevisionDelete\RevisionDeleter;
 use MediaWiki\Tests\Unit\Permissions\MockAuthorityTrait;
 use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use stdClass;
 use Wikimedia\Rdbms\IDBAccessObject;
 use Wikimedia\Rdbms\IResultWrapper;
@@ -545,6 +546,137 @@ class ZObjectStoreTest extends WikiLambdaRepoModeIntegrationTestCase {
 		// HACK (T343717): Re-get the Title so it's not cached on what the latest revision is
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$this->assertEquals( $secondText, $this->zobjectStore->fetchZObjectByTitle( $title )->getText() );
+	}
+
+	/**
+	 * Creates a function with one String input and a String output.
+	 *
+	 * @param User $user
+	 * @param string[] $testers The connected testers
+	 * @param string[] $implementations The connected implementations
+	 * @return string The ZID of the new function
+	 */
+	private function createFunction( User $user, array $testers, array $implementations ): string {
+		$this->insertZids( [ 'Z6', 'Z8', 'Z14', 'Z17', 'Z20', 'Z40' ] );
+		$input = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" },'
+			. '"Z2K2": { "Z1K1": "Z8",'
+			. '"Z8K1": [ "Z17", { "Z1K1": "Z17", "Z17K1": "Z6", "Z17K2": "Z0K1",'
+			. ' "Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ],'
+			. '"Z8K2": "Z6",'
+			. '"Z8K3": ' . json_encode( [ 'Z20', ...$testers ] ) . ','
+			. '"Z8K4": ' . json_encode( [ 'Z14', ...$implementations ] ) . ','
+			. '"Z8K5": "Z0" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$page = $this->zobjectStore->createNewZObject( RequestContext::getMain(), $input, 'Create function', $user );
+		$this->assertTrue( $page->isOK() );
+		return $page->getTitle()->getBaseText();
+	}
+
+	/**
+	 * @param string $zid
+	 * @return stdClass The latest revision of the object, decoded from JSON
+	 */
+	private function fetchObject( string $zid ): stdClass {
+		// HACK (T343717): Re-get the Title so it's not cached on what the latest revision is
+		$title = Title::newFromText( $zid, NS_MAIN );
+		return json_decode( $this->zobjectStore->fetchZObjectByTitle( $title )->getText() );
+	}
+
+	public static function provideUpdateZObject_functionSignature() {
+		$changeKey = static function ( stdClass $input ) {
+			$input->Z17K2 = str_replace( 'K1', 'K2', $input->Z17K2 );
+		};
+		return [
+			'change the output type' => [
+				static function ( stdClass $function ) {
+					$function->Z8K2 = 'Z40';
+				},
+				true
+			],
+			'change the type of an input' => [
+				static function ( stdClass $function ) {
+					$function->Z8K1[1]->Z17K1 = 'Z40';
+				},
+				true
+			],
+			'add an input' => [
+				static function ( stdClass $function ) use ( $changeKey ) {
+					$input = clone $function->Z8K1[1];
+					$changeKey( $input );
+					$function->Z8K1[] = $input;
+				},
+				true
+			],
+			'remove the input' => [
+				static function ( stdClass $function ) {
+					array_pop( $function->Z8K1 );
+				},
+				true
+			],
+			'change the key of an input' => [
+				static function ( stdClass $function ) use ( $changeKey ) {
+					$changeKey( $function->Z8K1[1] );
+				},
+				true
+			],
+			'add a label to an input' => [
+				static function ( stdClass $function ) {
+					$function->Z8K1[1]->Z17K3->Z12K1[] = (object)[
+						'Z1K1' => 'Z11',
+						'Z11K1' => 'Z1002',
+						'Z11K2' => 'Text'
+					];
+				},
+				false
+			],
+			'write the same output type in normal form' => [
+				static function ( stdClass $function ) {
+					$function->Z8K2 = (object)[ 'Z1K1' => 'Z9', 'Z9K1' => 'Z6' ];
+				},
+				false
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideUpdateZObject_functionSignature
+	 */
+	public function testUpdateZObject_functionSignature( callable $edit, bool $expectDisconnected ) {
+		$this->registerLangs( [ 'en' ] );
+		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
+		$zid = $this->createFunction( $maintainer, [ 'Z10022' ], [ 'Z10021' ] );
+
+		$object = $this->fetchObject( $zid );
+		$edit( $object->Z2K2 );
+		$status = $this->zobjectStore->updateZObject(
+			RequestContext::getMain(), $zid, json_encode( $object ), 'Edit summary', $maintainer
+		);
+		$this->assertTrue( $status->isOK() );
+
+		$saved = $this->fetchObject( $zid )->Z2K2;
+		$this->assertSame( $expectDisconnected ? [ 'Z20' ] : [ 'Z20', 'Z10022' ], $saved->Z8K3 );
+		$this->assertSame( $expectDisconnected ? [ 'Z14' ] : [ 'Z14', 'Z10021' ], $saved->Z8K4 );
+	}
+
+	public function testUpdateZObject_functionSignatureNeedsDisconnectRights() {
+		// The function has no implementations, thus any user can change its signature.
+		// But the change disconnects its tester, which needs the right to disconnect testers.
+		$user = $this->getTestUser()->getUser();
+		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
+		$zid = $this->createFunction( $functioneer, [ 'Z10022' ], [] );
+
+		$object = $this->fetchObject( $zid );
+		$object->Z2K2->Z8K2 = 'Z40';
+		$data = json_encode( $object );
+
+		$status = $this->zobjectStore->updateZObject( RequestContext::getMain(), $zid, $data, 'Edit', $user );
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
+		$this->assertSame( [ 'Z20', 'Z10022' ], $this->fetchObject( $zid )->Z2K2->Z8K3 );
+
+		$status = $this->zobjectStore->updateZObject( RequestContext::getMain(), $zid, $data, 'Edit', $functioneer );
+		$this->assertTrue( $status->isOK() );
+		$this->assertSame( [ 'Z20' ], $this->fetchObject( $zid )->Z2K2->Z8K3 );
 	}
 
 	public function testUpdateZObject_nonTitle() {

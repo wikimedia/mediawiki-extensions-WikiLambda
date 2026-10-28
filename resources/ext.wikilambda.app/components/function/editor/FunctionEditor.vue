@@ -36,7 +36,6 @@
 		<wl-publish-widget
 			class="ext-wikilambda-app-function-editor__footer"
 			:is-dirty="isFunctionDirty"
-			:function-signature-changed="functionSignatureChanged"
 			@start-publish="raiseFunctionWarnings"
 		></wl-publish-widget>
 	</div>
@@ -264,7 +263,6 @@ module.exports = exports = defineComponent( {
 			addLanguage,
 			i18n,
 			functionLanguages,
-			functionSignatureChanged,
 			iconLanguage,
 			isFunctionDirty,
 			raiseFunctionWarnings,

@@ -9,7 +9,7 @@
 
 const { saveZObject } = require( '../../utils/apiUtils.js' );
 const Constants = require( '../../Constants.js' );
-const { canonicalToHybrid, hybridToCanonical } = require( '../../utils/schemata.js' );
+const { hybridToCanonical } = require( '../../utils/schemata.js' );
 const {
 	getZObjectType,
 	getZCodeString,
@@ -247,13 +247,12 @@ module.exports = {
 		 *
 		 * @param {Object} param
 		 * @param {Object} param.summary
-		 * @param {boolean} param.disconnectFunctionObjects
 		 * @param {boolean} param.checkEditConflict Whether to reject the edit if the object
 		 *  has a newer revision than the one loaded in the store
 		 * @return {Promise}
 		 */
-		submitZObject: function ( { summary, disconnectFunctionObjects = false, checkEditConflict = false } ) {
-			this.transformZObjectForSubmission( disconnectFunctionObjects );
+		submitZObject: function ( { summary, checkEditConflict = false } ) {
+			this.transformZObjectForSubmission();
 
 			const zobject = hybridToCanonical( this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.MAIN ] ) );
 			const zid = this.isCreateNewPage ? undefined : this.getCurrentZObjectId;
@@ -286,11 +285,8 @@ module.exports = {
 		 * - Clears empty monolingual stringset labels.
 		 * - Clears empty arguments and argument labels.
 		 * - Removes list items marked as invalid.
-		 * - Unattaches implementations and testers, if relevant.
-		 *
-		 * @param {boolean} disconnectFunctionObjects
 		 */
-		transformZObjectForSubmission: function ( disconnectFunctionObjects ) {
+		transformZObjectForSubmission: function () {
 			const zobject = this.getJsonObject( Constants.STORED_OBJECTS.MAIN );
 			const content = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 			const type = getZObjectType( content );
@@ -376,11 +372,6 @@ module.exports = {
 					// clear the collection of list items removed
 					this.clearInvalidListItems( path );
 				}
-			}
-
-			// Disconnect implementations and testers if necessary
-			if ( disconnectFunctionObjects ) {
-				this.disconnectFunctionObjects();
 			}
 		},
 
@@ -635,25 +626,6 @@ module.exports = {
 					Constants.Z_PERSISTENTOBJECT_VALUE,
 					Constants.Z_FUNCTION_ARGUMENTS
 				] );
-			}
-		},
-
-		/**
-		 * Remove implementation and tester from a ZObject
-		 * The zObject has to be of type function
-		 */
-		disconnectFunctionObjects: function () {
-			const value = this.getZObjectByKeyPath( [
-				Constants.STORED_OBJECTS.MAIN,
-				Constants.Z_PERSISTENTOBJECT_VALUE
-			] );
-
-			if ( Constants.Z_FUNCTION_TESTERS in value ) {
-				value[ Constants.Z_FUNCTION_TESTERS ] = canonicalToHybrid( [ Constants.Z_TESTER ] );
-			}
-
-			if ( Constants.Z_FUNCTION_IMPLEMENTATIONS in value ) {
-				value[ Constants.Z_FUNCTION_IMPLEMENTATIONS ] = canonicalToHybrid( [ Constants.Z_IMPLEMENTATION ] );
 			}
 		},
 

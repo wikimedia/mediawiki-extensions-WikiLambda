@@ -66,10 +66,9 @@ describe( 'Publish widget', () => {
 		expect( wrapper.emitted( 'start-publish' ) ).toBeTruthy();
 	} );
 
-	it( 'passes disconnectFunctionObjects to submit action when function signature changed', async () => {
+	it( 'passes the summary to the submit action', async () => {
 		const wrapper = renderPublish( {
-			isDirty: true,
-			functionSignatureChanged: true
+			isDirty: true
 		} );
 		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
 
@@ -78,8 +77,7 @@ describe( 'Publish widget', () => {
 
 		await publishDialog.props( 'submitAction' )( { summary: 'A summary' } );
 		expect( store.submitZObject ).toHaveBeenCalledWith( {
-			summary: 'A summary',
-			disconnectFunctionObjects: true
+			summary: 'A summary'
 		} );
 	} );
 

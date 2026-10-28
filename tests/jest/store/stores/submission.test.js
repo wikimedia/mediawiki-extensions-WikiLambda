@@ -782,7 +782,7 @@ describe( 'zobject submission Pinia store', () => {
 
 				store.submitZObject( { summary: 'A summary' } );
 
-				expect( store.transformZObjectForSubmission ).toHaveBeenCalledWith( false );
+				expect( store.transformZObjectForSubmission ).toHaveBeenCalledWith();
 
 				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
@@ -796,7 +796,7 @@ describe( 'zobject submission Pinia store', () => {
 				}, { signal: undefined } );
 			} );
 
-			it( 'submits a function after disconnecting implementations and testers', () => {
+			it( 'submits a function with its implementations and testers', () => {
 				const zobject = JSON.parse(
 					fs.readFileSync( path.join( __dirname, './objects/getZFunction.json' ) )
 				).clean;
@@ -810,13 +810,10 @@ describe( 'zobject submission Pinia store', () => {
 				store.getCurrentZObjectId = 'Z0';
 				store.isCreateNewPage = false;
 
-				store.submitZObject( { summary: 'A summary', disconnectFunctionObjects: true } );
+				store.submitZObject( { summary: 'A summary' } );
 
+				// The server disconnects them if the edit changes the function signature
 				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-
-				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ] = [ Constants.Z_TESTER ];
-				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [ Constants.Z_IMPLEMENTATION ];
-
 				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_edit',
 					format: 'json',
@@ -1009,7 +1006,6 @@ describe( 'zobject submission Pinia store', () => {
 				store.deleteListItemsByKeyPath = jest.fn();
 				store.recalculateKeys = jest.fn();
 				store.clearInvalidListItems = jest.fn();
-				store.disconnectFunctionObjects = jest.fn();
 				store.setEmptyIsIdentityAsFalse = jest.fn();
 
 				const zobject = { Z2K2: 'string object' };
@@ -1019,22 +1015,22 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'removes empty names', () => {
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K3' ] );
 			} );
 
 			it( 'removes empty descriptions', () => {
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K5' ] );
 			} );
 
 			it( 'removes empty aliases', () => {
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyAliasValues ).toHaveBeenCalled();
 			} );
 
 			it( 'does not remove empty arguments if it is not a function', () => {
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyArguments ).not.toHaveBeenCalled();
 			} );
 
@@ -1043,7 +1039,7 @@ describe( 'zobject submission Pinia store', () => {
 					value: jest.fn().mockReturnValue( canonicalToHybrid( { Z2K2: { Z1K1: 'Z8' } } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyArguments ).toHaveBeenCalled();
 			} );
 
@@ -1055,7 +1051,7 @@ describe( 'zobject submission Pinia store', () => {
 					} } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyTypeFunctions ).toHaveBeenCalled();
 			} );
 
@@ -1067,7 +1063,7 @@ describe( 'zobject submission Pinia store', () => {
 					} } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.recalculateKeys ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2' ] );
 			} );
 
@@ -1082,7 +1078,7 @@ describe( 'zobject submission Pinia store', () => {
 					} } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 1 ] );
 				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 2 ] );
 			} );
@@ -1098,7 +1094,7 @@ describe( 'zobject submission Pinia store', () => {
 					} } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 1, 'Z3K3' ] );
 				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z4K2', 2, 'Z3K3' ] );
 			} );
@@ -1111,7 +1107,7 @@ describe( 'zobject submission Pinia store', () => {
 					} } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.recalculateKeys ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1' ] );
 			} );
 
@@ -1126,7 +1122,7 @@ describe( 'zobject submission Pinia store', () => {
 					} } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 1 ] );
 				expect( store.setEmptyIsIdentityAsFalse ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 2 ] );
 			} );
@@ -1142,7 +1138,7 @@ describe( 'zobject submission Pinia store', () => {
 					} } ) )
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 1, 'Z3K3' ] );
 				expect( store.removeEmptyMonolingualValues ).toHaveBeenCalledWith( [ 'main', 'Z2K2', 'Z50K1', 2, 'Z3K3' ] );
 			} );
@@ -1157,7 +1153,7 @@ describe( 'zobject submission Pinia store', () => {
 					}
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.deleteListItemsByKeyPath ).toHaveBeenCalledWith( {
 					keyPath: [ 'main', 'Z2K2' ],
 					indexes: [ 2 ]
@@ -1170,19 +1166,9 @@ describe( 'zobject submission Pinia store', () => {
 					value: false
 				} );
 
-				store.transformZObjectForSubmission( false );
+				store.transformZObjectForSubmission();
 				expect( store.deleteListItemsByKeyPath ).not.toHaveBeenCalled();
 				expect( store.clearInvalidListItems ).not.toHaveBeenCalled();
-			} );
-
-			it( 'disconnects function objects if needed', () => {
-				store.transformZObjectForSubmission( true );
-				expect( store.disconnectFunctionObjects ).toHaveBeenCalled();
-			} );
-
-			it( 'does not disconnect function objects if not needed', () => {
-				store.transformZObjectForSubmission( false );
-				expect( store.disconnectFunctionObjects ).not.toHaveBeenCalled();
 			} );
 		} );
 
@@ -1998,53 +1984,6 @@ describe( 'zobject submission Pinia store', () => {
 
 				store.jsonObject.main = canonicalToHybrid( zobject );
 				store.removeEmptyTypeFunctions();
-
-				const transformed = hybridToCanonical( store.jsonObject.main );
-				expect( hybridToCanonical( transformed ) ).toEqual( expected );
-			} );
-		} );
-
-		describe( 'disconnectFunctionObjects', () => {
-
-			it( 'disconnects all implementations and testers', () => {
-				const zobject = {
-					Z2K2: {
-						Z8K3: [ 'Z20', 'Z10020', 'Z10021' ],
-						Z8K4: [ 'Z14', 'Z10014', 'Z10015' ]
-					}
-				};
-
-				const expected = {
-					Z2K2: {
-						Z8K3: [ 'Z20' ],
-						Z8K4: [ 'Z14' ]
-					}
-				};
-
-				store.jsonObject.main = canonicalToHybrid( zobject );
-				store.disconnectFunctionObjects();
-
-				const transformed = hybridToCanonical( store.jsonObject.main );
-				expect( hybridToCanonical( transformed ) ).toEqual( expected );
-			} );
-
-			it( 'leaves intact when there are no implementations or testers', () => {
-				const zobject = {
-					Z2K2: {
-						Z8K3: [ 'Z20' ],
-						Z8K4: [ 'Z14' ]
-					}
-				};
-
-				const expected = {
-					Z2K2: {
-						Z8K3: [ 'Z20' ],
-						Z8K4: [ 'Z14' ]
-					}
-				};
-
-				store.jsonObject.main = canonicalToHybrid( zobject );
-				store.disconnectFunctionObjects();
 
 				const transformed = hybridToCanonical( store.jsonObject.main );
 				expect( hybridToCanonical( transformed ) ).toEqual( expected );
