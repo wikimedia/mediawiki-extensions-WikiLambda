@@ -421,6 +421,174 @@ describe( 'AbstractContentSection', () => {
 
 			expect( mockMenuActions.moveTo ).not.toHaveBeenCalled();
 		} );
+
+		it( 'marks the list while the user drags a fragment', async () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+			const list = wrapper.find( '.ext-wikilambda-app-abstract-content-section-fragments' );
+
+			expect( list.classes() ).not.toContain( 'ext-wikilambda-app-abstract-content-section-fragments__dragging' );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			await wrapper.vm.$nextTick();
+
+			expect( list.classes() ).toContain( 'ext-wikilambda-app-abstract-content-section-fragments__dragging' );
+
+			firePointer( 'pointercancel' );
+		} );
+
+		it( 'shows a copy of the dragged fragment under the line', async () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+			const rows = wrapper.vm.listRef.querySelectorAll( '.ext-wikilambda-app-abstract-content-section-fragment' );
+			rows[ 0 ].id = 'fragment-one';
+			rows[ 0 ].innerHTML = '<span id="inner-one">first fragment</span>' +
+				'<span class="ext-wikilambda-app-abstract-content-fragment-menu">menu</span>';
+			// The old place can be hidden and moved during the drag
+			rows[ 0 ].classList.add(
+				'ext-wikilambda-app-abstract-content-fragment__dragged',
+				'ext-wikilambda-app-abstract-content-fragment__in-place'
+			);
+			rows[ 0 ].style.transform = 'translateY( 30px )';
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			await wrapper.vm.$nextTick();
+			await wrapper.vm.$nextTick();
+
+			const ghost = wrapper.find( '.ext-wikilambda-app-abstract-content-section-ghost' );
+			expect( ghost.exists() ).toBe( true );
+			expect( ghost.attributes( 'aria-hidden' ) ).toBe( 'true' );
+			// The target is after the last fragment, at 60px in the list
+			expect( ghost.attributes( 'style' ) ).toContain( 'top: 60px' );
+			// The copy shows the fragment without its actions menu
+			expect( ghost.text() ).toBe( 'first fragment' );
+			// The copy shows no state of the old place
+			const copy = ghost.element.firstElementChild;
+			expect( Array.from( copy.classList ).filter(
+				( name ) => name.startsWith( 'ext-wikilambda-app-abstract-content-fragment__' )
+			) ).toEqual( [] );
+			expect( copy.getAttribute( 'style' ) ).toBeNull();
+			// The copy repeats no id, and it is not a fragment of the list
+			expect( ghost.element.querySelectorAll( '[id]' ).length ).toBe( 0 );
+			expect( ghost.element.querySelectorAll( '.ext-wikilambda-app-abstract-content-section-fragment' ).length )
+				.toBe( 0 );
+
+			firePointer( 'pointercancel' );
+		} );
+
+		it( 'keeps a checked radio button of the dragged fragment checked', async () => {
+			const wrapper = renderSection( { section: threeFragments }, { attachTo: document.body } );
+			setLayout( wrapper );
+			const rows = wrapper.vm.listRef.querySelectorAll( '.ext-wikilambda-app-abstract-content-section-fragment' );
+			rows[ 0 ].innerHTML = '<input type="radio" name="fragment-one-bool" value="Z41" checked>' +
+				'<input type="radio" name="fragment-one-bool" value="Z42">';
+			const original = rows[ 0 ].querySelector( 'input[value="Z41"]' );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			await wrapper.vm.$nextTick();
+			await wrapper.vm.$nextTick();
+
+			const ghost = wrapper.find( '.ext-wikilambda-app-abstract-content-section-ghost' );
+			// The copy has no field names, so it joins no group of the original
+			expect( ghost.element.querySelectorAll( '[name]' ).length ).toBe( 0 );
+			expect( ghost.element.querySelector( 'input[value="Z41"]' ).checked ).toBe( true );
+			expect( original.checked ).toBe( true );
+
+			firePointer( 'pointercancel' );
+			wrapper.unmount();
+		} );
+
+		it( 'opens a gap for the copy at the target', async () => {
+			jest.spyOn( HTMLElement.prototype, 'offsetHeight', 'get' ).mockReturnValue( 30 );
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			// Drag the last fragment above the first one
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 2 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 150 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 105 } );
+			await wrapper.vm.$nextTick();
+			await wrapper.vm.$nextTick();
+
+			// The gap is the height of the copy, and a little space
+			const rows = wrapper.findAll( '.ext-wikilambda-app-abstract-content-section-fragment' );
+			rows.forEach( ( row ) => {
+				expect( row.attributes( 'style' ) ).toContain( 'translateY( 34px )' );
+			} );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-section-fragments' ).attributes( 'style' ) )
+				.toContain( 'padding-bottom: 34px' );
+
+			firePointer( 'pointercancel' );
+			jest.restoreAllMocks();
+		} );
+
+		it( 'shows the line and the copy at the old place when the drop keeps the order', async () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			// Drag the second fragment a little down, over its own place
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 1 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 125 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 135 } );
+			await wrapper.vm.$nextTick();
+
+			// The second fragment starts 20px down the list
+			const ghost = wrapper.find( '.ext-wikilambda-app-abstract-content-section-ghost' );
+			expect( ghost.exists() ).toBe( true );
+			expect( ghost.attributes( 'style' ) ).toContain( 'top: 20px' );
+			const line = wrapper.find( '.ext-wikilambda-app-abstract-content-section-insertion' );
+			expect( line.exists() ).toBe( true );
+			expect( line.attributes( 'style' ) ).toContain( 'top: 20px' );
+			// The old place does not show, and the copy fits in its room
+			const dragged = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			expect( dragged[ 1 ].props( 'inPlace' ) ).toBe( true );
+			expect( dragged[ 0 ].props( 'inPlace' ) ).toBe( false );
+			wrapper.findAll( '.ext-wikilambda-app-abstract-content-section-fragment' ).forEach( ( row ) => {
+				expect( row.attributes( 'style' ) ).toBeUndefined();
+			} );
+
+			firePointer( 'pointercancel' );
+		} );
+
+		it( 'keeps the copy and the line when the pointer leaves the list sideways', async () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			firePointer( 'pointermove', { clientX: 400, clientY: 155 } );
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-section-ghost' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-section-insertion' ).exists() ).toBe( true );
+
+			firePointer( 'pointercancel' );
+		} );
+
+		it( 'removes the copy of the dragged fragment after the drop', async () => {
+			const wrapper = renderSection( { section: threeFragments } );
+			setLayout( wrapper );
+
+			const fragments = wrapper.findAllComponents( { name: 'wl-abstract-content-fragment' } );
+			fragments[ 0 ].vm.$emit( 'dragstart', { pointerId: 1, button: 0, clientX: 50, clientY: 110 } );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			firePointer( 'pointerup', { clientX: 50, clientY: 155 } );
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-section-ghost' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-section-insertion' ).exists() ).toBe( false );
+			// The gap closes
+			wrapper.findAll( '.ext-wikilambda-app-abstract-content-section-fragment' ).forEach( ( row ) => {
+				expect( row.attributes( 'style' ) ).toBeUndefined();
+			} );
+		} );
 	} );
 
 	describe( 'moving fragments', () => {

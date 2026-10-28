@@ -17,9 +17,16 @@
 
 // Distance in pixels that the pointer must move to start a drag
 const DRAG_THRESHOLD = 5;
+// Height in pixels of the band at the top and at the bottom of the viewport
+// where a drag scrolls the page
+const SCROLL_EDGE = 48;
+// Largest scroll in pixels for each animation frame
+const SCROLL_STEP_MAX = 16;
 
 const dragUtils = {
 	DRAG_THRESHOLD,
+	SCROLL_EDGE,
+	SCROLL_STEP_MAX,
 
 	/**
 	 * Returns whether the pointer moved far enough to start a drag.
@@ -37,11 +44,12 @@ const dragUtils = {
 
 	/**
 	 * Returns the insertion point for the current pointer position, or null
-	 * if the pointer is outside the list.
+	 * if there is no list to drop in.
 	 *
-	 * The pointer must stay between the start and the end edge of the list.
-	 * The editor shows the fragments beside the generated text, so a pointer
-	 * over the generated text must not give an insertion point.
+	 * The fragments are a vertical list, so only the height of the pointer
+	 * counts. A pointer that moves sideways out of the list, for example over
+	 * the generated text, keeps the target. Above the list the target is the
+	 * first position, and below the list it is the last.
 	 *
 	 * The pointer selects the insertion point after each fragment that its
 	 * middle line passes. The middle line prevents a change of the insertion
@@ -54,10 +62,6 @@ const dragUtils = {
 	 */
 	getInsertionPoint: function ( pointer, listRect, fragmentRects ) {
 		if ( !listRect || !fragmentRects || fragmentRects.length === 0 ) {
-			return null;
-		}
-
-		if ( pointer.x < listRect.left || pointer.x > listRect.right ) {
 			return null;
 		}
 
@@ -119,6 +123,56 @@ const dragUtils = {
 
 		const rect = fragmentRects[ insertionPoint - 1 ];
 		return rect ? rect.top - listRect.top : null;
+	},
+
+	/**
+	 * Returns the rectangles of the fragments as the user sees them during a
+	 * drag. The drag opens a gap before the insertion point, so the fragments
+	 * from the insertion point onwards move down by the height of the gap.
+	 *
+	 * The layout holds the places of the fragments when the drag started,
+	 * from the top of the list. The fragments move during the drag, so their
+	 * own rectangles would move the target as soon as it changes.
+	 *
+	 * @param {Array<Object>} layout - Places of the fragments, with top from the top of the list
+	 * @param {number} listTop - Top of the list in the viewport
+	 * @param {number|null} insertionPoint - Position that the gap is before
+	 * @param {number} gap - Height of the gap in pixels
+	 * @return {Array<Object>}
+	 */
+	placeRects: function ( layout, listTop, insertionPoint, gap ) {
+		return layout.map( ( rect, position ) => {
+			// The layout holds no benjamin item, so position 0 is fragment 1
+			const moved = insertionPoint !== null && position + 1 >= insertionPoint;
+			return {
+				top: listTop + rect.top + ( moved ? gap : 0 ),
+				height: rect.height,
+				left: rect.left,
+				right: rect.right
+			};
+		} );
+	},
+
+	/**
+	 * Returns the distance in pixels to scroll the page in one animation
+	 * frame of a drag. A pointer near the top or the bottom edge of the
+	 * viewport scrolls the page, faster as it gets nearer to the edge, so that
+	 * the user can drag a fragment to a position that is not visible.
+	 *
+	 * @param {number} pointerY - Vertical position of the pointer in the viewport
+	 * @param {number} viewportHeight
+	 * @return {number} Negative to scroll up, positive to scroll down, 0 to stay
+	 */
+	getScrollStep: function ( pointerY, viewportHeight ) {
+		const intoTop = SCROLL_EDGE - pointerY;
+		if ( intoTop > 0 ) {
+			return -Math.ceil( SCROLL_STEP_MAX * Math.min( 1, intoTop / SCROLL_EDGE ) );
+		}
+		const intoBottom = pointerY - ( viewportHeight - SCROLL_EDGE );
+		if ( intoBottom > 0 ) {
+			return Math.ceil( SCROLL_STEP_MAX * Math.min( 1, intoBottom / SCROLL_EDGE ) );
+		}
+		return 0;
 	}
 };
 

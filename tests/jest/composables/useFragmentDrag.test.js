@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const { nextTick } = require( 'vue' );
 const loadComposable = require( '../helpers/loadComposable.js' );
 const useFragmentDrag = require( '../../../resources/ext.wikilambda.app/composables/useFragmentDrag.js' );
 
@@ -23,6 +24,10 @@ describe( 'useFragmentDrag', () => {
 	let onDrop;
 	// Distance that the page scrolled down since the start of the test
 	let scrolled;
+	// Height of the gap that the list opens at the target
+	let gap;
+	// Distance that the fragments moved down in the list since the drag started
+	let moved;
 
 	/**
 	 * Move a rectangle as the page scroll moves it in the viewport.
@@ -57,10 +62,14 @@ describe( 'useFragmentDrag', () => {
 
 	beforeEach( () => {
 		scrolled = 0;
+		gap = 0;
+		moved = 0;
 		onDrop = jest.fn();
 		const [ result, testWrapper ] = loadComposable( () => useFragmentDrag( {
 			getListRect: () => shift( listRect ),
-			getFragmentRects: () => fragmentRects.map( shift ),
+			getFragmentRects: () => fragmentRects.map( shift )
+				.map( ( rect ) => Object.assign( rect, { top: rect.top + moved } ) ),
+			getGapHeight: () => gap,
 			onDrop
 		} ) );
 		drag = result;
@@ -147,12 +156,12 @@ describe( 'useFragmentDrag', () => {
 			expect( drag.insertionPoint.value ).toBe( 4 );
 		} );
 
-		it( 'clears the insertion point when the pointer leaves the list', () => {
+		it( 'keeps the insertion point when the pointer leaves the list sideways', () => {
 			drag.startDrag( pointerDown(), 1 );
 			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
 			firePointer( 'pointermove', { clientX: 400, clientY: 155 } );
 
-			expect( drag.insertionPoint.value ).toBeNull();
+			expect( drag.insertionPoint.value ).toBe( 4 );
 		} );
 
 		it( 'gives the offset of the line that shows the insertion point', () => {
@@ -162,18 +171,6 @@ describe( 'useFragmentDrag', () => {
 			// The pointer passed the middle of the first two fragments
 			expect( drag.insertionPoint.value ).toBe( 3 );
 			expect( drag.insertionOffset.value ).toBe( 40 );
-		} );
-
-		it( 'follows the page when it scrolls under the pointer', () => {
-			drag.startDrag( pointerDown(), 1 );
-			firePointer( 'pointermove', { clientX: 50, clientY: 135 } );
-			expect( drag.insertionPoint.value ).toBe( 3 );
-
-			scrolled = 20;
-			window.dispatchEvent( new Event( 'scroll' ) );
-
-			// The fragments moved up under the pointer, which now passes all three
-			expect( drag.insertionPoint.value ).toBe( 4 );
 		} );
 	} );
 
@@ -203,12 +200,12 @@ describe( 'useFragmentDrag', () => {
 			expect( onDrop ).not.toHaveBeenCalled();
 		} );
 
-		it( 'does not move the fragment when the pointer is outside the list', () => {
+		it( 'moves the fragment when the drop is beside the list', () => {
 			drag.startDrag( pointerDown(), 1 );
 			firePointer( 'pointermove', { clientX: 400, clientY: 155 } );
 			firePointer( 'pointerup', { clientX: 400, clientY: 155 } );
 
-			expect( onDrop ).not.toHaveBeenCalled();
+			expect( onDrop ).toHaveBeenCalledWith( 1, 3 );
 		} );
 
 		it( 'does not move the fragment for a click on the drag handle', () => {
@@ -308,6 +305,163 @@ describe( 'useFragmentDrag', () => {
 
 			expect( otherListener ).toHaveBeenCalledTimes( 1 );
 			document.removeEventListener( 'keydown', otherListener );
+		} );
+	} );
+
+	describe( 'opening a gap at the target', () => {
+		it( 'finds the target with the gap open', () => {
+			gap = 20;
+			drag.startDrag( pointerDown( { clientY: 150 } ), 3 );
+			// The pointer passes the middle of the first fragment, so the gap opens before the second
+			firePointer( 'pointermove', { clientX: 50, clientY: 115 } );
+			expect( drag.insertionPoint.value ).toBe( 2 );
+
+			// The pointer is in the gap, which moved the second fragment down to 140–160
+			firePointer( 'pointermove', { clientX: 50, clientY: 135 } );
+
+			expect( drag.insertionPoint.value ).toBe( 2 );
+		} );
+
+		it( 'shows the line at the top of the gap', () => {
+			gap = 20;
+			drag.startDrag( pointerDown( { clientY: 150 } ), 3 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 115 } );
+
+			expect( drag.insertionOffset.value ).toBe( 20 );
+		} );
+
+		it( 'shows the target at the old place when a drop keeps the order', () => {
+			gap = 30;
+			drag.startDrag( pointerDown(), 1 );
+			// The pointer passes the middle of the dragged fragment only
+			firePointer( 'pointermove', { clientX: 50, clientY: 125 } );
+
+			expect( drag.insertionPoint.value ).toBe( 2 );
+			expect( drag.isInPlace.value ).toBe( true );
+			// The line is at the top of the old place
+			expect( drag.insertionOffset.value ).toBe( 0 );
+			// The old place gives its 20px to the ghost, so the gap after it needs 10px more
+			expect( drag.gapPoint.value ).toBe( 2 );
+			expect( drag.gapShift.value ).toBe( 10 );
+		} );
+
+		it( 'opens no gap at the old place for a ghost that fits in it', () => {
+			gap = 15;
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 125 } );
+
+			expect( drag.gapShift.value ).toBe( 0 );
+		} );
+
+		it( 'opens a gap of the full height when a drop changes the order', () => {
+			gap = 30;
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 135 } );
+
+			expect( drag.isInPlace.value ).toBe( false );
+			expect( drag.gapPoint.value ).toBe( 3 );
+			expect( drag.gapShift.value ).toBe( 30 );
+		} );
+
+		it( 'measures the places again when the dragged fragment collapses', async () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 145 } );
+			expect( drag.insertionPoint.value ).toBe( 3 );
+
+			// The dragged fragment collapses, so the fragments move up 10px
+			moved = -10;
+			await nextTick();
+
+			// The pointer now passes the middle of all three fragments
+			expect( drag.insertionPoint.value ).toBe( 4 );
+		} );
+
+		it( 'uses the places of the fragments from the start of the drag', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 125 } );
+
+			// The gap moves the fragments, but the target must not follow them
+			moved = 100;
+			firePointer( 'pointermove', { clientX: 50, clientY: 135 } );
+
+			expect( drag.insertionPoint.value ).toBe( 3 );
+		} );
+	} );
+
+	describe( 'scrolling the page', () => {
+		let frames;
+
+		beforeEach( () => {
+			frames = [];
+			jest.spyOn( window, 'requestAnimationFrame' ).mockImplementation( ( callback ) => {
+				frames.push( callback );
+				return frames.length;
+			} );
+			jest.spyOn( window, 'cancelAnimationFrame' ).mockImplementation( () => {} );
+			jest.spyOn( window, 'scrollBy' ).mockImplementation( () => {} );
+		} );
+
+		afterEach( () => {
+			jest.restoreAllMocks();
+		} );
+
+		/**
+		 * Run the animation frames that the drag asked for so far.
+		 */
+		const runFrames = () => {
+			const pending = frames;
+			frames = [];
+			pending.forEach( ( callback ) => callback() );
+		};
+
+		it( 'follows the page when it scrolls under the pointer', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 135 } );
+			expect( drag.insertionPoint.value ).toBe( 3 );
+
+			scrolled = 20;
+			window.dispatchEvent( new Event( 'scroll' ) );
+
+			// The fragments moved up under the pointer, which now passes all three
+			expect( drag.insertionPoint.value ).toBe( 4 );
+		} );
+
+		it( 'scrolls the page down when the pointer is near the bottom edge', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: window.innerHeight - 5 } );
+			runFrames();
+
+			expect( window.scrollBy ).toHaveBeenCalledTimes( 1 );
+			expect( window.scrollBy.mock.calls[ 0 ][ 1 ] ).toBeGreaterThan( 0 );
+			// It goes on while the pointer stays near the edge
+			expect( frames.length ).toBe( 1 );
+		} );
+
+		it( 'scrolls the page up when the pointer is near the top edge', () => {
+			drag.startDrag( pointerDown( { clientY: 100 } ), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 5 } );
+			runFrames();
+
+			expect( window.scrollBy.mock.calls[ 0 ][ 1 ] ).toBeLessThan( 0 );
+		} );
+
+		it( 'does not scroll the page when the pointer is away from the edges', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: 155 } );
+			runFrames();
+
+			expect( window.scrollBy ).not.toHaveBeenCalled();
+			expect( frames.length ).toBe( 0 );
+		} );
+
+		it( 'stops scrolling the page after the drop', () => {
+			drag.startDrag( pointerDown(), 1 );
+			firePointer( 'pointermove', { clientX: 50, clientY: window.innerHeight - 5 } );
+			firePointer( 'pointerup', { clientX: 50, clientY: window.innerHeight - 5 } );
+			runFrames();
+
+			expect( window.cancelAnimationFrame ).toHaveBeenCalled();
+			expect( window.scrollBy ).not.toHaveBeenCalled();
 		} );
 	} );
 

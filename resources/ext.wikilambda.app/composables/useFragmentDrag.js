@@ -15,18 +15,25 @@
  * The drag starts only after the pointer moves a short distance. A pointer
  * down and up in the same place stays a click.
  *
+ * During the drag, the list opens a gap at the target for the dragged
+ * fragment. The gap moves the fragments after it, so the composable keeps
+ * the places of the fragments from the start of the drag, and it adds the
+ * gap itself to find the target.
+ *
  * @module ext.wikilambda.app.composables.useFragmentDrag
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-const { computed, onUnmounted, ref } = require( 'vue' );
+const { computed, nextTick, onUnmounted, ref } = require( 'vue' );
 
 const {
 	changesOrder,
 	getInsertionOffset,
 	getInsertionPoint,
+	getScrollStep,
+	placeRects,
 	getTargetIndex,
 	passesDragThreshold
 } = require( '../utils/dragUtils.js' );
@@ -38,10 +45,14 @@ const {
  * @param {Function} options.getListRect - () => Object|null, rectangle of the list
  * @param {Function} options.getFragmentRects - () => Array<Object>, rectangles of the fragments
  * @param {Function} options.onDrop - ( fragmentIndex, targetIndex ) => undefined
+ * @param {Function} [options.getGapHeight] - () => number, height of the gap at the target
  * @return {{
  *   isDragging: Object,
  *   draggedIndex: Object,
  *   insertionPoint: Object,
+ *   isInPlace: Object,
+ *   gapPoint: Object,
+ *   gapShift: Object,
  *   insertionOffset: Object,
  *   startDrag: function(PointerEvent, number): undefined,
  *   cancelDrag: function(): undefined
@@ -49,6 +60,7 @@ const {
  */
 module.exports = function useFragmentDrag( options ) {
 	const { getListRect, getFragmentRects, onDrop } = options;
+	const getGapHeight = options.getGapHeight || ( () => 0 );
 
 	// Position of the fragment that the user drags, or null outside a drag
 	const draggedIndex = ref( null );
@@ -61,23 +73,108 @@ module.exports = function useFragmentDrag( options ) {
 	let pointerId = null;
 	// Last position of the pointer during the drag, to update after a scroll
 	let pointer = null;
+	// Animation frame that scrolls the page, or null when the page stays
+	let scrollFrame = null;
+	// Places of the fragments when the drag started, from the top of the list
+	let layout = [];
 
-	// Distance from the top of the list to the line that shows the target
+	// Whether a drop now leaves the fragment in its place. The two insertion
+	// points next to the dragged fragment keep the order.
+	const isInPlace = computed( () => insertionPoint.value !== null &&
+		!changesOrder( insertionPoint.value, draggedIndex.value ) );
+
+	// Position from which the fragments move down to open a gap for the ghost,
+	// or null without a target. Over its old place, the dragged fragment gives
+	// its own room to the ghost, so the gap opens after it.
+	const gapPoint = computed( () => {
+		if ( insertionPoint.value === null ) {
+			return null;
+		}
+		return isInPlace.value ? draggedIndex.value + 1 : insertionPoint.value;
+	} );
+
+	// Distance that the fragments from the gap point move down. Over its old
+	// place, the gap needs only the room that the old place does not give.
+	const gapShift = computed( () => {
+		const height = getGapHeight();
+		if ( !isInPlace.value ) {
+			return height;
+		}
+		const place = layout[ draggedIndex.value - 1 ];
+		return Math.max( 0, height - ( place ? place.height : 0 ) );
+	} );
+
+	// Distance from the top of the list to the line that shows the target, and
+	// to the ghost under it. Over its old place, the line is at the top of
+	// that place. The fragments before the line do not move, so the layout
+	// gives the distance.
 	const insertionOffset = computed( () => getInsertionOffset(
-		insertionPoint.value,
-		getListRect(),
-		getFragmentRects()
+		isInPlace.value ? draggedIndex.value : insertionPoint.value,
+		{ top: 0 },
+		isDragging.value ? layout : []
 	) );
 
 	/**
-	 * Update the target position for the last pointer position. The pointer
-	 * can stay in place while the page scrolls under it, so a scroll also
-	 * calls this.
+	 * Keep the places of the fragments, before the gap moves them.
+	 *
+	 * @return {undefined}
+	 */
+	function measureLayout() {
+		const listRect = getListRect();
+		layout = !listRect ? [] : getFragmentRects().map( ( rect ) => ( {
+			top: rect.top - listRect.top,
+			height: rect.height,
+			left: rect.left,
+			right: rect.right
+		} ) );
+	}
+
+	/**
+	 * Update the target position for the last pointer position, with the
+	 * fragments where the user sees them. The pointer can stay in place while
+	 * the page scrolls under it, so a scroll also calls this.
 	 *
 	 * @return {undefined}
 	 */
 	function update() {
-		insertionPoint.value = getInsertionPoint( pointer, getListRect(), getFragmentRects() );
+		const listRect = getListRect();
+		if ( !listRect ) {
+			insertionPoint.value = null;
+			return;
+		}
+		const rects = placeRects( layout, listRect.top, gapPoint.value, gapShift.value );
+		insertionPoint.value = getInsertionPoint( pointer, listRect, rects );
+	}
+
+	/**
+	 * Scroll the page one step while the pointer is near the top or the
+	 * bottom edge of the viewport, and ask for the next step.
+	 *
+	 * @return {undefined}
+	 */
+	function scrollStep() {
+		scrollFrame = null;
+		if ( !isDragging.value || !pointer ) {
+			return;
+		}
+		const step = getScrollStep( pointer.y, window.innerHeight );
+		if ( step === 0 ) {
+			return;
+		}
+		window.scrollBy( 0, step );
+		update();
+		scrollFrame = window.requestAnimationFrame( scrollStep );
+	}
+
+	/**
+	 * Start to scroll the page, if it does not scroll already.
+	 *
+	 * @return {undefined}
+	 */
+	function startScroll() {
+		if ( scrollFrame === null ) {
+			scrollFrame = window.requestAnimationFrame( scrollStep );
+		}
 	}
 
 	/**
@@ -111,12 +208,18 @@ module.exports = function useFragmentDrag( options ) {
 		window.removeEventListener( 'scroll', onScroll );
 		window.removeEventListener( 'selectstart', onSelectStart );
 
+		if ( scrollFrame !== null ) {
+			window.cancelAnimationFrame( scrollFrame );
+			scrollFrame = null;
+		}
+
 		draggedIndex.value = null;
 		insertionPoint.value = null;
 		isDragging.value = false;
 		origin = null;
 		pointerId = null;
 		pointer = null;
+		layout = [];
 	}
 
 	/**
@@ -146,13 +249,23 @@ module.exports = function useFragmentDrag( options ) {
 			if ( !passesDragThreshold( origin, position ) ) {
 				return;
 			}
+			measureLayout();
 			isDragging.value = true;
+			// The start of the drag collapses the dragged fragment, so measure
+			// the places again when the page shows that
+			nextTick( () => {
+				if ( isDragging.value ) {
+					measureLayout();
+					update();
+				}
+			} );
 		}
 
 		// The pointer must not select the text of the fragments during a drag
 		event.preventDefault();
 		pointer = position;
 		update();
+		startScroll();
 	}
 
 	/**
@@ -226,7 +339,8 @@ module.exports = function useFragmentDrag( options ) {
 	}
 
 	/**
-	 * Follow the page when it scrolls during a drag.
+	 * Follow the page when it scrolls during a drag, by the wheel or by the
+	 * edge of the viewport.
 	 *
 	 * @return {undefined}
 	 */
@@ -279,6 +393,9 @@ module.exports = function useFragmentDrag( options ) {
 		isDragging,
 		draggedIndex,
 		insertionPoint,
+		isInPlace,
+		gapPoint,
+		gapShift,
 		insertionOffset,
 		startDrag,
 		cancelDrag

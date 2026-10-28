@@ -12,7 +12,11 @@ const {
 	getInsertionPoint,
 	getTargetIndex,
 	changesOrder,
-	getInsertionOffset
+	getInsertionOffset,
+	placeRects,
+	getScrollStep,
+	SCROLL_EDGE,
+	SCROLL_STEP_MAX
 } = require( '../../../resources/ext.wikilambda.app/utils/dragUtils.js' );
 
 describe( 'dragUtils', () => {
@@ -52,12 +56,12 @@ describe( 'dragUtils', () => {
 			expect( getInsertionPoint( { x: 50, y: 110 }, null, fragmentRects ) ).toBeNull();
 		} );
 
-		it( 'returns null when the pointer is right of the list', () => {
-			expect( getInsertionPoint( { x: 260, y: 110 }, listRect, fragmentRects ) ).toBeNull();
+		it( 'keeps the insertion point when the pointer is right of the list', () => {
+			expect( getInsertionPoint( { x: 260, y: 115 }, listRect, fragmentRects ) ).toBe( 2 );
 		} );
 
-		it( 'returns null when the pointer is left of the list', () => {
-			expect( getInsertionPoint( { x: -10, y: 110 }, listRect, fragmentRects ) ).toBeNull();
+		it( 'keeps the insertion point when the pointer is left of the list', () => {
+			expect( getInsertionPoint( { x: -10, y: 115 }, listRect, fragmentRects ) ).toBe( 2 );
 		} );
 
 		it( 'returns the first insertion point above the middle of the first fragment', () => {
@@ -141,6 +145,58 @@ describe( 'dragUtils', () => {
 
 		it( 'returns the bottom edge of the last fragment', () => {
 			expect( getInsertionOffset( 4, listRect, fragmentRects ) ).toBe( 60 );
+		} );
+	} );
+
+	describe( 'placeRects', () => {
+		// The same three fragments, from the top of the list
+		const layout = [
+			{ top: 0, left: 0, right: 200, height: 20 },
+			{ top: 20, left: 0, right: 200, height: 20 },
+			{ top: 40, left: 0, right: 200, height: 20 }
+		];
+
+		it( 'places the fragments in the viewport', () => {
+			expect( placeRects( layout, 100, null, 30 ) ).toEqual( fragmentRects );
+		} );
+
+		it( 'moves the fragments from the insertion point down by the gap', () => {
+			const rects = placeRects( layout, 100, 2, 30 );
+			expect( rects.map( ( rect ) => rect.top ) ).toEqual( [ 100, 150, 170 ] );
+		} );
+
+		it( 'moves no fragment for a gap after the last fragment', () => {
+			const rects = placeRects( layout, 100, 4, 30 );
+			expect( rects.map( ( rect ) => rect.top ) ).toEqual( [ 100, 120, 140 ] );
+		} );
+	} );
+
+	describe( 'getScrollStep', () => {
+		const viewportHeight = 600;
+
+		it( 'does not scroll when the pointer is away from the edges', () => {
+			expect( getScrollStep( 300, viewportHeight ) ).toBe( 0 );
+			expect( getScrollStep( SCROLL_EDGE, viewportHeight ) ).toBe( 0 );
+			expect( getScrollStep( viewportHeight - SCROLL_EDGE, viewportHeight ) ).toBe( 0 );
+		} );
+
+		it( 'scrolls up when the pointer is near the top edge', () => {
+			expect( getScrollStep( SCROLL_EDGE - 1, viewportHeight ) ).toBeLessThan( 0 );
+		} );
+
+		it( 'scrolls down when the pointer is near the bottom edge', () => {
+			expect( getScrollStep( viewportHeight - SCROLL_EDGE + 1, viewportHeight ) ).toBeGreaterThan( 0 );
+		} );
+
+		it( 'scrolls faster nearer to the edge', () => {
+			expect( getScrollStep( 10, viewportHeight ) ).toBeLessThan( getScrollStep( 40, viewportHeight ) );
+			expect( getScrollStep( 590, viewportHeight ) ).toBeGreaterThan( getScrollStep( 560, viewportHeight ) );
+		} );
+
+		it( 'scrolls at most the largest step, also past the edge', () => {
+			expect( getScrollStep( 0, viewportHeight ) ).toBe( -SCROLL_STEP_MAX );
+			expect( getScrollStep( -100, viewportHeight ) ).toBe( -SCROLL_STEP_MAX );
+			expect( getScrollStep( viewportHeight + 100, viewportHeight ) ).toBe( SCROLL_STEP_MAX );
 		} );
 	} );
 } );

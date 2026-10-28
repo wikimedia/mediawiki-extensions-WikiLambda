@@ -445,6 +445,32 @@ describe( 'AbstractContentFragment', () => {
 				.toContain( 'ext-wikilambda-app-abstract-content-fragment__dragged' );
 		} );
 
+		it( 'hides the old place when a drop leaves the fragment in place', () => {
+			const wrapper = renderFragment( { dragged: true, inPlace: true } );
+
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-content-fragment' ).classes() )
+				.toContain( 'ext-wikilambda-app-abstract-content-fragment__in-place' );
+		} );
+
+		it( 'collapses the fragment while the user drags it', () => {
+			const wrapper = renderFragment( { dragging: true, dragged: true } );
+
+			expect( wrapper.findComponent( { name: 'wl-z-object-key-value' } ).props( 'collapsed' ) ).toBe( true );
+		} );
+
+		it( 'does not collapse the fragment before the drag starts', () => {
+			// The pointer is down on the drag handle, but it did not move yet
+			const wrapper = renderFragment( { dragging: false, dragged: true } );
+
+			expect( wrapper.findComponent( { name: 'wl-z-object-key-value' } ).props( 'collapsed' ) ).toBe( false );
+		} );
+
+		it( 'does not collapse the other fragments during a drag', () => {
+			const wrapper = renderFragment( { dragging: true, dragged: false } );
+
+			expect( wrapper.findComponent( { name: 'wl-z-object-key-value' } ).props( 'collapsed' ) ).toBe( false );
+		} );
+
 		it( 'does not highlight a fragment during a drag', async () => {
 			const wrapper = renderFragment( { dragging: true } );
 

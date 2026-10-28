@@ -992,6 +992,31 @@ describe( 'ZObjectKeyValue', () => {
 				expect( toggle.props( 'hasExpandedMode' ) ).toBe( false );
 			} );
 
+			it( 'shows the collapsed view while collapsed is set, and keeps the expansion state', async () => {
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+					Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1002' },
+					Z11K2: { Z1K1: 'Z6', Z6K1: 'string value' }
+				};
+				store.getErrors = jest.fn().mockReturnValue( [] );
+
+				const wrapper = renderZObjectKeyValue( {
+					edit: true,
+					defaultExpanded: true
+				} );
+				expect( wrapper.vm.isExpanded ).toBe( true );
+				expect( wrapper.vm.renderComponent ).toBe( 'wl-z-object-key-value-set' );
+
+				// It renders the builtin component, which is the collapsed view
+				await wrapper.setProps( { collapsed: true } );
+				expect( wrapper.vm.isExpanded ).toBe( false );
+				expect( wrapper.vm.renderComponent ).toBe( 'wl-z-monolingual-string' );
+
+				await wrapper.setProps( { collapsed: false } );
+				expect( wrapper.vm.isExpanded ).toBe( true );
+				expect( wrapper.vm.renderComponent ).toBe( 'wl-z-object-key-value-set' );
+			} );
+
 			describe( 'expansion for errors/warnings in field', () => {
 				it( 'expands when component has field errors', async () => {
 					objectValue = {

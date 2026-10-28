@@ -11,7 +11,8 @@
 		:class="{
 			'ext-wikilambda-app-abstract-content-fragment__highlight': isHighlighted,
 			'ext-wikilambda-app-abstract-content-fragment__selected': isSelected,
-			'ext-wikilambda-app-abstract-content-fragment__dragged': dragged
+			'ext-wikilambda-app-abstract-content-fragment__dragged': dragged,
+			'ext-wikilambda-app-abstract-content-fragment__in-place': inPlace
 		}"
 		:aria-current="isSelected ? 'true' : undefined"
 		@pointerenter="setHighlight"
@@ -55,6 +56,7 @@
 			:skip-key="true"
 			:skip-indent="true"
 			:parent-list-item-type="htmlFragmentType"
+			:collapsed="dragging && dragged"
 		></wl-z-object-key-value>
 	</div>
 </template>
@@ -101,9 +103,19 @@ module.exports = exports = defineComponent( {
 			default: false
 		},
 		/**
-		 * Whether the user drags this fragment
+		 * Whether the user drags this fragment. During the drag, the fragment
+		 * shows its collapsed view, so that an expanded fragment is as small
+		 * as the others. It opens again after the drag.
 		 */
 		dragged: {
+			type: Boolean,
+			default: false
+		},
+		/**
+		 * Whether a drop now leaves this dragged fragment in its place. Then the
+		 * ghost takes the place, and the old place does not show.
+		 */
+		inPlace: {
 			type: Boolean,
 			default: false
 		}
@@ -334,20 +346,42 @@ module.exports = exports = defineComponent( {
 		box-shadow: inset 2px 0 0 0 @border-color-progressive;
 	}
 
+	// The old position of a dragged fragment: dimmed, with a dashed outline.
+	// An outline does not change the layout of the list during the drag.
 	&.ext-wikilambda-app-abstract-content-fragment__dragged {
+		background-color: transparent;
+		box-shadow: none;
+		outline: @border-width-base dashed @border-color-base;
+		outline-offset: calc( -1 * @border-width-base );
+		border-radius: @border-radius-base;
 		opacity: @opacity-medium;
 	}
 
+	// The ghost takes the old place, but the place keeps its room
+	&.ext-wikilambda-app-abstract-content-fragment__in-place {
+		visibility: hidden;
+	}
+
+	// The handle is on the first row, in line with the actions menu. Then the
+	// pointer takes hold of the row that stays when the fragment collapses.
 	.ext-wikilambda-app-abstract-content-fragment-drag {
 		display: flex;
 		flex: 0 0 auto;
 		align-items: center;
-		align-self: stretch;
+		// The handle is a little wider than its icon. Center the icon, so that
+		// it keeps some space from the selection marker on the start edge.
+		justify-content: center;
+		align-self: flex-start;
+		min-height: @min-size-interactive-pointer;
 		width: calc( @min-size-icon-small + 4px );
 		color: @color-subtle;
-		cursor: grab;
+		cursor: @cursor-grab;
 		// The pointer must drag the fragment, not scroll the page
 		touch-action: none;
+
+		&:hover {
+			color: @color-base;
+		}
 	}
 
 	.ext-wikilambda-app-abstract-content-fragment-menu__icon {

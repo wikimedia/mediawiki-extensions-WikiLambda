@@ -196,6 +196,12 @@ module.exports = exports = defineComponent( {
 		defaultExpanded: {
 			type: Boolean,
 			default: false
+		},
+		// Show the collapsed view for a while, for example during a drag.
+		// The expansion state stays, so the view comes back after it.
+		collapsed: {
+			type: Boolean,
+			default: false
 		}
 	},
 	emits: [ 'set-value', 'set-type', 'add-list-item', 'typed-list-type-changed' ],
@@ -500,11 +506,12 @@ module.exports = exports = defineComponent( {
 			// * it has a builtin component, and
 			// * it cannot be expanded, or
 			//   it is currently collapsed, or
+			//   it shows the collapsed view for a while, or
 			//   it is expanded, but it's handled internally by the builtin component
 			if (
 				config &&
 				config.hasBuiltin &&
-				( !config.allowExpansion || !expanded.value || config.expandToSelf )
+				( !config.allowExpansion || !expanded.value || props.collapsed || config.expandToSelf )
 			) {
 				return config.component;
 			}
@@ -539,6 +546,10 @@ module.exports = exports = defineComponent( {
 			}
 			// If expanded is disallowed, always collapsed:
 			if ( !layoutConfig.value.allowExpansion ) {
+				return false;
+			}
+			// Collapsed for a while, whatever the stored state:
+			if ( props.collapsed ) {
 				return false;
 			}
 			// Else, expanded state as stored locally:
