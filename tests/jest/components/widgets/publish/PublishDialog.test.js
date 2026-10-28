@@ -7,7 +7,7 @@
 
 'use strict';
 
-const { mount } = require( '@vue/test-utils' );
+const { flushPromises, mount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const { dialogGlobalStubs } = require( '../../../helpers/dialogTestHelpers.js' );
 
@@ -297,6 +297,29 @@ describe( 'Publish Dialog', () => {
 
 		await waitFor( () => expect( wrapper.find( '.cdx-message--warning.ext-wikilambda-app-publish-dialog__keyboard-submit-warning' ).exists() ).toBe( false ) );
 		expect( mockSubmitAction ).toHaveBeenCalled();
+	} );
+
+	it( 'does not publish again when pressing Ctrl + Enter while publishing', async () => {
+		let resolveSubmit;
+		mockSubmitAction = jest.fn().mockReturnValue( new Promise( ( resolve ) => {
+			resolveSubmit = resolve;
+		} ) );
+		const wrapper = renderPublishDialog( {
+			showDialog: true
+		} );
+
+		// The teleport stub renders the input again after each update, so find it each time
+		const findInput = () => wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
+		await triggerKeydown( findInput(), 'Enter', 13, 'ctrlKey' );
+		await triggerKeydown( findInput(), 'Enter', 13, 'ctrlKey' );
+
+		expect( mockSubmitAction ).toHaveBeenCalledTimes( 1 );
+
+		// After the first request finishes, the user can publish again
+		resolveSubmit( { success: true } );
+		await flushPromises();
+		await triggerKeydown( findInput(), 'Enter', 13, 'ctrlKey' );
+		expect( mockSubmitAction ).toHaveBeenCalledTimes( 2 );
 	} );
 
 	describe( 'Event logging', () => {

@@ -235,6 +235,11 @@ module.exports = exports = defineComponent( {
 		 * 2. If the response is successful, navigates to the content page.
 		 */
 		function publishPage() {
+			// The disabled button does not stop Ctrl/Cmd + Enter in the summary field.
+			// Do not send a second request while the first one is in progress.
+			if ( isPublishing.value ) {
+				return;
+			}
 			if ( shouldPromptForSummary() ) {
 				hasMissingSummaryWarning.value = true;
 				return;
