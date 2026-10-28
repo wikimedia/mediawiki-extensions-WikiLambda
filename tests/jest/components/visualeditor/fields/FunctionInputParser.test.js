@@ -190,6 +190,13 @@ describe( 'FunctionInputParser', () => {
 	} );
 
 	it( 'shows progress indicator while parser is running', async () => {
+		// Keep the parser calls pending until the test checks the progress indicator
+		const parse = store.runParser.getMockImplementation();
+		const pendingCalls = [];
+		store.runParser.mockImplementation( ( payload ) => new Promise( ( resolve ) => {
+			pendingCalls.push( () => resolve( parse( payload ) ) );
+		} ) );
+
 		const wrapper = renderFunctionInputParser();
 
 		// Trigger validation by updating the input
@@ -198,6 +205,9 @@ describe( 'FunctionInputParser', () => {
 
 		// Wait for the progress indicator to appear
 		await waitFor( () => expect( wrapper.find( '.ext-wikilambda-app-function-input-parser__progress-indicator' ).exists() ).toBe( true ) );
+
+		// Let the parser calls complete
+		pendingCalls.forEach( ( complete ) => complete() );
 
 		// Wait for validation to complete
 		await waitFor( () => expect( wrapper.emitted().validate.length ).toBe( 2 ) );
