@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Neriah",
 			"RhAnish",
 			"Waki285"
 		]
@@ -44,7 +45,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "フラグメント捜査メニュー",
 	"wikilambda-abstract-fragment-failing": "コンテンツが利用できません",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "$2 (または$1) を返す関数のみが表示されます。",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|戻り値の型が異なる関数を使用する方法]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|戻り値の型が異なる関数を使用する方法]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "$2 ($1) を出力する関数を選択してください",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "このフィールドには、$2 (または$1) を返す関数が必要です。検索結果には、この戻り値の型を持つ関数のみが表示されます。",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "一部の関数がリストにない理由",
@@ -68,11 +69,13 @@
 	"wikilambda-abstract-menu-option-insert-before": "この上にフラグメントを挿入",
 	"wikilambda-abstract-menu-option-move-after": "下にフラグメントを移動",
 	"wikilambda-abstract-menu-option-move-before": "上にフラグメントを移動",
+	"wikilambda-abstract-menu-option-try-function-call": "ウィキファンクションズで試す",
 	"wikilambda-abstract-preview-fragment-max-retries": "再試行回数の上限に達しました。しばらくしてからもう一度お試しください。",
 	"wikilambda-abstract-preview-fragment-missing": "欠落",
 	"wikilambda-abstract-preview-fragment-pending": "保留中",
 	"wikilambda-abstract-preview-fragment-replicate": "ウィキファンクションズで詳細を見る",
 	"wikilambda-abstract-preview-fragment-retry": "再試行",
+	"wikilambda-abstract-preview-fragment-unavailable": "現在レンダリングサービスがビジー状態です。{{PLURAL:$1|$1分}}後に再試行します。",
 	"wikilambda-abstract-preview-in-language": "生成されたテキスト",
 	"wikilambda-abstract-renderedwith": "このページは[[meta:Special:MyLanguage/Abstract Wikipedia|抽象ウィキペディア]]からレンダリングされました。",
 	"wikilambda-abstract-search-no-article": "– まだ記事がありません",

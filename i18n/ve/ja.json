@@ -50,6 +50,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-description": "ウィキファンクションズで関数の全リストをご覧ください",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "値を入力してください。",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "[[f:$1|ウィキファンクションズ]]で不足しているコンテンツをあなたの言語に翻訳するのを手伝ってください。",
+	"wikilambda-visualeditor-wikifunctionscall-error": "コンテンツエラー",
 	"wikilambda-visualeditor-wikifunctionscall-title": "関数",
 	"wikilambda-visualeditor-wikifunctionscall-preview-title": "プレビュー"
 }

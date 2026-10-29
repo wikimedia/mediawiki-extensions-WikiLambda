@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"McDutchie"
+			"McDutchie",
+			"Neriah"
 		]
 	},
 	"action-wikilambda-abstract-create": "crear nove articulos abstracte",
@@ -36,7 +37,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "Menu de actiones de fragmento",
 	"wikilambda-abstract-fragment-failing": "Fragmento fallente",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "Solmente functiones que retorna un $2 ($1) es listate.",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|Como usar un function con un altere typo de retorno]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|Como usar un function con un altere typo de retorno]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Selige un function que produce un $2 ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "Pro iste campo es expectate un function que retorna un $2 ($1). Solmente functiones con ille typo de retorno appare in le recerca.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "Proque alcun functiones non es listate",

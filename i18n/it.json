@@ -351,6 +351,7 @@
 	"wikilambda-functioncall-metadata-errors-args": "Dati dell'errore",
 	"wikilambda-functioncall-metadata-errors-children": "Traccia dello stack",
 	"wikilambda-functioncall-metadata-errors-debug-hint": "Qualcosa non funziona? Prova <code>Wikifunctions.Debug</code> per controllare il tuo codice.",
+	"wikilambda-functioncall-metadata-errors-message": "Messaggio d'errore",
 	"wikilambda-functioncall-metadata-errors-none": "Nessuno",
 	"wikilambda-functioncall-metadata-errors-summary": "Tipo di errore",
 	"wikilambda-functioncall-metadata-evaluation": "Valutazione",

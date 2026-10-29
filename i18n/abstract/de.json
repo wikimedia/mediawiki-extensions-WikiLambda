@@ -66,6 +66,7 @@
 	"wikilambda-abstract-menu-option-insert-before": "Fragment einfügen vor",
 	"wikilambda-abstract-menu-option-move-after": "Fragment verschieben nach",
 	"wikilambda-abstract-menu-option-move-before": "Fragment verschieben vor",
+	"wikilambda-abstract-menu-option-try-function-call": "Versuche es auf Wikifunctions",
 	"wikilambda-abstract-preview-fragment-max-retries": "Maximale Anzahl an Wiederholungsversuchen erreicht. Bitte versuche es später erneut.",
 	"wikilambda-abstract-preview-fragment-missing": "Fehlend",
 	"wikilambda-abstract-preview-fragment-pending": "Ausstehend",

@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Akbarali"
+			"Akbarali",
+			"Neriah"
 		]
 	},
 	"action-wikilambda-abstract-create": "പുതിയ അബ്സ്ട്രാക്റ്റ് ലേഖനങ്ങൾ സൃഷ്ടിക്കുക.",
@@ -43,7 +44,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "ശകലങ്ങളുടെ പ്രവർത്തന മെനു",
 	"wikilambda-abstract-fragment-failing": "ഉള്ളടക്കം ലഭ്യമല്ല",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "$2 ( $1 ) തിരികെ നൽകുന്ന ഫംഗ്ഷനുകൾ മാത്രമേ പട്ടികപ്പെടുത്തിയിട്ടുള്ളൂ.",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|വ്യത്യസ്തമായ റിട്ടേൺ തരമുള്ള ഒരു ഫംഗ്ഷൻ എങ്ങനെ ഉപയോഗിക്കാം]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|വ്യത്യസ്തമായ റിട്ടേൺ തരമുള്ള ഒരു ഫംഗ്ഷൻ എങ്ങനെ ഉപയോഗിക്കാം]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "$2 ( $1 ) ഔട്ട്പുട്ട് ചെയ്യുന്ന ഒരു ഫംഗ്ഷൻ തിരഞ്ഞെടുക്കുക",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "ഈ ഫീൽഡ് $2 ( $1 ) തിരികെ നൽകുന്ന ഒരു ഫംഗ്ഷൻ പ്രതീക്ഷിക്കുന്നു. ആ റിട്ടേൺ തരമുള്ള ഫംഗ്ഷനുകൾ മാത്രമേ തിരയലിൽ കാണിക്കൂ.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "ചില ഫംഗ്ഷനുകൾ പട്ടികയിൽ കാണാത്തത് എന്തുകൊണ്ട്",

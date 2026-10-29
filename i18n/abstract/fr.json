@@ -3,6 +3,7 @@
 		"authors": [
 			"Jdforrester",
 			"Jérémy-Günther-Heinz Jähnick",
+			"Neriah",
 			"VIGNERON",
 			"Wikipucine",
 			"Wladek92"
@@ -45,7 +46,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "Menu des actions du fragment",
 	"wikilambda-abstract-fragment-failing": "Contenu non disponible",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "Seules sont listées les fonctions qui renvoient un $2 ($1).",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|Comment utiliser une fonction avec un type de retour différent]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|Comment utiliser une fonction avec un type de retour différent]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Sélectionner une fonction qui produit un $2 ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "Ce champ attend une fonction qui renvoie $2 ($1). Seules les fonctions qui ont ce type de retour sont affichées dans la recherche.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "Pourquoi certaines fonctions ne sont pas listées",

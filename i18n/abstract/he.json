@@ -45,7 +45,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "תפריט פעולות מקטע",
 	"wikilambda-abstract-fragment-failing": "התוכן אינו זמין",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "רק פונקציות שמחזירות $2 ($1) מופיעות ברשימה.",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|איך להשתמש בפונקציה עם סוג מוחזר שונה]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|איך להשתמש בפונקציה עם סוג מוחזר שונה]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "נא לבחור פונקציה שפולטת $2 ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "השדה הזה מצפה לפונקציה שמחזירה $2 ($1). רק פונקציות עם הסוג המוחזר הזה מוצגות בחיפוש.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "למה פונקציות מסוימות אינן מופיעות ברשימה",

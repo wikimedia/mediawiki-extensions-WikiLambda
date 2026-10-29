@@ -3,6 +3,7 @@
 		"authors": [
 			"Anterdc99",
 			"GuoPC",
+			"Neriah",
 			"Ouclie"
 		]
 	},
@@ -45,7 +46,7 @@
 	"wikilambda-abstract-fragment-actions-menu": "片段操作菜单",
 	"wikilambda-abstract-fragment-failing": "内容不可用",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "仅列出返回$2（$1）的函数。",
-	"wikilambda-abstract-fragment-function-selector-learn-more": "[[abstract:Special:MyLanguage/Help:How to create an article|如何使用具有不同返回类型的函数]]",
+	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|如何使用具有不同返回类型的函数]]",
 	"wikilambda-abstract-fragment-function-selector-placeholder": "选择一个输出为$2（$1）的函数",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "此字段需要一个返回值为$2（$1）的函数。搜索结果中仅显示具有此返回类型的函数。",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "为什么有些函数没有列出",
@@ -69,11 +70,13 @@
 	"wikilambda-abstract-menu-option-insert-before": "在插入片段前",
 	"wikilambda-abstract-menu-option-move-after": "在移动片段后",
 	"wikilambda-abstract-menu-option-move-before": "在移动片段前",
+	"wikilambda-abstract-menu-option-try-function-call": "在Wikifunctions上尝试",
 	"wikilambda-abstract-preview-fragment-max-retries": "已达到最大重试次数，请稍后再试。",
 	"wikilambda-abstract-preview-fragment-missing": "丢失",
 	"wikilambda-abstract-preview-fragment-pending": "待定",
 	"wikilambda-abstract-preview-fragment-replicate": "在Wikifunctions中查看详细信息",
 	"wikilambda-abstract-preview-fragment-retry": "重试",
+	"wikilambda-abstract-preview-fragment-unavailable": "渲染服务目前繁忙。请在{{PLURAL:$1|$1分钟}}后重试。",
 	"wikilambda-abstract-preview-in-language": "生成的文本",
 	"wikilambda-abstract-renderedwith": "页面由[[meta:Special:MyLanguage/Abstract Wikipedia|抽象维基百科]]渲染。",
 	"wikilambda-abstract-search-no-article": "– 暂无条目",
