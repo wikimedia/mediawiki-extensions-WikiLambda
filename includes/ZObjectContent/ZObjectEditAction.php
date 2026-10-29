@@ -17,7 +17,6 @@ use MediaWiki\Extension\WikiLambda\PageTitle\PageTitleBuilder;
 use MediaWiki\Extension\WikiLambda\UIUtils;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
-use MediaWiki\MainConfigNames;
 use MediaWiki\Page\Article;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Skin\Skin;
@@ -80,17 +79,15 @@ class ZObjectEditAction extends Action {
 			return '';
 		}
 
-		$sitename = $this->getContext()->getConfig()->get( MainConfigNames::Sitename );
-
 		$zid = $targetZObject->getZid();
 		$label = $targetZObject->getLabels()
 			->buildStringForLanguage( $this->getLanguage() )
 			->fallbackWithEnglish()
 			->getString();
 
-		return $this->msg( 'wikilambda-edit' )->text() . ' ' .
-			( $label ?: $zid ) . ' - ' .
-			$sitename;
+		return $this->msg( 'pagetitle',
+			$this->msg( 'editing', $label ?: $zid )->text()
+		)->text();
 	}
 
 	/**

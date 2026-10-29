@@ -341,15 +341,12 @@ class PageTitleBuilder {
 			$userLang
 		);
 
-		$prefix = Html::element(
-			'span',
-			[ 'class' => self::EDIT_HEADER_CLASS . '__title' ],
-			$context->msg( 'wikilambda-edit' )->text()
-		);
-
-		$titleHtml =
-			" " . $prefix . " " . $BCP47CodeObjectType . " " . $zObjectLabelsWithLang[ 'title' ]
-			. $context->msg( 'colon-separator' )->text() . $BCP47CodeObjectName . $label;
+		// T359781: One message for the whole heading, so translators control the word order.
+		// The chips and the name span are already HTML; the type label is user text, so escape it.
+		$titleHtml = ' ' . $context->msg( 'editing' )->rawParams(
+			$BCP47CodeObjectType . ' ' . htmlspecialchars( $zObjectLabelsWithLang[ 'title' ] )
+			. $context->msg( 'colon-separator' )->escaped() . $BCP47CodeObjectName . $label
+		)->escaped();
 
 		return self::createZObjectPageTitle(
 			self::EDIT_HEADER_CLASS,

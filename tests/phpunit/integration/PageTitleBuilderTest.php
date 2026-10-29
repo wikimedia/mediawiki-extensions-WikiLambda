@@ -142,6 +142,9 @@ class PageTitleBuilderTest extends WikiLambdaRepoModeIntegrationTestCase {
 		// and the name label is French, so the name chip exists but is hidden by CSS.
 		$html = PageTitleBuilder::createZObjectEditPageTitle( $content, $this->makeLanguage( 'en' ), $context );
 		$this->assertStringStartsWith( '<span class="ext-wikilambda-editpage-header">', $html );
+		// T359781: the whole heading comes from the core "editing" message, not "Edit" + text
+		$this->assertStringContainsString( 'Editing ', $html );
+		$this->assertStringNotContainsString( 'ext-wikilambda-editpage-header__title">', $html );
 		$this->assertStringContainsString( 'ext-wikilambda-editpage-header__zid', $html );
 		$this->assertStringContainsString( '>Z401<', $html );
 		$this->assertStringContainsString( 'ext-wikilambda-editpage-header__bcp47-code-type', $html );
@@ -170,5 +173,31 @@ class PageTitleBuilderTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertStringContainsString( '>en<', $pcdHtml );
 		$this->assertStringContainsString( '>fr<', $pcdHtml );
 		$this->assertStringNotContainsString( 'ext-wikilambda-editpage-header__bcp47-code--hidden', $pcdHtml );
+	}
+
+	/**
+	 * @group Database
+	 */
+	public function testCreateZObjectEditPageTitle_escapesTypeLabel() {
+		$this->registerLangs( [ 'en' ] );
+		// Type labels are wiki content, so give the String type (Z6) an HTML label
+		$z6 = json_decode( file_get_contents(
+			dirname( __DIR__, 3 ) . '/function-schemata/data/definitions/Z6.json'
+		), true );
+		foreach ( $z6['Z2K3']['Z12K1'] as &$monolingual ) {
+			if ( is_array( $monolingual ) && $monolingual['Z11K1'] === 'Z1002' ) {
+				$monolingual['Z11K2'] = '<script>alert(1)</script>';
+			}
+		}
+		unset( $monolingual );
+		$this->editPageUnchecked( 'Z6', json_encode( $z6 ) );
+
+		$html = PageTitleBuilder::createZObjectEditPageTitle(
+			$this->newZObjectContentFixture(),
+			$this->makeLanguage( 'en' ),
+			RequestContext::getMain()
+		);
+		$this->assertStringNotContainsString( '<script>', $html );
+		$this->assertStringContainsString( '&lt;script&gt;alert(1)&lt;/script&gt;', $html );
 	}
 }
