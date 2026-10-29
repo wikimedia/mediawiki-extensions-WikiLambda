@@ -58,6 +58,13 @@ class LoadPreDefinedObjectTest extends WikiLambdaMaintenanceTestCase {
 		$this->maintenance->execute();
 	}
 
+	public function testNoFlags_explainsHowToChooseObjects(): void {
+		$this->maintenance->loadWithArgv( [] );
+		$this->expectCallToFatalError();
+		$this->expectOutputRegex( '/use "--all", "--zid Z<number>", or "--from Z<number> --to Z<number>"/' );
+		$this->maintenance->execute();
+	}
+
 	// ====== Behavior ======
 
 	public function testZidFlag_createsNewZObject(): void {

@@ -606,7 +606,7 @@ class LoadPreDefinedObject extends Maintenance {
 		if ( $all ) {
 			// --all option overrides any --from and --to passed as arguments
 			if ( (bool)$from || (bool)$to || (bool)$zid ) {
-				$this->fatalError( 'The flag "--all" should not be used along with "--for", "--to" or "--zid".' );
+				$this->fatalError( 'The flag "--all" should not be used along with "--from", "--to" or "--zid".' );
 			}
 
 			$from = 1;
@@ -622,13 +622,18 @@ class LoadPreDefinedObject extends Maintenance {
 			}
 
 			if ( (bool)$from || (bool)$to ) {
-				$this->fatalError( 'The flag "--zid" should not be used along with "--for", "--to" or "--all".' );
+				$this->fatalError( 'The flag "--zid" should not be used along with "--from", "--to" or "--all".' );
 			}
 
 			$from = $zid;
 			$to = $zid;
 		} else {
 			// If no --all and no --zid are entered, then --from and --to are mandatory
+			if ( !$from && !$to ) {
+				$this->fatalError( 'Choose which objects to load: use "--all", "--zid Z<number>", '
+					. 'or "--from Z<number> --to Z<number>". See --help for all options.' );
+			}
+
 			if ( (bool)$from xor (bool)$to ) {
 				$this->fatalError( 'The flag "--from" must be used with the flag "--to" to set a range.' );
 			}
