@@ -4,6 +4,7 @@
 			"Waki285"
 		]
 	},
+	"wikilambda-fragment-disabled": "ウィキファンクションズの関数の呼び出しは現在無効になっています。この呼び出しを別のものに置き換えることをお勧めします。",
 	"wikilambda-fragment-pending": "⏳ 関数を呼び出し中…",
 	"wikilambda-recentchanges-edit-legend": "ウィキファンクションズからの編集",
 	"wikilambda-recentchanges-edit-letter": "関",
@@ -38,6 +39,11 @@
 	"wikilambda-visualeditor-wikifunctionscall-dialog-search-results-title": "結果",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-string-input-placeholder": "テキストを入力してください",
 	"wikilambda-visualeditor-wikifunctionscall-dialog-suggested-functions-title": "推奨される関数",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-suggest-title": "[[f:Wikifunctions:Project chat|コミュニティに提案する]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-title": "[[f:Special:CreateObject|関数を作成]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-create-description": "ウィキファンクションズを成長させるために、あなた自身で関数を作成してください",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-title": "[[f:Special:ListObjectsByType|すべての関数を表示]]",
+	"wikilambda-visualeditor-wikifunctionscall-dialog-cta-explore-description": "ウィキファンクションズで関数の全リストをご覧ください",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "値を入力してください。",
 	"wikilambda-visualeditor-wikifunctionscall-info-missing-content": "[[f:$1|ウィキファンクションズ]]で不足しているコンテンツをあなたの言語に翻訳するのを手伝ってください。",
 	"wikilambda-visualeditor-wikifunctionscall-title": "関数",
