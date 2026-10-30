@@ -644,7 +644,7 @@ EOT;
 
 	public function testOnMultiContentSave_relatedObjects_forType() {
 		$this->insertZids( [ 'Z4', 'Z1002' ] );
-		$sysopUser = $this->getTestSysop()->getUser();
+		$sysopUser = $this->getTestUser( self::PRIVILEGED_GROUPS )->getUser();
 		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Insert new type
@@ -741,7 +741,7 @@ EOT;
 
 	public function testOnMultiContentSave_relatedObjects_forEnumType() {
 		$this->insertZids( [ 'Z4', 'Z1002' ] );
-		$sysopUser = $this->getTestSysop()->getUser();
+		$sysopUser = $this->getTestUser( self::PRIVILEGED_GROUPS )->getUser();
 		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Insert new Enum type
@@ -887,7 +887,7 @@ EOT;
 
 	public function testOnMultiContentSave_relatedObjects_forFunctionCall() {
 		$this->insertZids( [ 'Z7', 'Z6884', 'Z6095' ] );
-		$sysopUser = $this->getTestSysop()->getUser();
+		$sysopUser = $this->getTestUser( self::PRIVILEGED_GROUPS )->getUser();
 		$dbr = $this->getServiceContainer()->getConnectionProvider()->getPrimaryDatabase();
 
 		// Insert new Enum type

@@ -15,16 +15,22 @@ use MediaWiki\Api\ApiMessage;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
+use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\WikiLambdaMode;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Revision\RenderedRevision;
+use MediaWiki\Revision\RevisionLookup;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
+use MediaWiki\User\UserFactory;
+use MediaWiki\User\UserIdentity;
 use StatusValue;
 use Wikimedia\Message\MessageSpecifier;
+use Wikimedia\Rdbms\IDBAccessObject;
 
 class PageEditingHandler implements
 	\MediaWiki\Title\Hook\NamespaceIsMovableHook,
@@ -34,7 +40,10 @@ class PageEditingHandler implements
 	public function __construct(
 		private readonly Config $config,
 		private readonly ZObjectStore $zObjectStore,
-		private readonly WikiLambdaMode $mode
+		private readonly WikiLambdaMode $mode,
+		private readonly RevisionLookup $revisionLookup,
+		private readonly UserFactory $userFactory,
+		private readonly ZObjectAuthorization $zObjectAuthorization
 	) {
 	}
 
@@ -91,7 +100,7 @@ class PageEditingHandler implements
 
 			// If namespace is Main (ZObjects) check title, content type and validity:
 			if ( $linkTarget->inNamespace( NS_MAIN ) ) {
-				return $this->repoContentSave( $linkTarget, $renderedRevision, $hookStatus );
+				return $this->repoContentSave( $linkTarget, $renderedRevision, $user, $hookStatus );
 			}
 			// Repo Mode but not Main namespace: not our content
 		}
@@ -104,15 +113,17 @@ class PageEditingHandler implements
 	 * this method makes sure that:
 	 * * the title is well formed (is a ZObject Id),
 	 * * the content is of the right kind (ZObjectContent),
-	 * * the content passes validation checks, and
+	 * * the content passes validation checks,
+	 * * the user has the rights for the change, and
 	 * * the labels don't clash with existing ones
 	 *
 	 * @param LinkTarget $linkTarget
 	 * @param RenderedRevision $renderedRevision
+	 * @param UserIdentity $user
 	 * @param StatusValue $hookStatus
 	 * @return bool
 	 */
-	private function repoContentSave( $linkTarget, $renderedRevision, $hookStatus ): bool {
+	private function repoContentSave( $linkTarget, $renderedRevision, $user, $hookStatus ): bool {
 		$zid = $linkTarget->getDBkey();
 		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
 			// Title not valid; exit with error
@@ -131,6 +142,24 @@ class PageEditingHandler implements
 		if ( !$content->isValid() ) {
 			// Repo content not valid; exit with error
 			$hookStatus->fatal( 'wikilambda-invalidzobject' );
+			return false;
+		}
+
+		// (T443036) Core can save without ZObjectStore, e.g. for an undo, so check the rights here too.
+		$parentId = $renderedRevision->getRevision()->getParentId();
+		$parentContent = $parentId
+			? $this->revisionLookup->getRevisionById( $parentId, IDBAccessObject::READ_LATEST )?->getContent(
+				SlotRecord::MAIN, RevisionRecord::RAW
+			)
+			: null;
+		$authorizationStatus = $this->zObjectAuthorization->authorize(
+			$parentContent instanceof ZObjectContent ? $parentContent : null,
+			$content,
+			$this->userFactory->newFromUserIdentity( $user ),
+			Title::newFromLinkTarget( $linkTarget )
+		);
+		if ( !$authorizationStatus->isValid() ) {
+			$hookStatus->fatal( 'badaccess-group0' );
 			return false;
 		}
 

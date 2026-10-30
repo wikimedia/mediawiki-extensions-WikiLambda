@@ -9,6 +9,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Tests\Api\ApiTestCase;
 
 /**
@@ -30,6 +32,21 @@ class WikiLambdaApiTestCase extends ApiTestCase {
 		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', true );
 		$this->setMwGlobals( 'wgWikiLambdaEnableRepoMode', true );
 		\MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks::registerExtension();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function editPage(
+		$page,
+		$content,
+		$summary = '',
+		$defaultNs = NS_MAIN,
+		?Authority $performer = null
+	) {
+		// The save hook checks the WikiLambda rights, e.g. to create built-in objects.
+		$performer ??= $this->getTestUser( WikiLambdaIntegrationTestCase::PRIVILEGED_GROUPS )->getAuthority();
+		return parent::editPage( $page, $content, $summary, $defaultNs, $performer );
 	}
 
 	/**

@@ -36,6 +36,9 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	// WikiLambdaClientIntegrationTestCase and WikiLambdaAbstractModeIntegrationTestCase
 	use MockWikidataEntityLookupTrait;
 
+	/** Groups that have all the rights to create and edit any ZObject */
+	public const PRIVILEGED_GROUPS = [ 'sysop', 'functionmaintainer', 'functioneer', 'wikifunctions-staff' ];
+
 	private string $mainDataPath;
 
 	private static string $testDataPath;
@@ -161,6 +164,9 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		$contentText = $content instanceof Content ? $content->getText() : $content;
 		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
 		$contentText = preg_replace( $zPlaceholderRegex, "\"$page$1\"", $contentText );
+
+		// The save hook checks the WikiLambda rights, e.g. to create built-in objects.
+		$performer ??= $this->getTestUser( self::PRIVILEGED_GROUPS )->getAuthority();
 
 		// Then call parent editPage
 		return parent::editPage( $page, $contentText, $summary, $defaultNs, $performer );

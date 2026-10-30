@@ -14,6 +14,7 @@ use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\ActionAPI\ApiQueryZObjects;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContentHandler;
 use MediaWiki\Title\Title;
@@ -60,7 +61,7 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 			$content,
 			'Test creation object',
 			NS_MAIN,
-			$this->getTestSysop()->getUser()
+			$this->getTestUser( WikiLambdaIntegrationTestCase::PRIVILEGED_GROUPS )->getUser()
 		);
 	}
 

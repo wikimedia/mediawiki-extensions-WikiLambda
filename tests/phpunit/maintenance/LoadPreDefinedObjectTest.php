@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 
 use MediaWiki\Extension\WikiLambda\Maintenance\LoadPreDefinedObject;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Title\Title;
 
 require_once dirname( __DIR__, 3 ) . '/maintenance/loadPreDefinedObject.php';
@@ -109,7 +110,10 @@ class LoadPreDefinedObjectTest extends WikiLambdaMaintenanceTestCase {
 		// real revision, exercising the "Updated" path rather than a null edit.
 		$modified = json_decode( self::getDefinition( 'Z1' ) );
 		$modified->Z2K3->Z12K1[ 1 ]->Z11K2 = 'Object (locally modified)';
-		$this->editPage( 'Z1', json_encode( $modified ), 'Pre-insert modified Z1', NS_MAIN );
+		$this->editPage(
+			'Z1', json_encode( $modified ), 'Pre-insert modified Z1', NS_MAIN,
+			$this->getTestUser( WikiLambdaIntegrationTestCase::PRIVILEGED_GROUPS )->getAuthority()
+		);
 
 		// /s flag lets . match newlines so we can match across the per-ZID
 		// "Updated" line and the trailing summary in one assertion.

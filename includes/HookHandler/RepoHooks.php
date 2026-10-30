@@ -800,6 +800,12 @@ class RepoHooks implements
 			return;
 		}
 
+		// The save hook checks the rights to create each built-in object.
+		$userGroupManager = MediaWikiServices::getInstance()->getUserGroupManager();
+		foreach ( [ 'sysop', 'functionmaintainer', 'functioneer', 'wikifunctions-staff' ] as $group ) {
+			$userGroupManager->addUserToGroup( $creatingUser, $group );
+		}
+
 		$initialDataToLoadPath = static::getDataPath();
 
 		$dependenciesFile = file_get_contents( $initialDataToLoadPath . 'dependencies.json' );

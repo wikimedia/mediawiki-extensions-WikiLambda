@@ -13,6 +13,7 @@ use FilesystemIterator;
 use MediaWiki\Extension\WikiLambda\HookHandler\RepoHooks;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
+use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Tests\Maintenance\MaintenanceBaseTestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -46,7 +47,10 @@ abstract class WikiLambdaMaintenanceTestCase extends MaintenanceBaseTestCase {
 	protected function insertZids( array $zids ): void {
 		foreach ( $zids as $zid ) {
 			$data = self::getDefinition( $zid );
-			$this->editPage( $zid, $data, 'Test ZObject creation', NS_MAIN );
+			$this->editPage(
+				$zid, $data, 'Test ZObject creation', NS_MAIN,
+				$this->getTestUser( WikiLambdaIntegrationTestCase::PRIVILEGED_GROUPS )->getAuthority()
+			);
 		}
 	}
 

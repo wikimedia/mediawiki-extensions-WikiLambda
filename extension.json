@@ -203,7 +203,10 @@
 			"services": [
 				"MainConfig",
 				"WikiLambdaZObjectStore",
-				"WikiLambdaMode"
+				"WikiLambdaMode",
+				"RevisionLookup",
+				"UserFactory",
+				"WikiLambdaZObjectAuthorization"
 			]
 		},
 		"PagePostSaveHandler": {
