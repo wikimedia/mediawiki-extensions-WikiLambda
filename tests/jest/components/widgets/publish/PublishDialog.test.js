@@ -77,6 +77,13 @@ describe( 'Publish Dialog', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog' ).exists() ).toBe( true );
 	} );
 
+	it( 'starts with the initial summary', () => {
+		const wrapper = renderPublishDialog( { initialSummary: 'Undo revision 12345' } );
+
+		const input = wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input input' );
+		expect( input.element.value ).toBe( 'Undo revision 12345' );
+	} );
+
 	it( 'renders summary input field', () => {
 		const wrapper = renderPublishDialog();
 		expect( wrapper.find( '.ext-wikilambda-app-publish-dialog__summary-input' ).exists() ).toBe( true );

@@ -65,6 +65,18 @@ describe( 'usePublish', () => {
 		} );
 	} );
 
+	describe( 'initialSummary', () => {
+		it( 'is empty without an undo', () => {
+			expect( loadPublish().initialSummary.value ).toBe( '' );
+		} );
+
+		it( 'is the undo summary if the undo content loaded', () => {
+			store.getWikilambdaConfig = { undo: { rev: 12345, after: 12344, summary: 'Undo revision 12345' } };
+
+			expect( loadPublish().initialSummary.value ).toBe( 'Undo revision 12345' );
+		} );
+	} );
+
 	describe( 'waitAndHandlePublish', () => {
 		it( 'opens the publish dialog if the content is valid', async () => {
 			const publish = loadPublish();

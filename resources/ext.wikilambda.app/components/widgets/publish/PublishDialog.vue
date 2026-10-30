@@ -117,6 +117,11 @@ module.exports = exports = defineComponent( {
 			required: false,
 			default: ''
 		},
+		initialSummary: {
+			type: String,
+			required: false,
+			default: ''
+		},
 		submitAction: {
 			type: Function,
 			required: false,
@@ -140,7 +145,7 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 
 		// Dialog state
-		const summary = ref( '' );
+		const summary = ref( props.initialSummary );
 		const hasKeyboardSubmitWarning = ref( false );
 		const hasMissingSummaryWarning = ref( false );
 		const isPublishing = ref( false );

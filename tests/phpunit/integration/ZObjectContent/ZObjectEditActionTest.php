@@ -81,10 +81,11 @@ class ZObjectEditActionTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->makeContent( 'Z10001', 'first' )->serialize(),
 			$output->getJsConfigVars()[ 'wgWikiLambda' ][ 'undoContent' ]
 		);
-		$this->assertSame(
-			[ 'rev' => $revIds[1], 'after' => $revIds[0] ],
-			$output->getJsConfigVars()[ 'wgWikiLambda' ][ 'undo' ]
-		);
+		$undo = $output->getJsConfigVars()[ 'wgWikiLambda' ][ 'undo' ];
+		$this->assertSame( $revIds[1], $undo['rev'] );
+		$this->assertSame( $revIds[0], $undo['after'] );
+		// UIUtilsTest covers the summary text.
+		$this->assertStringContainsString( (string)$revIds[1], $undo['summary'] );
 		$this->assertStringNotContainsString( 'cdx-message--error', $output->getHTML() );
 	}
 

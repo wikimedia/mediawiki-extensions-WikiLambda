@@ -27,6 +27,7 @@
 			</cdx-button>
 			<wl-publish-dialog
 				:show-dialog="showPublishDialog"
+				:initial-summary="initialSummary"
 				:submit-action="submitAction"
 				:success-callback="successCallback"
 				:error-callback="errorCallback"
@@ -113,6 +114,7 @@ module.exports = exports = defineComponent( {
 		// Publish button and dialog state
 		const {
 			closePublishDialog,
+			initialSummary,
 			revertToEdit,
 			showPublishDialog,
 			waitAndHandlePublish
@@ -194,6 +196,7 @@ module.exports = exports = defineComponent( {
 			errorCallback,
 			closeLeaveDialog,
 			closePublishDialog,
+			initialSummary,
 			handleCancel,
 			leaveEditorCallback,
 			removeListeners,

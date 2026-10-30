@@ -276,4 +276,41 @@ class UIUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 		$this->assertStatusError( 'undo-norev', $status );
 	}
+
+	private function getUndoSummary( Title $title, int $undo, int $undoAfter ): string {
+		return UIUtils::getUndoSummary(
+			$title,
+			$undo,
+			$undoAfter,
+			$this->getServiceContainer()->getRevisionStore(),
+			RequestContext::getMain()
+		);
+	}
+
+	public function testGetUndoSummary_oneRevision() {
+		[ $title, $revIds ] = $this->createPageWithRevisions( 'UIUtilsTest summary one', [ 'A', 'B' ] );
+		$userName = $this->getServiceContainer()->getRevisionStore()
+			->getRevisionById( $revIds[1] )->getUser()->getName();
+
+		$this->assertSame(
+			wfMessage( 'undo-summary', $revIds[1], $userName )->inContentLanguage()->text(),
+			$this->getUndoSummary( $title, $revIds[1], $revIds[0] )
+		);
+	}
+
+	public function testGetUndoSummary_multipleRevisions() {
+		[ $title, $revIds ] = $this->createPageWithRevisions( 'UIUtilsTest summary multiple', [ 'A', 'B', 'C' ] );
+
+		$this->assertSame(
+			wfMessage( 'undo-summary-multiple' )->numParams( 2 )->params( $revIds[1], $revIds[2] )
+				->inContentLanguage()->text(),
+			$this->getUndoSummary( $title, $revIds[2], $revIds[0] )
+		);
+	}
+
+	public function testGetUndoSummary_emptyForUnknownRevision() {
+		[ $title, $revIds ] = $this->createPageWithRevisions( 'UIUtilsTest summary unknown', [ 'A', 'B' ] );
+
+		$this->assertSame( '', $this->getUndoSummary( $title, $revIds[1], 999999 ) );
+	}
 }

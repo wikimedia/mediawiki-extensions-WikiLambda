@@ -18,6 +18,7 @@
 		</cdx-button>
 		<wl-publish-dialog
 			:show-dialog="showPublishDialog"
+			:initial-summary="initialSummary"
 			:custom-legal-text="i18n( 'wikimedia-copyrightwarning-ccbysa40only' ).parse()"
 			:submit-action="submitAction"
 			:success-callback="successCallback"
@@ -85,6 +86,7 @@ module.exports = exports = defineComponent( {
 		// Publish button and dialog state
 		const {
 			closePublishDialog,
+			initialSummary,
 			revertToEdit,
 			showPublishDialog,
 			waitAndHandlePublish
@@ -130,6 +132,7 @@ module.exports = exports = defineComponent( {
 			errorCallback,
 			closeLeaveDialog,
 			closePublishDialog,
+			initialSummary,
 			isDirty,
 			leaveEditorCallback,
 			removeListeners,

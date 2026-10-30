@@ -12,7 +12,9 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Content\Content;
 use MediaWiki\Content\IContentHandlerFactory;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Html\Html;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Permissions\Authority;
@@ -20,6 +22,7 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
+use MediaWiki\User\ExternalUserNames;
 use StatusValue;
 
 class UIUtils {
@@ -181,6 +184,63 @@ class UIUtils {
 		}
 
 		return StatusValue::newGood( $content );
+	}
+
+	/**
+	 * Get the edit summary for the undo of revisions $undo back to $undoAfter.
+	 *
+	 * This follows EditPage::generateUndoEditSummary(), which is not available to extensions.
+	 *
+	 * @param PageIdentity $page
+	 * @param int $undo Newest revision to undo, from the 'undo' URL parameter
+	 * @param int $undoAfter Revision to restore, from the 'undoafter' URL parameter
+	 * @param RevisionStore $revisionStore
+	 * @param IContextSource $context
+	 * @return string The summary in the content language, or '' if a revision is not found
+	 */
+	public static function getUndoSummary(
+		PageIdentity $page,
+		int $undo,
+		int $undoAfter,
+		RevisionStore $revisionStore,
+		IContextSource $context
+	): string {
+		$undoRev = $revisionStore->getRevisionByTitle( $page, $undo );
+		$undoAfterRev = $revisionStore->getRevisionByTitle( $page, $undoAfter );
+		$firstRev = $undoAfterRev ? $revisionStore->getNextRevision( $undoAfterRev ) : null;
+		if ( !$undoRev || !$firstRev ) {
+			return '';
+		}
+
+		if ( $firstRev->getId() !== $undo ) {
+			$revisionCount = $revisionStore->countRevisionsBetween(
+				$firstRev->getPageId(),
+				$firstRev,
+				$undoRev,
+				null,
+				[ RevisionStore::INCLUDE_BOTH, RevisionStore::INCLUDE_DELETED_REVISIONS ]
+			);
+			return $context->msg( 'undo-summary-multiple' )
+				->numParams( $revisionCount )
+				->params( $firstRev->getId(), $undoRev->getId() )
+				->inContentLanguage()
+				->text();
+		}
+
+		$user = $undoRev->getUser();
+		$userText = $user?->getName();
+		if ( $userText === null ) {
+			$message = $context->msg( 'undo-summary-username-hidden', $undo );
+		} elseif ( ExternalUserNames::isExternal( $userText ) ) {
+			$userLinkTitle = ExternalUserNames::getUserLinkTitle( $userText );
+			$message = $userLinkTitle ?
+				$context->msg( 'undo-summary-import', $undo, $userLinkTitle->getPrefixedText(), $userText ) :
+				$context->msg( 'undo-summary-import2', $undo, $userText );
+		} else {
+			$isAnon = !$user->isRegistered() && $context->getConfig()->get( MainConfigNames::DisableAnonTalk );
+			$message = $context->msg( $isAnon ? 'undo-summary-anon' : 'undo-summary', $undo, $userText );
+		}
+		return $message->inContentLanguage()->text();
 	}
 
 }

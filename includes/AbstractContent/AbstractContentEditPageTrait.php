@@ -150,7 +150,11 @@ trait AbstractContentEditPageTrait {
 				);
 				if ( $undoStatus->isGood() ) {
 					$jsonContent = $undoStatus->getValue()->serialize();
-					$undoRequest = [ 'rev' => $undo, 'after' => $undoAfter ];
+					$undoRequest = [
+						'rev' => $undo,
+						'after' => $undoAfter,
+						'summary' => UIUtils::getUndoSummary( $title, $undo, $undoAfter, $revisionStore, $context ),
+					];
 				} else {
 					$output->addModuleStyles( [ 'mediawiki.codex.messagebox.styles' ] );
 					$output->addHTML( Html::errorBox( $context->msg( $undoStatus->getMessages()[0] )->parse() ) );

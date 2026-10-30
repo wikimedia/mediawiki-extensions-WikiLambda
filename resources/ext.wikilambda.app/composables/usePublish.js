@@ -21,8 +21,8 @@ const useMainStore = require( '../store/index.js' );
  *   returns true if the content can be published
  * @param {function(): void} [options.onPublishStart] - Optional callback invoked when the
  *   publish dialog opens (e.g. for event logging)
- * @return {Object} Composable API with showPublishDialog, closePublishDialog, revertToEdit,
- *   waitAndHandlePublish
+ * @return {Object} Composable API with showPublishDialog, closePublishDialog, initialSummary,
+ *   revertToEdit, waitAndHandlePublish
  */
 module.exports = function usePublish( { validate, onPublishStart } ) {
 	const store = useMainStore();
@@ -40,6 +40,16 @@ module.exports = function usePublish( { validate, onPublishStart } ) {
 		// (T335713) A failed undo loads the current revision, so it must not enable Publish.
 		!!store.getWikilambdaConfig.undo
 	) );
+
+	/**
+	 * The edit summary to start with: core's undo summary, if the undo content loaded.
+	 *
+	 * @return {string}
+	 */
+	const initialSummary = computed( () => {
+		const { undo } = store.getWikilambdaConfig;
+		return ( undo && undo.summary ) || '';
+	} );
 
 	function closePublishDialog() {
 		showPublishDialog.value = false;
@@ -84,6 +94,7 @@ module.exports = function usePublish( { validate, onPublishStart } ) {
 
 	return {
 		closePublishDialog,
+		initialSummary,
 		revertToEdit,
 		showPublishDialog,
 		waitAndHandlePublish
