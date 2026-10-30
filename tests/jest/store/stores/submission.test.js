@@ -9,6 +9,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { setActivePinia, createPinia } = require( 'pinia' );
+const ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const {
@@ -825,6 +826,50 @@ describe( 'zobject submission Pinia store', () => {
 				}, { signal: undefined } );
 			} );
 
+			describe( 'editor state after the submission', () => {
+				// The transformation removes the empty label and the invalid list item
+				const zobject = {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+					Z2K2: [ 'Z6', 'invalid item', 'valid item' ],
+					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: '' } ] }
+				};
+				const transformed = {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+					Z2K2: [ 'Z6', 'valid item' ],
+					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+				};
+				const invalidListItems = { 'main.Z2K2': [ 1 ] };
+
+				beforeEach( () => {
+					store.jsonObject.main = canonicalToHybrid( zobject );
+					store.invalidListItems = JSON.parse( JSON.stringify( invalidListItems ) );
+				} );
+
+				it( 'keeps the transformed object when the submission succeeds', async () => {
+					await store.submitZObject( { summary: 'A summary' } );
+
+					expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( transformed );
+					expect( store.invalidListItems ).toEqual( {} );
+				} );
+
+				it( 'restores the object and the invalid list items when the submission fails', async () => {
+					const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
+					postWithEditTokenMock.mockImplementation( () => Promise.reject( error ) );
+
+					await expect( store.submitZObject( { summary: 'A summary' } ) ).rejects.toBe( error );
+
+					// The request contained the transformed object
+					expect( postWithEditTokenMock ).toHaveBeenCalledWith(
+						expect.objectContaining( { zobject: JSON.stringify( transformed ) } ),
+						{ signal: undefined }
+					);
+					expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( zobject );
+					expect( store.invalidListItems ).toEqual( invalidListItems );
+				} );
+			} );
+
 			it( 'submits an object after cleaning empty monolingual objects', () => {
 				const zobject = JSON.parse(
 					fs.readFileSync( path.join( __dirname, './objects/getZFunction.json' ) )
@@ -1144,6 +1189,7 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'removes list items marked as invalid', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: [ 'Z6', 'a', 'b' ] } );
 				Object.defineProperty( store, 'hasInvalidListItems', {
 					value: true
 				} );
@@ -1159,6 +1205,42 @@ describe( 'zobject submission Pinia store', () => {
 					indexes: [ 2 ]
 				} );
 				expect( store.clearInvalidListItems ).toHaveBeenCalled();
+			} );
+
+			it( 'skips a list that is not there anymore', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: 'not a list' } );
+				Object.defineProperty( store, 'hasInvalidListItems', {
+					value: true
+				} );
+				Object.defineProperty( store, 'getInvalidListItems', {
+					value: {
+						'main.Z2K2': [ 1 ],
+						'main.Z2K2.Z20K2.Z10001K1': []
+					}
+				} );
+
+				store.transformZObjectForSubmission();
+				expect( store.deleteListItemsByKeyPath ).not.toHaveBeenCalled();
+				expect( store.clearInvalidListItems ).toHaveBeenCalledWith( 'main.Z2K2' );
+				expect( store.clearInvalidListItems ).toHaveBeenCalledWith( 'main.Z2K2.Z20K2.Z10001K1' );
+			} );
+
+			it( 'skips list items that are not there anymore', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: [ 'Z6', 'a', 'b' ] } );
+				Object.defineProperty( store, 'hasInvalidListItems', {
+					value: true
+				} );
+				Object.defineProperty( store, 'getInvalidListItems', {
+					value: {
+						'main.Z2K2': [ 2, 3, 4 ]
+					}
+				} );
+
+				store.transformZObjectForSubmission();
+				expect( store.deleteListItemsByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2' ],
+					indexes: [ 2 ]
+				} );
 			} );
 
 			it( 'does not remove list items if none are marked as invalid', () => {

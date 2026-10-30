@@ -55,7 +55,8 @@ module.exports = {
 		 * @param {string} listId
 		 */
 		clearInvalidListItems: function ( listId ) {
-			this.invalidListItems[ listId ] = [];
+			// Remove the entry, so that hasInvalidListItems becomes false
+			delete this.invalidListItems[ listId ];
 		},
 
 		/**

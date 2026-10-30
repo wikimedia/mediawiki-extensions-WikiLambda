@@ -65,8 +65,11 @@ describe( 'ListItems Pinia store', () => {
 				};
 				store.clearInvalidListItems( 'main.Z2K2' );
 
-				expect( store.invalidListItems[ 'main.Z2K2' ] ).toEqual( [] );
-				expect( store.invalidListItems[ 'main.Z2K3.Z12K1' ] ).toEqual( [ 5, 6 ] );
+				expect( store.invalidListItems ).toEqual( { 'main.Z2K3.Z12K1': [ 5, 6 ] } );
+				expect( store.hasInvalidListItems ).toBe( true );
+
+				store.clearInvalidListItems( 'main.Z2K3.Z12K1' );
+				expect( store.hasInvalidListItems ).toBe( false );
 			} );
 		} );
 
@@ -134,7 +137,7 @@ describe( 'ListItems Pinia store', () => {
 					newType: 'Z1'
 				} );
 
-				expect( store.invalidListItems ).toEqual( { 'main.Z2K2': [] } );
+				expect( store.invalidListItems ).toEqual( {} );
 			} );
 		} );
 	} );

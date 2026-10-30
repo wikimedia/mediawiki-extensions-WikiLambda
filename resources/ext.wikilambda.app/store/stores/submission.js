@@ -244,6 +244,7 @@ module.exports = {
 		 * Submit a zObject to the api.
 		 * The request is handled differently if new or existing object.
 		 * Empty labels are removed before submitting.
+		 * If the submission fails, the store gets back its state from before the submission.
 		 *
 		 * @param {Object} param
 		 * @param {Object} param.summary
@@ -252,6 +253,11 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		submitZObject: function ( { summary, checkEditConflict = false } ) {
+			// Save a copy of the editor state. The transformation changes it, and
+			// the editor must not keep these changes if the submission fails.
+			const zobjectCopy = JSON.parse( JSON.stringify( this.getJsonObject( Constants.STORED_OBJECTS.MAIN ) ) );
+			const invalidListItemsCopy = JSON.parse( JSON.stringify( this.getInvalidListItems ) );
+
 			this.transformZObjectForSubmission();
 
 			const zobject = hybridToCanonical( this.getZObjectByKeyPath( [ Constants.STORED_OBJECTS.MAIN ] ) );
@@ -269,6 +275,11 @@ module.exports = {
 				baseRevisionId,
 				undo: undo && undo.rev,
 				undoAfter: undo && undo.after
+			} ).catch( ( /* ApiError */ e ) => {
+				// Reset the editor state if the submission failed
+				this.setJsonObject( { namespace: Constants.STORED_OBJECTS.MAIN, zobject: zobjectCopy } );
+				this.invalidListItems = invalidListItemsCopy;
+				throw e;
 			} ).then( ( response ) => {
 				// Keep the new revision, so that later saves from this page do not conflict
 				if ( response && response.revisionId ) {
@@ -365,10 +376,16 @@ module.exports = {
 			if ( this.hasInvalidListItems ) {
 				const invalidLists = this.getInvalidListItems;
 				for ( const path in invalidLists ) {
-					this.deleteListItemsByKeyPath( {
-						keyPath: path.split( '.' ),
-						indexes: invalidLists[ path ]
-					} );
+					const keyPath = path.split( '.' );
+					const list = this.getZObjectByKeyPath( keyPath );
+					// The list is not there if the user removed it or its parent object.
+					// Items that the user removed are not there either.
+					if ( Array.isArray( list ) ) {
+						this.deleteListItemsByKeyPath( {
+							keyPath,
+							indexes: invalidLists[ path ].filter( ( index ) => index > 0 && index < list.length )
+						} );
+					}
 					// clear the collection of list items removed
 					this.clearInvalidListItems( path );
 				}
