@@ -44,11 +44,12 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, ref } = require( 'vue' );
+const { computed, defineComponent, inject } = require( 'vue' );
 
 const Constants = require( '../../../Constants.js' );
 const useEventLog = require( '../../../composables/useEventLog.js' );
 const useLeaveEditorDialog = require( '../../../composables/useLeaveEditorDialog.js' );
+const usePublish = require( '../../../composables/usePublish.js' );
 const urlUtils = require( '../../../utils/urlUtils.js' );
 const useMainStore = require( '../../../store/index.js' );
 const ApiError = require( '../../../store/classes/ApiError.js' );
@@ -109,81 +110,19 @@ module.exports = exports = defineComponent( {
 			submitInteraction( 'cancel', interactionData );
 		}
 
-		// Dialog state
-		const showPublishDialog = ref( false );
-
-		// Publish button state
-		/**
-		 * If 'oldid' exists in the query (and is not empty), or the server loaded the
-		 * content of an undo request, return true.
-		 * If true, this enables the Publish button without needing an event.
-		 *
-		 * @return {boolean}
-		 */
-		const revertToEdit = computed( () => !store.isCreateNewPage && (
-			( store.getQueryParams && typeof store.getQueryParams.oldid === 'string' && store.getQueryParams.oldid.trim() !== '' ) ||
-			// (T335713) A failed undo loads the current revision, so it must not enable Publish.
-			!!store.getWikilambdaConfig.undo
-		) );
-
-		// Dialog actions
-		/**
-		 * Handle cancel event from Publish dialog
-		 */
-		function closePublishDialog() {
-			showPublishDialog.value = false;
-		}
-
-		// Publish actions
-		/**
-		 * Waits for running parsers to return and persist
-		 * changes before going ahead and running the function call
-		 */
-		function waitAndHandlePublish() {
-			store.waitForRunningParsers.then( () => handlePublish() );
-		}
-
-		/**
-		 * Handle click event on Publish button: opens
-		 * the publish dialog.
-		 */
-		function handlePublish() {
-			store.clearValidationErrors();
-			const isValid = store.validateZObject();
-			if ( isValid ) {
-				raisePublishWarnings();
-				emit( 'start-publish' );
-				showPublishDialog.value = true;
-			}
-		}
-
-		// Warnings
-		/**
-		 * Check if there are any empty reference warnings in the errors.
-		 *
-		 * @return {boolean}
-		 */
-		function hasEmptyReferenceWarnings() {
-			return store.getErrorPaths.some( ( errorId ) => store.getErrors( errorId )
-				.some( ( error ) => error.messageKey === 'wikilambda-empty-reference-warning' ) );
-		}
-
-		/**
-		 * Check if we should show a publish dialog warning if:
-		 * - there are empty Z9K1/references
-		 * - there is Wikifunctions.Debug code in any Z16/Code objects
-		 *
-		 * This is called only when validation passes and the publish dialog is about to open.
-		 */
-		function raisePublishWarnings() {
-			if ( hasEmptyReferenceWarnings() ) {
-				store.setError( {
-					errorId: Constants.STORED_OBJECTS.MAIN,
-					errorMessageKey: 'wikilambda-empty-references-publish-warning',
-					errorType: Constants.ERROR_TYPES.WARNING
-				} );
-			}
-		}
+		// Publish button and dialog state
+		const {
+			closePublishDialog,
+			revertToEdit,
+			showPublishDialog,
+			waitAndHandlePublish
+		} = usePublish( {
+			validate: () => {
+				store.clearValidationErrors();
+				return store.validateZObject();
+			},
+			onPublishStart: () => emit( 'start-publish' )
+		} );
 
 		// Navigation handling
 		/**

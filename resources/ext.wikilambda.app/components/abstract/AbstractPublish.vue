@@ -35,12 +35,13 @@
 </template>
 
 <script>
-const { computed, defineComponent, inject, ref } = require( 'vue' );
+const { defineComponent, inject } = require( 'vue' );
 const { storeToRefs } = require( 'pinia' );
 
 const Constants = require( '../../Constants.js' );
 const useEventLog = require( '../../composables/useEventLog.js' );
 const useLeaveEditorDialog = require( '../../composables/useLeaveEditorDialog.js' );
+const usePublish = require( '../../composables/usePublish.js' );
 const useMainStore = require( '../../store/index.js' );
 const ApiError = require( '../../store/classes/ApiError.js' );
 
@@ -81,57 +82,20 @@ module.exports = exports = defineComponent( {
 			submitInteraction( 'cancel', store.getInteractionData );
 		}
 
-		// Publish state
-		const showPublishDialog = ref( false );
-
-		function closePublishDialog() {
-			showPublishDialog.value = false;
-		}
-
-		function waitAndHandlePublish() {
-			store.waitForRunningParsers.then( () => handlePublish() );
-		}
-
-		// Publish button state
-		/**
-		 * If 'oldid' exists in the query (and is not empty), or the server loaded the
-		 * content of an undo request, return true.
-		 * If true, this enables the Publish button without needing an event.
-		 *
-		 * @return {boolean}
-		 */
-		const revertToEdit = computed( () => !store.isCreateNewPage && (
-			( store.getQueryParams && typeof store.getQueryParams.oldid === 'string' && store.getQueryParams.oldid.trim() !== '' ) ||
-			// (T335713) A failed undo loads the current revision, so it must not enable Publish.
-			!!store.getWikilambdaConfig.undo
-		) );
-
-		function handlePublish() {
-			// Clear global and validation (field) errors:
-			store.clearErrors( Constants.STORED_OBJECTS.MAIN );
-			store.clearValidationErrors( Constants.STORED_OBJECTS.ABSTRACT );
-
-			const isValid = store.validateAbstractWikiContent();
-			if ( isValid ) {
-				raisePublishWarnings();
-				showPublishDialog.value = true;
+		// Publish button and dialog state
+		const {
+			closePublishDialog,
+			revertToEdit,
+			showPublishDialog,
+			waitAndHandlePublish
+		} = usePublish( {
+			validate: () => {
+				// Clear global and validation (field) errors:
+				store.clearErrors( Constants.STORED_OBJECTS.MAIN );
+				store.clearValidationErrors( Constants.STORED_OBJECTS.ABSTRACT );
+				return store.validateAbstractWikiContent();
 			}
-		}
-
-		function raisePublishWarnings() {
-			const hasEmptyRefs = store.getErrorPaths
-				.some( ( errorId ) => store.getErrors( errorId ).some( ( error ) => (
-					error.messageKey === 'wikilambda-empty-reference-warning'
-				) ) );
-
-			if ( hasEmptyRefs ) {
-				store.setError( {
-					errorId: Constants.STORED_OBJECTS.MAIN,
-					errorMessageKey: 'wikilambda-empty-references-publish-warning',
-					errorType: Constants.ERROR_TYPES.WARNING
-				} );
-			}
-		}
+		} );
 
 		function submitAction( { summary } ) {
 			return store.submitAbstractWikiContent( { summary } );
