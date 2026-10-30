@@ -151,6 +151,7 @@ class WikiLambdaServices {
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),
+			$services->getContentHandlerFactory(),
 			$services->getUserGroupManager(),
 			LoggerFactory::getInstance( 'WikiLambda' )
 		);

@@ -322,6 +322,30 @@ describe( 'apiUtils', () => {
 				{ signal: undefined }
 			);
 		} );
+
+		it( 'sends the undo revisions when given', async () => {
+			apiPostWithEditTokenMock.mockResolvedValue( {
+				wikilambda_edit: { page: 'Z100', revisionId: 102 }
+			} );
+
+			await apiUtils.saveZObject( {
+				zid: 'Z100',
+				zobject: { Z1K1: 'Z2' },
+				summary: 'Saving',
+				language: 'en',
+				undo: 101,
+				undoAfter: 100
+			} );
+
+			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith(
+				expect.objectContaining( {
+					action: 'wikilambda_edit',
+					undo: 101,
+					undoafter: 100
+				} ),
+				{ signal: undefined }
+			);
+		} );
 	} );
 
 	describe( 'sanitiseHtmlFragment', () => {

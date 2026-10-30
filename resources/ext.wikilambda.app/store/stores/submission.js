@@ -259,13 +259,17 @@ module.exports = {
 			const zid = this.isCreateNewPage ? undefined : this.getCurrentZObjectId;
 			// Send no base revision if it is unknown: mw.Api drops undefined, but not null
 			const baseRevisionId = ( checkEditConflict && this.getCurrentRevisionId ) || undefined;
+			// (T335713) Set only if the editor loaded the content of an undo request
+			const { undo } = this.getWikilambdaConfig;
 
 			return saveZObject( {
 				zobject,
 				zid,
 				summary,
 				language: this.getUserLangCode,
-				baseRevisionId
+				baseRevisionId,
+				undo: undo && undo.rev,
+				undoAfter: undo && undo.after
 			} ).then( ( response ) => {
 				// Keep the new revision, so that later saves from this page do not conflict
 				if ( response && response.revisionId ) {

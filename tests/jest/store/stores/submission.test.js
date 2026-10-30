@@ -960,6 +960,44 @@ describe( 'zobject submission Pinia store', () => {
 					expect( store.getCurrentRevisionId ).toBe( 12345 );
 				} );
 			} );
+
+			describe( 'undo', () => {
+				beforeEach( () => {
+					store.jsonObject.main = canonicalToHybrid( {
+						Z1K1: 'Z2',
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z999' },
+						Z2K2: 'some object',
+						Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					} );
+				} );
+
+				const getConfig = mw.config.get.getMockImplementation();
+
+				afterEach( () => {
+					mw.config.get.mockImplementation( getConfig );
+				} );
+
+				it( 'sends the undo revisions if the editor loaded an undo', () => {
+					mw.config.get.mockImplementation( ( key ) => (
+						key === 'wgWikiLambda' ?
+							Object.assign( {}, getConfig( key ), { undo: { rev: 12345, after: 12344 } } ) :
+							getConfig( key )
+					) );
+					store.submitZObject( { summary: 'A summary' } );
+
+					expect( postWithEditTokenMock ).toHaveBeenCalledWith(
+						expect.objectContaining( { undo: 12345, undoafter: 12344 } ),
+						{ signal: undefined }
+					);
+				} );
+
+				it( 'does not send undo revisions otherwise', () => {
+					store.submitZObject( { summary: 'A summary' } );
+
+					expect( postWithEditTokenMock.mock.calls[ 0 ][ 0 ].undo ).toBeUndefined();
+					expect( postWithEditTokenMock.mock.calls[ 0 ][ 0 ].undoafter ).toBeUndefined();
+				} );
+			} );
 		} );
 
 		describe( 'transformZObjectForSubmission', () => {

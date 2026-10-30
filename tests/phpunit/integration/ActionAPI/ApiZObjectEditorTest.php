@@ -399,6 +399,61 @@ class ApiZObjectEditorTest extends WikiLambdaApiTestCase {
 		$this->assertEquals( json_decode( $latestData ), json_decode( $zobject->getText() ) );
 	}
 
+	public function testUpdateSuccess_undoIsTagged() {
+		[
+			'zid' => $zid,
+			'outdatedRevId' => $outdatedRevId,
+			'latestRevId' => $latestRevId
+		] = $this->createZObjectWithTwoRevisions();
+
+		// The first revision, with a different key order and spacing from the stored form
+		$undoData = '{ "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11",'
+			. ' { "Z11K2": "unique label", "Z11K1": "Z1002", "Z1K1": "Z11" } ] },'
+			. ' "Z2K2": "First value", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" }, "Z1K1": "Z2" }';
+
+		$result = $this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'zid' => $zid,
+			'zobject' => $undoData,
+			'undo' => $latestRevId,
+			'undoafter' => $outdatedRevId
+		] );
+
+		$this->assertContains(
+			'mw-undo',
+			$this->getServiceContainer()->getChangeTagsStore()
+				->getTags( $this->getDb(), null, $result[0]['wikilambda_edit']['revisionId'] )
+		);
+	}
+
+	public function testUpdateSuccess_changedUndoIsNotTagged() {
+		[
+			'zid' => $zid,
+			'outdatedRevId' => $outdatedRevId,
+			'latestRevId' => $latestRevId
+		] = $this->createZObjectWithTwoRevisions();
+
+		// The first revision, with a label that the user changed after the undo
+		$changedUndoData = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "' . $zid . '" },'
+			. ' "Z2K2": "First value", "Z2K3":'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "other label" } ] } }';
+
+		$result = $this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'zid' => $zid,
+			'zobject' => $changedUndoData,
+			'undo' => $latestRevId,
+			'undoafter' => $outdatedRevId
+		] );
+
+		$this->assertTrue( $result[0]['wikilambda_edit']['success'] );
+		$this->assertNotContains(
+			'mw-undo',
+			$this->getServiceContainer()->getChangeTagsStore()
+				->getTags( $this->getDb(), null, $result[0]['wikilambda_edit']['revisionId'] )
+		);
+	}
+
 	public function testCreateFailed_specifiedZIDWithoutAuth() {
 		$data = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z12345" },'
 			. ' "Z2K2": "string",'

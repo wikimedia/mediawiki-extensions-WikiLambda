@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use Exception;
 use MediaWiki\Content\ContentSerializationException;
+use MediaWiki\Content\IContentHandlerFactory;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -24,6 +25,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\MessageLocalizer;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPage;
@@ -66,6 +68,7 @@ class ZObjectStore {
 	 * @param TitleFactory $titleFactory
 	 * @param WikiPageFactory $wikiPageFactory
 	 * @param RevisionStore $revisionStore
+	 * @param IContentHandlerFactory $contentHandlerFactory
 	 * @param UserGroupManager $userGroupManager
 	 * @param LoggerInterface $logger
 	 */
@@ -74,6 +77,7 @@ class ZObjectStore {
 		private readonly TitleFactory $titleFactory,
 		private readonly WikiPageFactory $wikiPageFactory,
 		private readonly RevisionStore $revisionStore,
+		private readonly IContentHandlerFactory $contentHandlerFactory,
 		private readonly UserGroupManager $userGroupManager,
 		private readonly LoggerInterface $logger
 	) {
@@ -350,6 +354,30 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Check if the content is the same as the undo of revisions $undo back to $undoAfter.
+	 *
+	 * @param Title $title
+	 * @param ZObjectContent $content
+	 * @param int $undo
+	 * @param int $undoAfter
+	 * @return bool
+	 */
+	private function isUndoContent( Title $title, ZObjectContent $content, int $undo, int $undoAfter ): bool {
+		$undoStatus = UIUtils::getUndoContent(
+			$title, $undo, $undoAfter, $this->revisionStore, $this->contentHandlerFactory
+		);
+		if ( !$undoStatus->isGood() ) {
+			return false;
+		}
+		$undoContent = $undoStatus->getValue();
+		'@phan-var ZObjectContent $undoContent';
+
+		// The editor can serialise the same object differently, so compare the canonical forms.
+		return FormatJson::encode( ZObjectUtils::canonicalize( $undoContent->getObject() ) ) ===
+			FormatJson::encode( ZObjectUtils::canonicalize( $content->getObject() ) );
+	}
+
+	/**
 	 * Create a new ZObject, with a newly assigned ZID, and store it in the Database
 	 *
 	 * @param MessageLocalizer $context The context of the action operation, for localisation of messages
@@ -377,11 +405,14 @@ class ZObjectStore {
 	 * @param int $flags Either EDIT_UPDATE (default) if editing or EDIT_NEW if creating a page
 	 * @param int|null $baseRevId The revision ID that the edit is based on. If set, and the page
 	 *  has a different latest revision, the edit fails with an edit conflict error.
+	 * @param int $undo The newest revision that the edit undoes, if any
+	 * @param int $undoAfter The revision that the edit restores, if any. If the edit is the same as
+	 *  the undo of $undo back to $undoAfter, it is marked as an undo.
 	 * @return ZObjectPage
 	 */
 	public function updateZObject(
 		MessageLocalizer $context, string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE,
-		?int $baseRevId = null
+		?int $baseRevId = null, int $undo = 0, int $undoAfter = 0
 	) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 
@@ -498,9 +529,14 @@ class ZObjectStore {
 			return ZObjectPage::newFatal( $e->getZError() );
 		}
 
+		// (T335713) Like core, mark only an unchanged undo as an undo, so that users cannot tag other edits.
+		$isUndo = $undo > 0 && $undoAfter > 0 && $this->isUndoContent( $title, $content, $undo, $undoAfter );
+
 		// We prepare the content to be saved
 		try {
-			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
+			$status = $page->doUserEditContent(
+				$content, $user, $summary, $flags, $isUndo ? $undoAfter : false, [], $isUndo ? $undo : 0
+			);
 		} catch ( Exception $e ) {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 

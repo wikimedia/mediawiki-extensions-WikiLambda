@@ -127,6 +127,8 @@ const apiUtils = {
 	 * @param {string} payload.language The  user language code
 	 * @param {number|undefined} payload.baseRevisionId The revision the edit is based on, if
 	 *  the API should reject the edit when the object has a newer revision
+	 * @param {number|undefined} payload.undo The newest revision that the edit undoes, if any
+	 * @param {number|undefined} payload.undoAfter The revision that the undo restores, if any
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -143,6 +145,8 @@ const apiUtils = {
 				zid: payload.zid,
 				zobject: JSON.stringify( payload.zobject ),
 				baserevid: payload.baseRevisionId,
+				undo: payload.undo,
+				undoafter: payload.undoAfter,
 				uselang: payload.language
 			}, {
 				signal: payload.signal

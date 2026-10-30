@@ -85,7 +85,9 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 			}
 
 			// Edit an existing ZObject
-			$response = $zObjectStore->updateZObject( $this, $zid, $zobject, $summary, $user, $editFlag, $baseRevId );
+			$response = $zObjectStore->updateZObject(
+				$this, $zid, $zobject, $summary, $user, $editFlag, $baseRevId, $params['undo'], $params['undoafter']
+			);
 		}
 
 		if ( !$response->isOK() ) {
@@ -183,6 +185,16 @@ class ApiZObjectEditor extends WikiLambdaApiBase {
 				ParamValidator::PARAM_TYPE => 'integer',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => null,
+			],
+			'undo' => [
+				ParamValidator::PARAM_TYPE => 'integer',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => 0,
+			],
+			'undoafter' => [
+				ParamValidator::PARAM_TYPE => 'integer',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => 0,
 			]
 		] + $this->getWatchlistParams();
 	}
