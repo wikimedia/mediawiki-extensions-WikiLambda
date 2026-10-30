@@ -1,6 +1,6 @@
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' );
+const { flushPromises, shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const FunctionInputParser = require( '../../../../../resources/ext.wikilambda.app/components/visualeditor/fields/FunctionInputParser.vue' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
@@ -286,6 +286,83 @@ describe( 'FunctionInputParser', () => {
 				response: { Z22K1: { Z1K1: typeZid } },
 				resolver: { resolve: jest.fn() }
 			} );
+		} );
+	} );
+
+	describe( 'parser result of an older value', () => {
+		const parserResponse = {
+			response: {
+				Z1K1: 'Z22',
+				Z22K1: {
+					Z1K1: typeZid,
+					[ `${ typeZid }K1` ]: 'Returned value'
+				}
+			},
+			resolver: { resolve: jest.fn() }
+		};
+
+		beforeEach( () => {
+			jest.useFakeTimers();
+		} );
+
+		afterEach( () => {
+			jest.useRealTimers();
+		} );
+
+		it( 'does not save the older value when the user clears the field while the parser runs', async () => {
+			// The parser request of the older value finishes after the user clears the
+			// field, unless it is aborted: then it rejects, as the API does
+			let resolveParser, rejectParser;
+			store.runParser.mockReturnValueOnce( new Promise( ( resolve, reject ) => {
+				resolveParser = resolve;
+				rejectParser = reject;
+			} ) );
+			global.abortSpy.mockImplementation( () => rejectParser( { code: 'abort' } ) );
+
+			const wrapper = renderFunctionInputParser( { value: '' } );
+			await flushPromises();
+
+			const input = wrapper.getComponent( { name: 'cdx-text-input' } );
+			input.vm.$emit( 'update:model-value', 'Older value' );
+			jest.advanceTimersByTime( 1000 );
+			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+
+			input.vm.$emit( 'update:model-value', '' );
+			jest.advanceTimersByTime( 1000 );
+			await flushPromises();
+
+			resolveParser( parserResponse );
+			await flushPromises();
+
+			// The empty value cancels the parser request of the older value
+			expect( global.abortSpy ).toHaveBeenCalledTimes( 1 );
+			// Only the empty value is saved, and the field stays invalid
+			expect( wrapper.emitted().update ).toEqual( [ [ '' ] ] );
+			expect( wrapper.emitted().validate.at( -1 ) ).toEqual( [ { isValid: false, error: expect.any( Object ) } ] );
+		} );
+
+		it( 'does not save the older value when the user checks the default value while the parser runs', async () => {
+			let rejectParser;
+			store.runParser.mockReturnValueOnce( new Promise( ( resolve, reject ) => {
+				rejectParser = reject;
+			} ) );
+			// The parser request rejects when it is aborted, as the API does
+			global.abortSpy.mockImplementation( () => rejectParser( { code: 'abort' } ) );
+
+			const wrapper = renderFunctionInputParser( { value: '', hasDefaultValue: true } );
+			await flushPromises();
+
+			const input = wrapper.getComponent( { name: 'cdx-text-input' } );
+			input.vm.$emit( 'update:model-value', 'Older value' );
+			jest.advanceTimersByTime( 1000 );
+			expect( store.runParser ).toHaveBeenCalledTimes( 1 );
+
+			await wrapper.setProps( { shouldUseDefaultValue: true } );
+			await flushPromises();
+
+			expect( global.abortSpy ).toHaveBeenCalledTimes( 1 );
+			expect( wrapper.emitted().update ).toBeUndefined();
+			expect( wrapper.vm.isParserRunning ).toBe( false );
 		} );
 	} );
 

@@ -168,6 +168,12 @@ module.exports = exports = defineComponent( {
 		 * @return {Promise<void>} - A promise that resolves if the value is valid or rejects with an error message.
 		 */
 		const isValid = ( value ) => new Promise( ( resolve, reject ) => {
+			// Cancel the parser request of the previous value, if any. Also when
+			// this value does not need the parser: the previous value is out of date.
+			if ( parserAbortController ) {
+				parserAbortController.abort();
+			}
+
 			// If default value checkbox is checked, field is valid
 			if ( props.shouldUseDefaultValue ) {
 				resolve();
@@ -186,10 +192,6 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
-			// Cancel previous parser request if any
-			if ( parserAbortController ) {
-				parserAbortController.abort();
-			}
 			parserAbortController = new AbortController();
 
 			// With non-empty value: run parser function
@@ -262,25 +264,18 @@ module.exports = exports = defineComponent( {
 		/**
 		 * Handles validation error by emitting the appropriate events.
 		 *
-		 * @param {ErrorData|string} error - The error caught
+		 * @param {ErrorData} error - The error caught
 		 */
 		function onValidateError( error ) {
-			// If the error message is 'abort', do not emit an error
-			// because the validation was cancelled.
-			if ( error === 'abort' ) {
-				return;
-			}
-			// Otherwise, emit the ErrorData object
 			emit( 'validate', { isValid: false, error } );
 		}
 
 		/**
 		 * Validates the value and handles the validation result.
-		 * Emits validation status and optionally updates the value if valid.
 		 *
 		 * @param {string} value - The value to validate.
-		 * @param {boolean} emitUpdate - Whether to emit the update event after validation.
-		 * @return {Promise}
+		 * @return {Promise<boolean>} Resolves with true if the validation was aborted,
+		 *  because the value changed, else with false.
 		 */
 		function validate( value ) {
 			onValidateStart();
@@ -288,13 +283,16 @@ module.exports = exports = defineComponent( {
 				.then( () => {
 					onValidateSuccess();
 					onValidateEnd();
+					return false;
 				} )
 				.catch( ( error ) => {
-					onValidateError( error );
-					// Only call onValidateEnd if the error is not an abort
-					if ( error !== 'abort' ) {
-						onValidateEnd();
+					// An aborted validation is for an older value: ignore its result
+					if ( error === 'abort' ) {
+						return true;
 					}
+					onValidateError( error );
+					onValidateEnd();
+					return false;
 				} );
 		}
 
@@ -306,8 +304,11 @@ module.exports = exports = defineComponent( {
 		 * @param {string} value
 		 */
 		function handleChange( value ) {
-			validate( value ).then( () => {
-				emit( 'update', value );
+			validate( value ).then( ( isAborted ) => {
+				// Do not save an older value
+				if ( !isAborted ) {
+					emit( 'update', value );
+				}
 			} );
 		}
 
