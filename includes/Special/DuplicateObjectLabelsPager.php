@@ -13,7 +13,6 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 use MediaWiki\Html\Html;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
-use MediaWiki\Page\LinkBatchFactory;
 use MediaWiki\Pager\TablePager;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\Title\Title;
@@ -23,13 +22,11 @@ class DuplicateObjectLabelsPager extends TablePager {
 	/**
 	 * @param SpecialPage $form
 	 * @param LinkRenderer $linkRenderer
-	 * @param LinkBatchFactory $linkBatchFactory
 	 * @param LanguageNameUtils $languageUtils
 	 */
 	public function __construct(
 		SpecialPage $form,
 		LinkRenderer $linkRenderer,
-		private readonly LinkBatchFactory $linkBatchFactory,
 		private readonly LanguageNameUtils $languageUtils
 	) {
 		parent::__construct( $form->getContext(), $linkRenderer );

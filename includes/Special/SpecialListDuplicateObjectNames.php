@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Language\LanguageNameUtils;
-use MediaWiki\Page\LinkBatchFactory;
 use MediaWiki\Parser\ParserOptions;
 use MediaWiki\SpecialPage\SpecialPage;
 use MediaWiki\User\User;
@@ -20,7 +19,6 @@ use MediaWiki\User\User;
 class SpecialListDuplicateObjectNames extends SpecialPage {
 	public function __construct(
 		private readonly LanguageNameUtils $languageNameUtils,
-		private readonly LinkBatchFactory $linkBatchFactory
 	) {
 		parent::__construct( 'ListDuplicateObjectNames' );
 	}
@@ -81,7 +79,6 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 		$pager = new DuplicateObjectLabelsPager(
 			$this,
 			$this->getLinkRenderer(),
-			$this->linkBatchFactory,
 			$this->languageNameUtils
 		);
 

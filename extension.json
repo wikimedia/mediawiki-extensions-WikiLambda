@@ -1334,8 +1334,7 @@
 		"ListDuplicateObjectNames": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateObjectNames",
 			"services": [
-				"LanguageNameUtils",
-				"LinkBatchFactory"
+				"LanguageNameUtils"
 			]
 		},
 		"ListObjectsByType": {
