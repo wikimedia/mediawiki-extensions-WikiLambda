@@ -1019,36 +1019,69 @@ class ZObjectUtils {
 	 * Zid. If the ZObject has a code key/Z16K2, it also replaces instances of unquoted
 	 * Z0s inside of the submitted code.
 	 *
+	 * The method decodes the JSON and walks the tree. Do not use regular expressions
+	 * on the JSON text: a code string can be very long, and PCRE then hits its stack
+	 * limit (T439199).
+	 *
 	 * @param string $data
 	 * @param string $zid
 	 * @return string
 	 */
-	public static function replaceNullReferencePlaceholder( $data, $zid ): string {
-		// Replace references and keys:
-		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
-		$zObjectString = preg_replace( $zPlaceholderRegex, "\"$zid$1\"", $data );
+	public static function replaceNullReferencePlaceholder( string $data, string $zid ): string {
+		try {
+			$zObject = json_decode( $data, false, 512, JSON_THROW_ON_ERROR );
+		} catch ( JsonException ) {
+			// Return the data without change. ZObjectContent then rejects it as invalid JSON.
+			return $data;
+		}
 
-		// Match code value and replace Z0s inside of it
-		// Use preg_replace_callback to avoid preg_replace interpreting backslashes in replacement
-		$codeRegex = '/\"' . preg_quote( ZTypeRegistry::Z_CODE_CODE, '/' ) . '\":(\s*)\"((?:\\\\\"|[^\"])*)\"/';
-		$z0Regex = '/' . preg_quote( ZTypeRegistry::Z_NULL_REFERENCE, '/' ) . '(K[1-9]\d*)?/';
-		$zObjectString = preg_replace_callback(
-			$codeRegex,
-			static function ( $matches ) use ( $zid, $z0Regex ) {
-				// $matches[0] is the full match: "Z16K2":"...code..."
-				// $matches[1] is the whitespace between colon and value
-				// $matches[2] is the code content (without the outer quotes)
-				$whitespace = $matches[1];
-				$codeContent = $matches[2];
-				// Replace Z0 references in the code content only
-				$newCodeContent = preg_replace( $z0Regex, "$zid$1", $codeContent );
-				// Reconstruct the JSON key-value pair, preserving the original structure and whitespace
-				return '"' . ZTypeRegistry::Z_CODE_CODE . '":' . $whitespace . '"' . $newCodeContent . '"';
-			},
-
-			$zObjectString
+		return json_encode(
+			self::replaceNullReferencePlaceholderInValue( $zObject, $zid ),
+			JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
 		);
-		return $zObjectString;
+	}
+
+	/**
+	 * Recursive helper for replaceNullReferencePlaceholder().
+	 *
+	 * @param mixed $value A decoded JSON value
+	 * @param string $zid
+	 * @return mixed The value with the placeholders replaced
+	 */
+	private static function replaceNullReferencePlaceholderInValue( $value, string $zid ) {
+		if ( is_string( $value ) ) {
+			// Replace a string only if all of it is "Z0" or "Z0Kn".
+			// Keep "Z0" inside other strings, for example in labels.
+			$placeholderRegex = '/^' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?$/D';
+			return preg_match( $placeholderRegex, $value )
+				? $zid . substr( $value, strlen( ZTypeRegistry::Z_NULL_REFERENCE ) )
+				: $value;
+		}
+
+		if ( is_array( $value ) ) {
+			return array_map(
+				static fn ( $item ) => self::replaceNullReferencePlaceholderInValue( $item, $zid ),
+				$value
+			);
+		}
+
+		if ( is_object( $value ) ) {
+			$output = new stdClass();
+			foreach ( $value as $key => $item ) {
+				$key = (string)$key;
+				$newKey = self::replaceNullReferencePlaceholderInValue( $key, $zid );
+				if ( $key === ZTypeRegistry::Z_CODE_CODE && is_string( $item ) ) {
+					// Replace all "Z0" substrings in code, for example "function Z0( Z0K1 )".
+					// The "Kn" suffix stays, thus "Z0K1" becomes "<zid>K1".
+					$output->$newKey = str_replace( ZTypeRegistry::Z_NULL_REFERENCE, $zid, $item );
+				} else {
+					$output->$newKey = self::replaceNullReferencePlaceholderInValue( $item, $zid );
+				}
+			}
+			return $output;
+		}
+
+		return $value;
 	}
 
 	/**

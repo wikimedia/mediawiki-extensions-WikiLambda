@@ -1650,6 +1650,62 @@ EOT;
 		];
 	}
 
+	/**
+	 * [T439199]: A long code string must not exhaust the PCRE JIT stack.
+	 */
+	public function testReplaceNullReferencePlaceholder_LongCode() {
+		$line = "const re = /\\d+\\.\\\\/; const s = \"Z0 \\\"quoted\\\"\"; // Z0K1 'single'\n";
+		$code = "function Z0( Z0K1 ) {\n" . str_repeat( $line, 4000 ) . "}";
+		$this->assertGreaterThan( 200000, strlen( $code ) );
+
+		$input = json_encode( [
+			'Z1K1' => 'Z2',
+			'Z2K1' => [ 'Z1K1' => 'Z6', 'Z6K1' => 'Z0' ],
+			'Z2K2' => [
+				'Z1K1' => 'Z14',
+				'Z14K1' => 'Z30837',
+				'Z14K3' => [ 'Z1K1' => 'Z16', 'Z16K1' => 'Z600', 'Z16K2' => $code ]
+			]
+		] );
+
+		$transformed = ZObjectUtils::replaceNullReferencePlaceholder( $input, 'Z30994' );
+		$decoded = json_decode( $transformed, true );
+
+		$this->assertIsArray( $decoded, 'Result should be valid JSON' );
+		$this->assertSame( 'Z30994', $decoded['Z2K1']['Z6K1'] );
+		$this->assertSame( str_replace( 'Z0', 'Z30994', $code ), $decoded['Z2K2']['Z14K3']['Z16K2'] );
+	}
+
+	/**
+	 * @dataProvider provideReplaceNullReferencePlaceholder_Placeholders
+	 */
+	public function testReplaceNullReferencePlaceholder_Placeholders( $input, $expected ) {
+		$this->assertSame( $expected, ZObjectUtils::replaceNullReferencePlaceholder( $input, 'Z123' ) );
+	}
+
+	public static function provideReplaceNullReferencePlaceholder_Placeholders() {
+		yield 'replaces references and keys, and keeps key order' => [
+			'{"Z1K1":"Z4","Z4K1":"Z0","Z0K1":"Z0K1","Z2K1":"Z0K12"}',
+			'{"Z1K1":"Z4","Z4K1":"Z123","Z123K1":"Z123K1","Z2K1":"Z123K12"}'
+		];
+		yield 'keeps strings that are not exactly a placeholder' => [
+			'{"Z6K1":["Z0 label","Z01","Z0K0","Z0K","Z10","xZ0","Z0\n"]}',
+			'{"Z6K1":["Z0 label","Z01","Z0K0","Z0K","Z10","xZ0","Z0\n"]}'
+		];
+		yield 'replaces all Z0 substrings in code only' => [
+			'{"Z16K2":"Z0(Z0K1, \"Z01\")","Z11K2":"Z0(Z0K1)"}',
+			'{"Z16K2":"Z123(Z123K1, \"Z1231\")","Z11K2":"Z0(Z0K1)"}'
+		];
+		yield 'keeps empty objects and arrays' => [
+			'{"Z1K1":"Z0","Z2K3":{},"Z12K1":[]}',
+			'{"Z1K1":"Z123","Z2K3":{},"Z12K1":[]}'
+		];
+		yield 'returns invalid JSON without change' => [
+			'{"Z1K1":"Z0",',
+			'{"Z1K1":"Z0",'
+		];
+	}
+
 	public function testNetworkSafeEncoding() {
 		$this->assertEquals(
 			'Foo',
