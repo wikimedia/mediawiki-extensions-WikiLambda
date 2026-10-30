@@ -67,6 +67,7 @@
 	"wikilambda-abstract-menu-option-insert-before": "Wstaw fragment przed",
 	"wikilambda-abstract-menu-option-move-after": "Przenieś fragment po",
 	"wikilambda-abstract-menu-option-move-before": "Przenieś fragment przed",
+	"wikilambda-abstract-menu-option-try-function-call": "Wypróbuj w Wikifunkcjach",
 	"wikilambda-abstract-preview-fragment-max-retries": "Osiągnięto maksymalną liczbę prób. Spróbuj ponownie później.",
 	"wikilambda-abstract-preview-fragment-missing": "Brak",
 	"wikilambda-abstract-preview-fragment-pending": "W toku",
