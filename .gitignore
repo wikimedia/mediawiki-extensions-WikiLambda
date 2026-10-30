@@ -12,7 +12,6 @@
 .vscode
 .cursor
 .env
-CLAUDE.md
 .claude
 # Allow lede, and two sample items, ignore the rest
 fixtures/wikidata/*
