@@ -322,6 +322,7 @@ class RepoHooks implements
 		$availableRights = [
 			'wikilambda-abstract-create',
 			'wikilambda-abstract-edit',
+			'wikilambda-abstract-request-fresh-result',
 			'wikilambda-abstract-run-unsaved-fragment',
 		];
 
@@ -329,6 +330,7 @@ class RepoHooks implements
 			'*' => [
 				'wikilambda-abstract-create' => false,
 				'wikilambda-abstract-edit' => false,
+				'wikilambda-abstract-request-fresh-result' => false,
 				'wikilambda-abstract-run-unsaved-fragment' => false,
 			],
 			'user' => [
@@ -336,13 +338,30 @@ class RepoHooks implements
 				'wikilambda-abstract-edit' => true,
 				'wikilambda-abstract-run-unsaved-fragment' => true,
 			],
+			// Asking for a fragment to be rendered again with the latest data costs work on
+			// Wikifunctions and Wikidata, so only established accounts may do it, as on
+			// Wikifunctions with wikilambda-request-fresh-result. (T442772)
+			'autoconfirmed' => [
+				'wikilambda-abstract-request-fresh-result' => true,
+			],
 		];
 
-		self::applyRegisteredConfig( $availableRights, $groupPermissions, [], [] );
+		// A rate-limit bucket must name an explicit group, and 'autoconfirmed' is implicit
+		// (see registerRepoModeConfig()), so the 'user' bucket covers every account with the right.
+		$rateLimits = [
+			'wikilambda-abstract-request-fresh-result' => [
+				// Two fresh results per minute, as for most users on Wikifunctions
+				'user' => [ 2, 60 ],
+			],
+		];
+
+		self::applyRegisteredConfig( $availableRights, $groupPermissions, $rateLimits, [] );
 
 		// The abstract-authoring rights are also reachable through the core 'editpage' OAuth grant.
 		// Registered here (not in registerRepoModeConfig) so they only appear on Special:ListGrants
-		// where abstract mode is enabled. (T423542)
+		// where abstract mode is enabled. (T423542) wikilambda-abstract-request-fresh-result is
+		// deliberately in no grant: tools should not trigger fresh results without a decision
+		// to allow it. (T442772)
 		self::applyGrantConfig(
 			[
 				'editpage' => [

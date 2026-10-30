@@ -42,6 +42,12 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 	private const ABSTRACT_USER_RIGHT = 'wikilambda-abstract-create';
 
 	/**
+	 * An abstract-mode-only right granted to autoconfirmed users, with its own rate
+	 * limit and in no OAuth grant: asking for fragments with the latest data. (T442772)
+	 */
+	private const ABSTRACT_FRESH_RESULT_RIGHT = 'wikilambda-abstract-request-fresh-result';
+
+	/**
 	 * An abstract-client-mode-only right granted to sysops: gates the opt-in action that
 	 * chooses which local articles render from Abstract Wikipedia content. (T422697)
 	 */
@@ -231,6 +237,30 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 				true, $wgGrantPermissions['editpage'][self::ABSTRACT_USER_RIGHT] ?? null,
 				"The 'editpage' OAuth grant must include abstract-authoring rights when abstract mode is enabled"
 			);
+			// Fresh results: autoconfirmed only, rate-limited, and in no OAuth grant. (T442772)
+			$this->assertContains( self::ABSTRACT_FRESH_RESULT_RIGHT, $wgAvailableRights );
+			$this->assertSame(
+				true, $wgGroupPermissions['autoconfirmed'][self::ABSTRACT_FRESH_RESULT_RIGHT] ?? null,
+				"'autoconfirmed' must be granted the fresh-result right when abstract mode is enabled"
+			);
+			$this->assertSame(
+				false, $wgGroupPermissions['*'][self::ABSTRACT_FRESH_RESULT_RIGHT] ?? null,
+				"Everyone else must be explicitly denied the fresh-result right"
+			);
+			$this->assertArrayNotHasKey(
+				self::ABSTRACT_FRESH_RESULT_RIGHT, $wgGroupPermissions['user'] ?? [],
+				"'user' must not be granted the fresh-result right; only 'autoconfirmed' is"
+			);
+			$this->assertSame(
+				[ 'user' => [ 2, 60 ] ], $wgRateLimits[self::ABSTRACT_FRESH_RESULT_RIGHT] ?? null,
+				'The fresh-result right must be rate-limited when abstract mode is enabled'
+			);
+			foreach ( $wgGrantPermissions as $grant => $rights ) {
+				$this->assertArrayNotHasKey(
+					self::ABSTRACT_FRESH_RESULT_RIGHT, $rights,
+					"The fresh-result right must not be in the '$grant' OAuth grant"
+				);
+			}
 		} else {
 			$this->assertNotContains(
 				self::ABSTRACT_USER_RIGHT, $wgAvailableRights,
@@ -239,6 +269,8 @@ class RepoHooksRegisterExtensionTest extends MediaWikiIntegrationTestCase {
 			$this->assertArrayNotHasKey(
 				self::ABSTRACT_USER_RIGHT, $wgGrantPermissions['editpage'] ?? []
 			);
+			$this->assertNotContains( self::ABSTRACT_FRESH_RESULT_RIGHT, $wgAvailableRights );
+			$this->assertArrayNotHasKey( self::ABSTRACT_FRESH_RESULT_RIGHT, $wgRateLimits );
 		}
 
 		if ( $expectAbstractClientModeRights ) {
