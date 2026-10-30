@@ -555,10 +555,16 @@ const abstractWikiStore = {
 				);
 			}
 
+			// (T420915) Compare the content, not the dirty flag: a missed change must not be lost.
+			const { content: loadedContent, undo } = this.getWikilambdaConfig;
+			const isUnchangedUndo = !!undo &&
+				JSON.stringify( content ) === JSON.stringify( JSON.parse( loadedContent ) );
+
 			return saveAbstractWikiContent( {
 				title,
 				content,
-				summary
+				summary,
+				undo: isUnchangedUndo ? undo : undefined
 			} );
 		},
 

@@ -857,6 +857,45 @@ describe( 'abstractWiki Pinia store', () => {
 					text: JSON.stringify( mockAbstractContent, null, 4 )
 				}, { signal: undefined } );
 			} );
+
+			it( 'submits an unchanged undo as an undo', async () => {
+				Object.defineProperty( store, 'getWikilambdaConfig', {
+					value: {
+						content: JSON.stringify( mockAbstractContent ),
+						undo: { rev: 12345, after: 12344 }
+					},
+					configurable: true
+				} );
+
+				await store.submitAbstractWikiContent( { summary: 'some summary' } );
+
+				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
+					action: 'edit',
+					format: 'json',
+					formatversion: '2',
+					summary: 'some summary',
+					title: `Abstract_Wikipedia:${ mockQid }`,
+					undo: 12345,
+					undoafter: 12344
+				}, { signal: undefined } );
+			} );
+
+			it( 'submits a changed undo as a normal edit', async () => {
+				Object.defineProperty( store, 'getWikilambdaConfig', {
+					value: {
+						content: JSON.stringify( Object.assign( {}, mockAbstractContent, { sections: {} } ) ),
+						undo: { rev: 12345, after: 12344 }
+					},
+					configurable: true
+				} );
+
+				await store.submitAbstractWikiContent( { summary: 'some summary' } );
+
+				const params = postWithEditTokenMock.mock.calls[ 0 ][ 0 ];
+				expect( params.text ).toBe( JSON.stringify( mockAbstractContent, null, 4 ) );
+				expect( params.undo ).toBeUndefined();
+				expect( params.undoafter ).toBeUndefined();
+			} );
 		} );
 
 		describe( 'onlyNeededFragments', () => {

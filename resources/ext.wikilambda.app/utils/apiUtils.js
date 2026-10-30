@@ -569,6 +569,8 @@ const apiUtils = {
 	 * @param {Object} payload.content
 	 * @param {string} payload.title
 	 * @param {string} payload.summary
+	 * @param {Object|undefined} payload.undo The undo revisions ({ rev, after }), if the content
+	 *  is the unchanged content of an undo request
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -576,15 +578,19 @@ const apiUtils = {
 		// Should never work with foreign API
 		const api = new mw.Api();
 
+		// Core makes the content of an undo itself, and marks the edit as an undo
+		const contentParams = payload.undo ?
+			{ undo: payload.undo.rev, undoafter: payload.undo.after } :
+			{ text: JSON.stringify( payload.content, null, 4 ) };
+
 		return new Promise( ( resolve, reject ) => {
-			api.postWithEditToken( {
+			api.postWithEditToken( Object.assign( {
 				action: 'edit',
 				format: 'json',
 				formatversion: '2',
 				summary: payload.summary || '',
-				title: payload.title,
-				text: JSON.stringify( payload.content, null, 4 )
-			}, {
+				title: payload.title
+			}, contentParams ), {
 				signal: payload.signal
 			} )
 				.then( ( data ) => resolve( data.edit ) )
