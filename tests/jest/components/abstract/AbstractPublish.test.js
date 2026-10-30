@@ -108,6 +108,36 @@ describe( 'AbstractPublish', () => {
 		expect( publishButton.attributes( 'disabled' ) ).not.toBe( 'true' );
 	} );
 
+	it( 'enables publish button if the undo content loaded', () => {
+		store.isDirty = false;
+		store.isCreateNewPage = false;
+		store.getQueryParams = {
+			undo: '12345',
+			undoafter: '12344'
+		};
+		store.getWikilambdaConfig = { undo: { rev: 12345, after: 12344 } };
+
+		const wrapper = renderAbstractPublish();
+
+		const publishButton = wrapper.find( '.ext-wikilambda-app-abstract-publish__publish' );
+		expect( publishButton.attributes( 'disabled' ) ).toBe( 'false' );
+	} );
+
+	it( 'disables publish button if the undo failed', () => {
+		store.isDirty = false;
+		store.isCreateNewPage = false;
+		store.getQueryParams = {
+			undo: '12345',
+			undoafter: '12344'
+		};
+		store.getWikilambdaConfig = {};
+
+		const wrapper = renderAbstractPublish();
+
+		const publishButton = wrapper.find( '.ext-wikilambda-app-abstract-publish__publish' );
+		expect( publishButton.attributes( 'disabled' ) ).toBe( 'true' );
+	} );
+
 	it( 'opens publish dialog when clicking publish and content is valid', async () => {
 		const wrapper = renderAbstractPublish();
 

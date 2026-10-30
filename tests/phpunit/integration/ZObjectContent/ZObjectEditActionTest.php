@@ -81,6 +81,10 @@ class ZObjectEditActionTest extends WikiLambdaRepoModeIntegrationTestCase {
 			$this->makeContent( 'Z10001', 'first' )->serialize(),
 			$output->getJsConfigVars()[ 'wgWikiLambda' ][ 'undoContent' ]
 		);
+		$this->assertSame(
+			[ 'rev' => $revIds[1], 'after' => $revIds[0] ],
+			$output->getJsConfigVars()[ 'wgWikiLambda' ][ 'undo' ]
+		);
 		$this->assertStringNotContainsString( 'cdx-message--error', $output->getHTML() );
 	}
 
@@ -97,6 +101,7 @@ class ZObjectEditActionTest extends WikiLambdaRepoModeIntegrationTestCase {
 
 		$output = $action->getOutput();
 		$this->assertArrayNotHasKey( 'undoContent', $output->getJsConfigVars()[ 'wgWikiLambda' ] );
+		$this->assertArrayNotHasKey( 'undo', $output->getJsConfigVars()[ 'wgWikiLambda' ] );
 		$this->assertStringContainsString(
 			Html::errorBox( $output->msg( 'undo-failure' )->parse() ),
 			$output->getHTML()

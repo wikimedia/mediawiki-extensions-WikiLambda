@@ -504,6 +504,10 @@ class AbstractContentEditActionTest extends WikiLambdaAbstractModeIntegrationTes
 
 		$output = $action->getOutput();
 		$this->assertSame( $firstJson, $output->getJsConfigVars()[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertSame(
+			[ 'rev' => $revIds[1], 'after' => $revIds[0] ],
+			$output->getJsConfigVars()[ 'wgWikiLambda' ][ 'undo' ]
+		);
 		$this->assertStringNotContainsString( 'cdx-message--error', $output->getHTML() );
 	}
 
@@ -524,6 +528,7 @@ class AbstractContentEditActionTest extends WikiLambdaAbstractModeIntegrationTes
 
 		$output = $action->getOutput();
 		$this->assertSame( $thirdJson, $output->getJsConfigVars()[ 'wgWikiLambda' ][ 'content' ] );
+		$this->assertNull( $output->getJsConfigVars()[ 'wgWikiLambda' ][ 'undo' ] );
 		$this->assertStringContainsString(
 			Html::errorBox( $output->msg( 'undo-failure' )->parse() ),
 			$output->getHTML()

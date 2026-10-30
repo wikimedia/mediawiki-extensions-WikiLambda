@@ -54,6 +54,7 @@ trait AbstractContentEditPageTrait {
 
 		$createNewPage = true;
 		$jsonContent = false;
+		$undoRequest = null;
 
 		// Resolve which revision MediaWiki is asking us to display.
 		//
@@ -149,6 +150,7 @@ trait AbstractContentEditPageTrait {
 				);
 				if ( $undoStatus->isGood() ) {
 					$jsonContent = $undoStatus->getValue()->serialize();
+					$undoRequest = [ 'rev' => $undo, 'after' => $undoAfter ];
 				} else {
 					$output->addModuleStyles( [ 'mediawiki.codex.messagebox.styles' ] );
 					$output->addHTML( Html::errorBox( $context->msg( $undoStatus->getMessages()[0] )->parse() ) );
@@ -174,6 +176,7 @@ trait AbstractContentEditPageTrait {
 			'content' => $jsonContent,
 			'createNewPage' => $createNewPage,
 			'title' => $title->getText(),
+			'undo' => $undoRequest,
 			'zlang' => $userLangCode,
 			'viewmode' => false
 		];

@@ -221,11 +221,13 @@ describe( 'Publish widget', () => {
 			expect( button.attributes( 'disabled' ) ).not.toBeDefined();
 		} );
 
-		it( 'enables publish button if undo', () => {
+		it( 'enables publish button if the undo content loaded', () => {
 			store.isCreateNewPage = false;
 			store.getQueryParams = {
-				undo: '12345'
+				undo: '12345',
+				undoafter: '12344'
 			};
+			store.getWikilambdaConfig = { undo: { rev: 12345, after: 12344 } };
 
 			const wrapper = renderPublish( {
 				isDirty: false
@@ -233,6 +235,22 @@ describe( 'Publish widget', () => {
 
 			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
 			expect( button.attributes( 'disabled' ) ).not.toBeDefined();
+		} );
+
+		it( 'disables publish button if the undo failed', () => {
+			store.isCreateNewPage = false;
+			store.getQueryParams = {
+				undo: '12345',
+				undoafter: '12344'
+			};
+			store.getWikilambdaConfig = {};
+
+			const wrapper = renderPublish( {
+				isDirty: false
+			} );
+
+			const button = wrapper.find( '.ext-wikilambda-app-publish-widget__publish-button' );
+			expect( button.attributes( 'disabled' ) ).toBeDefined();
 		} );
 	} );
 

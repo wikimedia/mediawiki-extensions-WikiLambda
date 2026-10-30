@@ -94,15 +94,17 @@ module.exports = exports = defineComponent( {
 
 		// Publish button state
 		/**
-		 * If 'oldid' or 'undo' exist in the query (and are not empty), return true.
+		 * If 'oldid' exists in the query (and is not empty), or the server loaded the
+		 * content of an undo request, return true.
 		 * If true, this enables the Publish button without needing an event.
 		 *
 		 * @return {boolean}
 		 */
-		const revertToEdit = computed( () => ( !store.isCreateNewPage && store.getQueryParams && (
-			( typeof store.getQueryParams.oldid === 'string' && store.getQueryParams.oldid.trim() !== '' ) ||
-			( typeof store.getQueryParams.undo === 'string' && store.getQueryParams.undo.trim() !== '' )
-		) ) );
+		const revertToEdit = computed( () => !store.isCreateNewPage && (
+			( store.getQueryParams && typeof store.getQueryParams.oldid === 'string' && store.getQueryParams.oldid.trim() !== '' ) ||
+			// (T335713) A failed undo loads the current revision, so it must not enable Publish.
+			!!store.getWikilambdaConfig.undo
+		) );
 
 		function handlePublish() {
 			// Clear global and validation (field) errors:

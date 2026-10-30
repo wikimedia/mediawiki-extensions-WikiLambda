@@ -165,6 +165,7 @@ class ZObjectEditAction extends Action {
 			);
 			if ( $undoStatus->isGood() ) {
 				$jsConfigVars['undoContent'] = $undoStatus->getValue()->serialize();
+				$jsConfigVars['undo'] = [ 'rev' => $undo, 'after' => $undoAfter ];
 			} else {
 				$output->addModuleStyles( [ 'mediawiki.codex.messagebox.styles' ] );
 				$output->addHTML( Html::errorBox( $this->msg( $undoStatus->getMessages()[0] )->parse() ) );
