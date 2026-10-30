@@ -23,6 +23,26 @@ function getBeforeunloadHandler() {
 	return window.addEventListener.mock.calls.find( ( c ) => c[ 0 ] === 'beforeunload' )[ 1 ];
 }
 
+function createClickEvent( target, props = {} ) {
+	return Object.assign( {
+		target,
+		button: 0,
+		defaultPrevented: false,
+		metaKey: false,
+		ctrlKey: false,
+		shiftKey: false,
+		altKey: false,
+		preventDefault: jest.fn()
+	}, props );
+}
+
+function createExternalLink() {
+	const link = document.createElement( 'a' );
+	link.href = 'https://example.com/other';
+	link.target = '';
+	return link;
+}
+
 describe( 'useLeaveEditorDialog composable', () => {
 	beforeEach( () => {
 		jest.spyOn( window, 'addEventListener' ).mockImplementation( () => {} );
@@ -92,27 +112,34 @@ describe( 'useLeaveEditorDialog composable', () => {
 	it( 'click on external link prevents default and shows dialog when dirty', () => {
 		const isDirty = ref( true );
 		const [ result ] = loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
-		const link = document.createElement( 'a' );
-		link.href = 'https://example.com/other';
-		link.target = '';
-		const preventDefault = jest.fn();
-		getClickHandler()( { target: link, preventDefault } );
+		const event = createClickEvent( createExternalLink() );
+		getClickHandler()( event );
 
-		expect( preventDefault ).toHaveBeenCalled();
+		expect( event.preventDefault ).toHaveBeenCalled();
 		expect( result.showLeaveEditorDialog.value ).toBe( true );
 		expect( result.leaveEditorCallback.value ).toBeDefined();
 		result.leaveEditorCallback.value();
 		expect( window.location.href ).toBe( 'https://example.com/other' );
 	} );
 
+	it( 'click on external link navigates immediately when not dirty', () => {
+		const isDirty = ref( false );
+		const [ result ] = loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
+		const event = createClickEvent( createExternalLink() );
+		getClickHandler()( event );
+
+		expect( event.preventDefault ).toHaveBeenCalled();
+		expect( result.showLeaveEditorDialog.value ).toBe( false );
+		expect( window.location.href ).toBe( 'https://example.com/other' );
+	} );
+
 	it( 'click on element with no link ancestor does nothing', () => {
 		const isDirty = ref( true );
 		loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
-		const span = document.createElement( 'span' );
-		const preventDefault = jest.fn();
-		getClickHandler()( { target: span, preventDefault } );
+		const event = createClickEvent( document.createElement( 'span' ) );
+		getClickHandler()( event );
 
-		expect( preventDefault ).not.toHaveBeenCalled();
+		expect( event.preventDefault ).not.toHaveBeenCalled();
 	} );
 
 	it( 'click on link without href does nothing', () => {
@@ -120,36 +147,73 @@ describe( 'useLeaveEditorDialog composable', () => {
 		loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
 		const link = document.createElement( 'a' );
 		link.target = '';
-		const preventDefault = jest.fn();
-		getClickHandler()( { target: link, preventDefault } );
+		const event = createClickEvent( link );
+		getClickHandler()( event );
 
-		expect( preventDefault ).not.toHaveBeenCalled();
+		expect( event.preventDefault ).not.toHaveBeenCalled();
 	} );
 
 	it( 'click on link with target _blank does nothing', () => {
 		const isDirty = ref( true );
 		loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
-		const link = document.createElement( 'a' );
-		link.href = 'https://example.com/other';
+		const link = createExternalLink();
 		link.target = '_blank';
-		const preventDefault = jest.fn();
-		getClickHandler()( { target: link, preventDefault } );
+		const event = createClickEvent( link );
+		getClickHandler()( event );
 
-		expect( preventDefault ).not.toHaveBeenCalled();
+		expect( event.preventDefault ).not.toHaveBeenCalled();
 	} );
 
 	it( 'click on link with role=button does nothing', () => {
 		const isDirty = ref( true );
 		loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
-		const link = document.createElement( 'a' );
-		link.href = 'https://example.com/other';
-		link.target = '';
+		const link = createExternalLink();
 		link.setAttribute( 'role', 'button' );
 		link.role = 'button'; // ensure property is set for composable's target.role check
-		const preventDefault = jest.fn();
-		getClickHandler()( { target: link, preventDefault } );
+		const event = createClickEvent( link );
+		getClickHandler()( event );
 
-		expect( preventDefault ).not.toHaveBeenCalled();
+		expect( event.preventDefault ).not.toHaveBeenCalled();
+	} );
+
+	describe( 'click on external link that does not navigate the current tab', () => {
+		function expectNoLeave( isDirty, props ) {
+			const [ result ] = loadComposable( () => useLeaveEditorDialog( { isDirty } ) );
+			const event = createClickEvent( createExternalLink(), props );
+			getClickHandler()( event );
+
+			expect( event.preventDefault ).not.toHaveBeenCalled();
+			expect( result.showLeaveEditorDialog.value ).toBe( false );
+			expect( window.location.href ).toBe( 'http://example.com/' );
+		}
+
+		it( 'does nothing with the Ctrl key', () => {
+			expectNoLeave( ref( true ), { ctrlKey: true } );
+		} );
+
+		it( 'does nothing with the Meta (Cmd) key', () => {
+			expectNoLeave( ref( true ), { metaKey: true } );
+		} );
+
+		it( 'does nothing with the Shift key', () => {
+			expectNoLeave( ref( true ), { shiftKey: true } );
+		} );
+
+		it( 'does nothing with the Alt key', () => {
+			expectNoLeave( ref( true ), { altKey: true } );
+		} );
+
+		it( 'does nothing with a non-primary mouse button', () => {
+			expectNoLeave( ref( true ), { button: 1 } );
+		} );
+
+		it( 'does nothing when another handler already prevented the default', () => {
+			expectNoLeave( ref( true ), { defaultPrevented: true } );
+		} );
+
+		it( 'does not navigate with a modifier key when not dirty', () => {
+			expectNoLeave( ref( false ), { metaKey: true } );
+		} );
 	} );
 
 	it( 'beforeunload when dirty calls preventDefault', () => {

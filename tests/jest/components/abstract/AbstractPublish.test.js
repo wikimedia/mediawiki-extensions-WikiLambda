@@ -67,7 +67,7 @@ describe( 'AbstractPublish', () => {
 			const link = document.createElement( 'a' );
 			link.href = 'https://example.com/leave';
 
-			handleClickAway( { target: link, preventDefault: jest.fn() } );
+			handleClickAway( { target: link, button: 0, preventDefault: jest.fn() } );
 
 			await waitFor( () => expect( mw.testKitchen.getInstrument().send )
 				.toHaveBeenCalledWith( 'cancel', store.getInteractionData ) );

@@ -73,10 +73,16 @@ module.exports = function useLeaveEditorDialog( { isDirty, onBeforeLeave } ) {
 	/**
 	 * Handles navigation away from the page when clicking a link.
 	 * Prevents accidental loss of work by showing confirmation when dirty.
+	 * Ignores clicks that do not navigate the current tab.
 	 *
-	 * @param {Event} e the click event
+	 * @param {MouseEvent} e the click event
 	 */
 	function handleClickAway( e ) {
+		// Let the browser handle a modified or non-primary click (for example, open in a new tab).
+		// The editor stays open, so there is no need to warn.
+		if ( e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey ) {
+			return;
+		}
 		const link = findNavigationLink( e.target );
 		if ( link ) {
 			e.preventDefault();
