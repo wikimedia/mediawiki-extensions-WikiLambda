@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"McDutchie"
+			"McDutchie",
+			"Neriah"
 		]
 	},
 	"action-wikilambda-abstract-create": "crear nove articulos abstracte",
