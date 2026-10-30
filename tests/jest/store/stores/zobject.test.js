@@ -1822,6 +1822,22 @@ describe( 'zobject Pinia store', () => {
 				} ).toThrowError( 'Unable to mutate state: Invalid array index: "0"' );
 			} );
 
+			it( 'relocates the field errors and the invalid list items so they follow the next items', () => {
+				store.errors = {
+					'main.Z2K2.1': [ 'error-for-una' ],
+					'main.Z2K2.4.Z6K1': [ 'error-for-catola' ]
+				};
+				store.invalidListItems = { 'main.Z2K2': [ 2, 4 ] };
+
+				store.deleteListItemsByKeyPath( {
+					keyPath: [ 'main', 'Z2K2' ],
+					indexes: [ 1, 2 ]
+				} );
+
+				expect( store.errors ).toEqual( { 'main.Z2K2.2.Z6K1': [ 'error-for-catola' ] } );
+				expect( store.invalidListItems ).toEqual( { 'main.Z2K2': [ 2 ] } );
+			} );
+
 			it( 'deletes one item from the array', () => {
 				store.deleteListItemsByKeyPath( {
 					keyPath: [ 'main', 'Z2K2' ],
@@ -2166,6 +2182,17 @@ describe( 'zobject Pinia store', () => {
 				} );
 			} );
 
+			it( 'relocates the invalid list items so they follow the moved item', () => {
+				store.invalidListItems = { 'main.Z2K2': [ 1, 4 ] };
+
+				store.moveListItemByKeyPath( {
+					keyPath: [ 'main', 'Z2K2', 1 ],
+					toIndex: 2
+				} );
+
+				expect( store.invalidListItems ).toEqual( { 'main.Z2K2': [ 2, 4 ] } );
+			} );
+
 			it( 'relocates field errors so they follow the moved item', () => {
 				store.errors = {
 					'main.Z2K2.1': [ 'error-for-una' ],
@@ -2182,6 +2209,34 @@ describe( 'zobject Pinia store', () => {
 					'main.Z2K2.2': [ 'error-for-una' ],
 					'main.Z2K2.1': [ 'error-for-dola' ]
 				} );
+			} );
+		} );
+
+		describe( 'insertListItemAtKeyPath', () => {
+			beforeEach( () => {
+				store.jsonObject.main = canonicalToHybrid( {
+					Z2K2: [ 'Z1', 'una', 'dola', 'tela' ]
+				} );
+			} );
+
+			it( 'inserts an item and relocates the field errors and the invalid list items so they follow the shifted items', () => {
+				store.errors = {
+					'main.Z2K2.1': [ 'error-for-una' ],
+					'main.Z2K2.3': [ 'error-for-tela' ]
+				};
+				store.invalidListItems = { 'main.Z2K2': [ 1, 3 ] };
+
+				store.insertListItemAtKeyPath( {
+					keyPath: [ 'main', 'Z2K2', '2' ],
+					value: canonicalToHybrid( 'nova' )
+				} );
+
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( [ 'Z1', 'una', 'nova', 'dola', 'tela' ] );
+				expect( store.errors ).toEqual( {
+					'main.Z2K2.1': [ 'error-for-una' ],
+					'main.Z2K2.4': [ 'error-for-tela' ]
+				} );
+				expect( store.invalidListItems ).toEqual( { 'main.Z2K2': [ 1, 4 ] } );
 			} );
 		} );
 

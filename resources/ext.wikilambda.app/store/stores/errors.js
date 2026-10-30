@@ -10,6 +10,7 @@ const Constants = require( '../../Constants.js' );
 
 const { extractErrorData } = require( '../../utils/errorUtils.js' );
 const { getValueFromCanonicalZMap } = require( '../../utils/schemata.js' );
+const { relocateListItemKeyPaths } = require( '../../utils/zobjectUtils.js' );
 const ErrorData = require( '../classes/ErrorData.js' );
 
 module.exports = {
@@ -282,65 +283,17 @@ module.exports = {
 		},
 
 		/**
-		 * Relocates field errors when a typed-list item is moved, so that an
-		 * item's errors (and its descendants') follow it to its new position
-		 * instead of staying with the array index (T431714).
+		 * Relocates field errors when the user deletes, inserts or moves items
+		 * of a typed list, so that the errors of an item (and of its
+		 * descendants) follow it to its new position instead of staying with
+		 * the array index (T431714). The errors of a deleted item are removed.
 		 *
-		 * Errors are keyed by the item's dotted keyPath, so moving the item at
-		 * `index` to `newIndex` under `listKeyPath` reproduces the array splice
-		 * on those keys: the moved item's index becomes `newIndex` and every
-		 * index the splice shifts is remapped by one. Indices outside the
-		 * affected range, and non-numeric children, are left untouched.
-		 *
-		 * @param {string|Array} listKeyPath keyPath of the list (not the item)
-		 * @param {number} index Current index of the moved item
-		 * @param {number} newIndex Target index of the moved item
+		 * @param {Array} listKeyPath keyPath of the list (not the item)
+		 * @param {Function} remap gets the old index of an item, and returns
+		 *  its new index, or -1 if the item was deleted
 		 */
-		relocateErrorsForListMove: function ( listKeyPath, index, newIndex ) {
-			if ( index === newIndex ) {
-				return;
-			}
-
-			const prefix = Array.isArray( listKeyPath ) ? listKeyPath.join( '.' ) : listKeyPath;
-			const low = Math.min( index, newIndex );
-			const high = Math.max( index, newIndex );
-
-			// Map an old item index to its index after the splice
-			const remap = ( itemIndex ) => {
-				if ( itemIndex === index ) {
-					return newIndex;
-				}
-				// The items between the old and new position shift by one
-				return index < newIndex ? itemIndex - 1 : itemIndex + 1;
-			};
-
-			// Collect the affected error entries before mutating, so a swap
-			// doesn't clobber a key that another entry is about to move into
-			const moved = [];
-			for ( const path of Object.keys( this.errors ) ) {
-				if ( !path.startsWith( prefix + '.' ) ) {
-					continue;
-				}
-				const rest = path.slice( prefix.length + 1 );
-				const dotIndex = rest.indexOf( '.' );
-				const itemIndex = Number( dotIndex === -1 ? rest : rest.slice( 0, dotIndex ) );
-				if ( !Number.isInteger( itemIndex ) || itemIndex < low || itemIndex > high ) {
-					continue;
-				}
-				const tail = dotIndex === -1 ? '' : rest.slice( dotIndex );
-				moved.push( {
-					oldPath: path,
-					newPath: `${ prefix }.${ remap( itemIndex ) }${ tail }`,
-					value: this.errors[ path ]
-				} );
-			}
-
-			moved.forEach( ( entry ) => {
-				delete this.errors[ entry.oldPath ];
-			} );
-			moved.forEach( ( entry ) => {
-				this.errors[ entry.newPath ] = entry.value;
-			} );
+		relocateListItemErrors: function ( listKeyPath, remap ) {
+			this.errors = relocateListItemKeyPaths( this.errors, listKeyPath, remap );
 		},
 
 		/**

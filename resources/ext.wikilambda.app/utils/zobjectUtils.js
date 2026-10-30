@@ -155,6 +155,41 @@ const zobjectUtils = {
 	},
 
 	/**
+	 * Relocates the entries of an object keyed by dotted key paths, after a
+	 * change to the items of a typed list. The key paths inside an item follow
+	 * the new index of the item. The entries inside a deleted item are removed.
+	 * Other entries, and the entry of the list itself, do not change.
+	 *
+	 * @param {Object} entries object with dotted key paths as keys
+	 * @param {Array} listKeyPath key path of the list
+	 * @param {Function} remap gets the old index of an item, and returns its
+	 *  new index, or -1 if the item was deleted
+	 * @return {Object} new object with the relocated entries
+	 */
+	relocateListItemKeyPaths: function ( entries, listKeyPath, remap ) {
+		const prefix = listKeyPath.join( '.' );
+		const relocated = {};
+
+		for ( const path of Object.keys( entries ) ) {
+			// The first key after the list key path is the index of the item
+			const [ itemKey, ...tail ] = path.slice( prefix.length + 1 ).split( '.' );
+
+			// Keep the entries outside of the list items as they are
+			if ( !path.startsWith( prefix + '.' ) || !/^\d+$/.test( itemKey ) ) {
+				relocated[ path ] = entries[ path ];
+				continue;
+			}
+
+			const newIndex = remap( Number( itemKey ) );
+			if ( newIndex !== -1 ) {
+				relocated[ [ prefix, newIndex, ...tail ].join( '.' ) ] = entries[ path ];
+			}
+		}
+
+		return relocated;
+	},
+
+	/**
 	 * Returns the terminal value of a string object.
 	 * Accepts both canonical and hybrid forms.
 	 *

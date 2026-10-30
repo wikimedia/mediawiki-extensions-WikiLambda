@@ -831,7 +831,7 @@ describe( 'zobject submission Pinia store', () => {
 				const zobject = {
 					Z1K1: 'Z2',
 					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
-					Z2K2: [ 'Z6', 'invalid item', 'valid item' ],
+					Z2K2: [ 'Z6', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'invalid item' }, 'valid item' ],
 					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: '' } ] }
 				};
 				const transformed = {
@@ -841,10 +841,13 @@ describe( 'zobject submission Pinia store', () => {
 					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
 				};
 				const invalidListItems = { 'main.Z2K2': [ 1 ] };
+				// The removal of the invalid list item moves the warning of the valid item
+				const warning = [ { messageKey: 'mock-warning' } ];
 
 				beforeEach( () => {
 					store.jsonObject.main = canonicalToHybrid( zobject );
 					store.invalidListItems = JSON.parse( JSON.stringify( invalidListItems ) );
+					store.errors = { 'main.Z2K2.2': warning };
 				} );
 
 				it( 'keeps the transformed object when the submission succeeds', async () => {
@@ -852,9 +855,10 @@ describe( 'zobject submission Pinia store', () => {
 
 					expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( transformed );
 					expect( store.invalidListItems ).toEqual( {} );
+					expect( store.errors ).toEqual( { 'main.Z2K2.1': warning } );
 				} );
 
-				it( 'restores the object and the invalid list items when the submission fails', async () => {
+				it( 'restores the object, the invalid list items and the errors when the submission fails', async () => {
 					const error = new ApiError( 'http', { error: { message: 'mock submission error' } } );
 					postWithEditTokenMock.mockImplementation( () => Promise.reject( error ) );
 
@@ -867,6 +871,7 @@ describe( 'zobject submission Pinia store', () => {
 					);
 					expect( hybridToCanonical( store.jsonObject.main ) ).toEqual( zobject );
 					expect( store.invalidListItems ).toEqual( invalidListItems );
+					expect( store.errors ).toEqual( { 'main.Z2K2.2': warning } );
 				} );
 			} );
 
@@ -1189,7 +1194,7 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'removes list items marked as invalid', () => {
-				store.jsonObject.main = canonicalToHybrid( { Z2K2: [ 'Z6', 'a', 'b' ] } );
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: [ 'Z6', 'a', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'b' } ] } );
 				Object.defineProperty( store, 'hasInvalidListItems', {
 					value: true
 				} );
@@ -1226,7 +1231,7 @@ describe( 'zobject submission Pinia store', () => {
 			} );
 
 			it( 'skips list items that are not there anymore', () => {
-				store.jsonObject.main = canonicalToHybrid( { Z2K2: [ 'Z6', 'a', 'b' ] } );
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: [ 'Z6', 'a', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'b' } ] } );
 				Object.defineProperty( store, 'hasInvalidListItems', {
 					value: true
 				} );
@@ -1243,6 +1248,51 @@ describe( 'zobject submission Pinia store', () => {
 				} );
 			} );
 
+			it( 'does not remove a marked item that now matches the item type of the list', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: [ 'Z6', 'a', 'b' ] } );
+				Object.defineProperty( store, 'hasInvalidListItems', {
+					value: true
+				} );
+				Object.defineProperty( store, 'getInvalidListItems', {
+					value: {
+						'main.Z2K2': [ 2 ]
+					}
+				} );
+
+				store.transformZObjectForSubmission();
+				expect( store.deleteListItemsByKeyPath ).toHaveBeenCalledWith( {
+					keyPath: [ 'main', 'Z2K2' ],
+					indexes: []
+				} );
+			} );
+
+			it( 'removes the items of the lists inside list items first', () => {
+				store.jsonObject.main = canonicalToHybrid( { Z2K2: [
+					{ Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
+					'not a list',
+					[ 'Z6', 'a', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'b' } ]
+				] } );
+				Object.defineProperty( store, 'hasInvalidListItems', {
+					value: true
+				} );
+				Object.defineProperty( store, 'getInvalidListItems', {
+					value: {
+						'main.Z2K2': [ 1 ],
+						'main.Z2K2.2': [ 2 ]
+					}
+				} );
+
+				store.transformZObjectForSubmission();
+				expect( store.deleteListItemsByKeyPath ).toHaveBeenNthCalledWith( 1, {
+					keyPath: [ 'main', 'Z2K2', '2' ],
+					indexes: [ 2 ]
+				} );
+				expect( store.deleteListItemsByKeyPath ).toHaveBeenNthCalledWith( 2, {
+					keyPath: [ 'main', 'Z2K2' ],
+					indexes: [ 1 ]
+				} );
+			} );
+
 			it( 'does not remove list items if none are marked as invalid', () => {
 				Object.defineProperty( store, 'hasInvalidListItems', {
 					value: false
@@ -1251,6 +1301,62 @@ describe( 'zobject submission Pinia store', () => {
 				store.transformZObjectForSubmission();
 				expect( store.deleteListItemsByKeyPath ).not.toHaveBeenCalled();
 				expect( store.clearInvalidListItems ).not.toHaveBeenCalled();
+			} );
+		} );
+
+		describe( 'invalid list items after the user changes the list', () => {
+			// The user changes the item type of the list from Object to String,
+			// thus the Boolean item is marked as invalid
+			beforeEach( () => {
+				store.jsonObject.main = canonicalToHybrid( {
+					Z1K1: 'Z2',
+					Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+					Z2K2: [ 'Z1', 'foo', { Z1K1: 'Z40', Z40K1: 'Z41' }, 'bar' ],
+					Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+				} );
+				store.setValueByKeyPath( {
+					keyPath: [ 'main', 'Z2K2', '0' ],
+					value: canonicalToHybrid( 'Z6' )
+				} );
+				store.handleListTypeChange( {
+					keyPath: 'main.Z2K2',
+					objectValue: store.jsonObject.main.Z2K2,
+					newType: 'Z6'
+				} );
+			} );
+
+			it( 'removes the invalid item after the user deletes an item before it', () => {
+				store.deleteListItemsByKeyPath( { keyPath: [ 'main', 'Z2K2' ], indexes: [ 1 ] } );
+
+				store.transformZObjectForSubmission();
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( [ 'Z6', 'bar' ] );
+			} );
+
+			it( 'removes the invalid item after the user moves it', () => {
+				store.moveListItemByKeyPath( { keyPath: [ 'main', 'Z2K2', '2' ], toIndex: 1 } );
+
+				store.transformZObjectForSubmission();
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( [ 'Z6', 'foo', 'bar' ] );
+			} );
+
+			it( 'removes the invalid item after the user inserts an item before it', () => {
+				store.insertListItemAtKeyPath( {
+					keyPath: [ 'main', 'Z2K2', '1' ],
+					value: canonicalToHybrid( 'new' )
+				} );
+
+				store.transformZObjectForSubmission();
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( [ 'Z6', 'new', 'foo', 'bar' ] );
+			} );
+
+			it( 'keeps the item after the user changes it to the item type of the list', () => {
+				store.setValueByKeyPath( {
+					keyPath: [ 'main', 'Z2K2', '2' ],
+					value: canonicalToHybrid( 'baz' )
+				} );
+
+				store.transformZObjectForSubmission();
+				expect( hybridToCanonical( store.jsonObject.main.Z2K2 ) ).toEqual( [ 'Z6', 'foo', 'baz', 'bar' ] );
 			} );
 		} );
 

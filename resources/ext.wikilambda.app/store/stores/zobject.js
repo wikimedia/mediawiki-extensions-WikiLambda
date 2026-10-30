@@ -542,6 +542,17 @@ const zobjectStore = {
 				}
 			} );
 
+			// Relocate the field errors and the invalid list items so they follow the next items
+			const remap = ( itemIndex ) => {
+				if ( indexList.includes( itemIndex ) ) {
+					return -1;
+				}
+				// The items after a deleted item shift back by one
+				return itemIndex - indexList.filter( ( index ) => index < itemIndex ).length;
+			};
+			this.relocateListItemErrors( keyPath, remap );
+			this.relocateInvalidListItems( keyPath, remap );
+
 			// Perform mutation:
 			// Sort in descending order to avoid index shift during deletion
 			indexList
@@ -635,8 +646,22 @@ const zobjectStore = {
 				throw new Error( `Unable to mutate state: New index "${ toIndex }" out of bounds` );
 			}
 
-			// Relocate any field errors so they follow the moved item's new position
-			this.relocateErrorsForListMove( keyPath.slice( 0, -1 ), index, newIndex );
+			// Relocate the field errors and the invalid list items so they follow the moved item
+			const remap = ( itemIndex ) => {
+				if ( itemIndex === index ) {
+					return newIndex;
+				}
+				// The items between the old and new position shift by one
+				if ( itemIndex > index && itemIndex <= newIndex ) {
+					return itemIndex - 1;
+				}
+				if ( itemIndex < index && itemIndex >= newIndex ) {
+					return itemIndex + 1;
+				}
+				return itemIndex;
+			};
+			this.relocateListItemErrors( keyPath.slice( 0, -1 ), remap );
+			this.relocateInvalidListItems( keyPath.slice( 0, -1 ), remap );
 
 			// Perform mutation:
 			const [ item ] = target.splice( index, 1 );
@@ -662,6 +687,11 @@ const zobjectStore = {
 			if ( !Number.isInteger( index ) || index < 0 || index > target.length ) {
 				throw new Error( `Unable to mutate state: Invalid array index: "${ finalKey }"` );
 			}
+
+			// Relocate the field errors and the invalid list items so they follow the shifted items
+			const remap = ( itemIndex ) => itemIndex >= index ? itemIndex + 1 : itemIndex;
+			this.relocateListItemErrors( keyPath.slice( 0, -1 ), remap );
+			this.relocateInvalidListItems( keyPath.slice( 0, -1 ), remap );
 
 			// Perform mutation:
 			target.splice( index, 0, value );

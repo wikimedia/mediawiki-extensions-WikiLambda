@@ -7,7 +7,7 @@
 'use strict';
 
 const Constants = require( '../../Constants.js' ); // Import Constants
-const { getZObjectType } = require( '../../utils/zobjectUtils.js' );
+const { getZObjectType, relocateListItemKeyPaths } = require( '../../utils/zobjectUtils.js' );
 const { typeToString } = require( '../../utils/typeUtils.js' );
 
 module.exports = {
@@ -34,6 +34,23 @@ module.exports = {
 		 */
 		hasInvalidListItems: function ( state ) {
 			return Object.keys( state.invalidListItems ).length > 0;
+		},
+
+		/**
+		 * Returns whether a list item does not match the item type of its list.
+		 * All items match a list of Z1/Object.
+		 *
+		 * @return {Function}
+		 */
+		isInvalidListItem: function () {
+			/**
+			 * @param {Object} item list item, in hybrid form
+			 * @param {Object|string} itemType item type of the list, in canonical form
+			 * @return {boolean}
+			 */
+			const findIsInvalidListItem = ( item, itemType ) => itemType !== Constants.Z_OBJECT &&
+				typeToString( itemType ) !== typeToString( getZObjectType( item ) );
+			return findIsInvalidListItem;
 		}
 	},
 
@@ -57,6 +74,27 @@ module.exports = {
 		clearInvalidListItems: function ( listId ) {
 			// Remove the entry, so that hasInvalidListItems becomes false
 			delete this.invalidListItems[ listId ];
+		},
+
+		/**
+		 * Relocates the invalid list items when the user deletes, inserts or
+		 * moves items of a typed list, so that the marks follow their items
+		 * instead of staying with the array indexes. This updates the indexes
+		 * of the list, and the key paths of the lists inside its items.
+		 *
+		 * @param {Array} listKeyPath keyPath of the list
+		 * @param {Function} remap gets the old index of an item, and returns
+		 *  its new index, or -1 if the item was deleted
+		 */
+		relocateInvalidListItems: function ( listKeyPath, remap ) {
+			const listId = listKeyPath.join( '.' );
+			const relocated = relocateListItemKeyPaths( this.invalidListItems, listKeyPath, remap );
+
+			if ( listId in relocated ) {
+				relocated[ listId ] = relocated[ listId ].map( remap ).filter( ( index ) => index !== -1 );
+			}
+
+			this.invalidListItems = relocated;
 		},
 
 		/**
@@ -89,11 +127,9 @@ module.exports = {
 			}
 
 			// Set invalid list items
-			const newTypeString = typeToString( newType );
 			const listItems = [];
 			itemIndexes.forEach( ( index ) => {
-				const itemTypeString = typeToString( getZObjectType( objectValue[ index ] ) );
-				if ( newTypeString !== itemTypeString ) {
+				if ( this.isInvalidListItem( objectValue[ index ], newType ) ) {
 					listItems.push( index );
 				}
 			} );

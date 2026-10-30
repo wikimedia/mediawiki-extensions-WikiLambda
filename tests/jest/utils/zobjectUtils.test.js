@@ -267,6 +267,40 @@ describe( 'zobjectUtils', () => {
 		} );
 	} );
 
+	describe( 'relocateListItemKeyPaths', () => {
+		const entries = {
+			main: 'root',
+			'main.Z2K2': 'list',
+			'main.Z2K2.1': 'deleted item',
+			'main.Z2K2.1.Z6K1': 'inside deleted item',
+			'main.Z2K2.2': 'item',
+			'main.Z2K2.2.Z12K1.1': 'inside item',
+			'main.Z2K2.Z9K1': 'non-numeric child',
+			'main.Z2K22.1': 'other list'
+		};
+
+		it( 'moves the entries inside the items, and removes the entries inside deleted items', () => {
+			// The item at index 1 was deleted
+			const remap = ( index ) => index === 1 ? -1 : index - 1;
+
+			expect( zobjectUtils.relocateListItemKeyPaths( entries, [ 'main', 'Z2K2' ], remap ) ).toEqual( {
+				main: 'root',
+				'main.Z2K2': 'list',
+				'main.Z2K2.1': 'item',
+				'main.Z2K2.1.Z12K1.1': 'inside item',
+				'main.Z2K2.Z9K1': 'non-numeric child',
+				'main.Z2K22.1': 'other list'
+			} );
+		} );
+
+		it( 'does not change the given object', () => {
+			const copy = Object.assign( {}, entries );
+			zobjectUtils.relocateListItemKeyPaths( entries, [ 'main', 'Z2K2' ], ( index ) => index + 1 );
+
+			expect( entries ).toEqual( copy );
+		} );
+	} );
+
 	describe( 'getZStringTerminalValue', () => {
 		it( 'returns undefined when object is undefined', () => {
 			const zobject = undefined;

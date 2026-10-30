@@ -43,6 +43,22 @@ describe( 'ListItems Pinia store', () => {
 				expect( store.hasInvalidListItems ).toBe( true );
 			} );
 		} );
+
+		describe( 'isInvalidListItem', () => {
+			const monolingual = canonicalToHybrid( { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'not a string' } );
+
+			it( 'returns false when the item matches the item type of the list', () => {
+				expect( store.isInvalidListItem( canonicalToHybrid( 'a string' ), 'Z6' ) ).toBe( false );
+			} );
+
+			it( 'returns true when the item does not match the item type of the list', () => {
+				expect( store.isInvalidListItem( monolingual, 'Z6' ) ).toBe( true );
+			} );
+
+			it( 'returns false for any item of a list of Z1/Object', () => {
+				expect( store.isInvalidListItem( monolingual, 'Z1' ) ).toBe( false );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', () => {
@@ -70,6 +86,39 @@ describe( 'ListItems Pinia store', () => {
 
 				store.clearInvalidListItems( 'main.Z2K3.Z12K1' );
 				expect( store.hasInvalidListItems ).toBe( false );
+			} );
+		} );
+
+		describe( 'relocateInvalidListItems', () => {
+			beforeEach( () => {
+				store.invalidListItems = {
+					'main.Z2K2': [ 1, 3 ],
+					'main.Z2K2.1.Z12K1': [ 1 ],
+					'main.Z2K2.3.Z12K1': [ 2 ],
+					'main.Z2K22': [ 1 ]
+				};
+			} );
+
+			it( 'updates the indexes of the list and the key paths of the lists inside its items', () => {
+				// The item at index 1 was deleted
+				store.relocateInvalidListItems( [ 'main', 'Z2K2' ], ( index ) => index === 1 ? -1 : index - 1 );
+
+				expect( store.invalidListItems ).toEqual( {
+					'main.Z2K2': [ 2 ],
+					'main.Z2K2.2.Z12K1': [ 2 ],
+					'main.Z2K22': [ 1 ]
+				} );
+			} );
+
+			it( 'only updates the lists inside the items of the given list', () => {
+				store.relocateInvalidListItems( [ 'main', 'Z2K2', '1', 'Z12K1' ], ( index ) => index + 1 );
+
+				expect( store.invalidListItems ).toEqual( {
+					'main.Z2K2': [ 1, 3 ],
+					'main.Z2K2.1.Z12K1': [ 2 ],
+					'main.Z2K2.3.Z12K1': [ 2 ],
+					'main.Z2K22': [ 1 ]
+				} );
 			} );
 		} );
 

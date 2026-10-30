@@ -358,23 +358,17 @@ describe( 'Errors Pinia store', () => {
 			} );
 		} );
 
-		describe( 'relocateErrorsForListMove', () => {
+		describe( 'relocateListItemErrors', () => {
 			const err = () => [ new ErrorData( 'k', [], null, Constants.ERROR_TYPES.ERROR ) ];
-
-			it( 'does nothing when the item does not move', () => {
-				store.errors = { 'main.Z2K2.K4.1': err() };
-				const before = store.errors;
-				store.relocateErrorsForListMove( 'main.Z2K2.K4', 1, 1 );
-				expect( store.errors ).toEqual( before );
-			} );
+			// Item at index 1 moves forward to index 2
+			const swap = ( index ) => ( { 1: 2, 2: 1 }[ index ] || index );
 
 			it( 'swaps the errors of two adjacent items on a move', () => {
 				const item1 = err();
 				const item2 = err();
 				store.errors = { 'main.Z2K2.K4.1': item1, 'main.Z2K2.K4.2': item2 };
 
-				// Move item at index 1 forward to index 2
-				store.relocateErrorsForListMove( 'main.Z2K2.K4', 1, 2 );
+				store.relocateListItemErrors( [ 'main', 'Z2K2', 'K4' ], swap );
 
 				expect( store.errors ).toEqual( {
 					'main.Z2K2.K4.2': item1,
@@ -386,13 +380,26 @@ describe( 'Errors Pinia store', () => {
 				const childError = err();
 				store.errors = { 'main.Z2K2.K4.2.Z6K1': childError };
 
-				// Move item at index 2 back to index 1
-				store.relocateErrorsForListMove( [ 'main', 'Z2K2', 'K4' ], 2, 1 );
+				store.relocateListItemErrors( [ 'main', 'Z2K2', 'K4' ], swap );
 
 				expect( store.errors ).toEqual( { 'main.Z2K2.K4.1.Z6K1': childError } );
 			} );
 
-			it( 'leaves errors outside the affected range and non-numeric children untouched', () => {
+			it( 'removes the errors of a deleted item and its descendants', () => {
+				const next = [ new ErrorData( 'next', [], null, Constants.ERROR_TYPES.ERROR ) ];
+				store.errors = {
+					'main.Z2K2.K4.1': err(),
+					'main.Z2K2.K4.1.Z6K1': err(),
+					'main.Z2K2.K4.2': next
+				};
+
+				// Item at index 1 is deleted
+				store.relocateListItemErrors( [ 'main', 'Z2K2', 'K4' ], ( index ) => index === 1 ? -1 : index - 1 );
+
+				expect( store.errors ).toEqual( { 'main.Z2K2.K4.1': next } );
+			} );
+
+			it( 'leaves errors outside the moved items and non-numeric children untouched', () => {
 				const outside = err();
 				const nonNumeric = err();
 				store.errors = {
@@ -400,7 +407,7 @@ describe( 'Errors Pinia store', () => {
 					'main.Z2K2.K4.Z9K1': nonNumeric
 				};
 
-				store.relocateErrorsForListMove( 'main.Z2K2.K4', 1, 2 );
+				store.relocateListItemErrors( [ 'main', 'Z2K2', 'K4' ], swap );
 
 				expect( store.errors ).toEqual( {
 					'main.Z2K2.K4.5': outside,
