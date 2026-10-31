@@ -1368,7 +1368,6 @@
 		"PreviewAbstract": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialPreviewAbstract",
 			"services": [
-				"ContentRenderer",
 				"LanguageNameUtils",
 				"WikifunctionsLanguageFactory",
 				"AbstractWikiArticleStore",

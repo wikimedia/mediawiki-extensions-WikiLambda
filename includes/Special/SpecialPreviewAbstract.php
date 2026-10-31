@@ -12,7 +12,6 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use MediaWiki\Config\ConfigException;
-use MediaWiki\Content\Renderer\ContentRenderer;
 use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
@@ -33,7 +32,6 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 	private StatsFactory $statsFactory;
 
 	public function __construct(
-		private readonly ContentRenderer $contentRenderer,
 		private readonly LanguageNameUtils $languageNameUtils,
 		private readonly WikifunctionsLanguageFactory $languageFactory,
 		private readonly AWArticleStore $articleStore,
