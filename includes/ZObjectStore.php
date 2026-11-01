@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Exception;
+use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Content\ContentSerializationException;
 use MediaWiki\Content\IContentHandlerFactory;
 use MediaWiki\Context\RequestContext;
@@ -27,13 +28,17 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\MessageLocalizer;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Permissions\Authority;
+use MediaWiki\RecentChanges\RecentChange;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Storage\EditResult;
+use MediaWiki\Storage\PageUpdater;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleArrayFromResult;
 use MediaWiki\Title\TitleFactory;
@@ -324,8 +329,13 @@ class ZObjectStore {
 			throw $e;
 		}
 
+		$pageUpdater = $this->preparePageUpdater( $page, $user, $content, $flags );
+
 		try {
-			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
+			$pageUpdater->saveRevision(
+				CommentStoreComment::newUnsavedComment( trim( $summary ) ),
+				$flags
+			);
 		} catch ( Exception $e ) {
 			// Error: Database or MediaWiki exception
 			$this->logger->warning(
@@ -335,7 +345,9 @@ class ZObjectStore {
 			throw $e;
 		}
 
-		// Error: Other doUserEditContent related errors
+		$status = $pageUpdater->getStatus();
+
+		// Error: Other saveRevision related errors
 		if ( !$status->isOK() ) {
 			$statusMessage = $status->getMessage();
 			$this->logger->info(
@@ -375,6 +387,38 @@ class ZObjectStore {
 		// The editor can serialise the same object differently, so compare the canonical forms.
 		return FormatJson::encode( ZObjectUtils::canonicalize( $undoContent->getObject() ) ) ===
 			FormatJson::encode( ZObjectUtils::canonicalize( $content->getObject() ) );
+	}
+
+	/**
+	 * Creates and prepares a PageUpdater for saving a ZObject revision.
+	 *
+	 * @param WikiPage $page
+	 * @param User $user
+	 * @param ZObjectContent $content
+	 * @param int &$flags
+	 * @return PageUpdater
+	 */
+	private function preparePageUpdater(
+		WikiPage $page,
+		User $user,
+		ZObjectContent $content,
+		int &$flags
+	): PageUpdater {
+		if ( ( $flags & EDIT_MINOR ) && !$user->isAllowed( 'minoredit' ) ) {
+			$flags &= ~EDIT_MINOR;
+		}
+
+		$pageUpdater = $page->newPageUpdater( $user );
+		$pageUpdater->setContent( SlotRecord::MAIN, $content );
+
+		$mainConfig = MediaWikiServices::getInstance()->getMainConfig();
+		$needsPatrol = $mainConfig->get( MainConfigNames::UseRCPatrol ) ||
+			( $mainConfig->get( MainConfigNames::UseNPPatrol ) && !$page->exists() );
+		if ( $needsPatrol && $user->authorizeWrite( 'autopatrol', $page->getTitle() ) ) {
+			$pageUpdater->setRcPatrolStatus( RecentChange::PRC_AUTOPATROLLED );
+		}
+
+		return $pageUpdater;
 	}
 
 	/**
@@ -539,10 +583,19 @@ class ZObjectStore {
 		// (T335713) Like core, mark only an unchanged undo as an undo, so that users cannot tag other edits.
 		$isUndo = $undo > 0 && $undoAfter > 0 && $this->isUndoContent( $title, $content, $undo, $undoAfter );
 
+		$pageUpdater = $this->preparePageUpdater( $page, $user, $content, $flags );
+
+		if ( $isUndo ) {
+			$pageUpdater->setCause( PageUpdater::CAUSE_UNDO );
+			$pageUpdater->markAsRevert( EditResult::REVERT_UNDO, $undo, $undoAfter );
+			$pageUpdater->setOriginalRevisionId( $undoAfter );
+		}
+
 		// We prepare the content to be saved
 		try {
-			$status = $page->doUserEditContent(
-				$content, $user, $summary, $flags, $isUndo ? $undoAfter : false, [], $isUndo ? $undo : 0
+			$pageUpdater->saveRevision(
+				CommentStoreComment::newUnsavedComment( trim( $summary ) ),
+				$flags
 			);
 		} catch ( Exception $e ) {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
@@ -566,13 +619,15 @@ class ZObjectStore {
 			return ZObjectPage::newFatal( $error );
 		}
 
+		$status = $pageUpdater->getStatus();
+
 		if ( !$status->isOK() ) {
 
 			// TODO (T362246): Dependency-inject
 			$statusFormatter = MediaWikiServices::getInstance()->getFormatterFactory()
 				->getStatusFormatter( $context );
 
-			// Error: Other doUserEditContent related errors
+			// Error: Other saveRevision related errors
 
 			$this->logger->info(
 				__METHOD__ . ' got a non-OK Status on publish, for page "{zid}"',

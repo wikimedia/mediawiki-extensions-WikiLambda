@@ -54,16 +54,14 @@ class ApiQueryZObjectsTest extends WikiLambdaApiTestCase {
 
 		// Add ZTypeTest multilingual object (Z111)
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
-		$baseObject = ZTestType::TEST_ENCODING;
-		$page = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $title );
-		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
-
-		$status = $page->doUserEditContent(
+		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
+		$this->editPage(
+			$title,
 			$content,
-			$this->getTestSysop()->getUser(),
-			"Test creation object"
+			'Test creation object',
+			NS_MAIN,
+			$this->getTestSysop()->getUser()
 		);
-		$page->clear();
 	}
 
 	public function testNotFound() {
