@@ -111,6 +111,7 @@ class AbstractWikiRequest {
 	 * @param string $languageZid
 	 * @param string $datetime
 	 * @param string $fragmentKey
+	 * @param bool $freshResult Ask Wikifunctions for a fresh result, bypassing its caches (T442987)
 	 * @return array
 	 */
 	public function fetchRenderedAWFragment(
@@ -118,7 +119,8 @@ class AbstractWikiRequest {
 		string $topicQid,
 		string $languageZid,
 		string $datetime,
-		string $fragmentKey
+		string $fragmentKey,
+		bool $freshResult = false
 	): array {
 		$renderedValue = [];
 
@@ -132,7 +134,7 @@ class AbstractWikiRequest {
 
 		try {
 			// 2. Run fragment function call, should return a Z89/Html fragment object
-			$response = $this->callRenderFunctionCall( $functionCall );
+			$response = $this->callRenderFunctionCall( $functionCall, $freshResult );
 			$htmlFragment = $response[ 'htmlFragment' ];
 
 			// 2.1. If successful, render the Z89K1/Html fragment value
@@ -323,6 +325,20 @@ class AbstractWikiRequest {
 	}
 
 	/**
+	 * Returns the HTTP headers that authenticate a fresh-result request to Wikifunctions.
+	 *
+	 * Wikifunctions only gives a fresh result to a caller with wikilambda-request-fresh-result,
+	 * and our requests are anonymous, so until this returns credentials, Wikifunctions refuses
+	 * fresh-result requests with a permission error. How this wiki should authenticate is still
+	 * being decided; that decision will be captured here. (T441586)
+	 *
+	 * @return array<string,string> Header name => value
+	 */
+	private function getServiceAuthHeaders(): array {
+		return [];
+	}
+
+	/**
 	 * Performs remote call to Wikifunctions' wikilambda_function_call Action API
 	 *
 	 * Returns an array with the keys:
@@ -330,10 +346,11 @@ class AbstractWikiRequest {
 	 * * 'metadata': the freshness metadata of the response; see getFreshnessMetadata()
 	 *
 	 * @param array $functionCall
+	 * @param bool $freshResult Ask for a fresh result, bypassing the caches of Wikifunctions
 	 * @return array{htmlFragment:array,metadata:array}
 	 * @throws WikifunctionCallException
 	 */
-	public function callRenderFunctionCall( array $functionCall ): array {
+	public function callRenderFunctionCall( array $functionCall, bool $freshResult = false ): array {
 		// Base API URL from config
 		$targetUrl = $this->config->get( 'WikiLambdaClientTargetAPI' );
 		if ( !$targetUrl ) {
@@ -364,6 +381,10 @@ class AbstractWikiRequest {
 			'action' => 'wikilambda_function_call',
 			'wikilambda_function_call_zobject' => $functionCallEncoded,
 		];
+		if ( $freshResult ) {
+			// (T442987) Bypass the caches on Wikifunctions; see also getServiceAuthHeaders()
+			$params[ 'wikilambda_function_call_fresh-result' ] = '1';
+		}
 
 		// Create and execute request
 		$request = $this->httpRequestFactory->create(
@@ -377,6 +398,13 @@ class AbstractWikiRequest {
 
 		// Set request origin header
 		$request->setHeader( 'X-WikiLambda-Request-Origin', OrchestratorRequest::AW_FRAGMENT_ORIGIN_HEADER );
+
+		// A fresh result needs this wiki to authenticate with Wikifunctions (T441586)
+		if ( $freshResult ) {
+			foreach ( $this->getServiceAuthHeaders() as $name => $value ) {
+				$request->setHeader( $name, $value );
+			}
+		}
 
 		// How long does the orchestrator take to respond per fragment?
 		// Grafana: mediawiki.WikiLambda.aw_orchestrator_call_seconds{}

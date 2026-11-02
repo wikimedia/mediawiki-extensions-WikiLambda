@@ -10,11 +10,13 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Permissions\SimpleAuthority;
 use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\User\UserIdentityValue;
@@ -22,6 +24,7 @@ use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ActionAPI\ApiAbstractWikiRunFragment
+ * @group Database
  */
 class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 
@@ -527,5 +530,194 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$this->assertEquals( $failureValue[ 'value' ], $result[ 'value' ] );
 		// (T441583) A stored failure also came from the store
 		$this->assertTrue( $result[ 'fromFragmentStore' ] );
+	}
+
+	// Fresh results (T442987)
+	// =======================
+
+	private const FRESH_QID = 'Q42';
+	private const FRESH_LANGUAGE = 'Z1002';
+	private const FRESH_FRAGMENT = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
+
+	/**
+	 * Parameters of a request for a fresh render of the test fragment
+	 *
+	 * @return array
+	 */
+	private function freshRequestParams(): array {
+		return [
+			'action' => 'abstractwiki_run_fragment',
+			'abstractwiki_run_fragment_qid' => self::FRESH_QID,
+			'abstractwiki_run_fragment_language' => self::FRESH_LANGUAGE,
+			'abstractwiki_run_fragment_fragment' => self::FRESH_FRAGMENT,
+			'abstractwiki_run_fragment_fresh' => '1',
+		];
+	}
+
+	/**
+	 * An authority with both rights that a fresh render needs. A SimpleAuthority has no
+	 * rate limits; see testFresh_isRateLimited() for those.
+	 *
+	 * @return SimpleAuthority
+	 */
+	private function freshResultAuthority(): SimpleAuthority {
+		return new SimpleAuthority( new UserIdentityValue( 0, '127.0.0.1' ), [
+			'wikilambda-abstract-run-unsaved-fragment',
+			'wikilambda-abstract-request-fresh-result',
+		] );
+	}
+
+	/**
+	 * Performs a request as the given performer, with a CSRF token under this module's
+	 * prefixed token parameter. doApiRequestWithToken() only adds the unprefixed 'token',
+	 * so we mint a token in a session and reuse that session, as
+	 * ApiAbstractWikiFetchSectionTest does.
+	 *
+	 * @param array $params
+	 * @param Authority $performer
+	 * @return array
+	 */
+	private function doRequestWithToken( array $params, Authority $performer ): array {
+		[ $tokenData, , $session ] = $this->doApiRequest( [
+			'action' => 'query',
+			'meta' => 'tokens',
+			'type' => 'csrf',
+		], null, false, $performer );
+		$params['abstractwiki_run_fragment_token'] = $tokenData['query']['tokens']['csrftoken'];
+		return $this->doApiRequest( $params, $session, false, $performer );
+	}
+
+	/**
+	 * Mock the store and the request so that nothing is read from the store, and
+	 * nothing is sent to render.
+	 */
+	private function expectNothingReadOrRendered(): void {
+		$fragmentStore = $this->createMock( AWFragmentStore::class );
+		$fragmentStore->expects( $this->never() )->method( 'getRenderedAWFragment' );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
+
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->never() )->method( 'fetchRenderedAWFragment' );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+	}
+
+	/**
+	 * With fresh=1, the fragment is rendered again here and now with a fresh result:
+	 * * the AWFragment store is not read,
+	 * * AbstractWikiRequest::fetchRenderedAWFragment is asked for a fresh result,
+	 *   with the store's key for the fragment,
+	 * * its result is returned.
+	 */
+	public function testFresh_rendersAgainWithAFreshResult() {
+		$this->overrideConfigValue( 'WikiLambdaAbstractEnableFreshResult', true );
+
+		$fragment = json_decode( self::FRESH_FRAGMENT, true );
+		$rendered = [
+			'success' => true,
+			'value' => '<b>rendered with the latest data</b>',
+			'renderDate' => '20230726040500'
+		];
+
+		$fragmentStore = $this->createMock( AWFragmentStore::class );
+		$fragmentStore->expects( $this->never() )->method( 'getRenderedAWFragment' );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
+
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->once() )
+			->method( 'fetchRenderedAWFragment' )
+			->with(
+				$fragment,
+				self::FRESH_QID,
+				self::FRESH_LANGUAGE,
+				'20230726040500',
+				AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment ),
+				true
+			)
+			->willReturn( $rendered );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$result = $this->doRequestWithToken(
+			$this->freshRequestParams(), $this->freshResultAuthority()
+		)[0][ 'abstractwiki_run_fragment' ];
+
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '<b>rendered with the latest data</b>', $result[ 'value' ] );
+	}
+
+	/**
+	 * Fresh renders are off unless the wiki enables them.
+	 */
+	public function testFresh_diesWhenNotEnabled() {
+		$this->overrideConfigValue( 'WikiLambdaAbstractEnableFreshResult', false );
+		$this->expectNothingReadOrRendered();
+
+		$this->expectApiErrorCode( 'abstractwiki_run_fragment-fresh-not-enabled' );
+
+		$this->doRequestWithToken( $this->freshRequestParams(), $this->freshResultAuthority() );
+	}
+
+	/**
+	 * A fresh render must come with a CSRF token, so that it cannot be triggered cross-site.
+	 */
+	public function testFresh_needsAToken() {
+		$this->overrideConfigValue( 'WikiLambdaAbstractEnableFreshResult', true );
+		$this->expectNothingReadOrRendered();
+
+		$this->expectApiErrorCode( 'missingparam' );
+
+		$this->doApiRequest( $this->freshRequestParams(), null, false, $this->freshResultAuthority() );
+	}
+
+	/**
+	 * A fresh render needs the wikilambda-abstract-request-fresh-result right. It is
+	 * checked with the rate limit, by Authority::authorizeAction(), whose refusal the
+	 * API reports as 'permissionserrors'.
+	 */
+	public function testFresh_diesWithoutTheRight() {
+		$this->overrideConfigValue( 'WikiLambdaAbstractEnableFreshResult', true );
+		$this->expectNothingReadOrRendered();
+
+		$this->expectApiErrorCode( 'permissionserrors' );
+
+		$this->doRequestWithToken(
+			$this->freshRequestParams(),
+			new SimpleAuthority(
+				new UserIdentityValue( 0, '127.0.0.1' ),
+				[ 'wikilambda-abstract-run-unsaved-fragment' ]
+			)
+		);
+	}
+
+	/**
+	 * Fresh renders are rate-limited: here, one per day, so the second request is refused,
+	 * and only the first is sent to render. A SimpleAuthority has no rate limits, so this
+	 * needs a real user, which is why this class is in the Database group.
+	 */
+	public function testFresh_isRateLimited() {
+		$this->overrideConfigValue( 'WikiLambdaAbstractEnableFreshResult', true );
+		$this->overrideConfigValue( 'RateLimits', [
+			'wikilambda-abstract-request-fresh-result' => [ 'user' => [ 1, 86400 ] ],
+		] );
+
+		$user = $this->getTestUser()->getUser();
+		$this->overrideUserPermissions( $user, [
+			'wikilambda-abstract-run-unsaved-fragment',
+			'wikilambda-abstract-request-fresh-result',
+		] );
+
+		$fragmentStore = $this->createMock( AWFragmentStore::class );
+		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
+
+		$awRequest = $this->createMock( AbstractWikiRequest::class );
+		$awRequest->expects( $this->once() )
+			->method( 'fetchRenderedAWFragment' )
+			->willReturn( [ 'success' => true, 'value' => '<b>rendered</b>' ] );
+		$this->setService( 'AbstractWikiRequest', $awRequest );
+
+		$this->doRequestWithToken( $this->freshRequestParams(), $user );
+
+		$this->expectApiErrorCode( 'ratelimited' );
+
+		$this->doRequestWithToken( $this->freshRequestParams(), $user );
 	}
 }

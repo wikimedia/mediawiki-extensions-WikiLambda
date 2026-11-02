@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
@@ -19,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Permissions\PermissionStatus;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 use Wikimedia\Timestamp\TimestampFormat as TS;
@@ -55,6 +57,9 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	 *   with the rendered value. In the case in which there is no fresh
 	 *   nor stale values cached, it will perform a synchronous call to
 	 *   wikifunctions_function_call and wait for its response.
+	 *
+	 * With fresh=true, it instead ignores the async flag and the cache and immediately
+	 * performs a synchronous call to wikifunctions_function_call. (T442987)
 	 *
 	 * A successful fragment will contain a 'success' flag set to true,
 	 * and the sanitized rendered fragment as 'value'. It may also contain
@@ -122,7 +127,9 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 
 		$language = $this->wfLanguageFactory->getLanguageFromZid( $languageZid );
 
-		$result = $this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $async );
+		$result = $params[ 'fresh' ] ?
+			$this->getFreshFragment( $fragment, $qid, $language ) :
+			$this->getLatestFragmentAndRevalidate( $fragment, $qid, $language, $async );
 
 		// Set response (fragment might be pending, successful or failed):
 		$pageResult = $this->getResult();
@@ -197,6 +204,86 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 	}
 
 	/**
+	 * Render the fragment again here and now, asking Wikifunctions for a fresh result,
+	 * bypassing its caches, and skipping the AWFragmentStore. The new render replaces the
+	 * stored one. (T442987)
+	 *
+	 * The user needs the wikilambda-abstract-request-fresh-result right, which is
+	 * rate-limited. As with any synchronous render, it also needs the
+	 * wikilambda-abstract-run-unsaved-fragment right, because it runs a fragment that the
+	 * caller supplies. A fresh request is always synchronous.
+	 *
+	 * @param array $fragment
+	 * @param string $qid
+	 * @param WikifunctionsLanguage $language
+	 * @return array
+	 */
+	private function getFreshFragment(
+		array $fragment,
+		string $qid,
+		WikifunctionsLanguage $language
+	): array {
+		if ( !$this->getConfig()->get( 'WikiLambdaAbstractEnableFreshResult' ) ) {
+			$this->dieWithError(
+				[ 'apierror-abstractwiki_run_fragment-fresh-not-enabled' ],
+				null, null, HttpStatus::NOT_IMPLEMENTED
+			);
+		}
+
+		$this->checkUserRightsAny( 'wikilambda-abstract-run-unsaved-fragment' );
+
+		// Checks the right, and counts this request towards its rate limit
+		$status = PermissionStatus::newEmpty();
+		if ( !$this->getAuthority()->authorizeAction( 'wikilambda-abstract-request-fresh-result', $status ) ) {
+			$this->dieStatus( $status );
+		}
+
+		// The same key as the store's, without reading the store
+		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+
+		return $this->abstractWikiRequest->fetchRenderedAWFragment(
+			$fragment,
+			$qid,
+			$language->getZid(),
+			ConvertibleTimestamp::now( TS::MW ),
+			$fragmentKey,
+			/* freshResult= */ true
+		);
+	}
+
+	/**
+	 * A fresh render costs work on Wikifunctions and Wikidata, so only that mode must be
+	 * posted, with a CSRF token, so that it cannot be triggered cross-site. Reading or
+	 * rendering a fragment as usual stays a cacheable GET. (T442987)
+	 *
+	 * @inheritDoc
+	 */
+	public function mustBePosted() {
+		return $this->isFreshRequest();
+	}
+
+	/**
+	 * @see mustBePosted()
+	 * @inheritDoc
+	 */
+	public function needsToken() {
+		return $this->isFreshRequest() ? 'csrf' : false;
+	}
+
+	/**
+	 * Whether the request asks for a fresh render.
+	 *
+	 * Reads the raw request rather than extractRequestParams() so it is safe to
+	 * call from needsToken()/mustBePosted(), which run before parameter
+	 * validation. A boolean API parameter is true whenever it is present.
+	 *
+	 * @return bool
+	 */
+	private function isFreshRequest(): bool {
+		return $this->getRequest()->getCheck( $this->encodeParamName( 'fresh' ) );
+	}
+
+	/**
 	 * @inheritDoc
 	 * @codeCoverageIgnore
 	 */
@@ -223,6 +310,11 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 				ParamValidator::PARAM_REQUIRED => true,
 			],
 			'async' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => false
+			],
+			'fresh' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => false

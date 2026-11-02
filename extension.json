@@ -116,6 +116,10 @@
 			"description": "If true, enable the 'abstract' mode of WikiLambda that powers Abstract Wikipedia, and so hosting Abstract Wiki content in the relevant namespace(s).",
 			"value": true
 		},
+		"WikiLambdaAbstractEnableFreshResult": {
+			"description": "If true, users with the wikilambda-abstract-request-fresh-result right can ask for an Abstract Wikipedia fragment to be rendered again with the latest data, bypassing the stored fragment and the caches on Wikifunctions (abstractwiki_run_fragment with fresh=1). Leave false until Wikifunctions accepts fresh-result requests from this wiki.",
+			"value": false
+		},
 		"WikiLambdaAbstractNamespaces": {
 			"description": "Map of namespaces to Wikidata concept types to use for Abstract Wiki content.",
 			"merge_strategy": "provide_default",

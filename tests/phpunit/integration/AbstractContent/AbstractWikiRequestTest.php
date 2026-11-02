@@ -410,8 +410,54 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 		}
 	}
 
+	/**
+	 * (T442987) The fresh-result parameter is sent to Wikifunctions only when asked for.
+	 *
+	 * @dataProvider provideFreshResult
+	 */
+	public function testCallRenderFunctionCall_freshResult( bool $freshResult ) {
+		$postData = null;
+		$factory = $this->getMockHttpFactoryCapturingPostData( $postData );
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		$request->callRenderFunctionCall( [ 'Z1K1' => 'Z7' ], $freshResult );
+
+		$this->assertSame( 'wikilambda_function_call', $postData[ 'action' ] );
+		if ( $freshResult ) {
+			$this->assertSame( '1', $postData[ 'wikilambda_function_call_fresh-result' ] );
+		} else {
+			$this->assertArrayNotHasKey( 'wikilambda_function_call_fresh-result', $postData );
+		}
+	}
+
+	public static function provideFreshResult(): array {
+		return [
+			'fresh result' => [ true ],
+			'cached result allowed' => [ false ],
+		];
+	}
+
 	// fetchRenderedAWFragment
 	// =======================
+
+	public function testFetchRenderedAWFragment_passesFreshResult() {
+		// (T442987) A request for a fresh render reaches Wikifunctions
+		$postData = null;
+		$factory = $this->getMockHttpFactoryCapturingPostData( $postData );
+		$request = $this->buildAbstractWikiRequest( $factory );
+
+		$result = $request->fetchRenderedAWFragment(
+			/* fragment= */ [ 'Z1K1' => 'Z7' ],
+			/* topicQid= */ 'Q42',
+			/* languageZid= */ 'Z1002',
+			/* datetime= */ '20260514040500',
+			/* fragmentKey= */ 'hashed-fragment',
+			/* freshResult= */ true
+		);
+
+		$this->assertTrue( $result[ 'success' ] );
+		$this->assertSame( '1', $postData[ 'wikilambda_function_call_fresh-result' ] );
+	}
 
 	public function testFetchRenderedAWFragment_success() {
 		$htmlContent = '<b>Hello World</b>';
@@ -817,6 +863,39 @@ class AbstractWikiRequestTest extends WikiLambdaAbstractModeIntegrationTestCase 
 				return $httpRequest;
 			} );
 
+		return $factory;
+	}
+
+	/**
+	 * Build a mock HttpRequestFactory that returns a successful Z89 HTML fragment response,
+	 * and captures the POST parameters of the request.
+	 *
+	 * @param array|null &$postData Set to the request's POST parameters
+	 * @return HttpRequestFactory
+	 */
+	private function getMockHttpFactoryCapturingPostData( ?array &$postData ): HttpRequestFactory {
+		$httpRequest = $this->createMock( MWHttpRequest::class );
+		$httpRequest->method( 'execute' )->willReturn( StatusValue::newGood() );
+		$httpRequest->method( 'getContent' )->willReturn( json_encode( [
+			'wikilambda_function_call' => [
+				'data' => json_encode( [
+					'Z22K1' => (object)[ 'Z1K1' => 'Z89', 'Z89K1' => '<b>Hello World</b>' ],
+					'Z22K2' => (object)[]
+				] )
+			]
+		] ) );
+		$httpRequest->method( 'getStatus' )->willReturn( 200 );
+		// No credentials yet: only the origin header is set (see getServiceAuthHeaders())
+		$httpRequest->expects( $this->once() )
+			->method( 'setHeader' )
+			->with( 'X-WikiLambda-Request-Origin', 'aw-fragment' );
+
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->method( 'create' )
+			->willReturnCallback( static function ( $url, $options ) use ( $httpRequest, &$postData ) {
+				$postData = $options[ 'postData' ];
+				return $httpRequest;
+			} );
 		return $factory;
 	}
 
