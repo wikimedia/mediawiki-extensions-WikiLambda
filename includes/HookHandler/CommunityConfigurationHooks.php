@@ -69,7 +69,10 @@ class CommunityConfigurationHooks implements
 		$editResult
 	) {
 		$pageIdentity = $wikiPage->getTitle();
-		if ( $pageIdentity->getDBkey() !== 'AbstractWikiOptedInArticles.json' ) {
+		if (
+			$pageIdentity->getNamespace() !== NS_MEDIAWIKI ||
+			$pageIdentity->getDBkey() !== 'AbstractWikiOptedInArticles.json'
+		) {
 			return;
 		}
 

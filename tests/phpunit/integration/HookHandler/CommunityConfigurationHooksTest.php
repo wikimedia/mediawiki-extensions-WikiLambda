@@ -118,4 +118,19 @@ class CommunityConfigurationHooksTest extends WikiLambdaAbstractClientIntegratio
 		$this->assertSame( 'Q42', $params['4::qid'] );
 		$this->assertSame( 'Douglas Adams', $params['5::redirect'] );
 	}
+
+	public function testIgnoresSameNameOutsideMediaWikiNamespace(): void {
+		$this->overrideConfigValue( 'NamespaceContentModels', [ NS_PROJECT => CONTENT_MODEL_JSON ] );
+		$data = [ 'OptedInArticles' => [ [ 'title' => [ 'Douglas Adams' ], 'qid' => 'Q42' ] ] ];
+		$this->editPage(
+			'Project:AbstractWikiOptedInArticles.json', new JsonContent( json_encode( $data ) ),
+			'', NS_MAIN, $this->getTestUser()->getUser()
+		);
+
+		$this->newSelectQueryBuilder()
+			->select( 'log_id' )
+			->from( 'logging' )
+			->where( [ 'log_type' => 'abstractwiki' ] )
+			->assertEmptyResult();
+	}
 }
