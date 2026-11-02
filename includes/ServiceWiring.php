@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiIntegrationStore;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
@@ -119,6 +120,10 @@ return [
 
 	'AbstractWikiConfigProvider' => static function ( MediaWikiServices $services ): AbstractWikiConfigProvider {
 		return new AbstractWikiConfigProvider();
+	},
+
+	'AbstractWikiIntegrationStore' => static function ( MediaWikiServices $services ): AbstractWikiIntegrationStore {
+		return new AbstractWikiIntegrationStore( $services->getConnectionProvider() );
 	},
 
 	// For all environments

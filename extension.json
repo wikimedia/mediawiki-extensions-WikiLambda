@@ -242,6 +242,16 @@
 				"RevisionStore"
 			]
 		},
+		"AbstractWikiIntegrationHooks": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\AbstractWikiIntegrationHooks",
+			"services": [
+				"WikiLambdaMode",
+				"PageStore",
+				"TitleParser",
+				"AbstractWikiConfigProvider",
+				"AbstractWikiIntegrationStore"
+			]
+		},
 		"ViewUrlCacheHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\ViewUrlCacheHandler",
 			"services": [
@@ -256,13 +266,19 @@
 	"Hooks": {
 		"PageSaveComplete": [
 			"ViewUrlCacheHandler",
-			"WikiLambdaCommunityConfigurationHooks"
+			"WikiLambdaCommunityConfigurationHooks",
+			"AbstractWikiIntegrationHooks"
 		],
 		"PageDeleteComplete": [
 			"ViewUrlCacheHandler",
-			"WikiLambdaClientHooks"
+			"WikiLambdaClientHooks",
+			"AbstractWikiIntegrationHooks"
 		],
-		"PageMoveComplete": "WikiLambdaClientHooks",
+		"PageMoveComplete": [
+			"WikiLambdaClientHooks",
+			"AbstractWikiIntegrationHooks"
+		],
+		"PageUndeleteComplete": "AbstractWikiIntegrationHooks",
 		"ParserCacheSaveComplete": "WikiLambdaClientHooks",
 		"ResourceLoaderRegisterModules": "WikiLambdaClientHooks",
 		"MakeGlobalVariablesScript": "WikiLambdaClientHooks",

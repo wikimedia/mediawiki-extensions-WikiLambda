@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiConfigProvider;
+use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiIntegrationStore;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
@@ -145,6 +146,13 @@ class WikiLambdaServices {
 	 */
 	public static function getAbstractWikiConfigProvider(): AbstractWikiConfigProvider {
 		return MediaWikiServices::getInstance()->getService( 'AbstractWikiConfigProvider' );
+	}
+
+	/**
+	 * @return AbstractWikiIntegrationStore
+	 */
+	public static function getAbstractWikiIntegrationStore(): AbstractWikiIntegrationStore {
+		return MediaWikiServices::getInstance()->getService( 'AbstractWikiIntegrationStore' );
 	}
 
 	/**
