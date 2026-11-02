@@ -1314,7 +1314,6 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialViewObject",
 			"services": [
 				"ContentRenderer",
-				"LanguageFactory",
 				"RevisionStore",
 				"UrlUtils",
 				"WikiLambdaZObjectStore"

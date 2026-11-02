@@ -20,7 +20,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectRepoUtils;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Html\Html;
-use MediaWiki\Language\LanguageFactory;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Parser\ParserOptions;
@@ -35,7 +34,6 @@ class SpecialViewObject extends UnlistedSpecialPage {
 
 	public function __construct(
 		private readonly ContentRenderer $contentRenderer,
-		private readonly LanguageFactory $languageFactory,
 		private readonly RevisionStore $revisionStore,
 		private readonly UrlUtils $urlUtils,
 		private readonly ZObjectStore $zObjectStore
