@@ -86,6 +86,8 @@
 	"apihelp-wikilambda_edit-param-watchlist": "Si shuruud la’aan ah ugu dar ama uga saar bogga liiska daawashada isticmaalaha hadda, isticmaal dookhyada (waa la iska indhatiraa isticmaalayaasha bot-ka) ama ha beddelin xaaladda daawashada.",
 	"apihelp-wikilambda_edit-param-watchlistexpiry": "Shaabbadda waqtiga ee dhicitaanka liiska daawashada. Ka tag xuduuddan gebi ahaanba haddii aad rabto in waqtiga dhicitaanka hadda jira aanu isbeddelin.",
 	"apihelp-wikilambda_edit-param-baserevid": "Aqoonsiga dib u eegista uu ku salaysan yahay wax ka beddelku. Haddii ZObject-ku leeyahay dib u eegistii ugu dambaysay oo ka duwan, wax ka beddelku wuu fashilmayaa waxaana soo baxaya khaladka isku dhaca wax ka beddelka.",
+	"apihelp-wikilambda_edit-param-undo": "Aqoonsiga dib u eegistii ugu dambaysay ee wax ka beddelku burinayo. Haddii ZObject-ku la mid yahay nuxurka ka dhashay dib-u-celinta dib u eegistan ilaa <var>undoafter</var>, wax ka beddelka waxaa loo calaamadinayaa inuu yahay dib u celin.",
+	"apihelp-wikilambda_edit-param-undoafter": "Aqoonsiga dib u eegista ay dib u celintu soo celinayso. Waxaa lala isticmaalaa <var>undo</var>.",
 	"apierror-wikilambda_function_call-client-error": "Lama dhammaystiri karin codsiga sababo la xiriira khalad dhinaca macmiilka ah",
 	"apierror-wikilambda_function_call-server-error": "Lama dhammaystiri karin codsiga sababo la xiriira khalad dhinaca adeegaha ah",
 	"apierror-wikilambda_function_call-concurrency-limit": "Waxaad hadda haysataa wicitaanno Shaqo oo badan oo socda.",

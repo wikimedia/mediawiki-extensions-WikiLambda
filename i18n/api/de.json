@@ -93,6 +93,8 @@
 	"apihelp-wikilambda_edit-param-watchlist": "Die Seite bedingungslos zur Beobachtungsliste des aktuellen Benutzers hinzufügen oder daraus entfernen, Einstellungen verwenden (wird bei Bot-Benutzern ignoriert) oder die Beobachtungsliste nicht ändern.",
 	"apihelp-wikilambda_edit-param-watchlistexpiry": "Zeitstempel für das Ablaufen der Beobachtungsliste. Wenn du diesen Parameter weglässt, bleibt die aktuelle Ablaufzeit so, wie sie ist.",
 	"apihelp-wikilambda_edit-param-baserevid": "Die Versions-ID, auf der die Bearbeitung basiert. Wenn das ZObject eine andere neueste Version aufweist, schlägt die Bearbeitung aufgrund eines Bearbeitungskonflikts fehl.",
+	"apihelp-wikilambda_edit-param-undo": "ID der neuesten Version, die durch die Bearbeitung rückgängig gemacht wird. Wenn das ZObject mit dem Rückgängigmachen dieser Version zurück zu <var>undoafter</var> übereinstimmt, wird die Bearbeitung als Rückgängigmachen markiert.",
+	"apihelp-wikilambda_edit-param-undoafter": "ID der Version, die durch die Rückgängig-Aktion wiederhergestellt wird. Wird mit <var>undo</var> verwendet.",
 	"apierror-wikilambda_function_call-client-error": "Die Anfrage konnte aufgrund eines Clientfehlers nicht abgeschlossen werden.",
 	"apierror-wikilambda_function_call-server-error": "Die Anfrage konnte aufgrund eines Serverfehlers nicht abgeschlossen werden.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Du hast zu viele Funktionsaufrufe, die im Moment ausgeführt werden.",

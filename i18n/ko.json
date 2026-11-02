@@ -74,7 +74,7 @@
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-label": "사용 문서",
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-label": "제목",
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-title-help-text": "첫 번째 항목은 해당 문서의 주요 제목입니다. 추가 제목은 모두 넘겨주기로 처리됩니다.",
-	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-label": "주제 QID",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-label": "주제",
 	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-qid-help-text": "이 페이지에 표시할 요약 위키백과 문서를 식별하는 위키데이터 QID입니다.",
 	"communityconfiguration-wikifunctionssuggestions-title": "추천된 위키함수",
 	"communityconfiguration-wikifunctionssuggestions-description": "사용자가 시각편집기에서 함수 호출 대화 상자를 처음 열 때 권장 함수로 표시되는 위키함수 목록(ZID 기준)입니다. 최대 5개 항목까지 표시됩니다.",

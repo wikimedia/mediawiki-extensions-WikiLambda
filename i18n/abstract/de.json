@@ -73,6 +73,7 @@
 	"wikilambda-abstract-preview-fragment-replicate": "Details in Wikifunctions anzeigen",
 	"wikilambda-abstract-preview-fragment-retry": "Erneut versuchen",
 	"wikilambda-abstract-preview-fragment-unavailable": "Der Rendering-Service ist momentan ausgelastet. Erneuter Versuch in {{PLURAL:$1|$1 Minute|$1 Minuten}}.",
+	"wikilambda-abstract-preview-provenance-fragment-store": "Dieser Text wurde zuvor generiert und gespeichert.",
 	"wikilambda-abstract-preview-in-language": "Erstellter Text",
 	"wikilambda-abstract-renderedwith": "Die Seite wurde aus [[meta:Special:MyLanguage/Abstract Wikipedia|abstrakten Wikipedia]] gerendert.",
 	"wikilambda-abstract-search-no-article": "– Noch kein Artikel vorhanden",
