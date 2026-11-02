@@ -604,6 +604,25 @@ class RepoHooks implements
 			] );
 		}
 
+		// Insert the shared cross-wiki Abstract Wikipedia integrations table, if needed.
+		// Written by abstract client wikis, and read by the abstract wiki. Virtual domain
+		// must be defined for the 'virtual-abstractwiki' key, as for 'virtual-wikifunctions-usage'.
+		if (
+			(
+				$config->has( 'WikiLambdaEnableAbstractClientMode' ) &&
+				$config->get( 'WikiLambdaEnableAbstractClientMode' )
+			) ||
+			( $config->has( 'WikiLambdaEnableAbstractMode' ) && $config->get( 'WikiLambdaEnableAbstractMode' ) )
+		) {
+			$updater->addExtensionUpdateOnVirtualDomain( [
+				'virtual-abstractwiki',
+				'addTable',
+				'abstractwiki_integrations',
+				"$dir/$type/table-abstractwiki_integrations.sql",
+				true
+			] );
+		}
+
 		// Insert the tables for repo-mode, if needed (Wikifunctions.org and development machines only)
 		if ( $config->has( 'WikiLambdaEnableRepoMode' ) && $config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			$repoTables = [

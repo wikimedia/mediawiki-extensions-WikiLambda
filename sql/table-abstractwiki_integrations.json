@@ -1,0 +1,65 @@
+[
+	{
+		"name": "abstractwiki_integrations",
+		"comment": "Integrations of Abstract Wikipedia articles into client wikis. One row per period in which a client wiki shows an abstract article at a local title; rows are closed, never deleted. Lives on the shared x1 cluster via the 'virtual-abstractwiki' virtual domain.",
+		"columns": [
+			{
+				"name": "awi_id",
+				"comment": "Surrogate key",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "awi_wiki",
+				"comment": "The client wiki's ID (e.g. 'enwiki')",
+				"type": "binary",
+				"options": { "length": 64, "notnull": true }
+			},
+			{
+				"name": "awi_title",
+				"comment": "The primary local title, in the client wiki's main namespace, in DB key form",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "awi_qid",
+				"comment": "The Wikidata item ID of the abstract article (e.g. 'Q90')",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "awi_added",
+				"comment": "When the integration started",
+				"type": "mwtimestamp",
+				"options": { "notnull": true }
+			},
+			{
+				"name": "awi_removed",
+				"comment": "When the integration ended; null while it is live",
+				"type": "mwtimestamp",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "awi_removed_reason",
+				"comment": "Why the integration ended: 1 for opted out, 2 for replaced by a local article; null while it is live",
+				"type": "mwtinyint",
+				"options": { "unsigned": true, "notnull": false }
+			}
+		],
+		"indexes": [
+			{
+				"name": "awi_wiki_title_removed",
+				"comment": "Find the live integrations of a client wiki, or of one of its titles",
+				"columns": [ "awi_wiki", "awi_title", "awi_removed" ],
+				"unique": false
+			},
+			{
+				"name": "awi_qid",
+				"comment": "Find the client wikis that integrate an abstract article",
+				"columns": [ "awi_qid" ],
+				"unique": false
+			}
+		],
+		"pk": [ "awi_id" ]
+	}
+]

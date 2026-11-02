@@ -1512,7 +1512,8 @@
 		}
 	},
 	"DatabaseVirtualDomains": [
-		"virtual-wikifunctions-usage"
+		"virtual-wikifunctions-usage",
+		"virtual-abstractwiki"
 	],
 	"LogTypes": [ "abstractwiki" ],
 	"LogNames": {
