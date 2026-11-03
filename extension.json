@@ -198,7 +198,6 @@
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler",
 			"services": [
 				"MainConfig",
-				"ConnectionProvider",
 				"WikiLambdaZObjectStore",
 				"WikiLambdaMode"
 			]

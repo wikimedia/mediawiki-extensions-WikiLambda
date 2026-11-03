@@ -20,33 +20,22 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Linker\LinkTarget;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
-use Psr\Log\LoggerInterface;
 use StatusValue;
 use Wikimedia\Message\MessageSpecifier;
-use Wikimedia\Rdbms\IConnectionProvider;
-use Wikimedia\Rdbms\IReadableDatabase;
 
 class PageEditingHandler implements
 	\MediaWiki\Title\Hook\NamespaceIsMovableHook,
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook
 {
-	private IReadableDatabase $dbr;
-	private LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Config $config,
-		IConnectionProvider $dbProvider,
 		private readonly ZObjectStore $zObjectStore,
 		private readonly WikiLambdaMode $mode
 	) {
-		// Non-injected items
-		$this->dbr = $dbProvider->getReplicaDatabase();
-		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
 	/**
