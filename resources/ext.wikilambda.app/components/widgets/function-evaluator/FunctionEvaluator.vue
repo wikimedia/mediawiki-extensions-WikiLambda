@@ -437,13 +437,22 @@ module.exports = exports = defineComponent( {
 			// If we are initializing the evaluator with an functionZid
 			// we fetch the function data and then we set the arguments
 			if ( functionZid ) {
+				// Ignore the result of a fetch for a function that is no longer selected
+				const isStale = () => functionZid !== props.functionZid;
 				fetchFunctionAndArguments( functionZid ).then( () => {
+					if ( isStale() ) {
+						return;
+					}
 					store.setFunctionCallArguments( {
 						keyPath: [ Constants.STORED_OBJECTS.FUNCTION_CALL ],
 						functionZid
 					} );
 					isLoading.value = false;
-				} ).catch( showLoadError );
+				} ).catch( () => {
+					if ( !isStale() ) {
+						showLoadError();
+					}
+				} );
 			} else {
 				isLoading.value = false;
 			}

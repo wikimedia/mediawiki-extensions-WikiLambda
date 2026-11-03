@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' );
+const { flushPromises, shallowMount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
 const { createGettersWithFunctionsMock, createLabelDataMock } = require( '../../../helpers/getterHelpers.js' );
 const useMainStore = require( '../../../../../resources/ext.wikilambda.app/store/index.js' );
@@ -629,6 +629,60 @@ describe( 'FunctionEvaluator', () => {
 				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 			} );
 			expect( wrapper.find( '[data-testid="function-evaluator-load-error"]' ).exists() ).toBe( false );
+		} );
+	} );
+
+	describe( 'when the selected function changes during a fetch', () => {
+		let pendingFetches;
+
+		beforeEach( () => {
+			// Each function fetch waits until the test resolves or rejects it
+			pendingFetches = {};
+			store.fetchZids.mockImplementation( ( { zids } ) => zids.length === 0 ?
+				Promise.resolve() :
+				new Promise( ( resolve, reject ) => {
+					pendingFetches[ zids[ 0 ] ] = { resolve, reject };
+				} ) );
+		} );
+
+		it( 'does not set the arguments of the function that is no longer selected', async () => {
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
+			await wrapper.setProps( { functionZid: 'Z10001' } );
+			pendingFetches.Z10001.resolve();
+			await flushPromises();
+
+			pendingFetches.Z10000.resolve();
+			await flushPromises();
+
+			expect( store.setFunctionCallArguments ).toHaveBeenCalledTimes( 1 );
+			expect( store.setFunctionCallArguments ).toHaveBeenCalledWith( {
+				keyPath: [ 'call' ],
+				functionZid: 'Z10001'
+			} );
+		} );
+
+		it( 'keeps the loader until the selected function loads', async () => {
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
+			await wrapper.setProps( { functionZid: 'Z10001' } );
+
+			pendingFetches.Z10000.resolve();
+			await flushPromises();
+
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( true );
+			expect( store.setFunctionCallArguments ).not.toHaveBeenCalled();
+		} );
+
+		it( 'does not show an error when the fetch of a function that is no longer selected fails', async () => {
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z14' } );
+			await wrapper.setProps( { functionZid: 'Z10001' } );
+			pendingFetches.Z10001.resolve();
+			await flushPromises();
+
+			pendingFetches.Z10000.reject( new Error( 'Network error' ) );
+			await flushPromises();
+
+			expect( wrapper.find( '[data-testid="function-evaluator-load-error"]' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
 		} );
 	} );
 } );
