@@ -224,7 +224,6 @@
 	"wikilambda-diff-value-elided": "…ほか$1件",
 	"wikilambda-diff-value-moved": "位置 $1: $2",
 	"wikilambda-discard-edits": "編集内容を破棄",
-	"wikilambda-edit": "編集",
 	"wikilambda-edit-conflict-error-message": "このページを読み込んでから、このオブジェクトが変更されました。ページを再読み込みして、もう一度お試しください。",
 	"wikilambda-edit-monolingual-text-placeholder": "テキストを入力",
 	"wikilambda-editor-additional-details-label": "追加の詳細",

@@ -213,7 +213,6 @@
 	"wikilambda-diff-value-elided": "… en $1 meer",
 	"wikilambda-diff-value-moved": "Positie $1: $2",
 	"wikilambda-discard-edits": "Wijzigingen niet opslaan",
-	"wikilambda-edit": "Bewerken",
 	"wikilambda-edit-conflict-error-message": "Dit object is veranderd sinds u deze pagina hebt geladen. Vernieuw de pagina en probeer het nogmaals.",
 	"wikilambda-edit-monolingual-text-placeholder": "Voer tekst in",
 	"wikilambda-editor-additional-details-label": "Aanvullende details",

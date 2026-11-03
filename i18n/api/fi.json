@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Wikipeedikko"
+		]
+	},
+	"apihelp-wikilambda_edit-param-undoafter": "Kumoamistoiminnolla palautettavan version tunnus. käytetään komennolla <var>undo</var>."
+}

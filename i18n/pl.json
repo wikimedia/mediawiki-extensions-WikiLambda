@@ -215,7 +215,6 @@
 	"wikilambda-diff-value-elided": "… i jeszcze $1",
 	"wikilambda-diff-value-moved": "Pozycja $1: $2",
 	"wikilambda-discard-edits": "Porzuć zmiany",
-	"wikilambda-edit": "Edytuj",
 	"wikilambda-edit-conflict-error-message": "Ten obiekt został zmieniony od czasu wczytania tej strony. Odśwież stronę i spróbuj ponownie.",
 	"wikilambda-edit-monolingual-text-placeholder": "Wprowadź tekst",
 	"wikilambda-editor-additional-details-label": "Dodatkowe szczegóły",

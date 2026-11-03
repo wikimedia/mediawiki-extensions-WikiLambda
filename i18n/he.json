@@ -206,7 +206,6 @@
 	"wikilambda-diff-value-elided": "... ועוד $1",
 	"wikilambda-diff-value-moved": "מיקום $1: $2",
 	"wikilambda-discard-edits": "זריקת העריכות",
-	"wikilambda-edit": "עריכת",
 	"wikilambda-edit-conflict-error-message": "העצם שוּנה מאז שטענת את הדף הזה. נא לרענן את הדף ולנסות שוב.",
 	"wikilambda-edit-monolingual-text-placeholder": "נא להזין טקסט",
 	"wikilambda-editor-additional-details-label": "פרטים נוספים",

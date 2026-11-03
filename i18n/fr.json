@@ -228,7 +228,6 @@
 	"wikilambda-diff-value-elided": "…et $1 {{PLURAL:$1|autre|autres}}",
 	"wikilambda-diff-value-moved": "Position $1 : $2",
 	"wikilambda-discard-edits": "Abandonner les modifications",
-	"wikilambda-edit": "Modifier",
 	"wikilambda-edit-monolingual-text-placeholder": "Saisir le texte",
 	"wikilambda-editor-additional-details-label": "Détails supplémentaires",
 	"wikilambda-editor-argument-list-label": "Liste d’arguments",

@@ -233,7 +233,6 @@
 	"wikilambda-diff-value-elided": "…还有另外$1个",
 	"wikilambda-diff-value-moved": "位置$1：$2",
 	"wikilambda-discard-edits": "放弃编辑",
-	"wikilambda-edit": "编辑",
 	"wikilambda-edit-conflict-error-message": "自您加载本页面以来，此对象已发生更改。请重新加载页面并重试。",
 	"wikilambda-edit-monolingual-text-placeholder": "输入文字",
 	"wikilambda-editor-additional-details-label": "其他详细信息",

@@ -37,7 +37,6 @@
 	"wikilambda-diff-group-description": "Descrive",
 	"wikilambda-diff-value-elided": "… e $1 plu",
 	"wikilambda-diff-value-moved": "Loca $1: $2",
-	"wikilambda-edit": "Edita",
 	"wikilambda-editor-boolean-selector": "Eleje vera/falsa",
 	"wikilambda-editor-code-editor-debug-code-warning": "Considera sutrae <code>Wikifunctions.Debug</code> ante publici",
 	"wikilambda-editor-default-name": "Nontitulida",
