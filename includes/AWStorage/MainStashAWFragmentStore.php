@@ -223,7 +223,7 @@ class MainStashAWFragmentStore extends AWFragmentStore {
 		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
 
 		// Build AWFragment object with: key, qid, locale and date
-		$awFragment = new AWFragment( $fragmentKey, $topicQid, $language->getCode() );
+		$awFragment = new AWFragment( $fragmentKey );
 
 		// Get fresh value and exit if there's a hit
 		$stashKey = $this->makeGlobalKey( $topicQid, $language->getZid(), $fragmentKey );

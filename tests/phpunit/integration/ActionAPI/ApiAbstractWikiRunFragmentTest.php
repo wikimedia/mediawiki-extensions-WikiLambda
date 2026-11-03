@@ -116,7 +116,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns fresh value
-		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
+		$storedFragment = new AWFragment( $fragmentKey );
 		$storedFragment->setValue( $storedValue, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
@@ -174,7 +174,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns stale value
-		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
+		$storedFragment = new AWFragment( $fragmentKey );
 		$storedFragment->setValue( $storedValue, AWFragment::AVAILABILITY_STALE );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
@@ -232,7 +232,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns missing fragment value
-		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
+		$missingFragment = new AWFragment( $fragmentKey );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
@@ -290,7 +290,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns missing fragment value
-		$missingFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
+		$missingFragment = new AWFragment( $fragmentKey );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
@@ -366,7 +366,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragment = json_decode( $fragmentStr, true );
 
 		// Mock fragment store: returns a missing fragment, so the API would render it
-		$missingFragment = new AWFragment( 'some-fragment-key', $qid, $language->getCode() );
+		$missingFragment = new AWFragment( 'some-fragment-key' );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
@@ -401,7 +401,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
 		$fragment = json_decode( $fragmentStr, true );
 
-		$storedFragment = new AWFragment( 'some-fragment-key', $qid, $language->getCode() );
+		$storedFragment = new AWFragment( 'some-fragment-key' );
 		$storedFragment->setValue(
 			[ 'success' => true, 'value' => '<b>fresh content</b>' ],
 			AWFragment::AVAILABILITY_FRESH
@@ -440,7 +440,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		$fragmentStr = '{"Z1K1":"Z89", "Z89K1":"<b>literal fragment</b>"}';
 		$fragment = json_decode( $fragmentStr, true );
 
-		$missingFragment = new AWFragment( 'some-fragment-key', $qid, $language->getCode() );
+		$missingFragment = new AWFragment( 'some-fragment-key' );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,
 			'language' => $language,
@@ -507,7 +507,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 		];
 
 		// Mock fragment store: returns fresh value with error
-		$storedFragment = new AWFragment( $fragmentKey, $qid, $language->getCode() );
+		$storedFragment = new AWFragment( $fragmentKey );
 		$storedFragment->setValue( $failureValue, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStoreForGetter( [
 			'topicQid' => $qid,

@@ -104,8 +104,8 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	// Helper functions
 	// ================
 
-	private function makeFragment( $qid, $lang, $value = null, $availability = null ): AWFragment {
-		$fragment = new AWFragment( 'arbitrary-key', $qid, $lang );
+	private function makeFragment( $value = null, $availability = null ): AWFragment {
+		$fragment = new AWFragment( 'arbitrary-key' );
 		if ( $value ) {
 			$fragment->setValue( $value, $availability ?? AWFragment::AVAILABILITY_FRESH );
 		}
@@ -156,7 +156,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	public function testFetchSection_freshFragment(): void {
 		$qid = 'Q42';
 		$section = 'Q8776414';
-		$lang = 'en';
 
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
 		$value = [ 'success' => true, 'value' => '<b>fresh content</b>' ];
@@ -172,7 +171,7 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$mockTitleFactory = $this->createMockTitleFactory( $qid );
 		$this->setService( 'TitleFactory', $mockTitleFactory );
 
-		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+		$storedFragment = $this->makeFragment( $value, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $storedFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
@@ -191,7 +190,6 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	public function testFetchSection_multipleFragments(): void {
 		$qid = 'Q42';
 		$section = 'Q8776414';
-		$lang = 'en';
 
 		$fragment1 = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal1</b>' ];
 		$fragment2 = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal2</b>' ];
@@ -212,9 +210,9 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 		$mockTitleFactory = $this->createMockTitleFactory( $qid );
 		$this->setService( 'TitleFactory', $mockTitleFactory );
 
-		$staleOk = $this->makeFragment( $qid, $lang, $value1, AWFragment::AVAILABILITY_STALE );
-		$freshBad = $this->makeFragment( $qid, $lang, $value2, AWFragment::AVAILABILITY_FRESH );
-		$missing = $this->makeFragment( $qid, $lang );
+		$staleOk = $this->makeFragment( $value1, AWFragment::AVAILABILITY_STALE );
+		$freshBad = $this->makeFragment( $value2, AWFragment::AVAILABILITY_FRESH );
+		$missing = $this->makeFragment();
 		$fragmentStore = $this->createMockFragmentStore( [
 			[ $fragment1, $staleOk ],
 			[ $fragment2, $freshBad ],
@@ -269,7 +267,7 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 
 		$value = [ 'success' => true, 'value' => '<b>old content</b>' ];
 		$this->setService( 'AbstractWikiFragmentStore', $this->createMockFragmentStore( [
-			[ $oldFragment, $this->makeFragment( $qid, 'en', $value ) ]
+			[ $oldFragment, $this->makeFragment( $value ) ]
 		] ) );
 
 		$result = $this->doApiRequest( [
@@ -288,14 +286,11 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	// ======================
 
 	public function testFetchFragments_freshFragment(): void {
-		$qid = 'Q42';
-		$lang = 'en';
-
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
 		$fragmentsJson = json_encode( [ $fragment ] );
 		$value = [ 'success' => true, 'value' => '<b>fresh content</b>' ];
 
-		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+		$storedFragment = $this->makeFragment( $value, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $storedFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
@@ -313,14 +308,11 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	}
 
 	public function testFetchFragments_staleFragment(): void {
-		$qid = 'Q42';
-		$lang = 'en';
-
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
 		$fragmentsJson = json_encode( [ $fragment ] );
 		$value = [ 'success' => true, 'value' => '<b>stale content</b>' ];
 
-		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+		$storedFragment = $this->makeFragment( $value, AWFragment::AVAILABILITY_FRESH );
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $storedFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
 
@@ -338,13 +330,10 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	}
 
 	public function testFetchFragments_pendingFragment(): void {
-		$qid = 'Q42';
-		$lang = 'en';
-
 		$fragment = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>literal</b>' ];
 		$fragmentsJson = json_encode( [ $fragment ] );
 
-		$missingFragment = $this->makeFragment( $qid, $lang );
+		$missingFragment = $this->makeFragment();
 
 		$fragmentStore = $this->createMockFragmentStore( [ [ $fragment, $missingFragment ] ] );
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
@@ -364,16 +353,13 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 	}
 
 	public function testFetchFragments_multipleStates(): void {
-		$qid = 'Q42';
-		$lang = 'en';
-
 		$fragment1 = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>first</b>' ];
 		$fragment2 = [ 'Z1K1' => 'Z89', 'Z89K1' => '<b>second</b>' ];
 		$fragmentsJson = json_encode( [ $fragment1, $fragment2 ] );
 		$value = [ 'success' => true, 'value' => '<b>first</b>' ];
 
-		$storedFragment = $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
-		$missingFragment = $this->makeFragment( $qid, $lang );
+		$storedFragment = $this->makeFragment( $value, AWFragment::AVAILABILITY_FRESH );
+		$missingFragment = $this->makeFragment();
 
 		$fragmentStore = $this->createMockFragmentStore( [
 			[ $fragment1, $storedFragment ],
@@ -418,11 +404,11 @@ class ApiAbstractWikiFetchSectionTest extends ApiTestCase {
 			->method( 'getRenderedAWFragment' )
 			->willReturnCallback(
 				function ( $f, $topicQid, $language, $dt )
-				use ( &$capturedTopic, &$capturedLanguage, &$capturedDatetime, $qid, $lang, $value ) {
+				use ( &$capturedTopic, &$capturedLanguage, &$capturedDatetime, $value ) {
 					$capturedTopic = $topicQid;
 					$capturedLanguage = $language;
 					$capturedDatetime = $dt;
-					return $this->makeFragment( $qid, $lang, $value, AWFragment::AVAILABILITY_FRESH );
+					return $this->makeFragment( $value, AWFragment::AVAILABILITY_FRESH );
 				}
 			);
 		$this->setService( 'AbstractWikiFragmentStore', $fragmentStore );
