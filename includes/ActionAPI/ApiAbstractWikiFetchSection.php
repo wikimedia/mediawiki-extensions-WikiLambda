@@ -20,17 +20,13 @@ use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\WikifunctionCallException;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\TitleFactory;
-use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 use Wikimedia\Timestamp\TimestampFormat as TS;
 
 class ApiAbstractWikiFetchSection extends ApiBase {
-
-	private LoggerInterface $logger;
 
 	public function __construct(
 		ApiMain $mainModule,
@@ -42,8 +38,6 @@ class ApiAbstractWikiFetchSection extends ApiBase {
 		private readonly TitleFactory $titleFactory
 	) {
 		parent::__construct( $mainModule, $moduleName, 'abstractwiki_fetch_section_' );
-		// Non-injected items
-		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
 
 	/**

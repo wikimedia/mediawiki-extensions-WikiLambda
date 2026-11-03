@@ -19,15 +19,11 @@ use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Logger\LoggerFactory;
-use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 use Wikimedia\Timestamp\TimestampFormat as TS;
 
 class ApiAbstractWikiRunFragment extends ApiBase {
-
-	private LoggerInterface $logger;
 
 	public function __construct(
 		ApiMain $mainModule,
@@ -37,8 +33,6 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		private readonly AbstractWikiRequest $abstractWikiRequest
 	) {
 		parent::__construct( $mainModule, $moduleName, 'abstractwiki_run_fragment_' );
-		// Non-injected items
-		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 	}
 
 	/**
