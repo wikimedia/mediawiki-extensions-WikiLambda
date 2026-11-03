@@ -48,12 +48,12 @@ describe( 'FunctionSearchNextSteps', () => {
 
 		const items = wrapper.findAll( '.ext-wikilambda-app-function-search-next-steps__item' );
 		expect( items.length ).toBe( 3 );
-		expect( items[ 0 ].get( 'a' ).text() ).toBe( 'Suggest to the community' );
-		expect( items[ 0 ].text() ).toContain( 'Start a discussion and ask contributors to help build the function' );
-		expect( items[ 1 ].get( 'a' ).text() ).toBe( 'Create the function' );
-		expect( items[ 1 ].text() ).toContain( 'Help grow Wikifunctions by creating the function yourself' );
-		expect( items[ 2 ].get( 'a' ).text() ).toBe( 'View all functions' );
-		expect( items[ 2 ].text() ).toContain( 'Explore the full list of functions in Wikifunctions' );
+		expect( items[ 0 ].get( 'a' ).text() ).toBe( 'View all functions' );
+		expect( items[ 0 ].text() ).toContain( 'Explore the full list of functions in Wikifunctions' );
+		expect( items[ 1 ].get( 'a' ).text() ).toBe( 'Suggest to the community' );
+		expect( items[ 1 ].text() ).toContain( 'Start a discussion and ask contributors to help build the function' );
+		expect( items[ 2 ].get( 'a' ).text() ).toBe( 'Create the function' );
+		expect( items[ 2 ].text() ).toContain( 'Help grow Wikifunctions by creating the function yourself' );
 	} );
 
 	it( 'links to the page of suggested functions on the current wiki', () => {

@@ -1,7 +1,7 @@
 <!--
 	WikiLambda Vue component for the next steps after a function search
-	in Abstract content that found nothing: suggest the function to the
-	community, create it, or browse the functions. For a field that expects
+	in Abstract content that found nothing: browse the functions, suggest
+	the function to the community, or create it. For a field that expects
 	an HTML fragment, browse the useful functions for article composition.
 	For other fields, browse the functions on Wikifunctions that return
 	the type of the field.
@@ -36,7 +36,7 @@ module.exports = exports = defineComponent( {
 	name: 'wl-function-search-next-steps',
 	props: {
 		/**
-		 * The type that the field expects. It sets the last link (see steps).
+		 * The type that the field expects. It sets the first link (see steps).
 		 */
 		returnType: {
 			type: String,
@@ -49,31 +49,16 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Returns the next steps, each with a link and a description:
-		 * * the page of Abstract Wikipedia where users suggest a new function
-		 * * the function editor on Wikifunctions
 		 * * for an HTML fragment: the page of Abstract Wikipedia with useful
 		 *   functions for article composition
 		 * * for another type: the list of functions on Wikifunctions, with
 		 *   only the functions that return the given type, if any
+		 * * the page of Abstract Wikipedia where users suggest a new function
+		 * * the function editor on Wikifunctions
 		 *
 		 * @return {Array}
 		 */
 		const steps = computed( () => [
-			{
-				id: 'suggest',
-				url: new mw.Title( Constants.PATHS.SUGGESTED_FUNCTIONS_TITLE ).getUrl(),
-				title: i18n( 'wikilambda-abstract-function-search-suggest-title' ).text(),
-				description: i18n( 'wikilambda-abstract-function-search-suggest-description' ).text()
-			},
-			{
-				id: 'create',
-				url: generateWikifunctionsPageUrl( {
-					title: Constants.PATHS.CREATE_OBJECT_TITLE,
-					params: { zid: Constants.Z_FUNCTION }
-				} ),
-				title: i18n( 'wikilambda-abstract-function-search-create-title' ).text(),
-				description: i18n( 'wikilambda-abstract-function-search-create-description' ).text()
-			},
 			props.returnType === Constants.Z_HTML_FRAGMENT ?
 				{
 					id: 'useful',
@@ -90,7 +75,22 @@ module.exports = exports = defineComponent( {
 					} ),
 					title: i18n( 'wikilambda-abstract-function-search-view-all-title' ).text(),
 					description: i18n( 'wikilambda-abstract-function-search-view-all-description' ).text()
-				}
+				},
+			{
+				id: 'suggest',
+				url: new mw.Title( Constants.PATHS.SUGGESTED_FUNCTIONS_TITLE ).getUrl(),
+				title: i18n( 'wikilambda-abstract-function-search-suggest-title' ).text(),
+				description: i18n( 'wikilambda-abstract-function-search-suggest-description' ).text()
+			},
+			{
+				id: 'create',
+				url: generateWikifunctionsPageUrl( {
+					title: Constants.PATHS.CREATE_OBJECT_TITLE,
+					params: { zid: Constants.Z_FUNCTION }
+				} ),
+				title: i18n( 'wikilambda-abstract-function-search-create-title' ).text(),
+				description: i18n( 'wikilambda-abstract-function-search-create-description' ).text()
+			}
 		] );
 
 		return {
