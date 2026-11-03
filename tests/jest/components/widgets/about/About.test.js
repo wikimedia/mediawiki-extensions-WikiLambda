@@ -807,4 +807,83 @@ describe( 'About', () => {
 			expect( blocks[ 0 ].vm.language ).toBe( 'Z1002' );
 		} );
 	} );
+
+	describe( 'Fallback language zid that arrives after mount', () => {
+		beforeEach( () => {
+			// User language: Extremaduran. The zid of Spanish is not known yet.
+			store.getFallbackLanguageZids = [ 'Z1841', 'Z1002' ];
+			store.getUserLangZid = 'Z1841';
+			multilingualDataLanguages.name = [ 'Z1003', 'Z1002' ];
+			multilingualDataLanguages.all = [ 'Z1003', 'Z1002' ];
+		} );
+
+		it( 'keeps unsaved edits and added languages in a view page', async () => {
+			const wrapper = renderAbout( { edit: false, type: 'Z6' } );
+			await waitFor( () => {} );
+
+			// Edit the user language block and add a language
+			wrapper.findAllComponents( { name: 'cdx-accordion' } )[ 0 ].find( '.cdx-accordion__action' ).trigger( 'click' );
+			await waitFor( () => {} );
+			const userLangBlock = wrapper.findAllComponents( { name: 'wl-about-language-block' } )[ 0 ];
+			userLangBlock.vm.$emit( 'update-edit-value', {
+				data: userLangBlock.vm.editData.name,
+				value: 'Unsaved name'
+			} );
+			wrapper.findComponent( { name: 'wl-about-languages-dialog' } ).vm.$emit( 'add-language', 'Z1430' );
+			await waitFor( () => {} );
+
+			// The zid of Spanish arrives
+			store.getFallbackLanguageZids = [ 'Z1841', 'Z1003', 'Z1002' ];
+			await waitFor( () => {
+				expect( wrapper.findAllComponents( { name: 'wl-about-language-block' } ).length ).toBe( 4 );
+			} );
+
+			const blocks = wrapper.findAllComponents( { name: 'wl-about-language-block' } );
+			expect( blocks.map( ( block ) => block.vm.language ) ).toEqual( [ 'Z1841', 'Z1002', 'Z1430', 'Z1003' ] );
+			expect( blocks[ 0 ].vm.edit ).toBe( true );
+			expect( blocks[ 0 ].vm.editData.name.value ).toBe( 'Unsaved name' );
+			expect( wrapper.find( '.ext-wikilambda-app-about__button-publish' ).exists() ).toBe( true );
+		} );
+
+		it( 'keeps unsaved edits in an edit page', async () => {
+			const wrapper = renderAbout( { edit: true, type: 'Z6' } );
+			await waitFor( () => {} );
+
+			const userLangBlock = wrapper.findAllComponents( { name: 'wl-about-language-block' } )[ 0 ];
+			userLangBlock.vm.$emit( 'update-edit-value', {
+				data: userLangBlock.vm.editData.name,
+				value: 'Unsaved name'
+			} );
+
+			// The zid of Spanish arrives
+			store.getFallbackLanguageZids = [ 'Z1841', 'Z1003', 'Z1002' ];
+			await waitFor( () => {
+				expect( wrapper.findAllComponents( { name: 'wl-about-language-block' } ).length ).toBe( 3 );
+			} );
+
+			const blocks = wrapper.findAllComponents( { name: 'wl-about-language-block' } );
+			expect( blocks[ 0 ].vm.editData.name.value ).toBe( 'Unsaved name' );
+			expect( blocks[ 2 ].vm.language ).toBe( 'Z1003' );
+			expect( blocks[ 2 ].vm.edit ).toBe( true );
+		} );
+
+		it( 'does not change the blocks when the fallback zids stay the same', async () => {
+			const wrapper = renderAbout( { edit: true, type: 'Z6' } );
+			await waitFor( () => {} );
+
+			const userLangBlock = wrapper.findAllComponents( { name: 'wl-about-language-block' } )[ 0 ];
+			userLangBlock.vm.$emit( 'update-edit-value', {
+				data: userLangBlock.vm.editData.name,
+				value: 'Unsaved name'
+			} );
+
+			// A new array with the same zids
+			store.getFallbackLanguageZids = [ 'Z1841', 'Z1002' ];
+			await waitFor( () => {} );
+
+			const blocks = wrapper.findAllComponents( { name: 'wl-about-language-block' } );
+			expect( blocks.map( ( block ) => block.vm.language ) ).toEqual( [ 'Z1841', 'Z1002' ] );
+			expect( blocks[ 0 ].vm.editData.name.value ).toBe( 'Unsaved name' );
+		} );
+	} );
 } );

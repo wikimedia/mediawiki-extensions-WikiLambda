@@ -256,22 +256,32 @@ module.exports = exports = defineComponent( {
 					undefined
 			} ];
 
-			// 2. If important info in main language is complete, exit
+			// 2. Add the fallback languages
+			addFallbackLanguages();
+		}
+
+		/**
+		 * Adds a block for each fallback language that has a name or input label
+		 * which the user language does not have. It keeps the blocks that are
+		 * already shown, so that their unsaved edits stay.
+		 */
+		function addFallbackLanguages() {
+			// 1. If important info in main language is complete, exit
 			let missingName = !fieldLangs.value.name.includes( store.getUserLangZid );
 			let missingInputs = fieldLangs.value.inputs.filter( ( langs ) => !langs.includes( store.getUserLangZid ) );
 			if ( !missingName && missingInputs.length === 0 ) {
 				return;
 			}
 
-			// 3. Collect fallback languages to cover up for missing fields
-			let addBlocks = [];
+			// 2. Collect fallback languages to cover up for missing fields
+			const addBlocks = [];
 			for ( const langZid of fallbackLanguageZids.value ) {
-				// 3.1. If everything is complete, exit loop
+				// 2.1. If everything is complete, exit loop
 				if ( !missingName && missingInputs.length === 0 ) {
 					break;
 				}
 
-				// 3.2. If we are still missing a fallback name, check if we have it in this language
+				// 2.2. If we are still missing a fallback name, check if we have it in this language
 				if ( missingName ) {
 					if ( fieldLangs.value.name.includes( langZid ) ) {
 						addBlocks.push( langZid );
@@ -279,7 +289,7 @@ module.exports = exports = defineComponent( {
 					}
 				}
 
-				// 3.3. For each missing input labels, check if we have it in this language
+				// 2.3. For each missing input labels, check if we have it in this language
 				const availableInputs = missingInputs.filter( ( input ) => input.includes( langZid ) );
 				if ( availableInputs.length > 0 ) {
 					addBlocks.push( langZid );
@@ -287,18 +297,8 @@ module.exports = exports = defineComponent( {
 				}
 			}
 
-			// 4. Remove duplicates and add fallback languages to language blocks
-			addBlocks = [ ...new Set( addBlocks ) ];
-			addBlocks.forEach( ( langZid ) => {
-				displayLanguages.value.push( {
-					zid: langZid,
-					edit: props.edit,
-					open: false,
-					editData: props.edit ?
-						editCopy( getMultilingualDataForLanguage( langZid ).viewData ) :
-						undefined
-				} );
-			} );
+			// 3. Add the fallback languages that are not shown yet
+			addBlocks.forEach( ( langZid ) => addLanguage( langZid ) );
 		}
 
 		// Editing
@@ -623,8 +623,9 @@ module.exports = exports = defineComponent( {
 		}
 
 		// Watch
+		// A fallback language can get its zid after mount, e.g. when a language lookup fetches it
 		watch( fallbackLanguageZids, () => {
-			initializeDisplayLanguages();
+			addFallbackLanguages();
 		} );
 
 		// Lifecycle
