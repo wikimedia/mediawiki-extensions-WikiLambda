@@ -41,10 +41,7 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 		$evaluateOnMiss = true,
 		$origin = ''
 	): array {
-		$key = ZObjectUtils::makeCacheKeyFromZObject( $query );
-
-		// Strip out revision counts for referenced Objects, as local dev machines may differ from fresh CI installs
-		$key = preg_replace( '/#\d+/u', '#0', $key );
+		$key = self::makeFixtureKey( $query );
 
 		// JSON doesn't like keys with newlines or tabs in them, so we need to replace them with something else.
 		$key = preg_replace( '/[\n\t]/u', '…', $key );
@@ -85,6 +82,32 @@ class MockOrchestratorRequest extends OrchestratorRequest {
 			'result' => '{"Z1K1":"Z22","Z22K1":' . $z22k1 . ',"Z22K2":' . $z22k2 . '}',
 			'httpStatusCode' => $httpStatusCode
 		];
+	}
+
+	/**
+	 * Make a readable fixture key from the query. References get a revision of 0, as local dev
+	 * machines may differ from fresh CI installs.
+	 *
+	 * E.g. { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hey" } => 'Z1K1|Z7#0,Z7K1|Z801#0,Z801K1|Hey,'
+	 *
+	 * @param \stdClass|array $query
+	 * @return string
+	 */
+	private static function makeFixtureKey( $query ): string {
+		$key = '';
+		foreach ( $query as $queryKey => $value ) {
+			$key .= $queryKey . '|';
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$key .= self::makeFixtureKey( $value );
+			} elseif ( is_scalar( $value ) ) {
+				$key .= $value;
+				if ( is_string( $value ) && ZObjectUtils::isValidZObjectReference( $value ) ) {
+					$key .= '#0';
+				}
+			}
+			$key .= ',';
+		}
+		return $key;
 	}
 
 	/**

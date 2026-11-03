@@ -17,6 +17,7 @@ use DateTime;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
 use MediaWiki\Extension\WikiLambda\ParserFunction\WikifunctionsCallDefaultValues;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\Stats\StatsFactory;
@@ -64,7 +65,9 @@ class MainStashWikifunctionsFragmentStore extends WikifunctionsFragmentStore {
 
 		return $this->stash->makeGlobalKey(
 			self::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-			json_encode( $functionCall )
+			self::CLIENT_FUNCTIONCALL_CACHE_KEY_VERSION,
+			$functionCall['target'],
+			ZObjectUtils::makeCacheKeyFromZObject( $functionCall, false )
 		);
 	}
 

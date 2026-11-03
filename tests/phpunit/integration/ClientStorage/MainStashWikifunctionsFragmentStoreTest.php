@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\ClientStorage\MainStashWikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\ClientStorage\WikifunctionsFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\ObjectCache\HashBagOStuff;
 use Wikimedia\Stats\StatsFactory;
@@ -72,7 +73,9 @@ class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 			->method( 'makeGlobalKey' )
 			->with(
 				WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-				json_encode( $keyedCall )
+				WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_VERSION,
+				$keyedCall['target'],
+				ZObjectUtils::makeCacheKeyFromZObject( $keyedCall, false )
 			)
 			->willReturn( $expectedKey );
 
@@ -248,7 +251,9 @@ class MainStashWikifunctionsFragmentStoreTest extends WikiLambdaClientIntegratio
 			->method( 'makeGlobalKey' )
 			->with(
 				WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX,
-				json_encode( $keyedCall )
+				WikifunctionsFragmentStore::CLIENT_FUNCTIONCALL_CACHE_KEY_VERSION,
+				$keyedCall['target'],
+				ZObjectUtils::makeCacheKeyFromZObject( $keyedCall, false )
 			)
 			->willReturn( $expectedKey );
 

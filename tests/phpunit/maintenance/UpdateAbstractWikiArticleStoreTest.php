@@ -9,7 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Maintenance;
 
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
@@ -18,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWSection;
 use MediaWiki\Extension\WikiLambda\Maintenance\UpdateAbstractWikiArticleStore;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockWikidataEntityLookupTrait;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Title\Title;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 use Wikimedia\Timestamp\TimestampFormat as TS;
@@ -669,7 +669,7 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 			$qid,
 			$lang,
 			$datetime,
-			AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment ),
+			ZObjectUtils::makeCacheKeyFromZObject( $fragment, false ),
 			$value
 		);
 	}

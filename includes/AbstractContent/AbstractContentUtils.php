@@ -43,30 +43,4 @@ class AbstractContentUtils {
 		return ( $input === 'Q0' );
 	}
 
-	/**
-	 * Walk a given input Object, and make a cache key constructed of its keys and values.
-	 * This is intended to build a key for an Abstract Content fragment while in Abstract mode,
-	 * and unlike ZObject cache keys in Repo Mode, it won't add revision Ids to the references.
-	 *
-	 * NOTE: Whether the input is passed as a stdClass or as associative array it will not
-	 * make any difference for the output string key, as demonstrated in the test cases.
-	 *
-	 * @param \stdClass|array $query
-	 * @return string
-	 */
-	public static function makeCacheKeyForAbstractFragment( $query ): string {
-		$accumulator = '';
-
-		foreach ( $query as $key => $value ) {
-			$accumulator .= $key . '|';
-			if ( is_array( $value ) || is_object( $value ) ) {
-				$accumulator .= self::makeCacheKeyForAbstractFragment( $value );
-			} elseif ( is_scalar( $value ) ) {
-				$accumulator .= $value;
-			}
-			$accumulator .= ',';
-		}
-
-		return $accumulator;
-	}
 }

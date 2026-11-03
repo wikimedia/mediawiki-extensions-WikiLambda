@@ -140,7 +140,7 @@ class AWFragment {
 
 	/**
 	 * Returns the fragment Key string.
-	 * Key is built with AbstractContentUtils::makeCacheKeyForAbstractFragment
+	 * Key is built with ZObjectUtils::makeCacheKeyFromZObject
 	 * and passed around for traceability.
 	 *
 	 * @return string

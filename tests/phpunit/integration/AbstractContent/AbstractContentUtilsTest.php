@@ -61,38 +61,4 @@ class AbstractContentUtilsTest extends WikiLambdaAbstractModeIntegrationTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider provideMakeCacheForAbstractFragment
-	 */
-	public function testMakeCacheForAbstractFragment( $input, $expected ) {
-		// test as stdClass
-		$this->assertEquals( $expected, AbstractContentUtils::makeCacheKeyForAbstractFragment(
-			json_decode( $input )
-		) );
-		// test as associative array
-		$this->assertEquals( $expected, AbstractContentUtils::makeCacheKeyForAbstractFragment(
-			json_decode( $input, true )
-		) );
-	}
-
-	public static function provideMakeCacheForAbstractFragment() {
-		yield 'Literal html' => [
-			'{ "Z1K1": "Z89", "Z89K1": "<b>Testing</b>" }',
-			'Z1K1|Z89,Z89K1|<b>Testing</b>,'
-		];
-
-		yield 'Simple fragment' => [
-			'{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "<b>Testing</b>" }',
-			'Z1K1|Z7,Z7K1|Z801,Z801K1|<b>Testing</b>,'
-		];
-
-		yield 'More complex fragment' => [
-			'{ "Z1K1": "Z7", "Z7K1": "Z27868",'
-				. '"Z27868K1": { "Z1K1": "Z7", "Z7K1": "Z23753",'
-				. ' "Z23753K1": { "Z1K1": "Z18", "Z18K1": "Z825K1" },'
-				. ' "Z23753K2": { "Z1K1": "Z18", "Z18K1": "Z825K2" } } }',
-			'Z1K1|Z7,Z7K1|Z27868,Z27868K1|Z1K1|Z7,Z7K1|Z23753,Z23753K1|Z1K1|Z18,'
-				. 'Z18K1|Z825K1,,Z23753K2|Z1K1|Z18,Z18K1|Z825K2,,,'
-		];
-	}
 }

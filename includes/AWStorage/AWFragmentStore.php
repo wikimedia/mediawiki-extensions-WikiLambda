@@ -34,6 +34,8 @@ use MediaWiki\Html\Html;
 abstract class AWFragmentStore {
 
 	public const ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX = 'WikiLambdaAbstractFragment';
+	/** Change this to stop reading all earlier entries. */
+	public const ABSTRACT_FRAGMENT_CACHE_KEY_VERSION = 'v2';
 
 	/** Metrics 'store' label shared by every AWFragmentStore backend. */
 	protected const METRIC_STORE = 'aw_fragment';

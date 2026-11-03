@@ -1390,30 +1390,55 @@ class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->assertSame( $translated, json_encode( $result ) );
 	}
 
-	/**
-	 * @dataProvider provideMakeCacheKeyFromZObject
-	 */
-	public function testMakeCacheKeyFromZObject( $inputObject, $expectedString ) {
-		$this->assertEquals( $expectedString, ZObjectUtils::makeCacheKeyFromZObject( $inputObject ) );
+	public function testMakeCacheKeyFromZObject_isStableHash() {
+		$call = json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Testing" }' );
+
+		$key = ZObjectUtils::makeCacheKeyFromZObject( $call );
+
+		$this->assertMatchesRegularExpression( '/^[0-9a-f]{64}$/', $key );
+		$this->assertSame( $key, ZObjectUtils::makeCacheKeyFromZObject( $call ) );
 	}
 
-	public static function provideMakeCacheKeyFromZObject() {
-		yield 'Simple Z6' => [
-			json_decode( '{ "Z1K1": "Z6", "Z6K1": "Testing" }' ),
-			'Z1K1|Z6#0,Z6K1|Testing,'
+	public function testMakeCacheKeyFromZObject_withoutRevisionIdsSameForObjectAndArray() {
+		$call = '{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": { "Z1K1": "Z18", "Z18K1": "Z825K1" } }';
+
+		$this->assertSame(
+			ZObjectUtils::makeCacheKeyFromZObject( json_decode( $call ), false ),
+			ZObjectUtils::makeCacheKeyFromZObject( json_decode( $call, true ), false )
+		);
+	}
+
+	/**
+	 * @dataProvider provideMakeCacheKeyFromZObject_distinctCalls
+	 */
+	public function testMakeCacheKeyFromZObject_distinctCalls( string $callOne, string $callTwo ) {
+		foreach ( [ true, false ] as $withRevisionIds ) {
+			$this->assertNotSame(
+				ZObjectUtils::makeCacheKeyFromZObject( json_decode( $callOne ), $withRevisionIds ),
+				ZObjectUtils::makeCacheKeyFromZObject( json_decode( $callTwo ), $withRevisionIds )
+			);
+		}
+	}
+
+	public static function provideMakeCacheKeyFromZObject_distinctCalls() {
+		yield 'Space and underscore' => [
+			'{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello World" }',
+			'{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello_World" }'
 		];
 
-		yield 'Simple Z7' => [
-			json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Testing" }' ),
-			'Z1K1|Z7#0,Z7K1|Z801#0,Z801K1|Testing,'
+		yield 'Separators in a value' => [
+			'{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "abc", "Z801K2": "x" }',
+			'{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "abc,Z801K2|x" }'
 		];
 
-		yield 'More complex Z7' => [
-			json_decode(
-				'{ "Z1K1": "Z7", "Z7K1": "Z802", "Z802K1": { "Z1K1": "Z40", "Z40K1": "Z41" }, '
-				. '"Z802K2": { "Z1K1": "Z40", "Z40K1": "Z41" }, "Z802K3": "Fail" }'
-			),
-			'Z1K1|Z7#0,Z7K1|Z802#0,Z802K1|Z1K1|Z40#0,Z40K1|Z41#0,,Z802K2|Z1K1|Z40#0,Z40K1|Z41#0,,Z802K3|Fail,'
+		yield 'Reference and string with its revision' => [
+			'{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Z6" }',
+			'{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Z6#0" }'
+		];
+
+		yield 'Boolean and string' => [
+			'{ "zobject": "Z6", "doValidate": true }',
+			'{ "zobject": "Z6", "doValidate": "1" }'
 		];
 	}
 

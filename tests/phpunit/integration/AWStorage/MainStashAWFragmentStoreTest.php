@@ -9,11 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
 use OverflowException;
 use Wikimedia\ObjectCache\BagOStuff;
@@ -147,7 +147,7 @@ class MainStashAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	public function testGetterFreshValue(): void {
 		$qid = 'Q42';
 		$fragment = [ 'Z1K1' => 'Z89' ];
-		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+		$fragmentKey = ZObjectUtils::makeCacheKeyFromZObject( $fragment, false );
 
 		// Mock job queue to assert that no revalidate job is created with a fresh fragment
 		$jobQueueGroup = $this->createMockJobQueueGroup();
@@ -182,7 +182,7 @@ class MainStashAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	public function testGetterStaleValue(): void {
 		$qid = 'Q42';
 		$fragment = [ 'Z1K1' => 'Z89' ];
-		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+		$fragmentKey = ZObjectUtils::makeCacheKeyFromZObject( $fragment, false );
 
 		// Set fragment at 2026-08-12 20:29
 		$renderTime = '20260812202900';
@@ -225,7 +225,7 @@ class MainStashAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	public function testGetterStaleValue_noRevalidate(): void {
 		$qid = 'Q42';
 		$fragment = [ 'Z1K1' => 'Z89' ];
-		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+		$fragmentKey = ZObjectUtils::makeCacheKeyFromZObject( $fragment, false );
 
 		// Set fragment at 2026-08-12 20:29
 		$renderTime = '20260812202900';
@@ -269,7 +269,7 @@ class MainStashAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 
 		$qid = 'Q42';
 		$fragment = [ 'Z1K1' => 'Z89' ];
-		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+		$fragmentKey = ZObjectUtils::makeCacheKeyFromZObject( $fragment, false );
 
 		$fragmentStore = new MainStashAWFragmentStore( $this->createMockJobQueueGroup(), $this->stash );
 		$fragmentStore->setRenderedAWFragment(
@@ -349,7 +349,7 @@ class MainStashAWFragmentStoreTest extends WikiLambdaAbstractModeIntegrationTest
 	public function testSetterFailedFragment_transientError_noOverwrite(): void {
 		$qid = 'Q42';
 		$fragment = [ 'Z1K1' => 'Z89' ];
-		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+		$fragmentKey = ZObjectUtils::makeCacheKeyFromZObject( $fragment, false );
 
 		$stash = $this->createSpyingStash();
 		$fragmentStore = new MainStashAWFragmentStore( $this->createMockJobQueueGroup(), $stash );

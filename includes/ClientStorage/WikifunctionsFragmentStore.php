@@ -26,6 +26,8 @@ use Psr\Log\LoggerInterface;
 abstract class WikifunctionsFragmentStore {
 
 	public const CLIENT_FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaClientFunctionCall';
+	/** Change this to stop reading all earlier entries. */
+	public const CLIENT_FUNCTIONCALL_CACHE_KEY_VERSION = 'v2';
 
 	/** Metrics 'store' label shared by WikifunctionsFragmentStore backends. */
 	protected const METRIC_STORE = 'client_functioncall';
@@ -39,9 +41,8 @@ abstract class WikifunctionsFragmentStore {
 	/*
 	 * Builds the client storage key for a given fragment function call.
 	 *
-	 * Note that we can't use ZObjectUtils::makeCacheKeyFromZObject here, as
-	 * that's repo-mode only. This means that this cache key doesn't have the
-	 * revision IDs of the referenced ZObjects.
+	 * Note that the revision IDs of the referenced ZObjects are repo-mode only,
+	 * so this cache key doesn't have them.
 	 *
 	 * The input object is an array with the necessary information to identify
 	 * the embedded fragment. Different cache implementations can choose to

@@ -44,6 +44,8 @@ class OrchestratorRequest {
 	public const AW_FRAGMENT_ORIGIN_HEADER = 'aw-fragment';
 	public const WF_CLIENT_ORIGIN_HEADER = 'wf-client';
 	public const FUNCTIONCALL_CACHE_KEY_PREFIX = 'WikiLambdaFunctionCall';
+	/** Change this to stop reading all earlier entries. */
+	public const FUNCTIONCALL_CACHE_KEY_VERSION = 'v2';
 
 	/**
 	 * The specialised request interface to control all network access to the function-orchestrator.
@@ -123,6 +125,8 @@ class OrchestratorRequest {
 
 		$requestKey = $this->objectCache->makeKey(
 			self::FUNCTIONCALL_CACHE_KEY_PREFIX,
+			self::FUNCTIONCALL_CACHE_KEY_VERSION,
+			self::getFunctionZidForCacheKey( $cacheableQuery ),
 			ZObjectUtils::makeCacheKeyFromZObject( $cacheableQuery )
 		);
 
@@ -779,5 +783,18 @@ class OrchestratorRequest {
 	 */
 	private static function isWikifunctionsClientRequest( string $origin ): bool {
 		return $origin === self::WF_CLIENT_ORIGIN_HEADER;
+	}
+
+	/**
+	 * Returns the ZID of the called function, so that a cache key is easy to find in the logs.
+	 *
+	 * @param array $query
+	 * @return string The function ZID, or Z0 if the call has no function reference
+	 */
+	private static function getFunctionZidForCacheKey( array $query ): string {
+		$functionZid = ( (array)( $query['zobject'] ?? [] ) )[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] ?? null;
+		return is_string( $functionZid ) && ZObjectUtils::isValidZObjectReference( $functionZid ) ?
+			$functionZid :
+			ZTypeRegistry::Z_NULL_REFERENCE;
 	}
 }

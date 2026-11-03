@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\ActionAPI;
 
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
@@ -239,7 +238,7 @@ class ApiAbstractWikiRunFragment extends ApiBase {
 		}
 
 		// The same key as the store's, without reading the store
-		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+		$fragmentKey = ZObjectUtils::makeCacheKeyFromZObject( $fragment, false );
 
 		return $this->abstractWikiRequest->fetchRenderedAWFragment(
 			$fragment,

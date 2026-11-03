@@ -10,12 +10,12 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Api\ApiUsageException;
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragment;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Permissions\SimpleAuthority;
 use MediaWiki\Tests\Api\ApiTestCase;
@@ -630,7 +630,7 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 				self::FRESH_QID,
 				self::FRESH_LANGUAGE,
 				'20230726040500',
-				AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment ),
+				ZObjectUtils::makeCacheKeyFromZObject( $fragment, false ),
 				true
 			)
 			->willReturn( $rendered );

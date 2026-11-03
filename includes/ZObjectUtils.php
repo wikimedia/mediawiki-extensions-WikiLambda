@@ -918,10 +918,10 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Walk a given input ZObject, and make a cache key constructed of its keys and values, with any
-	 * ZObject referenced being expanded to also include its revision ID.
+	 * Make a cache key for the given input ZObject. By default, the key also changes when any
+	 * ZObject that it references gets a new revision; this needs repo mode.
 	 *
-	 * E.g. { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hey" } => 'Z1K1|Z7#1,Z7K1|Z801#2,Z801K1|Hey'
+	 * The key is a hash, as cache backends change some characters (e.g. spaces) in key parts.
 	 *
 	 * TODO (T338245): Is this cache key too broad? Can we simplify?
 	 *
@@ -930,26 +930,30 @@ class ZObjectUtils {
 	 * function orchestrator.
 	 *
 	 * @param \stdClass|array $query
-	 * @return string response object returned by orchestrator
+	 * @param bool $withRevisionIds Whether the key depends on the revisions of the references
+	 * @return string
 	 */
-	public static function makeCacheKeyFromZObject( $query ): string {
-		$accumulator = '';
+	public static function makeCacheKeyFromZObject( $query, bool $withRevisionIds = true ): string {
+		return hash( 'sha256', json_encode(
+			[ $query, $withRevisionIds ? self::getReferencedRevisionIds( $query ) : [] ],
+			JSON_THROW_ON_ERROR
+		) );
+	}
 
-		foreach ( $query as $key => $value ) {
-			$accumulator .= $key . '|';
+	/**
+	 * @param \stdClass|array $query
+	 * @return array<string,int> The latest revision ID of each referenced ZObject, keyed by ZID
+	 */
+	private static function getReferencedRevisionIds( $query ): array {
+		$revisionIds = [];
+		foreach ( $query as $value ) {
 			if ( is_array( $value ) || is_object( $value ) ) {
-				$accumulator .= self::makeCacheKeyFromZObject( $value );
-			} elseif ( is_scalar( $value ) ) {
-				$accumulator .= $value;
-				// Special-case: If this is a ZObject reference, also append the object's revision ID to cache-bust
-				if ( is_string( $value ) && self::isValidZObjectReference( $value ) ) {
-					$accumulator .= '#' . Title::newFromDBkey( $value )->getLatestRevID();
-				}
+				$revisionIds += self::getReferencedRevisionIds( $value );
+			} elseif ( is_string( $value ) && self::isValidZObjectReference( $value ) ) {
+				$revisionIds[$value] ??= Title::newFromDBkey( $value )->getLatestRevID();
 			}
-			$accumulator .= ',';
 		}
-
-		return $accumulator;
+		return $revisionIds;
 	}
 
 	/**

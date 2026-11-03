@@ -13,11 +13,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\AWStorage;
 
-use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractContentUtils;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheAbstractContentFragmentJob;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\JobQueue\JobQueueGroup;
 use OverflowException;
 use Wikimedia\ObjectCache\BagOStuff;
@@ -75,6 +75,7 @@ class MainStashAWFragmentStore extends AWFragmentStore {
 	): string {
 		return $this->stash->makeGlobalKey(
 			self::ABSTRACT_FRAGMENT_CACHE_KEY_PREFIX,
+			self::ABSTRACT_FRAGMENT_CACHE_KEY_VERSION,
 			$topicQid,
 			$languageZid,
 			$fragmentKey
@@ -220,7 +221,7 @@ class MainStashAWFragmentStore extends AWFragmentStore {
 		string $datetime,
 		bool $revalidate = true
 	): AWFragment {
-		$fragmentKey = AbstractContentUtils::makeCacheKeyForAbstractFragment( $fragment );
+		$fragmentKey = ZObjectUtils::makeCacheKeyFromZObject( $fragment, false );
 
 		// Build AWFragment object with: key, qid, locale and date
 		$awFragment = new AWFragment( $fragmentKey );
