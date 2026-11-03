@@ -5,7 +5,8 @@
  * Fixes four types of issues:
  * 1. Testers/implementations incorrectly referenced by multiple functions
  * 2. Duplicate testers/implementations within a function's Z8K3/Z8K4 lists
- * 3. References to non-existent (deleted) testers/implementations
+ * 3. References to non-existent (deleted) testers/implementations. It keeps and reports
+ *    the ones that exist but are not valid.
  * 4. References to objects of the wrong type, e.g. a function in Z8K3. This occurs when
  *    a connected tester is deleted, and a new object of a different type reuses its ZID.
  *
@@ -23,6 +24,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Maintenance\Maintenance;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 
@@ -735,6 +737,7 @@ class FixFunctionTesterImplementationIssues extends Maintenance {
 			$valid = [];
 			$removed = [];
 			$wrongType = [];
+			$notValid = [];
 
 			foreach ( $original as $item ) {
 				if ( !( $item instanceof ZReference && $item->isValid() ) ) {
@@ -745,13 +748,25 @@ class FixFunctionTesterImplementationIssues extends Maintenance {
 
 				$zid = $item->getZValue();
 				$itemType = $this->getZObjectType( $zObjectStore, $zid );
-				if ( $itemType === null ) {
+				if ( $itemType === null && $this->pageExists( $zid ) ) {
+					// The object exists, but its content is not valid now, e.g. after a
+					// change to a built-in type. Keep it, so that someone can fix it.
+					$notValid[] = $zid;
+					$valid[] = $item;
+				} elseif ( $itemType === null ) {
 					$removed[] = $zid;
 				} elseif ( $itemType !== $config['type'] ) {
 					$wrongType[] = "$zid ($itemType)";
 				} else {
 					$valid[] = $item;
 				}
+			}
+
+			if ( count( $notValid ) > 0 ) {
+				$this->output(
+					"$functionZid: Kept {$config['name']}(s) that exist but are not valid: " .
+					implode( ", ", $notValid ) . "\n"
+				);
 			}
 
 			if ( count( $removed ) > 0 ) {
@@ -814,6 +829,15 @@ class FixFunctionTesterImplementationIssues extends Maintenance {
 			return null;
 		}
 		return $content->getZType();
+	}
+
+	/**
+	 * @param string $zid
+	 * @return bool Whether the page of the ZObject exists, also if its content is not valid
+	 */
+	private function pageExists( string $zid ): bool {
+		$title = Title::newFromText( $zid, NS_MAIN );
+		return $title !== null && $title->exists();
 	}
 
 	/**
