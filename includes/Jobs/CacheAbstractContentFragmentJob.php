@@ -9,14 +9,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
-use MediaWiki\Config\Config;
 use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\HttpStatus;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 use Wikimedia\Timestamp\TimestampFormat as TS;
@@ -35,7 +33,6 @@ use Wikimedia\Timestamp\TimestampFormat as TS;
  */
 class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob {
 
-	private Config $config;
 	private LoggerInterface $logger;
 	private AbstractWikiRequest $abstractWikiRequest;
 
@@ -46,7 +43,6 @@ class CacheAbstractContentFragmentJob extends Job implements GenericParameterJob
 		parent::__construct( 'cacheAbstractContentFragment', $params );
 
 		// Non-injected items
-		$this->config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->logger = LoggerFactory::getInstance( 'WikiLambdaAbstract' );
 
 		$this->abstractWikiRequest = WikiLambdaServices::getAbstractWikiRequest();
