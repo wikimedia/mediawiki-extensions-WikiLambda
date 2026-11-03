@@ -33,7 +33,6 @@ use MediaWiki\Skin\Skin;
 use MediaWiki\Skin\SkinTemplate;
 use MediaWiki\Specials\SpecialRecentChanges;
 use MediaWiki\Title\Title;
-use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\User;
 
 /**
@@ -64,9 +63,6 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 			[ 'WikiLambdaEnableAbstractMode', false ],
 		] );
 
-		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
-		$mockUserOptionsLookup->method( 'getOption' )->willReturn( 'de' );
-
 		// The handler asks this service if the page language is supported, and falls back to 'en' if
 		// it is not. Delegate to the real service, so that the tests use real language support.
 		$realLanguageNameUtils = $this->getServiceContainer()->getLanguageNameUtils();
@@ -82,7 +78,6 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->pageRenderingHandler = new PageRenderingHandler(
 			$mockHashConfigRepoMode,
 			$this->getServiceContainer()->getContentLanguage(),
-			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
@@ -101,7 +96,6 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->pageRenderingHandlerRepoModeOff = new PageRenderingHandler(
 			$mockHashConfigNotRepoMode,
 			$this->getServiceContainer()->getContentLanguage(),
-			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),
@@ -120,7 +114,6 @@ class PageRenderingHandlerTest extends WikiLambdaRepoModeIntegrationTestCase {
 		$this->pageRenderingHandlerAbstractMode = new PageRenderingHandler(
 			$mockHashConfigAbstractMode,
 			$this->getServiceContainer()->getContentLanguage(),
-			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),

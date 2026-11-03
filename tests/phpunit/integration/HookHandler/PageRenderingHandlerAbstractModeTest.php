@@ -13,7 +13,6 @@ use MediaWiki\Language\LanguageFactory;
 use MediaWiki\Language\LanguageNameUtils;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
-use MediaWiki\User\Options\UserOptionsLookup;
 use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
@@ -34,9 +33,6 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaAbstractModeIntegra
 			[ 'WikiLambdaEnableAbstractMode', true ],
 			[ 'WikiLambdaAbstractNamespaces', [ 2300 => [ 'Abstract_Wikipedia', 'Q50081413' ] ] ],
 		] );
-
-		$mockUserOptionsLookup = $this->createMock( UserOptionsLookup::class );
-		$mockUserOptionsLookup->method( 'getOption' )->willReturn( 'de' );
 
 		// The handler asks this service if the page language is supported, and falls back to 'en' if
 		// it is not. Delegate to the real service, so that the tests use real language support.
@@ -59,7 +55,6 @@ class PageRenderingHandlerAbstractModeTest extends WikiLambdaAbstractModeIntegra
 		$this->pageRenderingHandlerAbstractMode = new PageRenderingHandler(
 			$mockHashConfigAbstractMode,
 			$this->getServiceContainer()->getContentLanguage(),
-			$mockUserOptionsLookup,
 			$mockLanguageNameUtils,
 			$mockLanguageFactory,
 			$this->createNoOpMock( ZObjectStore::class ),

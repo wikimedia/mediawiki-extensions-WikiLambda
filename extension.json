@@ -218,7 +218,6 @@
 			"services": [
 				"MainConfig",
 				"ContentLanguage",
-				"UserOptionsLookup",
 				"LanguageNameUtils",
 				"LanguageFactory",
 				"WikiLambdaZObjectStore",

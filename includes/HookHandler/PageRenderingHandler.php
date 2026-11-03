@@ -36,7 +36,6 @@ use MediaWiki\Parser\PPFrame;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\Skin\Skin;
 use MediaWiki\Title\Title;
-use MediaWiki\User\Options\UserOptionsLookup;
 use Wikimedia\HtmlArmor\HtmlArmor;
 
 class PageRenderingHandler implements
@@ -53,7 +52,6 @@ class PageRenderingHandler implements
 	public function __construct(
 		private readonly Config $config,
 		private readonly Language $contentLanguage,
-		private readonly UserOptionsLookup $userOptionsLookup,
 		private readonly LanguageNameUtils $languageNameUtils,
 		private readonly LanguageFactory $languageFactory,
 		private readonly ZObjectStore $zObjectStore,
