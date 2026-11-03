@@ -44,7 +44,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	private int $functionRevision;
 
 	private array $connectedImplementations = [];
-	private array $connectedTests = [];
 	private array $memoizedObjectData = [];
 
 	public function __construct(
@@ -167,7 +166,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// Set globally function object, connected implementations and connected tests
 		$this->function = $functionObject;
 		$this->connectedImplementations = $functionObject->getImplementationZids();
-		$this->connectedTests = $functionObject->getTesterZids();
 
 		// 1.c. If no specific implementation Zids are passed in the request, test all of them (connected ones)
 		if ( !count( $requestedImps ) ) {
