@@ -453,7 +453,7 @@
 	"wikilambda-special-functionsbytests-form-status-pending": "연결 대기 중",
 	"wikilambda-special-functionsbytests-row-connected": "$1개 연결됨",
 	"wikilambda-special-functionsbytests-row-failing": "{{PLURAL:$1|$1개 실패}}",
-	"wikilambda-special-functionsbytests-row-tests": "{{PLURAL:$1|$1 테스트}}",
+	"wikilambda-special-functionsbytests-row-tests": "{{PLURAL:$1|$1개 테스트}}",
 	"wikilambda-special-functionsbytests-summary": "이 문서는 테스트 품질 및 상태별로 모든 함수를 나열합니다. 아래 양식을 사용하면 각 함수의 테스트 연결 및 결과 상태를 일치시켜 복잡한 검색을 수행할 수 있습니다. 목록의 함수는 사용자의 언어(또는 가장 유사한 폴밸 언어)로 된 이름을 기준으로 알파벳순으로 정렬됩니다.\n\n다음은 일반적인 검색 예시와 검색 방법입니다(언급되지 않은 필드는 비워 두어야 합니다).\n* 연결된 테스트가 2개 미만인 모든 함수 찾기: <code>Upper limit: 2</code>, <code>Test connection status: Connected</code>\n* 통과했지만 연결되지 않은 테스트가 있는 모든 함수 찾기: <code>Lower limit: 1</code>, <code>Test connection status: Pending</code>, <code>Test results: Passing</code>\n* 실패한 테스트가 있는 모든 함수 찾기: <code>Lower limit: 1</code>, <code>Test results: Failing</code>",
 	"wikilambda-special-list-all-pages": "모든 목록 문서",
 	"wikilambda-special-list-empty": "이 유형에 대한 영구적인 객체를 찾을 수 없습니다.",
