@@ -59,6 +59,14 @@
 				data-testid="function-evaluator-loader">
 				{{ i18n( 'wikilambda-loading' ).text() }}
 			</div>
+			<cdx-message
+				v-else-if="hasLoadError"
+				type="error"
+				class="ext-wikilambda-app-function-evaluator-widget__message"
+				data-testid="function-evaluator-load-error"
+			>
+				{{ i18n( 'wikilambda-function-evaluator-load-error' ).text() }}
+			</cdx-message>
 			<div v-else-if="!isSelectedFunctionFetched && !showFunctionSelector">
 				<p v-if="forImplementation">
 					{{ i18n( 'wikilambda-function-evaluator-no-function-selected-for-implementation' ).text() }}
@@ -195,6 +203,7 @@ module.exports = exports = defineComponent( {
 		const running = ref( false );
 		const hasResult = ref( false );
 		const isLoading = ref( true );
+		const hasLoadError = ref( false );
 		// Copy of the function call at the time the user runs it
 		const submittedFunctionCall = ref( null );
 
@@ -354,9 +363,19 @@ module.exports = exports = defineComponent( {
 		}
 
 		/**
+		 * Stops the loader and shows an error, as the function data did not load
+		 */
+		function showLoadError() {
+			isLoading.value = false;
+			hasLoadError.value = true;
+		}
+
+		/**
 		 * Loads a shared function call from the prop
 		 */
 		function loadSharedFunctionCall() {
+			hasLoadError.value = false;
+
 			// Get the function ZID from the shared function call
 			const functionZid = getZFunctionCallFunctionId( props.sharedFunctionCall );
 
@@ -380,7 +399,7 @@ module.exports = exports = defineComponent( {
 				if ( canRunFunction.value ) {
 					waitAndCallFunction();
 				}
-			} );
+			} ).catch( showLoadError );
 		}
 
 		/**
@@ -393,6 +412,7 @@ module.exports = exports = defineComponent( {
 		 */
 		function initialize( functionZid ) {
 			isLoading.value = true;
+			hasLoadError.value = false;
 
 			// Clear the function call response
 			clearResult();
@@ -423,7 +443,7 @@ module.exports = exports = defineComponent( {
 						functionZid
 					} );
 					isLoading.value = false;
-				} );
+				} ).catch( showLoadError );
 			} else {
 				isLoading.value = false;
 			}
@@ -549,6 +569,7 @@ module.exports = exports = defineComponent( {
 			functionKeyPath,
 			getInputKeyPath,
 			hasImplementations,
+			hasLoadError,
 			hasResult,
 			inputKeys,
 			isLoading,

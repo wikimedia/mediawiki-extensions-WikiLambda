@@ -580,4 +580,55 @@ describe( 'FunctionEvaluator', () => {
 			expect( message.text() ).toContain( 'Select a function to try this implementation.' );
 		} );
 	} );
+
+	describe( 'when the function data does not load', () => {
+		const sharedFunctionCall = {
+			Z1K1: 'Z7',
+			Z7K1: 'Z10000',
+			Z10000K1: 'pangolin'
+		};
+
+		beforeEach( () => {
+			store.fetchZids.mockRejectedValue( new Error( 'Network error' ) );
+		} );
+
+		it( 'shows an error instead of the loader on a function page', async () => {
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
+
+			await waitFor( () => {
+				expect( wrapper.find( '[data-testid="function-evaluator-load-error"]' ).exists() ).toBe( true );
+			} );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			expect( store.setFunctionCallArguments ).not.toHaveBeenCalled();
+		} );
+
+		it( 'shows an error and does not run a shared function call', async () => {
+			const wrapper = renderFunctionEvaluator( {
+				functionZid: 'Z10000',
+				contentType: 'Z8',
+				sharedFunctionCall
+			} );
+
+			await waitFor( () => {
+				expect( wrapper.find( '[data-testid="function-evaluator-load-error"]' ).exists() ).toBe( true );
+			} );
+			expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			expect( store.callZFunction ).not.toHaveBeenCalled();
+		} );
+
+		it( 'removes the error when a new function loads', async () => {
+			const wrapper = renderFunctionEvaluator( { functionZid: 'Z10000', contentType: 'Z8' } );
+			await waitFor( () => {
+				expect( wrapper.find( '[data-testid="function-evaluator-load-error"]' ).exists() ).toBe( true );
+			} );
+
+			store.fetchZids.mockResolvedValue();
+			await wrapper.setProps( { functionZid: 'Z10001' } );
+
+			await waitFor( () => {
+				expect( wrapper.find( '.ext-wikilambda-app-function-evaluator-widget__loader' ).exists() ).toBe( false );
+			} );
+			expect( wrapper.find( '[data-testid="function-evaluator-load-error"]' ).exists() ).toBe( false );
+		} );
+	} );
 } );

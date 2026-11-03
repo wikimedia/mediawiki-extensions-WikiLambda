@@ -1116,6 +1116,7 @@
 				"wikilambda-function-evaluator-title-function",
 				"wikilambda-function-evaluator-title-implementation",
 				"wikilambda-function-evaluator-enter-inputs",
+				"wikilambda-function-evaluator-load-error",
 				"wikilambda-function-evaluator-running",
 				"wikilambda-function-evaluator-result",
 				"wikilambda-function-evaluator-result-details",
