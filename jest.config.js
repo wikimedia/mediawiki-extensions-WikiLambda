@@ -6,6 +6,13 @@
  */
 'use strict';
 
+// ESM-only dependencies that need to be transpiled to CommonJS for Jest.
+const esmOnlyModules = [
+	'pinia',
+	'@pinia/testing',
+	'nostics'
+].join( '|' );
+
 module.exports = {
 	// Vue-jest specific global options (described here: https://github.com/vuejs/vue-jest#global-jest-options)
 	globals: {
@@ -19,6 +26,7 @@ module.exports = {
 	moduleFileExtensions: [
 		'js',
 		'json',
+		'mjs',
 		'vue'
 	],
 
@@ -34,8 +42,17 @@ module.exports = {
 	},
 
 	transform: {
-		'.*\\.(vue)$': '<rootDir>/node_modules/@vue/vue3-jest'
+		'.*\\.(vue)$': '<rootDir>/node_modules/@vue/vue3-jest',
+		[ `/node_modules/(${ esmOnlyModules })/.+\\.m?js$` ]: [
+			'babel-jest',
+			{ presets: [ [ '@babel/preset-env', { targets: { node: 'current' } } ] ] }
+		]
 	},
+
+	transformIgnorePatterns: [
+		`/node_modules/(?!(${ esmOnlyModules })/)`,
+		'\\.pnp\\.[^\\/]+$'
+	],
 
 	testEnvironment: 'jsdom',
 
