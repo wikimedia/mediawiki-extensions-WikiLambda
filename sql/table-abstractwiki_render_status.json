@@ -1,0 +1,52 @@
+[
+	{
+		"name": "abstractwiki_render_status",
+		"comment": "Render status of each stored Abstract Wikipedia article section, per language. One row per (topic, language, section), holding the current state only. Lives on the shared x1 cluster via the 'virtual-abstractwiki' virtual domain.",
+		"columns": [
+			{
+				"name": "awr_topic",
+				"comment": "The Wikidata item ID of the abstract article (e.g. 'Q90')",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "awr_section",
+				"comment": "The Wikidata item ID of the section (e.g. 'Q8776414')",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "awr_lang",
+				"comment": "The BCP-47 code of the language the section was rendered in",
+				"type": "binary",
+				"options": { "length": 35, "notnull": true }
+			},
+			{
+				"name": "awr_fragments",
+				"comment": "Total number of fragments in the section",
+				"type": "smallint",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "awr_pending",
+				"comment": "Number of fragments shown as pending",
+				"type": "smallint",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "awr_failed",
+				"comment": "Number of fragments shown as an error",
+				"type": "smallint",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "awr_rendered",
+				"comment": "When the stored section was rendered",
+				"type": "mwtimestamp",
+				"options": { "notnull": true }
+			}
+		],
+		"indexes": [],
+		"pk": [ "awr_topic", "awr_lang", "awr_section" ]
+	}
+]

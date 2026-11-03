@@ -623,6 +623,18 @@ class RepoHooks implements
 			] );
 		}
 
+		// Insert the shared Abstract Wikipedia render status table, if needed.
+		// Only the abstract wiki writes it, from the article store update script.
+		if ( $config->has( 'WikiLambdaEnableAbstractMode' ) && $config->get( 'WikiLambdaEnableAbstractMode' ) ) {
+			$updater->addExtensionUpdateOnVirtualDomain( [
+				'virtual-abstractwiki',
+				'addTable',
+				'abstractwiki_render_status',
+				"$dir/$type/table-abstractwiki_render_status.sql",
+				true
+			] );
+		}
+
 		// Insert the tables for repo-mode, if needed (Wikifunctions.org and development machines only)
 		if ( $config->has( 'WikiLambdaEnableRepoMode' ) && $config->get( 'WikiLambdaEnableRepoMode' ) ) {
 			$repoTables = [
