@@ -19,22 +19,15 @@ class AuthorizationStatus {
 	private $isValid = true;
 
 	/**
-	 * @var string
-	 */
-	private $failedRight;
-
-	/**
 	 * @var ZError|null
 	 */
 	private $errors = null;
 
 	/**
-	 * @param string $right
 	 * @param ZError $error
 	 */
-	public function setUnauthorized( $right, $error ): void {
+	public function setUnauthorized( $error ): void {
 		$this->isValid = false;
-		$this->failedRight = $right;
 		$this->errors = $error;
 	}
 

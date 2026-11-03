@@ -60,7 +60,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 			if ( !$authority->isAllowed( $right ) ) {
 				$flags = $creating ? EDIT_NEW : EDIT_UPDATE;
 				$error = ZErrorFactory::createAuthorizationZError( $right, $flags );
-				$status->setUnauthorized( $right, $error );
+				$status->setUnauthorized( $error );
 				break;
 			}
 		}
@@ -84,9 +84,8 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 				$block->appliesToPage( $title->getArticleId() )
 			) {
 				$status->setUnauthorized(
-					// Fall-back to the simple 'edit' right, as that's always needed regardless
-					$requiredRights[0] ?? 'edit',
 					ZErrorFactory::createAuthorizationZError(
+						// Fall-back to the simple 'edit' right, as that's always needed regardless
 						$requiredRights[0] ?? 'edit',
 						$creating ? EDIT_NEW : EDIT_UPDATE
 					)
