@@ -16,6 +16,27 @@ describe( 'errorUtils', () => {
 	const nestedErrorObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/nestedErrorObject.json' ) ) ),
 		nestedErrorObjectLocalKeys = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/nestedErrorObject_LocalKeys.json' ) ) );
 
+	describe( 'isContentFragmentFailure', () => {
+		it.each( [ 400, 404, 409, 422, '400' ] )( 'returns true for a failed fragment with HTTP %s', ( status ) => {
+			expect( errorUtils.isContentFragmentFailure( {
+				success: false,
+				value: { msg: 'apierror-abstractwiki_run_fragment-returned-zerror', httpStatusCode: status }
+			} ) ).toBe( true );
+		} );
+
+		it.each( [ 401, 403, 408, 429, 500, 503 ] )( 'returns false for a failed fragment with HTTP %s', ( status ) => {
+			expect( errorUtils.isContentFragmentFailure( {
+				success: false,
+				value: { msg: 'apierror-abstractwiki_run_fragment-forbidden', httpStatusCode: status }
+			} ) ).toBe( false );
+		} );
+
+		it( 'returns false for a successful fragment, or no value', () => {
+			expect( errorUtils.isContentFragmentFailure( { success: true, value: '<b>x</b>' } ) ).toBe( false );
+			expect( errorUtils.isContentFragmentFailure( undefined ) ).toBe( false );
+		} );
+	} );
+
 	describe( 'isUnavailableFragmentFailure', () => {
 		it( 'returns true for a failed fragment with HTTP 503', () => {
 			expect( errorUtils.isUnavailableFragmentFailure( {

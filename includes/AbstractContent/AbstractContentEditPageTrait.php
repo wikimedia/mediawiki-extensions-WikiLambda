@@ -182,7 +182,10 @@ trait AbstractContentEditPageTrait {
 			'title' => $title->getText(),
 			'undo' => $undoRequest,
 			'zlang' => $userLangCode,
-			'viewmode' => false
+			'viewmode' => false,
+			// Whether editors may ask for fragments to be rendered again with cache-busting;
+			// the provenance popover only offers it when this is true (T441584)
+			'freshResultEnabled' => (bool)$context->getConfig()->get( 'WikiLambdaAbstractEnableFreshResult' )
 		];
 		$output->addJsConfigVars( 'wgWikiLambda', $configVars );
 

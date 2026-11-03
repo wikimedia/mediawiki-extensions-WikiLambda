@@ -31,17 +31,38 @@
 				:item="item"
 			></wl-function-metadata-item>
 		</ul>
-		<a
-			:href="i18n( 'wikilambda-functioncall-metadata-cache-help-link' ).text()"
-			target="_blank"
-			class="ext-wikilambda-app-abstract-preview-provenance__link"
+		<cdx-message
+			v-if="freshRequest.error"
+			type="error"
+			:inline="true"
+			class="ext-wikilambda-app-abstract-preview-provenance__error"
 		>
-			{{ i18n( 'wikilambda-functioncall-metadata-cache-help-label' ).text() }}
-			<cdx-icon
-				:icon="iconLinkExternal"
-				class="ext-wikilambda-app-abstract-preview-provenance__link-icon"
-			></cdx-icon>
-		</a>
+			{{ freshRequest.error }}
+		</cdx-message>
+		<!-- As the action row of the Wikifunctions UI's "Provenance" section -->
+		<div class="ext-wikilambda-app-abstract-preview-provenance__action">
+			<cdx-button
+				v-if="showFreshButton"
+				class="ext-wikilambda-app-abstract-preview-provenance__fresh"
+				action="progressive"
+				weight="quiet"
+				:disabled="freshRequest.isLoading"
+				@click="$emit( 'request-fresh' )"
+			>
+				{{ i18n( 'wikilambda-functioncall-metadata-cache-freshen-button' ).text() }}
+			</cdx-button>
+			<a
+				:href="i18n( 'wikilambda-functioncall-metadata-cache-help-link' ).text()"
+				target="_blank"
+				class="ext-wikilambda-app-abstract-preview-provenance__link"
+			>
+				{{ i18n( 'wikilambda-functioncall-metadata-cache-help-label' ).text() }}
+				<cdx-icon
+					:icon="iconLinkExternal"
+					class="ext-wikilambda-app-abstract-preview-provenance__link-icon"
+				></cdx-icon>
+			</a>
+		</div>
 	</cdx-popover>
 </template>
 
@@ -56,7 +77,7 @@ const icons = require( '../../../lib/icons.json' );
 // Widget components
 const FunctionMetadataItem = require( '../widgets/function-evaluator/FunctionMetadataItem.vue' );
 // Codex components
-const { CdxIcon, CdxPopover } = require( '../../../codex.js' );
+const { CdxButton, CdxIcon, CdxMessage, CdxPopover } = require( '../../../codex.js' );
 
 // The freshness metadata keys stored with a rendered fragment, in display order
 const PROVENANCE_KEYS = [
@@ -85,7 +106,9 @@ module.exports = exports = defineComponent( {
 	name: 'wl-abstract-preview-provenance',
 	components: {
 		'wl-function-metadata-item': FunctionMetadataItem,
+		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
+		'cdx-message': CdxMessage,
 		'cdx-popover': CdxPopover
 	},
 	props: {
@@ -110,9 +133,17 @@ module.exports = exports = defineComponent( {
 		fragmentPreview: {
 			type: Object,
 			required: true
+		},
+		/**
+		 * The state of a request to render the fragment again with the latest data:
+		 * whether it is running, and the message of its last failure (T441584)
+		 */
+		freshRequest: {
+			type: Object,
+			default: () => ( { isLoading: false, error: null } )
 		}
 	},
-	emits: [ 'update:open' ],
+	emits: [ 'update:open', 'request-fresh' ],
 	setup( props ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
@@ -146,6 +177,24 @@ module.exports = exports = defineComponent( {
 				return i18n( 'wikilambda-functioncall-metadata-fresh-cached-entities' ).text();
 			}
 			return i18n( 'wikilambda-functioncall-metadata-cached' ).text();
+		} );
+
+		/**
+		 * Whether to offer "Run with latest data" (T441584): when the wiki allows it,
+		 * the user has the right, and the render is not completely fresh (because it
+		 * came from the fragment store, or it used the function-call cache or cached
+		 * Wikidata entities). A fragment with no render to describe (pending, missing,
+		 * or a failure before Wikifunctions answered) does not offer it: the preview's
+		 * own retry is for those.
+		 */
+		const showFreshButton = computed( () => {
+			if ( !store.getWikilambdaConfig.freshResultEnabled ||
+				!store.userHasRight( 'wikilambda-abstract-request-fresh-result' )
+			) {
+				return false;
+			}
+			return !!props.fragmentPreview.fromFragmentStore ||
+				( hasMetadata.value && !( 'functionCallFreshResult' in metadata.value ) );
 		} );
 
 		// The same transforms as the Wikifunctions UI, by the names in metadataKeys
@@ -199,6 +248,7 @@ module.exports = exports = defineComponent( {
 			iconHistory,
 			iconLinkExternal,
 			items,
+			showFreshButton,
 			summary
 		};
 	}
@@ -209,6 +259,10 @@ module.exports = exports = defineComponent( {
 @import '../../ext.wikilambda.app.variables.less';
 
 .ext-wikilambda-app-abstract-preview-provenance {
+	// Wide enough for the provenance rows without wrapping every value
+	width: 20rem;
+	max-width: calc( 100vw - 2rem );
+
 	.ext-wikilambda-app-abstract-preview-provenance__summary {
 		margin: 0 0 @spacing-50;
 	}
@@ -217,6 +271,18 @@ module.exports = exports = defineComponent( {
 		margin: 0 0 @spacing-50;
 		padding: 0;
 		list-style-position: inside;
+	}
+
+	.ext-wikilambda-app-abstract-preview-provenance__error {
+		margin: 0 0 @spacing-50;
+	}
+
+	// Stacked, as the popover is too narrow for the button and link side by side
+	.ext-wikilambda-app-abstract-preview-provenance__action {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: @spacing-50;
 	}
 
 	.ext-wikilambda-app-abstract-preview-provenance__link {

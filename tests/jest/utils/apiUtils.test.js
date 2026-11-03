@@ -8,6 +8,7 @@ describe( 'apiUtils', () => {
 	let apiGetMock;
 	let apiPostMock;
 	let apiPostWithEditTokenMock;
+	let apiGetTokenMock;
 
 	beforeEach( () => {
 		foreignApiGetMock = jest.fn();
@@ -18,10 +19,12 @@ describe( 'apiUtils', () => {
 		apiGetMock = jest.fn();
 		apiPostMock = jest.fn();
 		apiPostWithEditTokenMock = jest.fn();
+		apiGetTokenMock = jest.fn();
 		mw.Api = jest.fn( () => ( {
 			get: apiGetMock,
 			post: apiPostMock,
-			postWithEditToken: apiPostWithEditTokenMock
+			postWithEditToken: apiPostWithEditTokenMock,
+			getToken: apiGetTokenMock
 		} ) );
 	} );
 
@@ -424,6 +427,56 @@ describe( 'apiUtils', () => {
 			apiGetMock.mockRejectedValue( 'internal_api_error' );
 
 			await expect( apiUtils.fetchFunctionUsage( { zid: 'Z801' } ) )
+				.rejects.toBeInstanceOf( ApiError );
+		} );
+	} );
+
+	describe( 'runAbstractWikiFragment', () => {
+		const payload = {
+			qid: 'Q42',
+			language: 'Z1002',
+			fragment: { Z1K1: 'Z7', Z7K1: 'Z444' }
+		};
+
+		it( 'renders a fragment with a GET', async () => {
+			apiGetMock.mockResolvedValue( { abstractwiki_run_fragment: { success: true, value: '<b>x</b>' } } );
+
+			await expect( apiUtils.runAbstractWikiFragment( payload ) )
+				.resolves.toEqual( { success: true, value: '<b>x</b>' } );
+
+			expect( apiGetMock ).toHaveBeenCalledWith( {
+				action: 'abstractwiki_run_fragment',
+				format: 'json',
+				formatversion: '2',
+				abstractwiki_run_fragment_qid: 'Q42',
+				abstractwiki_run_fragment_language: 'Z1002',
+				abstractwiki_run_fragment_fragment: JSON.stringify( { Z1K1: 'Z7', Z7K1: 'Z444' } )
+			}, { signal: undefined } );
+			expect( apiPostMock ).not.toHaveBeenCalled();
+		} );
+
+		it( 'asks for a fresh render with a POST and a prefixed CSRF token (T441584)', async () => {
+			apiGetTokenMock.mockResolvedValue( 'csrf-token+\\' );
+			apiPostMock.mockResolvedValue( { abstractwiki_run_fragment: { success: true, value: '<b>new</b>' } } );
+
+			await expect( apiUtils.runAbstractWikiFragment( Object.assign( { fresh: true }, payload ) ) )
+				.resolves.toEqual( { success: true, value: '<b>new</b>' } );
+
+			expect( apiGetTokenMock ).toHaveBeenCalledWith( 'csrf' );
+			expect( apiPostMock ).toHaveBeenCalledWith( expect.objectContaining( {
+				action: 'abstractwiki_run_fragment',
+				abstractwiki_run_fragment_qid: 'Q42',
+				abstractwiki_run_fragment_fresh: true,
+				abstractwiki_run_fragment_token: 'csrf-token+\\'
+			} ), { signal: undefined } );
+			expect( apiGetMock ).not.toHaveBeenCalled();
+		} );
+
+		it( 'rejects with ApiError when a fresh render request fails', async () => {
+			apiGetTokenMock.mockResolvedValue( 'csrf-token+\\' );
+			apiPostMock.mockRejectedValue( 'ratelimited' );
+
+			await expect( apiUtils.runAbstractWikiFragment( Object.assign( { fresh: true }, payload ) ) )
 				.rejects.toBeInstanceOf( ApiError );
 		} );
 	} );

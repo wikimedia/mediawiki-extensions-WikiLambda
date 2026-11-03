@@ -458,6 +458,18 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'getFreshRequest', () => {
+			it( 'returns a request that is not running and has no error, by default', () => {
+				expect( store.getFreshRequest( 'suchgood#', 'Z1002' ) ).toEqual( { isLoading: false, error: null } );
+			} );
+
+			it( 'returns the state of the request for a fragment and language', () => {
+				store.freshRequests = { 'suchgood#:Z1002': { isLoading: true, error: null } };
+				expect( store.getFreshRequest( 'suchgood#', 'Z1002' ) ).toEqual( { isLoading: true, error: null } );
+				expect( store.getFreshRequest( 'suchgood#', 'Z1003' ) ).toEqual( { isLoading: false, error: null } );
+			} );
+		} );
+
 		describe( 'getSuggestedHtmlFunctions', () => {
 			it( 'returns empty list if nothing set', () => {
 				expect( store.getSuggestedHtmlFunctions ).toEqual( [] );
@@ -1875,6 +1887,115 @@ describe( 'abstractWiki Pinia store', () => {
 				job();
 
 				expect( store.requestFragmentPreview ).toHaveBeenCalledWith( payload, job );
+			} );
+		} );
+
+		describe( 'requestFreshFragmentPreview', () => {
+			let postMock;
+			let getTokenMock;
+
+			const fragmentKey = `suchgood#:${ mockLang }`;
+			const payload = {
+				fragmentHash: 'suchgood#',
+				qid: mockQid,
+				language: mockLang,
+				fragment: fragmentsOf( mockAbstractContentHybrid )[ 1 ]
+			};
+
+			/**
+			 * @param {Object} result value of abstractwiki_run_fragment
+			 */
+			function respondWith( result ) {
+				postMock.mockResolvedValue( { abstractwiki_run_fragment: result } );
+			}
+
+			beforeEach( () => {
+				store.freshRequests = {};
+				store.processFragmentResponse = jest.fn();
+
+				postMock = jest.fn();
+				getTokenMock = jest.fn().mockResolvedValue( 'csrf-token' );
+				mw.Api = jest.fn( () => ( {
+					post: postMock,
+					getToken: getTokenMock
+				} ) );
+			} );
+
+			it( 'asks for a fresh render, and shows the new render', async () => {
+				const result = { success: true, value: 'fresh render', metadata: { functionCallFreshResult: 'now' } };
+				respondWith( result );
+
+				const request = store.requestFreshFragmentPreview( payload );
+				// The current render stays shown while the request runs
+				expect( store.freshRequests[ fragmentKey ] ).toEqual( { isLoading: true, error: null } );
+				await request;
+
+				expect( postMock ).toHaveBeenCalledWith( expect.objectContaining( {
+					action: 'abstractwiki_run_fragment',
+					abstractwiki_run_fragment_qid: mockQid,
+					abstractwiki_run_fragment_language: mockLang,
+					abstractwiki_run_fragment_fresh: true,
+					abstractwiki_run_fragment_token: 'csrf-token'
+				} ), { signal: undefined } );
+				expect( store.processFragmentResponse ).toHaveBeenCalledWith( fragmentKey, result );
+				expect( store.freshRequests[ fragmentKey ] ).toEqual( { isLoading: false, error: null } );
+			} );
+
+			it( 'shows a failure caused by the content in place of the render, as the server stores it', async () => {
+				const result = {
+					success: false,
+					value: { msg: 'apierror-abstractwiki_run_fragment-returned-zerror', httpStatusCode: 400, params: [ 'Z507' ] }
+				};
+				respondWith( result );
+
+				await store.requestFreshFragmentPreview( payload );
+
+				expect( store.processFragmentResponse ).toHaveBeenCalledWith( fragmentKey, result );
+				expect( store.freshRequests[ fragmentKey ] ).toEqual( { isLoading: false, error: null } );
+			} );
+
+			it( 'keeps the render after any other failure, and keeps its message', async () => {
+				// e.g. Wikifunctions refused the fresh result
+				respondWith( {
+					success: false,
+					value: { msg: 'apierror-abstractwiki_run_fragment-forbidden', httpStatusCode: 403, params: [] }
+				} );
+
+				await store.requestFreshFragmentPreview( payload );
+
+				expect( store.processFragmentResponse ).not.toHaveBeenCalled();
+				expect( store.freshRequests[ fragmentKey ].isLoading ).toBe( false );
+				expect( store.freshRequests[ fragmentKey ].error ).toBe(
+					'You do not have the necessary permissions to render this fragment.'
+				);
+			} );
+
+			it( 'keeps the render when the request fails, e.g. at the rate limit, and keeps its message', async () => {
+				postMock.mockRejectedValue( 'ratelimited' );
+
+				await store.requestFreshFragmentPreview( payload );
+
+				expect( store.processFragmentResponse ).not.toHaveBeenCalled();
+				expect( store.freshRequests[ fragmentKey ].isLoading ).toBe( false );
+				expect( store.freshRequests[ fragmentKey ].error ).toBeTruthy();
+			} );
+
+			it( 'sends one request at a time for a fragment', async () => {
+				store.freshRequests[ fragmentKey ] = { isLoading: true, error: null };
+
+				await store.requestFreshFragmentPreview( payload );
+
+				expect( postMock ).not.toHaveBeenCalled();
+			} );
+		} );
+
+		describe( 'clearFreshRequestError', () => {
+			it( 'forgets the message of a failed request', () => {
+				store.freshRequests = { 'suchgood#:Z1002': { isLoading: false, error: 'Rate limited' } };
+
+				store.clearFreshRequestError( 'suchgood#', 'Z1002' );
+
+				expect( store.freshRequests[ 'suchgood#:Z1002' ] ).toEqual( { isLoading: false, error: null } );
 			} );
 		} );
 

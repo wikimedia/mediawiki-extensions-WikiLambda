@@ -38,6 +38,7 @@
 			:fragment-hash="fragmentHashes[ index ]"
 			@fragment-changed="regenerateHash( index )"
 			@retry="renderFragmentPreview( index )"
+			@request-fresh="requestFreshFragmentPreview( index )"
 		></wl-abstract-preview-fragment>
 	</div>
 </template>
@@ -156,6 +157,21 @@ module.exports = exports = defineComponent( {
 			} );
 		}
 
+		/**
+		 * Renders the given fragment again with the latest data, when the user asks for
+		 * it in its provenance popover (T441584)
+		 *
+		 * @param {number} index
+		 */
+		function requestFreshFragmentPreview( index ) {
+			store.requestFreshFragmentPreview( {
+				qid: store.getAbstractWikiId,
+				fragment: fragmentList.value[ index ],
+				fragmentHash: fragmentHashes.value[ index ],
+				language: store.getPreviewLanguageZid
+			} );
+		}
+
 		watch( () => props.language, () => {
 			renderSectionPreview();
 		} );
@@ -174,7 +190,8 @@ module.exports = exports = defineComponent( {
 			iconRetry,
 			i18n,
 			renderFragmentPreview,
-			renderSectionPreview
+			renderSectionPreview,
+			requestFreshFragmentPreview
 		};
 	}
 } );

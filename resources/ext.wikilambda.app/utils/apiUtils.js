@@ -658,6 +658,8 @@ const apiUtils = {
 	 * @param {Object} payload.fragment
 	 * @param {boolean} [payload.async] When true, the API only returns the stored value
 	 *  (or pending), and a server job renders the fragment
+	 * @param {boolean} [payload.fresh] When true, the API regenerates the fragment with
+	 *  the latest data, bypassing the stored value and the caches (T441584).
 	 * @param {AbortSignal} payload.signal The AbortSignal to cancel the request
 	 * @return {Promise}
 	 */
@@ -677,10 +679,20 @@ const apiUtils = {
 			params.abstractwiki_run_fragment_async = true;
 		}
 
+		// A fresh render is a POST with a CSRF token. We set the token as
+		// abstractwiki_run_fragment_token ourselves, because postWithToken would add
+		// the token parameter without the prefix (as in fetchAbstractWikiSection)
+		const options = { signal: payload.signal };
+		const request = !payload.fresh ?
+			api.get( params, options ) :
+			api.getToken( 'csrf' ).then( ( token ) => {
+				params.abstractwiki_run_fragment_fresh = true;
+				params.abstractwiki_run_fragment_token = token;
+				return api.post( params, options );
+			} );
+
 		return new Promise( ( resolve, reject ) => {
-			api.get( params, {
-				signal: payload.signal
-			} )
+			request
 				.then( ( data ) => resolve( data.abstractwiki_run_fragment ) )
 				.catch( ( ...args ) => reject( ApiError.fromMwApiRejection( ...args ) ) );
 		} );

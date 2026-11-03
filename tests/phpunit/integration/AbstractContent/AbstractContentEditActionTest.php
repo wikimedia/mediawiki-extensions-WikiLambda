@@ -100,6 +100,30 @@ class AbstractContentEditActionTest extends WikiLambdaAbstractModeIntegrationTes
 		$this->assertTrue( $action->doesWrites() );
 	}
 
+	/**
+	 * (T441584) The editor is told whether fresh results are enabled, so that the
+	 * provenance popover offers "Run with latest data" only then.
+	 *
+	 * @dataProvider provideFreshResultEnabled
+	 */
+	public function testShow_passesFreshResultEnabled( bool $enabled ) {
+		$this->overrideConfigValue( 'WikiLambdaAbstractEnableFreshResult', $enabled );
+		$title = Title::newFromText( 'Q99999', self::TEST_ABSTRACT_NS );
+		$action = $this->buildAction( $title );
+
+		$action->show();
+
+		$jsVars = $action->getOutput()->getJsConfigVars();
+		$this->assertSame( $enabled, $jsVars[ 'wgWikiLambda' ][ 'freshResultEnabled' ] );
+	}
+
+	public static function provideFreshResultEnabled(): array {
+		return [
+			'enabled' => [ true ],
+			'disabled' => [ false ],
+		];
+	}
+
 	public function testShow_newPage() {
 		$title = Title::newFromText( 'Q99999', self::TEST_ABSTRACT_NS );
 		$action = $this->buildAction( $title );

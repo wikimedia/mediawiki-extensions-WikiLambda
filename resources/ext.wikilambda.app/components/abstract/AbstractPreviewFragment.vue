@@ -92,7 +92,9 @@
 			:open="isProvenanceOpen"
 			:anchor="rootRef"
 			:fragment-preview="fragmentPreview"
+			:fresh-request="freshRequest"
 			@update:open="onProvenanceOpenUpdate"
+			@request-fresh="$emit( 'request-fresh' )"
 		></wl-abstract-preview-provenance>
 	</div>
 </template>
@@ -139,7 +141,7 @@ module.exports = exports = defineComponent( {
 			default: null
 		}
 	},
-	emits: [ 'retry' ],
+	emits: [ 'retry', 'request-fresh' ],
 	setup( props, { emit } ) {
 		const i18n = inject( 'i18n' );
 		const store = useMainStore();
@@ -358,6 +360,12 @@ module.exports = exports = defineComponent( {
 
 		const isProvenanceOpen = computed( () => store.getProvenanceFragment === props.keyPath );
 
+		// The state of a request to render this fragment again with the latest data (T441584)
+		const freshRequest = computed( () => store.getFreshRequest(
+			props.fragmentHash,
+			store.getPreviewLanguageZid
+		) );
+
 		/**
 		 * Close the provenance popover when Codex asks to, e.g. on a click
 		 * outside it, the Escape key, or its close button.
@@ -367,6 +375,8 @@ module.exports = exports = defineComponent( {
 		function onProvenanceOpenUpdate( open ) {
 			if ( !open ) {
 				store.setProvenanceFragment( undefined );
+				// A failure message is about the moment it happened; do not show it next time
+				store.clearFreshRequestError( props.fragmentHash, store.getPreviewLanguageZid );
 			}
 		}
 
@@ -394,6 +404,7 @@ module.exports = exports = defineComponent( {
 			retryPreview,
 			fragmentError,
 			fragmentPreview,
+			freshRequest,
 			contentRef,
 			errorRef,
 			isMissing,

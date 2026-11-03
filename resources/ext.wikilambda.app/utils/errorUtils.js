@@ -26,6 +26,21 @@ const errorUtils = {
 	},
 
 	/**
+	 * Returns whether an Abstract Wiki fragment value is a failure caused by its
+	 * content (HTTP 400, 404, 409 or 422), as HttpStatus::CONTENT_ERROR_CODES on the
+	 * server. The server stores such a failure in place of a stored render; it does
+	 * not store any other failure over one. (T441584)
+	 *
+	 * @param {Object|undefined} result fragment value from the abstractwiki APIs
+	 * @return {boolean}
+	 */
+	isContentFragmentFailure: function ( result ) {
+		const contentErrorStatusCodes = [ 400, 404, 409, 422 ];
+		return !!result && !result.success && !!result.value &&
+			contentErrorStatusCodes.includes( Number( result.value.httpStatusCode ) );
+	},
+
+	/**
 	 * Returns the global key that identifies an error value key.
 	 * The value of an error is an instance of the generic type Z885/Errortype to
 	 * type, so its keys can arrive in local form (K1, K2…). The labels are stored

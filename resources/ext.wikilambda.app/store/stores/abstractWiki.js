@@ -17,7 +17,7 @@ const { isValidZidFormat } = require( '../../utils/typeUtils.js' );
 const { createParserCall, hasArgumentReference, walkAndTransformZObject } = require( '../../utils/zobjectUtils.js' );
 const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
 const storeUtils = require( '../../utils/storeUtils.js' );
-const { isUnavailableFragmentFailure } = require( '../../utils/errorUtils.js' );
+const { isContentFragmentFailure, isUnavailableFragmentFailure } = require( '../../utils/errorUtils.js' );
 
 /* Time (ms) between processing jobs in the queue */
 const FRAGMENT_QUEUE_TIMEOUT = 2000;
@@ -94,6 +94,18 @@ const abstractWikiStore = {
 		 * undefined when none is open. Only one can be open at a time.
 		 */
 		provenance: undefined,
+		/**
+		 * State of the fresh-result requests ("Run with latest data", from
+		 * the provenance popover), indexed like `fragments`. Kept apart from the
+		 * fragment preview, so that the current render stays shown while a request
+		 * runs, and after a request fails. (T441584)
+		 *
+		 * freshRequests[ `${ sha256(fragment) }:${ langZid }` ] = {
+		 *   "isLoading":false,
+		 *   "error":null
+		 * }
+		 */
+		freshRequests: {},
 		previewLanguageZid: undefined,
 		suggestedHtmlFunctions: [],
 		fragmentQueue: [],
@@ -316,6 +328,24 @@ const abstractWikiStore = {
 		 */
 		getProvenanceFragment: function ( state ) {
 			return state.provenance;
+		},
+		/**
+		 * Returns the state of a fresh-result request ("Run with latest data"):
+		 * whether it is running, and the message of its last failure, if any.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getFreshRequest: function ( state ) {
+			/**
+			 * @param {string} fragmentHash
+			 * @param {string} langZid
+			 * @return {{isLoading: boolean, error: string|null}}
+			 */
+			return ( fragmentHash, langZid ) => (
+				state.freshRequests[ `${ fragmentHash }:${ langZid }` ] ||
+				{ isLoading: false, error: null }
+			);
 		},
 		/**
 		 * Returns the array with suggested html functions
@@ -968,6 +998,73 @@ const abstractWikiStore = {
 			const job = () => this.requestFragmentPreview( payload, job );
 			this.enqueueFragmentPreview( job );
 		},
+		/**
+		 * Renders a fragment again with the latest data, bypassing the stored render
+		 * and the caches, when the user asks for it in the provenance popover. (T441584)
+		 *
+		 * The current render stays shown while the request runs. Then:
+		 * * a new render replaces it, as does a failure caused by the content, which
+		 *   the server stores in place of the old render;
+		 * * any other failure (e.g. the rate limit, or a refusal from Wikifunctions)
+		 *   keeps it, as the server does, and the popover shows the failure.
+		 *
+		 * @param {Object} payload
+		 * @param {string} payload.fragmentHash
+		 * @param {string} payload.qid
+		 * @param {string} payload.language
+		 * @param {Object} payload.fragment
+		 * @return {Promise}
+		 */
+		requestFreshFragmentPreview: function ( payload ) {
+			const fragmentKey = `${ payload.fragmentHash }:${ payload.language }`;
+
+			// One request at a time for each fragment
+			const current = this.freshRequests[ fragmentKey ];
+			if ( current && current.isLoading ) {
+				return Promise.resolve();
+			}
+			this.freshRequests[ fragmentKey ] = { isLoading: true, error: null };
+
+			const finish = ( error = null ) => {
+				this.freshRequests[ fragmentKey ] = { isLoading: false, error };
+			};
+
+			return runAbstractWikiFragment( {
+				language: payload.language,
+				qid: payload.qid,
+				fragment: payload.fragment,
+				fresh: true
+			} ).then( ( data ) => {
+				if ( data && ( data.success || isContentFragmentFailure( data ) ) ) {
+					this.processFragmentResponse( fragmentKey, data );
+					finish();
+					return;
+				}
+				const value = ( data && data.value ) || {};
+				const message = value.msg ?
+					mw.message( value.msg, ...( Array.isArray( value.params ) ? value.params : [] ) ) :
+					mw.message( 'apierror-abstractwiki_run_fragment-unknown-error' );
+				finish( message.text() );
+			} ).catch( ( /* ApiError */ error ) => {
+				// e.g. the rate limit, a missing right, or a network failure
+				finish( error.messageOrFallback( 'apierror-abstractwiki_run_fragment-unknown-error' ) );
+			} );
+		},
+
+		/**
+		 * Forgets the message of a failed request to render a fragment again with the
+		 * latest data, e.g. when its provenance popover closes. (T441584)
+		 *
+		 * @param {string} fragmentHash
+		 * @param {string} langZid
+		 */
+		clearFreshRequestError: function ( fragmentHash, langZid ) {
+			const current = this.freshRequests[ `${ fragmentHash }:${ langZid }` ];
+			if ( current && current.error ) {
+				current.error = null;
+			}
+		},
+
 		/**
 		 * @param {Object} payload
 		 * @param {string} payload.fragmentHash

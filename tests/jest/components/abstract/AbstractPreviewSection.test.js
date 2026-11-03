@@ -216,4 +216,19 @@ describe( 'AbstractPreviewSection', () => {
 			language: mockLang
 		} );
 	} );
+
+	it( 'renders a fragment again with the latest data when it asks for it (T441584)', async () => {
+		store.requestFreshFragmentPreview = jest.fn();
+		wrapper = renderSection();
+		const fragments = wrapper.findAllComponents( { name: 'wl-abstract-preview-fragment' } );
+
+		await fragments[ 0 ].trigger( 'request-fresh' );
+
+		expect( store.requestFreshFragmentPreview ).toHaveBeenCalledWith( {
+			qid: mockQid,
+			fragment: mockLedeSection.fragments[ 1 ],
+			fragmentHash: 'hash1',
+			language: mockLang
+		} );
+	} );
 } );

@@ -717,6 +717,7 @@ describe( 'AbstractPreviewFragment', () => {
 		beforeEach( () => {
 			store.getProvenanceFragment = undefined;
 			store.setProvenanceFragment = jest.fn();
+			store.clearFreshRequestError = jest.fn();
 		} );
 
 		it( 'does not show the popover when another fragment has it open', () => {
@@ -750,6 +751,28 @@ describe( 'AbstractPreviewFragment', () => {
 			wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).vm.$emit( 'update:open', false );
 
 			expect( store.setProvenanceFragment ).toHaveBeenCalledWith( undefined );
+			// (T441584) A failure message is not shown again the next time
+			expect( store.clearFreshRequestError ).toHaveBeenCalledWith( fragmentHash, 'Z1002' );
+		} );
+
+		it( 'gives the popover the state of a fresh render request (T441584)', () => {
+			const freshRequest = { isLoading: true, error: null };
+			store.getFreshRequest = jest.fn().mockReturnValue( freshRequest );
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+
+			const popover = wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } );
+			expect( popover.props( 'freshRequest' ) ).toEqual( freshRequest );
+			expect( store.getFreshRequest ).toHaveBeenCalledWith( fragmentHash, 'Z1002' );
+		} );
+
+		it( 'passes on a request for a fresh render (T441584)', () => {
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+
+			wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).vm.$emit( 'request-fresh' );
+
+			expect( wrapper.emitted( 'request-fresh' ) ).toHaveLength( 1 );
 		} );
 
 		it( 'closes the popover when the fragment changes', async () => {
