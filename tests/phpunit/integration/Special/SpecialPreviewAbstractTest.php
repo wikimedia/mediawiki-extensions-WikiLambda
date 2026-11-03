@@ -232,6 +232,52 @@ class SpecialPreviewAbstractTest extends SpecialPageTestBase {
 		$this->assertStringContainsString( 'The topic "Jupiter" (Q319) does not', html_entity_decode( $html ) );
 	}
 
+	public function testEscapesWikidataLabelInPageTitle(): void {
+		$this->mockWikidataEntityLookup( [
+			'Q319' => [ 'en' => '<b style="color:red">Jupiter</b>' ],
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		$this->executeSpecialPage(
+			/* subpage */ 'en/Q319',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$pageTitle = $context->getOutput()->getPageTitle();
+		$this->assertStringNotContainsString( '<b', $pageTitle );
+		$this->assertStringContainsString( '&lt;b style=', $pageTitle );
+	}
+
+	public function testDoesNotParseWikidataLabelInUnsupportedTopicWarning(): void {
+		$this->mockWikidataEntityLookup( [
+			'Q319' => [ 'en' => '[https://example.org Log in again]' ],
+		] );
+
+		$context = RequestContext::getMain();
+		$context->setUser( $this->performer );
+		$context->setLanguage( 'en' );
+
+		[ $html ] = $this->executeSpecialPage(
+			/* subpage */ 'en/Q319',
+			/* request */ $context->getRequest(),
+			/* language */ null,
+			/* performer */ null,
+			/* fullHtml */ false,
+			/* context */ $context
+		);
+
+		$this->assertStringContainsString( 'cdx-message--warning', $html );
+		$this->assertStringNotContainsString( 'href="https://example.org"', $html );
+		$this->assertStringContainsString( '[https://example.org Log in again]', $html );
+	}
+
 	private function mockArticleStoreWithMetadata( $topic, $metadata = null ) {
 		$mockArticleStore = $this->createMock( AWArticleStore::class );
 		$mockArticleStore

@@ -161,7 +161,8 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		$sitename = $this->getConfig()->get( MainConfigNames::Sitename );
 		$htmlTitle = ( $targetTitle ? "$targetTitle ($targetQid)" : $targetQid ) . ' - ' . $sitename;
 
-		$output->setPageTitle( $targetTitle ?? $targetQid );
+		// The Wikidata label is plain text, but setPageTitle() takes HTML
+		$output->setPageTitle( htmlspecialchars( $targetTitle ?? $targetQid ) );
 		$output->setHTMLTitle( $htmlTitle );
 
 		// Check that topicQid is in the allow list
@@ -171,7 +172,9 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 		if ( !in_array( $targetQid, $allowedTopics ) ) {
 			$this->showWarningBox(
 				$this->msg( 'wikilambda-abstract-special-preview-unsupported-qid-title' )->escaped(),
-				$this->msg( 'wikilambda-abstract-special-preview-unsupported-qid-body', $fullTitle )->parse()
+				$this->msg( 'wikilambda-abstract-special-preview-unsupported-qid-body' )
+					->plaintextParams( $fullTitle )
+					->parse()
 			);
 			$this->recordRenderTiming( $startTime, $locale, $source, 'unsupported_topic' );
 			return;
@@ -349,10 +352,9 @@ class SpecialPreviewAbstract extends UnlistedSpecialPage {
 			}
 		}
 
-		$output->setPageTitle(
+		$output->setPageTitleMsg(
 			$this->msg( 'wikilambda-abstract-special-preview-list-title' )
-				->params( $this->languageLabel( $langCode ) )
-				->text()
+				->plaintextParams( $this->languageLabel( $langCode ) )
 		);
 
 		$output->addHTML( $available === [] ?
