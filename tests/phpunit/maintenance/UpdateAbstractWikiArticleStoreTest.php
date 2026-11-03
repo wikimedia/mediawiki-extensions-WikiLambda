@@ -635,10 +635,95 @@ class UpdateAbstractWikiArticleStoreTest extends WikiLambdaMaintenanceTestCase {
 		$this->assertStringContainsString( 'data-pending="1"', $metaTag );
 		$this->assertStringContainsString( 'data-failed="1"', $metaTag );
 		$this->assertStringContainsString( 'data-stale="1"', $metaTag );
+
+		$this->assertRenderStatusRows( [
+			[ $topicQid, $sectionQid, 'en', '3', '1', '1', self::NOW ],
+		] );
+	}
+
+	/**
+	 * A section dropped from the article must lose its stored copies, and with them its
+	 * render status rows, or Superset would still count it against the article.
+	 */
+	public function testRemovedSectionIsDeleted(): void {
+		$topicQid = 'Q42';
+		$ledeQid = AbstractWikiContent::ABSTRACTCONTENT_SECTION_LEDE;
+		$removedQid = 'Q102';
+
+		$fragment = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400' ];
+		$value = [ 'success' => true, 'value' => '<p>Lede</p>' ];
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $ledeQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment ) . ' ] } } }';
+
+		// SETUP: an earlier run stored a second section, in two languages
+		$this->loadAWContent( $topicQid, $awJson );
+		foreach ( [ 'en', 'es' ] as $locale ) {
+			$this->articleStore->setSection( new AWSection( $topicQid, $removedQid, $locale, '<p>Old</p>' ) );
+		}
+		$this->articleStore->setArticleMetadata( new AWArticleMetadata( $topicQid, [
+			'sections' => [ $ledeQid, $removedQid ],
+			'renderedLangs' => [ 'en', 'es' ],
+		] ) );
+		$this->loadAWFragment( $fragment, $topicQid, 'Z1002', $value );
+
+		// EXECUTE:
+		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en' ] );
+		$this->maintenance->execute();
+
+		// ASSERT: the removed section is gone in every language, the lede is recorded
+		foreach ( [ 'en', 'es' ] as $locale ) {
+			$this->assertNull( $this->articleStore->getSection( $topicQid, $removedQid, $locale ) );
+		}
+		$this->assertRenderStatusRows( [
+			[ $topicQid, $ledeQid, 'en', '1', '0', '0', self::NOW ],
+		] );
+	}
+
+	/**
+	 * When a re-run is still pending, the script keeps the stored section, so its render
+	 * status row must keep describing that stored section.
+	 */
+	public function testKeptStaleSectionKeepsItsRenderStatus(): void {
+		$topicQid = 'Q42';
+		$sectionQid = 'Q8776414';
+		$fragment = [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z400' ];
+
+		$awJson = '{ "qid": "' . $topicQid . '", "sections": {'
+			. ' "' . $sectionQid . '": { "index": 0,'
+			. ' "fragments": [ "Z89",' . json_encode( $fragment ) . ' ] } } }';
+
+		// SETUP: a stored section, but its fragment is not in the fragment store
+		ConvertibleTimestamp::setFakeTime( self::PAST );
+		$this->loadAWContent( $topicQid, $awJson );
+		$this->articleStore->setSection( new AWSection( $topicQid, $sectionQid, 'en', '<p>Old</p>' ) );
+		ConvertibleTimestamp::setFakeTime( self::NOW );
+
+		// EXECUTE:
+		$this->maintenance->loadWithArgv( [ '--topics', 'Q42', '--langs', 'en' ] );
+		$this->maintenance->execute();
+
+		// ASSERT: the row is still the one written with the stored section
+		$this->assertRenderStatusRows( [
+			[ $topicQid, $sectionQid, 'en', '0', '0', '0', self::PAST ],
+		] );
 	}
 
 	// Helper functions
 	// ================
+
+	/**
+	 * @param array $expected Rows, sorted by their values, as assertResultSet() sorts the result
+	 */
+	private function assertRenderStatusRows( array $expected ): void {
+		$this->newSelectQueryBuilder()
+			->select( [
+				'awr_topic', 'awr_section', 'awr_lang', 'awr_fragments', 'awr_pending', 'awr_failed', 'awr_rendered'
+			] )
+			->from( 'abstractwiki_render_status' )
+			->assertResultSet( $expected );
+	}
 
 	/**
 	 * Loads an AbstractWikiContent object into the abstract namespace given

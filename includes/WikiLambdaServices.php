@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiRequest;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWRenderStatusStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Cache\MemcachedWrapper;
@@ -209,7 +210,8 @@ class WikiLambdaServices {
 	public static function buildAWArticleStore( MediaWikiServices $services ): AWArticleStore {
 		return new MainStashAWArticleStore(
 			$services->getMainObjectStash(),
-			$services->getStatsFactory()
+			$services->getStatsFactory(),
+			new AWRenderStatusStore( $services->getConnectionProvider() )
 		);
 	}
 

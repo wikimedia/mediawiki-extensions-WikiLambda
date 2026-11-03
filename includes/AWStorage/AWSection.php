@@ -21,6 +21,9 @@ class AWSection {
 	private int $countFailed = 0;
 	private int $countStale = 0;
 
+	/** Number of fragments appended; not kept in the payload, so 0 for a section read from the store */
+	private int $countFragments = 0;
+
 	/** String to concatenate different fragment html blobs */
 	public const FRAGMENT_SEPARATOR = "\n";
 
@@ -133,12 +136,22 @@ class AWSection {
 	}
 
 	/**
+	 * Returns the number of fragments appended to this section.
+	 *
+	 * @return int
+	 */
+	public function getFragmentCount(): int {
+		return $this->countFragments;
+	}
+
+	/**
 	 * Appends a fragment html blob to the existing payload.
 	 *
 	 * @param AWFragment $awFragment
 	 * @return void
 	 */
 	public function appendFragment( $awFragment ): void {
+		$this->countFragments += 1;
 		$htmlFragment = '';
 
 		// Fragment is a miss: set section as pending, generate pending placeholder for fragment

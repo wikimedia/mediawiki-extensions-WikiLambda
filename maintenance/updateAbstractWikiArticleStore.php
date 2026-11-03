@@ -322,6 +322,15 @@ class UpdateAbstractWikiArticleStore extends Maintenance {
 				}
 			}
 
+			// Delete the stored sections that the article no longer has, so their render
+			// status does not count against the article.
+			$removedSectionQids = array_diff( $payload[ 'sections' ] ?? [], $sectionIds );
+			foreach ( $removedSectionQids as $sectionQid ) {
+				foreach ( $payload[ 'renderedLangs' ] ?? [] as $locale ) {
+					$this->articleStore->deleteSection( $topicQid, $sectionQid, $locale );
+				}
+			}
+
 			// 4. Before being done with this topicQid, we compile and store the AWArticleMetadata
 			$payload[ 'sections' ] = $sectionIds;
 			$payload[ 'lastRendered' ] = ConvertibleTimestamp::now( TS::MW );

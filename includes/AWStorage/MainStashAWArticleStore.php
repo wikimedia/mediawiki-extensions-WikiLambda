@@ -24,6 +24,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\AWStorage;
 
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Metrics\StoreOpsMetrics;
 use OverflowException;
 use Wikimedia\ObjectCache\BagOStuff;
@@ -58,7 +59,8 @@ class MainStashAWArticleStore extends AWArticleStore {
 
 	public function __construct(
 		private readonly BagOStuff $stash,
-		?StatsFactory $statsFactory = null
+		?StatsFactory $statsFactory = null,
+		private readonly ?AWRenderStatusStore $renderStatusStore = null
 	) {
 		$this->metrics = new StoreOpsMetrics( 'mainstash', $statsFactory );
 	}
@@ -194,6 +196,11 @@ class MainStashAWArticleStore extends AWArticleStore {
 		);
 		$this->metrics->recordOp( self::METRIC_STORE, 'set', $success ? 'success' : 'failure', $startTime );
 
+		if ( $success && $this->renderStatusStore ) {
+			// Defer the x1 write, so that a failure there does not stop the stash work of the caller.
+			DeferredUpdates::addCallableUpdate( fn () => $this->renderStatusStore->setStatus( $section, $now ) );
+		}
+
 		return $success;
 	}
 
@@ -211,6 +218,12 @@ class MainStashAWArticleStore extends AWArticleStore {
 			$this->makeSectionKey( $topicQid, $sectionQid, $locale, $schemaVersion )
 		);
 		$this->metrics->recordOp( self::METRIC_STORE, 'delete', $success ? 'success' : 'failure', $startTime );
+
+		if ( $this->renderStatusStore ) {
+			DeferredUpdates::addCallableUpdate(
+				fn () => $this->renderStatusStore->deleteStatus( $topicQid, $sectionQid, $locale )
+			);
+		}
 	}
 
 	/**

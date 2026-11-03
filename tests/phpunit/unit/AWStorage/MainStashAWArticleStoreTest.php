@@ -9,8 +9,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Unit\AWStorage;
 
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleMetadata;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWArticleStore;
+use MediaWiki\Extension\WikiLambda\AWStorage\AWRenderStatusStore;
 use MediaWiki\Extension\WikiLambda\AWStorage\AWSection;
 use MediaWiki\Extension\WikiLambda\AWStorage\MainStashAWArticleStore;
 use MediaWikiUnitTestCase;
@@ -190,6 +192,42 @@ class MainStashAWArticleStoreTest extends MediaWikiUnitTestCase {
 		$this->store->deleteSection( 'Q101', 'Q201', 'en' );
 		$this->assertNull( $this->store->getSection( 'Q101', 'Q201', 'en' ) );
 		$this->assertSame( [], $this->store->getSectionsForTopic( 'Q101', 'en' ) );
+	}
+
+	public function testSetSectionRecordsRenderStatus(): void {
+		ConvertibleTimestamp::setFakeTime( '20260101000000' );
+		$section = new AWSection( 'Q101', 'Q201', 'en', '<p>Hello</p>' );
+
+		$renderStatusStore = $this->createMock( AWRenderStatusStore::class );
+		$renderStatusStore->expects( $this->once() )
+			->method( 'setStatus' )
+			->with( $section, '20260101000000' );
+
+		$store = new MainStashAWArticleStore( $this->stash, null, $renderStatusStore );
+		$store->setSection( $section );
+		DeferredUpdates::doUpdates();
+	}
+
+	public function testSetSectionDoesNotRecordRenderStatusOnFailure(): void {
+		$stash = $this->createPartialMock( HashBagOStuff::class, [ 'set' ] );
+		$stash->method( 'set' )->willReturn( false );
+
+		$renderStatusStore = $this->createMock( AWRenderStatusStore::class );
+		$renderStatusStore->expects( $this->never() )->method( 'setStatus' );
+
+		$store = new MainStashAWArticleStore( $stash, null, $renderStatusStore );
+		$this->assertFalse( $store->setSection( new AWSection( 'Q101', 'Q201', 'en', '<p>Hello</p>' ) ) );
+	}
+
+	public function testDeleteSectionDeletesRenderStatus(): void {
+		$renderStatusStore = $this->createMock( AWRenderStatusStore::class );
+		$renderStatusStore->expects( $this->once() )
+			->method( 'deleteStatus' )
+			->with( 'Q101', 'Q201', 'en' );
+
+		$store = new MainStashAWArticleStore( $this->stash, null, $renderStatusStore );
+		$store->deleteSection( 'Q101', 'Q201', 'en' );
+		DeferredUpdates::doUpdates();
 	}
 
 	public function testSetAndGetArticleMetadataRoundTrip(): void {

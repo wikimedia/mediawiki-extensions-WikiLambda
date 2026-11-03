@@ -130,6 +130,7 @@ class AWSectionTest extends WikiLambdaAbstractClientIntegrationTestCase {
 		$sectionStatus = $section->getFragmentStatus();
 		$this->assertSame( $expectPending > 0, $section->isPending() );
 
+		$this->assertSame( count( $fragments ), $section->getFragmentCount() );
 		$this->assertSame( $expectPending, $sectionStatus[ 'pending' ] );
 		$this->assertSame( $expectFailed, $sectionStatus[ 'failed' ] );
 		$this->assertSame( $expectStale, $sectionStatus[ 'stale' ] );
