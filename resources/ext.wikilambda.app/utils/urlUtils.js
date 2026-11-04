@@ -217,10 +217,14 @@ const urlUtils = {
 		// Convert to JSON (URLSearchParams will handle encoding)
 		const jsonString = JSON.stringify( canonicalFunctionCall );
 
-		// Use the current page URL (without existing query params)
+		// Drop the old query params, but keep the title that an index.php URL
+		// such as /w/index.php?title=Z801 needs, or it opens the Main Page
 		const url = new URL( window.location.href );
-		// Clear existing query params
+		const title = url.searchParams.get( 'title' );
 		url.search = '';
+		if ( title ) {
+			url.searchParams.set( 'title', title );
+		}
 		// Add the call parameter (URLSearchParams.set will encode it)
 		url.searchParams.set( 'call', jsonString );
 

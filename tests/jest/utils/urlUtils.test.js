@@ -285,9 +285,37 @@ describe( 'urlUtils', () => {
 			expect( url ).toContain( 'call=' );
 			// Verify we can decode it back
 			const urlObj = new URL( url );
+			expect( urlObj.pathname ).toBe( '/wiki/Z801' );
+			expect( [ ...urlObj.searchParams.keys() ] ).toEqual( [ 'call' ] );
 			const decodedParam = urlObj.searchParams.get( 'call' );
 			const decodedCall = JSON.parse( decodeURIComponent( decodedParam ) );
 			expect( decodedCall ).toEqual( functionCall );
+		} );
+
+		it( 'should keep the title of an index.php URL and drop the other params', () => {
+			mockWindowLocation( 'http://example.com/w/index.php?title=Z801&oldid=123' );
+
+			const functionCall = {
+				Z1K1: 'Z7',
+				Z7K1: 'Z801',
+				Z801K1: 'hello'
+			};
+
+			const urlObj = new URL( generateShareUrl( functionCall ) );
+
+			expect( urlObj.pathname ).toBe( '/w/index.php' );
+			expect( [ ...urlObj.searchParams.keys() ] ).toEqual( [ 'title', 'call' ] );
+			expect( urlObj.searchParams.get( 'title' ) ).toBe( 'Z801' );
+			expect( JSON.parse( urlObj.searchParams.get( 'call' ) ) ).toEqual( functionCall );
+		} );
+
+		it( 'should keep the title of Special:RunFunction in an index.php URL', () => {
+			mockWindowLocation( 'http://example.com/w/index.php?title=Special:RunFunction' );
+
+			const urlObj = new URL( generateShareUrl( { Z1K1: 'Z7', Z7K1: 'Z801' } ) );
+
+			expect( urlObj.pathname ).toBe( '/w/index.php' );
+			expect( urlObj.searchParams.get( 'title' ) ).toBe( 'Special:RunFunction' );
 		} );
 
 		it( 'should properly encode special characters in JSON', () => {
