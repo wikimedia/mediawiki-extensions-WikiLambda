@@ -1,7 +1,8 @@
 'use strict';
 
-const { shallowMount } = require( '@vue/test-utils' );
+const { flushPromises, shallowMount } = require( '@vue/test-utils' );
 const { createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
+const ApiError = require( '../../../../resources/ext.wikilambda.app/store/classes/ApiError.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const FunctionSelect = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/FunctionSelect.vue' );
 const { waitFor } = require( '@testing-library/vue' );
@@ -125,6 +126,38 @@ describe( 'FunctionSelect', () => {
 		searchInput.vm.$emit( 'update:modelValue', '' );
 
 		expect( store.setLookupResults ).toHaveBeenCalledWith( [] );
+	} );
+
+	describe( 'when the lookup for a new search term rejects', () => {
+		beforeEach( () => {
+			// Results for an earlier term are still showing
+			store.getSearchTerm = 'addition';
+			store.getLookupResults = [ { zid: 'Z3', label: 'Function 3', language: 'en' } ];
+		} );
+
+		it( 'clears the previous lookup results when the lookup fails', async () => {
+			store.lookupFunctions = jest.fn().mockRejectedValue(
+				new ApiError( 'http', { error: { message: 'mock lookup error' } } )
+			);
+			const wrapper = renderFunctionSelect();
+
+			const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
+			searchInput.vm.$emit( 'update:modelValue', 'addition' );
+			await flushPromises();
+
+			expect( store.setLookupResults ).toHaveBeenCalledWith( [] );
+		} );
+
+		it( 'keeps the previous lookup results when the lookup is aborted', async () => {
+			store.lookupFunctions = jest.fn().mockRejectedValue( new ApiError( 'abort', {} ) );
+			const wrapper = renderFunctionSelect();
+
+			const searchInput = wrapper.findComponent( { name: 'cdx-search-input' } );
+			searchInput.vm.$emit( 'update:modelValue', 'addition' );
+			await flushPromises();
+
+			expect( store.setLookupResults ).not.toHaveBeenCalled();
+		} );
 	} );
 
 	it( 'does not emit select event for invalid Zids', async () => {

@@ -218,6 +218,8 @@ module.exports = exports = defineComponent( {
 				if ( error.code === 'abort' ) {
 					return;
 				}
+				// Do not leave the previous term's results listed under the new one
+				store.setLookupResults( [] );
 			} );
 		}
 
