@@ -54,6 +54,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Error message to show in the Wikifunctions call popup in the visual editor when the function ID is missing or invalid.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor when the enum field is not valid.",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor when the language field is not valid.",
+	"wikilambda-visualeditor-wikifunctionscall-error-load-inputs": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor, in place of the input fields, when the types of the function inputs and output could not be loaded.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor when the field is empty.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor when the reading function fails.",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Error message to show in the Wikifunctions call input configuration dialog in the visual editor when the Wikidata Lexeme ID is not valid.",

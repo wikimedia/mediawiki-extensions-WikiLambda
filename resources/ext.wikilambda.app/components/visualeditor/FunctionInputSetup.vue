@@ -42,6 +42,13 @@
 					@loading-end="$emit( 'loading-end' )"
 				></wl-function-input-field>
 			</div>
+			<cdx-message
+				v-else-if="hasLoadError"
+				type="error"
+				data-testid="function-input-setup-load-error"
+			>
+				{{ i18n( 'wikilambda-visualeditor-wikifunctionscall-error-load-inputs' ).text() }}
+			</cdx-message>
 		</div>
 		<div class="ext-wikilambda-app-function-input-setup__footer">
 			<cdx-icon :icon="icon"></cdx-icon>
@@ -81,6 +88,7 @@ module.exports = exports = defineComponent( {
 		// State
 		const inputFields = ref( [] );
 		const allTypesFetched = ref( false );
+		const hasLoadError = ref( false );
 
 		// Function data
 		/**
@@ -273,7 +281,8 @@ module.exports = exports = defineComponent( {
 		// Data fetching
 		/**
 		 * Fetches the ZIDs for all input types and the output type.
-		 * Show a loading state in VisualEditor while fetching.
+		 * Show a loading state in VisualEditor while fetching,
+		 * and an error if the fetch fails.
 		 *
 		 * @param {Array} inputs - The list of function inputs.
 		 * @param {string} outputType - The output type of the function.
@@ -293,6 +302,9 @@ module.exports = exports = defineComponent( {
 			store.fetchZids( { zids: zidsToFetch } )
 				.then( () => {
 					allTypesFetched.value = true;
+				} )
+				.catch( () => {
+					hasLoadError.value = true;
 				} )
 				.finally( () => {
 					emit( 'loading-end' );
@@ -344,6 +356,7 @@ module.exports = exports = defineComponent( {
 			functionZid,
 			handleUpdate,
 			handleValidation,
+			hasLoadError,
 			hasMissingContent,
 			icon,
 			inputFields,

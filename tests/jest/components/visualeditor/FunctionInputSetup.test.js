@@ -120,6 +120,24 @@ describe( 'FunctionInputSetup', () => {
 		expect( wrapper.emitted().update ).toBeTruthy();
 	} );
 
+	describe( 'when the input and output types do not load', () => {
+		beforeEach( () => {
+			store.fetchZids.mockRejectedValue( new Error( 'Network error' ) );
+		} );
+
+		it( 'shows an error instead of the input fields and the preview', async () => {
+			const wrapper = renderFunctionInputSetup();
+
+			await waitFor( () => {
+				expect( wrapper.find( '[data-testid="function-input-setup-load-error"]' ).exists() ).toBe( true );
+			} );
+			expect( wrapper.findAllComponents( { name: 'wl-function-input-field' } ).length ).toBe( 0 );
+			expect( wrapper.findComponent( { name: 'wl-function-input-preview' } ).exists() ).toBe( false );
+			expect( wrapper.emitted( 'loading-end' ) ).toBeTruthy();
+			expect( store.setVEFunctionParamsValid ).toHaveBeenLastCalledWith( false );
+		} );
+	} );
+
 	describe( 'Prefill with selected text', () => {
 		beforeEach( () => {
 			// Default: no existing params and no selected text
