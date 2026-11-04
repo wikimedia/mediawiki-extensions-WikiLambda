@@ -149,6 +149,7 @@ describe( 'AbstractTitle', () => {
 		expect( warningMessage.exists() ).toBe( true );
 		expect( warningMessage.text() ).toBe(
 			'There is already an Abstract Article for that Wikidata Item:  (Q42)' );
+		expect( warningMessage.find( 'a' ).attributes( 'href' ) ).toBe( '/wiki/Abstract Wikipedia:Q42' );
 	} );
 
 	it( 'sets new Abstract Wiki content Id when clicking create', async () => {

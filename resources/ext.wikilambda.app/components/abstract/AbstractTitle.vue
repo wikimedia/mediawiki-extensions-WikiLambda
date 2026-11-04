@@ -36,7 +36,7 @@
 				type="warning"
 			>
 				{{ i18n( 'wikilambda-abstract-special-create-existing' ).text() }}
-				<p><a :href="itemPage.title">{{ itemLabel }} {{ i18n( 'parentheses', [ itemId ] ).text() }}</a></p>
+				<p><a :href="itemPageUrl">{{ itemLabel }} {{ i18n( 'parentheses', [ itemId ] ).text() }}</a></p>
 			</cdx-message>
 			<cdx-button
 				class="ext-wikilambda-app-abstract-title__button"
@@ -104,6 +104,14 @@ module.exports = exports = defineComponent( {
 		 * @return {string}
 		 */
 		const itemLabel = computed( () => itemLabelData.value ? itemLabelData.value.label : '' );
+
+		/**
+		 * Returns the URL of the existing Abstract Wiki page for the
+		 * selected Item, or an empty string if there is none.
+		 *
+		 * @return {string}
+		 */
+		const itemPageUrl = computed( () => itemPage.value ? new mw.Title( itemPage.value.title ).getUrl() : '' );
 
 		/**
 		 * Returns whether we can create a new Abstract Wiki page, so:
@@ -188,7 +196,7 @@ module.exports = exports = defineComponent( {
 			isLoading,
 			itemId,
 			itemType,
-			itemPage,
+			itemPageUrl,
 			itemLabel,
 			selectItemId,
 			createAbstractForQid,
