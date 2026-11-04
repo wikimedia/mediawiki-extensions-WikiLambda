@@ -63,7 +63,8 @@ function replaceBrokenImage( img ) {
 }
 
 /**
- * Bind onerror handlers to images inside ext-wikilambda-image figures.
+ * Bind onerror handlers to images inside ext-wikilambda-image figures, and replace
+ * those that have already failed.
  * A data attribute guards against double-binding when a container is scanned more than once.
  *
  * @memberof module:ext.wikilambda.image
@@ -79,6 +80,12 @@ function initInContainer( containerEl ) {
 	);
 	[ ...imgs ].forEach( ( img ) => {
 		img.setAttribute( 'data-wl-img-init', '1' );
+		// The image may have failed before this module loaded. An image that is still
+		// loading, such as a lazy one below the fold, is not complete yet.
+		if ( img.getAttribute( 'src' ) && img.complete && img.naturalWidth === 0 ) {
+			replaceBrokenImage( img );
+			return;
+		}
 		img.addEventListener( 'error', () => replaceBrokenImage( img ) );
 	} );
 }
