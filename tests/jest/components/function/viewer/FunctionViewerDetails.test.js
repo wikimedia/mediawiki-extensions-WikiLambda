@@ -151,6 +151,47 @@ describe( 'FunctionViewerDetails', () => {
 		expect( testTableItems[ 1 ].status.title ).toEqual( 'Connected' );
 	} );
 
+	it( 'runs the testers once both lists are fetched', async () => {
+		renderFunctionViewerDetails();
+
+		await waitFor( () => {
+			expect( store.getTestResults ).toHaveBeenCalledWith( {
+				zFunctionId: 'Z666',
+				zImplementations: [ 'Z333', 'Z444', 'Z555' ],
+				zTesters: [ 'Z111', 'Z222' ],
+				clearPreviousResults: true
+			} );
+		} );
+	} );
+
+	describe( 'when a list fails to load', () => {
+		const fetchError = new ApiError( 'http', { error: { message: 'error!' } } );
+
+		it( 'shows an error in the implementations table and does not run the testers', async () => {
+			store.fetchImplementations.mockRejectedValue( fetchError );
+			const wrapper = renderFunctionViewerDetails();
+			const [ implTable, testTable ] = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } );
+
+			await waitFor( () => {
+				expect( implTable.props( 'emptyText' ) ).toBe( 'Could not load the implementations. Reload the page to try again.' );
+				expect( testTable.props( 'data' ) ).toHaveLength( 2 );
+			} );
+			expect( store.getTestResults ).not.toHaveBeenCalled();
+		} );
+
+		it( 'shows an error in the tests table and does not run the testers', async () => {
+			store.fetchTests.mockRejectedValue( fetchError );
+			const wrapper = renderFunctionViewerDetails();
+			const [ implTable, testTable ] = wrapper.findAllComponents( { name: 'wl-function-viewer-details-table' } );
+
+			await waitFor( () => {
+				expect( testTable.props( 'emptyText' ) ).toBe( 'Could not load the tests. Reload the page to try again.' );
+				expect( implTable.props( 'data' ) ).toHaveLength( 3 );
+			} );
+			expect( store.getTestResults ).not.toHaveBeenCalled();
+		} );
+	} );
+
 	describe( 'implementations without labels display the ZID', () => {
 		beforeEach( () => {
 			store.getLabelData = createLabelDataMock( { Z333: 'Z333 name' } );

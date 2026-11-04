@@ -13,8 +13,7 @@
 				:title="i18n( 'wikilambda-function-implementation-table-header' ).text()"
 				:can-connect="areProposedImplementationsSelected"
 				:can-disconnect="areAvailableImplementationsSelected"
-				:empty-text="implementationsFetched ?
-					i18n( 'wikilambda-implementation-none-found' ).text() : i18n( 'wikilambda-loading' ).text()"
+				:empty-text="implementationsEmptyText"
 				:is-loading="implementationsLoading"
 				:add-link="addImplementationLink"
 				data-testid="function-implementations-table"
@@ -28,8 +27,7 @@
 				:title="i18n( 'wikilambda-function-test-cases-table-header' ).text()"
 				:can-connect="areProposedTestersSelected"
 				:can-disconnect="areAvailableTestersSelected"
-				:empty-text="testsFetched ?
-					i18n( 'wikilambda-tester-none-found' ).text() : i18n( 'wikilambda-loading' ).text()"
+				:empty-text="testsEmptyText"
 				:is-loading="testsLoading"
 				:add-link="addTestLink"
 				data-testid="function-testers-table"
@@ -97,6 +95,7 @@ module.exports = exports = defineComponent( {
 		// Implementations data
 		const implementationsState = ref( {} );
 		const implementationsFetched = ref( false );
+		const implementationsFetchFailed = ref( false );
 		const implementationsLoading = ref( false );
 
 		/**
@@ -143,6 +142,20 @@ module.exports = exports = defineComponent( {
 			zid: Constants.Z_IMPLEMENTATION,
 			[ Constants.Z_IMPLEMENTATION_FUNCTION ]: store.getCurrentZObjectId
 		} ) );
+
+		/**
+		 * Text shown while the Implementations table has no rows
+		 *
+		 * @return {string}
+		 */
+		const implementationsEmptyText = computed( () => {
+			if ( implementationsFetchFailed.value ) {
+				return i18n( 'wikilambda-implementation-load-error' ).text();
+			}
+			return implementationsFetched.value ?
+				i18n( 'wikilambda-implementation-none-found' ).text() :
+				i18n( 'wikilambda-loading' ).text();
+		} );
 
 		/**
 		 * Build the columns for the Implementations table
@@ -348,12 +361,15 @@ module.exports = exports = defineComponent( {
 			store.fetchImplementations( store.getCurrentZObjectId ).then( ( zids ) => {
 				setImplementationsState( zids );
 				implementationsFetched.value = true;
+			} ).catch( () => {
+				implementationsFetchFailed.value = true;
 			} );
 		}
 
 		// Tests data
 		const testsState = ref( {} );
 		const testsFetched = ref( false );
+		const testsFetchFailed = ref( false );
 		const testsLoading = ref( false );
 
 		/**
@@ -391,6 +407,20 @@ module.exports = exports = defineComponent( {
 			zid: Constants.Z_TESTER,
 			[ Constants.Z_TESTER_FUNCTION ]: store.getCurrentZObjectId
 		} ) );
+
+		/**
+		 * Text shown while the Tests table has no rows
+		 *
+		 * @return {string}
+		 */
+		const testsEmptyText = computed( () => {
+			if ( testsFetchFailed.value ) {
+				return i18n( 'wikilambda-tester-load-error' ).text();
+			}
+			return testsFetched.value ?
+				i18n( 'wikilambda-tester-none-found' ).text() :
+				i18n( 'wikilambda-loading' ).text();
+		} );
 
 		/**
 		 * Build the columns for the Tests table
@@ -581,6 +611,8 @@ module.exports = exports = defineComponent( {
 			store.fetchTests( store.getCurrentZObjectId ).then( ( zids ) => {
 				setTestsState( zids );
 				testsFetched.value = true;
+			} ).catch( () => {
+				testsFetchFailed.value = true;
 			} );
 		}
 
@@ -633,11 +665,11 @@ module.exports = exports = defineComponent( {
 			disconnectCheckedTests,
 			implementationsColumns,
 			implementationsData,
-			implementationsFetched,
+			implementationsEmptyText,
 			implementationsLoading,
 			testsColumns,
 			testsData,
-			testsFetched,
+			testsEmptyText,
 			testsLoading,
 			i18n
 		};
