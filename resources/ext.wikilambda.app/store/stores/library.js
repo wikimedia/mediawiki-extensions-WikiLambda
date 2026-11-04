@@ -1047,7 +1047,11 @@ module.exports = {
 				this.setEnumData( { zid: payload.type, data: data.labels, searchContinue: data.searchContinue } );
 				return data;
 			} ).catch( () => {
-				this.setEnumData( { zid: payload.type, data: [] } );
+				// Remove a failed first page, so that the next call requests it again.
+				// A failed next page keeps the continuation token for the same reason.
+				if ( !searchContinue ) {
+					delete this.enums[ payload.type ];
+				}
 			} );
 
 			if ( !searchContinue ) {

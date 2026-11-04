@@ -1415,5 +1415,34 @@ describe( 'library Pinia store', () => {
 			} );
 		} );
 
+		describe( 'fetchEnumValues with a failed request', () => {
+			it( 'requests the first page again on the next call', async () => {
+				getMock = jest.fn()
+					.mockRejectedValueOnce( 'API error' )
+					.mockResolvedValueOnce( { query: { wikilambdasearch_labels: mockEnumValues } } );
+
+				await store.fetchEnumValues( { type: 'Z30000' } );
+				expect( store.getEnum( 'Z30000' ) ).toBeUndefined();
+
+				await store.fetchEnumValues( { type: 'Z30000' } );
+				expect( getMock ).toHaveBeenCalledTimes( 2 );
+				expect( store.getEnum( 'Z30000' ).data ).toEqual( mockEnumValues );
+			} );
+
+			it( 'keeps the loaded values and the continuation token when the next page fails', async () => {
+				store.enums = { Z30000: { data: mockEnumValues, searchContinue: 10 } };
+				getMock = jest.fn().mockRejectedValue( 'API error' );
+
+				await store.fetchEnumValues( { type: 'Z30000' } );
+				expect( store.getEnum( 'Z30000' ) ).toEqual( { data: mockEnumValues, searchContinue: 10 } );
+
+				await store.fetchEnumValues( { type: 'Z30000' } );
+				expect( getMock ).toHaveBeenCalledTimes( 2 );
+				expect( getMock ).toHaveBeenLastCalledWith( expect.objectContaining( {
+					wikilambdasearch_continue: 10
+				} ) );
+			} );
+		} );
+
 	} );
 } );
