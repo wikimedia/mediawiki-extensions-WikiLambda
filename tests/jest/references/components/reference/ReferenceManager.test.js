@@ -230,6 +230,29 @@ describe( 'ReferenceManager', () => {
 
 			jest.useRealTimers();
 		} );
+
+		it( 'pins a hover-opened popover when its trigger is clicked', async () => {
+			jest.useFakeTimers();
+			const wrapper = renderReferenceManager();
+
+			// A mouse click comes after the mouseenter
+			wrapper.vm.handleMouseenter( triggerButton );
+			wrapper.vm.handleClick( triggerButton );
+
+			expect( wrapper.vm.popoverOpen ).toBe( true );
+			expect( wrapper.vm.popoverMode ).toBe( 'click' );
+
+			// Leaving the trigger does not close a pinned popover
+			wrapper.vm.handleMouseleave();
+			jest.advanceTimersByTime( 350 );
+			expect( wrapper.vm.popoverOpen ).toBe( true );
+
+			// The next click closes it
+			wrapper.vm.handleClick( triggerButton );
+			expect( wrapper.vm.popoverOpen ).toBe( false );
+
+			jest.useRealTimers();
+		} );
 	} );
 
 	describe( 'closing references', () => {

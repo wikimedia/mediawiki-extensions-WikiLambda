@@ -280,14 +280,14 @@ module.exports = exports = defineComponent( {
 			}
 
 			// Desktop: Popover
-			popoverMode.value = 'click';
-
-			// Click always pins the popover open (disables hover-close logic).
-			// If it was hover-opened, clicking converts it to pinned mode instead of closing.
-			if ( popoverOpen.value && anchor.value === button ) {
+			// A click on the trigger of a pinned popover closes it
+			if ( popoverOpen.value && anchor.value === button && popoverMode.value === 'click' ) {
 				return setPopoverOpen( false );
 			}
 
+			// Else the click pins the popover open (disables hover-close logic),
+			// also when a hover opened it
+			popoverMode.value = 'click';
 			cancelHoverClose();
 			openReferenceForTrigger( button );
 		}
