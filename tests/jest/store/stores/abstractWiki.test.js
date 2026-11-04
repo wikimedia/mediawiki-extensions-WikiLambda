@@ -1206,6 +1206,60 @@ describe( 'abstractWiki Pinia store', () => {
 				expect( store.setError ).toHaveBeenCalled();
 			} );
 
+			it( 'sets the fragments of a failed request as pending', async () => {
+				postMock = jest.fn().mockRejectedValue( new ApiError( 'error-code', { error: { message: 'error!' } } ) );
+				mw.Api = jest.fn( () => ( { post: postMock, getToken: getTokenMock } ) );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.fragments[ `hash1:${ mockLang }` ] ).toEqual( expect.objectContaining( {
+					isLoading: false,
+					isPending: true
+				} ) );
+				expect( store.fragments[ `hash2:${ mockLang }` ].isPending ).toBe( true );
+			} );
+
+			it( 'sets the fragments as pending if the response length does not match', async () => {
+				postMock = jest.fn().mockResolvedValue( {
+					[ ledeQid ]: [ { success: true, value: '<p>Fragment 1</p>' } ]
+				} );
+				mw.Api = jest.fn( () => ( { post: postMock, getToken: getTokenMock } ) );
+
+				await store.fetchSectionPreview( {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				} );
+
+				expect( store.fragments[ `hash1:${ mockLang }` ].isPending ).toBe( true );
+				expect( store.fragments[ `hash2:${ mockLang }` ].isPending ).toBe( true );
+			} );
+
+			it( 'requests the fragments of a failed request again', async () => {
+				postMock.mockRejectedValueOnce( new ApiError( 'error-code', { error: { message: 'error!' } } ) );
+				const payload = {
+					topic: mockQid,
+					section: ledeQid,
+					language: mockLang,
+					fragments,
+					fragmentHashes
+				};
+
+				await store.fetchSectionPreview( payload );
+				await store.fetchSectionPreview( payload );
+
+				expect( postMock ).toHaveBeenCalledTimes( 2 );
+				expect( store.processFragmentResponse ).toHaveBeenCalledTimes( 2 );
+			} );
+
 			it( 'holds a promise for every requested fragment while the request runs', () => {
 				const promise = store.fetchSectionPreview( {
 					topic: mockQid,

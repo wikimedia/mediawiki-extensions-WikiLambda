@@ -686,6 +686,15 @@ const abstractWikiStore = {
 		requestSectionPreview: function ( payload ) {
 			const { section, keys } = payload;
 
+			// A failed fragment has a state, so it counts as done. Set it as pending, so that it
+			// shows a retry button and the next section request asks for it again
+			const newKeys = keys.filter( ( key ) => !this.fragments[ key ] );
+			const setNewFragmentsPending = () => {
+				newKeys.forEach( ( key ) => {
+					this.fragments[ key ].isPending = true;
+				} );
+			};
+
 			// Set fragments as loading, without overwriting whatever data is available
 			keys.forEach( ( key ) => {
 				if ( !this.fragments[ key ] ) {
@@ -714,6 +723,7 @@ const abstractWikiStore = {
 						errorType: Constants.ERROR_TYPES.ERROR,
 						errorMessageKey: 'apierror-abstractwiki_fetch_section-bad-fragments'
 					} );
+					setNewFragmentsPending();
 					return;
 				}
 
@@ -728,6 +738,7 @@ const abstractWikiStore = {
 					errorType: Constants.ERROR_TYPES.ERROR,
 					errorMessage: error.message
 				} );
+				setNewFragmentsPending();
 
 			} ).finally( () => {
 				// Unset all isLoading (if any was left due to api error)
