@@ -150,7 +150,6 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 
 				// If the function call is valid, show the function name and description.
 				const piniaStore = ve.init.mw.WikifunctionsCall.piniaStore;
-				const submitVEInteraction = piniaStore.submitVEInteraction( 'function-link-click' );
 				const functionLabelData = piniaStore.getLabelData( functionId );
 				const functionLabel = functionLabelData.isUntitled ?
 					OO.ui.deferMsg( 'brackets', OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-no-name' ) ) :
@@ -170,7 +169,7 @@ ve.ui.WikifunctionsCallContextItem.prototype.renderBody = function () {
 					.attr( 'href', functionUri )
 					.attr( 'target', '_blank' )
 					.css( { 'font-weight': 'bold', display: 'block' } )
-					.on( 'click', submitVEInteraction )
+					.on( 'click', () => piniaStore.submitVEInteraction( 'function-link-click' ) )
 					.text( functionLabel );
 
 				// Create a Function description paragraph.
