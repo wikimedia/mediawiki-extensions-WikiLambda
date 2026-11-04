@@ -60,8 +60,9 @@ ve.ce.WikifunctionsCallNode.prototype.onSetup = function () {
 ve.ce.WikifunctionsCallNode.prototype.getLoadingState = function () {
 	const loadingMsg = OO.ui.msg( 'wikilambda-visualeditor-wikifunctionscall-ce-loading' );
 
+	// doneGenerating() needs the loading class to cache this chip apart from the final render
 	const $loadingContainer = $( '<span>' )
-		.addClass( 'ext-wikilambda-visualeditor-chip' );
+		.addClass( 'ext-wikilambda-visualeditor-chip ext-wikilambda-visualeditor-loading' );
 
 	const $loadingSpan = $( '<span>' )
 		.addClass( 'ext-wikilambda-visualeditor-chip__msg' )
@@ -186,9 +187,10 @@ ve.ce.WikifunctionsCallNode.prototype.generateContents = function ( config = {} 
  * @inheritdoc
  */
 ve.ce.WikifunctionsCallNode.prototype.doneGenerating = function ( generatedContents, config, staged ) {
-	// If done loading, reset config object with loading=false
+	// Hash only the loading state, not the retry bookkeeping, so that
+	// toDomElements() finds the final render under { loading: false }
 	const isLoading = generatedContents[ 0 ].classList.contains( 'ext-wikilambda-visualeditor-loading' );
-	const newConfig = Object.assign( {}, config || {}, { loading: isLoading } );
+	const newConfig = { loading: isLoading };
 
 	ve.ce.WikifunctionsCallNode.super.prototype.doneGenerating.call( this, generatedContents, newConfig, staged );
 
