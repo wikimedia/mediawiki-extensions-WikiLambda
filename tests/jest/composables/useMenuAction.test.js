@@ -208,6 +208,7 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
+			expect( store.insertHashAtKeyPath ).not.toHaveBeenCalled();
 		} );
 
 		it( 'inserts an item at the bottom of the list and marks page and fragment as dirty', () => {
@@ -222,6 +223,20 @@ describe( 'useMenuAction', () => {
 			} );
 
 			expect( store.setDirty ).toHaveBeenCalledTimes( 1 );
+			expect( store.insertHashAtKeyPath ).not.toHaveBeenCalled();
+		} );
+
+		it( 'inserts a blank fragment hash when it adds a fragment at the end of a section', () => {
+			const keyPath = 'abstractwiki.sections.Q8776414.fragments';
+
+			menuAction.addListItem( payload, keyPath, 3 );
+
+			expect( store.insertHashAtKeyPath ).toHaveBeenCalledTimes( 1 );
+			expect( store.insertHashAtKeyPath ).toHaveBeenCalledWith( `${ keyPath }.3` );
+			expect( store.pushItemsByKeyPath ).toHaveBeenCalledWith( {
+				keyPath: keyPath.split( '.' ),
+				values: [ hybridValue ]
+			} );
 		} );
 	} );
 

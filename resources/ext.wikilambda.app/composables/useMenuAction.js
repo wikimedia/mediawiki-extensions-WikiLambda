@@ -116,6 +116,12 @@ module.exports = function useMenuAction() {
 	function addListItem( payload, keyPath, nextKey ) {
 		const value = store.createObjectByType( payload );
 		const newItemPath = `${ keyPath }.${ nextKey }`;
+
+		// Keep the fragment previews aligned with the fragments
+		if ( isAbstractFragment( newItemPath ) ) {
+			store.insertHashAtKeyPath( newItemPath );
+		}
+
 		store.pushItemsByKeyPath( {
 			keyPath: keyPath.split( '.' ),
 			values: [ canonicalToHybrid( value ) ]

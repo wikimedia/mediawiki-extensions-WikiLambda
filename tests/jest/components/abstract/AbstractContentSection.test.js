@@ -327,6 +327,34 @@ describe( 'AbstractContentSection', () => {
 		await waitFor( () => expect( store.setAbstractFragmentHash ).toHaveBeenCalledTimes( 1 ) );
 		expect( store.setAbstractFragmentHash ).toHaveBeenCalledWith( section.qid, 0, fragmentHash );
 	} );
+
+	it( 'refreshes the fragment hash with the stored value after a paste from the clipboard', async () => {
+		const clipboardValue = { Z1K1: 'Z7', Z7K1: 'Z444', Z444K1: 'pasted composition' };
+		const storedValue = {
+			Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+			Z7K1: { Z1K1: 'Z9', Z9K1: 'Z444' },
+			Z444K1: { Z1K1: 'Z6', Z6K1: 'pasted composition' }
+		};
+		const fragmentHash = await sha256( JSON.stringify( stabilize( storedValue ) ) );
+
+		store.cleanClipboardItem = jest.fn().mockReturnValue( clipboardValue );
+		store.getZObjectByKeyPath = jest.fn().mockReturnValue( storedValue );
+		store.setAbstractFragmentHash = jest.fn();
+		const wrapper = renderSection();
+
+		wrapper.findComponent( { name: 'wl-abstract-content-fragment' } )
+			.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD } );
+		wrapper.findComponent( { name: 'wl-clipboard-dialog' } )
+			.vm.$emit( 'paste', { value: clipboardValue } );
+
+		expect( store.setValueByKeyPath ).toHaveBeenCalledWith( {
+			keyPath: keyPath.split( '.' ),
+			value: clipboardValue
+		} );
+		expect( store.getZObjectByKeyPath ).toHaveBeenCalledWith( keyPath.split( '.' ) );
+		await waitFor( () => expect( store.setAbstractFragmentHash ).toHaveBeenCalledTimes( 1 ) );
+		expect( store.setAbstractFragmentHash ).toHaveBeenCalledWith( section.qid, 0, fragmentHash );
+	} );
 	describe( 'dragging a fragment', () => {
 		const threeFragments = Object.assign( {}, section, {
 			fragments: [ benjaminType, fragmentCall, fragmentCall, fragmentCall ]

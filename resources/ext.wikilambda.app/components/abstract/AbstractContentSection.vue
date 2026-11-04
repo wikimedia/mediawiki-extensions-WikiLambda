@@ -169,11 +169,12 @@ module.exports = exports = defineComponent( {
 		 * @param {Object} item
 		 */
 		function pasteFromClipboard( item ) {
+			const keyPath = copyToKeyPath.value.split( '.' );
 			const cleanValue = store.cleanClipboardItem( item.value, copyToKeyPath.value );
-			store.setValueByKeyPath( {
-				keyPath: copyToKeyPath.value.split( '.' ),
-				value: cleanValue
-			} );
+			store.setValueByKeyPath( { keyPath, value: cleanValue } );
+
+			// Hash the value in its stored form, not the clipboard form
+			regenerateHash( store.getZObjectByKeyPath( keyPath ), keyPath[ keyPath.length - 1 ] );
 
 			// Set page as dirty
 			store.setDirty();
@@ -518,6 +519,9 @@ module.exports = exports = defineComponent( {
 		// * On AbstractContentFragment change, emits a 'rehash' event after waiting
 		//   for inactivity. On receiving 'rehash', this component rebuilds the hash
 		//   and updates the array in the store.
+		// * On paste from the clipboard: the pasted value is a new list item, so Vue
+		//   mounts a new AbstractContentFragment, which emits no 'rehash'. This
+		//   component rebuilds the hash after the paste.
 
 		/**
 		 * Updates the fragment hash for the fragment placed in the given index
