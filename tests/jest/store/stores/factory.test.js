@@ -369,6 +369,21 @@ describe( 'factory Pinia store', () => {
 					const result = store.createObjectByType( payload );
 					expect( result ).toEqual( expected );
 				} );
+
+				it( 'creates a wikidata enum instance of lexeme senses', () => {
+					store.getTypeOfWikidataEnum.mockReturnValue( 'Z6096' );
+					const payload = { type: enumType };
+					const expected = {
+						Z1K1: 'Z10004',
+						Z10004K1: {
+							Z1K1: 'Z6096',
+							Z6096K1: ''
+						}
+					};
+
+					const result = store.createObjectByType( payload );
+					expect( result ).toEqual( expected );
+				} );
 			} );
 
 			describe( 'createZBoolean', () => {

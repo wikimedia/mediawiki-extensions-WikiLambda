@@ -641,6 +641,7 @@ const typeUtils = {
 
 			case Constants.Z_WIKIDATA_REFERENCE_LEXEME:
 			case Constants.Z_WIKIDATA_REFERENCE_LEXEME_FORM:
+			case Constants.Z_WIKIDATA_REFERENCE_LEXEME_SENSE:
 			case Constants.Z_WIKIDATA_REFERENCE_ITEM:
 			case Constants.Z_WIKIDATA_REFERENCE_PROPERTY:
 				// Empty Wikidata reference:

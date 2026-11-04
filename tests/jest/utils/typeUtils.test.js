@@ -296,6 +296,16 @@ describe( 'typeUtils', () => {
 					[ Constants.Z_MONOLINGUALSTRING_VALUE ]: ''
 				} );
 			} );
+			it.each( Object.values( Constants.WIKIDATA_REFERENCE_TYPES ) )(
+				'of Wikidata reference if type is %s',
+				( referenceType ) => {
+					const result = getScaffolding( referenceType );
+					expect( result ).toStrictEqual( {
+						[ Constants.Z_OBJECT_TYPE ]: referenceType,
+						[ `${ referenceType }K1` ]: ''
+					} );
+				}
+			);
 		} );
 		describe( 'return undefined', () => {
 			it( 'if type is other than reference, string, or monolingual string', () => {
