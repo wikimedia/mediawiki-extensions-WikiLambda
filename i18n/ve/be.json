@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Artsiom91",
 			"No Sleep till Krupki",
 			"Ucukor"
 		]
@@ -11,18 +12,18 @@
 	"wikilambda-recentchanges-edit-letter": "Ф",
 	"wikilambda-recentchanges-edit-title": "Праўка Вікіфункцыяў",
 	"wikilambda-recentchanges-entry-function": "Функцыя",
-	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Злучана $1 Ажыццяўленне:|Злучаны $1 Ажыццяўленні:|Злучаны $1 Ажыццяўленняў:|1=Злучана Ажыццяўленне}} $2",
+	"wikilambda-recentchanges-explanation-connect-implementation": "{{PLURAL:$1|Падключана $1 Рэалізацыя:|Падключаны $1 Рэалізацыі:|Падключана $1 Рэалізацый:|1=Падключана Рэалізацыя}} $2",
 	"wikilambda-recentchanges-explanation-connect-tester": "{{PLURAL:$1|Злучаны $1 Тэставы выпадак:|Злучаныя $1 Тэставых выпадку:|Злучаныя $1 Тэставых выпадкаў:|1=Злучаны $1 Тэставы выпадак:}} $2",
 	"wikilambda-recentchanges-explanation-delete-function": "Выдалена вызначэнне Функцыі",
-	"wikilambda-recentchanges-explanation-delete-implementation": "Выдалена Ажыццяўленне $1",
+	"wikilambda-recentchanges-explanation-delete-implementation": "Выдалена Рэалізацыя $1",
 	"wikilambda-recentchanges-explanation-delete-tester": "Выдалены Тэставы выпадак $1",
-	"wikilambda-recentchanges-explanation-disconnect-implementation": "{{PLURAL:$1|Адлучана $1 Ажыццяўленне:|Адлучаны $1 Ажыццяўленні:|Адлучаны $1 Ажыццяўленняў:|1=Адлучана Ажыццяўленне}} $2",
+	"wikilambda-recentchanges-explanation-disconnect-implementation": "{{PLURAL:$1|Адключана $1 Рэалізацыя:|Адключаны $1 Рэалізацыі:|Адключана $1 Рэалізацый:|1=Адключана Рэалізацыя}} $2",
 	"wikilambda-recentchanges-explanation-disconnect-tester": "{{PLURAL:$1|Адлучаны $1 Тэставы выпадак:|Адлучаныя $1 Тэставых выпадку:|Адлучаныя $1 Тэставых выпадкаў:|1=Адлучаны $1 Тэставы выпадак:}} $2",
 	"wikilambda-recentchanges-explanation-edit-function": "Змененае вызначэнне функцыі",
-	"wikilambda-recentchanges-explanation-edit-implementation": "Зменена Ажыццяўленне $1",
+	"wikilambda-recentchanges-explanation-edit-implementation": "Зменена Рэалізацыя $1",
 	"wikilambda-recentchanges-explanation-edit-tester": "Зменены Тэставы выпадак $1",
 	"wikilambda-recentchanges-explanation-restore-function": "Аднаўлена вызначэнне Функцыі",
-	"wikilambda-recentchanges-explanation-restore-implementation": "Аднаўлена Ажыццяўленне $1",
+	"wikilambda-recentchanges-explanation-restore-implementation": "Адноўлена Рэалізацыя $1",
 	"wikilambda-recentchanges-explanation-restore-tester": "Аднаўлены Тэставы выпадак $1",
 	"wikilambda-recentchanges-filter-description": "Праўкі, якія пачынаюцца на Вікіфункцыях",
 	"wikilambda-recentchanges-filter-label": "Праўкі Вікіфункцыяў",
@@ -69,5 +70,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-preview-error": "Функцыя не можа адлюстраваць вынік. Паўтарыце спробу пазней.",
 	"wikilambda-visualeditor-wikifunctionscall-preview-cancelled": "Скасаванае",
 	"wikilambda-visualeditor-wikifunctionscall-preview-retry-button-label": "Скінуць",
-	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Скасаваць"
+	"wikilambda-visualeditor-wikifunctionscall-preview-cancel-button-label": "Скасаваць",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Паказаць адрэндараваны"
 }

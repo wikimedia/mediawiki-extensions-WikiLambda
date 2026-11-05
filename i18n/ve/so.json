@@ -52,6 +52,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Tafatir shaqada si loo saxo qiimayaasha maqan ama aan sax ahayn.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Ikhtiyaar lama dooran.",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "Luuqad lama dooran.",
+	"wikilambda-visualeditor-wikifunctionscall-error-load-inputs": "Gelinnada shaqadan lama soo rari karin. Fadlan mar kale isku day mar kale.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Fadlan geli qiime.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Khalad aan la garanayn. [[f:Talk:$1|Soo sheeg arrinta]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Lexeme Wikidata ah oo aan sax ahayn.",

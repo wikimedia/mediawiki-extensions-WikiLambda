@@ -296,6 +296,7 @@
 	"wikilambda-function-evaluation-restriction-notrunnable": "Esta función non ten implementacións conectadas.",
 	"wikilambda-function-evaluation-restriction-warning": "Sentímolo! Polo momento, só os usuarios que iniciaron sesión poden executar funcións.",
 	"wikilambda-function-evaluator-enter-inputs": "Introduce as entradas",
+	"wikilambda-function-evaluator-load-error": "Non se puido cargar a función. Recarga a páxina para intentalo de novo.",
 	"wikilambda-function-evaluator-no-function-selected": "Selecciona unha función para probala.",
 	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Selecciona unha función para probar esta implementación.",
 	"wikilambda-function-evaluator-result": "Resultado",

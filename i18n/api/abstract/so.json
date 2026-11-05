@@ -21,6 +21,7 @@
 	"apierror-abstractwiki_run_fragment-bad-fragment": "Qaybtu ma aha wicitaan shaqo oo sax ah.",
 	"apierror-abstractwiki_run_fragment-bad-response": "Qaybtu waxay soo celisay nooc khaldan.",
 	"apierror-abstractwiki_run_fragment-forbidden": "Ma lihid oggolaanshaha lagama maarmaanka ah si aad u soo bandhigto qaybtan.",
+	"apierror-abstractwiki_run_fragment-fresh-not-enabled": "Lama soo bandhigi karo jajabyada nuxurka Abstract Wikipedia iyadoo la adeegsanayo xogtii ugu dambaysay: astaantan lama hawlgelin.",
 	"apierror-abstractwiki_run_fragment-not-enabled": "Lama soo bandhigi karo qaybaha nuxurka Abstract Wikipedia: sifadan lama hawlgelin.",
 	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifunctions waxay soo celisay jawaab fashilantay: $1",
 	"apierror-abstractwiki_run_fragment-service-unavailable": "Adeegga soo bandhigista si ku meel gaar ah looma heli karo. Fadlan isku day mar kale goor dambe.",
@@ -31,6 +32,7 @@
 	"apihelp-abstractwiki_run_fragment-param-language": "Aqoonsiga Shayga Luuqadda (Language ZObject Id) ee loo adeegsaday soo bandhigista qaybta. Waa inuu noqdaa Zid sax ah.",
 	"apihelp-abstractwiki_run_fragment-param-date": "Xargaha taariikhda ee loo adeegsaday soo bandhigista qaybta.",
 	"apihelp-abstractwiki_run_fragment-param-fragment": "JSON-ka isku-dhafka qaybta. Waa inuu noqdaa ZObject sax ah oo uu soo saaraa walax nooca Z89/qayb HTML ah",
+	"apihelp-abstractwiki_run_fragment-param-fresh": "In jajabka mar kale lagu soo bandhigo xogtii ugu dambaysay, iyadoo laga gudbayo jajabka kaydsan iyo kaydadka Wikifunctions. Waxay u baahan tahay oggolaanshaha codsashada natiijooyin cusub, kaas oo xaddidan tirada codsiyada, codsi POST ah iyo calaamad CSRF ah, mar walbana si toos ah ayuu u dhacaa.",
 	"apihelp-abstractwiki_run_fragment-example-literal-html": "Ku socodsii qayb leh walax HTML ah oo sugan",
 	"apihelp-abstractwiki_run_fragment-example-composition": "Ku socodsii qayb leh isku dhis isticmaala doodaha qid iyo luuqad"
 }

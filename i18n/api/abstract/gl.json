@@ -21,6 +21,7 @@
 	"apierror-abstractwiki_run_fragment-bad-fragment": "O fragmento non é unha chamada de función válida.",
 	"apierror-abstractwiki_run_fragment-bad-response": "O fragmento devolveu un tipo incorrecto.",
 	"apierror-abstractwiki_run_fragment-forbidden": "Non tes os permisos necesarios para renderizar este fragmento.",
+	"apierror-abstractwiki_run_fragment-fresh-not-enabled": "Non se poden renderizar os fragmentos de contido da Wikipedia abstracta cos datos máis recentes: esta funcionalidade non está activada.",
 	"apierror-abstractwiki_run_fragment-not-enabled": "Non se poden renderizar os fragmentos de contido da Wikipedia abstracta: esta funcionalidade non está activada.",
 	"apierror-abstractwiki_run_fragment-returned-zerror": "Wikifuncións devolveu unha resposta con erro: $1",
 	"apierror-abstractwiki_run_fragment-service-unavailable": "O servizo de renderizado non está dispoñible temporalmente. Inténtao de novo máis tarde.",
@@ -31,6 +32,7 @@
 	"apihelp-abstractwiki_run_fragment-param-language": "O ID do ZObject de lingua empregado para renderizar o fragmento. Debe ser un Zid válido.",
 	"apihelp-abstractwiki_run_fragment-param-date": "A cadea de data empregada para renderizar o fragmento.",
 	"apihelp-abstractwiki_run_fragment-param-fragment": "Un JSON de composición de fragmentos. Debe ser un ZObject válido e debe xerar un obxecto de tipo Z89/HTML Fragment.",
+	"apihelp-abstractwiki_run_fragment-param-fresh": "Indica se se debe renderizar o fragmento de novo cos datos máis recentes, omitindo o fragmento almacenado e as cachés de Wikifuncións. Necesita o dereito de solicitar resultados recentes, que ten un límite de taxa, unha solicitude POST e un token CSRF, e sempre é síncrono.",
 	"apihelp-abstractwiki_run_fragment-example-literal-html": "Executar un fragmento cun obxecto HTML literal",
 	"apihelp-abstractwiki_run_fragment-example-composition": "Executar un fragmento cunha composición que usa argumentos Qid e de lingua"
 }

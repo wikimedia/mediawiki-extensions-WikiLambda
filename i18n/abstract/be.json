@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Artsiom91"
+		]
+	},
+	"content-model-abstractwiki": "Абстрактны артыкул",
+	"wikilambda-abstract-content-object": "Абстрактны артыкул",
+	"wikilambda-abstract-menu-option-show-provenance": "Паказаць паходжанне",
+	"wikilambda-abstract-preview-fragment-replicate": "Глядзець падрабязнасці ў Вікіфункцыях",
+	"wikilambda-abstract-preview-provenance-fragment-store": "Гэты тэкст быў згенераваны раней і захаваны",
+	"wikilambda-abstract-preview-provenance-render-date": "Фрагмент адрэндараваны",
+	"wikilambda-abstract-preview-provenance-unavailable": "Няма інфармацыі пра паходжанне для гэтага фрагмента",
+	"wikilambda-abstract-preview-in-language": "Згенераваны тэкст",
+	"wikilambda-abstract-search-no-article": "— яшчэ няма артыкула",
+	"wikilambda-abstract-special-create": "Стварыць новы абстрактны артыкул",
+	"wikilambda-abstract-special-create-qid": "Стварыць новы абстрактны артыкул для $1"
+}

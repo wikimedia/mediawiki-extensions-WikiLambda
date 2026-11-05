@@ -55,6 +55,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "编辑函数以修复缺失或无效的值。",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "未选择选项。",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "未选择语言。",
+	"wikilambda-visualeditor-wikifunctionscall-error-load-inputs": "无法加载此函数的输入。请稍后重试。",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "请输入一个值。",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "未知错误。[[f:Talk:$1|报告问题]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "无效的维基数据词位。",

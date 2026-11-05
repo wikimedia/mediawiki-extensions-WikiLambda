@@ -1,8 +1,19 @@
 {
 	"@metadata": {
 		"authors": [
+			"Artsiom91",
 			"Putnik"
 		]
 	},
-	"wikilambda-abstract-special-create": "Создать новую абстрактную статью"
+	"content-model-abstractwiki": "Абстрактная статья",
+	"wikilambda-abstract-content-object": "Абстрактная статья",
+	"wikilambda-abstract-menu-option-show-provenance": "Показать происхождение",
+	"wikilambda-abstract-preview-fragment-replicate": "Смотреть подробности в Викифункциях",
+	"wikilambda-abstract-preview-provenance-fragment-store": "Этот текст был сгенерирован ранее и сохранён",
+	"wikilambda-abstract-preview-provenance-render-date": "Фрагмент отрендерен",
+	"wikilambda-abstract-preview-provenance-unavailable": "Нет информации о происхождении для этого фрагмента",
+	"wikilambda-abstract-preview-in-language": "Сгенерированный текст",
+	"wikilambda-abstract-search-no-article": "— ещё нет статьи",
+	"wikilambda-abstract-special-create": "Создать новую абстрактную статью",
+	"wikilambda-abstract-special-create-qid": "Создать новую абстрактную статью для $1"
 }
