@@ -744,9 +744,51 @@ describe( 'AbstractPreviewFragment', () => {
 			);
 		} );
 
-		it( 'closes the popover when it asks to close', () => {
+		it( 'points at the first element with a width when the fragment itself has none, e.g. an infobox', async () => {
+			store.getFragmentPreview = jest.fn().mockReturnValue( {
+				html: '<table class="infobox"><tr><td>Infobox</td></tr></table>'
+			} );
+			const widthOf = ( element ) => ( element.tagName === 'TABLE' || element.tagName === 'TD' ) ? 200 : 0;
+			const getRect = jest.spyOn( HTMLElement.prototype, 'getBoundingClientRect' )
+				.mockImplementation( function () {
+					return { width: widthOf( this ) };
+				} );
 			store.getProvenanceFragment = keyPath;
 			wrapper = renderFragment();
+			await wrapper.vm.$nextTick();
+
+			const popover = wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } );
+			expect( popover.props( 'anchor' ) ).toBe( wrapper.find( 'table' ).element );
+			getRect.mockRestore();
+		} );
+
+		it( 'points at the new element when the generated text changes', async () => {
+			const preview = { html: '<table><tr><td>Old</td></tr></table>' };
+			store.getFragmentPreview = jest.fn( () => preview );
+			const getRect = jest.spyOn( HTMLElement.prototype, 'getBoundingClientRect' )
+				.mockImplementation( function () {
+					return { width: this.tagName === 'TABLE' ? 200 : 0 };
+				} );
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+			await wrapper.vm.$nextTick();
+			const oldTable = wrapper.find( 'table' ).element;
+
+			// e.g. after "Run with latest data"
+			store.getFragmentPreview = jest.fn( () => ( { html: '<table><tr><td>New</td></tr></table>' } ) );
+			await wrapper.vm.$nextTick();
+			await wrapper.vm.$nextTick();
+
+			const newTable = wrapper.find( 'table' ).element;
+			expect( newTable ).not.toBe( oldTable );
+			expect( wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).props( 'anchor' ) ).toBe( newTable );
+			getRect.mockRestore();
+		} );
+
+		it( 'closes the popover when it asks to close', async () => {
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment();
+			await wrapper.vm.$nextTick();
 
 			wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).vm.$emit( 'update:open', false );
 
@@ -755,20 +797,22 @@ describe( 'AbstractPreviewFragment', () => {
 			expect( store.clearFreshRequestError ).toHaveBeenCalledWith( fragmentHash, 'Z1002' );
 		} );
 
-		it( 'gives the popover the state of a fresh render request (T441584)', () => {
+		it( 'gives the popover the state of a fresh render request (T441584)', async () => {
 			const freshRequest = { isLoading: true, error: null };
 			store.getFreshRequest = jest.fn().mockReturnValue( freshRequest );
 			store.getProvenanceFragment = keyPath;
 			wrapper = renderFragment();
+			await wrapper.vm.$nextTick();
 
 			const popover = wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } );
 			expect( popover.props( 'freshRequest' ) ).toEqual( freshRequest );
 			expect( store.getFreshRequest ).toHaveBeenCalledWith( fragmentHash, 'Z1002' );
 		} );
 
-		it( 'passes on a request for a fresh render (T441584)', () => {
+		it( 'passes on a request for a fresh render (T441584)', async () => {
 			store.getProvenanceFragment = keyPath;
 			wrapper = renderFragment();
+			await wrapper.vm.$nextTick();
 
 			wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).vm.$emit( 'request-fresh' );
 

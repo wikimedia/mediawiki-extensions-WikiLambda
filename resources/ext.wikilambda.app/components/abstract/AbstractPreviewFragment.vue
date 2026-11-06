@@ -88,9 +88,9 @@
 
 		<!-- Provenance popover, opened from the fragment menu (T441583) -->
 		<wl-abstract-preview-provenance
-			v-if="isProvenanceOpen"
+			v-if="isProvenanceOpen && provenanceAnchor"
 			:open="isProvenanceOpen"
-			:anchor="rootRef"
+			:anchor="provenanceAnchor"
 			:fragment-preview="fragmentPreview"
 			:fresh-request="freshRequest"
 			@update:open="onProvenanceOpenUpdate"
@@ -367,6 +367,35 @@ module.exports = exports = defineComponent( {
 		) );
 
 		/**
+		 * Returns the element that the provenance popover points at. The fragment's
+		 * root is inline, so that text fragments flow as running text. An inline
+		 * element around a block or a float, such as an infobox or an image, has no
+		 * width of its own, so point at the first element inside it that has one.
+		 *
+		 * @return {HTMLElement|null}
+		 */
+		function findProvenanceAnchor() {
+			const root = rootRef.value;
+			if ( !root || root.getBoundingClientRect().width > 0 ) {
+				return root;
+			}
+			return Array.from( root.querySelectorAll( '*' ) )
+				.find( ( element ) => element.getBoundingClientRect().width > 0 ) || root;
+		}
+
+		// Find the anchor after the page shows the fragment, and again when its
+		// generated text changes, e.g. after "Run with latest data", which replaces
+		// the element that the popover pointed at.
+		const provenanceAnchor = ref( null );
+		watch(
+			[ isProvenanceOpen, rootRef, () => fragmentPreview.value.html ],
+			() => {
+				provenanceAnchor.value = isProvenanceOpen.value ? findProvenanceAnchor() : null;
+			},
+			{ immediate: true, flush: 'post' }
+		);
+
+		/**
 		 * Close the provenance popover when Codex asks to, e.g. on a click
 		 * outside it, the Escape key, or its close button.
 		 *
@@ -414,6 +443,7 @@ module.exports = exports = defineComponent( {
 			missingLabel,
 			onFocusIn,
 			onProvenanceOpenUpdate,
+			provenanceAnchor,
 			rootRef,
 			selectFragment,
 			setHighlight,
