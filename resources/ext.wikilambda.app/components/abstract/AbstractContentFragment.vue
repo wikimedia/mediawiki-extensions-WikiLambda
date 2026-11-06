@@ -202,14 +202,15 @@ module.exports = exports = defineComponent( {
 					icon: icons.cdxIconLinkExternal
 				} ] : [] ) ]
 			};
-			// show provenance of the generated text (T441583)
+			// show provenance of the generated text (T441583), when there is any
 			const provenanceActionGroup = {
 				label: i18n( 'wikilambda-abstract-menu-option-show-provenance' ).text(),
 				hideLabel: true,
 				items: [ {
 					label: i18n( 'wikilambda-abstract-menu-option-show-provenance' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.SHOW_PROVENANCE,
-					icon: icons.cdxIconHistory
+					icon: icons.cdxIconHistory,
+					disabled: !store.hasFragmentProvenance( props.keyPath )
 				} ]
 			};
 			// delete item

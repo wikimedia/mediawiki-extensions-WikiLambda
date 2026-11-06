@@ -114,6 +114,27 @@ describe( 'AbstractContentFragment', () => {
 			expect( deleteGroup.items[ 0 ].value ).toBe( Constants.LIST_MENU_OPTIONS.DELETE_ITEM );
 		} );
 
+		it( 'dims "Show provenance" when the popover would have nothing to show', () => {
+			store.hasFragmentProvenance = jest.fn().mockReturnValue( false );
+			const wrapper = renderFragment();
+
+			expect( store.hasFragmentProvenance ).toHaveBeenCalledWith( keyPath );
+			expect( wrapper.vm.menuItems[ 3 ].items[ 0 ].disabled ).toBe( true );
+		} );
+
+		it( 'offers "Show provenance" as soon as there is provenance, also while the menu is open', async () => {
+			store.hasFragmentProvenance = jest.fn().mockReturnValue( false );
+			const wrapper = renderFragment();
+			const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			expect( menuButton.props( 'menuItems' )[ 3 ].items[ 0 ].disabled ).toBe( true );
+
+			// e.g. the pending render arrives
+			store.hasFragmentProvenance = jest.fn().mockReturnValue( true );
+			await wrapper.vm.$nextTick();
+
+			expect( menuButton.props( 'menuItems' )[ 3 ].items[ 0 ].disabled ).toBe( false );
+		} );
+
 		it( 'disables move-before when fragment is first', () => {
 			const wrapper = renderFragment( {
 				keyPath: 'abstractwiki.sections.Q8776414.fragments.1'

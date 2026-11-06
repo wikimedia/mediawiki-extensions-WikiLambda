@@ -330,6 +330,32 @@ const abstractWikiStore = {
 			return state.provenance;
 		},
 		/**
+		 * Returns whether the provenance popover has anything to show for the
+		 * fragment at a key path, in the preview language: its generated text
+		 * came from the fragment store, or has a render date or freshness metadata.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		hasFragmentProvenance: function ( state ) {
+			/**
+			 * @param {string} keyPath e.g. abstractwiki.sections.Q1.fragments.2
+			 * @return {boolean}
+			 */
+			return ( keyPath ) => {
+				const parts = keyPath.split( '.' );
+				const sectionQid = parts[ 2 ];
+				const index = Number( parts[ parts.length - 1 ] ) - 1;
+				const hash = ( state.sectionHashes[ sectionQid ] || [] )[ index ];
+				const preview = hash && this.getFragmentPreview( hash, this.getPreviewLanguageZid );
+				return !!preview && (
+					!!preview.fromFragmentStore ||
+					!!preview.renderDate ||
+					Object.keys( preview.metadata || {} ).length > 0
+				);
+			};
+		},
+		/**
 		 * Returns the state of a fresh-result request ("Run with latest data"):
 		 * whether it is running, and the message of its last failure, if any.
 		 *

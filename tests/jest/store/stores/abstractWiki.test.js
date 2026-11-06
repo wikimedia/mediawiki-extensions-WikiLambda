@@ -470,6 +470,50 @@ describe( 'abstractWiki Pinia store', () => {
 			} );
 		} );
 
+		describe( 'hasFragmentProvenance', () => {
+			const fragmentKeyPath = 'abstractwiki.sections.Q8776414.fragments.2';
+			const previewKey = `hash2:${ mockLang }`;
+
+			beforeEach( () => {
+				store.sectionHashes = { Q8776414: [ 'hash1', 'hash2' ] };
+			} );
+
+			it( 'returns false when the fragment has no hash or no preview', () => {
+				store.sectionHashes = {};
+				expect( store.hasFragmentProvenance( fragmentKeyPath ) ).toBe( false );
+
+				store.sectionHashes = { Q8776414: [ 'hash1', 'hash2' ] };
+				expect( store.hasFragmentProvenance( fragmentKeyPath ) ).toBe( false );
+			} );
+
+			it( 'returns false when the preview has nothing to show, e.g. while it loads', () => {
+				store.fragments = { [ previewKey ]: { isLoading: true, metadata: {} } };
+				expect( store.hasFragmentProvenance( fragmentKeyPath ) ).toBe( false );
+			} );
+
+			it( 'returns true when the preview came from the fragment store', () => {
+				store.fragments = { [ previewKey ]: { html: '<p>text</p>', fromFragmentStore: true } };
+				expect( store.hasFragmentProvenance( fragmentKeyPath ) ).toBe( true );
+			} );
+
+			it( 'returns true when the preview has a render date', () => {
+				store.fragments = { [ previewKey ]: { error: {}, renderDate: '20261105120000' } };
+				expect( store.hasFragmentProvenance( fragmentKeyPath ) ).toBe( true );
+			} );
+
+			it( 'returns true when the preview has freshness metadata', () => {
+				store.fragments = {
+					[ previewKey ]: { html: '<p>text</p>', metadata: { functionCallFreshResult: 'true' } }
+				};
+				expect( store.hasFragmentProvenance( fragmentKeyPath ) ).toBe( true );
+			} );
+
+			it( 'reads the preview in the preview language', () => {
+				store.fragments = { 'hash2:Z1787': { html: '<p>text</p>', fromFragmentStore: true } };
+				expect( store.hasFragmentProvenance( fragmentKeyPath ) ).toBe( false );
+			} );
+		} );
+
 		describe( 'getSuggestedHtmlFunctions', () => {
 			it( 'returns empty list if nothing set', () => {
 				expect( store.getSuggestedHtmlFunctions ).toEqual( [] );

@@ -31,7 +31,9 @@ describe( 'AbstractPreviewProvenance', () => {
 					},
 					'wl-function-metadata-item': false,
 					'cdx-button': false,
-					'cdx-message': false
+					'cdx-message': false,
+					'cdx-progress-indicator': false,
+					CdxLabel: false
 				}
 			}
 		} );
@@ -290,6 +292,25 @@ describe( 'AbstractPreviewProvenance', () => {
 			const wrapper = renderProvenance( { fromFragmentStore: true }, { isLoading: true, error: null } );
 
 			expect( findButton( wrapper ).attributes( 'disabled' ) ).toBeDefined();
+		} );
+
+		it( 'shows that a request runs next to the button', () => {
+			allowFreshResults();
+			const wrapper = renderProvenance( { fromFragmentStore: true }, { isLoading: true, error: null } );
+
+			const indicator = wrapper.findComponent( { name: 'CdxProgressIndicator' } );
+			expect( indicator.exists() ).toBe( true );
+			expect( indicator.props( 'showLabel' ) ).toBe( true );
+			expect( indicator.text() ).toContain( 'Running…' );
+			expect( indicator.element.parentElement ).toBe( findButton( wrapper ).element.parentElement );
+		} );
+
+		it( 'shows no progress indicator when no request runs', () => {
+			allowFreshResults();
+			const wrapper = renderProvenance( { fromFragmentStore: true }, { isLoading: false, error: null } );
+
+			expect( findButton( wrapper ).exists() ).toBe( true );
+			expect( wrapper.findComponent( { name: 'CdxProgressIndicator' } ).exists() ).toBe( false );
 		} );
 
 		it( 'shows the message of a failed request', () => {

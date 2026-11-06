@@ -41,16 +41,26 @@
 		</cdx-message>
 		<!-- As the action row of the Wikifunctions UI's "Provenance" section -->
 		<div class="ext-wikilambda-app-abstract-preview-provenance__action">
-			<cdx-button
+			<div
 				v-if="showFreshButton"
-				class="ext-wikilambda-app-abstract-preview-provenance__fresh"
-				action="progressive"
-				weight="quiet"
-				:disabled="freshRequest.isLoading"
-				@click="$emit( 'request-fresh' )"
+				class="ext-wikilambda-app-abstract-preview-provenance__fresh-row"
 			>
-				{{ i18n( 'wikilambda-functioncall-metadata-cache-freshen-button' ).text() }}
-			</cdx-button>
+				<cdx-button
+					class="ext-wikilambda-app-abstract-preview-provenance__fresh"
+					action="progressive"
+					weight="quiet"
+					:disabled="freshRequest.isLoading"
+					@click="$emit( 'request-fresh' )"
+				>
+					{{ i18n( 'wikilambda-functioncall-metadata-cache-freshen-button' ).text() }}
+				</cdx-button>
+				<cdx-progress-indicator
+					v-if="freshRequest.isLoading"
+					:show-label="true"
+				>
+					{{ i18n( 'wikilambda-abstract-preview-provenance-running' ).text() }}
+				</cdx-progress-indicator>
+			</div>
 			<a
 				:href="i18n( 'wikilambda-functioncall-metadata-cache-help-link' ).text()"
 				target="_blank"
@@ -77,7 +87,7 @@ const icons = require( '../../../lib/icons.json' );
 // Widget components
 const FunctionMetadataItem = require( '../widgets/function-evaluator/FunctionMetadataItem.vue' );
 // Codex components
-const { CdxButton, CdxIcon, CdxMessage, CdxPopover } = require( '../../../codex.js' );
+const { CdxButton, CdxIcon, CdxMessage, CdxPopover, CdxProgressIndicator } = require( '../../../codex.js' );
 
 // The freshness metadata keys stored with a rendered fragment, in display order
 const PROVENANCE_KEYS = [
@@ -109,7 +119,8 @@ module.exports = exports = defineComponent( {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
 		'cdx-message': CdxMessage,
-		'cdx-popover': CdxPopover
+		'cdx-popover': CdxPopover,
+		'cdx-progress-indicator': CdxProgressIndicator
 	},
 	props: {
 		/**
@@ -283,6 +294,22 @@ module.exports = exports = defineComponent( {
 		flex-direction: column;
 		align-items: flex-start;
 		gap: @spacing-50;
+	}
+
+	.ext-wikilambda-app-abstract-preview-provenance__fresh-row {
+		display: flex;
+		align-items: center;
+		gap: @spacing-50;
+	}
+
+	// Codex marks the element in focus. The popover focuses the button when it opens,
+	// normally by drawing a rectangle around it, but we don't want the rectangle, so we
+	// show the mark only when the browser judges it useful, e.g. after keyboard use.
+	.ext-wikilambda-app-abstract-preview-provenance__fresh {
+		&.cdx-button--weight-quiet.cdx-button--action-progressive:enabled:focus:not( :active ):not( :focus-visible ) {
+			border-color: transparent;
+			box-shadow: none;
+		}
 	}
 
 	.ext-wikilambda-app-abstract-preview-provenance__link {
