@@ -52,6 +52,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Sunting fungsi untuk membetulkan nilai yang hilang atau tidak sah.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "Tiada pilihan yang dipilih.",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "Tiada bahasa yang dipilih.",
+	"wikilambda-visualeditor-wikifunctionscall-error-load-inputs": "Tidak dapat memuatkan input fungsi ini. Sila cuba lagi nanti.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "Sila masukkan nilai.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "Ralat Tidak Diketahui. [[f:Talk:$1|Laporkan isu]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "Leksem Wikidata tidak sah.",
