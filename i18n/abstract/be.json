@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Artsiom91"
+		]
+	},
+	"content-model-abstractwiki": "Абстрактны артыкул",
+	"wikilambda-abstract-content-object": "Абстрактны артыкул",
+	"wikilambda-abstract-preview-in-language": "Згенераваны тэкст",
+	"wikilambda-abstract-special-create": "Стварыць новы абстрактны артыкул",
+	"wikilambda-abstract-special-create-qid": "Стварыць новы абстрактны артыкул для $1"
+}

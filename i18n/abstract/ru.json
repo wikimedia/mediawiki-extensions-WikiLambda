@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Putnik"
+			"Putnik",
+			"Artsiom91"
 		]
 	},
-	"wikilambda-abstract-special-create": "Создать новую абстрактную статью"
+	"content-model-abstractwiki": "Абстрактная статья",
+	"wikilambda-abstract-content-object": "Абстрактная статья",
+	"wikilambda-abstract-preview-in-language": "Сгенерированный текст",
+	"wikilambda-abstract-special-create": "Создать новую абстрактную статью",
+	"wikilambda-abstract-special-create-qid": "Создать новую абстрактную статью для $1"
 }

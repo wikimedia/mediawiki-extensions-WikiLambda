@@ -342,6 +342,7 @@
 	"wikilambda-helplink-button": "Hjälp",
 	"wikilambda-helplink-tooltip": "Du kan läsa en hjälpsida som förklarar denna metadata",
 	"wikilambda-history-title": "Sidversionshistorik för \"$1\" ($2)",
+	"wikilambda-html-fragment-toggle": "Visa renderad",
 	"wikilambda-implementation-create-new": "Lägg till implementering",
 	"wikilambda-implementation-none-found": "Implementeringar du skapar kommer visas här.",
 	"wikilambda-implementation-selector": "Välj en implementering",

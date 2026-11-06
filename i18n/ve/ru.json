@@ -4,7 +4,8 @@
 			"Amire80",
 			"Merrahtar",
 			"Okras",
-			"Vonavy"
+			"Vonavy",
+			"Artsiom91"
 		]
 	},
 	"wikilambda-recentchanges-edit-legend": "Правка из Викифункций",
@@ -36,5 +37,6 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "Отредактируйте функцию, чтобы исправить отсутствующие или недопустимые значения.",
 	"wikilambda-visualeditor-wikifunctionscall-popup-loading": "Загрузка данных функции",
 	"wikilambda-visualeditor-wikifunctionscall-popup-no-function": "Функция не выбрана.",
-	"wikilambda-visualeditor-wikifunctionscall-title": "Функция"
+	"wikilambda-visualeditor-wikifunctionscall-title": "Функция",
+	"wikilambda-visualeditor-wikifunctionscall-preview-html-fragment-toggle": "Показать отрендеренный"
 }
