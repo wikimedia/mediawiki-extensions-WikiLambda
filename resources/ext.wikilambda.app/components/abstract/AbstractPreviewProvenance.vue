@@ -39,40 +39,37 @@
 		>
 			{{ freshRequest.error }}
 		</cdx-message>
-		<!-- As the action row of the Wikifunctions UI's "Provenance" section -->
-		<div class="ext-wikilambda-app-abstract-preview-provenance__action">
-			<div
-				v-if="showFreshButton"
-				class="ext-wikilambda-app-abstract-preview-provenance__fresh-row"
-			>
+		<a
+			:href="i18n( 'wikilambda-functioncall-metadata-cache-help-link' ).text()"
+			target="_blank"
+			class="ext-wikilambda-app-abstract-preview-provenance__link"
+		>
+			{{ i18n( 'wikilambda-functioncall-metadata-cache-help-label' ).text() }}
+			<cdx-icon
+				:icon="iconLinkExternal"
+				class="ext-wikilambda-app-abstract-preview-provenance__link-icon"
+			></cdx-icon>
+		</a>
+		<template v-if="showFreshButton" #footer>
+			<div class="ext-wikilambda-app-abstract-preview-provenance__footer">
+				<cdx-progress-indicator
+					v-if="freshRequest.isLoading"
+					:show-label="true"
+					class="ext-wikilambda-app-abstract-preview-provenance__running"
+				>
+					{{ i18n( 'wikilambda-abstract-preview-provenance-running' ).text() }}
+				</cdx-progress-indicator>
 				<cdx-button
 					class="ext-wikilambda-app-abstract-preview-provenance__fresh"
 					action="progressive"
-					weight="quiet"
+					weight="primary"
 					:disabled="freshRequest.isLoading"
 					@click="$emit( 'request-fresh' )"
 				>
 					{{ i18n( 'wikilambda-functioncall-metadata-cache-freshen-button' ).text() }}
 				</cdx-button>
-				<cdx-progress-indicator
-					v-if="freshRequest.isLoading"
-					:show-label="true"
-				>
-					{{ i18n( 'wikilambda-abstract-preview-provenance-running' ).text() }}
-				</cdx-progress-indicator>
 			</div>
-			<a
-				:href="i18n( 'wikilambda-functioncall-metadata-cache-help-link' ).text()"
-				target="_blank"
-				class="ext-wikilambda-app-abstract-preview-provenance__link"
-			>
-				{{ i18n( 'wikilambda-functioncall-metadata-cache-help-label' ).text() }}
-				<cdx-icon
-					:icon="iconLinkExternal"
-					class="ext-wikilambda-app-abstract-preview-provenance__link-icon"
-				></cdx-icon>
-			</a>
-		</div>
+		</template>
 	</cdx-popover>
 </template>
 
@@ -288,28 +285,22 @@ module.exports = exports = defineComponent( {
 		margin: 0 0 @spacing-50;
 	}
 
-	// Stacked, as the popover is too narrow for the button and link side by side
-	.ext-wikilambda-app-abstract-preview-provenance__action {
+	// The progress indicator at the start, the button at the end. If they do not
+	// fit on one line, e.g. in a long translation, the button moves to its own line.
+	.ext-wikilambda-app-abstract-preview-provenance__footer {
 		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: @spacing-50;
-	}
-
-	.ext-wikilambda-app-abstract-preview-provenance__fresh-row {
-		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: @spacing-50;
 	}
 
-	// Codex marks the element in focus. The popover focuses the button when it opens,
-	// normally by drawing a rectangle around it, but we don't want the rectangle, so we
-	// show the mark only when the browser judges it useful, e.g. after keyboard use.
+	.ext-wikilambda-app-abstract-preview-provenance__running {
+		min-width: 0;
+	}
+
 	.ext-wikilambda-app-abstract-preview-provenance__fresh {
-		&.cdx-button--weight-quiet.cdx-button--action-progressive:enabled:focus:not( :active ):not( :focus-visible ) {
-			border-color: transparent;
-			box-shadow: none;
-		}
+		margin-inline-start: auto;
+		max-width: 100%;
 	}
 
 	.ext-wikilambda-app-abstract-preview-provenance__link {

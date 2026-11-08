@@ -25,7 +25,7 @@ describe( 'AbstractPreviewProvenance', () => {
 				stubs: {
 					// Render the popover content in place
 					'cdx-popover': {
-						template: '<div class="cdx-popover-stub"><slot></slot></div>',
+						template: '<div class="cdx-popover-stub"><slot></slot><footer v-if="$slots.footer"><slot name="footer"></slot></footer></div>',
 						props: [ 'open', 'anchor', 'title', 'icon', 'useCloseButton', 'placement' ],
 						emits: [ 'update:open' ]
 					},
@@ -248,7 +248,7 @@ describe( 'AbstractPreviewProvenance', () => {
 			expect( button.exists() ).toBe( true );
 			expect( button.text() ).toBe( 'Run with latest data' );
 			expect( button.classes() ).toContain( 'cdx-button--action-progressive' );
-			expect( button.classes() ).toContain( 'cdx-button--weight-quiet' );
+			expect( button.classes() ).toContain( 'cdx-button--weight-primary' );
 		} );
 
 		it.each( [
@@ -285,6 +285,23 @@ describe( 'AbstractPreviewProvenance', () => {
 			await findButton( wrapper ).trigger( 'click' );
 
 			expect( wrapper.emitted( 'request-fresh' ) ).toHaveLength( 1 );
+		} );
+
+		it( 'offers the button in the footer', () => {
+			allowFreshResults();
+			const wrapper = renderProvenance( { fromFragmentStore: true } );
+
+			expect( findButton( wrapper ).element.closest( 'footer' ) ).not.toBeNull();
+			// The help link stays in the body, above the footer
+			const link = wrapper.find( '.ext-wikilambda-app-abstract-preview-provenance__link' );
+			expect( link.element.closest( 'footer' ) ).toBeNull();
+		} );
+
+		it( 'has no footer when it does not offer the button', () => {
+			const wrapper = renderProvenance( { fromFragmentStore: true } );
+
+			expect( wrapper.find( 'footer' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-provenance__link' ).exists() ).toBe( true );
 		} );
 
 		it( 'disables the button while a request runs', () => {
