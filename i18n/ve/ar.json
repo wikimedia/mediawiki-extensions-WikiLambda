@@ -56,6 +56,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "عدّل الدالة لإصلاح القيم المفقودة أو غير الصالحة.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "لم يُحدّد أي خيار.",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "لم يُحدّد أي لغة.",
+	"wikilambda-visualeditor-wikifunctionscall-error-load-inputs": "تعذر تحميل مدخلات هذه الدالة. يرجى المحاولة مرة أخرى لاحقاً.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "يُرجى إدخال قيمة.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "خطأ غير معروف. [[f:Talk:$1|أبلغ عن مشكلة]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "معجمية ويكي بيانات غير صالحة.",
