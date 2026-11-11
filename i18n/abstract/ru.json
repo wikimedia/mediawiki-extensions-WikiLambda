@@ -1,8 +1,24 @@
 {
 	"@metadata": {
 		"authors": [
-			"Putnik"
+			"Putnik",
+			"Artsiom91"
 		]
 	},
-	"wikilambda-abstract-special-create": "Создать новую абстрактную статью"
+	"content-model-abstractwiki": "Абстрактная статья",
+	"wikilambda-abstract-content-object": "Абстрактная статья",
+	"wikilambda-abstract-fragment-function-selector-helper-text": "Показываются только те функции, которые возвращают $2 ($1).",
+	"wikilambda-abstract-fragment-function-selector-placeholder": "Выберите функцию, возвращающую $2 ($1)",
+	"wikilambda-abstract-fragment-function-selector-popover-body": "Поле ожидает функцию, которая возвращает $2 ($1). В поиске показываются только функции с этим возвращаемым типом.",
+	"wikilambda-abstract-fragment-function-selector-popover-title": "Почему некоторые функции не показываются",
+	"wikilambda-abstract-menu-option-delete-fragment": "Удалить фрагмент",
+	"wikilambda-abstract-menu-option-insert-after": "Вставить фрагмент впереди",
+	"wikilambda-abstract-menu-option-insert-before": "Вставить фрагмент сзади",
+	"wikilambda-abstract-menu-option-move-after": "Передвинуть фрагмент вперёд",
+	"wikilambda-abstract-menu-option-move-before": "Передвинуть фрагмент назад",
+	"wikilambda-abstract-preview-fragment-replicate": "Смотреть подробности в Викифункциях",
+	"wikilambda-abstract-preview-in-language": "Сгенерированный текст",
+	"wikilambda-abstract-search-no-article": "— ещё нет статьи",
+	"wikilambda-abstract-special-create": "Создать новую абстрактную статью",
+	"wikilambda-abstract-special-create-qid": "Создать новую абстрактную статью для $1"
 }

@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Artsiom91"
+		]
+	},
+	"content-model-abstractwiki": "Абстрактны артыкул",
+	"wikilambda-abstract-content-object": "Абстрактны артыкул",
+	"wikilambda-abstract-fragment-function-selector-helper-text": "Паказваюцца толькі тыя функцыі, якія вяртаюць $2 ($1).",
+	"wikilambda-abstract-fragment-function-selector-placeholder": "Выберыце функцыю, якая вяртае $2 ($1)",
+	"wikilambda-abstract-fragment-function-selector-popover-body": "Поле чакае функцыю, якая вяртае $2 ($1). У пошуку паказваюцца толькі тыя функцыі, якія вяртаюць гэты тып.",
+	"wikilambda-abstract-fragment-function-selector-popover-title": "Чаму некаторыя функцыі не паказваюцца",
+	"wikilambda-abstract-menu-option-delete-fragment": "Выдаліць фрагмент",
+	"wikilambda-abstract-menu-option-insert-after": "Уставіць фрагмент наперадзе",
+	"wikilambda-abstract-menu-option-insert-before": "Уставіць фрагмент ззаду",
+	"wikilambda-abstract-menu-option-move-after": "Перасунуць фрагмент наперад",
+	"wikilambda-abstract-menu-option-move-before": "Перасунуць фрагмент назад",
+	"wikilambda-abstract-preview-fragment-replicate": "Глядзець падрабязнасці ў Вікіфункцыях",
+	"wikilambda-abstract-preview-in-language": "Згенераваны тэкст",
+	"wikilambda-abstract-search-no-article": "— яшчэ няма артыкула",
+	"wikilambda-abstract-special-create": "Стварыць новы абстрактны артыкул",
+	"wikilambda-abstract-special-create-qid": "Стварыць новы абстрактны артыкул для $1"
+}
