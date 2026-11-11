@@ -16,6 +16,7 @@ use MediaWiki\Extension\SpamBlacklist\BaseBlacklist;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\MockSiteMatrix;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Html\Html;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -89,8 +90,9 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		$this->placeholderSalt = bin2hex( random_bytes( 8 ) );
 
 		// The local server URL is always allowed, so we can link to the current wiki
-		$localServer = MediaWikiServices::getInstance()->getMainConfig()->get( 'Server' );
-		$canonicalServer = MediaWikiServices::getInstance()->getMainConfig()->get( 'CanonicalServer' );
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		$localServer = $config->get( MainConfigNames::Server );
+		$canonicalServer = $config->get( MainConfigNames::CanonicalServer );
 
 		$this->allowedUrls = array_filter( [
 			$this->toProtocolRelative( $localServer ),
@@ -438,7 +440,7 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 		static $emptyAbstractPageCache = [];
 
 		// Only apply red-link logic if the URL points to the current (local) wiki server
-		$localHost = preg_replace( '#^(https?:)?//#i', '', $config->get( 'Server' ) );
+		$localHost = preg_replace( '#^(https?:)?//#i', '', $config->get( MainConfigNames::Server ) );
 
 		$parsedHost = $parsedLink['host'] ?? '';
 		if ( isset( $parsedLink['port'] ) ) {
@@ -452,7 +454,7 @@ class WikifunctionsSanitiserTokenHandler extends RelayTokenHandler {
 
 		// Only support /wiki/$1 article-path form (e.g. /wiki/Abstract_Wikipedia:Q42)
 		$titleText = null;
-		$articlePath = $config->get( 'ArticlePath' );
+		$articlePath = $config->get( MainConfigNames::ArticlePath );
 		$dollarPos = strpos( $articlePath, '$1' );
 		if ( $dollarPos !== false ) {
 			$pathPrefix = substr( $articlePath, 0, $dollarPos );

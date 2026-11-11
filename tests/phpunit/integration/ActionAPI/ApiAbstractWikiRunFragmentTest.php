@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\AWStorage\AWFragmentStore;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguage;
 use MediaWiki\Extension\WikiLambda\Language\WikifunctionsLanguageFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Permissions\SimpleAuthority;
 use MediaWiki\Tests\Api\ApiTestCase;
@@ -694,9 +695,11 @@ class ApiAbstractWikiRunFragmentTest extends ApiTestCase {
 	 * needs a real user, which is why this class is in the Database group.
 	 */
 	public function testFresh_isRateLimited() {
-		$this->overrideConfigValue( 'WikiLambdaAbstractEnableFreshResult', true );
-		$this->overrideConfigValue( 'RateLimits', [
-			'wikilambda-abstract-request-fresh-result' => [ 'user' => [ 1, 86400 ] ],
+		$this->overrideConfigValues( [
+			'WikiLambdaAbstractEnableFreshResult' => true,
+			MainConfigNames::RateLimits => [
+				'wikilambda-abstract-request-fresh-result' => [ 'user' => [ 1, 86400 ] ],
+			],
 		] );
 
 		$user = $this->getTestUser()->getUser();

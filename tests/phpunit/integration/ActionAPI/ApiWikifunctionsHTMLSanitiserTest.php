@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ActionAPI;
 
 use MediaWiki\Api\ApiUsageException;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Registration\ExtensionRegistry;
 
 /**
@@ -24,8 +25,10 @@ class ApiWikifunctionsHTMLSanitiserTest extends WikiLambdaApiTestCase {
 	 * @dataProvider provideHTML
 	 */
 	public function testSanitise( $input, $expected ) {
-		$this->overrideConfigValue( 'Server', 'http://this.wikifunctions.mock' );
-		$this->overrideConfigValue( 'CanonicalServer', 'https://canonical.wikifunctions.mock' );
+		$this->overrideConfigValues( [
+			MainConfigNames::Server => 'http://this.wikifunctions.mock',
+			MainConfigNames::CanonicalServer => 'https://canonical.wikifunctions.mock',
+		] );
 
 		$response = $this->doApiRequestWithToken( [
 			'action' => 'wikifunctions_html_sanitiser',
@@ -47,10 +50,12 @@ class ApiWikifunctionsHTMLSanitiserTest extends WikiLambdaApiTestCase {
 	 * wiki and pass CSRF.
 	 */
 	public function testSanitiseOnClientWiki() {
-		$this->overrideConfigValue( 'Server', 'http://this.wikifunctions.mock' );
-		$this->overrideConfigValue( 'CanonicalServer', 'https://canonical.wikifunctions.mock' );
-		$this->overrideConfigValue( 'WikiLambdaEnableRepoMode', false );
-		$this->overrideConfigValue( 'WikiLambdaEnableClientMode', true );
+		$this->overrideConfigValues( [
+			MainConfigNames::Server => 'http://this.wikifunctions.mock',
+			MainConfigNames::CanonicalServer => 'https://canonical.wikifunctions.mock',
+			'WikiLambdaEnableRepoMode' => false,
+			'WikiLambdaEnableClientMode' => true,
+		] );
 
 		$response = $this->doApiRequestWithToken( [
 			'action' => 'wikifunctions_html_sanitiser',
@@ -152,8 +157,10 @@ class ApiWikifunctionsHTMLSanitiserTest extends WikiLambdaApiTestCase {
 	}
 
 	public function testSanitise_rejectedOverlong() {
-		$this->overrideConfigValue( 'Server', 'http://this.wikifunctions.mock' );
-		$this->overrideConfigValue( 'CanonicalServer', 'https://canonical.wikifunctions.mock' );
+		$this->overrideConfigValues( [
+			MainConfigNames::Server => 'http://this.wikifunctions.mock',
+			MainConfigNames::CanonicalServer => 'https://canonical.wikifunctions.mock',
+		] );
 
 		$input = str_repeat( 'A', 65535 );
 

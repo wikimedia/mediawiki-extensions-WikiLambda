@@ -13,6 +13,7 @@ use MediaWiki\Extension\WikiLambda\AbstractContent\AbstractWikiContent;
 use MediaWiki\Extension\WikiLambda\Renderer\WikifunctionsSanitiserTokenHandler;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\AbstractModeTestConfigTrait;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MainConfigNames;
 use MediaWikiIntegrationTestCase;
 
 /**
@@ -122,14 +123,14 @@ class WikifunctionsSanitiserTokenHandlerTest extends MediaWikiIntegrationTestCas
 
 	private function localWikiUrl( string $titleText ): string {
 		$config = $this->getServiceContainer()->getMainConfig();
-		$server = $config->get( 'Server' );
-		$articlePath = $config->get( 'ArticlePath' );
+		$server = $config->get( MainConfigNames::Server );
+		$articlePath = $config->get( MainConfigNames::ArticlePath );
 		$path = str_replace( '$1', wfUrlencode( str_replace( ' ', '_', $titleText ) ), $articlePath );
 		return $server . $path;
 	}
 
 	private function localViewUrl( string $lang, string $titleText ): string {
-		$server = $this->getServiceContainer()->getMainConfig()->get( 'Server' );
+		$server = $this->getServiceContainer()->getMainConfig()->get( MainConfigNames::Server );
 		return $server . '/view/' . $lang . '/' . wfUrlencode( str_replace( ' ', '_', $titleText ) );
 	}
 
@@ -171,8 +172,10 @@ class WikifunctionsSanitiserTokenHandlerTest extends MediaWikiIntegrationTestCas
 		// The host normalisation must strip the leading '//' so the link's host still matches the
 		// local server; otherwise isEmptyAbstractArticle() never recognises the link as local and
 		// no red-link class is added, even though the link still renders via the allow-list.
-		$this->overrideConfigValue( 'Server', '//abstract.wikipedia.org' );
-		$this->overrideConfigValue( 'CanonicalServer', 'https://abstract.wikipedia.org' );
+		$this->overrideConfigValues( [
+			MainConfigNames::Server => '//abstract.wikipedia.org',
+			MainConfigNames::CanonicalServer => 'https://abstract.wikipedia.org',
+		] );
 
 		$url = 'https://abstract.wikipedia.org/wiki/Abstract_Wikipedia:Q00000';
 		$result = $this->sanitise( '<a href="' . $url . '">Link</a>' );

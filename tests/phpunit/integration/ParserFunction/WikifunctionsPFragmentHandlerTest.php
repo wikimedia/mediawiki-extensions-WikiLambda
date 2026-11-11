@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\WikidataEntityLookup;
 use MediaWiki\Http\HttpRequestFactory;
 use MediaWiki\Http\MWHttpRequest;
 use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Parser\ParserOutput;
 use StatusValue;
 use Wikimedia\Parsoid\Core\ContentMetadataCollector;
@@ -394,6 +395,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 
 	public function testReturnsHtmlFragmentWhenOutputTypeIsZ89() {
 		$mainConfig = $this->getServiceContainer()->getMainConfig();
+		$server = $mainConfig->get( MainConfigNames::Server );
 		$mockHttpRequestFactory = $this->createMock( HttpRequestFactory::class );
 
 		$mockClientFragmentStore = $this->createMock( WikifunctionsFragmentStore::class );
@@ -402,7 +404,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			'type' => ZTypeRegistry::Z_HTML_FRAGMENT,
 			'value' => '
 				<b data-mw="This is a bad vector!" data-mw-foo="No, really!">HTML!</b><script>alert("x")</script>
-				<a href="' . $mainConfig->get( 'Server' ) . '" target="_blank" title="This will be dropped"'
+				<a href="' . $server . '" target="_blank" title="This will be dropped"'
 					. ' onmouseover="alert(\'XSS1\')">A local link</a>
 				<a href="https://af.wikipedia.org/wiki/Eenhoring" data-mw="Corruption!">Wikipedia link</a>
 				<a href="https://www.google.com" target="_blank">Not a local link</a>
@@ -466,7 +468,7 @@ class WikifunctionsPFragmentHandlerTest extends WikiLambdaClientIntegrationTestC
 			$html
 		);
 		$this->assertStringContainsString(
-			'<a href="' . $mainConfig->get( 'Server' ) . '">A local link</a>',
+			'<a href="' . $mainConfig->get( MainConfigNames::Server ) . '">A local link</a>',
 			$html
 		);
 		$this->assertStringContainsString(

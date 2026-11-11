@@ -24,6 +24,7 @@ use MediaWiki\Http\MWHttpRequest;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
@@ -504,7 +505,7 @@ class WikifunctionsClientRequestJob extends Job implements GenericParameterJob {
 		);
 
 		$requestUri = self::getClientTargetUrl( $this->config, $this->logger )
-			. $this->config->get( 'RestPath' )
+			. $this->config->get( MainConfigNames::RestPath )
 			. '/wikifunctions/v0/call'
 			. '/' . $target
 			. '/' . $encodedArguments

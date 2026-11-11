@@ -15,6 +15,7 @@ use MediaWiki\Content\AbstractContent;
 use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Json\FormatJson;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use StatusValue;
@@ -173,7 +174,7 @@ EOD;
 
 		return (
 			!$this->isRedirect()
-			&& ( $config->get( 'ArticleCountMethod' ) === 'any' )
+			&& ( $config->get( MainConfigNames::ArticleCountMethod ) === 'any' )
 		);
 	}
 

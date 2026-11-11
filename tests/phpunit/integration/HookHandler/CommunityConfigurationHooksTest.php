@@ -4,6 +4,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\HookHandler;
 
 use MediaWiki\Content\JsonContent;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaAbstractClientIntegrationTestCase;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Registration\ExtensionRegistry;
 
 /**
@@ -120,7 +121,7 @@ class CommunityConfigurationHooksTest extends WikiLambdaAbstractClientIntegratio
 	}
 
 	public function testIgnoresSameNameOutsideMediaWikiNamespace(): void {
-		$this->overrideConfigValue( 'NamespaceContentModels', [ NS_PROJECT => CONTENT_MODEL_JSON ] );
+		$this->overrideConfigValue( MainConfigNames::NamespaceContentModels, [ NS_PROJECT => CONTENT_MODEL_JSON ] );
 		$data = [ 'OptedInArticles' => [ [ 'title' => [ 'Douglas Adams' ], 'qid' => 'Q42' ] ] ];
 		$this->editPage(
 			'Project:AbstractWikiOptedInArticles.json', new JsonContent( json_encode( $data ) ),
