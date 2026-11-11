@@ -17,6 +17,7 @@ const keyPath = 'abstractwiki.sections.Q8776414.fragments.1';
 const fragmentHash = 'somegood#';
 
 describe( 'AbstractPreviewFragment', () => {
+	const originalWidth = window.innerWidth;
 	let store;
 	let wrapper;
 
@@ -61,6 +62,10 @@ describe( 'AbstractPreviewFragment', () => {
 		store.setHighlightedFragment = jest.fn();
 		store.getSelectedFragment = undefined;
 		store.setSelectedFragment = jest.fn();
+	} );
+
+	afterEach( () => {
+		window.innerWidth = originalWidth;
 	} );
 
 	it( 'renders without errors', () => {
@@ -629,6 +634,15 @@ describe( 'AbstractPreviewFragment', () => {
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( keyPath );
 		} );
 
+		it( 'does not add highlight on a tap on a touch screen', async () => {
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+
+			await fragment.trigger( 'pointerenter', { pointerType: 'touch' } );
+
+			expect( store.setHighlightedFragment ).not.toHaveBeenCalled();
+		} );
+
 		it( 'removes highlight on pointer leave', async () => {
 			wrapper = renderFragment();
 			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
@@ -638,23 +652,48 @@ describe( 'AbstractPreviewFragment', () => {
 			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( undefined );
 		} );
 
-		it( 'sets highlight when the focus moves into the fragment', async () => {
+		it( 'sets highlight when the keyboard moves the focus into the fragment', async () => {
+			store.getFragmentPreview = jest.fn().mockReturnValue( {
+				html: '<a href="#">Link</a>',
+				isLoading: false
+			} );
+			wrapper = renderFragment();
+			// An element can have the focus only when it is in the document
+			document.body.appendChild( wrapper.element );
+
+			wrapper.find( 'a' ).element.focus();
+			await wrapper.vm.$nextTick();
+
+			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( keyPath );
+			wrapper.element.remove();
+		} );
+
+		it( 'does not set highlight when a pointer moves the focus into the fragment', async () => {
 			wrapper = renderFragment();
 			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
 
 			await fragment.trigger( 'focusin' );
 
-			expect( store.setHighlightedFragment ).toHaveBeenCalledWith( keyPath );
+			expect( store.setHighlightedFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'unsets highlight when the focus leaves the fragment', async () => {
 			wrapper = renderFragment();
 			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
 
-			await fragment.trigger( 'focusin' );
 			await fragment.trigger( 'focusout' );
 
 			expect( store.setHighlightedFragment ).toHaveBeenLastCalledWith( undefined );
+		} );
+
+		it( 'keeps highlight when the focus leaves while the mouse is on the fragment', async () => {
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+			fragment.element.matches = jest.fn( ( selector ) => selector === ':hover' );
+
+			await fragment.trigger( 'focusout' );
+
+			expect( store.setHighlightedFragment ).not.toHaveBeenCalled();
 		} );
 
 		it( 'removes highlight on unmount', () => {
@@ -697,7 +736,59 @@ describe( 'AbstractPreviewFragment', () => {
 			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
 		} );
 
+		it( 'does not select the fragment on a click on a link or a button', async () => {
+			store.getFragmentPreview = jest.fn().mockReturnValue( {
+				html: '<a href="#">Link</a><button type="button">Reference</button>',
+				isLoading: false
+			} );
+			wrapper = renderFragment();
+
+			await wrapper.find( 'a' ).trigger( 'click' );
+			await wrapper.find( 'button' ).trigger( 'click' );
+
+			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'selects the fragment when the keyboard moves the focus into it', async () => {
+			store.getFragmentPreview = jest.fn().mockReturnValue( {
+				html: '<a href="#">Link</a>',
+				isLoading: false
+			} );
+			wrapper = renderFragment();
+			// An element can have the focus only when it is in the document
+			document.body.appendChild( wrapper.element );
+
+			wrapper.find( 'a' ).element.focus();
+			await wrapper.vm.$nextTick();
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
+			wrapper.element.remove();
+		} );
+
+		it( 'does not select the fragment when a pointer moves the focus into it', async () => {
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+
+			await fragment.trigger( 'focusin' );
+
+			expect( store.setSelectedFragment ).not.toHaveBeenCalled();
+		} );
+
+		it( 'selects the fragment on any focus in a browser without :focus-visible', async () => {
+			wrapper = renderFragment();
+			const fragment = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' );
+			fragment.element.matches = jest.fn( () => {
+				throw new SyntaxError( 'Unknown pseudo-class' );
+			} );
+
+			await fragment.trigger( 'focusin' );
+
+			expect( store.setSelectedFragment ).toHaveBeenCalledWith( keyPath );
+		} );
+
 		it( 'moves itself into view when it becomes the selected fragment', async () => {
+			// The fragment moves into view only at desktop width
+			window.innerWidth = Constants.BREAKPOINTS.DESKTOP;
 			wrapper = renderFragment();
 			const scrollIntoView = jest.fn();
 			wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' )

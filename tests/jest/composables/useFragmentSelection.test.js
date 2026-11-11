@@ -10,6 +10,7 @@ const { ref } = require( 'vue' );
 const { waitFor } = require( '@testing-library/vue' );
 
 const loadComposable = require( '../helpers/loadComposable.js' );
+const Constants = require( '../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../resources/ext.wikilambda.app/store/index.js' );
 const useFragmentSelection = require( '../../../resources/ext.wikilambda.app/composables/useFragmentSelection.js' );
 
@@ -17,6 +18,7 @@ const keyPath = 'abstractwiki.sections.Q8776414.fragments.2';
 const otherKeyPath = 'abstractwiki.sections.Q8776414.fragments.3';
 
 describe( 'useFragmentSelection', () => {
+	const originalWidth = window.innerWidth;
 	let store;
 	let elementRef;
 	let scrollIntoView;
@@ -32,6 +34,11 @@ describe( 'useFragmentSelection', () => {
 
 		matchMediaSpy = jest.fn().mockReturnValue( { matches: false } );
 		window.matchMedia = matchMediaSpy;
+		window.innerWidth = Constants.BREAKPOINTS.DESKTOP;
+	} );
+
+	afterEach( () => {
+		window.innerWidth = originalWidth;
 	} );
 
 	describe( 'isSelected', () => {
@@ -124,6 +131,19 @@ describe( 'useFragmentSelection', () => {
 			await waitFor( () => expect( scrollIntoView ).toHaveBeenCalledWith(
 				expect.objectContaining( { behavior: 'auto' } )
 			) );
+		} );
+
+		it( 'does not move the element below desktop width, where the columns are stacked', async () => {
+			window.innerWidth = Constants.BREAKPOINTS.DESKTOP - 1;
+
+			const [ , wrapper ] = loadComposable(
+				() => useFragmentSelection( () => keyPath, elementRef )
+			);
+
+			store.getSelectedFragment = keyPath;
+			await wrapper.vm.$nextTick();
+
+			expect( scrollIntoView ).not.toHaveBeenCalled();
 		} );
 
 		it( 'does nothing when the element is not available', async () => {

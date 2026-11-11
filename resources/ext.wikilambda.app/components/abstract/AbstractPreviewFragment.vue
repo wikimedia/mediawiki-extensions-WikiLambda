@@ -9,11 +9,11 @@
 		ref="rootRef"
 		class="ext-wikilambda-app-abstract-preview-fragment"
 		:aria-current="isSelected ? 'true' : undefined"
-		@pointerenter="setHighlight"
+		@pointerenter="onPointerEnter"
 		@pointerleave="unsetHighlight"
 		@focusin="onFocusIn"
-		@focusout="unsetHighlight"
-		@click="selectFragment"
+		@focusout="onFocusOut"
+		@click="onClick"
 	>
 		<!-- Fragment exists but was not initialized in this language -->
 		<div
@@ -304,12 +304,70 @@ module.exports = exports = defineComponent( {
 		);
 
 		/**
-		 * Highlight the fragment and select it when the keyboard moves the
-		 * focus into it, so that the definition follows the focus.
+		 * Select the fragment on a click on its text. A click on a link or a
+		 * button, such as a reference marker, does the action of that control only.
+		 *
+		 * @param {MouseEvent} event
 		 */
-		function onFocusIn() {
+		function onClick( event ) {
+			if ( event.target.closest( 'a, button' ) ) {
+				return;
+			}
+			selectFragment();
+		}
+
+		/**
+		 * Highlight the fragment when a mouse or a pen moves over it. A touch
+		 * screen has no hover: a tap also sends this event, but must not highlight.
+		 *
+		 * @param {PointerEvent} event
+		 */
+		function onPointerEnter( event ) {
+			if ( event.pointerType === 'touch' ) {
+				return;
+			}
+			setHighlight();
+		}
+
+		/**
+		 * Highlight the fragment and select it when the keyboard moves the
+		 * focus into it, so that the definition follows the focus. A click or a
+		 * tap on a link or a button also moves the focus, but does not do this.
+		 *
+		 * @param {FocusEvent} event
+		 */
+		function onFocusIn( event ) {
+			if ( !isFocusVisible( event.target ) ) {
+				return;
+			}
 			setHighlight();
 			selectFragment();
+		}
+
+		/**
+		 * Returns whether the browser shows the focus of the element, as it
+		 * does for the keyboard. A browser without :focus-visible shows it.
+		 *
+		 * @param {HTMLElement} element
+		 * @return {boolean}
+		 */
+		function isFocusVisible( element ) {
+			try {
+				return element.matches( ':focus-visible' );
+			} catch ( error ) {
+				return true;
+			}
+		}
+
+		/**
+		 * Remove the highlight when the focus leaves the fragment. Keep it while
+		 * the mouse is on the fragment, e.g. when a reference popover takes the focus.
+		 */
+		function onFocusOut() {
+			if ( rootRef.value && rootRef.value.matches( ':hover' ) ) {
+				return;
+			}
+			unsetHighlight();
 		}
 
 		/**
@@ -441,12 +499,13 @@ module.exports = exports = defineComponent( {
 			isSelected,
 			missingCanRetry,
 			missingLabel,
+			onClick,
 			onFocusIn,
+			onFocusOut,
+			onPointerEnter,
 			onProvenanceOpenUpdate,
 			provenanceAnchor,
 			rootRef,
-			selectFragment,
-			setHighlight,
 			unsetHighlight,
 			iconRetry,
 			i18n

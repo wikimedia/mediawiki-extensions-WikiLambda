@@ -12,6 +12,10 @@
  * so the column that the user clicked stays where it is, and only the other
  * column scrolls.
  *
+ * When the columns are stacked, both columns scroll with the page. A move
+ * into view then takes the user away from the text that they read, so the
+ * fragment does not move.
+ *
  * @module ext.wikilambda.app.composables.useFragmentSelection
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -21,6 +25,8 @@
 const { computed, onUnmounted, watch } = require( 'vue' );
 
 const useMainStore = require( '../store/index.js' );
+const useStackedColumns = require( './useStackedColumns.js' );
+const { prefersReducedMotion } = require( '../utils/mediaUtils.js' );
 
 /**
  * Composable that tells a fragment component if it is selected, lets it become
@@ -35,6 +41,7 @@ const useMainStore = require( '../store/index.js' );
  */
 module.exports = function useFragmentSelection( getKeyPath, elementRef ) {
 	const store = useMainStore();
+	const { isStacked } = useStackedColumns();
 
 	const isSelected = computed( () => (
 		!!getKeyPath() && store.getSelectedFragment === getKeyPath()
@@ -49,21 +56,14 @@ module.exports = function useFragmentSelection( getKeyPath, elementRef ) {
 		store.setSelectedFragment( getKeyPath() );
 	}
 
-	/**
-	 * Returns whether the user asked for less movement on the screen.
-	 *
-	 * @return {boolean}
-	 */
-	function prefersReducedMotion() {
-		return !!( window.matchMedia &&
-			window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
-	}
-
 	// Move this fragment into view when it becomes the selected fragment.
 	// Use `flush: 'post'`, because the element must be in its final position
 	// before it is measured.
 	watch( isSelected, ( selected ) => {
 		if ( !selected || !elementRef.value || !elementRef.value.scrollIntoView ) {
+			return;
+		}
+		if ( isStacked.value ) {
 			return;
 		}
 		elementRef.value.scrollIntoView( {

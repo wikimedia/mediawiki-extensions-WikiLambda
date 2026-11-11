@@ -18,6 +18,7 @@ const fragmentCall = {
 };
 
 describe( 'AbstractContentFragment', () => {
+	const originalWidth = window.innerWidth;
 	let store;
 
 	function renderFragment( props = {} ) {
@@ -46,6 +47,10 @@ describe( 'AbstractContentFragment', () => {
 		store.getSelectedFragment = undefined;
 		store.setSelectedFragment = jest.fn();
 		store.getFunctionCallLink = jest.fn().mockReturnValue( '/view/en/Z444?call=%7B%7D' );
+	} );
+
+	afterEach( () => {
+		window.innerWidth = originalWidth;
 	} );
 
 	it( 'renders without errors', () => {
@@ -380,6 +385,8 @@ describe( 'AbstractContentFragment', () => {
 		} );
 
 		it( 'moves itself into view when it becomes the selected fragment', async () => {
+			// The fragment moves into view only at desktop width
+			window.innerWidth = Constants.BREAKPOINTS.DESKTOP;
 			const wrapper = renderFragment();
 			const scrollIntoView = jest.fn();
 			wrapper.element.scrollIntoView = scrollIntoView;
