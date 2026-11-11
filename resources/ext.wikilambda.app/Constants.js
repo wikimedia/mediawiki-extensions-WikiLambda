@@ -472,20 +472,19 @@ Constants.LABEL_CHARS_MAX = 50;
 // the same limit for long mw.Api GET requests.
 Constants.URL_CHARS_MAX = 7500;
 
-// Breakpoints
+// Breakpoints: the minimum widths of the Codex @min-width-breakpoint-* tokens,
+// for use in JS. The Codex tokens are only available in Less.
 Constants.BREAKPOINTS = {
 	MOBILE: 320,
-	TABLET: 720,
-	DESKTOP: 1000,
-	DESKTOP_WIDE: 1200,
-	DESKTOP_EXTRAWIDE: 2000
+	TABLET: 640,
+	DESKTOP: 1120,
+	DESKTOP_WIDE: 1680
 };
 Constants.BREAKPOINT_TYPES = {
 	MOBILE: 'MOBILE',
 	TABLET: 'TABLET',
 	DESKTOP: 'DESKTOP',
-	DESKTOP_WIDE: 'DESKTOP_WIDE',
-	DESKTOP_EXTRAWIDE: 'DESKTOP_EXTRAWIDE'
+	DESKTOP_WIDE: 'DESKTOP_WIDE'
 };
 
 Constants.COLOR_NESTING_LEVELS = 6;
