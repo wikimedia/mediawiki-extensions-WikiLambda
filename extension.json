@@ -40,7 +40,6 @@
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/",
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\Maintenance\\": "tests/phpunit/maintenance/"
 	},
-	"callback": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks::registerExtension",
 	"ContentHandlers": {
 		"zobject": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ZObjectContent\\ZObjectContentHandler",
@@ -162,6 +161,7 @@
 	"ConfigRegistry": {
 		"WikiLambda": "MediaWiki\\Config\\GlobalVarConfig::newInstance"
 	},
+	"callback": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\RepoHooks::registerExtension",
 	"HookHandlers": {
 		"AbstractPageRenderingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\AbstractPageRenderingHandler",

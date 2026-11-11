@@ -405,7 +405,7 @@ class PageRenderingHandler implements
 	 * @param array $data
 	 * @return bool
 	 */
-	public function matchRepoAndAbstractRoutes( array &$matches, array $data ): bool {
+	private function matchRepoAndAbstractRoutes( array &$matches, array $data ): bool {
 		$lang = $data[ '$2' ];
 		$id = $data[ '$1' ];
 
@@ -435,7 +435,7 @@ class PageRenderingHandler implements
 		$router->add(
 			'/view/$2/$1',
 			[ 'title' => false ],
-			[ 'callback' => [ $this, 'matchRepoAndAbstractRoutes' ] ],
+			[ 'callback' => $this->matchRepoAndAbstractRoutes( ... ) ],
 		);
 	}
 
@@ -618,8 +618,10 @@ class PageRenderingHandler implements
 			return;
 		}
 		// Provide {{#wikifunctionlabel:Z1234|en}} that will render a link to the ZObject with its label
-		$parser->setFunctionHook( 'wikifunctionlabel', [ $this, 'parserFunctionWikifunctionLabel' ] );
-		$parser->setFunctionHook( 'wikifunctionlabeldesc', [ $this, 'parserFunctionWikifunctionLabelAndDescription' ] );
+		$parser->setFunctionHook( 'wikifunctionlabel',
+			$this->parserFunctionWikifunctionLabel( ... ) );
+		$parser->setFunctionHook( 'wikifunctionlabeldesc',
+			$this->parserFunctionWikifunctionLabelAndDescription( ... ) );
 	}
 
 	/**
@@ -635,7 +637,7 @@ class PageRenderingHandler implements
 	 * @param string $langCode Language code to use for the label, defaults to and will fall back to English
 	 * @return string
 	 */
-	public function parserFunctionWikifunctionLabel( $parser, $zid = 'Z1', $langCode = 'en' ): string {
+	private function parserFunctionWikifunctionLabel( $parser, $zid = 'Z1', $langCode = 'en' ): string {
 		return $this->renderParserFunctionWikifunction( $parser, $zid, $langCode, false );
 	}
 
@@ -652,7 +654,7 @@ class PageRenderingHandler implements
 	 * @param string $langCode Language code to use for the label, defaults to and will fall back to English
 	 * @return string
 	 */
-	public function parserFunctionWikifunctionLabelAndDescription( $parser, $zid = 'Z1', $langCode = 'en' ): string {
+	private function parserFunctionWikifunctionLabelAndDescription( $parser, $zid = 'Z1', $langCode = 'en' ): string {
 		return $this->renderParserFunctionWikifunction( $parser, $zid, $langCode, true );
 	}
 
