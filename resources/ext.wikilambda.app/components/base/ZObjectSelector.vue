@@ -121,6 +121,14 @@ module.exports = exports = defineComponent( {
 			default: ''
 		},
 		/**
+		 * Codex icon shown inside the lookup input, overriding the
+		 * built-in icon for type-specific selectors.
+		 */
+		icon: {
+			type: [ String, Object ],
+			default: undefined
+		},
+		/**
 		 * List of Zids to exclude from selection and from
 		 * the lookup results. Must be in uppercase.
 		 */
@@ -417,13 +425,17 @@ module.exports = exports = defineComponent( {
 		} );
 
 		/**
-		 * Icon shown inside the lookup input for type-specific selectors,
-		 * mirroring the Wikidata logo shown by the Wikidata EntitySelector.
+		 * Icon shown inside the lookup input: the icon passed as an input
+		 * prop, or a built-in one for type-specific selectors, mirroring
+		 * the Wikidata logo shown by the Wikidata EntitySelector.
 		 * Returns undefined for generic selectors so no icon is shown.
 		 *
 		 * @return {string|undefined}
 		 */
 		const startIcon = computed( () => {
+			if ( props.icon ) {
+				return props.icon;
+			}
 			switch ( props.type ) {
 				case Constants.Z_FUNCTION:
 					return icons.cdxIconFunction;

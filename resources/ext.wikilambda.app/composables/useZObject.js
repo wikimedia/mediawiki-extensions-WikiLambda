@@ -38,7 +38,8 @@ const {
 	isWikidataReference,
 	getWikidataEntityId,
 	getWikidataEntityReference,
-	getCommonsMediaId
+	getCommonsMediaId,
+	getWikifunctionsReferenceId
 } = require( '../utils/zobjectUtils.js' );
 
 /**
@@ -137,6 +138,8 @@ module.exports = function useZObject( { keyPath } = {} ) {
 		getWikidataEntityId,
 		getWikidataEntityReference,
 		// Commons methods
-		getCommonsMediaId
+		getCommonsMediaId,
+		// Wikifunctions object reference methods
+		getWikifunctionsReferenceId
 	};
 };

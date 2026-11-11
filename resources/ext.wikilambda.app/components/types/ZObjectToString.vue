@@ -82,6 +82,7 @@
 const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'vue' );
 
 const wikidataIconSvg = require( './wikidata/wikidataIconSvg.js' );
+const wikifunctionsIconSvg = require( '../visualeditor/wikifunctionsIconSvg.js' );
 const Constants = require( '../../Constants.js' );
 const useError = require( '../../composables/useError.js' );
 const useType = require( '../../composables/useType.js' );
@@ -124,6 +125,7 @@ module.exports = exports = defineComponent( {
 		const { hasChildErrors } = useError( { keyPath: () => props.keyPath } );
 		const {
 			getCommonsMediaId,
+			getWikifunctionsReferenceId,
 			getWikidataEntityId,
 			getWikidataEntityReference,
 			getZArgumentReferenceTerminalValue,
@@ -136,7 +138,7 @@ module.exports = exports = defineComponent( {
 			isWikidataFetch,
 			key
 		} = useZObject( { keyPath: () => props.keyPath } );
-		const { typeToString } = useType();
+		const { isValidZidFormat, typeToString } = useType();
 		const store = useMainStore();
 
 		// Renderer state
@@ -212,6 +214,25 @@ module.exports = exports = defineComponent( {
 		 * @return {boolean}
 		 */
 		const isCommonsType = computed( () => type.value === Constants.Z_COMMONS_MEDIA_REFERENCE );
+
+		/**
+		 * Returns whether the object is a Wikifunctions object reference (Z96).
+		 *
+		 * @return {boolean}
+		 */
+		const isWikifunctionsReference = computed( () => type.value === Constants.Z_WIKIFUNCTIONS_REFERENCE );
+
+		/**
+		 * Returns the ZID referenced by a Z96 object, or an empty string if unset.
+		 * Returns undefined if the object is not a Z96, or if its ZID is not a
+		 * terminal string (e.g. it is returned by a function call).
+		 *
+		 * @return {string|undefined}
+		 */
+		const wikifunctionsReferenceZid = computed( () => ( isWikifunctionsReference.value ?
+			getWikifunctionsReferenceId( props.objectValue ) :
+			undefined
+		) );
 
 		// Commons data
 
@@ -345,6 +366,13 @@ module.exports = exports = defineComponent( {
 				return commonsMediaId.value || undefined;
 			}
 
+			// A Z96 shows its ZID, or what returns the ZID (e.g. a function call)
+			if ( isWikifunctionsReference.value ) {
+				return typeof wikifunctionsReferenceZid.value === 'string' ?
+					wikifunctionsReferenceZid.value || undefined :
+					props.objectValue[ Constants.Z_WIKIFUNCTIONS_REFERENCE_ID ];
+			}
+
 			if ( type.value === Constants.Z_FUNCTION_CALL ) {
 				return props.objectValue[ Constants.Z_FUNCTION_CALL_FUNCTION ];
 			}
@@ -373,20 +401,29 @@ module.exports = exports = defineComponent( {
 		 *
 		 * @return {string|undefined}
 		 */
-		const valueKey = computed( () => (
-			type.value === Constants.Z_FUNCTION_CALL ?
-				Constants.Z_FUNCTION_CALL_FUNCTION :
-				Constants.Z_OBJECT_TYPE
-		) );
+		const valueKey = computed( () => {
+			if ( type.value === Constants.Z_FUNCTION_CALL ) {
+				return Constants.Z_FUNCTION_CALL_FUNCTION;
+			}
+			if ( isWikifunctionsReference.value ) {
+				return Constants.Z_WIKIFUNCTIONS_REFERENCE_ID;
+			}
+			return Constants.Z_OBJECT_TYPE;
+		} );
 
 		// Renderer data
 		/**
 		 * Return the renderer function Zid, if any.
 		 * Else returns undefined.
+		 * A Z96 shows the label of its object instead, without
+		 * a call to its renderer.
 		 *
 		 * @return {string|undefined}
 		 */
-		const rendererZid = computed( () => store.getRendererZid( type.value ) );
+		const rendererZid = computed( () => ( isWikifunctionsReference.value ?
+			undefined :
+			store.getRendererZid( type.value )
+		) );
 
 		/**
 		 * Returns whether the value for this object is a string
@@ -453,8 +490,15 @@ module.exports = exports = defineComponent( {
 			// It will have no children in parenthesis when either:
 			// * The object is one of these types: string, reference, arg reference or html
 			// * The object is a wikidata entity
+			// * The object is a commons media or a wikifunctions object reference
 			// * The object has a successfully rendered value
-			if ( isTerminalType || isWikidataTerminal.value || isCommonsType.value || isValueRendered.value ) {
+			if (
+				isTerminalType ||
+				isWikidataTerminal.value ||
+				isCommonsType.value ||
+				isWikifunctionsReference.value ||
+				isValueRendered.value
+			) {
 				return [];
 			}
 
@@ -492,6 +536,9 @@ module.exports = exports = defineComponent( {
 			if ( isCommonsType.value ) {
 				return icons.cdxIconImage;
 			}
+			if ( isWikifunctionsReference.value ) {
+				return wikifunctionsIconSvg;
+			}
 			if ( type.value === Constants.Z_ARGUMENT_REFERENCE ) {
 				return icons.cdxIconFunctionArgument;
 			}
@@ -518,6 +565,10 @@ module.exports = exports = defineComponent( {
 
 			if ( isCommonsType.value ) {
 				return store.getCommonsMediaDescriptionUrl( commonsMediaId.value );
+			}
+
+			if ( isWikifunctionsReference.value && !isValidZidFormat( wikifunctionsReferenceZid.value ) ) {
+				return;
 			}
 
 			return urlUtils.generateViewUrl( {
@@ -662,6 +713,16 @@ module.exports = exports = defineComponent( {
 				emit( 'expand', true );
 			}
 		} );
+
+		/**
+		 * Fetch the label of the object a Z96 references, also when
+		 * the referenced ZID changes.
+		 */
+		watch( wikifunctionsReferenceZid, ( zid ) => {
+			if ( isValidZidFormat( zid ) ) {
+				store.fetchZids( { zids: [ zid ] } );
+			}
+		}, { immediate: true } );
 
 		// Lifecycle
 		onMounted( () => {

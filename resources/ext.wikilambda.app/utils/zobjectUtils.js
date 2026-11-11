@@ -727,6 +727,18 @@ const zobjectUtils = {
 	},
 
 	/**
+	 * Returns the referenced ZID of a Z96 (Wikifunctions object reference).
+	 * Returns an empty string if unset, and undefined if Z96K1 is not a
+	 * terminal string (e.g. a function call or an argument reference).
+	 *
+	 * @param {Object} value A Z96 object
+	 * @return {string|undefined}
+	 */
+	getWikifunctionsReferenceId: function ( value ) {
+		return zobjectUtils.getZStringTerminalValue( value[ Constants.Z_WIKIFUNCTIONS_REFERENCE_ID ] );
+	},
+
+	/**
 	 * Recursively walks a nested generic type and returns
 	 * the field IDs and whether they are valid or not.
 	 * Returns a flat array of validated fields [ { fieldPath, isValid } ]

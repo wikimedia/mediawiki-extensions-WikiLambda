@@ -106,6 +106,7 @@ const ZTester = require( './ZTester.vue' );
 const ZImplementation = require( './ZImplementation.vue' );
 const ZCode = require( './ZCode.vue' );
 const ZArgumentReference = require( './ZArgumentReference.vue' );
+const ZWikifunctionsReference = require( './ZWikifunctionsReference.vue' );
 // Commons Media type components
 const CommonsMediaReference = require( './commons/MediaReference.vue' );
 // Wikidata Type components
@@ -141,6 +142,7 @@ module.exports = exports = defineComponent( {
 		'wl-z-implementation': ZImplementation,
 		'wl-z-code': ZCode,
 		'wl-z-argument-reference': ZArgumentReference,
+		'wl-z-wikifunctions-reference': ZWikifunctionsReference,
 		// Commons Media type components
 		'wl-commons-media-reference': CommonsMediaReference,
 		// Wikidata type components

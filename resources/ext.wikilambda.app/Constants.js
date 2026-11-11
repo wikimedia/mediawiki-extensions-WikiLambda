@@ -123,6 +123,8 @@ const Constants = {
 	Z_SERIALISER_CONVERTER: 'Z64K3',
 	Z_HTML_FRAGMENT: 'Z89',
 	Z_HTML_FRAGMENT_VALUE: 'Z89K1',
+	Z_WIKIFUNCTIONS_REFERENCE: 'Z96',
+	Z_WIKIFUNCTIONS_REFERENCE_ID: 'Z96K1',
 	Z_QUOTE: 'Z99',
 	Z_QUOTE_VALUE: 'Z99K1',
 	Z_VALIDATE_OBJECT: 'Z101',
@@ -342,6 +344,12 @@ Constants.BUILTIN_TYPE_CONFIG = {
 		component: 'wl-z-typed-list',
 		allowExpansion: true,
 		expandToSelf: true
+	},
+	[ Constants.Z_WIKIFUNCTIONS_REFERENCE ]: {
+		hasBuiltin: true,
+		component: 'wl-z-wikifunctions-reference',
+		allowExpansion: true,
+		collapseOnInit: true
 	},
 	[ Constants.Z_WIKIDATA_ITEM ]: {
 		hasBuiltin: true,

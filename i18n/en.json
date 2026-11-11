@@ -673,6 +673,8 @@
 	"wikilambda-validation-error-name-toolong": "Name in $1 must be {{PLURAL:$2|$2 character|$2 characters}} or shorter.",
 	"wikilambda-commons-media-selector-placeholder": "Search Commons images",
 	"wikilambda-commons-media-empty-value-placeholder": "No image selected",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "Select Wikifunctions object",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "No object selected",
 	"wikilambda-wikidata-entity-selector-placeholder": "Select Wikidata entity",
 	"wikilambda-wikidata-entity-fetch-error": "Could not load the data from Wikidata.",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "No value",

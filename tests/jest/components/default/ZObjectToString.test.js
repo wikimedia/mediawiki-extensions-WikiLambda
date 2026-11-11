@@ -578,6 +578,117 @@ describe( 'ZObjectToString', () => {
 			} );
 		} );
 
+		describe( 'for Wikifunctions object references', () => {
+			beforeEach( () => {
+				keyPath = 'main.Z2K2.Z20K2.Z40327K2';
+				store.getLabelData = createLabelDataMock( {
+					Z96: 'Wikifunctions object reference',
+					Z801: 'Echo',
+					Z802: 'If',
+					Z28231: 'ZID of a function'
+				} );
+			} );
+
+			it( 'renders the logo and a link to the referenced object', () => {
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: { Z1K1: 'Z6', Z6K1: 'Z802' }
+				};
+
+				const wrapper = renderZObjectToString();
+				const link = wrapper.find( 'a[data-testid=object-to-string-link]' );
+				expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+				expect( link.attributes().href ).toBe( '/view/en/Z802' );
+				expect( link.text() ).toBe( 'If' );
+				expect( wrapper.find( '.ext-wikilambda-app-object-to-string__children' ).exists() ).toBe( false );
+			} );
+
+			it( 'fetches the label of the referenced object', () => {
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: { Z1K1: 'Z6', Z6K1: 'Z802' }
+				};
+
+				renderZObjectToString();
+				expect( store.fetchZids ).toHaveBeenCalledWith( { zids: [ 'Z802' ] } );
+			} );
+
+			it( 'fetches the label again when the referenced object changes', async () => {
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: { Z1K1: 'Z6', Z6K1: 'Z802' }
+				};
+
+				const wrapper = renderZObjectToString();
+				await wrapper.setProps( { objectValue: {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: { Z1K1: 'Z6', Z6K1: 'Z801' }
+				} } );
+				expect( store.fetchZids ).toHaveBeenLastCalledWith( { zids: [ 'Z801' ] } );
+			} );
+
+			it( 'does not run the renderer of the type', async () => {
+				store.getRendererZid = createGettersWithFunctionsMock( 'Z40974' );
+				store.runRenderer = jest.fn().mockResolvedValue( {
+					response: { [ Constants.Z_RESPONSEENVELOPE_VALUE ]: 'rendered' }
+				} );
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: { Z1K1: 'Z6', Z6K1: 'Z802' }
+				};
+
+				const wrapper = renderZObjectToString();
+				await waitFor( () => expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).text() ).toBe( 'If' ) );
+				expect( store.runRenderer ).not.toHaveBeenCalledWith( expect.objectContaining( {
+					zobject: expect.objectContaining( { Z1K1: 'Z96' } )
+				} ) );
+			} );
+
+			it( 'renders no link when the value is not a valid ZID', () => {
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: { Z1K1: 'Z6', Z6K1: 'not a ZID' }
+				};
+
+				const wrapper = renderZObjectToString();
+				expect( wrapper.find( 'a[data-testid=object-to-string-link]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'span[data-testid=object-to-string-text]' ).text() ).toBe( 'not a ZID' );
+				expect( store.fetchZids ).not.toHaveBeenCalled();
+			} );
+
+			it( 'renders a call to action when the value is empty, in edit mode', () => {
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: { Z1K1: 'Z6', Z6K1: '' }
+				};
+
+				const wrapper = renderZObjectToString( { edit: true } );
+				const button = wrapper.find( 'button[data-testid=object-to-string-link]' );
+				expect( button.text() ).toBe( 'Select Wikifunctions object reference' );
+			} );
+
+			it( 'renders the logo and the function call that returns the ZID, without the type', () => {
+				objectValue = {
+					Z1K1: { Z1K1: 'Z9', Z9K1: 'Z96' },
+					Z96K1: {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z28231' },
+						Z28231K1: { Z1K1: 'Z9', Z9K1: 'Z801' }
+					}
+				};
+
+				const wrapper = renderZObjectToString();
+				const parentElement = wrapper.find( '.ext-wikilambda-app-object-to-string__parent' );
+				expect( parentElement.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
+
+				const functionLink = parentElement.find( 'a[data-testid=object-to-string-link]' );
+				expect( functionLink.attributes().href ).toBe( '/view/en/Z28231' );
+				expect( functionLink.text() ).toBe( 'ZID of a function' );
+				expect( wrapper.text() ).toContain( 'Echo' );
+				expect( wrapper.find( 'a[href="/view/en/Z96"]' ).exists() ).toBe( false );
+			} );
+		} );
+
 		describe( 'for any other type', () => {
 			beforeEach( () => {
 				// Example for fallback behavior: ZMonolingual string object

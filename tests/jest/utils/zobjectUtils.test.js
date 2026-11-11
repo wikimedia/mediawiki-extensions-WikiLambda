@@ -2267,6 +2267,26 @@ describe( 'zobjectUtils', () => {
 		} );
 	} );
 
+	describe( 'getWikifunctionsReferenceId', () => {
+		it( 'returns the referenced ZID', () => {
+			const zobject = { Z1K1: 'Z96', Z96K1: { Z1K1: 'Z6', Z6K1: 'Z802' } };
+			expect( zobjectUtils.getWikifunctionsReferenceId( zobject ) ).toBe( 'Z802' );
+			expect( zobjectUtils.getWikifunctionsReferenceId( canonicalToHybrid( zobject ) ) ).toBe( 'Z802' );
+		} );
+
+		it( 'returns an empty string when the ZID is unset', () => {
+			const zobject = { Z1K1: 'Z96', Z96K1: '' };
+			expect( zobjectUtils.getWikifunctionsReferenceId( zobject ) ).toBe( '' );
+			expect( zobjectUtils.getWikifunctionsReferenceId( canonicalToHybrid( zobject ) ) ).toBe( '' );
+		} );
+
+		it( 'returns undefined when the ZID is returned by a function call', () => {
+			const zobject = { Z1K1: 'Z96', Z96K1: { Z1K1: 'Z7', Z7K1: 'Z28231', Z28231K1: 'Z801' } };
+			expect( zobjectUtils.getWikifunctionsReferenceId( zobject ) ).toBeUndefined();
+			expect( zobjectUtils.getWikifunctionsReferenceId( canonicalToHybrid( zobject ) ) ).toBeUndefined();
+		} );
+	} );
+
 	describe( 'validateFunctionCall', () => {
 		const keyPath = [ 'main', 'Z2K2', 'Z20K2' ];
 

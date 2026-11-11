@@ -224,6 +224,11 @@ describe( 'ZObjectSelector', () => {
 			expect( wrapper.vm.startIcon ).toBeUndefined();
 		} );
 
+		it( 'shows the icon given as a prop inside the input', () => {
+			const wrapper = renderZObjectSelector( { type: Constants.Z_FUNCTION, icon: '<path/>' } );
+			expect( wrapper.vm.startIcon ).toBe( '<path/>' );
+		} );
+
 		it( 'on initialization, sets suggested objects', async () => {
 			const wrapper = renderZObjectSelector( {
 				type: Constants.Z_TYPE

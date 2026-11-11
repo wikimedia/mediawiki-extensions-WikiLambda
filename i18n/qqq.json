@@ -690,6 +690,8 @@
 	"wikilambda-validation-error-name-toolong": "Validation error message when saving a name that is too long.\n\nParams:\n* $1 - The language for which the name is too long.\n* $2 - The character length limit.",
 	"wikilambda-commons-media-selector-placeholder": "Placeholder text for the lookup component to search and select a Commons image file.\n\n{{doc-wikilambda}}",
 	"wikilambda-commons-media-empty-value-placeholder": "Placeholder text shown when no Commons image has been selected, in read mode.\n\n{{doc-wikilambda}}",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "Placeholder text for the lookup component to search and select the Wikifunctions object that a Wikifunctions object reference points to.\n\n{{doc-wikilambda}}",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "Placeholder text shown when a Wikifunctions object reference has no object selected, in read mode.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-entity-selector-placeholder": "Placeholder text for the lookup component to search and select any kind of Wikidata entity.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-entity-fetch-error": "Error message shown when the request to fetch an entity from Wikidata failed. This is not shown when the entity does not exist, only when the request itself failed.\n\n{{doc-wikilambda}}",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Placeholder text for an empty Wikidata entity value, in read mode.\n\n{{doc-wikilambda}}",
