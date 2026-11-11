@@ -74,14 +74,6 @@ describe( 'AbstractContentFragment', () => {
 			expect( menu.exists() ).toBe( true );
 		} );
 
-		it( 'does not show actions menu button when edit=false', () => {
-			const wrapper = renderFragment( { edit: false } );
-
-			const menu = wrapper.find( '.ext-wikilambda-app-abstract-content-fragment-menu' );
-
-			expect( menu.exists() ).toBe( false );
-		} );
-
 		it( 'emits action event when selecting a menu action', () => {
 			const wrapper = renderFragment();
 
@@ -155,6 +147,57 @@ describe( 'AbstractContentFragment', () => {
 				wrapper.vm.menuItems[ 0 ].items[ 1 ];
 
 			expect( moveAfterItem.disabled ).toBe( true );
+		} );
+	} );
+
+	describe( 'fragment actions in read mode', () => {
+		function getMenuValues( wrapper ) {
+			return wrapper.vm.menuItems.map( ( item ) => item.value );
+		}
+
+		async function openMenu( wrapper ) {
+			await wrapper.find( '.ext-wikilambda-app-abstract-content-fragment-menu' ).trigger( 'click' );
+		}
+
+		it( 'shows actions menu button', () => {
+			const wrapper = renderFragment( { edit: false } );
+
+			const menu = wrapper.find( '.ext-wikilambda-app-abstract-content-fragment-menu' );
+
+			expect( menu.exists() ).toBe( true );
+		} );
+
+		it( 'offers copy and the try option when the menu opens and there is a link', async () => {
+			const wrapper = renderFragment( { edit: false } );
+
+			await openMenu( wrapper );
+
+			expect( getMenuValues( wrapper ) ).toEqual( [
+				Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
+				Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL
+			] );
+		} );
+
+		it( 'offers only copy when there is no link', async () => {
+			store.getFunctionCallLink = jest.fn().mockReturnValue( null );
+			const wrapper = renderFragment( { edit: false } );
+
+			await openMenu( wrapper );
+
+			expect( getMenuValues( wrapper ) ).toEqual( [
+				Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD
+			] );
+		} );
+
+		it( 'emits the copy action when the copy option is selected', () => {
+			const wrapper = renderFragment( { edit: false } );
+
+			const menuButton = wrapper.findComponent( { name: 'cdx-menu-button' } );
+			menuButton.vm.$emit( 'update:selected', Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD );
+
+			expect( wrapper.emitted( 'action' ) ).toEqual( [
+				[ { action: Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD } ]
+			] );
 		} );
 	} );
 

@@ -285,6 +285,19 @@ describe( 'AbstractContentSection', () => {
 		expect( mockMenuActions.deleteListItem ).toHaveBeenCalledWith( keyPath );
 	} );
 
+	it( 'copies the selected fragment to the clipboard in read mode', () => {
+		const wrapper = renderSection( { edit: false } );
+
+		const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+		fragment.trigger( 'action', { action: Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD } );
+
+		expect( store.copyToClipboard ).toHaveBeenCalledWith( {
+			originKey: 'Q8776414.1',
+			originSlotType: Constants.Z_HTML_FRAGMENT,
+			value: fragmentCall
+		} );
+	} );
+
 	it( 'opens the function call of the selected fragment on Wikifunctions', () => {
 		const wrapper = renderSection();
 

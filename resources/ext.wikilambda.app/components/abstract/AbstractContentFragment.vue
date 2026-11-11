@@ -32,7 +32,6 @@
 			<cdx-icon :icon="iconDrag" size="small"></cdx-icon>
 		</span>
 		<cdx-menu-button
-			v-if="edit"
 			:aria-label="i18n( 'wikilambda-abstract-fragment-actions-menu' ).text()"
 			class="ext-wikilambda-app-abstract-content-fragment-menu"
 			action="default"
@@ -151,6 +150,23 @@ module.exports = exports = defineComponent( {
 		} );
 
 		const menuItems = computed( () => {
+			const copyItem = {
+				label: i18n( 'wikilambda-clipboard-menu-option-copy' ).text(),
+				value: Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
+				icon: icons.cdxIconCopy
+			};
+			// try the function call on Wikifunctions when there is a link
+			const tryItems = hasCallLink.value ? [ {
+				label: i18n( 'wikilambda-abstract-menu-option-try-function-call' ).text(),
+				value: Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL,
+				icon: icons.cdxIconLinkExternal
+			} ] : [];
+
+			// Read mode offers only the actions that leave the article as it is
+			if ( !props.edit ) {
+				return [ copyItem, ...tryItems ];
+			}
+
 			const isFirst = key.value === '1';
 			const isLast = key.value === String( fragmentCount.value );
 			// move item (before or after)
@@ -183,24 +199,15 @@ module.exports = exports = defineComponent( {
 					icon: icons.cdxIconTableAddRowAfter
 				} ]
 			};
-			// clipboard options, and try the function call on Wikifunctions
-			// when there is a link
+			// clipboard options, and the try option
 			const clipboardActionGroup = {
 				label: i18n( 'wikilambda-clipboard-menu-group' ).text(),
 				hideLabel: true,
-				items: [ {
-					label: i18n( 'wikilambda-clipboard-menu-option-copy' ).text(),
-					value: Constants.LIST_MENU_OPTIONS.COPY_CLIPBOARD,
-					icon: icons.cdxIconCopy
-				}, {
+				items: [ copyItem, {
 					label: i18n( 'wikilambda-clipboard-menu-option-paste' ).text(),
 					value: Constants.LIST_MENU_OPTIONS.PASTE_CLIPBOARD,
 					icon: icons.cdxIconPaste
-				}, ...( hasCallLink.value ? [ {
-					label: i18n( 'wikilambda-abstract-menu-option-try-function-call' ).text(),
-					value: Constants.LIST_MENU_OPTIONS.TRY_FUNCTION_CALL,
-					icon: icons.cdxIconLinkExternal
-				} ] : [] ) ]
+				}, ...tryItems ]
 			};
 			// show provenance of the generated text (T441583), when there is any
 			const provenanceActionGroup = {
