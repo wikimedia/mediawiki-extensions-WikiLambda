@@ -87,6 +87,7 @@
 	"wikilambda-abstract-preview-fragment-unavailable": "Adeegga bandhiggu hadda wuu mashquulsan yahay. Mar kale ayaa la isku dayi doonaa {{PLURAL:$1|$1 daqiiqo|$1 daqiiqadood}}.",
 	"wikilambda-abstract-preview-provenance-fragment-store": "Qoraalkan ayaa hore loo sameeyay oo la kaydiyay",
 	"wikilambda-abstract-preview-provenance-render-date": "Qayb la soo bandhigay",
+	"wikilambda-abstract-preview-provenance-running": "Wuu socdaa…",
 	"wikilambda-abstract-preview-provenance-unavailable": "Ma jiro macluumaad ku saabsan halka ay qaybtani ka timid",
 	"wikilambda-abstract-preview-in-language": "Qoraal la soo saaray",
 	"wikilambda-abstract-renderedwith": "Bogga waxaa laga soo bandhigay [[meta:Special:MyLanguage/Abstract Wikipedia|Abstract Wikipedia]].",
