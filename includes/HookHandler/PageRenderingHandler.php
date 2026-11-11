@@ -545,12 +545,12 @@ class PageRenderingHandler implements
 	 * @param string $magicWordId
 	 * @param ?string &$ret
 	 * @param PPFrame|false $frame
-	 * @return bool|void
+	 * @return void
 	 */
 	public function onParserGetVariableValueSwitch( $parser, &$variableCache, $magicWordId, &$ret, $frame ) {
 		// We only do this in repo mode
 		if ( !$this->mode->isRepo() ) {
-			return true;
+			return;
 		}
 
 		$matchedType = match ( $magicWordId ) {
@@ -572,9 +572,6 @@ class PageRenderingHandler implements
 
 		// Speed-optimisation: cache the value for calls to the same variable in the same request
 		$variableCache[$magicWordId] = $ret;
-
-		// Permit future callbacks to run for this hook (e.g. other extensions' code).
-		return true;
 	}
 
 	/**
