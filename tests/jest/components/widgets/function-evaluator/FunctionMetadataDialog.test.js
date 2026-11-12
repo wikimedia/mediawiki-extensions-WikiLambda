@@ -668,7 +668,7 @@ describe( 'dialog', () => {
 			// Check content
 			const content = section.find( '.cdx-accordion__content' );
 			const keys = content.findAll( '.ext-wikilambda-app-function-metadata-item' );
-			expect( keys.length ).toBe( 4 );
+			expect( keys.length ).toBe( 6 );
 
 			expect( keys[ 0 ].text() ).toContain( 'Most-called Functions:' );
 			const list = keys[ 0 ].findAll( 'ul > li' );
@@ -687,6 +687,26 @@ describe( 'dialog', () => {
 
 			expect( keys[ 3 ].text() ).toContain( 'Number of Functions called:' );
 			expect( keys[ 3 ].text() ).toContain( '2' );
+
+			expect( keys[ 4 ].text() ).toContain( 'Calls answered from cache:' );
+			expect( keys[ 4 ].text() ).toContain( '1' );
+
+			expect( keys[ 5 ].text() ).toContain( 'Most frequent calls answered from cache (caller → called):' );
+			const cachedPairList = keys[ 5 ].findAll( 'ul > li' );
+			expect( cachedPairList.length ).toBe( 1 );
+			expect( cachedPairList[ 0 ].text() ).toBe( '(top level) → Z10000: 1' );
+		} );
+
+		it( 'shows the function calls section with only the cached call count', () => {
+			const wrapper = renderFunctionMetadataDialog( {
+				metadata: metadata.convertSetToMap( { cachedFunctionCalls: '2' } )
+			} );
+			const sections = wrapper.findAllComponents( { name: 'cdx-accordion' } );
+			expect( sections.length ).toBe( 1 );
+			expect( sections[ 0 ].find( '.cdx-accordion__header__title' ).text() ).toBe( 'Function calls' );
+			const keys = sections[ 0 ].findAll( '.ext-wikilambda-app-function-metadata-item' );
+			expect( keys.length ).toBe( 1 );
+			expect( keys[ 0 ].text() ).toContain( 'Calls answered from cache:' );
 		} );
 
 		it( 'shows only the call count in the summary when the function count is missing', () => {

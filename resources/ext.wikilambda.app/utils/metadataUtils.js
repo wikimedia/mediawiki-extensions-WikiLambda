@@ -56,7 +56,9 @@ const metadataUtils = {
 				{ key: 'functionCallCounts', title: 'wikilambda-functioncall-metadata-function-calls-most-called', transform: 'getDebugLogs' },
 				{ key: 'functionCallPairCounts', title: 'wikilambda-functioncall-metadata-function-calls-pairs', transform: 'getDebugLogs' },
 				{ key: 'functionCallTotal', title: 'wikilambda-functioncall-metadata-function-calls-total' },
-				{ key: 'functionCallDistinctFunctions', title: 'wikilambda-functioncall-metadata-function-calls-distinct-functions' }
+				{ key: 'functionCallDistinctFunctions', title: 'wikilambda-functioncall-metadata-function-calls-distinct-functions' },
+				{ key: 'cachedFunctionCalls', title: 'wikilambda-functioncall-metadata-function-calls-cached-total' },
+				{ key: 'cachedFunctionCallPairCounts', title: 'wikilambda-functioncall-metadata-function-calls-cached-pairs', transform: 'getDebugLogs' }
 			]
 		},
 		caching: {

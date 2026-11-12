@@ -439,6 +439,8 @@
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Execution debug logs",
 	"wikilambda-functioncall-metadata-expected-result": "Expected result",
 	"wikilambda-functioncall-metadata-function-calls": "Function calls",
+	"wikilambda-functioncall-metadata-function-calls-cached-pairs": "Most frequent calls answered from cache (caller → called)",
+	"wikilambda-functioncall-metadata-function-calls-cached-total": "Calls answered from cache",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Number of Functions called",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "Most-called Functions",
 	"wikilambda-functioncall-metadata-function-calls-pairs": "Most frequent calls (caller → called)",

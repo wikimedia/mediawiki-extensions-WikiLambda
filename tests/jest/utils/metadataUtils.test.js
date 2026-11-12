@@ -49,7 +49,9 @@ describe( 'metadataUtils', () => {
 			'functionCallCounts',
 			'functionCallPairCounts',
 			'functionCallTotal',
-			'functionCallDistinctFunctions'
+			'functionCallDistinctFunctions',
+			'cachedFunctionCalls',
+			'cachedFunctionCallPairCounts'
 		] );
 	} );
 
