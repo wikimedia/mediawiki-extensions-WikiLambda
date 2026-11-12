@@ -87,6 +87,7 @@
 	"wikilambda-abstract-preview-fragment-unavailable": "Vykreslovací služba je momentálně zaneprázdněna. Další pokus za {{PLURAL:$1|$1 minutu|$1 minuty|$1 minut}}.",
 	"wikilambda-abstract-preview-provenance-fragment-store": "Tento text byl vygenerován již dříve a uložen",
 	"wikilambda-abstract-preview-provenance-render-date": "Fragment vykreslen",
+	"wikilambda-abstract-preview-provenance-running": "Běží…",
 	"wikilambda-abstract-preview-provenance-unavailable": "Pro tento fragment nejsou k dispozici informace o původu",
 	"wikilambda-abstract-preview-in-language": "Generovaný text",
 	"wikilambda-abstract-renderedwith": "Stránka byla vykreslena z [[meta:Special:MyLanguage/Abstract Wikipedia|Abstraktní Wikipedie]].",

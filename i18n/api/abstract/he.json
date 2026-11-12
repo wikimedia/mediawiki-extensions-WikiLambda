@@ -16,11 +16,13 @@
 	"apihelp-abstractwiki_fetch_section-param-language": "מזהה עצם ה־Z שמשמש לתיצוג המקטעים. זה חייב להיות Zid תקין.",
 	"apihelp-abstractwiki_fetch_section-param-date": "מחרוזת התאריך שמשמשת לתיצוג המקטעים.",
 	"apihelp-abstractwiki_fetch_section-param-fragments": "מערך אופציונלי של מקטעים שיש להחזיר עבורם את הערכים המתוצגים שלהם. אם המערך ריק, המקטעים המוחזרים יהיו אלה שמאוחסנים עבור המקטע Qid הנתון בהתאם לגרסה הנוכחית. כאשר המערך אינו ריק, עליו להכיל רשימה של קריאות לפונקציית מקטע. אלו עשויות להיות שונות מאלו שנשמרות במקטע (למשל, הן נערכות באופן פעיל ומצבן הנוכחי שמור), והבקשות האלו דורשות הרשאות נוספות.",
+	"apihelp-abstractwiki_fetch_section-param-revision": "מזהה גרסה אופציונלי של הנושא דף הוויקיפדיה המופשטת הנושא. אם זה ניתן, ולא מועבר הפרמטר \"fragments\", המקטעים המוחזרים הם שיאוחסנו עבור מזהה ה־Q של המקטע הנתון לפי הגרסה ההיא ולא הנוכחית.",
 	"apihelp-abstractwiki_fetch_section-example-lede": "שליפת המקטעים המתוצגים של פרק נתון.",
 	"apihelp-abstractwiki_fetch_section-example-unsaved": "שליפת הערכים המתוצגים של רשימת מקטעים שלא נשמרו.",
 	"apierror-abstractwiki_run_fragment-bad-fragment": "המקטע אינו קריאה תקינה לפונקציה.",
 	"apierror-abstractwiki_run_fragment-bad-response": "המקטע החזיר סוג שגוי.",
 	"apierror-abstractwiki_run_fragment-forbidden": "אין לך הרשאות שנחוצות לתיצוג המקטע הזה.",
+	"apierror-abstractwiki_run_fragment-fresh-not-enabled": "לא ניתן לתצג תוכן של מקטעי ויקיפדיה מופשטת עם הנתונים האחרונים: התכונה הזאת אינה מופעלת.",
 	"apierror-abstractwiki_run_fragment-not-enabled": "לא ניתן לתצג תוכן של מקטעי ויקיפדיה מופשטת: התכונה הזאת אינה מופעלת.",
 	"apierror-abstractwiki_run_fragment-returned-zerror": "ויקיפונקציות החזירו תגובה כושלת: $1",
 	"apierror-abstractwiki_run_fragment-service-unavailable": "שירות התיצוג אינו זמין באופן זמני. נא לנסות שוב מאוחר יותר.",
@@ -31,6 +33,7 @@
 	"apihelp-abstractwiki_run_fragment-param-language": "מזהה עצם ה־Z של השפה שמשמשת לתיצוג הקטע. זה חייב להיות מזהה Z תקין.",
 	"apihelp-abstractwiki_run_fragment-param-date": "מחרוזת התאריך שמשמשת לתיצוג הקטע.",
 	"apihelp-abstractwiki_run_fragment-param-fragment": "JSON של הרכבת מקטע. זה אמור להיות עצם Z תקין והוא אמור לפלוט עצם מסוג Z89/מקטע HTML",
+	"apihelp-abstractwiki_run_fragment-param-fresh": "האם לתצג את המקטע שוב עם הנתונים האחרונים, ולדלג על המקטע המאוחסן ואת המטמונים בוויקיפונקציות. זה דורש הרשאה לבקש את התוצאות הטריות, דבר שיש עליו הגבלת קצב, בקשת POST ואסימון CSRF, וזה תמיד סינכרוני.",
 	"apihelp-abstractwiki_run_fragment-example-literal-html": "הרצת מקטע עם עם עצם HTML מפורש",
 	"apihelp-abstractwiki_run_fragment-example-composition": "הרצת מקטע עם הרכבה שמשתמשת במזהה Q וארגומנטים של שפה"
 }

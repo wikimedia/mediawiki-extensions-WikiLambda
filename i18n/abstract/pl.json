@@ -87,6 +87,7 @@
 	"wikilambda-abstract-preview-fragment-unavailable": "Usługa renderowania jest obecnie zajęta. Spróbuj ponownie za {{PLURAL:$1|minutę|$1 minuty|$1 minut|$1 minuty}}.",
 	"wikilambda-abstract-preview-provenance-fragment-store": "Ten tekst został wygenerowany wcześniej i zapisany",
 	"wikilambda-abstract-preview-provenance-render-date": "Fragment wyrenderowano",
+	"wikilambda-abstract-preview-provenance-running": "W toku…",
 	"wikilambda-abstract-preview-provenance-unavailable": "Brak informacji o pochodzeniu tego fragmentu",
 	"wikilambda-abstract-preview-in-language": "Wygenerowany tekst",
 	"wikilambda-abstract-renderedwith": "Strona została wygenerowana z [[meta:Special:MyLanguage/Abstract Wikipedia|Abstrakcyjnej Wikipedii]].",

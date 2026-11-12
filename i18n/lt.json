@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Babellini",
 			"Nokeoo",
 			"Pavel1513"
 		]
@@ -20,7 +21,7 @@
 	"wikilambda-function-definition-output-selector": "Pasirinkite tipą",
 	"wikilambda-function-details-table-approve": "Prijungti",
 	"wikilambda-function-details-table-deactivate": "Atjungti",
-	"wikilambda-function-evaluation-restriction-notrunnable": "Ši funkcija neturi patvirtintų diegimų.",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Ši funkcija neturi susietų diegimų.",
 	"wikilambda-function-implementation-state-approved": "Prijungta",
 	"wikilambda-function-implementation-state-deactivated": "Atjungta",
 	"wikilambda-function-implementation-state-label": "Būsena",

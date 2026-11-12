@@ -87,6 +87,7 @@
 	"wikilambda-abstract-preview-fragment-unavailable": "O servizo de renderización está ocupado nestes intres. Intentarémolo de novo {{PLURAL:$1|nun minuto|en $1 minutos}}.",
 	"wikilambda-abstract-preview-provenance-fragment-store": "Este texto xerouse anteriormente e almacenouse",
 	"wikilambda-abstract-preview-provenance-render-date": "Fragmento renderizado",
+	"wikilambda-abstract-preview-provenance-running": "Executando…",
 	"wikilambda-abstract-preview-provenance-unavailable": "Non hai información dispoñible sobre a procedencia deste fragmento",
 	"wikilambda-abstract-preview-in-language": "Texto xerado",
 	"wikilambda-abstract-renderedwith": "A páxina renderizouse desde a [[meta:Special:MyLanguage/Abstract Wikipedia|Wikipedia abstracta]].",
