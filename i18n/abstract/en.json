@@ -56,6 +56,7 @@
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Select a function outputting a $2 ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "This field expects a function which returns a $2 ($1). Only functions with that return type are shown in the search.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "Why some functions aren't listed",
+	"wikilambda-abstract-fragment-output-show-more": "Show more",
 	"wikilambda-abstract-function-search-suggest-title": "Suggest to the community",
 	"wikilambda-abstract-function-search-suggest-description": "Start a discussion and ask contributors to help build the function",
 	"wikilambda-abstract-function-search-create-title": "Create the function",

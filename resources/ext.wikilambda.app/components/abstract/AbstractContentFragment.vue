@@ -48,15 +48,24 @@
 				size="small"
 			></cdx-icon>
 		</cdx-menu-button>
-		<wl-z-object-key-value
-			:key-path="keyPath"
-			:object-value="fragment"
-			:edit="edit"
-			:skip-key="true"
-			:skip-indent="true"
-			:parent-list-item-type="htmlFragmentType"
-			:collapsed="dragging && dragged"
-		></wl-z-object-key-value>
+		<div class="ext-wikilambda-app-abstract-content-fragment-content">
+			<wl-z-object-key-value
+				:key-path="keyPath"
+				:object-value="fragment"
+				:edit="edit"
+				:skip-key="true"
+				:skip-indent="true"
+				:parent-list-item-type="htmlFragmentType"
+				:collapsed="dragging && dragged"
+			></wl-z-object-key-value>
+			<wl-abstract-content-fragment-output
+				v-if="showOutput && !dragged"
+				:key-path="keyPath"
+				:fragment="fragment"
+				:fragment-hash="fragmentHash"
+				:selected="isSelected"
+			></wl-abstract-content-fragment-output>
+		</div>
 	</div>
 </template>
 
@@ -68,6 +77,8 @@ const useFragmentSelection = require( '../../composables/useFragmentSelection.js
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
+// Abstract components
+const AbstractContentFragmentOutput = require( './AbstractContentFragmentOutput.vue' );
 // Type components
 const ZObjectKeyValue = require( '../types/ZObjectKeyValue.vue' );
 // Codex components
@@ -76,6 +87,7 @@ const { CdxIcon, CdxMenuButton } = require( '../../../codex.js' );
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-content-fragment',
 	components: {
+		'wl-abstract-content-fragment-output': AbstractContentFragmentOutput,
 		'wl-z-object-key-value': ZObjectKeyValue,
 		'cdx-icon': CdxIcon,
 		'cdx-menu-button': CdxMenuButton
@@ -92,6 +104,15 @@ module.exports = exports = defineComponent( {
 		edit: {
 			type: Boolean,
 			required: true
+		},
+		fragmentHash: {
+			type: String,
+			required: false,
+			default: null
+		},
+		showOutput: {
+			type: Boolean,
+			default: false
 		},
 		/**
 		 * Whether the user drags a fragment of this section. The pointer
@@ -416,6 +437,37 @@ module.exports = exports = defineComponent( {
 		width: calc( @min-size-icon-small + 4px );
 		min-width: calc( @min-size-icon-small + 4px );
 		color: @color-subtle;
+	}
+
+	// The narrow screens are touch screens, which need a larger target. The
+	// expand toggles keep their width, because they repeat on each level.
+	@media screen and ( max-width: @max-width-breakpoint-tablet ) {
+		.ext-wikilambda-app-abstract-content-fragment-menu > .cdx-button,
+		.ext-wikilambda-app-expanded-toggle.cdx-button {
+			min-height: @min-size-interactive-touch;
+		}
+
+		.ext-wikilambda-app-abstract-content-fragment-menu > .cdx-button {
+			width: @min-size-interactive-touch;
+			min-width: @min-size-interactive-touch;
+		}
+
+		// A nested toggle stays in line with its label, which has the pointer
+		// height. The fragment's own toggle and menu keep their full height,
+		// so they do not stick out of the fragment.
+		.ext-wikilambda-app-key-value-block .ext-wikilambda-app-key-value-block {
+			.ext-wikilambda-app-expanded-toggle.cdx-button {
+				margin-top: calc( ( @min-size-interactive-pointer - @min-size-interactive-touch ) / 2 );
+				margin-bottom: calc( ( @min-size-interactive-pointer - @min-size-interactive-touch ) / 2 );
+			}
+		}
+
+		.ext-wikilambda-app-expanded-toggle__icon.cdx-icon--small {
+			min-width: @min-size-icon-medium;
+			min-height: @min-size-icon-medium;
+			width: @size-icon-medium;
+			height: @size-icon-medium;
+		}
 	}
 
 	.ext-wikilambda-app-abstract-content-fragment-content {

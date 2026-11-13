@@ -178,6 +178,42 @@ describe( 'AbstractContentSection', () => {
 		expect( fragment.props( 'edit' ) ).toBe( true );
 	} );
 
+	describe( 'generated text under the fragments', () => {
+		const originalWidth = window.innerWidth;
+
+		afterEach( () => {
+			window.innerWidth = originalWidth;
+		} );
+
+		it( 'passes the hash of each fragment to the fragment', () => {
+			store.getAbstractSectionHashes = jest.fn().mockReturnValue( [ 'hash1#' ] );
+			const wrapper = renderSection();
+
+			const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+
+			expect( store.getAbstractSectionHashes ).toHaveBeenCalledWith( 'Q8776414' );
+			expect( fragment.props( 'fragmentHash' ) ).toBe( 'hash1#' );
+		} );
+
+		it( 'shows the generated text under the fragments below desktop width, where the columns are stacked', () => {
+			window.innerWidth = Constants.BREAKPOINTS.DESKTOP - 1;
+			const wrapper = renderSection();
+
+			const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+
+			expect( fragment.props( 'showOutput' ) ).toBe( true );
+		} );
+
+		it( 'does not show the generated text under the fragments at desktop width', () => {
+			window.innerWidth = Constants.BREAKPOINTS.DESKTOP;
+			const wrapper = renderSection();
+
+			const fragment = wrapper.findComponent( { name: 'wl-abstract-content-fragment' } );
+
+			expect( fragment.props( 'showOutput' ) ).toBe( false );
+		} );
+	} );
+
 	it( 'does not show the add content button and dialog when edit=false', () => {
 		const wrapper = renderSection( { edit: false } );
 

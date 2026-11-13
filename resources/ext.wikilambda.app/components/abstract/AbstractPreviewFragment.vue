@@ -15,80 +15,26 @@
 		@focusout="onFocusOut"
 		@click="onClick"
 	>
-		<!-- Fragment exists but was not initialized in this language -->
+		<!-- Missing, loading or failed -->
+		<wl-abstract-fragment-status
+			v-if="status !== 'html'"
+			ref="statusRef"
+			:key-path="keyPath"
+			:fragment-hash="fragmentHash"
+			@retry="retryPreview"
+		></wl-abstract-fragment-status>
+		<!-- eslint-disable vue/no-v-html -->
 		<div
-			v-if="isMissing"
+			v-else
 			ref="contentRef"
-			class="ext-wikilambda-app-abstract-preview-fragment-blank-wrapper"
-		>
-			<div class="ext-wikilambda-app-abstract-preview-fragment-blank">
-				{{ missingLabel }}
-				<button
-					v-if="missingCanRetry"
-					type="button"
-					class="ext-wikilambda-app-button-reset
-						ext-wikilambda-app-abstract-preview-fragment-retry"
-					:aria-label="i18n( 'wikilambda-abstract-preview-fragment-retry' ).text()"
-					@click.stop="retryPreview"
-				>
-					<cdx-icon :icon="iconRetry"></cdx-icon>
-				</button>
-			</div>
-		</div>
-
-		<!-- Fragment is loading (promise in flight). A fragment that waits for a busy
-		rendering service keeps its notice while it loads, so that the layout does not move. -->
-		<cdx-progress-indicator
-			v-else-if="fragmentPreview.isLoading && !fragmentPreview.isUnavailable"
-			class="ext-wikilambda-app-abstract-preview-fragment-loading"
-		>
-			{{ i18n( 'wikilambda-loading' ).text() }}
-		</cdx-progress-indicator>
-
-		<!-- Fragment is available (error or success) -->
-		<template v-else>
-			<div
-				v-if="fragmentPreview.hasError && fragmentError"
-				ref="errorRef"
-				class="ext-wikilambda-app-abstract-preview-fragment-error-wrapper"
-			>
-				<cdx-message
-					class="ext-wikilambda-app-abstract-preview-fragment-error"
-					:type="fragmentError.type"
-				>
-					<wl-safe-message :error="fragmentError.message"></wl-safe-message>
-					<button
-						v-if="fragmentError.retry"
-						class="ext-wikilambda-app-button-reset
-							ext-wikilambda-app-abstract-preview-fragment-retry"
-						@click="retryPreview"
-					>
-						{{ i18n( 'wikilambda-abstract-preview-fragment-retry' ).text() }}
-					</button>
-					<div v-if="fragmentError.replicateLink">
-						<a
-							:href="fragmentError.replicateLink"
-							target="_blank"
-							class="ext-wikilambda-app-abstract-preview-fragment-replicate"
-						>
-							{{ i18n( 'wikilambda-abstract-preview-fragment-replicate' ).text() }}
-						</a>
-					</div>
-				</cdx-message>
-			</div>
-			<!-- eslint-disable vue/no-v-html -->
-			<div
-				v-else
-				ref="contentRef"
-				class="ext-wikilambda-app-abstract-preview-fragment-html"
-				v-html="fragmentPreview.html"
-			></div>
-			<!-- eslint-enable vue/no-v-html -->
-		</template>
+			class="ext-wikilambda-app-abstract-preview-fragment-html"
+			v-html="fragmentPreview.html"
+		></div>
+		<!-- eslint-enable vue/no-v-html -->
 
 		<!-- Provenance popover, opened from the fragment menu (T441583) -->
 		<wl-abstract-preview-provenance
-			v-if="isProvenanceOpen && provenanceAnchor"
+			v-if="!hideProvenance && isProvenanceOpen && provenanceAnchor"
 			:open="isProvenanceOpen"
 			:anchor="provenanceAnchor"
 			:fragment-preview="fragmentPreview"
@@ -103,20 +49,17 @@
 const { computed, defineComponent, inject, onUnmounted, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
+const useFragmentPreview = require( '../../composables/useFragmentPreview.js' );
+const useFragmentProvenance = require( '../../composables/useFragmentProvenance.js' );
 const useFragmentSelection = require( '../../composables/useFragmentSelection.js' );
 const useInitReferences = require( '../../composables/useInitReferences.js' );
 const useInitImages = require( '../../composables/useInitImages.js' );
 const useVisibleTimeout = require( '../../composables/useVisibleTimeout.js' );
 const useMainStore = require( '../../store/index.js' );
-const ErrorData = require( '../../store/classes/ErrorData.js' );
-const icons = require( '../../../lib/icons.json' );
 
 // Abstract components
+const AbstractFragmentStatus = require( './AbstractFragmentStatus.vue' );
 const AbstractPreviewProvenance = require( './AbstractPreviewProvenance.vue' );
-// Base components
-const SafeMessage = require( '../base/SafeMessage.vue' );
-// Codex components
-const { CdxMessage, CdxIcon, CdxProgressIndicator } = require( '../../../codex.js' );
 
 // Time (ms) between retries of a fragment that failed because the rendering service is busy
 const UNAVAILABLE_FRAGMENT_RETRY_DELAY = Constants.UNAVAILABLE_FRAGMENT_RETRY_MINUTES * 60 * 1000;
@@ -124,11 +67,8 @@ const UNAVAILABLE_FRAGMENT_RETRY_DELAY = Constants.UNAVAILABLE_FRAGMENT_RETRY_MI
 module.exports = exports = defineComponent( {
 	name: 'wl-abstract-preview-fragment',
 	components: {
-		'wl-abstract-preview-provenance': AbstractPreviewProvenance,
-		'wl-safe-message': SafeMessage,
-		'cdx-message': CdxMessage,
-		'cdx-icon': CdxIcon,
-		'cdx-progress-indicator': CdxProgressIndicator
+		'wl-abstract-fragment-status': AbstractFragmentStatus,
+		'wl-abstract-preview-provenance': AbstractPreviewProvenance
 	},
 	props: {
 		keyPath: {
@@ -139,48 +79,24 @@ module.exports = exports = defineComponent( {
 			type: String,
 			required: false,
 			default: null
+		},
+		/**
+		 * Whether this fragment hides the provenance popover. When the columns
+		 * are stacked, the generated text under the fragment shows it.
+		 */
+		hideProvenance: {
+			type: Boolean,
+			default: false
 		}
 	},
 	emits: [ 'retry', 'request-fresh' ],
 	setup( props, { emit } ) {
-		const i18n = inject( 'i18n' );
 		const store = useMainStore();
-
-		const iconRetry = icons.cdxIconReload;
 
 		// Fragment Preview Status
 		// =======================
 
-		// Fragment preview as cached by the fragmentHash:languageZid key
-		const fragmentPreview = computed( () => {
-			const storedPreview = store.getFragmentPreview(
-				props.fragmentHash,
-				store.getPreviewLanguageZid
-			);
-			return storedPreview || {
-				isLoading: false,
-				isBlank: true
-			};
-		} );
-
-		// The fragment is missing so the editor should see a missing state
-		const isMissing = computed( () => {
-			if ( fragmentPreview.value.isLoading ) {
-				return false;
-			}
-			return fragmentPreview.value.isBlank || fragmentPreview.value.isPending;
-		} );
-
-		// The fragment is missing and can be requested again, show retry button
-		const missingCanRetry = computed( () => (
-			fragmentPreview.value.isBlank ||
-			fragmentPreview.value.isPending
-		) );
-
-		// Label of the missing (blank or pending) block
-		const missingLabel = computed( () => ( fragmentPreview.value.isPending ?
-			i18n( 'wikilambda-abstract-preview-fragment-pending' ).text() :
-			i18n( 'wikilambda-abstract-preview-fragment-missing' ).text() ) );
+		const { status, fragmentPreview } = useFragmentPreview( () => props.keyPath, () => props.fragmentHash );
 
 		// Observe fragmentPreview changes and request retry when no preview available.
 		// Options:
@@ -231,38 +147,6 @@ module.exports = exports = defineComponent( {
 			}
 		}, { immediate: true } );
 
-		// Fragment error render information for the preview
-		const fragmentError = computed( () => {
-			if ( !fragmentPreview.value.hasError ) {
-				return null;
-			}
-			const error = fragmentPreview.value.error;
-
-			// Build best error message, in order of preference
-			// 1. parseable error message obtained from Z50K3 and the error arguments
-			// 2. if not available, use the error.code with error.params, or else the error type label, as parameter
-			// 3. if not available, fall back to error.text
-			let errorData;
-			const parsedMessage = store.getHtmlErrorMessage( error.zid, error.zerror );
-			if ( parsedMessage ) {
-				errorData = ErrorData.buildErrorData( { errorMessage: parsedMessage } );
-			} else if ( error.code ) {
-				errorData = ErrorData.buildErrorData( {
-					errorMessageKey: error.code,
-					errorParams: error.params || [ store.getLabelData( error.zid ).label ]
-				} );
-			} else {
-				errorData = ErrorData.buildErrorData( { errorMessage: error.text } );
-			}
-
-			return Object.assign( {}, error, {
-				type: error.type || Constants.ERROR_TYPES.ERROR,
-				message: errorData,
-				// A busy service is not a problem with the fragment: no link to run it there
-				replicateLink: fragmentPreview.value.isUnavailable ? null : store.getFunctionCallLink( props.keyPath )
-			} );
-		} );
-
 		/**
 		 * Renders the preview of the given fragment for the
 		 */
@@ -274,7 +158,7 @@ module.exports = exports = defineComponent( {
 		// ====================
 		const rootRef = ref( null );
 		const contentRef = ref( null );
-		const errorRef = ref( null );
+		const statusRef = ref( null );
 
 		const { initReferences } = useInitReferences( contentRef );
 		const { initImages } = useInitImages( contentRef );
@@ -382,8 +266,8 @@ module.exports = exports = defineComponent( {
 				fragmentHighlightRegistry.unregisterFragmentNodes( props.keyPath );
 				return;
 			}
-			if ( preview.hasError && errorRef.value ) {
-				fragmentHighlightRegistry.registerFragmentNodes( props.keyPath, [ errorRef.value ] );
+			if ( status.value === 'error' && statusRef.value ) {
+				fragmentHighlightRegistry.registerFragmentNodes( props.keyPath, [ statusRef.value.$el ] );
 				return;
 			}
 			if ( preview.html && contentRef.value ) {
@@ -416,13 +300,11 @@ module.exports = exports = defineComponent( {
 		// Provenance popover
 		// ==================
 
-		const isProvenanceOpen = computed( () => store.getProvenanceFragment === props.keyPath );
-
-		// The state of a request to render this fragment again with the latest data (T441584)
-		const freshRequest = computed( () => store.getFreshRequest(
-			props.fragmentHash,
-			store.getPreviewLanguageZid
-		) );
+		const {
+			isProvenanceOpen,
+			freshRequest,
+			onProvenanceOpenUpdate
+		} = useFragmentProvenance( () => props.keyPath, () => props.fragmentHash );
 
 		/**
 		 * Returns the element that the provenance popover points at. The fragment's
@@ -453,52 +335,21 @@ module.exports = exports = defineComponent( {
 			{ immediate: true, flush: 'post' }
 		);
 
-		/**
-		 * Close the provenance popover when Codex asks to, e.g. on a click
-		 * outside it, the Escape key, or its close button.
-		 *
-		 * @param {boolean} open
-		 */
-		function onProvenanceOpenUpdate( open ) {
-			if ( !open ) {
-				store.setProvenanceFragment( undefined );
-				// A failure message is about the moment it happened; do not show it next time
-				store.clearFreshRequestError( props.fragmentHash, store.getPreviewLanguageZid );
-			}
-		}
-
-		// The popover describes one render of the fragment: when the fragment
-		// changes, the render it described is gone, so close the popover.
-		watch( () => props.fragmentHash, () => {
-			if ( isProvenanceOpen.value ) {
-				store.setProvenanceFragment( undefined );
-			}
-		} );
-
 		// On unmount, remove highlight state
 		onUnmounted( () => {
 			unsetHighlight();
 			if ( fragmentHighlightRegistry ) {
 				fragmentHighlightRegistry.unregisterFragmentNodes( props.keyPath );
 			}
-			// A fragment that goes away must not keep its popover open
-			if ( isProvenanceOpen.value ) {
-				store.setProvenanceFragment( undefined );
-			}
 		} );
 
 		return {
 			retryPreview,
-			fragmentError,
 			fragmentPreview,
 			freshRequest,
 			contentRef,
-			errorRef,
-			isMissing,
 			isProvenanceOpen,
 			isSelected,
-			missingCanRetry,
-			missingLabel,
 			onClick,
 			onFocusIn,
 			onFocusOut,
@@ -506,9 +357,9 @@ module.exports = exports = defineComponent( {
 			onProvenanceOpenUpdate,
 			provenanceAnchor,
 			rootRef,
-			unsetHighlight,
-			iconRetry,
-			i18n
+			status,
+			statusRef,
+			unsetHighlight
 		};
 	}
 } );
@@ -519,38 +370,6 @@ module.exports = exports = defineComponent( {
 
 .ext-wikilambda-app-abstract-preview-fragment {
 	display: unset;
-
-	.ext-wikilambda-app-abstract-preview-fragment-blank-wrapper {
-		display: inline-block;
-	}
-
-	.ext-wikilambda-app-abstract-preview-fragment-blank {
-		display: inline-block;
-		background-color: @background-color-neutral;
-		border: @border-width-base @border-style-base @border-color-muted;
-		border-radius: @border-radius-base;
-		margin-right: @spacing-25;
-		margin-bottom: @spacing-25;
-		font-family: @font-family-base;
-		font-weight: @font-weight-normal;
-		font-size: @font-size-small;
-		line-height: @line-height-x-small;
-		color: @color-subtle;
-		vertical-align: middle;
-		padding: @spacing-12 @spacing-35;
-	}
-
-	.ext-wikilambda-app-abstract-preview-fragment-loading {
-		margin: 0 @spacing-25;
-	}
-
-	.ext-wikilambda-app-abstract-preview-fragment-error {
-		margin: @spacing-25 0;
-	}
-
-	.ext-wikilambda-app-abstract-preview-fragment-retry {
-		.cdx-mixin-link();
-	}
 
 	.ext-wikilambda-app-abstract-preview-fragment-html {
 		display: unset;

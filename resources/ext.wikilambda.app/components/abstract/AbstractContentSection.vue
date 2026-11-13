@@ -34,6 +34,8 @@
 					:edit="edit"
 					:key-path="`${ section.fragmentsPath }.${ index }`"
 					:fragment="fragment"
+					:fragment-hash="fragmentHashes[ index - 1 ]"
+					:show-output="isStacked"
 					:style="getFragmentStyle( index )"
 					:dragging="isDragging"
 					:dragged="draggedIndex === index"
@@ -84,12 +86,13 @@
 </template>
 
 <script>
-const { defineComponent, inject, nextTick, ref, watch } = require( 'vue' );
+const { computed, defineComponent, inject, nextTick, ref, watch } = require( 'vue' );
 
 const Constants = require( '../../Constants.js' );
 const useEventLog = require( '../../composables/useEventLog.js' );
 const useFragmentDrag = require( '../../composables/useFragmentDrag.js' );
 const useMenuAction = require( '../../composables/useMenuAction.js' );
+const useStackedColumns = require( '../../composables/useStackedColumns.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 const { sha256, stabilize } = require( '../../utils/miscUtils.js' );
@@ -153,6 +156,13 @@ module.exports = exports = defineComponent( {
 		} = menuActions();
 
 		const iconAdd = icons.cdxIconAdd;
+
+		// Hashes of the fragments, without the benjamin item
+		const fragmentHashes = computed( () => store.getAbstractSectionHashes( props.section.qid ) );
+
+		// When the columns are stacked, the generated text column is far from
+		// the fragments, so each fragment shows its generated text
+		const { isStacked } = useStackedColumns();
 
 		// Clipboard vars
 		const showClipboard = ref( false );
@@ -533,7 +543,9 @@ module.exports = exports = defineComponent( {
 		return {
 			closeClipboard,
 			draggedIndex,
+			fragmentHashes,
 			isInPlace,
+			isStacked,
 			getFragmentStyle,
 			getListStyle,
 			ghostRef,

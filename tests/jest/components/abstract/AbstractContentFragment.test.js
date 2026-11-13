@@ -70,6 +70,43 @@ describe( 'AbstractContentFragment', () => {
 		expect( fragmentComponent.props( 'edit' ) ).toBe( true );
 	} );
 
+	describe( 'generated text under the fragment', () => {
+		it( 'does not show the generated text by default', () => {
+			const wrapper = renderFragment();
+
+			expect( wrapper.findComponent( { name: 'wl-abstract-content-fragment-output' } ).exists() ).toBe( false );
+		} );
+
+		it( 'shows the generated text when showOutput is set', () => {
+			const wrapper = renderFragment( { showOutput: true, fragmentHash: 'hash1#' } );
+
+			const output = wrapper.findComponent( { name: 'wl-abstract-content-fragment-output' } );
+
+			expect( output.exists() ).toBe( true );
+			expect( output.props() ).toEqual( {
+				keyPath,
+				fragment: fragmentCall,
+				fragmentHash: 'hash1#',
+				selected: false
+			} );
+		} );
+
+		it( 'tells the generated text when the fragment is selected', () => {
+			store.getSelectedFragment = keyPath;
+			const wrapper = renderFragment( { showOutput: true, fragmentHash: 'hash1#' } );
+
+			const output = wrapper.findComponent( { name: 'wl-abstract-content-fragment-output' } );
+
+			expect( output.props( 'selected' ) ).toBe( true );
+		} );
+
+		it( 'does not show the generated text while the user drags the fragment', () => {
+			const wrapper = renderFragment( { showOutput: true, dragging: true, dragged: true } );
+
+			expect( wrapper.findComponent( { name: 'wl-abstract-content-fragment-output' } ).exists() ).toBe( false );
+		} );
+	} );
+
 	describe( 'fragment actions', () => {
 		it( 'shows actions menu button when edit=true', () => {
 			const wrapper = renderFragment();

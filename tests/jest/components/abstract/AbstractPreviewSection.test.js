@@ -7,6 +7,7 @@
 'use strict';
 
 const { shallowMount } = require( '@vue/test-utils' );
+const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const AbstractPreviewSection = require( '../../../../resources/ext.wikilambda.app/components/abstract/AbstractPreviewSection.vue' );
 
@@ -130,6 +131,30 @@ describe( 'AbstractPreviewSection', () => {
 
 		expect( fragments[ 1 ].props( 'keyPath' ) ).toBe( `${ mockLedeSection.fragmentsPath }.2` );
 		expect( fragments[ 1 ].props( 'fragmentHash' ) ).toBe( 'hash2' );
+	} );
+
+	describe( 'provenance popover', () => {
+		const originalWidth = window.innerWidth;
+
+		afterEach( () => {
+			window.innerWidth = originalWidth;
+		} );
+
+		it( 'lets the fragments show the popover at desktop width', () => {
+			window.innerWidth = Constants.BREAKPOINTS.DESKTOP;
+			wrapper = renderSection();
+
+			const fragment = wrapper.findComponent( { name: 'wl-abstract-preview-fragment' } );
+			expect( fragment.props( 'hideProvenance' ) ).toBe( false );
+		} );
+
+		it( 'hides the popover of the fragments when the columns are stacked', () => {
+			window.innerWidth = Constants.BREAKPOINTS.DESKTOP - 1;
+			wrapper = renderSection();
+
+			const fragment = wrapper.findComponent( { name: 'wl-abstract-preview-fragment' } );
+			expect( fragment.props( 'hideProvenance' ) ).toBe( true );
+		} );
 	} );
 
 	// Retry button

@@ -55,11 +55,11 @@ class ViewAbstractPage extends Page {
 	}
 
 	get previewFragmentLoading() {
-		return $$( '.ext-wikilambda-app-abstract-preview-fragment-loading' );
+		return $$( '.ext-wikilambda-app-abstract-preview .ext-wikilambda-app-abstract-fragment-status-loading' );
 	}
 
 	get previewFragmentError() {
-		return $( '.ext-wikilambda-app-abstract-preview-fragment-error' );
+		return $( '.ext-wikilambda-app-abstract-preview .ext-wikilambda-app-abstract-fragment-status-error' );
 	}
 
 	/**

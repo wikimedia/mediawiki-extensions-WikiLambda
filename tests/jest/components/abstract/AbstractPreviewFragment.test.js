@@ -30,6 +30,7 @@ describe( 'AbstractPreviewFragment', () => {
 			},
 			global: {
 				stubs: {
+					'wl-abstract-fragment-status': false,
 					'wl-safe-message': false,
 					'cdx-message': false,
 					'cdx-progress-indicator': true
@@ -88,7 +89,7 @@ describe( 'AbstractPreviewFragment', () => {
 
 	it( 'renders retry button when no preview is stored', () => {
 		wrapper = renderFragment();
-		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-retry' );
 		expect( retryButton.exists() ).toBe( true );
 	} );
 
@@ -120,7 +121,7 @@ describe( 'AbstractPreviewFragment', () => {
 
 	it( 'emits retry when retry button is clicked on missing fragmen', async () => {
 		wrapper = renderFragment();
-		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-retry' );
 		await retryButton.trigger( 'click' );
 		expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
 	} );
@@ -151,7 +152,7 @@ describe( 'AbstractPreviewFragment', () => {
 
 		wrapper = renderFragment();
 
-		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-retry' );
 		expect( retryButton.exists() ).toBe( true );
 	} );
 
@@ -165,7 +166,7 @@ describe( 'AbstractPreviewFragment', () => {
 
 		wrapper = renderFragment();
 
-		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		const retryButton = wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-retry' );
 		await retryButton.trigger( 'click' );
 		expect( wrapper.emitted( 'retry' ) ).toHaveLength( 1 );
 	} );
@@ -183,7 +184,7 @@ describe( 'AbstractPreviewFragment', () => {
 
 		wrapper = renderFragment();
 
-		const loader = wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-loading' );
+		const loader = wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-loading' );
 		expect( loader.exists() ).toBe( true );
 	} );
 
@@ -221,7 +222,7 @@ describe( 'AbstractPreviewFragment', () => {
 		wrapper = renderFragment();
 
 		await waitFor( () => {
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-error' ).exists() ).toBe( true );
 		} );
 
 		expect( wrapper.text() ).toContain( 'some error happened' );
@@ -256,7 +257,7 @@ describe( 'AbstractPreviewFragment', () => {
 		wrapper = renderFragment();
 
 		await waitFor( () => {
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-error' ).exists() ).toBe( true );
 		} );
 
 		await wrapper.vm.$nextTick();
@@ -301,7 +302,7 @@ describe( 'AbstractPreviewFragment', () => {
 		const message = wrapper.findComponent( { name: 'cdx-message' } );
 		await waitFor( () => expect( message.exists() ).toBe( true ) );
 
-		const button = message.find( '.ext-wikilambda-app-abstract-preview-fragment-retry' );
+		const button = message.find( '.ext-wikilambda-app-abstract-fragment-status-retry' );
 		expect( button.text() ).toBe( 'Retry' );
 
 		// Click button and check emitted event
@@ -327,7 +328,7 @@ describe( 'AbstractPreviewFragment', () => {
 		wrapper = renderFragment();
 
 		await waitFor( () => {
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-error' ).exists() ).toBe( true );
 		} );
 
 		expect( wrapper.text() ).toContain( 'Wikifunctions returned a failed response: Some zerror happened' );
@@ -349,7 +350,7 @@ describe( 'AbstractPreviewFragment', () => {
 		wrapper = renderFragment();
 
 		await waitFor( () => {
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-error' ).exists() ).toBe( true );
 		} );
 
 		expect( wrapper.text() ).toContain( 'The rendering service is busy right now. Trying again in' );
@@ -407,15 +408,15 @@ describe( 'AbstractPreviewFragment', () => {
 
 			wrapper = renderFragment();
 
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-loading' ).exists() ).toBe( false );
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-loading' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-error' ).exists() ).toBe( true );
 		} );
 
 		it( 'does not show the link to Wikifunctions under the notice', () => {
 			wrapper = renderFragment();
 
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-error' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' ).exists() ).toBe( false );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-error' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-app-abstract-fragment-status-replicate' ).exists() ).toBe( false );
 		} );
 
 		it( 'emits retry after the delay that the notice states', () => {
@@ -541,7 +542,7 @@ describe( 'AbstractPreviewFragment', () => {
 
 		const message = wrapper.findComponent( { name: 'cdx-message' } );
 		await waitFor( () => expect( message.exists() ).toBe( true ) );
-		const link = message.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' );
+		const link = message.find( '.ext-wikilambda-app-abstract-fragment-status-replicate' );
 		expect( link.text() ).toBe( 'View details in Wikifunctions' );
 
 		const href = link.attributes( 'href' );
@@ -604,7 +605,7 @@ describe( 'AbstractPreviewFragment', () => {
 			wrapper = renderFragment();
 
 			const message = await findErrorMessage();
-			const link = message.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' );
+			const link = message.find( '.ext-wikilambda-app-abstract-fragment-status-replicate' );
 			expect( link.exists() ).toBe( true );
 			expect( link.attributes( 'href' ).length ).toBeLessThanOrEqual( Constants.URL_CHARS_MAX );
 		} );
@@ -617,7 +618,7 @@ describe( 'AbstractPreviewFragment', () => {
 
 			const message = await findErrorMessage();
 			expect( message.text() ).toContain( 'Some error' );
-			expect( message.find( '.ext-wikilambda-app-abstract-preview-fragment-replicate' ).exists() ).toBe( false );
+			expect( message.find( '.ext-wikilambda-app-abstract-fragment-status-replicate' ).exists() ).toBe( false );
 		} );
 	} );
 
@@ -833,6 +834,15 @@ describe( 'AbstractPreviewFragment', () => {
 			expect( popover.props( 'anchor' ) ).toBe(
 				wrapper.find( '.ext-wikilambda-app-abstract-preview-fragment' ).element
 			);
+		} );
+
+		it( 'does not show the popover when the generated text under the fragment shows it', async () => {
+			store.getFragmentPreview = jest.fn().mockReturnValue( { html: '<p>Some text</p>' } );
+			store.getProvenanceFragment = keyPath;
+			wrapper = renderFragment( { hideProvenance: true } );
+			await wrapper.vm.$nextTick();
+
+			expect( wrapper.findComponent( { name: 'wl-abstract-preview-provenance' } ).exists() ).toBe( false );
 		} );
 
 		it( 'points at the first element with a width when the fragment itself has none, e.g. an infobox', async () => {

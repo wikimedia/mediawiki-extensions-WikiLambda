@@ -36,6 +36,7 @@
 			:key="`${section.index}-${section.qid}-${index}`"
 			:key-path="`${ section.fragmentsPath }.${ index + 1 }`"
 			:fragment-hash="fragmentHashes[ index ]"
+			:hide-provenance="isStacked"
 			@fragment-changed="regenerateHash( index )"
 			@retry="renderFragmentPreview( index )"
 			@request-fresh="requestFreshFragmentPreview( index )"
@@ -46,6 +47,7 @@
 <script>
 const { computed, defineComponent, inject, onMounted, watch } = require( 'vue' );
 
+const useStackedColumns = require( '../../composables/useStackedColumns.js' );
 const useMainStore = require( '../../store/index.js' );
 const icons = require( '../../../lib/icons.json' );
 
@@ -93,6 +95,10 @@ module.exports = exports = defineComponent( {
 		const store = useMainStore();
 
 		const iconRetry = icons.cdxIconReload;
+
+		// When the columns are stacked, the provenance popover opens on the
+		// generated text under the fragment, which is next to the fragment menu
+		const { isStacked } = useStackedColumns();
 
 		// Fragment list without the benjamin item, to share indexes with fragmentHashes
 		const fragmentList = computed( () => props.section.fragments.slice( 1 ) );
@@ -188,6 +194,7 @@ module.exports = exports = defineComponent( {
 			fragmentHashes,
 			hasSomePendingFragments,
 			iconRetry,
+			isStacked,
 			i18n,
 			renderFragmentPreview,
 			renderSectionPreview,
