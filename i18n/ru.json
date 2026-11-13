@@ -282,6 +282,7 @@
 	"wikilambda-function-evaluator-no-function-selected-for-implementation": "Выберите функцию, чтобы попробовать эту реализацию.",
 	"wikilambda-function-evaluator-result": "Результат",
 	"wikilambda-function-evaluator-result-details": "Подробности",
+	"wikilambda-function-evaluator-result-error": "Нет результата. Откройте «Подробности», чтобы увидеть больше информации.",
 	"wikilambda-function-evaluator-run-function": "Выполнить функцию",
 	"wikilambda-function-evaluator-running": "Выполняется…",
 	"wikilambda-function-evaluator-share-button": "Скопировать ссылку на результат",

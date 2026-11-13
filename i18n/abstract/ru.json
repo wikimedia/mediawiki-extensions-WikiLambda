@@ -7,6 +7,11 @@
 	},
 	"content-model-abstractwiki": "Абстрактная статья",
 	"wikilambda-abstract-content-object": "Абстрактная статья",
+	"wikilambda-abstract-menu-option-delete-fragment": "Удалить фрагмент",
+	"wikilambda-abstract-menu-option-insert-after": "Вставить фрагмент впереди",
+	"wikilambda-abstract-menu-option-insert-before": "Вставить фрагмент сзади",
+	"wikilambda-abstract-menu-option-move-after": "Передвинуть фрагмент вперёд",
+	"wikilambda-abstract-menu-option-move-before": "Передвинуть фрагмент назад",
 	"wikilambda-abstract-preview-in-language": "Сгенерированный текст",
 	"wikilambda-abstract-special-create": "Создать новую абстрактную статью",
 	"wikilambda-abstract-special-create-qid": "Создать новую абстрактную статью для $1"

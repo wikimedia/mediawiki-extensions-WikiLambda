@@ -6,6 +6,11 @@
 	},
 	"content-model-abstractwiki": "Абстрактны артыкул",
 	"wikilambda-abstract-content-object": "Абстрактны артыкул",
+	"wikilambda-abstract-menu-option-delete-fragment": "Выдаліць фрагмент",
+	"wikilambda-abstract-menu-option-insert-after": "Уставіць фрагмент наперадзе",
+	"wikilambda-abstract-menu-option-insert-before": "Уставіць фрагмент ззаду",
+	"wikilambda-abstract-menu-option-move-after": "Перасунуць фрагмент наперад",
+	"wikilambda-abstract-menu-option-move-before": "Перасунуць фрагмент назад",
 	"wikilambda-abstract-preview-in-language": "Згенераваны тэкст",
 	"wikilambda-abstract-special-create": "Стварыць новы абстрактны артыкул",
 	"wikilambda-abstract-special-create-qid": "Стварыць новы абстрактны артыкул для $1"
