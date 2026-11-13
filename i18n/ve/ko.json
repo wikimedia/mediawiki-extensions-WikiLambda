@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Bisang",
+			"Suleiman the Magnificent Television",
 			"Tensama0415",
 			"YeBoy371",
 			"Ykhwong",
@@ -56,6 +57,7 @@
 	"wikilambda-visualeditor-wikifunctionscall-error-bad-function": "누락되었거나 유효하지 않은 값을 수정하려면 함수를 편집하세요.",
 	"wikilambda-visualeditor-wikifunctionscall-error-enum": "선택된 옵션이 없습니다.",
 	"wikilambda-visualeditor-wikifunctionscall-error-language": "선택된 언어가 없습니다.",
+	"wikilambda-visualeditor-wikifunctionscall-error-load-inputs": "이 함수의 입력을 로드할 수 없습니다. 나중에 다시 시도해 주세요.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser-empty": "값을 입력해 주십시오.",
 	"wikilambda-visualeditor-wikifunctionscall-error-parser": "알 수 없는 오류입니다. [[f:Talk:$1|문제 보고]]",
 	"wikilambda-visualeditor-wikifunctionscall-error-wikidata-lexeme": "유효하지 않은 위키데이터 어휘소입니다.",
