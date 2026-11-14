@@ -23,7 +23,7 @@ class ZNaturalLanguage extends ZObject {
 	public function __construct( $code, $aliases = null ) {
 		$this->data[ ZTypeRegistry::Z_LANGUAGE_CODE ] = $code;
 		if ( $aliases ) {
-			$this->data[ ZTYpeRegistry::Z_LANGUAGE_SECONDARYCODES ] = $aliases;
+			$this->data[ ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES ] = $aliases;
 		}
 	}
 

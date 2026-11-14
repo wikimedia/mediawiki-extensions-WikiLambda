@@ -111,7 +111,7 @@ class ApiQueryZObjects extends WikiLambdaApiQueryGeneratorBase {
 			$dependencies = $this->getTypeDependencies( $zobject );
 		}
 
-		// 2. Select only the requested language from all ZMultilingualStrings
+		// 2. Select only the requested language from all ZMultiLingualStrings
 		if ( is_array( $languages ) ) {
 			$langRegistry = ZLangRegistry::singleton();
 			$languageZids = $langRegistry->getLanguageZids( $languages );

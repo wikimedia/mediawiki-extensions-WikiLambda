@@ -112,8 +112,8 @@ class ZPersistentObject extends ZObject {
 	}
 
 	/**
-	 * Validate the length of a field in the ZMultilingualString of this ZPersistentObject.
-	 * The field is validated for each language in the ZMultilingualString.
+	 * Validate the length of a field in the ZMultiLingualString of this ZPersistentObject.
+	 * The field is validated for each language in the ZMultiLingualString.
 	 *
 	 * @param string $fieldName The name of the field to validate
 	 * @param int $length The maximum length of the field
@@ -201,11 +201,11 @@ class ZPersistentObject extends ZObject {
 	}
 
 	/**
-	 * Get the ZMultilingualString that contains the label of this ZPersistentObject.
+	 * Get the ZMultiLingualString that contains the label of this ZPersistentObject.
 	 *
-	 * @return ZMultilingualString The mulilingual string object with the label
+	 * @return ZMultiLingualString The mulilingual string object with the label
 	 */
-	public function getLabels(): ZMultilingualString {
+	public function getLabels(): ZMultiLingualString {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
 	}
 
@@ -227,20 +227,20 @@ class ZPersistentObject extends ZObject {
 	}
 
 	/**
-	 * Get the ZMultilingualStringSet that contains the aliases for this ZPersistentObject.
+	 * Get the ZMultiLingualStringSet that contains the aliases for this ZPersistentObject.
 	 *
-	 * @return ZMultilingualStringSet The mulilingual stringset object with the aliases
+	 * @return ZMultiLingualStringSet The mulilingual stringset object with the aliases
 	 */
 	public function getAliases(): ZMultiLingualStringSet {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ];
 	}
 
 	/**
-	 * Get the ZMultilingualString that contains the description of this ZPersistentObject.
+	 * Get the ZMultiLingualString that contains the description of this ZPersistentObject.
 	 *
-	 * @return ?ZMultilingualString The mulilingual string object with the description
+	 * @return ?ZMultiLingualString The mulilingual string object with the description
 	 */
-	public function getDescriptions(): ?ZMultilingualString {
+	public function getDescriptions(): ?ZMultiLingualString {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ];
 	}
 

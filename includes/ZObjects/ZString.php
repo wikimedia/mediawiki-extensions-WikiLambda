@@ -35,7 +35,7 @@ class ZString extends ZObject {
 		}
 
 		// Possibly a serialised version of a ZString; pull out the value and use it if so, otherwise we'll default.
-		if ( $value instanceof \stdclass ) {
+		if ( $value instanceof \stdClass ) {
 			$arrayObject = get_object_vars( $value );
 			if (
 				array_key_exists( 'data', $arrayObject )

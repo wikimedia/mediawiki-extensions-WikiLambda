@@ -163,7 +163,7 @@ class ZKey extends ZObject {
 	}
 
 	/**
-	 * Get the ZMultilingualString that contains the label for this key
+	 * Get the ZMultiLingualString that contains the label for this key
 	 *
 	 * @return ZMultiLingualString
 	 */

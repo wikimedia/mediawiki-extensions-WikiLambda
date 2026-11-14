@@ -19,7 +19,7 @@ use MediaWiki\MediaWikiServices;
  * Builder of a string for a certain language.
  *
  * Don't instantiate it directly, rather call
- * MediaWiki\Extension\WikiLambda\ZObjects\ZMultilingualString->buildStringForLanguage( $lang )
+ * MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString->buildStringForLanguage( $lang )
  */
 class StringForLanguageBuilder {
 
@@ -28,9 +28,9 @@ class StringForLanguageBuilder {
 
 	/**
 	 * @param Language $language The language with build the string for
-	 * @param ZMultilingualString $provider Object that provides the localized strings.
+	 * @param ZMultiLingualString $provider Object that provides the localized strings.
 	 */
-	public function __construct( private readonly Language $language, private readonly ZMultilingualString $provider ) {
+	public function __construct( private readonly Language $language, private readonly ZMultiLingualString $provider ) {
 	}
 
 	/**

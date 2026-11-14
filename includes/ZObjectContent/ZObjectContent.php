@@ -320,7 +320,7 @@ class ZObjectContent extends AbstractContent {
 	/**
 	 * Wrapper for ZPersistentObject getLabels method. Returns the labels of the ZPersistentObject.
 	 *
-	 * @return ZMultilingualString
+	 * @return ZMultiLingualString
 	 * @throws ZErrorException
 	 */
 	public function getLabels(): ZMultiLingualString {

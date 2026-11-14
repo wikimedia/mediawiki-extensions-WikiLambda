@@ -347,7 +347,7 @@ class ZObjectUtils {
 	/**
 	 * Filters ZObject to preferred language.
 	 *
-	 * Given a ZObject, reduces all its ZMultilingualStrings to
+	 * Given a ZObject, reduces all its ZMultiLingualStrings to
 	 * only the preferred language or fallbacks.
 	 *
 	 * @param array|stdClass|string $input decoded JSON object for a ZObject

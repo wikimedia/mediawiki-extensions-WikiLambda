@@ -160,7 +160,7 @@ class ZMultiLingualString extends ZObject {
 	}
 
 	/**
-	 * Add a ZMonoLingualString to the ZMultilingualString object.
+	 * Add a ZMonoLingualString to the ZMultiLingualString object.
 	 *
 	 * As there is no dynamic use of these classes (only pre-write or pre-read
 	 * instantiation), setting a language that already exists is not a "set"

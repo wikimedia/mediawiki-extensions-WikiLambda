@@ -610,7 +610,7 @@ class WikifunctionsPFragmentHandler extends PFragmentHandler {
 	/**
 	 * Helper to create an error fragment for failed function calls.
 	 */
-	private function createErrorfulFragment( ParsoidExtensionAPI $extApi, ?string $errorMessageKey ): HTMLPFragment {
+	private function createErrorfulFragment( ParsoidExtensionAPI $extApi, ?string $errorMessageKey ): HtmlPFragment {
 		$cmc = $extApi->getMetadata();
 		if ( $cmc instanceof ParserOutput ) {
 			// Make sure our fragment's cache expiry is set to at most 1 hour, as we're adding an errorful piece of
