@@ -22,6 +22,7 @@
 	"apierror-abstractwiki_run_fragment-bad-fragment": "هذا الجزء ليس استدعاء دالة صالحًا.",
 	"apierror-abstractwiki_run_fragment-bad-response": "أعاد الجزء نوعاً خاطئاً.",
 	"apierror-abstractwiki_run_fragment-forbidden": "ليس لديك الصلاحيات اللازمة لعرض هذا الجزء.",
+	"apierror-abstractwiki_run_fragment-fresh-not-enabled": "لا يمكن تقديم مقتطفات محتوى ويكيبيديا المجردة مع أحدث البيانات: هذه الميزة غير فعالة.",
 	"apierror-abstractwiki_run_fragment-not-enabled": "تعذر عرض أجزاء محتوى ويكيبيديا المجردة: هذه الميزة غير مفعلة.",
 	"apierror-abstractwiki_run_fragment-returned-zerror": "أعادت ويكي دوال استجابة فشل: $1",
 	"apierror-abstractwiki_run_fragment-service-unavailable": "خدمة التصيير غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.",
@@ -32,6 +33,7 @@
 	"apihelp-abstractwiki_run_fragment-param-language": "معرّف كائن اللغة ZObject المستخدم لعرض الجزء. يجب أن يكون معرّف Zid صالحًا.",
 	"apihelp-abstractwiki_run_fragment-param-date": "سلسلة التاريخ المستخدمة لعرض الجزء.",
 	"apihelp-abstractwiki_run_fragment-param-fragment": "ملف JSON لتكوين جزء من البيانات. يجب أن يكون كائن ZObject صالحًا، ويجب أن يُخرج كائنًا من نوع Z89/HTML Fragment.",
+	"apihelp-abstractwiki_run_fragment-param-fresh": "ما إذا كان يجب إعادة عرض الفصل مع أحدث البيانات ، وتجاوز الفصل المخزن والخزائن المتخزنة على ويكي فونكس. يحتاج إلى الحق في طلب نتائج جديدة، وهو محدود بالمعدلات، طلب POST وطوكين CSRF، وهو دائمًا متزامن.",
 	"apihelp-abstractwiki_run_fragment-example-literal-html": "قم بتشغيل جزء يحتوي على كائن HTML حرفي",
 	"apihelp-abstractwiki_run_fragment-example-composition": "قم بتشغيل جزء باستخدام تركيبة تستخدم وسيطات qid واللغة"
 }
