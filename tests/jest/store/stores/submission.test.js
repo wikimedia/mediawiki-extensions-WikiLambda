@@ -1463,14 +1463,14 @@ describe( 'zobject submission Pinia store', () => {
 						Z1K1: 'Z12',
 						Z12K1: [
 							'Z11',
-							{ Z1K1: 'Z11', Z11K1: '', Z11K2: 'remove this...' }
+							{ Z1K1: 'Z11', Z11K1: '', Z11K2: 'remove this…' }
 						]
 					},
 					Z2K5: {
 						Z1K1: 'Z12',
 						Z12K1: [
 							'Z11',
-							{ Z1K1: 'Z11', Z11K1: '', Z11K2: '...but not this' }
+							{ Z1K1: 'Z11', Z11K1: '', Z11K2: '…but not this' }
 						]
 					}
 				};
@@ -1484,7 +1484,7 @@ describe( 'zobject submission Pinia store', () => {
 						Z1K1: 'Z12',
 						Z12K1: [
 							'Z11',
-							{ Z1K1: 'Z11', Z11K1: '', Z11K2: '...but not this' }
+							{ Z1K1: 'Z11', Z11K1: '', Z11K2: '…but not this' }
 						]
 					}
 				};

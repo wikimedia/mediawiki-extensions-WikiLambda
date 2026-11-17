@@ -33,10 +33,10 @@ class PageTitleBuilderTest extends WikiLambdaRepoModeIntegrationTestCase {
 	}
 
 	public function testCreateAbstractEditPageTitle_withQid() {
-		$html = PageTitleBuilder::createAbstractEditPageTitle( 'Create...', 'en', 'ltr', 'Q42' );
+		$html = PageTitleBuilder::createAbstractEditPageTitle( 'Create…', 'en', 'ltr', 'Q42' );
 		$this->assertStringStartsWith( '<span class="ext-wikilambda-editpage-header">', $html );
 		$this->assertStringContainsString(
-			'<span class="ext-wikilambda-editpage-header__title" lang="en" dir="ltr">Create...</span>',
+			'<span class="ext-wikilambda-editpage-header__title" lang="en" dir="ltr">Create…</span>',
 			$html
 		);
 		$this->assertStringContainsString( '<span class="ext-wikilambda-editpage-header__qid"', $html );

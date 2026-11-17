@@ -335,7 +335,7 @@ describe( 'ApiError class', () => {
 			const response = {
 				warnings: {
 					result: {
-						'*': 'This result was truncated because...'
+						'*': 'This result was truncated because…'
 					}
 				},
 				query: []
@@ -345,7 +345,7 @@ describe( 'ApiError class', () => {
 				ApiError.fromMwApiSuccess( code, response );
 			} catch ( e ) {
 				expect( e instanceof ApiError ).toBe( true );
-				expect( e.message ).toBe( 'This result was truncated because...' );
+				expect( e.message ).toBe( 'This result was truncated because…' );
 			}
 		} );
 	} );
