@@ -122,6 +122,7 @@ describe( 'ZObjectToString', () => {
 				const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
 				expect( referenceLink.attributes().href ).toBe( '/view/en/Z42' );
 				expect( referenceLink.text() ).toBe( 'False' );
+				expect( wrapper.find( '[title]' ).exists() ).toBe( false );
 			} );
 		} );
 
@@ -414,6 +415,17 @@ describe( 'ZObjectToString', () => {
 					expect( wrapper.findComponent( { name: 'cdx-icon' } ).exists() ).toBe( true );
 					expect( referenceLink.attributes().href ).toBe( 'https://www.wikidata.org/wiki/Q42' );
 					expect( referenceLink.text() ).toBe( 'The Answer To The Question' );
+				} );
+
+				it( 'shows the item ID as a title on the wrapper, not on the link', () => {
+					objectValue = wdReference;
+
+					const wrapper = renderZObjectToString();
+					const baseToken = wrapper.find( '.ext-wikilambda-app-object-to-string__base-token' );
+					const referenceLink = wrapper.find( 'a[data-testid=object-to-string-link]' );
+					expect( baseToken.attributes().title ).toBe( 'Q42' );
+					expect( referenceLink.attributes().title ).toBeUndefined();
+					expect( wrapper.find( '.cdx-tooltip' ).exists() ).toBe( false );
 				} );
 
 				it( 'renders a fetch function to a Wikidata item', () => {

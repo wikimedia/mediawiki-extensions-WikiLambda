@@ -7,9 +7,11 @@
 <template>
 	<span class="ext-wikilambda-app-object-to-string">
 		<span class="ext-wikilambda-app-object-to-string ext-wikilambda-app-object-to-string__parent">
+			<!-- The Wikidata ID title is on the wrapper, so Page Previews ignores the link -->
 			<span
 				class="ext-wikilambda-app-object-to-string__base-token"
 				:class="classNames"
+				:title="isWikidataType && showLink ? labelData.zid : undefined"
 			>
 				<cdx-icon
 					v-if="icon"
@@ -36,7 +38,6 @@
 					>{{ labelData.label }}</button>
 					<a
 						v-else-if="showLink"
-						v-tooltip:top="isWikidataType ? labelData.zid : null"
 						:href="link"
 						:lang="labelData.langCode"
 						:dir="labelData.langDir"
@@ -94,16 +95,13 @@ const urlUtils = require( '../../utils/urlUtils.js' );
 const icons = require( '../../../lib/icons.json' );
 
 // Codex components
-const { CdxIcon, CdxTooltip } = require( '../../../codex.js' );
+const { CdxIcon } = require( '../../../codex.js' );
 
 module.exports = exports = defineComponent( {
 	name: 'wl-z-object-to-string',
 	components: {
 		'cdx-icon': CdxIcon,
 		'wl-z-object-to-string': this
-	},
-	directives: {
-		tooltip: CdxTooltip
 	},
 	props: {
 		keyPath: {
