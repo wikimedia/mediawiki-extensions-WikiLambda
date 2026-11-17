@@ -23689,6 +23689,15 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z1553",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "new-deva",
+            "wlzl_label_normalised": "new-deva",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z1554",
             "wlzl_type": "Z60",
             "wlzl_language": "Z1002",
@@ -41437,6 +41446,42 @@
             "wlzl_return_type": null
         },
         {
+            "wlzl_zobject_zid": "Z2079",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1002",
+            "wlzl_label": "Newari (Newa script)",
+            "wlzl_label_normalised": "newari (newa script)",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2079",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z2079",
+            "wlzl_label": "𑐣𑐾𑐥𑐵𑐮 𑐨𑐵𑐲𑐵",
+            "wlzl_label_normalised": "𑐣𑐥𑐵𑐮 𑐨𑐵𑐲𑐵",
+            "wlzl_label_primary": "1",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2079",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "Z2079",
+            "wlzl_label_normalised": "z2079",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
+            "wlzl_zobject_zid": "Z2079",
+            "wlzl_type": "Z60",
+            "wlzl_language": "Z1360",
+            "wlzl_label": "new-newa",
+            "wlzl_label_normalised": "new-newa",
+            "wlzl_label_primary": "0",
+            "wlzl_return_type": null
+        },
+        {
             "wlzl_zobject_zid": "Z6001",
             "wlzl_type": "Z4",
             "wlzl_language": "Z1002",
@@ -51367,6 +51412,10 @@
             "wlzlangs_language": "new"
         },
         {
+            "wlzlangs_zid": "Z1553",
+            "wlzlangs_language": "new-deva"
+        },
+        {
             "wlzlangs_zid": "Z1554",
             "wlzlangs_language": "mn"
         },
@@ -53553,6 +53602,10 @@
         {
             "wlzlangs_zid": "Z2078",
             "wlzlangs_language": "it-ch"
+        },
+        {
+            "wlzlangs_zid": "Z2079",
+            "wlzlangs_language": "new-newa"
         }
     ]
 }
