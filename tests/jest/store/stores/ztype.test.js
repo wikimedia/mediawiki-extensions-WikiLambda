@@ -135,6 +135,26 @@ describe( 'ztype Pinia store', () => {
 				expect( store.getRendererExamples( rendererZid ) ).toEqual( expected );
 			} );
 
+			it( 'returns examples in the order of the connected tests', () => {
+				Object.defineProperty( store, 'getConnectedObjects', {
+					value: jest.fn().mockReturnValue( [ 'Z30010', 'Z30011' ] )
+				} );
+				store.rendererExamples = {
+					[ rendererZid ]: {
+						Z30011: 'two',
+						Z30012: 'disconnected',
+						Z30010: 'one'
+					}
+				};
+				const expected = [
+					{ testZid: 'Z30010', result: 'one' },
+					{ testZid: 'Z30011', result: 'two' },
+					{ testZid: 'Z30012', result: 'disconnected' }
+				];
+				expect( store.getRendererExamples( rendererZid ) ).toEqual( expected );
+				expect( store.getConnectedObjects ).toHaveBeenCalledWith( rendererZid, 'Z8K3' );
+			} );
+
 			it( 'returns example for a given test', () => {
 				store.rendererExamples = {
 					[ rendererZid ]: {

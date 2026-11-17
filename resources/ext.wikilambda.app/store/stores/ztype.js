@@ -131,7 +131,8 @@ module.exports = {
 		},
 
 		/**
-		 * Returns an array with the generated examples for a given renderer.
+		 * Returns the generated examples for a given renderer, in the order of its
+		 * connected tests rather than the order they were loaded.
 		 * If testZid is present as an argument, filters the results to return only that value.
 		 *
 		 * @param {Object} state
@@ -147,7 +148,14 @@ module.exports = {
 				const filteredExamples = [];
 				const examples = state.rendererExamples[ rendererZid ];
 				if ( examples ) {
-					for ( const key of Object.keys( examples ) ) {
+					const connectedTestZids = this.getConnectedObjects( rendererZid, Constants.Z_FUNCTION_TESTERS );
+					const testPosition = ( zid ) => {
+						const index = connectedTestZids.indexOf( zid );
+						return index === -1 ? connectedTestZids.length : index;
+					};
+					const orderedTestZids = Object.keys( examples )
+						.sort( ( a, b ) => testPosition( a ) - testPosition( b ) );
+					for ( const key of orderedTestZids ) {
 						if ( examples[ key ] ) {
 							filteredExamples.push( { testZid: key, result: examples[ key ] } );
 						}
