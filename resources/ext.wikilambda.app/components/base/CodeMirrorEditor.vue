@@ -16,6 +16,7 @@
 			v-if="editorComponent"
 			class="ext-wikilambda-app-code-editor__codemirror"
 			data-testid="codemirror-code-editor"
+			dir="ltr"
 			compact
 			:model-value="value"
 			:mode="editorMode"

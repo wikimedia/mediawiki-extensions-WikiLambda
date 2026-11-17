@@ -127,6 +127,12 @@ describe( 'CodeMirrorEditor', () => {
 		expect( wrapper.findComponent( CodeMirrorStub ).props( 'mode' ) ).toBe( 'javascript' );
 	} );
 
+	it( 'is always left-to-right', async () => {
+		const wrapper = await renderCodeMirrorEditor();
+
+		expect( wrapper.findComponent( CodeMirrorStub ).attributes( 'dir' ) ).toBe( 'ltr' );
+	} );
+
 	it( 'passes on readOnly and disabled', async () => {
 		const wrapper = await renderCodeMirrorEditor( { readOnly: true, disabled: true } );
 		const editor = wrapper.findComponent( CodeMirrorStub );

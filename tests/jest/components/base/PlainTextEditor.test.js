@@ -24,6 +24,12 @@ describe( 'PlainTextEditor', () => {
 		expect( wrapper.emitted( 'change' ) ).toEqual( [ [ 'fanta' ] ] );
 	} );
 
+	it( 'is always left-to-right', () => {
+		const wrapper = mount( PlainTextEditor );
+
+		expect( wrapper.find( 'textarea' ).attributes( 'dir' ) ).toBe( 'ltr' );
+	} );
+
 	it( 'is read-only when readOnly is set', () => {
 		const wrapper = mount( PlainTextEditor, { props: { readOnly: true } } );
 

@@ -11,6 +11,7 @@
 	<textarea
 		class="ext-wikilambda-app-plain-text-editor"
 		data-testid="plain-code-editor"
+		dir="ltr"
 		:value="value"
 		:rows="rows"
 		:readonly="readOnly || disabled"
