@@ -419,6 +419,8 @@
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Rejestry debugowania wykonania",
 	"wikilambda-functioncall-metadata-expected-result": "Oczekiwany wynik",
 	"wikilambda-functioncall-metadata-function-calls": "Wywołania funkcji",
+	"wikilambda-functioncall-metadata-function-calls-cached-pairs": "Najczęstsze wywołania obsłużone z pamięci podręcznej (funkcja wywołująca → funkcja wywoływana)",
+	"wikilambda-functioncall-metadata-function-calls-cached-total": "Wywołania obsłużone z pamięci podręcznej",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Liczba wywołań funkcji",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "Najczęściej wywoływane funkcje",
 	"wikilambda-functioncall-metadata-function-calls-pairs": "Najczęstsze wywołania (wywołująca funkcja → wywoływana funkcja)",

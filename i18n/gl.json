@@ -413,6 +413,8 @@
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Rexistros de depuración de execución",
 	"wikilambda-functioncall-metadata-expected-result": "Resultado esperado",
 	"wikilambda-functioncall-metadata-function-calls": "Chamadas de función",
+	"wikilambda-functioncall-metadata-function-calls-cached-pairs": "Chamadas máis frecuentes respondidas desde a caché (quen chama → a quen chaman)",
+	"wikilambda-functioncall-metadata-function-calls-cached-total": "Chamadas respondidas desde a caché",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Número de funcións chamadas",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "Funcións máis chamadas",
 	"wikilambda-functioncall-metadata-function-calls-pairs": "Chamadas máis frecuentes (quen chama → a quen chaman)",

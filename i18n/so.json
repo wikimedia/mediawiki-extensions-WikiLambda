@@ -412,6 +412,8 @@
 	"wikilambda-functioncall-metadata-execution-debug-logs": "Diiwaannada khaladka raadraaca fulinta",
 	"wikilambda-functioncall-metadata-expected-result": "Natiijada la filayo",
 	"wikilambda-functioncall-metadata-function-calls": "Wicitaannada Wikifunctions",
+	"wikilambda-functioncall-metadata-function-calls-cached-pairs": "Wicitaannada ugu badan ee laga jawaabay kaydka (wacaha → kan la wacay)",
+	"wikilambda-functioncall-metadata-function-calls-cached-total": "Wicitaannada laga jawaabay kaydka",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "Tirada hawlaha la wacay",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "Hawlaha inta badan la waco",
 	"wikilambda-functioncall-metadata-function-calls-pairs": "Wicitaannada ugu badan (wicitaanada → la wacay)",
