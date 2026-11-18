@@ -12,7 +12,7 @@
 			:columns="columns"
 			:data="data"
 			:paginate="data.length > 5"
-			:pagination-size-options="[ { value: 5 }, { value: 10 }, { value: 20, value: 50 } ]"
+			:pagination-size-options="[ { value: 5 }, { value: 10 }, { value: 20 }, { value: 50 } ]"
 			:aria-label="title"
 			class="ext-wikilambda-app-function-viewer-details-table___table-container"
 		>

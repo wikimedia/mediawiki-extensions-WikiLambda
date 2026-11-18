@@ -37,6 +37,12 @@ describe( 'FunctionViewerDetailsTable', () => {
 		expect( wrapper.find( '.ext-wikilambda-app-function-viewer-details-table' ).exists() ).toBe( true );
 	} );
 
+	it( 'offers 5, 10, 20 and 50 items per page', () => {
+		const wrapper = renderFunctionViewerDetailsTable();
+		const sizeOptions = wrapper.findComponent( { name: 'CdxTable' } ).props( 'paginationSizeOptions' );
+		expect( sizeOptions.map( ( option ) => option.value ) ).toEqual( [ 5, 10, 20, 50 ] );
+	} );
+
 	describe( 'connect and disconnect buttons', () => {
 		it( 'disables connect button when canConnect is false', () => {
 			const wrapper = renderFunctionViewerDetailsTable( {
