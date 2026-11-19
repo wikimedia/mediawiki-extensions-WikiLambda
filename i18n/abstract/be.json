@@ -5,6 +5,10 @@
 		]
 	},
 	"content-model-abstractwiki": "Абстрактны артыкул",
+	"wikilambda-abstract-add-content-button-label": "Дадаць змесціва",
+	"wikilambda-abstract-add-content-community-suggestions": "Прапановы супольнасці",
+	"wikilambda-abstract-add-content-dialog-title": "Дадаць змесціва",
+	"wikilambda-abstract-add-content-inputs": "Уваходы:",
 	"wikilambda-abstract-content-object": "Абстрактны артыкул",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "Паказваюцца толькі тыя функцыі, якія вяртаюць $2 ($1).",
 	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|Як ужыць функцыю, што вяртае іншы тып]]",

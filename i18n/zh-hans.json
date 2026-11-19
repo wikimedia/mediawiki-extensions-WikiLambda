@@ -444,6 +444,8 @@
 	"wikilambda-functioncall-metadata-execution-debug-logs": "调试执行日志",
 	"wikilambda-functioncall-metadata-expected-result": "预期结果",
 	"wikilambda-functioncall-metadata-function-calls": "函数调用",
+	"wikilambda-functioncall-metadata-function-calls-cached-pairs": "从缓存返回的最频繁调用（调用者 → 调用对象）",
+	"wikilambda-functioncall-metadata-function-calls-cached-total": "从缓存返回的调用",
 	"wikilambda-functioncall-metadata-function-calls-distinct-functions": "调用函数的数量",
 	"wikilambda-functioncall-metadata-function-calls-most-called": "调用最多的函数",
 	"wikilambda-functioncall-metadata-function-calls-pairs": "最频繁的调用（调用者 → 调用对象）",

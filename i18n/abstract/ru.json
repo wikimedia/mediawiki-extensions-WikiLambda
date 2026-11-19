@@ -6,6 +6,10 @@
 		]
 	},
 	"content-model-abstractwiki": "Абстрактная статья",
+	"wikilambda-abstract-add-content-button-label": "Добавить содержимое",
+	"wikilambda-abstract-add-content-community-suggestions": "Предложения сообщества",
+	"wikilambda-abstract-add-content-dialog-title": "Добавить содержимое",
+	"wikilambda-abstract-add-content-inputs": "Вводы:",
 	"wikilambda-abstract-content-object": "Абстрактная статья",
 	"wikilambda-abstract-fragment-function-selector-helper-text": "Показываются только те функции, которые возвращают $2 ($1).",
 	"wikilambda-abstract-fragment-function-selector-learn-more": "[[Special:MyLanguage/Help:How to create an article|Как использовать функцию с другим возвращаемым типом]]",

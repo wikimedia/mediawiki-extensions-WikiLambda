@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Artsiom91"
+		]
+	},
+	"apierror-abstractwiki_run_fragment-returned-zerror": "Викифункции вернули неудачный ответ: $1"
+}
