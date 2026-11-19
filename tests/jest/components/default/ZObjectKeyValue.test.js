@@ -238,6 +238,19 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( { name: 'wl-z-object-string-renderer' } ).exists() ).toBe( true );
 		} );
 
+		it( 'fallback with renderer and no parser', () => {
+			store.hasRenderer = createGettersWithFunctionsMock( true );
+
+			objectValue = {
+				Z1K1: { Z1K1: 'Z9', Z9K1: 'Z30000' },
+				Z30000K1: { Z1K1: 'Z6', Z6K1: '' }
+			};
+
+			const wrapper = renderZObjectKeyValue( { edit: true } );
+
+			expect( wrapper.findComponent( { name: 'wl-z-object-string-renderer' } ).exists() ).toBe( true );
+		} );
+
 		it( 'fallback z-object-key-value-set with renderer and parser when the object has argument references', () => {
 			store.hasRenderer = createGettersWithFunctionsMock( true );
 			store.hasParser = createGettersWithFunctionsMock( true );

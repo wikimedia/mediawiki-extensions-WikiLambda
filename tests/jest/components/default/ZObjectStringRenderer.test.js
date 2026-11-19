@@ -184,6 +184,7 @@ describe( 'ZObjectStringRenderer', () => {
 		store.getStoredObject = jest.fn().mockImplementation( ( zid ) => storedObjects[ zid ] );
 		store.getUserLangCode = 'en';
 		store.getUserLangZid = 'Z1002';
+		store.hasParser = createGettersWithFunctionsMock( true );
 		store.isCreateNewPage = false;
 		store.getErrors = createGettersWithFunctionsMock( [] );
 
@@ -649,6 +650,59 @@ describe( 'ZObjectStringRenderer', () => {
 
 			// Renderer should not run with blank values
 			expect( store.runRenderer ).not.toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'in edit mode, for a type without parser', () => {
+		beforeEach( () => {
+			store.hasParser = createGettersWithFunctionsMock( false );
+		} );
+
+		it( 'when collapsed, shows the rendered value as text instead of a field', async () => {
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
+
+			expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( false );
+
+			const text = wrapper.find( '[data-testid="z-object-string-renderer-text"]' );
+			await waitFor( () => expect( text.text() ).toBe( renderedString ) );
+		} );
+
+		it( 'expands a blank object', async () => {
+			const wrapper = renderZObjectStringRenderer( {
+				objectValue: blankObjectValue,
+				edit: true
+			} );
+
+			await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toEqual( [ [ true ] ] ) );
+		} );
+
+		it( 'collapses an object with values, even on a new page without passing tests', async () => {
+			store.isCreateNewPage = true;
+
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
+
+			await waitFor( () => expect( wrapper.emitted( 'expand' ) ).toEqual( [ [ false ] ] ) );
+		} );
+
+		it( 'clears the rendered value when collapsed after the object was blanked', async () => {
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
+
+			const text = () => wrapper.find( '[data-testid="z-object-string-renderer-text"]' );
+			await waitFor( () => expect( text().text() ).toBe( renderedString ) );
+
+			await wrapper.setProps( { objectValue: blankObjectValue, expanded: true } );
+			await wrapper.setProps( { expanded: false } );
+
+			expect( text().text() ).toBe( '' );
+		} );
+
+		it( 'shows "No display value" when the renderer fails', async () => {
+			store.runRenderer = jest.fn().mockResolvedValue( errorResponse );
+
+			const wrapper = renderZObjectStringRenderer( { edit: true } );
+
+			const text = wrapper.find( '[data-testid="z-object-string-renderer-text"]' );
+			await waitFor( () => expect( text.text() ).toBe( 'No display value' ) );
 		} );
 	} );
 } );

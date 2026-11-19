@@ -8,8 +8,9 @@
 	<div class="ext-wikilambda-app-object-string-renderer" data-testid="z-object-string-renderer">
 		<!-- If expanded is false, show text field -->
 		<template v-if="!expanded">
+			<!-- Without a parser, the rendered text cannot be edited -->
 			<p
-				v-if="!edit"
+				v-if="!edit || !hasParser"
 				class="ext-wikilambda-app-object-string-renderer__text"
 				:class="{ 'ext-wikilambda-app-object-string-renderer__rendering': rendererRunning }"
 				data-testid="z-object-string-renderer-text">
@@ -158,6 +159,14 @@ module.exports = exports = defineComponent( {
 		 */
 		const typeObject = computed( () => store.getStoredObject( props.type ) );
 
+		/**
+		 * Whether the type has a parser, so that the
+		 * rendered value can be edited as text
+		 *
+		 * @return {boolean}
+		 */
+		const hasParser = computed( () => store.hasParser( props.type ) );
+
 		// Renderer data
 		/**
 		 * Return renderer function Zid
@@ -225,11 +234,14 @@ module.exports = exports = defineComponent( {
 
 		/**
 		 * Returns the string to show when rendered value fails, which will
-		 * be epty string on edit mode, and "No display value" on view
+		 * be empty string in the edit field, and "No display value" as text
 		 *
 		 * @return {string}
 		 */
-		const noRenderedValue = computed( () => props.edit ? '' : i18n( 'wikilambda-renderer-view-invalid-result' ).text() );
+		const noRenderedValue = computed( () => props.edit && hasParser.value ?
+			'' :
+			i18n( 'wikilambda-renderer-view-invalid-result' ).text()
+		);
 
 		/**
 		 * Update the local renderedValue variable with the new
@@ -256,18 +268,12 @@ module.exports = exports = defineComponent( {
 				return;
 			}
 
-			// If typeObject is available, initialize the model blank object.
-			if ( typeObject.value && !blankObject.value ) {
-				initializeBlankObject();
-			}
-
-			const zobject = hybridToCanonical( props.objectValue );
-
-			// If zobject is blank, exit renderer.
-			if ( JSON.stringify( zobject ) === JSON.stringify( blankObject.value ) ) {
+			if ( isBlankObject() ) {
+				renderedValue.value = '';
 				return;
 			}
 
+			const zobject = hybridToCanonical( props.objectValue );
 			rendererRunning.value = true;
 			renderedValue.value = i18n( 'wikilambda-string-renderer-running' ).text();
 
@@ -448,6 +454,19 @@ module.exports = exports = defineComponent( {
 			blankObject.value = hybridToCanonical( store.createObjectByType( { type: props.type } ) );
 		}
 
+		/**
+		 * Whether the object has no values yet. This can only be known
+		 * once the typeObject is available.
+		 *
+		 * @return {boolean}
+		 */
+		function isBlankObject() {
+			if ( typeObject.value && !blankObject.value ) {
+				initializeBlankObject();
+			}
+			return JSON.stringify( hybridToCanonical( props.objectValue ) ) === JSON.stringify( blankObject.value );
+		}
+
 		// Key-value set actions
 		/**
 		 * If the object type is changed, surface the event so that
@@ -470,12 +489,15 @@ module.exports = exports = defineComponent( {
 				store.getTestResults( {
 					zFunctionId: rendererZid.value
 				} ).then( () => {
-					// At this point store.getPassingTestZids is already returning the existing tests.
-				// If none exist and we are creating a new object, expand to key-value set
+					// Expand to the key-value set when the collapsed view cannot help to fill in the object:
+					// * without a parser, while the object is blank
+					// * with a parser, on a new object with no passing tests to show as examples
 					const isNewOrEvaluator = store.isCreateNewPage ||
 					store.getCurrentView === Constants.VIEWS.FUNCTION_EVALUATOR;
 					const hasNoPassingTests = store.getPassingTestZids( rendererZid.value ).length === 0;
-					const setExpanded = isNewOrEvaluator && hasNoPassingTests;
+					const setExpanded = hasParser.value ?
+						isNewOrEvaluator && hasNoPassingTests :
+						isBlankObject();
 					emit( 'expand', setExpanded );
 					renderTestsInitialized.value = true;
 				} );
@@ -553,6 +575,7 @@ module.exports = exports = defineComponent( {
 		return {
 			fieldErrors,
 			hasFieldErrors,
+			hasParser,
 			openExamplesDialog,
 			placeholderValue,
 			renderedExamples,

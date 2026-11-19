@@ -475,7 +475,6 @@ module.exports = exports = defineComponent( {
 			if (
 				!layout.component &&
 				store.hasRenderer( type.value ) &&
-				store.hasParser( type.value ) &&
 				!hasArgumentReference( props.objectValue )
 			) {
 				// TODO (T359669): Currently there are no type distinctions between renderers,
