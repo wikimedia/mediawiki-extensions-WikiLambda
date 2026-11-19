@@ -43,6 +43,73 @@ describe( 'FunctionViewerDetailsTable', () => {
 		expect( sizeOptions.map( ( option ) => option.value ) ).toEqual( [ 5, 10, 20, 50 ] );
 	} );
 
+	describe( 'pagination', () => {
+		const pageSizeKey = 'ext-wikilambda-app-function-details-page-size';
+		const rows = Array.from( { length: 30 }, ( _, index ) => ( { id: `row-${ index }` } ) );
+		const rowIds = ( table ) => table.props( 'data' ).map( ( row ) => row.id );
+
+		beforeEach( () => {
+			mw.storage.get.mockReturnValue( null );
+		} );
+
+		it( 'shows the first five rows when no page size is stored', () => {
+			const wrapper = renderFunctionViewerDetailsTable( { data: rows } );
+			const table = wrapper.findComponent( { name: 'CdxTable' } );
+
+			expect( mw.storage.get ).toHaveBeenCalledWith( pageSizeKey );
+			expect( table.props( 'paginationSizeDefault' ) ).toBe( 5 );
+			expect( table.props( 'totalRows' ) ).toBe( 30 );
+			expect( rowIds( table ) ).toEqual( [ 'row-0', 'row-1', 'row-2', 'row-3', 'row-4' ] );
+		} );
+
+		it( 'starts with the stored page size', () => {
+			mw.storage.get.mockReturnValue( '20' );
+			const wrapper = renderFunctionViewerDetailsTable( { data: rows } );
+			const table = wrapper.findComponent( { name: 'CdxTable' } );
+
+			expect( table.props( 'paginationSizeDefault' ) ).toBe( 20 );
+			expect( table.props( 'data' ) ).toHaveLength( 20 );
+		} );
+
+		it( 'ignores a stored page size that is not an option', () => {
+			mw.storage.get.mockReturnValue( '7' );
+			const wrapper = renderFunctionViewerDetailsTable( { data: rows } );
+
+			expect( wrapper.findComponent( { name: 'CdxTable' } ).props( 'paginationSizeDefault' ) ).toBe( 5 );
+		} );
+
+		it( 'shows the page that the table asks for', async () => {
+			const wrapper = renderFunctionViewerDetailsTable( { data: rows } );
+			const table = wrapper.findComponent( { name: 'CdxTable' } );
+
+			table.vm.$emit( 'load-more', 5, 5 );
+			await wrapper.vm.$nextTick();
+
+			expect( rowIds( table ) ).toEqual( [ 'row-5', 'row-6', 'row-7', 'row-8', 'row-9' ] );
+			expect( mw.storage.set ).not.toHaveBeenCalled();
+		} );
+
+		it( 'remembers a new page size', async () => {
+			const wrapper = renderFunctionViewerDetailsTable( { data: rows } );
+			const table = wrapper.findComponent( { name: 'CdxTable' } );
+
+			table.vm.$emit( 'load-more', 0, 50 );
+			await wrapper.vm.$nextTick();
+
+			expect( mw.storage.set ).toHaveBeenCalledWith( pageSizeKey, '50' );
+			expect( table.props( 'data' ) ).toHaveLength( 30 );
+		} );
+
+		it( 'shows all rows without paging when they fit on the smallest page', () => {
+			const fewRows = rows.slice( 0, 5 );
+			const wrapper = renderFunctionViewerDetailsTable( { data: fewRows } );
+			const table = wrapper.findComponent( { name: 'CdxTable' } );
+
+			expect( table.props( 'paginate' ) ).toBe( false );
+			expect( table.props( 'data' ) ).toEqual( fewRows );
+		} );
+	} );
+
 	describe( 'connect and disconnect buttons', () => {
 		it( 'disables connect button when canConnect is false', () => {
 			const wrapper = renderFunctionViewerDetailsTable( {
