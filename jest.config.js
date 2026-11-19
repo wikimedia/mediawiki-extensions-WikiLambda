@@ -62,6 +62,9 @@ module.exports = {
 
 	clearMocks: true,
 
+	// The integration tests start the whole app, and they run slowly on CI.
+	testTimeout: 20000,
+
 	coverageProvider: 'v8',
 
 	// Indicates whether the coverage information should be collected while executing the test
