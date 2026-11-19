@@ -21,7 +21,7 @@
 	"license-name": "MIT",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.47.0",
+		"MediaWiki": ">= 1.48.0",
 		"extensions": {
 			"WikimediaMessages": "*",
 			"UniversalLanguageSelector": "*"
@@ -155,7 +155,9 @@
 		},
 		"WikiLambdaSearchIndexLanguages": {
 			"description": "Allowlist of language codes that get their own per-language CirrusSearch fields (zobject_labels.<lang> etc.) when WikiLambdaEnableSearchIndexFields is on. All other languages are still searchable via the zobject_labels_all catch-all field. Deliberately small; to be tuned with the Search Platform team (T390562 M1).",
-			"value": [ "en" ]
+			"value": [
+				"en"
+			]
 		}
 	},
 	"ConfigRegistry": {
@@ -1526,7 +1528,9 @@
 		"virtual-wikifunctions-usage",
 		"virtual-abstractwiki"
 	],
-	"LogTypes": [ "abstractwiki" ],
+	"LogTypes": [
+		"abstractwiki"
+	],
 	"LogNames": {
 		"abstractwiki": "wikilambda-abstract-log-name"
 	},
