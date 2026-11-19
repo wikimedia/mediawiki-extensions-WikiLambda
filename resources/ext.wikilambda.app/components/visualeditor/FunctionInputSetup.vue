@@ -64,7 +64,7 @@ const { computed, defineComponent, inject, onMounted, ref, watch } = require( 'v
 const useMainStore = require( '../../store/index.js' );
 const Constants = require( '../../Constants.js' );
 const FunctionInputField = require( './FunctionInputField.vue' );
-const ExpandableDescription = require( './ExpandableDescription.vue' );
+const ExpandableDescription = require( '../base/ExpandableDescription.vue' );
 const FunctionInputPreview = require( './FunctionInputPreview.vue' );
 const wikifunctionsIconSvg = require( './wikifunctionsIconSvg.js' );
 

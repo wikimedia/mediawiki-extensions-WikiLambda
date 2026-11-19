@@ -35,7 +35,7 @@
 
 <script>
 const { defineComponent } = require( 'vue' );
-const ExpandableDescription = require( './ExpandableDescription.vue' );
+const ExpandableDescription = require( '../base/ExpandableDescription.vue' );
 const LabelData = require( '../../store/classes/LabelData.js' );
 
 module.exports = exports = defineComponent( {

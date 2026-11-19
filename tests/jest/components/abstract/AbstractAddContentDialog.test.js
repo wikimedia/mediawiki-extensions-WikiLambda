@@ -7,6 +7,7 @@
 'use strict';
 
 const { flushPromises, shallowMount } = require( '@vue/test-utils' );
+const { waitFor } = require( '@testing-library/vue' );
 const { dialogGlobalStubs } = require( '../../helpers/dialogTestHelpers.js' );
 const { createLabelDataMock } = require( '../../helpers/getterHelpers.js' );
 const Constants = require( '../../../../resources/ext.wikilambda.app/Constants.js' );
@@ -24,11 +25,12 @@ describe( 'AbstractAddContentDialog', () => {
 				...props
 			},
 			global: {
-				// Render the shared item list and the header, so that their content is rendered
+				// Render the shared item list, the header and the descriptions, so that their content is rendered
 				stubs: {
 					...dialogGlobalStubs,
 					'wl-dialog-item-list': false,
-					'wl-custom-dialog-header': false
+					'wl-custom-dialog-header': false,
+					'wl-expandable-description': false
 				}
 			}
 		} );
@@ -124,6 +126,22 @@ describe( 'AbstractAddContentDialog', () => {
 		expect( chips.map( ( chip ) => chip.text() ) ).toEqual( [ 'Wikidata item', 'language' ] );
 		// One hidden separator between the two input labels
 		expect( inputs.findAll( '.ext-wikilambda-app-abstract-add-content-dialog__screen-reader-text' ).length ).toBe( 1 );
+	} );
+
+	it( 'does not select the function on Enter on the Read more button of its description', async () => {
+		const wrapper = renderDialog();
+		const option = findOptions( wrapper )[ 0 ];
+		// A description longer than its line
+		const descriptionText = option.get( '.ext-wikilambda-app-expandable-description__text' ).element;
+		Object.defineProperty( descriptionText, 'scrollHeight', { value: 40 } );
+		Object.defineProperty( descriptionText, 'clientHeight', { value: 20 } );
+		await waitFor( () => expect( option.find( '.ext-wikilambda-app-expandable-description__toggle-button' ).exists() ).toBe( true ) );
+
+		const readMore = option.get( '.ext-wikilambda-app-expandable-description__toggle-button' );
+		await readMore.trigger( 'keydown', { key: 'Enter' } );
+		await readMore.trigger( 'keyup', { key: 'Enter' } );
+
+		expect( wrapper.emitted( 'select' ) ).toBeUndefined();
 	} );
 
 	it( 'shows no description or inputs when a function has none', () => {

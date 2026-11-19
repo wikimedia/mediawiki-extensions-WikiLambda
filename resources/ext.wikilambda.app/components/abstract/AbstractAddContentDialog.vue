@@ -54,12 +54,11 @@
 						:dir="item.matchLabel.langDir"
 					>{{ i18n( 'parentheses', [ item.matchLabel.label ] ).text() }}</span>
 				</span>
-				<span
+				<wl-expandable-description
 					v-if="item.description"
 					class="ext-wikilambda-app-dialog-item-list__item-description"
-					:lang="item.description.langCode"
-					:dir="item.description.langDir"
-				>{{ item.description.label }}</span>
+					:description="item.description"
+				></wl-expandable-description>
 				<span
 					v-if="item.inputs.length > 0"
 					class="ext-wikilambda-app-abstract-add-content-dialog__option-inputs"
@@ -94,6 +93,7 @@ const { extractIdFromUrl } = require( '../../utils/urlUtils.js' );
 // Base components
 const CustomDialogHeader = require( '../base/CustomDialogHeader.vue' );
 const DialogItemList = require( '../base/DialogItemList.vue' );
+const ExpandableDescription = require( '../base/ExpandableDescription.vue' );
 const FunctionSearchNextSteps = require( '../base/FunctionSearchNextSteps.vue' );
 // Codex components
 const { CdxDialog, CdxSearchInput } = require( '../../../codex.js' );
@@ -105,6 +105,7 @@ module.exports = exports = defineComponent( {
 		'cdx-search-input': CdxSearchInput,
 		'wl-custom-dialog-header': CustomDialogHeader,
 		'wl-dialog-item-list': DialogItemList,
+		'wl-expandable-description': ExpandableDescription,
 		'wl-function-search-next-steps': FunctionSearchNextSteps
 	},
 	props: {
@@ -357,6 +358,23 @@ module.exports = exports = defineComponent( {
 	.ext-wikilambda-app-abstract-add-content-dialog__match {
 		margin-left: @spacing-25;
 		color: @color-subtle;
+	}
+
+	// "Read more" covers the end of the description line: give it the color of the row
+	.ext-wikilambda-app-dialog-item-list__button:hover .ext-wikilambda-app-expandable-description__toggle-button {
+		background-color: @background-color-interactive-subtle--hover;
+
+		&::before {
+			background: linear-gradient( to right, transparent, @background-color-interactive-subtle--hover );
+		}
+	}
+
+	.ext-wikilambda-app-dialog-item-list__button:active .ext-wikilambda-app-expandable-description__toggle-button {
+		background-color: @background-color-interactive-subtle--active;
+
+		&::before {
+			background: linear-gradient( to right, transparent, @background-color-interactive-subtle--active );
+		}
 	}
 
 	.ext-wikilambda-app-abstract-add-content-dialog__option-inputs {

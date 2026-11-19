@@ -1,6 +1,6 @@
 <!--
-	WikiLambda Vue component for Visual Editor Wikifunctions function call
-	insertion and edit plugin.
+	WikiLambda Vue component for a description that shows its first lines,
+	with a button to read more or less.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
@@ -16,11 +16,13 @@
 		>
 			{{ description.label }}
 		</span>
+		<!-- Stop Enter too: an item around it, such as a dialog item list row, can select on Enter -->
 		<button
 			v-if="isExpandable"
 			type="button"
 			class="ext-wikilambda-app-expandable-description__toggle-button"
 			@click.stop="toggleExpanded"
+			@keydown.enter.stop
 		>
 			{{ isExpanded ?
 				i18n( 'wikilambda-visualeditor-wikifunctionscall-dialog-read-less-description' ) :

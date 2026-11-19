@@ -2,7 +2,7 @@
 
 const { mount } = require( '@vue/test-utils' );
 const { waitFor } = require( '@testing-library/vue' );
-const ExpandableDescription = require( '../../../../resources/ext.wikilambda.app/components/visualeditor/ExpandableDescription.vue' );
+const ExpandableDescription = require( '../../../../resources/ext.wikilambda.app/components/base/ExpandableDescription.vue' );
 const LabelData = require( '../../../../resources/ext.wikilambda.app/store/classes/LabelData.js' );
 
 function setWindowWidth( width ) {
