@@ -10,6 +10,14 @@ const { createPinia, setActivePinia } = require( 'pinia' );
 const useMainStore = require( '../../../../resources/ext.wikilambda.app/store/index.js' );
 const { canonicalToHybrid } = require( '../../../../resources/ext.wikilambda.app/utils/schemata.js' );
 
+// Z1002 is a language, Z1004 is not fetched
+const storedObjects = {
+	Z1002: {
+		success: true,
+		data: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z6', Z6K1: 'Z1002' }, Z2K2: { Z1K1: 'Z60', Z60K1: 'en' } }
+	}
+};
+
 describe( 'ListItems Pinia store', () => {
 	let store;
 
@@ -57,6 +65,30 @@ describe( 'ListItems Pinia store', () => {
 
 			it( 'returns false for any item of a list of Z1/Object', () => {
 				expect( store.isInvalidListItem( monolingual, 'Z1' ) ).toBe( false );
+			} );
+
+			describe( 'with a reference', () => {
+				const reference = canonicalToHybrid( 'Z1002' );
+
+				beforeEach( () => {
+					store.objects = storedObjects;
+				} );
+
+				it( 'returns false when the referred object has the item type of the list', () => {
+					expect( store.isInvalidListItem( reference, 'Z60' ) ).toBe( false );
+				} );
+
+				it( 'returns true when the referred object has another type', () => {
+					expect( store.isInvalidListItem( reference, 'Z6' ) ).toBe( true );
+				} );
+
+				it( 'returns false for a list of references', () => {
+					expect( store.isInvalidListItem( reference, 'Z9' ) ).toBe( false );
+				} );
+
+				it( 'returns false when the referred object is not fetched yet', () => {
+					expect( store.isInvalidListItem( canonicalToHybrid( 'Z1004' ), 'Z6' ) ).toBe( false );
+				} );
 			} );
 		} );
 	} );
@@ -158,6 +190,21 @@ describe( 'ListItems Pinia store', () => {
 
 				expect( store.invalidListItems ).toEqual( {
 					'main.Z2K2': [ 2, 3 ]
+				} );
+			} );
+
+			it( 'keeps references to objects of the new type, and to objects not fetched yet', () => {
+				store.objects = storedObjects;
+				const currentList = canonicalToHybrid( [ 'Z1', 'Z1002', 'Z1004', 'not a language' ] );
+
+				store.handleListTypeChange( {
+					keyPath: 'main.Z2K2',
+					objectValue: currentList,
+					newType: 'Z60'
+				} );
+
+				expect( store.invalidListItems ).toEqual( {
+					'main.Z2K2': [ 3 ]
 				} );
 			} );
 

@@ -38,7 +38,9 @@ module.exports = {
 
 		/**
 		 * Returns whether a list item does not match the item type of its list.
-		 * All items match a list of Z1/Object.
+		 * All items match a list of Z1/Object. A reference, function call or
+		 * argument reference matches if it resolves to the item type, or if
+		 * the type it resolves to is not known yet.
 		 *
 		 * @return {Function}
 		 */
@@ -48,8 +50,17 @@ module.exports = {
 			 * @param {Object|string} itemType item type of the list, in canonical form
 			 * @return {boolean}
 			 */
-			const findIsInvalidListItem = ( item, itemType ) => itemType !== Constants.Z_OBJECT &&
-				typeToString( itemType ) !== typeToString( getZObjectType( item ) );
+			const findIsInvalidListItem = ( item, itemType ) => {
+				if ( itemType === Constants.Z_OBJECT ) {
+					return false;
+				}
+				const listItemType = typeToString( itemType );
+				if ( typeToString( getZObjectType( item ) ) === listItemType ) {
+					return false;
+				}
+				const resolvingType = this.getResolvingType( item );
+				return resolvingType !== undefined && typeToString( resolvingType ) !== listItemType;
+			};
 			return findIsInvalidListItem;
 		}
 	},
