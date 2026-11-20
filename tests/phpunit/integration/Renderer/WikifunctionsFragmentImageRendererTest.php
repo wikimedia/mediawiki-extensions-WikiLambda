@@ -89,18 +89,48 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 	 * @param bool $isOk Whether the execute() call reports success.
 	 */
 	private function makeHttpFactory( $body, bool $isOk = true ): HttpRequestFactory {
-		$content = is_array( $body ) ? json_encode( $body ) : $body;
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->method( 'create' )->willReturn( $this->makeHttpRequest( $body, $isOk ) );
+		return $factory;
+	}
 
+	/**
+	 * Build a mock MWHttpRequest that returns the given JSON body.
+	 *
+	 * @param array|string $body Array is JSON-encoded; pass a string for raw/invalid JSON.
+	 * @param bool $isOk Whether the execute() call reports success.
+	 */
+	private function makeHttpRequest( $body, bool $isOk = true ): MWHttpRequest {
 		$mockRequest = $this->createMock( MWHttpRequest::class );
 		$mockRequest->method( 'execute' )->willReturn(
 			$isOk ? StatusValue::newGood() : StatusValue::newFatal( 'http-request-error' )
 		);
-		$mockRequest->method( 'getContent' )->willReturn( $content );
+		$mockRequest->method( 'getContent' )->willReturn( is_array( $body ) ? json_encode( $body ) : $body );
 		$mockRequest->method( 'getStatus' )->willReturn( $isOk ? 200 : 503 );
+		return $mockRequest;
+	}
 
-		$factory = $this->createMock( HttpRequestFactory::class );
-		$factory->method( 'create' )->willReturn( $mockRequest );
-		return $factory;
+	/**
+	 * Build a MemcachedWrapper mock that keeps the values in $cacheStore and their TTLs in $cacheTTLs.
+	 */
+	private function makeInMemoryCache( array &$cacheStore, array &$cacheTTLs = [] ): MemcachedWrapper {
+		$cache = $this->createMock( MemcachedWrapper::class );
+		$cache->method( 'makeKey' )->willReturnCallback(
+			static fn ( string ...$parts ) => implode( ':', $parts )
+		);
+		$cache->method( 'get' )->willReturnCallback(
+			static function ( string $key ) use ( &$cacheStore ) {
+				return $cacheStore[$key] ?? false;
+			}
+		);
+		$cache->method( 'set' )->willReturnCallback(
+			static function ( string $key, mixed $value, int $ttl ) use ( &$cacheStore, &$cacheTTLs ): bool {
+				$cacheStore[$key] = $value;
+				$cacheTTLs[$key] = $ttl;
+				return true;
+			}
+		);
+		return $cache;
 	}
 
 	// ------------------------------------------------------------------
@@ -125,6 +155,16 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 
 	public function testRender_midWithoutPrefix_returnsWarningFigure() {
 		$result = $this->buildRenderer()->render( '68960758', 'thumb', null );
+		$this->assertStringContainsString( 'ext-wikilambda-image--error', $result );
+		$this->assertStringNotContainsString( '<img', $result );
+	}
+
+	public function testRender_midWithLeadingZero_returnsErrorFigureWithoutCallingApi() {
+		// A leading zero would give a second M-ID, and a second cache key, for the same page.
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->never() )->method( 'create' );
+
+		$result = $this->buildRenderer( $factory )->render( 'M068960758', 'thumb', null );
 		$this->assertStringContainsString( 'ext-wikilambda-image--error', $result );
 		$this->assertStringNotContainsString( '<img', $result );
 	}
@@ -427,29 +467,73 @@ class WikifunctionsFragmentImageRendererTest extends MediaWikiIntegrationTestCas
 		);
 	}
 
-	public function testRender_doesNotCacheApiErrors() {
-		// The HTTP factory is called on each request when the API fails.
+	public function testRender_cachesApiErrorsForAMinute() {
 		$factory = $this->createMock( HttpRequestFactory::class );
-		$factory->expects( $this->exactly( 2 ) )
+		$factory->expects( $this->once() )
 			->method( 'create' )
-			->willReturnCallback( function () {
-				$req = $this->createMock( MWHttpRequest::class );
-				$req->method( 'execute' )->willReturn( StatusValue::newFatal( 'error' ) );
-				$req->method( 'getContent' )->willReturn( '' );
-				$req->method( 'getStatus' )->willReturn( 503 );
-				return $req;
-			} );
+			->willReturn( $this->makeHttpRequest( '', false ) );
 
-		$cache = $this->createMock( MemcachedWrapper::class );
-		$cache->method( 'makeKey' )->willReturnCallback(
-			static fn ( string ...$parts ) => implode( ':', $parts )
-		);
-		$cache->method( 'get' )->willReturn( false );
-		$cache->expects( $this->never() )->method( 'set' );
+		$cacheStore = [];
+		$cacheTTLs = [];
+		$renderer = $this->buildRenderer( $factory, $this->makeInMemoryCache( $cacheStore, $cacheTTLs ) );
+		$renderer->render( 'M68960758', 'thumb', null );
+		// Second call must hit cache, not make a new HTTP request.
+		$result = $renderer->render( 'M68960758', 'thumb', null );
 
-		$renderer = $this->buildRenderer( $factory, $cache );
-		$renderer->render( 'M68960758', 'thumb', null );
-		// Second call must retry the API, not hit the cache.
-		$renderer->render( 'M68960758', 'thumb', null );
+		$this->assertStringContainsString( 'ext-wikilambda-image--error', $result );
+		$this->assertSame( [ MemcachedWrapper::TTL_MINUTE ], array_values( $cacheTTLs ) );
+	}
+
+	public function testRender_cachesMissingPageForAnHour() {
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->once() )
+			->method( 'create' )
+			->willReturn( $this->makeHttpRequest( [
+				'query' => [ 'pages' => [ [ 'pageid' => 99999999, 'missing' => true ] ] ]
+			] ) );
+
+		$cacheStore = [];
+		$cacheTTLs = [];
+		$renderer = $this->buildRenderer( $factory, $this->makeInMemoryCache( $cacheStore, $cacheTTLs ) );
+		$renderer->render( 'M99999999', 'thumb', null );
+		// Second call must hit cache, not make a new HTTP request.
+		$result = $renderer->render( 'M99999999', 'thumb', null );
+
+		$this->assertStringContainsString( 'ext-wikilambda-image--error', $result );
+		$this->assertSame( [ MemcachedWrapper::TTL_HOUR ], array_values( $cacheTTLs ) );
+	}
+
+	public function testRender_cachesPageThatIsNotAFileAsMissing() {
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->once() )
+			->method( 'create' )
+			// A gallery page exists, but has no imageinfo.
+			->willReturn( $this->makeHttpRequest( [
+				'query' => [ 'pages' => [ [ 'pageid' => 123, 'title' => 'Cats' ] ] ]
+			] ) );
+
+		$cacheStore = [];
+		$cacheTTLs = [];
+		$renderer = $this->buildRenderer( $factory, $this->makeInMemoryCache( $cacheStore, $cacheTTLs ) );
+		$renderer->render( 'M123', 'thumb', null );
+		$result = $renderer->render( 'M123', 'thumb', null );
+
+		$this->assertStringContainsString( 'ext-wikilambda-image--error', $result );
+		$this->assertSame( [ MemcachedWrapper::TTL_HOUR ], array_values( $cacheTTLs ) );
+	}
+
+	// ------------------------------------------------------------------
+	// Commons API request
+	// ------------------------------------------------------------------
+
+	public function testRender_commonsRequestHasTimeout() {
+		$factory = $this->createMock( HttpRequestFactory::class );
+		$factory->expects( $this->once() )
+			->method( 'create' )
+			// The render waits for the request, so it must not use the longer default timeout.
+			->with( $this->anything(), $this->callback( static fn ( array $options ) => isset( $options['timeout'] ) ) )
+			->willReturn( $this->makeHttpRequest( self::VALID_API_RESPONSE ) );
+
+		$this->buildRenderer( $factory )->render( 'M68960758', 'thumb', null );
 	}
 }

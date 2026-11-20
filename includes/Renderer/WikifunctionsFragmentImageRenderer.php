@@ -5,7 +5,7 @@
  *
  * Converts a single <ext-wikilambda-image> custom element produced by Wikifunctions
  * function output into safe <figure> HTML, fetching metadata from the Commons API
- * and caching successful results in MemcachedWrapper.
+ * and caching the results in MemcachedWrapper.
  *
  * @file
  * @ingroup Extensions
@@ -30,11 +30,23 @@ class WikifunctionsFragmentImageRenderer {
 	private const ALLOWED_THUMB_HOSTS = [ 'upload.wikimedia.org', 'thumb.wikimedia.org' ];
 	private const SUPPORTED_SIZES = [ 'thumb' ];
 
+	/** No leading zeros, so that each Commons page has one M-ID and one cache key. */
+	private const MID_PATTERN = '/^M[1-9]\d*$/';
+
+	/** The render waits for the Commons API, so do not use the longer default timeout. */
+	private const COMMONS_API_TIMEOUT_SECONDS = 2;
+
 	/**
 	 * Sentinel returned by doFetchCommonsImageData() when the Commons page does not exist.
 	 * Distinguished from null (API/network error) so the caller can show a more specific message.
 	 */
 	private const FETCH_NOT_FOUND = 'NOT_FOUND';
+
+	/**
+	 * Cached for a short time after an API/network error, so that every render during a
+	 * Commons outage does not wait for the API again.
+	 */
+	private const FETCH_FAILED = 'FAILED';
 
 	/**
 	 * Maximum bytes of a rejected M-ID to log. A malformed M-ID is arbitrary function output
@@ -71,7 +83,7 @@ class WikifunctionsFragmentImageRenderer {
 			return $this->createImageErrorFigure( 'wikilambda-commons-image-error-no-image', 'warning', $alt );
 		}
 
-		if ( !preg_match( '/^M\d+$/', $mid ) ) {
+		if ( !preg_match( self::MID_PATTERN, $mid ) ) {
 			$this->logger->info( __METHOD__ . ': Invalid M-ID format: {mid}', [
 				// mb_strcut, not substr: the value is arbitrary function output, and a cut in the
 				// middle of a multi-byte character makes the field invalid UTF-8 for the log pipeline.
@@ -139,8 +151,8 @@ class WikifunctionsFragmentImageRenderer {
 	 * Returns a data array on success, the FETCH_NOT_FOUND sentinel when the Commons page
 	 * does not exist, or null on a transient API/network failure.
 	 *
-	 * Successful results are cached in MemcachedWrapper for one day; failures are not cached
-	 * so that they self-heal on the next request.
+	 * Results are cached in MemcachedWrapper: successful results for one day, missing pages
+	 * for one hour, and failures for one minute.
 	 *
 	 * @param string $mid e.g. "M68960758"
 	 * @param string $size e.g. "thumb"
@@ -152,7 +164,7 @@ class WikifunctionsFragmentImageRenderer {
 
 		$cached = $this->objectCache->get( $cacheKey );
 		if ( $cached !== false ) {
-			return is_array( $cached ) ? $cached : null;
+			return ( is_array( $cached ) || $cached === self::FETCH_NOT_FOUND ) ? $cached : null;
 		}
 
 		// Extract the numeric page ID from the M-ID
@@ -161,6 +173,10 @@ class WikifunctionsFragmentImageRenderer {
 
 		if ( is_array( $result ) ) {
 			$this->objectCache->set( $cacheKey, $result, MemcachedWrapper::TTL_DAY );
+		} elseif ( $result === self::FETCH_NOT_FOUND ) {
+			$this->objectCache->set( $cacheKey, $result, MemcachedWrapper::TTL_HOUR );
+		} else {
+			$this->objectCache->set( $cacheKey, self::FETCH_FAILED, MemcachedWrapper::TTL_MINUTE );
 		}
 
 		return $result;
@@ -184,8 +200,8 @@ class WikifunctionsFragmentImageRenderer {
 	 *
 	 * Uses imageinfo with iiurlwidth so the API computes the thumbnail URL directly.
 	 *
-	 * Returns a data array on success, FETCH_NOT_FOUND when the Commons page is missing,
-	 * or null on a network/API error.
+	 * Returns a data array on success, FETCH_NOT_FOUND when the Commons page is missing or
+	 * is not a file, or null on a network/API error.
 	 *
 	 * @param int $pageId Numeric Commons page ID
 	 * @param int $thumbWidth Desired thumbnail width in pixels
@@ -202,7 +218,9 @@ class WikifunctionsFragmentImageRenderer {
 			'formatversion' => '2',
 		] );
 
-		$request = $this->httpRequestFactory->create( $url, [ 'method' => 'GET' ], __METHOD__ );
+		$request = $this->httpRequestFactory->create(
+			$url, [ 'method' => 'GET', 'timeout' => self::COMMONS_API_TIMEOUT_SECONDS ], __METHOD__
+		);
 		$status = $request->execute();
 
 		if ( !$status->isOK() ) {
@@ -228,9 +246,10 @@ class WikifunctionsFragmentImageRenderer {
 			return self::FETCH_NOT_FOUND;
 		}
 
+		// The page exists but is not a file, e.g. a gallery page
 		$imageinfo = $page['imageinfo'][0] ?? null;
 		if ( !$imageinfo ) {
-			return null;
+			return self::FETCH_NOT_FOUND;
 		}
 
 		return [
