@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use MediaWiki\Content\AbstractContent;
 use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
@@ -117,32 +118,20 @@ EOD;
 		$mids = [];
 		foreach ( $this->getSections() ?? [] as $section ) {
 			$fragments = $section['fragments'] ?? null;
-			if ( is_array( $fragments ) ) {
-				self::collectCommonsMediaIds( $fragments, $mids );
+			if ( !is_array( $fragments ) ) {
+				continue;
+			}
+			$mediaReferences = ZObjectUtils::findObjectsWithKeyValue(
+				$fragments, ZTypeRegistry::Z_OBJECT_TYPE, ZTypeRegistry::Z_COMMONS_MEDIA_REFERENCE
+			);
+			foreach ( $mediaReferences as $mediaReference ) {
+				$mid = $mediaReference[ ZTypeRegistry::Z_COMMONS_MEDIA_REFERENCE_ID ] ?? null;
+				if ( is_string( $mid ) && preg_match( '/^M[1-9]\d*$/', $mid ) ) {
+					$mids[ $mid ] = true;
+				}
 			}
 		}
 		return array_keys( $mids );
-	}
-
-	/**
-	 * Walk a ZObject and add the M-ID of each Z310/Commons media reference to the set.
-	 *
-	 * @param array $zobject
-	 * @param array<string,true> &$mids
-	 */
-	private static function collectCommonsMediaIds( array $zobject, array &$mids ): void {
-		if ( ( $zobject[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? null ) === ZTypeRegistry::Z_COMMONS_MEDIA_REFERENCE ) {
-			$mid = $zobject[ ZTypeRegistry::Z_COMMONS_MEDIA_REFERENCE_ID ] ?? null;
-			if ( is_string( $mid ) && preg_match( '/^M[1-9]\d*$/', $mid ) ) {
-				$mids[ $mid ] = true;
-			}
-			return;
-		}
-		foreach ( $zobject as $value ) {
-			if ( is_array( $value ) ) {
-				self::collectCommonsMediaIds( $value, $mids );
-			}
-		}
 	}
 
 	/**

@@ -963,6 +963,36 @@ class ZObjectUtilsTest extends WikiLambdaRepoModeIntegrationTestCase {
 		];
 	}
 
+	/**
+	 * @dataProvider provideFindObjectsWithKeyValue
+	 */
+	public function testFindObjectsWithKeyValue( array $zobject, array $expected ) {
+		$this->assertSame( $expected, ZObjectUtils::findObjectsWithKeyValue( $zobject, 'Z1K1', 'Z310' ) );
+	}
+
+	public static function provideFindObjectsWithKeyValue() {
+		$mediaReference = static fn ( $mid ) => [ 'Z1K1' => 'Z310', 'Z310K1' => $mid ];
+
+		return [
+			'no match' => [ [ 'Z1K1' => 'Z6', 'Z6K1' => 'Z310' ], [] ],
+			'the object itself' => [ $mediaReference( 'M1' ), [ $mediaReference( 'M1' ) ] ],
+			'key with another value' => [ [ 'Z1K1' => 'Z7', 'Z7K1' => 'Z310' ], [] ],
+			'nested in a function call and a list, in document order' => [
+				[
+					'Z1K1' => 'Z7',
+					'Z7K1' => 'Z10000',
+					'Z10000K1' => [ 'Z310', $mediaReference( 'M2' ), $mediaReference( 'M1' ) ],
+					'Z10000K2' => $mediaReference( 'M3' ),
+				],
+				[ $mediaReference( 'M2' ), $mediaReference( 'M1' ), $mediaReference( 'M3' ) ]
+			],
+			'inside a match' => [
+				[ 'Z1K1' => 'Z310', 'Z310K1' => $mediaReference( 'M4' ) ],
+				[ [ 'Z1K1' => 'Z310', 'Z310K1' => $mediaReference( 'M4' ) ], $mediaReference( 'M4' ) ]
+			],
+		];
+	}
+
 	public function testGetLabelOfFunctionArgument() {
 		$this->insertZids( [ 'Z17' ] );
 

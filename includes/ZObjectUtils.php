@@ -598,6 +598,25 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Find the objects, at any depth in an array-form ZObject, that have the given
+	 * value for the given key, e.g. all Commons media references (Z1K1 => Z310).
+	 *
+	 * @param array $zobject
+	 * @param string $key
+	 * @param string $value
+	 * @return array[] The matching objects, in document order
+	 */
+	public static function findObjectsWithKeyValue( array $zobject, string $key, string $value ): array {
+		$matches = ( $zobject[ $key ] ?? null ) === $value ? [ $zobject ] : [];
+		foreach ( $zobject as $child ) {
+			if ( is_array( $child ) ) {
+				array_push( $matches, ...self::findObjectsWithKeyValue( $child, $key, $value ) );
+			}
+		}
+		return $matches;
+	}
+
+	/**
 	 * Returns the natural language label of a given Zid in the language
 	 * passed as parameter or available fallback languages. If not available,
 	 * returns the non-translated Zid.
