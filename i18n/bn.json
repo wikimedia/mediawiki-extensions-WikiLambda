@@ -297,7 +297,7 @@
 	"wikilambda-function-implementation-selectall-label": "সবগুলো নির্বাচন",
 	"wikilambda-function-implementation-state-approved": "সংযুক্ত",
 	"wikilambda-function-implementation-state-deactivated": "বিচ্ছিন্ন",
-	"wikilambda-function-implementation-state-label": "অবস্থা",
+	"wikilambda-function-implementation-state-label": "স্থিতি",
 	"wikilambda-function-implementation-table-header": "বাস্তবায়ন",
 	"wikilambda-function-implementation-tests-passed-label": "পরীক্ষায় উত্তীর্ণ",
 	"wikilambda-function-inputs-title": "ইনপুট",
