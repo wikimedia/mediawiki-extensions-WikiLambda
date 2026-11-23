@@ -54,6 +54,7 @@
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Selecciona unha función que dea como resultado $2 ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "Este campo agarda unha función que devolva $2 ($1). Só se mostran na procura as funcións con ese tipo de devolución.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "Por que non se listan algunhas funcións",
+	"wikilambda-abstract-fragment-output-show-more": "Mostrar máis",
 	"wikilambda-abstract-function-search-suggest-title": "Suxerir á comunidade",
 	"wikilambda-abstract-function-search-suggest-description": "Inicia unha conversa e pídelle aos colaboradores que axuden a construír a función",
 	"wikilambda-abstract-function-search-create-title": "Crear a función",

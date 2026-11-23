@@ -355,6 +355,8 @@
 	"wikilambda-typeselector-label": "Izberite vrsto",
 	"wikilambda-typeunavailable": "neprepoznana vrsta",
 	"wikilambda-unknown-save-error-message": "Pri poskusu shranjevanja sprememb je prišlo do napake.",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "Izberite objekt Wikifunkcij",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "Ni izbranega objekta",
 	"wikilambda-wikidata-lexeme-selector-placeholder": "Izberite leksem Wikipodatkov",
 	"wikilambda-zerror": "Napaka vrste $1",
 	"wikilambda-zimplememntation-composition-missing": "Sestava je prazna. Izberite funkcijo.",

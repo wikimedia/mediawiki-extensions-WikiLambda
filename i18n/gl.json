@@ -637,6 +637,8 @@
 	"wikilambda-validation-error-name-toolong": "O nome en $1 debe ter {{PLURAL:$2|$2 carácter|$2 caracteres}} ou menos.",
 	"wikilambda-commons-media-selector-placeholder": "Procurar imaxes en Commons",
 	"wikilambda-commons-media-empty-value-placeholder": "Non se seleccionou ningunha imaxe",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "Seleccionar o obxecto de Wikifuncións",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "Non se seleccionou ningún obxecto",
 	"wikilambda-wikidata-entity-selector-placeholder": "Seleccionar a entidade de Wikidata",
 	"wikilambda-wikidata-entity-fetch-error": "Non se puideron cargar os datos de Wikidata.",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Sen valor",

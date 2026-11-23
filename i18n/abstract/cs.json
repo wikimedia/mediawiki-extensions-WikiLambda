@@ -54,6 +54,7 @@
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Vyberte funkci s návratovým typem $2 ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "Toto pole očekává funkci s návratovým typem $2 ($1). V hledání se zobrazují pouze funkce, které vrací tento typ.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "Proč nejsou některé funkce uvedeny",
+	"wikilambda-abstract-fragment-output-show-more": "Zobrazit více",
 	"wikilambda-abstract-function-search-suggest-title": "Navrhnout komunitě",
 	"wikilambda-abstract-function-search-suggest-description": "Zahajte diskusi a požádejte přispěvatele, aby pomohli funkci vytvořit",
 	"wikilambda-abstract-function-search-create-title": "Vytvořit funkci",

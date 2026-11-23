@@ -54,6 +54,7 @@
 	"wikilambda-abstract-fragment-function-selector-placeholder": "Wybierz funkcję zwracającą wartość typu „$2” ($1)",
 	"wikilambda-abstract-fragment-function-selector-popover-body": "W tym polu należy podać funkcję zwracającą wartość typu $2 ($1). W wynikach wyszukiwania wyświetlane są wyłącznie funkcje o tym typie zwracanej wartości.",
 	"wikilambda-abstract-fragment-function-selector-popover-title": "Dlaczego niektóre funkcje nie są wymienione",
+	"wikilambda-abstract-fragment-output-show-more": "Pokaż więcej",
 	"wikilambda-abstract-function-search-suggest-title": "Zaproponuj społeczności",
 	"wikilambda-abstract-function-search-suggest-description": "Rozpocznij dyskusję i poproś innych o pomoc w stworzeniu tej funkcji",
 	"wikilambda-abstract-function-search-create-title": "Utwórz funkcję",

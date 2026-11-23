@@ -636,6 +636,8 @@
 	"wikilambda-validation-error-name-toolong": "Magaca ku jira $1 waa inuu ahaadaa {{PLURAL:$2|$2 xaraf|$2 xarafo}} ama ka gaaban.",
 	"wikilambda-commons-media-selector-placeholder": "Raadi sawirrada Commons",
 	"wikilambda-commons-media-empty-value-placeholder": "Sawir lama dooran",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "Dooro shayga Wikifunctions",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "Wax shay ah lama dooran",
 	"wikilambda-wikidata-entity-selector-placeholder": "Dooro qaybta Wikidata",
 	"wikilambda-wikidata-entity-fetch-error": "Lama soo dejin karin xogta Wikidata.",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Qiime ma jiro",

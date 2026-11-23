@@ -668,6 +668,8 @@
 	"wikilambda-validation-error-name-toolong": "$1中的名称必须为{{PLURAL:$2|$2字符}}或更短。",
 	"wikilambda-commons-media-selector-placeholder": "搜索维基共享资源图片",
 	"wikilambda-commons-media-empty-value-placeholder": "未选择图片",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "选择Wikifunctions对象",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "未选择任何对象",
 	"wikilambda-wikidata-entity-selector-placeholder": "选择维基数据实体",
 	"wikilambda-wikidata-entity-fetch-error": "无法从维基数据加载数据。",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "无值",

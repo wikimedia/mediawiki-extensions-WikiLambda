@@ -632,6 +632,8 @@
 	"wikilambda-validation-error-name-toolong": "Název v jazyce $1 smí mít délku {{PLURAL:$2|$2 znak|$2 znaky|$2 znaků}} nebo méně.",
 	"wikilambda-commons-media-selector-placeholder": "Hledat obrázky na Commons",
 	"wikilambda-commons-media-empty-value-placeholder": "Nevybrán žádný obrázek",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "Vyberte objekt Wikifunkcí",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "Není vybrán žádný objekt",
 	"wikilambda-wikidata-entity-selector-placeholder": "Vybrat entitu Wikidat",
 	"wikilambda-wikidata-entity-fetch-error": "Nepodařilo se načíst data z Wikidat.",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Bez hodnoty",

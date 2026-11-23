@@ -483,6 +483,8 @@
 	"wikilambda-validation-error-name-toolong": "Den Numm op $1 däerf maximal {{PLURAL:$2|$2 Zeeche}} laang sinn.",
 	"wikilambda-commons-media-selector-placeholder": "Biller op Commons sichen",
 	"wikilambda-commons-media-empty-value-placeholder": "Kee Bild erausgesicht",
+	"wikilambda-wikifunctions-reference-selector-placeholder": "Wikifunctions-Objet auswielen",
+	"wikilambda-wikifunctions-reference-empty-value-placeholder": "Keen Objet ausgewielt",
 	"wikilambda-wikidata-entity-selector-placeholder": "Wikidata-Entitéit wielen",
 	"wikilambda-wikidata-entity-empty-value-placeholder": "Kee Wäert",
 	"wikilambda-wikidata-item-selector-placeholder": "Wikidata-Element wielen",
