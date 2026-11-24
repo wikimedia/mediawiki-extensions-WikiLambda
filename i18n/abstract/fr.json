@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Eihel",
 			"Jdforrester",
 			"Jérémy-Günther-Heinz Jähnick",
 			"Kvardek du",
@@ -31,8 +32,8 @@
 	"wikilambda-abstract-content-object": "Article de la Wikipédia abstraite",
 	"wikilambda-abstract-content-history-title": "Historique des versions de « $1 » ($2)",
 	"wikilambda-abstract-content-history-title-no-label": "Historique des versions pour $1",
-	"wikilambda-abstract-edit-title-with-label": "Modifier le résumé de l'article pour « 1$ » ( 2$ )",
-	"wikilambda-abstract-edit-title": "Modifier le résumé de l'article pour 1$",
+	"wikilambda-abstract-edit-title-with-label": "Modifier l’article Abstract pour « $1 » ($2)",
+	"wikilambda-abstract-edit-title": "Modifier l’article Abstract pour $1",
 	"wikilambda-abstract-error-bad-fragments-type": "La section avec la clé « $1 » contient une liste de fragments mal typée.",
 	"wikilambda-abstract-error-bad-qid": "La valeur de la propriété Qid (« $1 ») n'est pas un Qid d'élément Wikidata valide.",
 	"wikilambda-abstract-error-nonexistent-qid": "L'élément Wikidata $1 n'existe pas. Veuillez sélectionner un élément Wikidata valide avant de publier.",
@@ -109,6 +110,6 @@
 	"wikilambda-abstract-special-preview-unsupported-qid-title": "Ce sujet n'est pas encore supporté.",
 	"wikilambda-abstract-special-view": "Consulter un article de la Wikipedia abstraite",
 	"wikilambda-abstract-tab-createlocal": "Créer un article local",
-	"wikilambda-abstract-tab-edit": "Modifier le résumé",
+	"wikilambda-abstract-tab-edit": "Modifier Abstract",
 	"wikilambda-abstract-tab-history": "Historique abstraite"
 }

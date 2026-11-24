@@ -43,6 +43,8 @@
 	"action-wikilambda-edit-user-function": "urejanje obstoječe funkcije, ki jo je zagotovil uporabnik",
 	"action-wikilambda-execute": "izvajanje funkcij",
 	"action-wikilambda-execute-unsaved-code": "izvajanje neshranjene implementacijske kode",
+	"communityconfiguration-abstractwikioptedinarticles-title": "Prijavljeni članki Abstraktne Wikipedije",
+	"communityconfiguration-abstractwikioptedinarticles-optedinarticles-label": "Prijavljeni članki",
 	"content-model-zobject": "Objekt WikiLambda",
 	"group-functioneer": "Funkcionarji",
 	"group-functioneer-member": "{{GENDER:$1|funkcionar|funkcionarka|funkcionar_ka}}",
