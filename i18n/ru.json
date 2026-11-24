@@ -60,7 +60,7 @@
 	"action-wikilambda-edit-object-description": "править описания существующего Объекта",
 	"action-wikilambda-edit-object-label": "править метки существующего Объекта",
 	"action-wikilambda-edit-object-type": "править тип существующего Объекта",
-	"action-wikilambda-edit-predefined": "править существующие «предопределенные» Объекты (ниже Z10000)",
+	"action-wikilambda-edit-predefined": "редактирование существующих «предопределённых» Объектов (ниже Z10000)",
 	"action-wikilambda-edit-programming": "править существующие Объекты Языка программирования",
 	"action-wikilambda-edit-running-function": "править Функцию, имеющую подключённую Реализацию",
 	"action-wikilambda-edit-running-function-definition": "править вводы и вывод Функции, которая имеет подключённую Реализацию",
